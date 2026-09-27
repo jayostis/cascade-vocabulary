@@ -1,0 +1,32 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://ns.cascadeprotocol.org/core/v1#> a owl:Ontology .
+
+cascade:PatientProfile a owl:Class ;
+    rdfs:label "Patient Profile"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> .
+
+cascade:dateOfBirth a owl:DatatypeProperty ;
+    rdfs:label "Date of Birth"@en ;
+    rdfs:domain cascade:PatientProfile ;
+    rdfs:range xsd:date ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> .
+
+cascade:sourceRecordId a owl:DatatypeProperty ;
+    rdfs:label "Source Record ID"@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> .
+
+foaf:givenName a owl:DatatypeProperty ;
+    rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> .
+
+foaf:familyName a owl:DatatypeProperty ;
+    rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> .
+
+foaf:name a owl:DatatypeProperty ;
+    rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> .
