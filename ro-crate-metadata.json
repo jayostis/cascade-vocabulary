@@ -1,0 +1,44 @@
+{
+  "@context": "https://w3id.org/ro/crate/1.2/context",
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": { "@id": "https://w3id.org/ro/crate/1.2" },
+      "about": { "@id": "./" }
+    },
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name": "Cascade vocabulary",
+      "description": "The ontology and shapes files a Cascade Bridge Adapter's output is read against: clinical terms copied from the-cascade-protocol/spec under their own IRIs, each naming the commit it was copied from with dct:source, and the records and judgments terms first declared here.",
+      "version": "0.1.0",
+      "license": { "@id": "https://spdx.org/licenses/Apache-2.0" },
+      "isBasedOn": { "@id": "https://github.com/the-cascade-protocol/spec" },
+      "hasPart": [
+        { "@id": "ontologies/core/v1/core.ttl" },
+        { "@id": "ontologies/core/v1/core.shapes.ttl" },
+        { "@id": "ontologies/health/v1/health.ttl" },
+        { "@id": "ontologies/health/v1/health.shapes.ttl" },
+        { "@id": "ontologies/clinical/v1/clinical.ttl" },
+        { "@id": "ontologies/clinical/v1/clinical.shapes.ttl" },
+        { "@id": "ontologies/records/v1-draft/records.ttl" },
+        { "@id": "ontologies/records/v1-draft/records.shapes.ttl" },
+        { "@id": "ontologies/judgments/v1-draft/judgments.ttl" },
+        { "@id": "ontologies/judgments/v1-draft/judgments.shapes.ttl" }
+      ]
+    },
+    { "@id": "ontologies/core/v1/core.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/core/v1#" }, "license": { "@id": "https://spdx.org/licenses/CC-BY-4.0" } },
+    { "@id": "ontologies/core/v1/core.shapes.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/core/v1#" }, "license": { "@id": "https://spdx.org/licenses/CC-BY-4.0" } },
+    { "@id": "ontologies/health/v1/health.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/health/v1#" }, "license": { "@id": "https://spdx.org/licenses/CC-BY-4.0" } },
+    { "@id": "ontologies/health/v1/health.shapes.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/health/v1#" }, "license": { "@id": "https://spdx.org/licenses/CC-BY-4.0" } },
+    { "@id": "ontologies/clinical/v1/clinical.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/clinical/v1#" }, "license": { "@id": "https://spdx.org/licenses/CC-BY-4.0" } },
+    { "@id": "ontologies/clinical/v1/clinical.shapes.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/clinical/v1#" }, "license": { "@id": "https://spdx.org/licenses/CC-BY-4.0" } },
+    { "@id": "ontologies/records/v1-draft/records.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/records/v1-draft#" } },
+    { "@id": "ontologies/records/v1-draft/records.shapes.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/records/v1-draft#" } },
+    { "@id": "ontologies/judgments/v1-draft/judgments.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/judgments/v1-draft#" } },
+    { "@id": "ontologies/judgments/v1-draft/judgments.shapes.ttl", "@type": "File", "encodingFormat": "text/turtle", "about": { "@id": "https://ns.cascadeprotocol.org/judgments/v1-draft#" } },
+    { "@id": "https://spdx.org/licenses/Apache-2.0", "@type": "CreativeWork", "name": "Apache License 2.0", "identifier": "Apache-2.0" },
+    { "@id": "https://spdx.org/licenses/CC-BY-4.0", "@type": "CreativeWork", "name": "Creative Commons Attribution 4.0 International", "identifier": "CC-BY-4.0" }
+  ]
+}
