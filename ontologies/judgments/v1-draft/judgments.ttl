@@ -1,0 +1,57 @@
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<https://ns.cascadeprotocol.org/judgments/v1-draft#> a owl:Ontology .
+
+jdg:Judgment a owl:Class ;
+    rdfs:label "judgment"@en ;
+    rdfs:comment "A conclusion about records, made by someone at a time; its members are prov:hadMember."@en ;
+    rdfs:subClassOf prov:Collection .
+
+jdg:verdict a owl:ObjectProperty ;
+    rdfs:label "verdict"@en ;
+    rdfs:domain jdg:Judgment .
+
+jdg:Same a owl:NamedIndividual ;
+    rdfs:label "same"@en ;
+    rdfs:comment "The members are one thing: a view draws one entry on every member."@en .
+
+jdg:Different a owl:NamedIndividual ;
+    rdfs:label "different"@en ;
+    rdfs:comment "The members are kept apart: a counting Different wins over any Same for that pair."@en .
+
+jdg:Erroneous a owl:NamedIndividual ;
+    rdfs:label "erroneous"@en ;
+    rdfs:comment "The members, records or a whole activity, are left out of every view."@en .
+
+jdg:About a owl:NamedIndividual ;
+    rdfs:label "about"@en ;
+    rdfs:comment "The member, a source's patient record, is about the jdg:subject: every record naming it is the subject's."@en .
+
+jdg:subject a owl:ObjectProperty ;
+    rdfs:label "subject"@en ;
+    rdfs:domain jdg:Judgment ;
+    rdfs:range rec:Subject .
+
+jdg:basis a owl:ObjectProperty ;
+    rdfs:label "basis"@en ;
+    rdfs:domain jdg:Judgment .
+
+jdg:PortalAuthenticated a owl:NamedIndividual ;
+    rdfs:label "portal authenticated"@en ;
+    rdfs:comment "The patient record came back from a login the person made themselves."@en .
+
+jdg:RelatedPerson a owl:NamedIndividual ;
+    rdfs:label "related person"@en ;
+    rdfs:comment "A proxy's connection to someone else's chart, whose own RelatedPerson names the proxy."@en .
+
+jdg:Demographics a owl:NamedIndividual ;
+    rdfs:label "demographics"@en ;
+    rdfs:comment "A matcher judged it from name, birth date, address or phone."@en .
+
+jdg:OwnerStatement a owl:NamedIndividual ;
+    rdfs:label "owner statement"@en ;
+    rdfs:comment "The operator said so, at import or later."@en .

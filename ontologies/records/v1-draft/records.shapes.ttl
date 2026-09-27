@@ -1,0 +1,73 @@
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+rec:SourceUrlShape a sh:NodeShape ;
+    sh:targetSubjectsOf rec:sourceUrl ;
+    sh:property [
+        sh:path rec:sourceUrl ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A record has one source address, an IRI."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:PatientShape a sh:NodeShape ;
+    sh:targetSubjectsOf rec:patient ;
+    sh:property [
+        sh:path rec:patient ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A version is about one patient record, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:RevisionShape a sh:NodeShape ;
+    sh:targetClass rec:Revision ;
+    sh:property [
+        sh:path rec:revisionOf ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A revision is of exactly one record."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path rec:version ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A revision sets exactly one version."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A revision carries its arrival time, one xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:wasRevisionOf ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A revision follows at most one earlier revision."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:CurrentRevisionShape a sh:NodeShape ;
+    sh:targetSubjectsOf rec:currentRevision ;
+    sh:property [
+        sh:path rec:currentRevision ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A record has at most one current revision."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:SubjectShape a sh:NodeShape ;
+    sh:targetClass rec:Subject ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:message "A subject holds no data: what is known about the person lives in profiles."@en ;
+    sh:severity sh:Violation .
