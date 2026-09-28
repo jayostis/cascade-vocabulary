@@ -18,8 +18,6 @@ program loads. Holds exactly the terms an adapter pinned to it writes, and nothi
   version's content is required, because a source may omit any of it.
 - **The crate lists every file.** A file an adapter lists is named by its path from this
   repository's root, as `ontologies/<name>/<version>/<name>.ttl` and `<name>.shapes.ttl`.
-- **Every shape is tested** by an example that conforms under `tests/conforms/` and one
-  that fails it on exactly that constraint under `tests/fails/`, each named by its sentence.
 
 ## Conventions
 
