@@ -1,0 +1,72 @@
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+jdg:JudgmentShape a sh:NodeShape ;
+    sh:targetClass jdg:Judgment ;
+    sh:property [
+        sh:path jdg:verdict ;
+        sh:maxCount 1 ;
+        sh:in ( jdg:Same jdg:Different jdg:Erroneous jdg:About ) ;
+        sh:message "A judgment gives at most one verdict: jdg:Same, jdg:Different, jdg:Erroneous or jdg:About. One that only retracts gives none."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:hadMember ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A judgment's members are records or activities, named by their IRIs."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A judgment carries the time it was made, one xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:or ( [ sh:class prov:Person ] [ sh:class prov:SoftwareAgent ] ) ;
+        sh:message "A judgment has one author, a prov:Person or a prov:SoftwareAgent, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:used ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A judgment names what it used by IRI: versions it saw, reference versions it applied."@en ;
+        sh:severity sh:Violation
+    ] .
+
+jdg:AboutVerdictShape a sh:NodeShape ;
+    sh:targetClass jdg:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path jdg:verdict ; sh:hasValue jdg:About ] ]
+        [ sh:property [ sh:path jdg:subject ; sh:minCount 1 ] ,
+                      [ sh:path jdg:basis ; sh:minCount 1 ] ,
+                      [ sh:path prov:hadMember ; sh:minCount 1 ; sh:maxCount 1 ] ]
+    ) ;
+    sh:message "An About judgment names one member, a subject and a basis."@en ;
+    sh:severity sh:Violation .
+
+jdg:AboutShape a sh:NodeShape ;
+    sh:targetSubjectsOf jdg:subject , jdg:basis ;
+    sh:property [
+        sh:path jdg:verdict ;
+        sh:hasValue jdg:About ;
+        sh:message "Only an About judgment names a subject and a basis."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path jdg:subject ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:disjoint prov:wasAttributedTo ;
+        sh:message "An About judgment names exactly one subject, which is never its author."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path jdg:basis ;
+        sh:maxCount 1 ;
+        sh:in ( jdg:PortalAuthenticated jdg:RelatedPerson jdg:Demographics jdg:OwnerStatement ) ;
+        sh:message "An About judgment gives exactly one basis: jdg:PortalAuthenticated, jdg:RelatedPerson, jdg:Demographics or jdg:OwnerStatement."@en ;
+        sh:severity sh:Violation
+    ] .
