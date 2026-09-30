@@ -1,5 +1,7 @@
+@prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -71,3 +73,24 @@ rec:SubjectShape a sh:NodeShape ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:message "A subject holds no data: what is known about the person lives in profiles."@en ;
     sh:severity sh:Violation .
+
+rec:ReferenceSeriesShape a sh:NodeShape ;
+    sh:targetClass rec:ReferenceSeries ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A reference series has one name."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path [ sh:inversePath prov:specializationOf ] ;
+        sh:minCount 1 ;
+        sh:node rec:ReferenceVersionShape ;
+        sh:message "A reference series has at least one version, and each version names its own label and at most one version it replaces."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:ReferenceVersionShape a sh:NodeShape ;
+    sh:property [ sh:path pav:version ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                [ sh:path prov:wasRevisionOf ; sh:nodeKind sh:IRI ; sh:maxCount 1 ] .

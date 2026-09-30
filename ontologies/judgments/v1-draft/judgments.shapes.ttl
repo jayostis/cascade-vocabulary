@@ -1,4 +1,5 @@
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -36,6 +37,22 @@ jdg:JudgmentShape a sh:NodeShape ;
         sh:nodeKind sh:IRI ;
         sh:message "A judgment names what it used by IRI: versions it saw, reference versions it applied."@en ;
         sh:severity sh:Violation
+    ] , [
+        sh:path npx:supersedes ;
+        sh:class jdg:Judgment ;
+        sh:message "A judgment supersedes only judgments."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path npx:retracts ;
+        sh:class jdg:Judgment ;
+        sh:message "A judgment retracts only judgments."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path jdg:justification ;
+        sh:maxCount 1 ;
+        sh:in ( jdg:SameCode jdg:SameCodeAndDate jdg:SameMappedCode jdg:SameMappedCodeAndDate ) ;
+        sh:message "A judgment gives at most one justification: jdg:SameCode, jdg:SameCodeAndDate, jdg:SameMappedCode or jdg:SameMappedCodeAndDate."@en ;
+        sh:severity sh:Violation
     ] .
 
 jdg:AboutVerdictShape a sh:NodeShape ;
@@ -70,3 +87,87 @@ jdg:AboutShape a sh:NodeShape ;
         sh:message "An About judgment gives exactly one basis: jdg:PortalAuthenticated, jdg:RelatedPerson, jdg:Demographics or jdg:OwnerStatement."@en ;
         sh:severity sh:Violation
     ] .
+
+jdg:VerdictOrRetractionShape a sh:NodeShape ;
+    sh:targetClass jdg:Judgment ;
+    sh:xone (
+        [ sh:path jdg:verdict ; sh:minCount 1 ]
+        [ sh:path npx:retracts ; sh:minCount 1 ]
+    ) ;
+    sh:message "A judgment either gives a verdict or retracts judgments, not both and not neither."@en ;
+    sh:severity sh:Violation .
+
+jdg:RetractionShape a sh:NodeShape ;
+    sh:targetSubjectsOf npx:retracts ;
+    sh:property [
+        sh:path prov:hadMember ;
+        sh:maxCount 0 ;
+        sh:message "A retraction names only the judgments it retracts: no members, no supersession, no justification."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path npx:supersedes ;
+        sh:maxCount 0 ;
+        sh:message "A retraction names only the judgments it retracts: no members, no supersession, no justification."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path jdg:justification ;
+        sh:maxCount 0 ;
+        sh:message "A retraction names only the judgments it retracts: no members, no supersession, no justification."@en ;
+        sh:severity sh:Violation
+    ] .
+
+jdg:VerdictMembersShape a sh:NodeShape ;
+    sh:targetClass jdg:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path jdg:verdict ; sh:minCount 1 ] ]
+        [ sh:path prov:hadMember ; sh:minCount 1 ]
+    ) ;
+    sh:message "A judgment that gives a verdict judges at least one member."@en ;
+    sh:severity sh:Violation .
+
+jdg:SetVerdictShape a sh:NodeShape ;
+    sh:targetClass jdg:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path jdg:verdict ; sh:minCount 1 ; sh:in ( jdg:Same jdg:Different ) ] ]
+        [ sh:path prov:hadMember ; sh:minCount 2 ]
+    ) ;
+    sh:message "A Same or a Different judges a set of at least two records."@en ;
+    sh:severity sh:Violation .
+
+jdg:JustificationShape a sh:NodeShape ;
+    sh:targetSubjectsOf jdg:justification ;
+    sh:property [
+        sh:path jdg:verdict ;
+        sh:hasValue jdg:Same ;
+        sh:message "Only a Same judgment gives a justification."@en ;
+        sh:severity sh:Violation
+    ] .
+
+jdg:MachineSameShape a sh:NodeShape ;
+    sh:targetClass jdg:Judgment ;
+    sh:or (
+        [ sh:not [ sh:and (
+            [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:SoftwareAgent ]
+            [ sh:path jdg:verdict ; sh:hasValue jdg:Same ]
+        ) ] ]
+        [ sh:property [ sh:path jdg:justification ; sh:minCount 1 ] ,
+                      [ sh:path prov:used ; sh:minCount 1 ] ]
+    ) ;
+    sh:message "A machine's Same gives its justification and names what it used."@en ;
+    sh:severity sh:Violation .
+
+jdg:PersonJudgmentShape a sh:NodeShape ;
+    sh:targetClass jdg:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:Person ] ]
+        [ sh:property [ sh:path prov:qualifiedAttribution ; sh:minCount 1 ; sh:maxCount 1 ;
+                        sh:node jdg:AttributionShape ] ,
+                      [ sh:path ( prov:qualifiedAttribution prov:agent ) ;
+                        sh:equals prov:wasAttributedTo ] ]
+    ) ;
+    sh:message "A person's judgment names the role its author acted in, in one prov:qualifiedAttribution whose agent is the author."@en ;
+    sh:severity sh:Violation .
+
+jdg:AttributionShape a sh:NodeShape ;
+    sh:property [ sh:path prov:agent ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                [ sh:path prov:hadRole ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( jdg:patient ) ] .
