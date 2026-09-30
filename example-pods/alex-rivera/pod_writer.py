@@ -58,7 +58,7 @@ FOLDERS = {
 OWNED_POD_FOLDERS = ["subject", "records", "provenance", "attachments"]
 ADAPTER = "<cascade-bridge-adapter-fhir-r4>"
 VOCABULARIES = "<cascade-vocabulary at the adapter's pin>"
-FORMATS = {".json": "application/json", ".py": "text/x-python", ".rq": "application/sparql-query",
+FORMATS = {".csv": "text/csv", ".json": "application/json", ".py": "text/x-python", ".rq": "application/sparql-query",
            ".ttl": "text/turtle", ".xml": "application/xml"}
 
 
@@ -404,7 +404,8 @@ def events_manifest(manifest, pod):
 def handle_table(handles, manifest, pod):
     table = {handle: dict(row) for handle, row in handles.items() if not COMPUTED_ROW.search(handle)}
     for handle, row in table.items():
-        row.pop("name", None)
+        if "first" in row or "inputs" in row:
+            row.pop("name", None)
         if row.get("inputs", [""])[0].startswith("ni:"):
             row.pop("inputs", None)
     names = {"S": next(e["subject"] for e in manifest["events"] if "subject" in e)}
