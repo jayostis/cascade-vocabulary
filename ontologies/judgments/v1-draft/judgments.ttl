@@ -1,6 +1,11 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
@@ -55,3 +60,15 @@ jdg:Demographics a owl:NamedIndividual ;
 jdg:OwnerStatement a owl:NamedIndividual ;
     rdfs:label "owner statement"@en ;
     rdfs:comment "The operator said so, at import or later."@en .
+
+npx:supersedes a rdf:Property , owl:IrreflexiveObjectProperty ;
+    rdfs:isDefinedBy <http://purl.org/nanopub/x/> ;
+    rdfs:domain np:Nanopublication ;
+    rdfs:range np:Nanopublication ;
+    dct:source <https://github.com/peta-pico/ontologies/blob/271a83341f419de9ef3de87687b172b6790adaf2/nanopubx.ttl> .
+
+npx:retracts a rdf:Property ;
+    rdfs:isDefinedBy <http://purl.org/nanopub/x/> ;
+    rdfs:domain foaf:Agent ;
+    rdfs:range np:Nanopublication ;
+    dct:source <https://github.com/peta-pico/ontologies/blob/271a83341f419de9ef3de87687b172b6790adaf2/nanopubx.ttl> .
