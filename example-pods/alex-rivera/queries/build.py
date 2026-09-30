@@ -32,12 +32,6 @@ REC_VIEW = "https://ns.cascadeprotocol.org/records/v1-draft#View"
 PREFIXES = (QUERIES / "derivations" / "current-revisions.rq").read_text(encoding="utf-8").split("\n\n", 1)[0]
 CURRENT_REFERENCE_VERSIONS = PREFIXES + """
 SELECT ?v WHERE { ?series a rec:ReferenceSeries ; pav:hasCurrentVersion ?v }"""
-RECORDS = PREFIXES + """
-SELECT DISTINCT ?record WHERE {
-  VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
-  ?record a ?type .
-  ?revision rec:revisionOf ?record .
-}"""
 
 
 def listing():
@@ -210,7 +204,7 @@ def index_ttl(files):
 """).encode("utf-8")
 
 
-def manifest_ttl(created, files, records):
+def manifest_ttl(created):
     return (f"""@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
@@ -221,9 +215,6 @@ def manifest_ttl(created, files, records):
     dct:title "Alex Rivera's example pod" ;
     dct:created "{created}"^^xsd:dateTime ;
     cascade:schemaVersion "1.8" ;
-    cascade:exportFormat "directory" ;
-    cascade:containerCount "{files}"^^xsd:integer ;
-    cascade:totalRecords "{records}"^^xsd:integer ;
     prov:wasGeneratedBy [
         a prov:Activity ;
         prov:startedAtTime "{created}"^^xsd:dateTime ;
@@ -250,7 +241,7 @@ def written(engine):
     if missing:
         raise ValueError(f"events.json lists none of these under derived: {missing}")
     files["index.ttl"] = index_ttl(everything)
-    files["manifest.ttl"] = manifest_ttl(manifest["events"][-1]["at"], len(everything), len(store.select(RECORDS)))
+    files["manifest.ttl"] = manifest_ttl(manifest["events"][-1]["at"])
     return files
 
 

@@ -9,7 +9,7 @@ import rdflib
 from pyshacl import validate
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, SH
+from rdflib.namespace import OWL, RDF, SH
 
 ROOT = Path(__file__).absolute().parent.parent
 ONTOLOGIES = ROOT / "ontologies"
@@ -212,6 +212,14 @@ def defined_in(vocabularies):
     for vocabulary in vocabularies:
         graph.parse(shapes_file(vocabulary), format="turtle")
     return set(graph.subjects(RDF.type, SH.NodeShape)) | set(graph.objects(None, SH.node))
+
+
+def test_every_term_the_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it():
+    namespaces = tuple(str(n) for n in ontology().subjects(RDF.type, OWL.Ontology))
+    declared = set(ontology().subjects(RDF.type, None))
+    written = {(str(term), relative) for relative in every_rdf_file() for triple in loaded(relative)
+               for term in triple if isinstance(term, URIRef) and str(term).startswith(namespaces)}
+    assert sorted((term, relative) for term, relative in written if URIRef(term) not in declared) == []
 
 
 @pytest.mark.parametrize("relative", [r for r in every_rdf_file() if r not in NOT_CHECKED_FOR_CONFORMANCE])

@@ -64,11 +64,29 @@ def load(base, name, graph):
 
 
 def save_queries(base):
+    saved = {entry["name"] for entry in json.loads(request("GET", f"{base}/rest/sparql/saved-queries", accept="application/json"))}
     for path in sorted((EXAMPLE / "queries" / "people").glob("*.rq")):
         name = path.relative_to(EXAMPLE / "queries").with_suffix("").as_posix()
         query = {"name": name, "body": path.read_text(encoding="utf-8"), "shared": True}
-        request("POST", f"{base}/rest/sparql/saved-queries", json.dumps(query).encode("utf-8"), "application/json")
+        method = "PUT" if name in saved else "POST"
+        request(method, f"{base}/rest/sparql/saved-queries", json.dumps(query).encode("utf-8"), "application/json")
         yield name
+
+
+def fill(base):
+    loaded = 0
+    for name, graph in graphs():
+        load(base, name, graph)
+        loaded += 1
+    saved = list(save_queries(base))
+    size = request("GET", f"{base}/repositories/{REPOSITORY}/size").decode("utf-8").strip()
+    return loaded, saved, size
+
+
+def refusal(error):
+    if isinstance(error, urllib.error.HTTPError):
+        return f"{error.url} answered {error.code}: {error.read().decode('utf-8', 'replace')}"
+    return f"no answer: {error.reason}"
 
 
 def main():
@@ -80,14 +98,14 @@ def main():
             print(f"load.py: {base} already has a repository {REPOSITORY}; nothing changed", file=sys.stderr)
             return 1
         create(base)
-        loaded = 0
-        for name, graph in graphs():
-            load(base, name, graph)
-            loaded += 1
-        saved = list(save_queries(base))
-        size = request("GET", f"{base}/repositories/{REPOSITORY}/size").decode("utf-8").strip()
-    except urllib.error.HTTPError as error:
-        print(f"load.py: {error.url} answered {error.code}: {error.read().decode('utf-8', 'replace')}", file=sys.stderr)
+        try:
+            loaded, saved, size = fill(base)
+        except BaseException:
+            request("DELETE", f"{base}/rest/repositories/{REPOSITORY}")
+            print(f"load.py: removed the repository {REPOSITORY} it had created", file=sys.stderr)
+            raise
+    except urllib.error.URLError as error:
+        print(f"load.py: {refusal(error)}", file=sys.stderr)
         return 2
     print(f"{REPOSITORY}: {loaded} graphs, {size} statements, {len(saved)} saved queries")
     return 0

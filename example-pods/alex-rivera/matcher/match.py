@@ -301,13 +301,14 @@ class Matcher:
         g = self.pod.graph
         revised = {o for o in g.objects(None, WAS_REVISION_OF) if str(o) in self.references.versions}
         by_justification = {JDG + r["justification"]: r for r in self.rules}
+        theirs = self.pod.subjects_records()
         for judgment in sorted(g.subjects(URIRef(PROV + "wasAttributedTo"), URIRef(MATCHER)), key=str):
-            if g.value(judgment, URIRef(JDG + "verdict")) != URIRef(JDG + "Same"):
+            if g.value(judgment, URIRef(JDG + "verdict")) != URIRef(JDG + "Same") or self.pod.replaced(judgment):
                 continue
             if not revised & set(g.objects(judgment, URIRef(PROV + "used"))):
                 continue
             rule = by_justification[str(g.value(judgment, URIRef(JDG + "justification")))]
-            members = [self.pod.records[m] for m in sorted(g.objects(judgment, URIRef(PROV + "hadMember")), key=str)]
+            members = [theirs[m] for m in sorted(g.objects(judgment, URIRef(PROV + "hadMember")), key=str) if m in theirs]
             still = [m for m in members if any(self.matches(rule, m, o) for o in members if o is not m)]
             if len(still) >= 2:
                 self.same(rule, still)

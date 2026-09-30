@@ -198,3 +198,56 @@ def test_a_matcher_judgments_name_is_the_record_name_of_its_inputs(tmp_path):
               *sorted([rules, ingredient_map, version("first"), version("second")])]
     assert str(judgment) == recomputed.record_name(inputs)
     assert relative == match.fanned("judgments", str(judgment))
+
+
+def rechecked_after_the_ingredient_map_keeps_its_row(pod, monkeypatch):
+    references = match.References().by_key["ingredient-map"]
+    old, new = references["versions"]
+    written = pod.match("E2")
+    [same] = [r for r in written if r.startswith("judgments/")]
+    for relative, path in written.items():
+        pod.reference(relative, path.read_bytes())
+    pod.event("E3")
+    pod.reference(match.fanned("references", new["name"]), match.version_file(references, new))
+    yield str(next(Graph().parse(written[same], format="turtle").subjects(RDF_TYPE, URIRef(JDG + "Judgment"))))
+    (pod.root / "events.json").write_text(json.dumps({"events": pod.events}), encoding="utf-8")
+    kept = match.read_csv
+    monkeypatch.setattr(match, "read_csv", lambda relative: kept(old["table"] if relative == new["table"] else relative))
+    matcher = match.Matcher(match.Pod(pod.root, "E3"), "2026-03-01T00:00:00Z")
+    matcher.recheck()
+    yield {relative for relative in matcher.files if relative.startswith("judgments/")}
+
+
+def mapped_pair(tmp_path, **later):
+    return pod_of_two(tmp_path, "allergies", f"health:allergenCode <{SNOMED}373270004>",
+                      f"health:allergenCode <{RXNORM}7980>", **later)
+
+
+def test_a_recheck_rederives_a_same_whose_table_was_revised_and_still_joins_its_members(tmp_path, monkeypatch):
+    steps = rechecked_after_the_ingredient_map_keeps_its_row(mapped_pair(tmp_path), monkeypatch)
+    next(steps)
+    assert len(next(steps)) == 1
+
+
+def test_a_recheck_never_rederives_a_same_the_person_retracted(tmp_path, monkeypatch):
+    pod = mapped_pair(tmp_path)
+    steps = rechecked_after_the_ingredient_map_keeps_its_row(pod, monkeypatch)
+    pod.judgment("retraction", f"npx:retracts <{next(steps)}>")
+    assert next(steps) == set()
+
+
+def test_a_recheck_never_rederives_a_same_the_person_superseded(tmp_path, monkeypatch):
+    pod = mapped_pair(tmp_path)
+    steps = rechecked_after_the_ingredient_map_keeps_its_row(pod, monkeypatch)
+    pod.judgment("replacement", f"jdg:verdict jdg:Different ; prov:hadMember <{record('first')}> , "
+                                f"<{record('second')}> ; npx:supersedes <{next(steps)}>")
+    assert next(steps) == set()
+
+
+def test_a_recheck_never_joins_a_record_whose_about_was_retracted(tmp_path, monkeypatch):
+    pod = mapped_pair(tmp_path, profile="urn:example:profile:b")
+    pod.about("about-b", profile="urn:example:profile:b")
+    steps = rechecked_after_the_ingredient_map_keeps_its_row(pod, monkeypatch)
+    next(steps)
+    pod.judgment("retraction", "npx:retracts <urn:example:judgment:about-b>")
+    assert next(steps) == set()
