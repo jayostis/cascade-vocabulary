@@ -158,7 +158,10 @@ class References:
         series = self.by_key[key]
         held = [v for v in pod.graph.subjects(SPECIALIZATION_OF, URIRef(series["name"]))]
         if not held:
-            return next(v for v in series["versions"] if v["version"] == series["ships_with"])
+            shipped = next((v for v in series["versions"] if v["version"] == series["ships_with"]), None)
+            if shipped is None:
+                raise Failure(f"{series['label']} ships with {series['ships_with']}, a version it does not list")
+            return shipped
         revised = {o for v in held for o in pod.graph.objects(v, WAS_REVISION_OF)}
         current = [v for v in held if v not in revised]
         if len(current) != 1 or str(current[0]) not in self.versions:

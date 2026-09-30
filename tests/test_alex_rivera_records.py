@@ -330,3 +330,13 @@ def test_running_the_writer_once_on_a_copy_reproduces_the_example_byte_for_byte(
 
     compare(filecmp.dircmp(EXAMPLE, copy, ignore=["__pycache__"]), "")
     assert differences == []
+
+
+def test_every_filed_entry_activity_gets_its_own_handle():
+    sys.path.insert(0, str(EXAMPLE))
+    import pod_writer
+
+    pod = pod_writer.Pod()
+    pod.activities = {"entries/a1.ttl": "urn:example:activity:1", "entries/a2.ttl": "urn:example:activity:2"}
+    table = pod_writer.handle_table({}, {"events": [{"event": "E1", "subject": "urn:example:subject"}]}, pod)
+    assert {table[h]["name"] for h in ("A1", "A2")} == {"urn:example:activity:1", "urn:example:activity:2"}

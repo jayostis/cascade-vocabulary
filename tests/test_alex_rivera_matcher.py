@@ -4,6 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 import rdflib
 from rdflib import Graph, URIRef
 
@@ -251,3 +252,12 @@ def test_a_recheck_never_joins_a_record_whose_about_was_retracted(tmp_path, monk
     next(steps)
     pod.judgment("retraction", "npx:retracts <urn:example:judgment:about-b>")
     assert next(steps) == set()
+
+
+def test_a_series_that_ships_with_a_version_it_does_not_list_is_a_failure_not_a_traceback(tmp_path):
+    references = match.References()
+    references.by_key["rules"]["ships_with"] = "no such version"
+    pod = SmallPod(tmp_path)
+    (tmp_path / "events.json").write_text(json.dumps({"events": pod.events}), encoding="utf-8")
+    with pytest.raises(match.Failure):
+        references.current("rules", match.Pod(tmp_path, "E1"))

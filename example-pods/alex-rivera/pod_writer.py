@@ -410,7 +410,7 @@ def handle_table(handles, manifest, pod):
             row.pop("inputs", None)
     names = {"S": next(e["subject"] for e in manifest["events"] if "subject" in e)}
     names.update({f"I-{e['event']}": e["import"] for e in manifest["events"] if "import" in e})
-    names.update({"A1": activity for activity in pod.activities.values()})
+    names.update({f"A{n}": activity for n, activity in enumerate(pod.activities.values(), 1)})
     for handle, row in table.items():
         if "first" in row:
             if row["first"] not in pod.first_records:

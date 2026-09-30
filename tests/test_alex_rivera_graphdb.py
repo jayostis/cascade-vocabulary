@@ -17,7 +17,7 @@ class GraphDB:
     queries whose names POST refuses twice."""
 
     def __init__(self):
-        self.repositories, self.saved, self.refuse_statements_after = set(), {}, None
+        self.repositories, self.saved, self.refuse_statements_after, self.refuse_delete = set(), {}, None, False
         self.statements = 0
         graphdb = self
 
@@ -79,7 +79,9 @@ class GraphDB:
             def do_DELETE(self):
                 path = urlparse(self.path).path
                 repository = path.rsplit("/", 1)[-1]
-                if path.startswith("/rest/repositories/") and repository in graphdb.repositories:
+                if graphdb.refuse_delete:
+                    self.answer(500, b"cannot delete")
+                elif path.startswith("/rest/repositories/") and repository in graphdb.repositories:
                     graphdb.repositories.discard(repository)
                     graphdb.statements = 0
                     self.answer(200)
@@ -134,3 +136,9 @@ def test_a_graphdb_that_does_not_answer_is_reported_without_a_traceback():
     result = load(url)
     assert result.returncode == 2
     assert "Traceback" not in result.stderr and result.stderr.startswith("load.py: ")
+
+
+def test_a_load_whose_cleanup_is_refused_still_reports_why_the_load_failed(graphdb):
+    graphdb.refuse_statements_after, graphdb.refuse_delete = 3, True
+    result = load(graphdb.url)
+    assert result.returncode == 2 and "answered 500: refused" in result.stderr, result.stderr

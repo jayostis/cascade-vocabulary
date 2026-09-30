@@ -101,8 +101,13 @@ def main():
         try:
             loaded, saved, size = fill(base)
         except BaseException:
-            request("DELETE", f"{base}/rest/repositories/{REPOSITORY}")
-            print(f"load.py: removed the repository {REPOSITORY} it had created", file=sys.stderr)
+            try:
+                request("DELETE", f"{base}/rest/repositories/{REPOSITORY}")
+            except urllib.error.URLError as cleanup:
+                print(f"load.py: could not remove the repository {REPOSITORY} it had created: {refusal(cleanup)}",
+                      file=sys.stderr)
+            else:
+                print(f"load.py: removed the repository {REPOSITORY} it had created", file=sys.stderr)
             raise
     except urllib.error.URLError as error:
         print(f"load.py: {refusal(error)}", file=sys.stderr)
