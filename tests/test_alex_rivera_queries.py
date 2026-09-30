@@ -56,6 +56,35 @@ def is_subquery(part):
     return part.name == "GroupOrUnionGraphPattern" and [g.name for g in part["graph"]] == ["SubSelect"]
 
 
+QUERY_FORMS = ("SelectQuery", "ConstructQuery", "AskQuery", "DescribeQuery", "SubSelect")
+EXISTS_FORMS = ("Builtin_EXISTS", "Builtin_NOTEXISTS")
+NESTED = {
+    "nested-not-exists": "SELECT * WHERE { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d FILTER NOT EXISTS { ?d ?e ?f } } }",
+    "union-joined": "SELECT * WHERE { ?x ?y ?a { ?a ?b ?c } UNION { ?a ?d ?c } }",
+    "union-in-a-group": "SELECT * WHERE { { { ?a ?b ?c } UNION { ?a ?d ?c } } }",
+    "subquery-in-optional": "SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a ?q ?r { SELECT ?r WHERE { ?r ?s ?t } } } }",
+}
+
+
+def nested_forms(text):
+    everything = list(nodes(parseQuery(text)))
+    wheres = {id(n["where"]) for n in everything if n.name in QUERY_FORMS and n.get("where") is not None}
+    found = []
+    for node in everything:
+        if node.name in EXISTS_FORMS and any(m.name in EXISTS_FORMS for m in nodes(node["graph"])):
+            found.append("nested-not-exists")
+        if node.name == "GroupGraphPatternSub":
+            parts = list(node.get("part") or [])
+            unions = [p for p in parts if p.name == "GroupOrUnionGraphPattern" and len(p["graph"]) > 1]
+            if unions and len(parts) > 1:
+                found.append("union-joined")
+            elif unions and id(node) not in wheres:
+                found.append("union-in-a-group")
+        if node.name == "OptionalGraphPattern" and any(m.name == "SubSelect" for m in nodes(node["graph"])):
+            found.append("subquery-in-optional")
+    return found
+
+
 def canonical(term):
     return term if term[0] != "literal" else ("literal", term[1], term[2] or build.XSD_STRING, term[3])
 
@@ -217,3 +246,20 @@ def test_the_graphdb_config_names_no_machine():
     machine = re.compile(r"file:|(?<![A-Za-z])[A-Za-z]:[\\/]|localhost|127\.0\.0\.1|0\.0\.0\.0|/(?:home|Users|tmp)/|:\d{2,5}\b")
     for name in ("repository.ttl", "load.py"):
         assert machine.findall((EXAMPLE / "graphdb" / name).read_text(encoding="utf-8")) == [], name
+
+
+@pytest.mark.parametrize("relative", every_query())
+def test_every_query_is_one_flat_pattern(relative):
+    assert nested_forms(build.query_text(relative)) == []
+
+
+@pytest.mark.parametrize("form", sorted(NESTED))
+def test_the_flat_pattern_check_refuses_each_nested_form(form):
+    assert nested_forms(NESTED[form]) == [form]
+
+
+def test_the_flat_pattern_check_accepts_a_union_whose_branches_are_each_complete():
+    assert nested_forms("""SELECT * WHERE {
+      { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d } OPTIONAL { ?a ?e ?f } }
+      UNION { { SELECT ?a WHERE { ?a ?b ?c } } ?a ?d ?c }
+    }""") == []
