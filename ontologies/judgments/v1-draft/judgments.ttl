@@ -8,6 +8,8 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
 <https://ns.cascadeprotocol.org/judgments/v1-draft#> a owl:Ontology .
 
@@ -44,6 +46,31 @@ jdg:subject a owl:ObjectProperty ;
 jdg:basis a owl:ObjectProperty ;
     rdfs:label "basis"@en ;
     rdfs:domain jdg:Judgment .
+
+jdg:justification a owl:ObjectProperty ;
+    rdfs:label "justification"@en ;
+    rdfs:comment "The rule a machine applied to conclude Same."@en ;
+    rdfs:domain jdg:Judgment .
+
+jdg:SameCode a owl:NamedIndividual ;
+    rdfs:label "same code"@en ;
+    rdfs:comment "Both records carry one code from one code system, as their sources supplied it."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+jdg:SameCodeAndDate a owl:NamedIndividual ;
+    rdfs:label "same code and date"@en ;
+    rdfs:comment "Both records carry one code from one code system and one date."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+jdg:SameMappedCode a owl:NamedIndividual ;
+    rdfs:label "same mapped code"@en ;
+    rdfs:comment "The records carry codes from two code systems that a reference table pairs."@en ;
+    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
+
+jdg:SameMappedCodeAndDate a owl:NamedIndividual ;
+    rdfs:label "same mapped code and date"@en ;
+    rdfs:comment "The records carry two codes that a reference table puts in one group, and one date."@en ;
+    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
 
 jdg:PortalAuthenticated a owl:NamedIndividual ;
     rdfs:label "portal authenticated"@en ;
