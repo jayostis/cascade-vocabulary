@@ -233,6 +233,12 @@ def test_everything_labelled_has_exactly_one_label():
     assert predicates == {(False, RDFS_LABEL), (True, str(RDF_TYPE)), (True, "http://www.w3.org/ns/prov#used")}
 
 
+def test_no_two_labelled_things_share_a_label():
+    graph = Graph().parse(build.POD / build.LABEL_FILE, publicID=build.POD_BASE + build.LABEL_FILE)
+    things = Counter(str(label) for label in graph.objects(None, URIRef(RDFS_LABEL)))
+    assert {label: n for label, n in things.items() if n > 1} == {}
+
+
 @pytest.mark.parametrize("relative", build.listing()["people"])
 def test_every_query_for_people_runs_on_the_final_pod_and_both_engines_agree(relative):
     text = build.query_text(relative)

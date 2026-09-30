@@ -16,15 +16,14 @@ WHERE {
                              (health:ImmunizationRecord "Immunization") (clinical:Procedure "Procedure") }
       ?thing a ?type ; pav:hasCurrentVersion ?v ; rec:currentRevision ?r .
       FILTER NOT EXISTS { ?thing rdfs:label [] }
-      OPTIONAL { ?v health:allergen ?n1 }
-      OPTIONAL { ?v health:conditionName ?n2 }
-      OPTIONAL { ?v health:vaccineName ?n3 }
-      OPTIONAL { ?v clinical:procedureName ?n4 }
+      OPTIONAL { ?v health:allergen|health:conditionName|health:vaccineName|clinical:procedureName ?name }
       OPTIONAL { ?r prov:wasDerivedFrom ?doc }
+      OPTIONAL { ?r prov:wasDerivedFrom/pav:retrievedFrom ?from }
       OPTIONAL { ?r prov:wasDerivedFrom/prov:qualifiedAttribution ?a .
                  ?a prov:hadRole rec:author ; prov:agent/rdfs:label ?author }
-      BIND (CONCAT(?kind, " · ", COALESCE(?n1, ?n2, ?n3, ?n4, "no name"), " · ",
-                   COALESCE(?author, IF(BOUND(?doc), "unknown source", "own entry"))) AS ?l)
+      BIND (CONCAT(?kind, " · ", COALESCE(?name, "no name"), " · ",
+                   COALESCE(CONCAT(?author, " · ", REPLACE(STR(?from), "^.*/", "")),
+                            IF(BOUND(?doc), "unknown source", "own entry"))) AS ?l)
     }
     GROUP BY ?thing }
   UNION
@@ -34,19 +33,21 @@ WHERE {
                              (health:ImmunizationRecord "Immunization") (clinical:Procedure "Procedure") }
       ?thing prov:specializationOf ?record .
       ?record a ?type .
+      ?revision rec:version ?thing ; prov:generatedAtTime ?t .
       FILTER NOT EXISTS { ?thing rdfs:label [] }
-      OPTIONAL { ?thing health:allergen ?n1 }
-      OPTIONAL { ?thing health:conditionName ?n2 }
-      OPTIONAL { ?thing health:vaccineName ?n3 }
-      OPTIONAL { ?thing clinical:procedureName ?n4 }
+      OPTIONAL { ?thing health:allergen|health:conditionName|health:vaccineName|clinical:procedureName ?name }
       OPTIONAL { ?thing clinical:status ?s1 }
       OPTIONAL { ?thing health:status ?s2 }
       OPTIONAL { ?thing clinical:verificationStatus ?s3 }
       OPTIONAL { ?thing clinical:criticality ?c }
       OPTIONAL { ?thing health:administrationDate ?d1 }
       OPTIONAL { ?thing clinical:procedureDate ?d2 }
-      BIND (CONCAT(?kind, " version · ", COALESCE(?n1, ?n2, ?n3, ?n4, "no name"), " · ",
-                   COALESCE(?s1, ?s2, ?s3, CONCAT("criticality ", ?c), STR(?d1), STR(?d2), "nothing stated")) AS ?l)
+      OPTIONAL { ?revision prov:wasDerivedFrom ?doc }
+      OPTIONAL { ?revision prov:wasDerivedFrom/pav:retrievedFrom ?from }
+      BIND (CONCAT(?kind, " version · ", COALESCE(?name, "no name"), " · ",
+                   COALESCE(?s1, ?s2, ?s3, CONCAT("criticality ", ?c), STR(?d1), STR(?d2), "nothing stated"), " · ",
+                   COALESCE(REPLACE(STR(?from), "^.*/", ""), IF(BOUND(?doc), "unknown source", "own entry")),
+                   " · first received ", SUBSTR(STR(?t), 1, 10)) AS ?l)
     }
     GROUP BY ?thing }
   UNION
@@ -54,12 +55,12 @@ WHERE {
     WHERE {
       ?thing a rec:Revision ; rec:version ?v ; prov:generatedAtTime ?t .
       FILTER NOT EXISTS { ?thing rdfs:label [] }
-      OPTIONAL { ?v health:allergen ?n1 }
-      OPTIONAL { ?v health:conditionName ?n2 }
-      OPTIONAL { ?v health:vaccineName ?n3 }
-      OPTIONAL { ?v clinical:procedureName ?n4 }
-      BIND (CONCAT("Revision · ", COALESCE(?n1, ?n2, ?n3, ?n4, "no name"), " · received ",
-                   SUBSTR(STR(?t), 1, 10)) AS ?l)
+      OPTIONAL { ?v health:allergen|health:conditionName|health:vaccineName|clinical:procedureName ?name }
+      OPTIONAL { ?thing prov:wasDerivedFrom ?doc }
+      OPTIONAL { ?thing prov:wasDerivedFrom/pav:retrievedFrom ?from }
+      BIND (CONCAT("Revision · ", COALESCE(?name, "no name"), " · ",
+                   COALESCE(REPLACE(STR(?from), "^.*/", ""), IF(BOUND(?doc), "unknown source", "own entry")),
+                   " · received ", SUBSTR(STR(?t), 1, 10)) AS ?l)
     }
     GROUP BY ?thing }
   UNION
@@ -70,8 +71,10 @@ WHERE {
       OPTIONAL { ?thing prov:qualifiedAttribution ?a .
                  ?a prov:hadRole rec:author ; prov:agent/rdfs:label ?author }
       OPTIONAL { ?thing pav:retrievedFrom ?from }
+      OPTIONAL { ?thing pav:retrievedOn ?on }
       BIND (CONCAT("Document · ", COALESCE(?author, "unknown source"),
-                   COALESCE(CONCAT(" · ", REPLACE(STR(?from), "^.*/([^/]+/[^/]+)$", "$1")), "")) AS ?l)
+                   COALESCE(CONCAT(" · ", REPLACE(STR(?from), "^.*/([^/]+/[^/]+)$", "$1")), ""),
+                   COALESCE(CONCAT(" · retrieved ", SUBSTR(STR(?on), 1, 10)), "")) AS ?l)
     }
     GROUP BY ?thing }
   UNION
@@ -82,9 +85,15 @@ WHERE {
       OPTIONAL { ?thing jdg:verdict ?verdict }
       OPTIONAL { ?who rdfs:label ?machine }
       OPTIONAL { ?thing prov:qualifiedAttribution/prov:hadRole ?role }
+      OPTIONAL { ?thing prov:hadMember/^prov:specializationOf/(health:allergen|health:conditionName|health:vaccineName|clinical:procedureName) ?about }
+      OPTIONAL { ?thing npx:retracts/jdg:verdict ?retracted }
+      OPTIONAL { ?thing npx:retracts/prov:hadMember/^prov:specializationOf/(health:allergen|health:conditionName|health:vaccineName|clinical:procedureName) ?retractedAbout }
       BIND (CONCAT(COALESCE(REPLACE(STR(?verdict), "^.*#", ""), "Retraction"), " · ",
                    COALESCE(?machine, IF(?role = jdg:patient, "the patient", "a person")), " · ",
-                   SUBSTR(STR(?t), 1, 10)) AS ?l)
+                   SUBSTR(STR(?t), 1, 10), " · ",
+                   IF(BOUND(?verdict), COALESCE(?about, "a patient profile"),
+                      CONCAT("of ", COALESCE(REPLACE(STR(?retracted), "^.*#", ""), "a judgment"), " · ",
+                             COALESCE(?retractedAbout, "a patient profile")))) AS ?l)
     }
     GROUP BY ?thing }
   UNION
@@ -104,22 +113,22 @@ WHERE {
                              (cascade:PatientProfile "Patient entry") }
       ?thing a ?type ; cascade:mergedFrom [] .
       FILTER NOT EXISTS { ?thing rdfs:label [] }
-      OPTIONAL { ?thing health:allergen ?n1 }
-      OPTIONAL { ?thing health:conditionName ?n2 }
-      OPTIONAL { ?thing health:vaccineName ?n3 }
-      OPTIONAL { ?thing clinical:procedureName ?n4 }
-      BIND (CONCAT(?kind, COALESCE(CONCAT(" · ", COALESCE(?n1, ?n2, ?n3, ?n4)), "")) AS ?l)
+      OPTIONAL { ?thing health:allergen|health:conditionName|health:vaccineName|clinical:procedureName ?name }
+      OPTIONAL { ?thing health:onsetDate|health:administrationDate|clinical:procedureDate ?date }
+      BIND (CONCAT(?kind, COALESCE(CONCAT(" · ", ?name), ""), COALESCE(CONCAT(" · ", STR(?date)), "")) AS ?l)
     }
     GROUP BY ?thing }
   UNION
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
       ?version rec:patient ?thing .
+      ?revision rec:version ?version ; prov:generatedAtTime ?t .
       FILTER NOT EXISTS { ?thing a rec:Subject }
       FILTER NOT EXISTS { ?thing rdfs:label [] }
-      OPTIONAL { ?revision rec:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?a .
+      OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution ?a .
                  ?a prov:hadRole rec:author ; prov:agent/rdfs:label ?author }
-      BIND (CONCAT("Patient profile · ", COALESCE(?author, "unknown source")) AS ?l)
+      BIND (CONCAT("Patient profile · ", COALESCE(?author, "unknown source"),
+                   " · first received ", SUBSTR(STR(?t), 1, 10)) AS ?l)
     }
     GROUP BY ?thing }
   UNION
