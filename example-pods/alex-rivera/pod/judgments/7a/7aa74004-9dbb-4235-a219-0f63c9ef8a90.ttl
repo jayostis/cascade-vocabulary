@@ -1,0 +1,17 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:7aa74004-9dbb-4235-a219-0f63c9ef8a90> a jdg:Judgment ;
+    jdg:verdict jdg:Erroneous ;
+    prov:hadMember <urn:uuid:fe154b72-acd5-8b7f-a1dd-4b5d7e364c2b> ;
+    dct:description "the echocardiogram was cancelled; it was never done"@en ;
+    prov:used <ni:///sha-256;VNLSjQY7vBS-gX2TUkSaBAWDWPMl9d-BMIRxV4tNCIc> ;
+    prov:wasAttributedTo <https://pod.alex-rivera.example/profile/card.ttl#me> ;
+    prov:qualifiedAttribution [ a prov:Attribution ;
+        prov:agent <https://pod.alex-rivera.example/profile/card.ttl#me> ;
+        prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2027-04-02T20:00:00Z"^^xsd:dateTime .
+
+<https://pod.alex-rivera.example/profile/card.ttl#me> a prov:Person .

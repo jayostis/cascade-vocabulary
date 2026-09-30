@@ -1,0 +1,16 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> a jdg:Judgment ;
+    npx:retracts <urn:uuid:cfaa93ae-1a6f-4ff7-96d6-a1c9e0ea3680> ;
+    dct:description "my clinician says bronchitis and asthma are different"@en ;
+    prov:wasAttributedTo <https://pod.alex-rivera.example/profile/card.ttl#me> ;
+    prov:qualifiedAttribution [ a prov:Attribution ;
+        prov:agent <https://pod.alex-rivera.example/profile/card.ttl#me> ;
+        prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2027-04-02T20:00:00Z"^^xsd:dateTime .
+
+<https://pod.alex-rivera.example/profile/card.ttl#me> a prov:Person .

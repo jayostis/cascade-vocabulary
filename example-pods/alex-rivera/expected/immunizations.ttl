@@ -1,0 +1,14 @@
+@prefix h:        <urn:example:alex-rivera:handle:> .
+@prefix rec:      <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix health:   <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade:  <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+
+[] a health:ImmunizationRecord ;
+  cascade:mergedFrom h:H1-IMM-FLU25 , h:H2O-IMM-FLU25 , h:H2F-IMM-FLU25 ;
+  health:vaccineName "Influenza, injectable, quadrivalent, preservative free" ;
+  health:vaccineCode "150" ;
+  rec:latestMember h:H2F-IMM-FLU25 ;
+  health:status "completed" ;
+  rec:statusFrom h:H2F-IMM-FLU25 ;
+  health:administrationDate "2025-10-15"^^xsd:date .

@@ -1,0 +1,66 @@
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+
+SELECT ?needs ?entryLabel ?judgmentLabel ?entry ?judgment
+WHERE {
+  { { SELECT ?entry
+      WHERE {
+        ?entry a health:AllergyRecord ; cascade:mergedFrom ?record .
+        ?revision rec:revisionOf ?record ; rec:version/clinical:criticality ?c .
+        FILTER NOT EXISTS { ?later prov:wasRevisionOf ?revision }
+      }
+      GROUP BY ?entry
+      HAVING (COUNT(DISTINCT ?c) > 1) }
+    BIND ("members disagree on criticality" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel } }
+  UNION
+  { { SELECT DISTINCT ?judgment
+      WHERE {
+        ?judgment a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember ?record .
+        ?revision rec:revisionOf ?record ; rec:version ?now .
+        FILTER NOT EXISTS { ?later prov:wasRevisionOf ?revision }
+        FILTER NOT EXISTS { ?judgment prov:used ?now }
+        FILTER NOT EXISTS { ?superseding npx:supersedes ?judgment }
+        FILTER NOT EXISTS { ?retracting npx:retracts ?judgment }
+        FILTER NOT EXISTS { ?judgment prov:used ?input .
+                            ?input prov:specializationOf/a rec:ReferenceSeries .
+                            ?newer prov:wasRevisionOf ?input }
+      } }
+    BIND ("a member changed since it was judged" AS ?needs)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
+  UNION
+  { { SELECT ?entry
+      WHERE {
+        VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+        ?entry a ?type ; cascade:mergedFrom ?record .
+        ?judgment jdg:verdict jdg:Same ; jdg:justification ?why ;
+                  prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?record .
+        FILTER NOT EXISTS { ?superseding npx:supersedes ?judgment }
+        FILTER NOT EXISTS { ?retracting npx:retracts ?judgment }
+        FILTER NOT EXISTS { ?judgment prov:used ?input .
+                            ?input prov:specializationOf/a rec:ReferenceSeries .
+                            ?newer prov:wasRevisionOf ?input }
+      }
+      GROUP BY ?entry
+      HAVING (COUNT(DISTINCT ?why) > 1) }
+    BIND ("joined through two kinds of machine sameness" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel } }
+  UNION
+  { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+    ?judgment jdg:verdict jdg:Different ; prov:hadMember ?a , ?b .
+    FILTER (STR(?a) < STR(?b))
+    FILTER NOT EXISTS { ?superseding npx:supersedes ?judgment }
+    FILTER NOT EXISTS { ?retracting npx:retracts ?judgment }
+    ?entry a ?type ; cascade:mergedFrom ?a , ?b .
+    BIND ("judged different, still joined" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
+}
+ORDER BY ?needs ?entryLabel ?judgmentLabel

@@ -1,0 +1,54 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;W-gmPwaUpox7CJwPZ8aMM-dTqafrCNJ1vGCrtXGBMtc> health:onsetDate "2022-05-03"^^xsd:date ;
+	health:allergyCategory "medication" ;
+	health:allergenCode <http://www.nlm.nih.gov/research/umls/rxnorm/10180> ;
+	clinical:verificationStatus "confirmed" ;
+	clinical:criticality "low" ;
+	clinical:allergyType "allergy" ;
+	health:allergen "Sulfamethoxazole" ;
+	health:reaction "Itching" , "Rash" ;
+	clinical:status "active" .
+_:70ac2080bfa235d28ea3bcf50ae737c7 pav:lastUpdateOn "2026-11-12T14:00:00Z"^^xsd:dateTime ;
+	pav:version "2" ;
+	bridge:arrivedAs <ni:///sha-256;W-gmPwaUpox7CJwPZ8aMM-dTqafrCNJ1vGCrtXGBMtc> .
+<ni:///sha-256;W-gmPwaUpox7CJwPZ8aMM-dTqafrCNJ1vGCrtXGBMtc> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
+	prov:specializationOf <urn:uuid:58507165-cd9a-815a-9b90-bc53e0468cc2> .
+<urn:uuid:58507165-cd9a-815a-9b90-bc53e0468cc2> health:sourceRecordId "alg-sulfa-1" ;
+	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/AllergyIntolerance/alg-sulfa-1> ;
+	a health:AllergyRecord .
+_:70ac2080bfa235d28ea3bcf50ae737c7 bridge:selector "" ;
+	prov:wasDerivedFrom <ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> ;
+	prov:wasGeneratedBy _:75de5ebf2f559c7d1367795fff8a8a3c .
+<ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/AllergyIntolerance/alg-sulfa-1> ;
+	pav:retrievedOn "2026-11-20T09:00:00Z"^^xsd:dateTime .
+_:ec9eff299cf05b8a4d73cfa3b1883a07 prov:agent _:87129afaea00f61837010f0cc0c60e77 .
+_:87129afaea00f61837010f0cc0c60e77 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:ec9eff299cf05b8a4d73cfa3b1883a07 prov:hadRole rec:transmitter .
+<ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> prov:qualifiedAttribution _:ec9eff299cf05b8a4d73cfa3b1883a07 .
+_:a016ee06ff741a06b111ede56db6dbcd prov:agent _:b30ad38e388a07ac895c58ca9d1d5dec .
+_:b30ad38e388a07ac895c58ca9d1d5dec <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
+_:a016ee06ff741a06b111ede56db6dbcd prov:hadRole rec:author .
+<ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> prov:qualifiedAttribution _:a016ee06ff741a06b111ede56db6dbcd ;
+	bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+	bridge:sourceFormatVersion "4.0.1" .
+_:75de5ebf2f559c7d1367795fff8a8a3c <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> a prov:Entity .
+_:75de5ebf2f559c7d1367795fff8a8a3c a prov:Activity ;
+	prov:used <ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> ;
+	prov:qualifiedAssociation _:f3a3c2208774773e4cbedfea5dcdd196 .
+_:f3a3c2208774773e4cbedfea5dcdd196 prov:hadPlan _:aac05a75f916c063d71a2b5bbe8a2148 .
+_:aac05a75f916c063d71a2b5bbe8a2148 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:f3a3c2208774773e4cbedfea5dcdd196 prov:agent _:c08360cb4c174b68f26dec70e5727b24 .
+_:c08360cb4c174b68f26dec70e5727b24 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

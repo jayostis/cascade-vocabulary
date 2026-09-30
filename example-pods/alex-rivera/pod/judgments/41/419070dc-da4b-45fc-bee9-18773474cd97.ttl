@@ -1,0 +1,19 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:419070dc-da4b-45fc-bee9-18773474cd97> a jdg:Judgment ;
+    jdg:verdict jdg:Different ;
+    prov:hadMember <urn:uuid:36e76923-0050-8139-8d81-ab105e86dd0b> ,
+                   <urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> ;
+    dct:description "two colonoscopies, eighteen months apart"@en ;
+    prov:used <ni:///sha-256;3It5VSHsYFzl8jo05X8MXg6BvQZ-DMOK6gupQ4o8aSI> ,
+              <ni:///sha-256;Pi1M8qD-OrppWcObZv9gC1rGYLJnJZZJgkOAZSdJSuk> ;
+    prov:wasAttributedTo <https://pod.alex-rivera.example/profile/card.ttl#me> ;
+    prov:qualifiedAttribution [ a prov:Attribution ;
+        prov:agent <https://pod.alex-rivera.example/profile/card.ttl#me> ;
+        prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-12-02T19:00:00Z"^^xsd:dateTime .
+
+<https://pod.alex-rivera.example/profile/card.ttl#me> a prov:Person .

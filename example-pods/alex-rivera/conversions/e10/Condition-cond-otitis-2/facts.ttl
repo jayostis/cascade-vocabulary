@@ -1,0 +1,19 @@
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+bridge:thisDocument
+  pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-otitis-2> ;
+  pav:retrievedOn "2027-02-10T17:19:00Z"^^xsd:dateTime ;
+  prov:qualifiedAttribution
+    [ prov:agent [ rdfs:label "Apple Health" ] ; prov:hadRole rec:transmitter ] ,
+    [ prov:agent [ rdfs:label "Meridian Health System" ] ; prov:hadRole rec:author ] ;
+  bridge:serverBaseUrl "https://FHIR.Meridian.example/api/FHIR/R4" ;
+  bridge:sourceFormatVersion "4.0.1" .
+
+bridge:thisImport
+  rdfs:label "Apple Health export" ;
+  prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
