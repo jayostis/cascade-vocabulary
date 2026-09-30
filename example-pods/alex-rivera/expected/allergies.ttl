@@ -1,0 +1,38 @@
+@prefix h:        <urn:example:alex-rivera:handle:> .
+@prefix rec:      <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix health:   <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade:  <https://ns.cascadeprotocol.org/core/v1#> .
+
+[] a health:AllergyRecord ;
+  cascade:mergedFrom h:H1-ALG-PCN , h:H2O-ALG-PCN , h:H2F-ALG-PCN ;
+  health:allergen "Penicillin" ;
+  health:allergenCode <http://snomed.info/sct/373270004> ;
+  rec:latestMember h:H2F-ALG-PCN ;
+  clinical:status "active" ;
+  rec:statusFrom h:H2F-ALG-PCN ;
+  clinical:criticality "high" .
+
+[] a health:AllergyRecord ;
+  cascade:mergedFrom h:H1-ALG-SULFA , h:H2O-ALG-SULFA , h:H2F-ALG-SULFA ;
+  health:allergen "Sulfamethoxazole" ;
+  health:allergenCode <http://www.nlm.nih.gov/research/umls/rxnorm/10180> ;
+  rec:latestMember h:H2F-ALG-SULFA ;
+  clinical:status "active" ;
+  rec:statusFrom h:H2F-ALG-SULFA ;
+  clinical:criticality "high" .
+
+[] a health:AllergyRecord ;
+  cascade:mergedFrom h:H1-ALG-LATEX ;
+  health:allergen "Latex" ;
+  health:allergenCode <http://snomed.info/sct/111088007> ;
+  rec:latestMember h:H1-ALG-LATEX ;
+  clinical:status "active" ;
+  rec:statusFrom h:H1-ALG-LATEX ;
+  clinical:criticality "low" .
+
+[] a health:AllergyRecord ;
+  cascade:mergedFrom h:APP-ALG-PEANUT ;
+  health:allergen "Peanuts" ;
+  rec:latestMember h:APP-ALG-PEANUT ;
+  clinical:criticality "high" .
