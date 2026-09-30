@@ -716,6 +716,12 @@
           "@id": "events.json"
         },
         {
+          "@id": "graphdb/load.py"
+        },
+        {
+          "@id": "graphdb/repository.ttl"
+        },
+        {
           "@id": "handles.json"
         },
         {
@@ -834,6 +840,24 @@
         },
         {
           "@id": "pod/attachments/sha-256/fb064571e16b01b11a919c469e5c89fcb80fd1f7c5ae3e8faa0770e95a4618ae"
+        },
+        {
+          "@id": "pod/clinical/allergies.ttl"
+        },
+        {
+          "@id": "pod/clinical/conditions.ttl"
+        },
+        {
+          "@id": "pod/clinical/immunizations.ttl"
+        },
+        {
+          "@id": "pod/clinical/labels.ttl"
+        },
+        {
+          "@id": "pod/clinical/patient-profile.ttl"
+        },
+        {
+          "@id": "pod/clinical/procedures.ttl"
         },
         {
           "@id": "pod/index.ttl"
@@ -1344,6 +1368,129 @@
         },
         {
           "@id": "pod_writer.py"
+        },
+        {
+          "@id": "queries/build.py"
+        },
+        {
+          "@id": "queries/derivations/allergy-status-sources.rq"
+        },
+        {
+          "@id": "queries/derivations/counting-judgments-everyday.rq"
+        },
+        {
+          "@id": "queries/derivations/counting-judgments-export.rq"
+        },
+        {
+          "@id": "queries/derivations/current-reference-versions.rq"
+        },
+        {
+          "@id": "queries/derivations/current-revisions.rq"
+        },
+        {
+          "@id": "queries/derivations/date-sources.rq"
+        },
+        {
+          "@id": "queries/derivations/different-pairs.rq"
+        },
+        {
+          "@id": "queries/derivations/entries.rq"
+        },
+        {
+          "@id": "queries/derivations/excluded-at-source.rq"
+        },
+        {
+          "@id": "queries/derivations/excluded-by-judgment.rq"
+        },
+        {
+          "@id": "queries/derivations/excluded-with-their-activity.rq"
+        },
+        {
+          "@id": "queries/derivations/latest-members.rq"
+        },
+        {
+          "@id": "queries/derivations/same-pairs.rq"
+        },
+        {
+          "@id": "queries/derivations/status-sources.rq"
+        },
+        {
+          "@id": "queries/derivations/subjects.rq"
+        },
+        {
+          "@id": "queries/derivations/top-criticalities.rq"
+        },
+        {
+          "@id": "queries/labels.rq"
+        },
+        {
+          "@id": "queries/listing.json"
+        },
+        {
+          "@id": "queries/people/How many of each kind.rq"
+        },
+        {
+          "@id": "queries/people/Judgments that no longer count.rq"
+        },
+        {
+          "@id": "queries/people/My active allergies.rq"
+        },
+        {
+          "@id": "queries/people/My active conditions.rq"
+        },
+        {
+          "@id": "queries/people/My immunizations.rq"
+        },
+        {
+          "@id": "queries/people/My patient profiles.rq"
+        },
+        {
+          "@id": "queries/people/My procedures.rq"
+        },
+        {
+          "@id": "queries/people/Records in no view, and why.rq"
+        },
+        {
+          "@id": "queries/people/What changed and when.rq"
+        },
+        {
+          "@id": "queries/people/What each import brought in.rq"
+        },
+        {
+          "@id": "queries/people/What needs my review.rq"
+        },
+        {
+          "@id": "queries/people/Where this entry came from.rq"
+        },
+        {
+          "@id": "queries/people/Who judged what.rq"
+        },
+        {
+          "@id": "queries/review/changed-since-judged.rq"
+        },
+        {
+          "@id": "queries/review/criticality-disagreements.rq"
+        },
+        {
+          "@id": "queries/review/different-pairs-joined.rq"
+        },
+        {
+          "@id": "queries/review/mixed-justifications.rq"
+        },
+        {
+          "@id": "queries/views/allergies.rq"
+        },
+        {
+          "@id": "queries/views/conditions.rq"
+        },
+        {
+          "@id": "queries/views/immunizations.rq"
+        },
+        {
+          "@id": "queries/views/patients.rq"
+        },
+        {
+          "@id": "queries/views/procedures.rq"
         }
       ]
     },
@@ -3107,8 +3254,22 @@
       "@id": "events.json",
       "@type": "File",
       "encodingFormat": "application/json",
-      "contentSize": "20019",
-      "sha256": "df9638996b2dcb5fa173c3f56b17ce2124aae2d599dc5e70e535cc81907297e3"
+      "contentSize": "20208",
+      "sha256": "51f5b9be87defcdb0e5c6d948e49ce8c7d13622ef2342b1bbab0d0f04099f3e2"
+    },
+    {
+      "@id": "graphdb/load.py",
+      "@type": "File",
+      "encodingFormat": "text/x-python",
+      "contentSize": "3813",
+      "sha256": "c3b3b89000bc22253443c0195f7b0f265a44723a95443ead84f3b062403f9e84"
+    },
+    {
+      "@id": "graphdb/repository.ttl",
+      "@type": "File",
+      "encodingFormat": "text/turtle",
+      "contentSize": "517",
+      "sha256": "b97f698dd60ac1ba91a4dfcc2d031d2b1df2cbd1252bfa1843ca93ed03511d41"
     },
     {
       "@id": "handles.json",
@@ -3400,11 +3561,53 @@
       "sha256": "fb064571e16b01b11a919c469e5c89fcb80fd1f7c5ae3e8faa0770e95a4618ae"
     },
     {
+      "@id": "pod/clinical/allergies.ttl",
+      "@type": "File",
+      "encodingFormat": "text/turtle",
+      "contentSize": "6224",
+      "sha256": "aa2e3e1f1d3318a31d984280fe332c3c90660346482fa75eafe3a84e1bb82963"
+    },
+    {
+      "@id": "pod/clinical/conditions.ttl",
+      "@type": "File",
+      "encodingFormat": "text/turtle",
+      "contentSize": "6946",
+      "sha256": "8edab59d956d8a319e58ca69d0b07375d8b32235b51f2f5a9e7fafedcae83415"
+    },
+    {
+      "@id": "pod/clinical/immunizations.ttl",
+      "@type": "File",
+      "encodingFormat": "text/turtle",
+      "contentSize": "2221",
+      "sha256": "ea2aab012a62325ea079c08dfc0df11aa05fd91b4119bb4d1a8888b9a16c9f03"
+    },
+    {
+      "@id": "pod/clinical/labels.ttl",
+      "@type": "File",
+      "encodingFormat": "text/turtle",
+      "contentSize": "26454",
+      "sha256": "67cbdf9c987eefbd1a050ca2e8a700cde904503a126401953c3adad4f22937f3"
+    },
+    {
+      "@id": "pod/clinical/patient-profile.ttl",
+      "@type": "File",
+      "encodingFormat": "text/turtle",
+      "contentSize": "1122",
+      "sha256": "2e78139ee626dfc2d76d79468bfd8bf35e99f3fc5f1c1dab8e767d7b256168e5"
+    },
+    {
+      "@id": "pod/clinical/procedures.ttl",
+      "@type": "File",
+      "encodingFormat": "text/turtle",
+      "contentSize": "3431",
+      "sha256": "f3dfd50e05cddfe2bfbf87737f364e58a78fc0d728c49fc11b303111595f04b7"
+    },
+    {
       "@id": "pod/index.ttl",
       "@type": "File",
       "encodingFormat": "text/turtle",
       "contentSize": "392",
-      "sha256": "e5ccd9b97ae9379974c0e8ac95ab58d79cd564926bf3010188f5db19c4660298"
+      "sha256": "45e9b076ef76935e07c76882776af8d6e038ff0725682cd3cfdceddd9fcfbbe8"
     },
     {
       "@id": "pod/judgments/3b/3bce4ba5-7594-859e-97ef-44bb6e02fabe.ttl",
@@ -3571,8 +3774,8 @@
       "@id": "pod/manifest.ttl",
       "@type": "File",
       "encodingFormat": "text/turtle",
-      "contentSize": "804",
-      "sha256": "21a6d2462953954ee312eb5d792ee64bae0b5f0873350358f4f0426f7dc2c918"
+      "contentSize": "799",
+      "sha256": "7279b053acfa7211c61ef3d9d307338f4c1821aa8cf4f9e567f5ddecaea756e2"
     },
     {
       "@id": "pod/profile/card.ttl",
@@ -4595,6 +4798,293 @@
         "@id": "https://github.com/jayostis/cascade-vocabulary"
       },
       "programmingLanguage": "Python"
+    },
+    {
+      "@id": "queries/build.py",
+      "@type": "File",
+      "encodingFormat": "text/x-python",
+      "contentSize": "9653",
+      "sha256": "90a0234a35f33137adcbe9f22b30cadd7570c6e080b38b8ad105c99e62a92abc"
+    },
+    {
+      "@id": "queries/derivations/allergy-status-sources.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1111",
+      "sha256": "5856037afc3582215db4100c3d2c5024966252707b640bb1ac1862c42c2e7831"
+    },
+    {
+      "@id": "queries/derivations/counting-judgments-everyday.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "884",
+      "sha256": "8a66d2660b3060a0f05047710dd6bb31e536a68ffeea539e0ba958f0955a95b0"
+    },
+    {
+      "@id": "queries/derivations/counting-judgments-export.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1124",
+      "sha256": "2285f6a941980fbc4cb71d5a055b261d384f62321f5694090a780a617ff9c0e1"
+    },
+    {
+      "@id": "queries/derivations/current-reference-versions.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "661",
+      "sha256": "0dea4f3e6617fd85e9cece3228389b8d367729d42eee8f23b414e84a256ddd95"
+    },
+    {
+      "@id": "queries/derivations/current-revisions.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "989",
+      "sha256": "08ed606b17299950de9b49b522bb825dede230a63705af345a2dc7044eabfa61"
+    },
+    {
+      "@id": "queries/derivations/date-sources.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1351",
+      "sha256": "bb7d96d9c9f1da58f1266ca76149a571ea05970686c37e0fa1003a8aeb112ef6"
+    },
+    {
+      "@id": "queries/derivations/different-pairs.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "629",
+      "sha256": "c3dbf5229a1910f8a3ba8b7d2e4e152fcafacdf0dc2030a1186b493f8e44e8fb"
+    },
+    {
+      "@id": "queries/derivations/entries.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "975",
+      "sha256": "ca11016ddb3a8ae45711c9bf8ab56dc823757eda33b4e74a2667ab10af46d040"
+    },
+    {
+      "@id": "queries/derivations/excluded-at-source.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "656",
+      "sha256": "2f839543a2c37d228bedd2cdb0ff3ace64d7968b2b3355d273e09c413ccadbeb"
+    },
+    {
+      "@id": "queries/derivations/excluded-by-judgment.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "643",
+      "sha256": "4431507cc6b08eba60796a8a6cd90859850dcfd16869cecc33c0f9472eff9a92"
+    },
+    {
+      "@id": "queries/derivations/excluded-with-their-activity.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "670",
+      "sha256": "fb3e33569b87cd98eb485615197b4160d3693449c85f73375b2ff9a8841f912d"
+    },
+    {
+      "@id": "queries/derivations/latest-members.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1116",
+      "sha256": "f81f252d911b9fc68f6469c8f819154d9e042a7ab9e46f6098e1941abb88b4e1"
+    },
+    {
+      "@id": "queries/derivations/same-pairs.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "672",
+      "sha256": "7e8949a8de799bca1afd571bbb55f4db9189b7721e0ab1fafccd796056ccf255"
+    },
+    {
+      "@id": "queries/derivations/status-sources.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1317",
+      "sha256": "60a6819be98ae209ee5455b8485da1ac0b978352ec79ab3031ae695fe4dffb5d"
+    },
+    {
+      "@id": "queries/derivations/subjects.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "762",
+      "sha256": "1188c153198cfee668a0f0803d6033be74ee65752a571a1c250eb7c7349445fe"
+    },
+    {
+      "@id": "queries/derivations/top-criticalities.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "789",
+      "sha256": "f176268fd8a368a2997106b26c497d28132b0cabf012d67cceeab3643b82fddb"
+    },
+    {
+      "@id": "queries/labels.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "6108",
+      "sha256": "ba7dca7efe10e718d44276bffdd45005eda781fc4be84f601e581b1c66a190f6"
+    },
+    {
+      "@id": "queries/listing.json",
+      "@type": "File",
+      "encodingFormat": "application/json",
+      "contentSize": "3118",
+      "sha256": "77e70ad58447018020246a033b4362271583dd93090afcc0970bcce73e7c811d"
+    },
+    {
+      "@id": "queries/people/How many of each kind.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "588",
+      "sha256": "e5a10d8de35bfb85b24b4556677a72b97054ca70ce8e9eb48faff51d7704a8c8"
+    },
+    {
+      "@id": "queries/people/Judgments that no longer count.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1223",
+      "sha256": "e6cd4d28f915001181baa609eaf7bc05328671ba9b603e3de9177c02764cae46"
+    },
+    {
+      "@id": "queries/people/My active allergies.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "911",
+      "sha256": "f8a9cf168a79be237157bac335d1e0aba89b5ee4d0277e31c18a669678b5d341"
+    },
+    {
+      "@id": "queries/people/My active conditions.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "902",
+      "sha256": "059072973444bc8e39e13e8c7bb68d64b69a8e9eba628fce32b55940ea4b438c"
+    },
+    {
+      "@id": "queries/people/My immunizations.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "958",
+      "sha256": "f6dfbe60a9c2fc1c0b3fcdd62d1049a3d073c368d59b9257b0b9dd88850a58cf"
+    },
+    {
+      "@id": "queries/people/My patient profiles.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1091",
+      "sha256": "aab95ff81e7c9af9b912ee646638a0112b31f35b045e996c0220d8fe66a0106d"
+    },
+    {
+      "@id": "queries/people/My procedures.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "985",
+      "sha256": "4429766905e853fea994d7a9b89f7303c532d73eac18fdfd9dfb10831ecd2150"
+    },
+    {
+      "@id": "queries/people/Records in no view, and why.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "2546",
+      "sha256": "8d8dd76bd34b1999a0aeb9a96cdc06576d57136242cb159dfc71e58fcdaae3e6"
+    },
+    {
+      "@id": "queries/people/What changed and when.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1132",
+      "sha256": "9d3c8c618c66eb3ed007a902e6527fa8d0b1deee19e9550ff7ec33b8ffe465b8"
+    },
+    {
+      "@id": "queries/people/What each import brought in.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "906",
+      "sha256": "19e73bd26f686eac258a3d57e6ec713a60d97ea61774e78f96b069dff617f85b"
+    },
+    {
+      "@id": "queries/people/What needs my review.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "3227",
+      "sha256": "e79e3efb66590c840d780c8e41f574fc4cfdcec7c2c21607d630ffc1ac5b7fd0"
+    },
+    {
+      "@id": "queries/people/Where this entry came from.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1369",
+      "sha256": "b07e58d3923a00fd54acc6604b833480abff6d2825d924d9b7927acecc027d5e"
+    },
+    {
+      "@id": "queries/people/Who judged what.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1203",
+      "sha256": "ef354abc84c02795aee7673c8ce88150ba221dbf0a2c0757f73e29af371e0b2b"
+    },
+    {
+      "@id": "queries/review/changed-since-judged.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "682",
+      "sha256": "2f530245c88523f6ae6949f3224be14955219f366a6a4a3c9da895ee9994ca7b"
+    },
+    {
+      "@id": "queries/review/criticality-disagreements.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "666",
+      "sha256": "5ba14a38082a6e599c86999d1e52ba79b50d22e65a487216ecf692acf0171b8d"
+    },
+    {
+      "@id": "queries/review/different-pairs-joined.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "747",
+      "sha256": "577f16bcfe9070e22db2a20bee4c4665ab7bd76913fed3f2fb1b03e41923ee4b"
+    },
+    {
+      "@id": "queries/review/mixed-justifications.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "848",
+      "sha256": "7f09c0712eb998d0aadb96892c823bf3d2ae35dea5244ee7bdd7179f14622c07"
+    },
+    {
+      "@id": "queries/views/allergies.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1271",
+      "sha256": "e0995e5da7994c5fa04dd2c41dc0e47f6172416b19bc8113cee7ef8981b6937e"
+    },
+    {
+      "@id": "queries/views/conditions.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1430",
+      "sha256": "70868047d592559e81a055fe76c632c35d34f5d3c5db48a292662765d3974649"
+    },
+    {
+      "@id": "queries/views/immunizations.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1214",
+      "sha256": "9a3981b3dfe3990669576dd89b5e6575733ff5963adff2c1df09ad616e9ba570"
+    },
+    {
+      "@id": "queries/views/patients.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "785",
+      "sha256": "362e3cf50cffa56205555941ce66695432716f2512789c755754e5f7b8df275a"
+    },
+    {
+      "@id": "queries/views/procedures.rq",
+      "@type": "File",
+      "encodingFormat": "application/sparql-query",
+      "contentSize": "1208",
+      "sha256": "c3138f74b7137727b59b4666da2233c8e2bb7968b81464ae06d6ec0180da6634"
     },
     {
       "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/blob/cabd6f52a98d1f0c97284f47347d61f3bb752504/fixtures/in/allergy-with-id.json",
