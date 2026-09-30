@@ -1,12 +1,13 @@
 # cascade-vocabulary — Agent Context
 
 The vocabulary jayostis/cascade-bridge-adapter-fhir-r4 is read against, as a package a
-program loads. Holds exactly the terms an adapter pinned to it writes, and nothing more.
+program loads. Holds exactly the terms an adapter pinned to it, or an example pod,
+writes, and nothing more.
 
 ## The rules
 
-- **A term arrives because an adapter writes it.** No term for later, none for
-  completeness. Removing a term an adapter still lists is a breaking change for it.
+- **A term arrives because an adapter, or an example pod, writes it.** No
+  term for later, none for completeness. Removing a term an adapter still lists is a breaking change for it.
 - **A copied term keeps its IRI** and names the file and commit it came from with
   `dct:source`. It carries its type, label, domain, range and superclasses, and nothing
   else: the rest is at its source. Its shape is the source's, trimmed to the terms here,
