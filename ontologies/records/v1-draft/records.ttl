@@ -1,7 +1,11 @@
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://ns.cascadeprotocol.org/records/v1-draft#> a owl:Ontology .
 
@@ -42,3 +46,20 @@ rec:author a prov:Role ;
 rec:transmitter a prov:Role ;
     rdfs:label "transmitter"@en ;
     rdfs:comment "The party that fetched and delivered a document, as US Core's provenance agent type transmitter."@en .
+
+rec:ReferenceSeries a owl:Class ;
+    rdfs:label "reference series"@en ;
+    rdfs:comment "A versioned reference table or rule set a machine applies; each of its versions is a prov:specializationOf it."@en .
+
+pav:version a owl:DatatypeProperty ;
+    rdfs:label "Version"@en ;
+    rdfs:isDefinedBy <http://purl.org/pav/> ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> .
+
+rdfs:label a rdf:Property ;
+    rdfs:label "label"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2000/01/rdf-schema#> ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Literal ;
+    dct:source <https://www.w3.org/TR/2014/REC-rdf-schema-20140225/> .
