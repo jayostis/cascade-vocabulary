@@ -155,3 +155,19 @@ jdg:MachineSameShape a sh:NodeShape ;
     ) ;
     sh:message "A machine's Same gives its justification and names what it used."@en ;
     sh:severity sh:Violation .
+
+jdg:PersonJudgmentShape a sh:NodeShape ;
+    sh:targetClass jdg:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:Person ] ]
+        [ sh:property [ sh:path prov:qualifiedAttribution ; sh:minCount 1 ; sh:maxCount 1 ;
+                        sh:node jdg:AttributionShape ] ,
+                      [ sh:path ( prov:qualifiedAttribution prov:agent ) ;
+                        sh:equals prov:wasAttributedTo ] ]
+    ) ;
+    sh:message "A person's judgment names the role its author acted in, in one prov:qualifiedAttribution whose agent is the author."@en ;
+    sh:severity sh:Violation .
+
+jdg:AttributionShape a sh:NodeShape ;
+    sh:property [ sh:path prov:agent ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                [ sh:path prov:hadRole ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( jdg:patient ) ] .
