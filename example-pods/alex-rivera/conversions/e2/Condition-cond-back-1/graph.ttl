@@ -1,0 +1,50 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;Xqfzlxl17bLfNyaM33_jUoraT36YJhCRwx5_GOhz6a4> health:status "active" ;
+	health:snomedCode <http://snomed.info/sct/279039007> ;
+	health:onsetDate "2026-06-01"^^xsd:date ;
+	health:conditionName "Low back pain" ;
+	clinical:verificationStatus "confirmed" .
+_:d190e9394f14f1b5793aaee555cacd51 pav:lastUpdateOn "2026-06-01T11:00:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;Xqfzlxl17bLfNyaM33_jUoraT36YJhCRwx5_GOhz6a4> .
+<ni:///sha-256;Xqfzlxl17bLfNyaM33_jUoraT36YJhCRwx5_GOhz6a4> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
+	prov:specializationOf <urn:uuid:32577616-8317-8671-9b05-b50ac9714136> .
+<urn:uuid:32577616-8317-8671-9b05-b50ac9714136> health:sourceRecordId "cond-back-1" ;
+	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-back-1> ;
+	a health:ConditionRecord .
+_:d190e9394f14f1b5793aaee555cacd51 bridge:selector "" ;
+	prov:wasDerivedFrom <ni:///sha-256;4_DNZznZw6wM99hmpsDsg2LzY810PPiGfzCwZ1-mNqk> ;
+	prov:wasGeneratedBy _:f03b8679713bc8f14bc595aa41228790 .
+<ni:///sha-256;4_DNZznZw6wM99hmpsDsg2LzY810PPiGfzCwZ1-mNqk> pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-back-1> ;
+	pav:retrievedOn "2026-09-01T10:00:00Z"^^xsd:dateTime .
+_:9274f6eec6eee4a7616873084f21ef2b prov:agent _:8f5947263b1e444fa972fddd117c41c .
+_:8f5947263b1e444fa972fddd117c41c <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:9274f6eec6eee4a7616873084f21ef2b prov:hadRole rec:transmitter .
+<ni:///sha-256;4_DNZznZw6wM99hmpsDsg2LzY810PPiGfzCwZ1-mNqk> prov:qualifiedAttribution _:9274f6eec6eee4a7616873084f21ef2b .
+_:8a81937bc6c56626a44d29c96b9203de prov:agent _:414ba57de6ddf0ee818800bb0f1edb1 .
+_:414ba57de6ddf0ee818800bb0f1edb1 <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
+_:8a81937bc6c56626a44d29c96b9203de prov:hadRole rec:author .
+<ni:///sha-256;4_DNZznZw6wM99hmpsDsg2LzY810PPiGfzCwZ1-mNqk> prov:qualifiedAttribution _:8a81937bc6c56626a44d29c96b9203de ;
+	bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+	bridge:sourceFormatVersion "4.0.1" .
+_:f03b8679713bc8f14bc595aa41228790 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-09-01T10:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;4_DNZznZw6wM99hmpsDsg2LzY810PPiGfzCwZ1-mNqk> a prov:Entity .
+_:f03b8679713bc8f14bc595aa41228790 a prov:Activity ;
+	prov:used <ni:///sha-256;4_DNZznZw6wM99hmpsDsg2LzY810PPiGfzCwZ1-mNqk> ;
+	prov:qualifiedAssociation _:f1278e34c8c33d786c0c7f0fa8145ef7 .
+_:f1278e34c8c33d786c0c7f0fa8145ef7 prov:hadPlan _:260fb98ad4432bfa3fc8d90aab8b1ec9 .
+_:260fb98ad4432bfa3fc8d90aab8b1ec9 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:f1278e34c8c33d786c0c7f0fa8145ef7 prov:agent _:4a03144f8befb250d1cafcf255450dd5 .
+_:4a03144f8befb250d1cafcf255450dd5 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

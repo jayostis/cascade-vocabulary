@@ -1,0 +1,50 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;gvc8EtC9iCQscpIOvD8rwGQ_gQCTn26bF-mIR1hOEjQ> health:status "active" ;
+	health:snomedCode <http://snomed.info/sct/38341003> ;
+	health:onsetDate "2021-04-02"^^xsd:date ;
+	health:conditionName "Essential hypertension" ;
+	clinical:verificationStatus "confirmed" .
+_:aba58818a881ebf8c7692ab4be4059a4 pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;gvc8EtC9iCQscpIOvD8rwGQ_gQCTn26bF-mIR1hOEjQ> .
+<ni:///sha-256;gvc8EtC9iCQscpIOvD8rwGQ_gQCTn26bF-mIR1hOEjQ> rec:patient <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> ;
+	prov:specializationOf <urn:uuid:2d163d89-13a2-8719-8535-876bd794003a> .
+<urn:uuid:2d163d89-13a2-8719-8535-876bd794003a> health:sourceRecordId "lv-cond-201" ;
+	rec:sourceUrl <https://fhir.larkspur.example/r4/Condition/lv-cond-201> ;
+	a health:ConditionRecord .
+_:aba58818a881ebf8c7692ab4be4059a4 bridge:selector "" ;
+	prov:wasDerivedFrom <ni:///sha-256;qryk4MG3hAJwf6mUdbw9UDLh84cFcozYJ3uA8qJmdKU> ;
+	prov:wasGeneratedBy _:331f267d2d38e02b6eadd8f8204594a8 .
+<ni:///sha-256;qryk4MG3hAJwf6mUdbw9UDLh84cFcozYJ3uA8qJmdKU> pav:retrievedFrom <https://fhir.larkspur.example/r4/Condition/lv-cond-201> ;
+	pav:retrievedOn "2027-03-18T12:00:00Z"^^xsd:dateTime .
+_:ff2caa5423cdce66e2b850b53de9800d prov:agent _:5c23449fc2b4e08500f8a4af0fa7daf9 .
+_:5c23449fc2b4e08500f8a4af0fa7daf9 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:ff2caa5423cdce66e2b850b53de9800d prov:hadRole rec:transmitter .
+<ni:///sha-256;qryk4MG3hAJwf6mUdbw9UDLh84cFcozYJ3uA8qJmdKU> prov:qualifiedAttribution _:ff2caa5423cdce66e2b850b53de9800d .
+_:cfe398c4c280c1a66a1d51f7af594128 prov:agent _:5626f64cce2590f0515dda562d601b0d .
+_:5626f64cce2590f0515dda562d601b0d <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
+_:cfe398c4c280c1a66a1d51f7af594128 prov:hadRole rec:author .
+<ni:///sha-256;qryk4MG3hAJwf6mUdbw9UDLh84cFcozYJ3uA8qJmdKU> prov:qualifiedAttribution _:cfe398c4c280c1a66a1d51f7af594128 ;
+	bridge:serverBaseUrl "https://fhir.larkspur.example/r4" ;
+	bridge:sourceFormatVersion "4.0.1" .
+_:331f267d2d38e02b6eadd8f8204594a8 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2027-03-18T12:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;qryk4MG3hAJwf6mUdbw9UDLh84cFcozYJ3uA8qJmdKU> a prov:Entity .
+_:331f267d2d38e02b6eadd8f8204594a8 a prov:Activity ;
+	prov:used <ni:///sha-256;qryk4MG3hAJwf6mUdbw9UDLh84cFcozYJ3uA8qJmdKU> ;
+	prov:qualifiedAssociation _:fdcdaf9a3f9f10e2ddea97add64dd283 .
+_:fdcdaf9a3f9f10e2ddea97add64dd283 prov:hadPlan _:7f558b1c960b29ffdb25ac8e4e8075fb .
+_:7f558b1c960b29ffdb25ac8e4e8075fb a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:fdcdaf9a3f9f10e2ddea97add64dd283 prov:agent _:e1b4dffcfb7840a13736dce1f9bc8b5c .
+_:e1b4dffcfb7840a13736dce1f9bc8b5c a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .
