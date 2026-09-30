@@ -1,0 +1,26 @@
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+
+CONSTRUCT { ?entry rec:statusFrom ?from }
+WHERE {
+  { SELECT ?entry (IRI(MIN(STR(?r))) AS ?from)
+    WHERE {
+      { SELECT ?entry (MAX(?t2) AS ?t)
+        WHERE {
+          ?r2 a health:AllergyRecord ; rec:inEntry ?entry ;
+              rec:currentRevision ?rev2 ; pav:hasCurrentVersion/clinical:status [] .
+          ?rev2 prov:generatedAtTime ?t2 ; prov:wasDerivedFrom [] . }
+        GROUP BY ?entry }
+      ?r a health:AllergyRecord ; rec:inEntry ?entry ;
+         rec:currentRevision ?rev ; pav:hasCurrentVersion/clinical:status [] .
+      ?rev prov:generatedAtTime ?t ; prov:wasDerivedFrom [] .
+    }
+    GROUP BY ?entry }
+}

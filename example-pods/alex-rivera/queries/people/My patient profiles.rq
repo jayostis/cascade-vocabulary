@@ -1,0 +1,22 @@
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+
+SELECT ?profileLabel ?aboutLabel ?stands (COUNT(DISTINCT ?record) AS ?records) ?profile ?about
+WHERE {
+  ?about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember ?profile .
+  ?version rec:patient ?profile ; prov:specializationOf ?record .
+  OPTIONAL { ?profile rdfs:label ?profileLabel }
+  OPTIONAL { ?about rdfs:label ?aboutLabel }
+  OPTIONAL { ?retracting npx:retracts ?about }
+  OPTIONAL { ?superseding npx:supersedes ?about }
+  BIND (IF(BOUND(?retracting) || BOUND(?superseding), "no", "yes") AS ?stands)
+}
+GROUP BY ?profile ?profileLabel ?about ?aboutLabel ?stands
+ORDER BY ?profileLabel ?aboutLabel
