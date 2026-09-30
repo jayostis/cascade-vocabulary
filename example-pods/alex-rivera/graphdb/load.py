@@ -1,4 +1,4 @@
-"""Creates the alex-rivera repository in a GraphDB, loads the finished pod into it, and saves every query.
+"""Creates the alex-rivera repository in a GraphDB, loads the finished pod into it, and saves the queries for people.
 
 python3 example-pods/alex-rivera/graphdb/load.py <GraphDB URL>
 """
@@ -64,7 +64,7 @@ def load(base, name, graph):
 
 
 def save_queries(base):
-    for path in sorted((EXAMPLE / "queries").rglob("*.rq")):
+    for path in sorted((EXAMPLE / "queries" / "people").glob("*.rq")):
         name = path.relative_to(EXAMPLE / "queries").with_suffix("").as_posix()
         query = {"name": name, "body": path.read_text(encoding="utf-8"), "shared": True}
         request("POST", f"{base}/rest/sparql/saved-queries", json.dumps(query).encode("utf-8"), "application/json")
