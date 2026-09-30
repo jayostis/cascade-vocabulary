@@ -49,6 +49,15 @@ def members(graph, node):
     return set(Collection(graph, graph.value(node, OWL.unionOf)))
 
 
+def predicates(graph, path):
+    if isinstance(path, URIRef):
+        return {path}
+    inverse = graph.value(path, SH.inversePath)
+    if inverse is not None:
+        return predicates(graph, inverse)
+    return {p for step in Collection(graph, path) for p in predicates(graph, step)}
+
+
 @pytest.mark.parametrize("path", ONTOLOGIES, ids=relative)
 def test_every_turtle_file_parses(path):
     assert len(Graph().parse(path)) > 0
@@ -80,7 +89,8 @@ def test_every_copied_term_names_the_commit_it_was_copied_from(path):
 
 
 def test_every_predicate_a_shape_constrains_is_declared_or_is_prov_o():
-    paths = set(union(SHAPES).objects(None, SH.path))
+    shapes = union(SHAPES)
+    paths = {p for path in shapes.objects(None, SH.path) for p in predicates(shapes, path)}
     undeclared = {p for p in paths - declared() if not str(p).startswith(str(PROV))}
     assert undeclared == set()
 
