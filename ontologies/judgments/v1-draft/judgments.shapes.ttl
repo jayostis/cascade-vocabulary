@@ -1,6 +1,7 @@
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 jdg:JudgmentShape a sh:NodeShape ;
     sh:targetClass jdg:Judgment ;
@@ -14,6 +15,26 @@ jdg:JudgmentShape a sh:NodeShape ;
         sh:path prov:hadMember ;
         sh:nodeKind sh:IRI ;
         sh:message "A judgment's members are records or activities, named by their IRIs."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A judgment carries the time it was made, one xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:or ( [ sh:class prov:Person ] [ sh:class prov:SoftwareAgent ] ) ;
+        sh:message "A judgment has one author, a prov:Person or a prov:SoftwareAgent, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:used ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A judgment names what it used by IRI: versions it saw, reference versions it applied."@en ;
         sh:severity sh:Violation
     ] .
 
