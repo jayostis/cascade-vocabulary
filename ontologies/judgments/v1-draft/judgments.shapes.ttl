@@ -42,9 +42,11 @@ jdg:AboutVerdictShape a sh:NodeShape ;
     sh:targetClass jdg:Judgment ;
     sh:or (
         [ sh:not [ sh:path jdg:verdict ; sh:hasValue jdg:About ] ]
-        [ sh:property [ sh:path jdg:subject ; sh:minCount 1 ] , [ sh:path jdg:basis ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path jdg:subject ; sh:minCount 1 ] ,
+                      [ sh:path jdg:basis ; sh:minCount 1 ] ,
+                      [ sh:path prov:hadMember ; sh:minCount 1 ; sh:maxCount 1 ] ]
     ) ;
-    sh:message "An About judgment names a subject and gives a basis."@en ;
+    sh:message "An About judgment names one member, a subject and a basis."@en ;
     sh:severity sh:Violation .
 
 jdg:AboutShape a sh:NodeShape ;
@@ -58,7 +60,8 @@ jdg:AboutShape a sh:NodeShape ;
         sh:path jdg:subject ;
         sh:nodeKind sh:IRI ;
         sh:maxCount 1 ;
-        sh:message "An About judgment names exactly one subject."@en ;
+        sh:disjoint prov:wasAttributedTo ;
+        sh:message "An About judgment names exactly one subject, which is never its author."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path jdg:basis ;
