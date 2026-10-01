@@ -168,3 +168,34 @@ def test_the_graphdb_config_names_no_machine():
     machine = re.compile(r"file:|(?<![A-Za-z])[A-Za-z]:[\\/]|localhost|127\.0\.0\.1|0\.0\.0\.0|/(?:home|Users|tmp)/|:\d{2,5}\b")
     for name in ("repository.ttl", "load.py"):
         assert machine.findall((EXAMPLE / "graphdb" / name).read_text(encoding="utf-8")) == [], name
+
+
+UNIT_PREFIXES = """
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix : <urn:x:> .
+"""
+
+
+def answer(engine, question, turtle, tmp_path):
+    path = tmp_path / f"{engine}.ttl"
+    path.write_text(UNIT_PREFIXES + turtle, encoding="utf-8")
+    store = build.ENGINES[engine]()
+    store.load(path, "urn:x:")
+    return [{name: term[1] for name, term in row.items()}
+            for row in store.select(build.query_text(build.questions()[question]))]
+
+
+@pytest.mark.parametrize("engine", ENGINES)
+def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_total_of_its_records(engine, tmp_path):
+    found = answer(engine, "profile/Whose it is counted as", """
+        :about a jdg:Judgment ; rec:counts true ; jdg:verdict jdg:About ; prov:hadMember :p ; jdg:subject :s .
+        :v1 rec:patient :p ; prov:specializationOf :r1 . :rev1 rec:version :v1 ; prov:wasDerivedFrom :d1 .
+        :v2 rec:patient :p ; prov:specializationOf :r2 . :rev2 rec:version :v2 ; prov:wasDerivedFrom :d2 .
+        :v3 rec:patient :p ; prov:specializationOf :r3 . :rev3 rec:version :v3 ; prov:wasDerivedFrom :d2 .
+        :d1 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Meridian" ] ] .
+        :d2 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Larkspur" ] ] .
+    """, tmp_path)
+    assert sorted((row["hospital"], row["records"]) for row in found) == [("Larkspur", "3"), ("Meridian", "3")]
