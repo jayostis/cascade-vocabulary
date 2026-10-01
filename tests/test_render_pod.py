@@ -181,6 +181,15 @@ def test_judgments_are_listed_in_the_order_they_were_made_whatever_the_offsets(t
     assert [row[0][0] for row in rows[1:]] == ["early", "late"]
 
 
+def test_a_judgment_with_no_time_made_is_listed_after_the_dated_ones_with_an_empty_made_cell(tmp_path):
+    site = site_over(tmp_path, """
+        :dated a jdg:Judgment ; prov:generatedAtTime "2027-01-01T06:00:00Z"^^xsd:dateTime ; prov:wasAttributedTo :someone .
+        :undated a jdg:Judgment ; prov:wasAttributedTo :someone .
+    """)
+    rows = Page(site.judgment_rows({"https://pod.example/undated", "https://pod.example/dated"})).rows
+    assert [(row[0][0], row[2][0]) for row in rows[1:]] == [("dated", "2027-01-01 06:00 UTC"), ("undated", "")]
+
+
 def test_the_current_revision_is_the_one_that_arrived_last_whatever_the_offsets(tmp_path):
     site = site_over(tmp_path, """
         :early rec:revisionOf :record ; rec:version :v1 ; prov:generatedAtTime "2027-01-01T10:00:00+05:00"^^xsd:dateTime .

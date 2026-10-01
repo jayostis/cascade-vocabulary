@@ -305,7 +305,11 @@ class Site:
 
     def judgment_rows(self, judgments):
         rows = []
-        for judgment in sorted(judgments, key=lambda j: (instant(self.judgments[j]["made"][1]), self.label(j), j)):
+        def order(judgment):
+            made = self.judgments[judgment].get("made")
+            return made is None, made and instant(made[1]), self.label(judgment), judgment
+
+        for judgment in sorted(judgments, key=order):
             j = self.judgments[judgment]
             rows.append([self.link(judgment), e(self.label(j["verdict"])) if "verdict" in j else "",
                          e(when(j["made"][1])) if "made" in j else "", self.made_by(judgment), self.standing(judgment)])
