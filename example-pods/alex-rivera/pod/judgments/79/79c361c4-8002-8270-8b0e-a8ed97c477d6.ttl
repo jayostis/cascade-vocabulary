@@ -3,16 +3,20 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<urn:uuid:79c361c4-8002-8270-8b0e-a8ed97c477d6> a jdg:Judgment ;
-    jdg:verdict jdg:Same ;
-    prov:hadMember <urn:uuid:36e76923-0050-8139-8d81-ab105e86dd0b> ,
-                   <urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> ;
-    jdg:justification jdg:SameCode ;
-    prov:used <ni:///sha-256;3It5VSHsYFzl8jo05X8MXg6BvQZ-DMOK6gupQ4o8aSI> ,
-              <ni:///sha-256;Pi1M8qD-OrppWcObZv9gC1rGYLJnJZZJgkOAZSdJSuk> ,
-              <urn:uuid:78bb02bc-0461-46b5-8a0b-14b1940d0194> ;
-    prov:wasAttributedTo <urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76> ;
-    prov:generatedAtTime "2026-10-14T15:43:00Z"^^xsd:dateTime .
+<urn:uuid:79c361c4-8002-8270-8b0e-a8ed97c477d6>
+  a jdg:Judgment ;
+  prov:generatedAtTime "2026-10-14T15:43:00Z"^^xsd:dateTime ;
+  prov:hadMember
+    <urn:uuid:36e76923-0050-8139-8d81-ab105e86dd0b> ,
+    <urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> ;
+  prov:used
+    <ni:///sha-256;3It5VSHsYFzl8jo05X8MXg6BvQZ-DMOK6gupQ4o8aSI> ,
+    <ni:///sha-256;Pi1M8qD-OrppWcObZv9gC1rGYLJnJZZJgkOAZSdJSuk> ,
+    <urn:uuid:78bb02bc-0461-46b5-8a0b-14b1940d0194> ;
+  prov:wasAttributedTo <urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76> ;
+  jdg:justification jdg:SameCode ;
+  jdg:verdict jdg:Same .
 
-<urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76> a prov:SoftwareAgent ;
-    rdfs:label "Cascade matcher" .
+<urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76>
+  a prov:SoftwareAgent ;
+  rdfs:label "Cascade matcher" .

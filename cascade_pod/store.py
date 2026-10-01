@@ -19,6 +19,18 @@ def keep_literals_as_written():
 keep_literals_as_written()
 
 
+def iri(value):
+    return ("iri", value)
+
+
+def blank(name):
+    return ("blank", name)
+
+
+def literal(text, datatype=XSD_STRING):
+    return ("literal", text, datatype, None)
+
+
 def parsed(path, base=None):
     keep_literals_as_written()
     return rdflib.Graph().parse(data=path.read_bytes(), format="turtle", publicID=base)

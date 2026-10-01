@@ -2,98 +2,39 @@
 
 import csv
 import json
-import re
 
-from rdflib import URIRef
-from rdflib.namespace import RDF
+from rdflib import Literal, Namespace, URIRef
+from rdflib.namespace import RDF, XSD
 
-from . import Failure, names
-from .pod import CLINICAL, HEALTH, NOT_RDF, RECORD_FOLDERS, fanned
+from . import Failure, names, turtle
+from .pod import NOT_RDF, RECORD_FOLDERS, fanned
 from .store import Rdflib
 
-MATCHER = "urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76"
-
-PREFIXES = {
-    "dct": "http://purl.org/dc/terms/",
-    "jdg": "https://ns.cascadeprotocol.org/judgments/v1-draft#",
-    "npx": "http://purl.org/nanopub/x/",
-    "pav": "http://purl.org/pav/",
-    "prov": "http://www.w3.org/ns/prov#",
-    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "rec": "https://ns.cascadeprotocol.org/records/v1-draft#",
-    "xsd": "http://www.w3.org/2001/XMLSchema#",
-}
-JDG, NPX, PROV, REC = (PREFIXES[p] for p in ("jdg", "npx", "prov", "rec"))
-PAV_VERSION = URIRef(PREFIXES["pav"] + "version")
-SPECIALIZATION_OF, WAS_REVISION_OF = URIRef(PROV + "specializationOf"), URIRef(PROV + "wasRevisionOf")
-CODES = [URIRef(HEALTH + "allergenCode"), URIRef(HEALTH + "snomedCode"), URIRef(CLINICAL + "snomedCode")]
-VACCINE_CODE, ADMINISTRATION_DATE = URIRef(HEALTH + "vaccineCode"), URIRef(HEALTH + "administrationDate")
+CLINICAL, HEALTH, JDG, NPX, PAV, PROV, RDFS, REC = (
+    Namespace(turtle.PREFIXES[p]) for p in ("clinical", "health", "jdg", "npx", "pav", "prov", "rdfs", "rec"))
+MATCHER = URIRef("urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76")
+CODES = [HEALTH.allergenCode, HEALTH.snomedCode, CLINICAL.snomedCode]
 SNOMED, RXNORM = "http://snomed.info/sct/", "http://www.nlm.nih.gov/research/umls/rxnorm/"
 
 
-# Turtle in one fixed layout, shared by every judgment and reference file
-
-JUDGMENT_ORDER = ["jdg:verdict", "jdg:subject", "jdg:basis", "prov:hadMember", "jdg:justification",
-                  "npx:supersedes", "npx:retracts", "dct:description", "prov:used", "prov:wasAttributedTo",
-                  "prov:qualifiedAttribution", "prov:generatedAtTime"]
-REFERENCE_ORDER = ["rdfs:label", "prov:specializationOf", "pav:version", "prov:wasRevisionOf"]
-
-
-def _iri(iri):
-    for prefix, namespace in PREFIXES.items():
-        if iri.startswith(namespace) and iri[len(namespace):].isalnum():
-            return f"{prefix}:{iri[len(namespace):]}"
-    return f"<{iri}>"
+def judgment(name, *, at, members, justification, used):
+    same = URIRef(name)
+    return {(same, RDF.type, JDG.Judgment), (same, JDG.verdict, JDG.Same), (same, JDG.justification, justification),
+            *((same, PROV.hadMember, URIRef(m)) for m in members), *((same, PROV.used, URIRef(u)) for u in used),
+            (same, PROV.wasAttributedTo, MATCHER), (same, PROV.generatedAtTime, Literal(at, datatype=XSD.dateTime)),
+            (MATCHER, RDF.type, PROV.SoftwareAgent), (MATCHER, RDFS.label, Literal("Cascade matcher"))}
 
 
-def _string(text):
-    return '"' + text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n") + '"'
+def series_triples(series):
+    return {(URIRef(series["name"]), RDF.type, REC.ReferenceSeries),
+            (URIRef(series["name"]), RDFS.label, Literal(series["label"]))}
 
 
-def _block(subject, kind, statements, order):
-    lines = [f"{_iri(subject)} a {kind} ;"]
-    present = [p for p in order if statements.get(p)]
-    for index, predicate in enumerate(present):
-        end = " ." if index == len(present) - 1 else " ;"
-        values = sorted(statements[predicate])
-        indent = " " * (5 + len(predicate))
-        lines.append(f"    {predicate} " + f" ,\n{indent}".join(values) + end)
-    return "\n".join(lines)
-
-
-def _file(blocks):
-    text = "\n\n".join(blocks)
-    bare = re.sub(r'<[^>]*>|"(?:[^"\\]|\\.)*"', " ", text)
-    used = [p for p in PREFIXES if re.search(rf"(?<![\w-]){p}:", bare)]
-    head = "".join(f"@prefix {p}: <{PREFIXES[p]}> ." + "\n" for p in used)
-    return (head + "\n" + text + "\n").encode("utf-8")
-
-
-def judgment_file(name, *, at, members, justification, used):
-    statements = {
-        "jdg:verdict": [_iri(JDG + "Same")],
-        "prov:hadMember": [_iri(m) for m in members],
-        "jdg:justification": [_iri(JDG + justification)],
-        "prov:used": [_iri(u) for u in used],
-        "prov:wasAttributedTo": [_iri(MATCHER)],
-        "prov:generatedAtTime": [_string(at) + "^^xsd:dateTime"],
-    }
-    author_block = f'{_iri(MATCHER)} a prov:SoftwareAgent ;\n    rdfs:label "Cascade matcher" .'
-    return _file([_block(name, "jdg:Judgment", statements, JUDGMENT_ORDER), author_block])
-
-
-def series_file(series):
-    return _file([_block(series["name"], "rec:ReferenceSeries", {"rdfs:label": [_string(series["label"])]},
-                         REFERENCE_ORDER)])
-
-
-def version_file(series, version):
+def version_triples(series, version):
+    named = URIRef(version["name"])
     revises = [v["name"] for v in series["versions"] if v["version"] == version.get("revises")]
-    return _file([_block(version["name"], "prov:Entity", {
-        "prov:specializationOf": [_iri(series["name"])],
-        "pav:version": [_string(version["version"])],
-        "prov:wasRevisionOf": [_iri(r) for r in revises],
-    }, REFERENCE_ORDER)])
+    return {(named, RDF.type, PROV.Entity), (named, PROV.specializationOf, URIRef(series["name"])),
+            (named, PAV.version, Literal(version["version"])), *((named, PROV.wasRevisionOf, URIRef(r)) for r in revises)}
 
 
 # What the matcher knows: the example's references and their tables
@@ -111,13 +52,13 @@ class References:
 
     def current(self, key, pod):
         series = self.by_key[key]
-        held = [v for v in pod.graph.subjects(SPECIALIZATION_OF, URIRef(series["name"]))]
+        held = [v for v in pod.graph.subjects(PROV.specializationOf, URIRef(series["name"]))]
         if not held:
             shipped = next((v for v in series["versions"] if v["version"] == series["ships_with"]), None)
             if shipped is None:
                 raise Failure(f"{series['label']} ships with {series['ships_with']}, a version it does not list")
             return shipped
-        revised = {o for v in held for o in pod.graph.objects(v, WAS_REVISION_OF)}
+        revised = {o for v in held for o in pod.graph.objects(v, PROV.wasRevisionOf)}
         current = [v for v in held if v not in revised]
         if len(current) != 1 or str(current[0]) not in self.versions:
             raise Failure(f"the pod holds no one current version the matcher knows of {series['label']}")
@@ -145,30 +86,30 @@ class Reading:
         g, records = self.graph, {}
         for kind, folder in RECORD_FOLDERS.items():
             for record in g.subjects(RDF.type, URIRef(kind)):
-                revisions = set(g.subjects(URIRef(REC + "revisionOf"), record))
-                followed = {o for r in revisions for o in g.objects(r, WAS_REVISION_OF)}
-                first = [r for r in revisions if g.value(r, WAS_REVISION_OF) is None]
+                revisions = set(g.subjects(REC.revisionOf, record))
+                followed = {o for r in revisions for o in g.objects(r, PROV.wasRevisionOf)}
+                first = [r for r in revisions if g.value(r, PROV.wasRevisionOf) is None]
                 latest = list(revisions - followed)
                 if len(first) != 1 or len(latest) != 1:
                     raise Failure(f"{record} has no one first and one latest revision")
-                version = g.value(latest[0], URIRef(REC + "version"))
+                version = g.value(latest[0], REC.version)
                 records[record] = {
                     "name": str(record), "folder": folder, "path": self.defined_in[record],
-                    "first": self.defined_in[first[0]], "arrived": str(g.value(first[0], URIRef(PROV + "generatedAtTime"))),
-                    "version": str(version), "patient": g.value(version, URIRef(REC + "patient")),
+                    "first": self.defined_in[first[0]], "arrived": str(g.value(first[0], PROV.generatedAtTime)),
+                    "version": str(version), "patient": g.value(version, REC.patient),
                     "codes": {(p, o) for p in CODES for o in g.objects(version, p)},
-                    "vaccine": g.value(version, VACCINE_CODE), "date": g.value(version, ADMINISTRATION_DATE),
+                    "vaccine": g.value(version, HEALTH.vaccineCode), "date": g.value(version, HEALTH.administrationDate),
                 }
         return records
 
     def replaced(self, judgment):
-        return any(True for p in (NPX + "supersedes", NPX + "retracts") for _ in self.graph.subjects(URIRef(p), judgment))
+        return any(True for p in (NPX.supersedes, NPX.retracts) for _ in self.graph.subjects(p, judgment))
 
     def subjects_profiles(self):
         g, profiles = self.graph, {self.subject}
-        for about in g.subjects(URIRef(JDG + "verdict"), URIRef(JDG + "About")):
-            if g.value(about, URIRef(JDG + "subject")) == self.subject and not self.replaced(about):
-                profiles |= set(g.objects(about, URIRef(PROV + "hadMember")))
+        for about in g.subjects(JDG.verdict, JDG.About):
+            if g.value(about, JDG.subject) == self.subject and not self.replaced(about):
+                profiles |= set(g.objects(about, PROV.hadMember))
         return profiles
 
     def subjects_records(self):
@@ -217,6 +158,10 @@ class Matcher:
             raise Failure(f"rule set {self.rules_version['version']} names rules this matcher does not apply")
         self.files = {}
 
+    def file(self, folder, name, triples):
+        path = fanned(folder, name)
+        self.files[path] = turtle.write(triples, self.pod.example.address + path)
+
     def table_version(self, rule):
         return self.references.current(rule["table"], self.pod) if rule["table"] else None
 
@@ -228,16 +173,16 @@ class Matcher:
     def same(self, rule, members):
         applied = [self.rules_version] + ([self.table_version(rule)] if rule["table"] else [])
         used = sorted({v["name"] for v in applied} | {m["version"] for m in members})
-        justification = JDG + rule["justification"]
+        justification = JDG[rule["justification"]]
         member_names = sorted(m["name"] for m in members)
-        name = names.record([MATCHER, justification, *member_names, *used])
-        self.files[fanned("judgments", name)] = judgment_file(
-            name, at=self.at, members=member_names, justification=rule["justification"], used=used)
+        name = names.record([str(MATCHER), str(justification), *member_names, *used])
+        self.file("judgments", name, judgment(name, at=self.at, members=member_names, justification=justification,
+                                              used=used))
         for version in applied:
             series, _ = self.references.versions[version["name"]]
-            for thing, content in ((series, series_file(series)), (version, version_file(series, version))):
+            for thing, triples in ((series, series_triples(series)), (version, version_triples(series, version))):
                 if not self.pod.holds(thing["name"]):
-                    self.files[fanned("references", thing["name"])] = content
+                    self.file("references", thing["name"], triples)
 
     def take(self, event):
         theirs = self.pod.subjects_records()
@@ -253,16 +198,16 @@ class Matcher:
 
     def recheck(self):
         g = self.pod.graph
-        revised = {o for o in g.objects(None, WAS_REVISION_OF) if str(o) in self.references.versions}
-        by_justification = {JDG + r["justification"]: r for r in self.rules}
+        revised = {o for o in g.objects(None, PROV.wasRevisionOf) if str(o) in self.references.versions}
+        by_justification = {JDG[r["justification"]]: r for r in self.rules}
         theirs = self.pod.subjects_records()
-        for judgment in sorted(g.subjects(URIRef(PROV + "wasAttributedTo"), URIRef(MATCHER)), key=str):
-            if g.value(judgment, URIRef(JDG + "verdict")) != URIRef(JDG + "Same") or self.pod.replaced(judgment):
+        for judged in sorted(g.subjects(PROV.wasAttributedTo, MATCHER), key=str):
+            if g.value(judged, JDG.verdict) != JDG.Same or self.pod.replaced(judged):
                 continue
-            if not revised & set(g.objects(judgment, URIRef(PROV + "used"))):
+            if not revised & set(g.objects(judged, PROV.used)):
                 continue
-            rule = by_justification[str(g.value(judgment, URIRef(JDG + "justification")))]
-            members = [theirs[m] for m in sorted(g.objects(judgment, URIRef(PROV + "hadMember")), key=str) if m in theirs]
+            rule = by_justification[g.value(judged, JDG.justification)]
+            members = [theirs[m] for m in sorted(g.objects(judged, PROV.hadMember), key=str) if m in theirs]
             still = [m for m in members if any(self.matches(rule, m, o) for o in members if o is not m)]
             if len(still) >= 2:
                 self.same(rule, still)

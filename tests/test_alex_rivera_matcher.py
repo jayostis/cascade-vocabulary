@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from rdflib import Graph, URIRef
 
-from cascade_pod import Failure, match
+from cascade_pod import Failure, match, turtle
 from cascade_pod.pod import Example, fanned
 
 ROOT = Path(__file__).absolute().parent.parent
@@ -149,10 +149,10 @@ def test_the_ingredient_map_pairs_only_its_rows_under_its_current_version(tmp_pa
     old, new = ingredient_map["versions"]
     assert fanned("references", old["name"]) in written and fanned("references", new["name"]) not in written
 
-    pod.reference(fanned("references", ingredient_map["name"]), match.series_file(ingredient_map))
-    pod.reference(fanned("references", old["name"]), match.version_file(ingredient_map, old))
+    pod.reference(fanned("references", ingredient_map["name"]), turtle.write(match.series_triples(ingredient_map)))
+    pod.reference(fanned("references", old["name"]), turtle.write(match.version_triples(ingredient_map, old)))
     pod.event("E3")
-    pod.reference(fanned("references", new["name"]), match.version_file(ingredient_map, new))
+    pod.reference(fanned("references", new["name"]), turtle.write(match.version_triples(ingredient_map, new)))
     pod.record("third", "allergies", f"health:allergenCode <{RXNORM}7980>")
     assert sames(pod.match("E3")) == {(frozenset({"third", "second"}), "SameCode")}
 
@@ -214,7 +214,7 @@ def rechecked_after_the_ingredient_map_keeps_its_row(pod, monkeypatch):
     for relative, path in written.items():
         pod.reference(relative, path.read_bytes())
     pod.event("E3")
-    pod.reference(fanned("references", new["name"]), match.version_file(references, new))
+    pod.reference(fanned("references", new["name"]), turtle.write(match.version_triples(references, new)))
     yield str(next(Graph().parse(written[same], format="turtle").subjects(RDF_TYPE, URIRef(JDG + "Judgment"))))
     pod.tell()
     kept = match.References.table

@@ -9,7 +9,9 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-from cascade_pod import derive, vocabulary
+from rdflib import Graph
+
+from cascade_pod import derive, store, vocabulary
 from cascade_pod.pod import Example
 
 ROOT = Path(__file__).absolute().parent.parent
@@ -125,7 +127,8 @@ def test_a_load_into_an_empty_graphdb_creates_the_repository_and_saves_the_queri
 def test_a_load_adds_the_derived_state_under_the_everyday_lens_as_a_graph_of_its_own(graphdb):
     assert load(graphdb.url).returncode == 0
     derived = derive.derive(derive.loaded(ALEX, "oxigraph"), "everyday")
-    assert sorted(graphdb.graphs["urn:cascade:derived:everyday"].splitlines()) == derive.ntriples(derived)
+    posted = Graph().parse(data=graphdb.graphs["urn:cascade:derived:everyday"], format="nt")
+    assert {tuple(store.from_rdflib(t) for t in triple) for triple in posted} == derived
 
 
 def test_a_load_saves_every_question_under_its_path_in_questions(graphdb):

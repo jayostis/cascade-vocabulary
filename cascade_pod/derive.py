@@ -2,14 +2,14 @@
 
 from typing import NamedTuple
 
-from . import Failure, vocabulary
+from . import Failure, turtle, vocabulary
 from .pod import LABEL_FILE, VIEW_FILES
-from .store import ENGINES, XSD_STRING
+from .store import ENGINES, blank, iri, literal, to_rdflib
 
+CASCADE, DCT, LDP, PROV, RDF, RDFS, REC, XSD = (
+    turtle.PREFIXES[p] for p in ("cascade", "dct", "ldp", "prov", "rdf", "rdfs", "rec", "xsd"))
+TYPE = iri(RDF + "type")
 DERIVED = "urn:cascade:derived:"
-RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-PROV_USED = "http://www.w3.org/ns/prov#used"
-REC_VIEW = "https://ns.cascadeprotocol.org/records/v1-draft#View"
 
 
 def loaded(example, engine, through=None):
@@ -47,66 +47,28 @@ def build(example, engine, lens="everyday", through=None):
     return Built(store, derived, views, labels)
 
 
-# Writing
-
-def _escaped(text):
-    return text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")
-
-
-def ntriples_term(term):
-    if term[0] == "iri":
-        return f"<{term[1]}>"
-    if term[0] == "blank":
-        raise ValueError(f"a blank node, _:{term[1]}, reached a written file")
-    text = f'"{_escaped(term[1])}"'
-    if term[3]:
-        return f"{text}@{term[3]}"
-    return text if term[2] == XSD_STRING else f"{text}^^<{term[2]}>"
+def marked(address, triples, reference_versions):
+    """A view's triples, with the file marked as a view built with these reference versions."""
+    view = iri(address)
+    return triples | {(view, TYPE, iri(REC + "View"))} | {(view, iri(PROV + "used"), iri(v)) for v in reference_versions}
 
 
-def ntriples(triples):
-    return sorted({" ".join(ntriples_term(t) for t in triple) + " ." for triple in triples})
-
-
-def turtle(triples, reference_versions):
-    mark = [f"<> <{RDF_TYPE}> <{REC_VIEW}> ."] + sorted(f"<> <{PROV_USED}> <{v}> ." for v in reference_versions)
-    return ("\n".join(mark + ntriples(triples)) + "\n").encode("utf-8")
-
-
-def index_ttl(files):
+def index(address, files):
+    root = iri(address)
     folders = sorted({path.split("/", 1)[0] for path in files if "/" in path and not path.startswith(".")})
-    contains = ",\n".join(f"        </{folder}/>" for folder in folders)
-    return (f"""@prefix dct: <http://purl.org/dc/terms/> .
-@prefix ldp: <http://www.w3.org/ns/ldp#> .
-
-<./>
-    a ldp:Container, ldp:BasicContainer ;
-    dct:title "Pod Root Container" ;
-    ldp:contains
-{contains} .
-""").encode("utf-8")
+    return {(root, TYPE, iri(LDP + "Container")), (root, TYPE, iri(LDP + "BasicContainer")),
+            (root, iri(DCT + "title"), literal("Pod Root Container")),
+            *((root, iri(LDP + "contains"), iri(f"{address}{folder}/")) for folder in folders)}
 
 
-def manifest_ttl(title, created):
-    return (f"""@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-<#manifest> a cascade:ExportManifest ;
-    dct:title "{title}" ;
-    dct:created "{created}"^^xsd:dateTime ;
-    cascade:schemaVersion "1.8" ;
-    prov:wasGeneratedBy [
-        a prov:Activity ;
-        prov:startedAtTime "{created}"^^xsd:dateTime ;
-        prov:wasAssociatedWith [
-            a prov:SoftwareAgent ;
-            rdfs:label "build.py"
-        ]
-    ] .
-""").encode("utf-8")
+def manifest(address, title, created):
+    manifest, activity, agent = iri(address + "#manifest"), blank("activity"), blank("agent")
+    at = literal(created, XSD + "dateTime")
+    return {(manifest, TYPE, iri(CASCADE + "ExportManifest")), (manifest, iri(DCT + "title"), literal(title)),
+            (manifest, iri(DCT + "created"), at), (manifest, iri(CASCADE + "schemaVersion"), literal("1.8")),
+            (manifest, iri(PROV + "wasGeneratedBy"), activity), (activity, TYPE, iri(PROV + "Activity")),
+            (activity, iri(PROV + "startedAtTime"), at), (activity, iri(PROV + "wasAssociatedWith"), agent),
+            (agent, TYPE, iri(PROV + "SoftwareAgent")), (agent, iri(RDFS + "label"), literal("build.py"))}
 
 
 def written(example, engine):
@@ -114,14 +76,16 @@ def written(example, engine):
     built = build(example, engine)
     current = vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"])
     used = [row["version"][1] for row in built.store.select(current)]
-    files = {VIEW_FILES[view]: turtle(triples, used) for view, triples in built.views.items()}
-    files[LABEL_FILE] = turtle(built.labels, used)
+    files = {VIEW_FILES[view]: marked(example.address + VIEW_FILES[view], triples, used)
+             for view, triples in built.views.items()}
+    files[LABEL_FILE] = marked(example.address + LABEL_FILE, built.labels, used)
     missing = sorted((set(files) | {"index.ttl", "manifest.ttl"}) - set(example.derived))
     if missing:
         raise Failure(f"events.json lists none of these under derived: {missing}")
-    files["index.ttl"] = index_ttl(example.files() + example.derived)
-    files["manifest.ttl"] = manifest_ttl(example.title, example.events[-1]["at"])
-    return files
+    files["index.ttl"] = index(example.address, example.files() + example.derived)
+    files["manifest.ttl"] = manifest(example.address + "manifest.ttl", example.title, example.events[-1]["at"])
+    return {path: turtle.write({tuple(map(to_rdflib, t)) for t in triples}, example.address + path)
+            for path, triples in files.items()}
 
 
 def write(example, engine, out=None):

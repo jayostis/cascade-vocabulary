@@ -4,15 +4,9 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<#manifest> a cascade:ExportManifest ;
-    dct:title "Alex Rivera's example pod" ;
-    dct:created "2027-08-20T08:00:04Z"^^xsd:dateTime ;
-    cascade:schemaVersion "1.8" ;
-    prov:wasGeneratedBy [
-        a prov:Activity ;
-        prov:startedAtTime "2027-08-20T08:00:04Z"^^xsd:dateTime ;
-        prov:wasAssociatedWith [
-            a prov:SoftwareAgent ;
-            rdfs:label "build.py"
-        ]
-    ] .
+<#manifest>
+  dct:created "2027-08-20T08:00:04Z"^^xsd:dateTime ;
+  dct:title "Alex Rivera's example pod" ;
+  a cascade:ExportManifest ;
+  prov:wasGeneratedBy [ a prov:Activity ; prov:startedAtTime "2027-08-20T08:00:04Z"^^xsd:dateTime ; prov:wasAssociatedWith [ a prov:SoftwareAgent ; rdfs:label "build.py" ] ] ;
+  cascade:schemaVersion "1.8" .
