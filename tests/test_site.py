@@ -264,8 +264,8 @@ TINY = """
 """
 
 
-def tiny(tmp_path, turtle_text):
-    """The blocks on the page of :record, in the site of a pod built from the owner's profile and these statements."""
+def tiny(tmp_path, turtle_text, thing="urn:x:record"):
+    """The blocks on the thing's page, in the site of a pod built from the owner's profile and these statements."""
     folder = tmp_path / "tiny"
     files = {"profile/card.ttl": "<#me> <http://www.w3.org/ns/pim/space#storage> </> .\n", "data.ttl": TINY + turtle_text}
     for path, text in files.items():
@@ -279,7 +279,7 @@ def tiny(tmp_path, turtle_text):
     example = Example(folder)
     save(example.derived_turtle("oxigraph"), example.pod)
     built = site.Site(example).files()
-    return {block["title"]: block for block in blocks(Page(built[page_of("urn:x:record")].decode("utf-8")))}
+    return {block["title"]: block for block in blocks(Page(built[page_of(thing)].decode("utf-8")))}
 
 
 def column(block, name):
@@ -326,3 +326,13 @@ def test_a_revision_derived_from_two_documents_shows_each_document_beside_its_ow
     revisions = record["Its revisions, in the order they arrived"]
     assert list(zip(column(revisions, "document"), column(revisions, "hospital"))) == [
         ("<urn:x:doc-a>", '"Hospital A"'), ("<urn:x:doc-b>", '"Hospital B"')]
+
+
+def test_a_thing_only_ever_named_by_others_is_stated_by_the_files_that_name_it(tmp_path):
+    profile = tiny(tmp_path, """
+        :revision rec:revisionOf :record ; rec:version :version ; prov:generatedAtTime "2027-01-01T09:00:00Z"^^xsd:dateTime .
+        :version rec:patient :profile .
+    """, "urn:x:profile")
+    stated = profile["Which file states each thing"]
+    assert ("<https://pod.example/data.ttl>", '"true"^^<http://www.w3.org/2001/XMLSchema#boolean>') in list(
+        zip(column(stated, "file"), column(stated, "named")))

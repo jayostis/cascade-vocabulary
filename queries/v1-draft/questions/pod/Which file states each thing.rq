@@ -1,13 +1,23 @@
-# Every file is loaded twice: into the default graph, which the other questions read, and into a graph named by its address, which GRAPH ?file reads. So for any thing you can ask which files say something about it.
-# A file the build wrote and can write again, a view or the labels, is rebuilt, and comes after the file the thing arrived in.
+# Every file is loaded twice: into the default graph, which the other questions read, and into a graph named by its address,
+# which GRAPH ?file reads. A file states a thing when it says something about it, or names it as the value of a statement:
+# a patient profile has no file of its own, so the files that name it are where it is stated.
+# Named marks a row for a file that names the thing, and rebuilt a view or the labels, which the build writes; the file a thing
+# arrived in comes first.
 PREFIX pim: <http://www.w3.org/ns/pim/space#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT DISTINCT ?thing ?file ?rebuilt
+SELECT DISTINCT ?thing ?file ?named ?rebuilt
 WHERE {
-  GRAPH ?file { ?thing ?property ?value }
-  ?owner pim:storage ?root .
-  FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
-  BIND (EXISTS { ?file a rec:View } AS ?rebuilt)
+  { GRAPH ?file { ?thing ?property ?value }
+    ?owner pim:storage ?root .
+    FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
+    BIND (false AS ?named)
+    BIND (EXISTS { ?file a rec:View } AS ?rebuilt) }
+  UNION
+  { GRAPH ?file { ?subject ?property ?thing }
+    ?owner pim:storage ?root .
+    FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
+    BIND (true AS ?named)
+    BIND (EXISTS { ?file a rec:View } AS ?rebuilt) }
 }
-ORDER BY ?thing ?rebuilt ?file
+ORDER BY ?thing ?named ?rebuilt ?file
