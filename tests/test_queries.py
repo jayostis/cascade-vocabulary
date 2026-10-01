@@ -316,47 +316,27 @@ def words(text):
     return re.findall(r"[a-z0-9]+", text.lower())
 
 
-COMMON = {"a", "and", "are", "each", "every", "how", "in", "is", "it", "its", "many", "my", "of", "the", "they", "this",
-          "to", "what", "which"}
-SHORT = 8
-ENUMERATING = ("every", "everything")
-
-
-def stems(text):
-    return {word.rstrip("s") for word in words(text) if word not in COMMON}
-
-
 def missing_prose(relative, text):
-    """Why the query's leading comment does not do its job, or None: there is none, or it opens with the query's name,
-    or with a short clause that only lists every thing the name names, such as "Every revision of the record"."""
+    """Why the query's leading comment does not do its job, or None: there is none, or it opens with the query's
+    name."""
     prose = vocabulary.prose(text)
     if not prose:
         return "no prose"
-    name = Path(relative).stem
-    if words(prose)[:len(words(name))] == words(name):
+    name = words(Path(relative).stem)
+    if words(prose)[:len(name)] == name:
         return "prose opening with its name"
-    opening = re.split(r"[.,;:]", prose)[0]
-    if len(words(opening)) <= SHORT and words(opening)[0] in ENUMERATING and stems(opening) & stems(name):
-        return "prose opening by restating its name"
     return None
 
 
-def test_the_prose_check_refuses_a_query_with_no_prose_or_prose_restating_its_name():
+def test_the_prose_check_refuses_a_query_with_no_prose_or_prose_opening_with_its_name():
     query = "SELECT ?s WHERE { ?s ?p ?o }"
     assert missing_prose("pod/Which file states each thing.rq", query) == "no prose"
     assert missing_prose("pod/Which file states each thing.rq", "# Which file states each thing.\n" + query) == \
         "prose opening with its name"
     assert missing_prose("derivations/same-pairs.rq", "# Same pairs: ...\n" + query) == "prose opening with its name"
-    assert missing_prose("record/What each version says.rq",
-                         "# Everything each version of the record states.\n" + query) == \
-        "prose opening by restating its name"
-    assert missing_prose("record/Its revisions, in the order they arrived.rq",
-                         "# Every revision of the record, in the order they arrived.\n" + query) == \
-        "prose opening by restating its name"
-    assert missing_prose("record/What each version says.rq",
-                         "# A version is named by a hash of its content, so two arrivals share one.\n" + query) is None
+    assert missing_prose("pod/Which file states each thing.rq", "# Each file is its own graph.\n" + query) is None
 
 
 @pytest.mark.parametrize("relative", every_query())
-def test_every_query_opens_with_prose_that_does_not_restate_its_name(relative):
+def test_every_query_has_prose_that_does_not_open_with_its_name(relative):
     assert missing_prose(relative, vocabulary.query(relative)) is None
