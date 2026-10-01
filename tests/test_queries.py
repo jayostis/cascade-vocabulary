@@ -50,12 +50,15 @@ NESTED = {
     "union-joined": "SELECT * WHERE { ?x ?y ?a { ?a ?b ?c } UNION { ?a ?d ?c } }",
     "union-in-a-group": "SELECT * WHERE { { { ?a ?b ?c } UNION { ?a ?d ?c } } }",
     "subquery-in-optional": "SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a ?q ?r { SELECT ?r WHERE { ?r ?s ?t } } } }",
+    "graph-in-a-group": "SELECT * WHERE { ?a ?b ?c OPTIONAL { GRAPH ?g { ?a ?d ?e } } }",
 }
 
 
 def nested_forms(text):
     everything = list(nodes(parseQuery(text)))
     wheres = {id(n["where"]) for n in everything if n.name in QUERY_FORMS and n.get("where") is not None}
+    branches = {id(branch) for n in everything if id(n) in wheres for part in n.get("part") or []
+                if part.name == "GroupOrUnionGraphPattern" for branch in part["graph"]}
     found = []
     for node in everything:
         if node.name in EXISTS_FORMS and any(m.name in EXISTS_FORMS for m in nodes(node["graph"])):
@@ -67,6 +70,8 @@ def nested_forms(text):
                 found.append("union-joined")
             elif unions and id(node) not in wheres:
                 found.append("union-in-a-group")
+            if any(p.name == "GraphGraphPattern" for p in parts) and not {id(node)} & (wheres | branches):
+                found.append("graph-in-a-group")
         if node.name == "OptionalGraphPattern" and any(m.name == "SubSelect" for m in nodes(node["graph"])):
             found.append("subquery-in-optional")
     return found
@@ -114,6 +119,13 @@ def test_the_flat_pattern_check_accepts_a_union_whose_branches_are_each_complete
     assert nested_forms("""SELECT * WHERE {
       { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d } OPTIONAL { ?a ?e ?f } }
       UNION { { SELECT ?a WHERE { ?a ?b ?c } } ?a ?d ?c }
+    }""") == []
+
+
+def test_the_flat_pattern_check_accepts_a_graph_around_a_whole_pattern():
+    assert nested_forms("""SELECT * WHERE {
+      { GRAPH ?g { ?a ?b ?c OPTIONAL { ?a ?e ?f } } ?g ?h ?i }
+      UNION { VALUES ?a { <urn:x:a> } GRAPH ?g { ?a ?d ?c } }
     }""") == []
 
 
