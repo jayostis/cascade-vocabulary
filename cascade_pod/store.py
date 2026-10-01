@@ -4,6 +4,8 @@ A term is ("iri", value), ("blank", id) or ("literal", lexical form, datatype, l
 Every triple added under a graph's name is in the default graph as well, and queries read the default graph.
 """
 
+import warnings
+
 import pyoxigraph
 import rdflib
 
@@ -106,13 +108,19 @@ class Rdflib:
         graphs = [self.dataset.default_graph] + ([self.dataset.graph(rdflib.URIRef(graph))] if graph else [])
         self.dataset.addN((*triple, g) for triple in triples for g in graphs)
 
+    def _query(self, query):
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", "Dataset.default_context is deprecated", DeprecationWarning)
+            result = self.dataset.query(query)
+            return [str(v) for v in result.vars or ()], list(result)
+
     def construct(self, query):
-        return {tuple(from_rdflib(t) for t in triple) for triple in self.dataset.query(query)}
+        _, found = self._query(query)
+        return {tuple(from_rdflib(t) for t in triple) for triple in found}
 
     def select(self, query):
-        result = self.dataset.query(query)
-        names = [str(v) for v in result.vars]
-        return [{name: from_rdflib(row[name]) for name in names if row[name] is not None} for row in result]
+        names, rows = self._query(query)
+        return [{name: from_rdflib(row[name]) for name in names if row[name] is not None} for row in rows]
 
     def triples(self):
         return {tuple(from_rdflib(t) for t in triple) for triple in self.dataset.default_graph}

@@ -7,7 +7,6 @@ import argparse
 import base64
 import hashlib
 import html
-import importlib.util
 import shutil
 import sys
 from collections import defaultdict
@@ -15,6 +14,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pyoxigraph
+
+sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
+from cascade_pod import derive, vocabulary  # noqa: E402
+from cascade_pod.pod import LABEL_FILE, VIEW_FILES, Example  # noqa: E402
+from cascade_pod.store import Oxigraph  # noqa: E402
 
 LENS = "everyday"
 ONTOLOGIES = Path(__file__).absolute().parent.parent / "ontologies"
@@ -66,17 +70,6 @@ ul { padding-left: 1.25rem; }
 """
 
 
-def example_build(pod):
-    """The example's own queries/build.py, which loads its pod and runs its lenses."""
-    path = pod.absolute().parent / "queries" / "build.py"
-    spec = importlib.util.spec_from_file_location("example_build", path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    if module.POD.resolve() != pod.resolve():
-        raise SystemExit(f"render.py: {path} builds {module.POD}, not {pod}")
-    return module
-
-
 def page(iri):
     return hashlib.sha256(iri.encode("utf-8")).hexdigest() + ".html"
 
@@ -114,34 +107,34 @@ def e(text):
 class Pod:
     def __init__(self, folder):
         self.folder = Path(folder)
-        build = self.build = example_build(self.folder)
-        self.store = build.loaded("oxigraph")
-        build.derive(self.store, LENS)
-        self.store.load(build.POD / build.LABEL_FILE, build.POD_BASE + build.LABEL_FILE)
+        self.example = Example(self.folder.parent)
+        self.store = derive.loaded(self.example, "oxigraph")
+        derive.derive(self.store, LENS)
+        self.store.load(self.example.pod / LABEL_FILE, self.example.address + LABEL_FILE)
         self.labels = self._labels()
-        self.views = {view: self._view(relative) for view, relative in sorted(build.VIEW_FILES.items())}
+        self.views = {view: self._view(relative) for view, relative in sorted(VIEW_FILES.items())}
 
     def rows(self, relative):
-        found = self.store.select(self.build.query_text(relative))
+        found = self.store.select(vocabulary.query(relative))
         return sorted(found, key=lambda row: sorted((k, term_key(v)) for k, v in row.items()))
 
     def _labels(self):
-        vocabulary = self.build.Oxigraph()
+        terms = Oxigraph()
         for path in sorted(ONTOLOGIES.rglob("*.ttl")):
             if not path.name.endswith(".shapes.ttl"):
-                vocabulary.load(path, path.absolute().as_uri())
-        text = self.build.query_text("questions/pod/What everything is called.rq")
+                terms.load(path, path.absolute().as_uri())
+        text = vocabulary.query("questions/pod/What everything is called.rq")
         labels = {}
-        for source in (vocabulary.select(text), self.store.select(text)):
+        for source in (terms.select(text), self.store.select(text)):
             for row in sorted(source, key=lambda r: r["label"][1]):
                 labels.setdefault(row["thing"], row["label"][1])
         return labels
 
     def _view(self, relative):
-        base = self.build.POD_BASE + relative
+        base = self.example.address + relative
         entries = defaultdict(list)
-        convert = self.build.Oxigraph()._term
-        for triple in pyoxigraph.parse(path=str(self.build.POD / relative), format=pyoxigraph.RdfFormat.TURTLE,
+        convert = Oxigraph()._term
+        for triple in pyoxigraph.parse(path=str(self.example.pod / relative), format=pyoxigraph.RdfFormat.TURTLE,
                                        base_iri=base):
             subject = convert(triple.subject)
             if subject != ("iri", base):
@@ -323,7 +316,7 @@ class Site:
                           "No judgment names it.")
 
     def view_title(self, view):
-        stem = Path(self.pod.build.VIEW_FILES[view]).stem.replace("-", " ")
+        stem = Path(VIEW_FILES[view]).stem.replace("-", " ")
         return stem[:1].upper() + stem[1:]
 
     def fields(self, pairs):

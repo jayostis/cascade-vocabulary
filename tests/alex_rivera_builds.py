@@ -1,36 +1,28 @@
 import json
-import sys
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-import pyoxigraph
 import pytest
-import rdflib
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.namespace import XSD
 
-rdflib.NORMALIZE_LITERALS = False
+from cascade_pod import derive, store, vocabulary
+from cascade_pod.pod import NOT_RDF, Example
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
-POD = EXAMPLE / "pod"
+ALEX = Example(EXAMPLE)
+POD = ALEX.pod
 EXPECTED = EXAMPLE / "expected"
-POD_BASE = "https://pod.alex-rivera.example/"
+POD_BASE = ALEX.address
 HANDLE_NS = "urn:example:alex-rivera:handle:"
-sys.path.insert(0, str(EXAMPLE / "queries"))
-import build as example_build  # noqa: E402
 
 ENGINES = ("oxigraph", "rdflib")
 LENSES = ("everyday", "export")
-NOT_RDF = ("attachments/", ".well-known/solid")
 
 MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
 IN_ENTRY = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#inEntry")
-
-
-def manifest():
-    return json.loads((EXAMPLE / "events.json").read_text(encoding="utf-8"))
 
 
 @lru_cache(maxsize=None)
@@ -58,7 +50,7 @@ def handle(term):
 
 
 def events():
-    return manifest()["events"]
+    return ALEX.events
 
 
 def adds(event):
@@ -69,12 +61,7 @@ def adds(event):
 
 
 def files_through(event):
-    files = []
-    for row in events():
-        files.extend(row["adds"])
-        if row["event"] == event:
-            return tuple(files)
-    pytest.fail(f"events.json lists no event {event}")
+    return tuple(ALEX.files(event))
 
 
 def is_rdf(relative):
@@ -82,89 +69,27 @@ def is_rdf(relative):
 
 
 def load_pod_file(relative):
-    return Graph().parse(POD / relative, format="turtle", publicID=POD_BASE + relative)
+    return store.parsed(POD / relative, POD_BASE + relative)
+
+
+def graph(triples):
+    found = Graph()
+    for triple in triples:
+        found.add(tuple(store.to_rdflib(t) for t in triple))
+    return found
 
 
 @lru_cache(maxsize=None)
-def _pod(files):
-    graph = Graph()
-    for relative in files:
-        if is_rdf(relative):
-            graph += load_pod_file(relative)
-    return graph
-
-
 def pod(event):
-    return _pod(files_through(event))
+    engine = store.Rdflib()
+    ALEX.load(engine, event)
+    return engine.dataset.default_graph
 
 
 def _string_typed(term):
     if isinstance(term, Literal) and term.datatype is None and term.language is None:
         return Literal(str(term), datatype=XSD.string)
     return term
-
-
-def _from_oxigraph(term):
-    if isinstance(term, pyoxigraph.NamedNode):
-        return URIRef(term.value)
-    if isinstance(term, pyoxigraph.BlankNode):
-        return BNode(term.value)
-    if term.language:
-        return Literal(term.value, lang=term.language)
-    return _string_typed(Literal(term.value, datatype=URIRef(term.datatype.value)))
-
-
-class Oxigraph:
-    def __init__(self):
-        self.store = pyoxigraph.Store()
-
-    def load(self, relative):
-        self.store.load(path=str(POD / relative), format=pyoxigraph.RdfFormat.TURTLE, base_iri=POD_BASE + relative)
-
-    def derive(self, text):
-        triples = list(self.store.query(text))
-        self.store.extend(pyoxigraph.Quad(t.subject, t.predicate, t.object, pyoxigraph.DefaultGraph()) for t in triples)
-
-    def construct(self, text):
-        written = pyoxigraph.serialize(list(self.store.query(text)), format=pyoxigraph.RdfFormat.N_TRIPLES)
-        return Graph().parse(data=written.decode("utf-8"), format="nt")
-
-    def select(self, text):
-        solutions = self.store.query(text)
-        variables = solutions.variables
-        return [
-            {v.value: _from_oxigraph(row[v]) for v in variables if row[v] is not None}
-            for row in solutions
-        ]
-
-    def state(self):
-        dumped = self.store.dump(format=pyoxigraph.RdfFormat.N_TRIPLES, from_graph=pyoxigraph.DefaultGraph())
-        return Graph().parse(data=dumped.decode("utf-8"), format="nt")
-
-
-class Rdflib:
-    def __init__(self):
-        self.graph = Graph()
-
-    def load(self, relative):
-        self.graph.parse(POD / relative, format="turtle", publicID=POD_BASE + relative)
-
-    def derive(self, text):
-        self.graph += self.graph.query(text).graph
-
-    def construct(self, text):
-        result = Graph()
-        result += self.graph.query(text).graph
-        return result
-
-    def select(self, text):
-        return [
-            {key: _string_typed(value) for key, value in row.asdict().items()}
-            for row in self.graph.query(text)
-        ]
-
-    def state(self):
-        return self.graph
 
 
 @dataclass(frozen=True)
@@ -175,21 +100,12 @@ class Build:
 
 
 @lru_cache(maxsize=None)
-def _build(engine, lens, files):
-    store = {"oxigraph": Oxigraph, "rdflib": Rdflib}[engine]()
-    for relative in files:
-        if is_rdf(relative):
-            store.load(relative)
-    for relative in example_build.derivations(lens):
-        store.derive(example_build.query_text(relative))
-    views = {view: store.construct(example_build.query_text(r)) for view, r in example_build.named("views").items()}
-    needs_review = {kind: store.select(example_build.query_text(example_build.questions()[f"{kind}/What needs review"]))
-                    for kind in ("entry", "judgment")}
-    return Build(store.state(), views, needs_review)
-
-
 def build(engine, lens, event):
-    return _build(engine, lens, files_through(event))
+    built = derive.build(ALEX, engine, lens, event)
+    needs_review = {kind: [{key: store.to_rdflib(value) for key, value in row.items()}
+                           for row in built.store.select(vocabulary.query(vocabulary.questions()[f"{kind}/What needs review"]))]
+                    for kind in ("entry", "judgment")}
+    return Build(graph(built.store.triples()), {view: graph(triples) for view, triples in built.views.items()}, needs_review)
 
 
 def comparable(term):

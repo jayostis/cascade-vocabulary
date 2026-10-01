@@ -1,5 +1,4 @@
 import base64
-import sys
 from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
@@ -11,10 +10,11 @@ from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
+from cascade_pod.pod import NOT_RDF, VIEW_FILES, Example
+
 ROOT = Path(__file__).absolute().parent.parent
 ONTOLOGIES = ROOT / "ontologies"
-sys.path.insert(0, str(ROOT / "example-pods" / "alex-rivera" / "queries"))
-import build  # noqa: E402
+ALEX = Example(ROOT / "example-pods" / "alex-rivera")
 
 rdflib.NORMALIZE_LITERALS = False
 
@@ -53,7 +53,7 @@ NOT_CHECKED_FOR_CONFORMANCE = (
 
 
 def every_rdf_file():
-    return sorted(p for p in build.pod_files() + build.events()["derived"] if not p.startswith(build.NOT_RDF))
+    return sorted(p for p in ALEX.files() + ALEX.derived if not p.startswith(NOT_RDF))
 
 
 def shapes_file(vocabulary):
@@ -79,7 +79,7 @@ def ontology():
 
 @lru_cache(maxsize=None)
 def loaded(relative):
-    return Graph().parse(build.POD / relative, format="turtle", publicID=build.POD_BASE + relative)
+    return Graph().parse(ALEX.pod / relative, format="turtle", publicID=ALEX.address + relative)
 
 
 @lru_cache(maxsize=None)
@@ -103,7 +103,7 @@ def named_for(relative):
 
 
 def things(relative, graph):
-    if relative in build.VIEW_FILES.values():
+    if relative in VIEW_FILES.values():
         return set(graph.subjects(MERGED_FROM, None))
     thing = named_for(relative)
     return {thing} if (thing, None, None) in graph else set()
@@ -112,7 +112,7 @@ def things(relative, graph):
 def kind_of(relative, graph):
     if unshaped(relative):
         return None
-    if relative in build.VIEW_FILES.values():
+    if relative in VIEW_FILES.values():
         return "view"
     [thing] = things(relative, graph) or [None]
     if relative.startswith("records/"):

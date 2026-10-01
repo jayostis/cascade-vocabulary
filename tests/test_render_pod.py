@@ -8,6 +8,8 @@ from urllib.parse import urlparse
 import pytest
 from rdflib import URIRef
 
+from cascade_pod.store import Oxigraph
+
 sys.path.insert(0, str(Path(__file__).absolute().parent))
 from alex_rivera_builds import POD, ROOT, events, load_pod_file, name, pod  # noqa: E402
 
@@ -145,13 +147,12 @@ PREFIXES = """
 
 
 def site_over(tmp_path, turtle):
-    build = render.example_build(POD)
-    store = build.Oxigraph()
+    store = Oxigraph()
     path = tmp_path / "pod.ttl"
     path.write_text(PREFIXES + turtle, encoding="utf-8")
     store.load(path, "https://pod.example/")
     pod = object.__new__(render.Pod)
-    pod.folder, pod.build, pod.store, pod.labels, pod.views = tmp_path, build, store, {}, {}
+    pod.folder, pod.store, pod.labels, pod.views = tmp_path, store, {}, {}
     return render.Site(pod)
 
 
