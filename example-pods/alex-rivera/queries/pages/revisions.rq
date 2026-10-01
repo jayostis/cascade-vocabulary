@@ -12,12 +12,14 @@ SELECT ?record ?revision ?version ?arrived ?previous ?document ?retrieved ?hospi
 WHERE {
   ?revision rec:revisionOf ?record ; rec:version ?version ; prov:generatedAtTime ?arrived .
   OPTIONAL { ?revision prov:wasRevisionOf ?previous }
-  OPTIONAL { ?revision prov:wasDerivedFrom ?document }
-  OPTIONAL { ?revision prov:wasDerivedFrom/pav:retrievedOn ?retrieved }
-  OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution ?author .
-             ?author prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
-  OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution ?sender .
-             ?sender prov:hadRole rec:transmitter ; prov:agent/rdfs:label ?transmitter }
+  OPTIONAL {
+    ?revision prov:wasDerivedFrom ?document .
+    OPTIONAL { ?document pav:retrievedOn ?retrieved }
+    OPTIONAL { ?document prov:qualifiedAttribution ?author .
+               ?author prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
+    OPTIONAL { ?document prov:qualifiedAttribution ?sender .
+               ?sender prov:hadRole rec:transmitter ; prov:agent/rdfs:label ?transmitter }
+  }
   OPTIONAL { ?revision prov:wasGeneratedBy ?import }
   OPTIONAL { ?revision prov:wasGeneratedBy/prov:startedAtTime ?started }
 }

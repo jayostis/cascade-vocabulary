@@ -11,6 +11,7 @@ import importlib.util
 import shutil
 import sys
 from collections import defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pyoxigraph
@@ -18,6 +19,7 @@ import pyoxigraph
 LENS = "everyday"
 ONTOLOGIES = Path(__file__).absolute().parent.parent / "ontologies"
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+XSD_DATE_TIME = "http://www.w3.org/2001/XMLSchema#dateTime"
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 MERGED_FROM = "https://ns.cascadeprotocol.org/core/v1#mergedFrom"
 SOURCES = {REC + "latestMember": "Latest member", REC + "statusFrom": "Status from", REC + "dateFrom": "Date from"}
@@ -90,9 +92,21 @@ def attachment(document):
 
 
 def when(text):
-    if len(text) >= 16 and text[10] == "T":
-        return text[:10] + " " + text[11:16] + (" UTC" if text.endswith("Z") else "")
-    return text
+    if len(text) < 16 or text[10] != "T":
+        return text
+    moment = datetime.fromisoformat(text)
+    offset = moment.utcoffset()
+    zone = "" if offset is None else " UTC" if not offset else " " + moment.isoformat()[-6:]
+    return moment.strftime("%Y-%m-%d %H:%M") + zone
+
+
+def instant(text):
+    moment = datetime.fromisoformat(text)
+    return moment if moment.tzinfo else moment.replace(tzinfo=timezone.utc)
+
+
+def term_key(term):
+    return tuple("" if part is None else part for part in term)
 
 
 def e(text):
@@ -110,7 +124,7 @@ class Pod:
 
     def rows(self, relative):
         found = self.store.select(self.build.query_text(relative))
-        return sorted(found, key=lambda row: sorted((k, v) for k, v in row.items()))
+        return sorted(found, key=lambda row: sorted((k, term_key(v)) for k, v in row.items()))
 
     def _labels(self):
         vocabulary = self.build.Oxigraph()
@@ -133,7 +147,7 @@ class Pod:
             subject = convert(triple.subject)
             if subject != ("iri", base):
                 entries[subject[1]].append((triple.predicate.value, convert(triple.object)))
-        return {entry: sorted(pairs) for entry, pairs in entries.items() if any(p == MERGED_FROM for p, _ in pairs)}
+        return {entry: sorted(pairs, key=lambda pair: (pair[0], term_key(pair[1]))) for entry, pairs in entries.items() if any(p == MERGED_FROM for p, _ in pairs)}
 
 
 class Site:
@@ -166,10 +180,22 @@ class Site:
 
         self.revisions = defaultdict(list)
         self.current = {}
+        revisions = {}
         for row in pod.rows("pages/revisions.rq"):
-            self.revisions[row["record"][1]].append(row)
+            revision = revisions.get(row["revision"])
+            if revision is None:
+                revision = revisions[row["revision"]] = {
+                    key: row[key] for key in ("record", "revision", "version", "arrived", "previous", "import", "started")
+                    if key in row}
+                revision["documents"] = defaultdict(lambda: {"retrieved": set(), "hospital": set(), "transmitter": set()})
+                self.revisions[row["record"][1]].append(revision)
+            if "document" in row:
+                held = revision["documents"][row["document"]]
+                for key in held:
+                    if key in row:
+                        held[key].add(row[key])
         for record, rows in self.revisions.items():
-            rows.sort(key=lambda r: (r["arrived"][1], r["revision"][1]))
+            rows.sort(key=lambda r: (instant(r["arrived"][1]), r["revision"][1]))
             currents = [r for r in rows if not any(o.get("previous") == r["revision"] for o in rows)]
             self.current[record] = currents[-1]
         self.content = defaultdict(list)
@@ -183,7 +209,11 @@ class Site:
             self.profile_records[row["profile"][1]].add(row["record"][1])
         self.not_shown = pod.rows("pages/not-shown.rq")
         self.subjects = [row["subject"][1] for row in pod.rows("pages/subjects.rq")]
-        self.counted_profiles = pod.rows("pages/profiles-counted.rq")
+        self.counted_profiles = defaultdict(set)
+        for row in pod.rows("pages/profiles-counted.rq"):
+            hospitals = self.counted_profiles[(row["profile"], row["about"])]
+            if "hospital" in row:
+                hospitals.add(row["hospital"][1])
 
         self.entry_view = {}
         self.record_entry = {}
@@ -193,7 +223,7 @@ class Site:
                 for p, o in pairs:
                     if p == MERGED_FROM:
                         self.record_entry[o[1]] = entry
-        profiles = set(self.profile_records) | {row["profile"][1] for row in self.counted_profiles}
+        profiles = set(self.profile_records) | {profile[1] for profile, _ in self.counted_profiles}
         profiles |= {m for j in self.judgments.values() if j.get("verdict") == ("iri", "https://ns.cascadeprotocol.org/judgments/v1-draft#About") for m in j["members"]}
         self.pages = {}
         for entry in self.entry_view:
@@ -214,7 +244,7 @@ class Site:
             text = self.labels[term]
             return text[:1].upper() + text[1:]
         if term[0] == "literal":
-            return when(term[1])
+            return when(term[1]) if term[2] == XSD_DATE_TIME else term[1]
         if term[0] == "iri":
             return local_name(term[1])
         return "unnamed"
@@ -292,6 +322,10 @@ class Site:
     def fields(self, pairs):
         return sorted({p for p, _ in pairs if p not in NOT_FIELDS}, key=lambda p: self.label(p))
 
+    @staticmethod
+    def hospitals(revision):
+        return ", ".join(sorted({h[1] for held in revision["documents"].values() for h in held["hospital"]}))
+
     def current_content(self, record):
         row = self.current.get(record)
         return set(self.content.get(row["version"][1], ())) if row else set()
@@ -300,9 +334,9 @@ class Site:
 
     def index(self):
         subjects = "".join(f"<li>{self.link(s)}</li>" for s in sorted(self.subjects, key=self.label))
-        profiles = [[self.link(row["profile"]), e(row["hospital"][1]) if "hospital" in row else "",
-                     self.link(row["about"])]
-                    for row in sorted(self.counted_profiles, key=lambda r: (self.label(r["profile"]), self.label(r["about"])))]
+        profiles = [[self.link(profile), e(", ".join(sorted(hospitals))), self.link(about)]
+                    for (profile, about), hospitals in sorted(self.counted_profiles.items(),
+                                                              key=lambda p: (self.label(p[0][0]), self.label(p[0][1])))]
         views = [[f'<a href="view-{e(view)}.html">{e(self.view_title(view))}</a>', str(len(entries))]
                  for view, entries in self.pod.views.items()]
         body = (f"<h2>Subject</h2>\n<ul>{subjects}</ul>\n"
@@ -344,7 +378,7 @@ class Site:
         for member in members:
             row = self.current.get(member)
             member_rows.append([self.link(member),
-                                e(row["hospital"][1]) if row and "hospital" in row else "",
+                                e(self.hospitals(row)) if row else "",
                                 self.link(row["version"]) if row else "",
                                 e(when(row["arrived"][1])) if row else ""])
         judgments = set().union(*(self.naming.get(m, set()) for m in members))
@@ -366,23 +400,22 @@ class Site:
             if "previous" in row:
                 facts.append(("Revises", e(self.label(row["previous"]))))
             facts.append(("Version", e(self.label(row["version"]))))
-            content = sorted(self.content.get(row["version"][1], ()), key=lambda c: (self.label(c[0]), c[1]))
+            content = sorted(self.content.get(row["version"][1], ()), key=lambda c: (self.label(c[0]), term_key(c[1])))
             if content:
                 facts.append(("Its content", "<ul>" + "".join(
                     f'<li><span class="quiet">{e(self.label(f))}:</span> {self.value(v, f)}</li>' for f, v in content)
                     + "</ul>"))
-            if "document" in row:
-                path = attachment(row["document"][1])
-                text = e(self.label(row["document"]))
+            for document in sorted(row["documents"], key=term_key):
+                held = row["documents"][document]
+                path = attachment(document[1])
+                text = e(self.label(document))
                 if path and (self.pod.folder / path).is_file():
                     copied.add(path)
                     text = f'<a href="{e(path)}">{text}</a>'
                 facts.append(("Document", text))
-            for key, title in (("hospital", "Hospital"), ("transmitter", "Transmitter")):
-                if key in row:
-                    facts.append((title, e(row[key][1])))
-            if "retrieved" in row:
-                facts.append(("Retrieved", e(when(row["retrieved"][1]))))
+                for key, title in (("hospital", "Hospital"), ("transmitter", "Transmitter")):
+                    facts.extend((title, e(value[1])) for value in sorted(held[key], key=term_key))
+                facts.extend(("Retrieved", e(when(value[1]))) for value in sorted(held["retrieved"], key=term_key))
             if "import" in row:
                 started = f' <span class="quiet">started {e(when(row["started"][1]))}</span>' if "started" in row else ""
                 facts.append(("Import", e(self.label(row["import"])) + started))
