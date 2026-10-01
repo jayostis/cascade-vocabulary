@@ -82,7 +82,7 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(en
 
 def test_every_committed_view_is_marked_rebuildable_and_registered():
     store = build.derive(build.loaded("oxigraph"), "everyday")
-    current = {URIRef(row["v"][1]) for row in store.select(build.CURRENT_REFERENCE_VERSIONS)}
+    current = {URIRef(row["version"][1]) for row in store.select(build.query_text(build.CURRENT_REFERENCE_VERSIONS))}
     for relative in sorted(set(build.VIEW_FILES.values()) | {build.LABEL_FILE}):
         address = URIRef(build.POD_BASE + relative)
         graph = Graph().parse(build.POD / relative, format="turtle", publicID=str(address))

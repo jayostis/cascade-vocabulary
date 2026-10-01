@@ -1,3 +1,4 @@
+import ast
 import json
 import sys
 from functools import lru_cache
@@ -207,3 +208,25 @@ def test_no_query_spells_out_an_iri_in_a_namespace_the_queries_declare(relative)
     declared_namespaces = tuple(namespace for prefix in prefixes for namespace in namespaces()[prefix])
     _, query = parsed(relative)
     assert {str(iri) for iri in iris(query) if str(iri).startswith(declared_namespaces)} == set()
+
+
+def queries_held(source):
+    found = []
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            try:
+                parseQuery(node.value)
+            except Exception:
+                continue
+            found.append(node.value)
+    return found
+
+
+def test_the_held_query_check_finds_a_query_in_a_string_and_nothing_else():
+    source = 'TEXT = """SELECT ?s WHERE { ?s ?p ?o }"""\nNAME = "SELECT"\n'
+    assert queries_held(source) == ["SELECT ?s WHERE { ?s ?p ?o }"]
+
+
+@pytest.mark.parametrize("tool", sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "example-pods").rglob("*.py")))
+def test_no_tool_holds_a_query(tool):
+    assert queries_held((ROOT / tool).read_text(encoding="utf-8")) == []

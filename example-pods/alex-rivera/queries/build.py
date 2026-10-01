@@ -26,10 +26,7 @@ LABEL_FILE = "clinical/labels.ttl"
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 PROV_USED = "http://www.w3.org/ns/prov#used"
 REC_VIEW = "https://ns.cascadeprotocol.org/records/v1-draft#View"
-CURRENT_REFERENCE_VERSIONS = """PREFIX pav: <http://purl.org/pav/>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-
-SELECT ?v WHERE { ?series a rec:ReferenceSeries ; pav:hasCurrentVersion ?v }"""
+CURRENT_REFERENCE_VERSIONS = "questions/pod/Which reference versions are current.rq"
 
 
 def events():
@@ -244,7 +241,7 @@ def written(engine):
     for triples in views.values():
         store.add(triples)
     labels = store.construct(query_text("labels.rq"))
-    used = [row["v"][1] for row in store.select(CURRENT_REFERENCE_VERSIONS)]
+    used = [row["version"][1] for row in store.select(query_text(CURRENT_REFERENCE_VERSIONS))]
     files = {VIEW_FILES[view]: turtle(triples, used) for view, triples in views.items()}
     files[LABEL_FILE] = turtle(labels, used)
     manifest = events()
