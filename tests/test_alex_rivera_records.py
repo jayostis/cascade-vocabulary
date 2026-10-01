@@ -18,6 +18,7 @@ rdflib.NORMALIZE_LITERALS = False
 ROOT = Path(__file__).absolute().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 import recomputed  # noqa: E402
+from cascade_pod import write  # noqa: E402
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 POD = EXAMPLE / "pod"
@@ -317,8 +318,8 @@ def test_the_records_layer_conforms_to_the_records_shapes():
 def test_running_the_writer_once_on_a_copy_reproduces_the_example_byte_for_byte(tmp_path):
     copy = tmp_path / "alex-rivera"
     shutil.copytree(EXAMPLE, copy, ignore=shutil.ignore_patterns("__pycache__"))
-    result = subprocess.run([sys.executable, str(EXAMPLE / "pod_writer.py"), "--example", str(copy)],
-                            capture_output=True, text=True)
+    result = subprocess.run([sys.executable, "-m", "cascade_pod", "write", str(copy)],
+                            capture_output=True, text=True, cwd=ROOT)
     assert result.returncode == 0, result.stderr
     differences = []
 
@@ -333,10 +334,7 @@ def test_running_the_writer_once_on_a_copy_reproduces_the_example_byte_for_byte(
 
 
 def test_every_filed_entry_activity_gets_its_own_handle():
-    sys.path.insert(0, str(EXAMPLE))
-    import pod_writer
-
-    pod = pod_writer.Pod()
-    pod.activities = {"entries/a1.ttl": "urn:example:activity:1", "entries/a2.ttl": "urn:example:activity:2"}
-    table = pod_writer.handle_table({}, {"events": [{"event": "E1", "subject": "urn:example:subject"}]}, pod)
+    filing = write.Filing(None)
+    filing.activities = {"entries/a1.ttl": "urn:example:activity:1", "entries/a2.ttl": "urn:example:activity:2"}
+    table = write.handle_table({}, [{"event": "E1", "subject": "urn:example:subject"}], filing)
     assert {table[h]["name"] for h in ("A1", "A2")} == {"urn:example:activity:1", "urn:example:activity:2"}

@@ -293,6 +293,7 @@ def test_the_held_query_check_finds_a_query_in_a_string_and_nothing_else():
     assert queries_held(source) == ["SELECT ?s WHERE { ?s ?p ?o }"]
 
 
-@pytest.mark.parametrize("tool", sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "example-pods").rglob("*.py")))
+@pytest.mark.parametrize("tool", sorted(p.relative_to(ROOT).as_posix()
+                                         for folder in ("cascade_pod", "example-pods") for p in (ROOT / folder).rglob("*.py")))
 def test_no_tool_holds_a_query(tool):
     assert queries_held((ROOT / tool).read_text(encoding="utf-8")) == []
