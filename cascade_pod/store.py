@@ -93,10 +93,14 @@ class Oxigraph:
     def construct(self, query):
         return {tuple(self._term(t) for t in (x.subject, x.predicate, x.object)) for x in self.store.query(query)}
 
-    def select(self, query):
+    def answer(self, query):
+        """The query's columns, and its rows with each bound column's term."""
         solutions = self.store.query(query)
         names = [v.value for v in solutions.variables]
-        return [{name: self._term(row[name]) for name in names if row[name] is not None} for row in solutions]
+        return names, [{name: self._term(row[name]) for name in names if row[name] is not None} for row in solutions]
+
+    def select(self, query):
+        return self.answer(query)[1]
 
     def triples(self, graph=None):
         named = pyoxigraph.NamedNode(graph) if graph else pyoxigraph.DefaultGraph()
@@ -138,9 +142,12 @@ class Rdflib:
         _, found = self._query(query)
         return {tuple(from_rdflib(t) for t in triple) for triple in found}
 
-    def select(self, query):
+    def answer(self, query):
         names, rows = self._query(query)
-        return [{name: from_rdflib(row[name]) for name in names if row[name] is not None} for row in rows]
+        return names, [{name: from_rdflib(row[name]) for name in names if row[name] is not None} for row in rows]
+
+    def select(self, query):
+        return self.answer(query)[1]
 
     def triples(self, graph=None):
         return {tuple(from_rdflib(t) for t in triple) for triple in self.graph(graph)}
