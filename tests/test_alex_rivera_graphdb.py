@@ -131,6 +131,11 @@ def test_a_load_adds_the_derived_state_under_the_everyday_lens_as_a_graph_of_its
     assert {tuple(store.from_rdflib(t) for t in triple) for triple in posted} == derived
 
 
+def test_a_load_fills_one_graph_for_each_graph_of_the_pod_in_the_builders_store(graphdb):
+    assert load(graphdb.url).returncode == 0
+    assert sorted(graphdb.graphs) == derive.build(ALEX, "oxigraph").store.graphs()
+
+
 def test_a_load_saves_every_question_under_its_path_in_questions(graphdb):
     assert load(graphdb.url).returncode == 0
     assert graphdb.saved == {name: vocabulary.query(relative) for name, relative in vocabulary.questions().items()}

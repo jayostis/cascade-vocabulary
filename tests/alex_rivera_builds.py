@@ -8,7 +8,7 @@ from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.namespace import XSD
 
 from cascade_pod import derive, store, vocabulary
-from cascade_pod.pod import NOT_RDF, Example
+from cascade_pod.pod import NOT_RDF, VIEW_FILES, Example
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
@@ -105,7 +105,8 @@ def build(engine, lens, event):
     needs_review = {kind: [{key: store.to_rdflib(value) for key, value in row.items()}
                            for row in built.store.select(vocabulary.query(vocabulary.questions()[f"{kind}/What needs review"]))]
                     for kind in ("entry", "judgment")}
-    return Build(graph(built.store.triples()), {view: graph(triples) for view, triples in built.views.items()}, needs_review)
+    views = {view: graph(built.files[path]) for view, path in VIEW_FILES.items()}
+    return Build(graph(built.store.triples()), views, needs_review)
 
 
 def comparable(term):

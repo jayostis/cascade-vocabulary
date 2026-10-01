@@ -31,20 +31,32 @@ def derive(store, lens):
 class Built(NamedTuple):
     store: object
     derived: set
-    views: dict
-    labels: set
+    files: dict
 
 
 def build(example, engine, lens="everyday", through=None):
-    """The pod's store with the lens's derived state, its views and the labels added."""
+    """The pod in a store, as every tool and question sees it: each file of the pod through the event, the views,
+    the labels, the index and the manifest built from them, the lens's derived state and the vocabulary, each in a
+    graph of its own and all of them in the default graph."""
     store = loaded(example, engine, through)
     derived = derive(store, lens)
-    views = {view: store.construct(vocabulary.query(relative)) for view, relative in vocabulary.named("views").items()}
-    for triples in views.values():
-        store.add(triples)
-    labels = store.construct(vocabulary.query("labels.rq"))
-    store.add(labels)
-    return Built(store, derived, views, labels)
+    current = vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"])
+    used = [row["version"][1] for row in store.select(current)]
+    views = {VIEW_FILES[view]: store.construct(vocabulary.query(relative))
+             for view, relative in vocabulary.named("views").items()}
+    files = {path: marked(example.address + path, triples, used) for path, triples in views.items()}
+    _add(store, example, files)
+    files[LABEL_FILE] = marked(example.address + LABEL_FILE, store.construct(vocabulary.query("labels.rq")), used)
+    files["index.ttl"] = index(example.address, example.files(through) + example.derived)
+    files["manifest.ttl"] = manifest(example.address + "manifest.ttl", example.title, example.through(through)[-1]["at"])
+    _add(store, example, {path: files[path] for path in (LABEL_FILE, "index.ttl", "manifest.ttl")})
+    vocabulary.load(store)
+    return Built(store, derived, files)
+
+
+def _add(store, example, files):
+    for path, triples in files.items():
+        store.add(triples, example.address + path)
 
 
 def marked(address, triples, reference_versions):
@@ -73,17 +85,10 @@ def manifest(address, title, created):
 
 def written(example, engine):
     """Every file the build writes, by its path within pod/."""
-    built = build(example, engine)
-    current = vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"])
-    used = [row["version"][1] for row in built.store.select(current)]
-    files = {VIEW_FILES[view]: marked(example.address + VIEW_FILES[view], triples, used)
-             for view, triples in built.views.items()}
-    files[LABEL_FILE] = marked(example.address + LABEL_FILE, built.labels, used)
-    missing = sorted((set(files) | {"index.ttl", "manifest.ttl"}) - set(example.derived))
-    if missing:
-        raise Failure(f"events.json lists none of these under derived: {missing}")
-    files["index.ttl"] = index(example.address, example.files() + example.derived)
-    files["manifest.ttl"] = manifest(example.address + "manifest.ttl", example.title, example.events[-1]["at"])
+    files = build(example, engine).files
+    unlisted = sorted(set(files) - set(example.derived))
+    if unlisted:
+        raise Failure(f"events.json lists none of these under derived: {unlisted}")
     return {path: turtle.write({tuple(map(to_rdflib, t)) for t in triples}, example.address + path)
             for path, triples in files.items()}
 

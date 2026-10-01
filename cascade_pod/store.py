@@ -125,7 +125,7 @@ class Rdflib:
 
     def _query(self, query):
         with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", "Dataset.default_context is deprecated", DeprecationWarning)
+            warnings.filterwarnings("ignore", r"Dataset\.\w+ is deprecated", DeprecationWarning)
             result = self.dataset.query(query)
             return [str(v) for v in result.vars or ()], list(result)
 

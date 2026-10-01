@@ -17,7 +17,7 @@ import pyoxigraph
 
 sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
 from cascade_pod import derive, vocabulary  # noqa: E402
-from cascade_pod.pod import LABEL_FILE, VIEW_FILES, Example  # noqa: E402
+from cascade_pod.pod import VIEW_FILES, Example  # noqa: E402
 from cascade_pod.store import Oxigraph  # noqa: E402
 
 LENS = "everyday"
@@ -108,9 +108,7 @@ class Pod:
     def __init__(self, folder):
         self.folder = Path(folder)
         self.example = Example(self.folder.parent)
-        self.store = derive.loaded(self.example, "oxigraph")
-        derive.derive(self.store, LENS)
-        self.store.load(self.example.pod / LABEL_FILE, self.example.address + LABEL_FILE)
+        self.store = derive.build(self.example, "oxigraph", LENS).store
         self.labels = self._labels()
         self.views = {view: self._view(relative) for view, relative in sorted(VIEW_FILES.items())}
 

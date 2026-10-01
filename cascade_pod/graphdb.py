@@ -58,11 +58,7 @@ class GraphDB:
         request("DELETE", f"{self.base}/rest/repositories/{self.example.name}")
 
     def fill(self):
-        store = derive.loaded(self.example, "oxigraph")
-        derive.derive(store, LENS)
-        for path in self.example.derived:
-            store.load(self.example.pod / path, self.example.address + path)
-        vocabulary.load(store)
+        store = derive.build(self.example, "oxigraph", LENS).store
         graphs = store.graphs()
         for graph in graphs:
             context = urllib.parse.quote(f"<{graph}>", safe="")
