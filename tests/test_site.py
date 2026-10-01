@@ -350,3 +350,10 @@ def test_the_folder_table_names_a_records_folders_untyped_versions_and_leaves_ou
     rows = {(row["folder"]["value"], row["type"]["value"]) for row in folders["rows"]}
     assert ('"/records/allergies/"', '"no type stated"') in rows
     assert not {row for row in rows if row[0] == '"/clinical/"' and not row[1].startswith("<")}
+
+
+
+def test_no_template_and_not_the_stylesheet_holds_an_iri():
+    found = {path.name: re.findall(r"\w+://[^\s\"'<>]+", path.read_text(encoding="utf-8"))
+             for path in [*(site.HERE / "templates").glob("*.html"), site.HERE / site.STYLESHEET]}
+    assert {name: iris for name, iris in found.items() if iris} == {}

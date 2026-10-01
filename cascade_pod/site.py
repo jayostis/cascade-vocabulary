@@ -22,6 +22,12 @@ COPY = "pod/"
 ANY_THING = "thing"
 STATED = "pod/Which file states each thing"
 CALLED = "pod/What everything is called"
+CODE_SYSTEMS = {
+    "http://snomed.info/sct/": "SNOMED CT",
+    "http://www.nlm.nih.gov/research/umls/rxnorm/": "RxNorm",
+    "http://hl7.org/fhir/sid/cvx/": "CVX",
+    "http://hl7.org/fhir/sid/icd-10-cm/": "ICD-10-CM",
+}
 
 
 def page(iri):
@@ -35,6 +41,12 @@ def shown(literal):
     moment = datetime.fromisoformat(str(literal))
     return (moment if moment.tzinfo else moment.replace(tzinfo=timezone.utc)).astimezone(timezone.utc).strftime(
         "%Y-%m-%d %H:%M UTC")
+
+
+def code(iri):
+    """The code system and the code an IRI names, or None."""
+    return next(((system, str(iri)[len(prefix):]) for prefix, system in CODE_SYSTEMS.items()
+                 if str(iri).startswith(prefix)), None)
 
 
 class Query:
@@ -116,7 +128,7 @@ class Site:
     def environment(self):
         environment = jinja2.Environment(loader=jinja2.FileSystemLoader(HERE / "templates"), autoescape=True,
                                          undefined=jinja2.StrictUndefined, trim_blocks=True, lstrip_blocks=True)
-        environment.filters.update(href=self.links.get, shown=shown, nt=turtle.term,
+        environment.filters.update(href=self.links.get, shown=shown, code=code, nt=turtle.term,
                                    prefixed=lambda iri: turtle.prefixed(str(iri)))
         environment.tests.update(iri=lambda term: isinstance(term, URIRef), literal=lambda term: isinstance(term, Literal))
         environment.globals.update(

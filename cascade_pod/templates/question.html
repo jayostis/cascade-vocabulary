@@ -1,28 +1,15 @@
-{% set CODE_SYSTEMS = {
-  "http://snomed.info/sct/": "SNOMED CT",
-  "http://www.nlm.nih.gov/research/umls/rxnorm/": "RxNorm",
-  "http://hl7.org/fhir/sid/cvx/": "CVX",
-  "http://hl7.org/fhir/sid/icd-10-cm/": "ICD-10-CM",
-} %}
-
 {% macro term(value, label=none) -%}
 <data value="{{ value|nt }}">
 {%- if value is literal -%}
 {{ value|shown }}
-{%- else -%}
-{%- set code = namespace(system=none, number=none) -%}
-{%- for prefix, system in CODE_SYSTEMS.items() if value.startswith(prefix) -%}
-{%- set code.system = system -%}
-{%- set code.number = value[prefix|length:] -%}
-{%- endfor -%}
-{%- if code.system -%}
-<a href="{{ value }}">{{ code.system }} {{ code.number }}</a>
+{%- elif value|code -%}
+{%- set system, number = value|code -%}
+<a href="{{ value }}">{{ system }} {{ number }}</a>
 {%- else -%}
 {%- set href = value|href -%}
 {%- if href %}<a href="{{ href }}">{% endif -%}
 {%- if label %}{{ label }}{% elif value in terms %}{{ terms[value] }} <code>{{ value|prefixed }}</code>{% else %}<code>{{ value|prefixed or value }}</code>{% endif -%}
 {%- if href %}</a>{% endif -%}
-{%- endif -%}
 {%- endif -%}
 </data>
 {%- endmacro %}
