@@ -1,0 +1,18 @@
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?record rec:currentRevision ?r ; pav:hasCurrentVersion ?v }
+WHERE {
+  { SELECT ?record (IRI(MIN(STR(?h))) AS ?r)
+    WHERE {
+      { SELECT ?record (MAX(?t0) AS ?t)
+        WHERE { ?h0 rec:revisionOf ?record ; prov:generatedAtTime ?t0 .
+                FILTER NOT EXISTS { ?n0 prov:wasRevisionOf ?h0 } }
+        GROUP BY ?record }
+      ?h rec:revisionOf ?record ; prov:generatedAtTime ?t .
+      FILTER NOT EXISTS { ?n prov:wasRevisionOf ?h }
+    }
+    GROUP BY ?record }
+  ?r rec:version ?v .
+}

@@ -1,0 +1,8 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?profile ?record
+WHERE {
+  ?revision rec:revisionOf ?record ; rec:version/rec:patient ?profile .
+  FILTER NOT EXISTS { ?later prov:wasRevisionOf ?revision }
+}

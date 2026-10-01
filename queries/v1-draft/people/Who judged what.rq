@@ -1,0 +1,19 @@
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?made ?judgmentLabel ?verdict ?author ?role ?memberLabel ?reason ?supersedes ?retracts ?judgment ?member
+WHERE {
+  ?judgment a jdg:Judgment ; prov:generatedAtTime ?made ; prov:wasAttributedTo ?author .
+  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+  OPTIONAL { ?judgment jdg:verdict ?verdict }
+  OPTIONAL { ?judgment prov:qualifiedAttribution/prov:hadRole ?role }
+  OPTIONAL { ?judgment prov:hadMember ?member }
+  OPTIONAL { ?judgment prov:hadMember ?member . ?member rdfs:label ?memberLabel }
+  OPTIONAL { ?judgment dct:description ?reason }
+  OPTIONAL { ?judgment npx:supersedes ?supersedes }
+  OPTIONAL { ?judgment npx:retracts ?retracts }
+}
+ORDER BY ?made ?judgmentLabel ?memberLabel

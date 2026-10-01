@@ -1,0 +1,13 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?started ?activityLabel ?recordLabel ?versionLabel ?activity ?revision ?record
+WHERE {
+  ?activity a prov:Activity ; prov:startedAtTime ?started .
+  ?revision prov:wasGeneratedBy ?activity ; rec:revisionOf ?record ; rec:version ?version .
+  OPTIONAL { ?activity rdfs:label ?activityLabel }
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { ?version rdfs:label ?versionLabel }
+}
+ORDER BY ?started ?recordLabel

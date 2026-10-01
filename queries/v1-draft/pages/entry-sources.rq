@@ -1,0 +1,7 @@
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?entry ?role ?record
+WHERE {
+  VALUES ?role { rec:latestMember rec:statusFrom rec:dateFrom }
+  ?entry ?role ?record .
+}

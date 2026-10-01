@@ -1,0 +1,15 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?performed ?procedure ?snomed ?status (COUNT(?record) AS ?records) ?label ?entry
+WHERE {
+  ?entry a clinical:Procedure ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry clinical:procedureDate ?performed }
+  OPTIONAL { ?entry clinical:procedureName ?procedure }
+  OPTIONAL { ?entry clinical:snomedCode ?snomed }
+  OPTIONAL { ?entry clinical:status ?status }
+  OPTIONAL { ?entry rdfs:label ?label }
+}
+GROUP BY ?entry ?performed ?procedure ?snomed ?status ?label
+ORDER BY DESC(?performed) ?procedure

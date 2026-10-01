@@ -1,0 +1,14 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?condition ?snomed ?onset (COUNT(?record) AS ?records) ?label ?entry
+WHERE {
+  ?entry a health:ConditionRecord ; health:status "active" ;
+         health:conditionName ?condition ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry health:snomedCode ?snomed }
+  OPTIONAL { ?entry health:onsetDate ?onset }
+  OPTIONAL { ?entry rdfs:label ?label }
+}
+GROUP BY ?entry ?condition ?snomed ?onset ?label
+ORDER BY ?condition

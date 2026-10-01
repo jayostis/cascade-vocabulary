@@ -1,0 +1,11 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?judgment
+WHERE {
+  ?judgment rec:counts true ; jdg:verdict jdg:Same ; prov:hadMember ?record .
+  ?record pav:hasCurrentVersion ?now .
+  FILTER NOT EXISTS { ?judgment prov:used ?now }
+}

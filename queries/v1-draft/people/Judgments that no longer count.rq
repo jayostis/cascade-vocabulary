@@ -1,0 +1,26 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?judgmentLabel ?why ?byLabel ?judgment ?by
+WHERE {
+  { ?by npx:supersedes ?judgment .
+    BIND ("superseded" AS ?why)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+  UNION
+  { ?by npx:retracts ?judgment .
+    BIND ("retracted" AS ?why)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+  UNION
+  { ?judgment a jdg:Judgment ; prov:used ?replaced .
+    ?replaced prov:specializationOf/a rec:ReferenceSeries .
+    ?by prov:wasRevisionOf ?replaced .
+    BIND ("made under a reference version since replaced" AS ?why)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+}
+ORDER BY ?judgmentLabel ?why

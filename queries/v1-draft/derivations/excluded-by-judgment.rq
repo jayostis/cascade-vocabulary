@@ -1,0 +1,10 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?record rec:excluded true }
+WHERE {
+  ?e rec:counts true ; jdg:verdict jdg:Erroneous ; prov:hadMember ?record .
+  ?record pav:hasCurrentVersion ?v .
+}

@@ -1,0 +1,12 @@
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?a ?b ?entry
+WHERE {
+  VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+  ?a jdg:currentlyDifferent ?b ; a ?type ; rec:inEntry ?entry .
+  ?b a ?type ; rec:inEntry ?entry .
+  FILTER (STR(?a) < STR(?b))
+}

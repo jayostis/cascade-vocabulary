@@ -27,7 +27,6 @@ from alex_rivera_builds import (  # noqa: E402
     listed_entries,
     listed_judgments,
     listed_pairs,
-    listing,
     load_pod_file,
     members_shown,
     name,
@@ -187,7 +186,7 @@ def test_where_hospitals_disagree_on_criticality_the_entry_shows_the_most_severe
     b = build(engine, lens, event)
     key = entry_holding(b, "allergies", "H1-ALG-SULFA")
     assert values(entries(b.views["allergies"])[key], CLINICAL.criticality) == {string("high")}
-    assert key in listed_entries(b, "criticalityDisagreement")
+    assert key in listed_entries(b, "criticality-disagreements")
 
 
 # P5
@@ -276,14 +275,14 @@ def test_a_group_joined_through_two_kinds_of_machine_sameness_is_one_entry_liste
     flu = frozenset({"H1-IMM-FLU25", "H2O-IMM-FLU25", "H2F-IMM-FLU25"})
     everyday = build(engine, "everyday", "E13")
     assert entry_keys(everyday, "immunizations") == {flu}
-    assert listed_entries(everyday, "mixedJustifications") == {flu}
+    assert listed_entries(everyday, "mixed-justifications") == {flu}
 
     export = build(engine, "export", "E13")
     assert entry_keys(export, "immunizations") == {
         frozenset({"H1-IMM-FLU25", "H2O-IMM-FLU25"}),
         frozenset({"H2F-IMM-FLU25"}),
     }
-    assert listed_entries(export, "mixedJustifications") == set()
+    assert listed_entries(export, "mixed-justifications") == set()
     assert not counts(export, "J17")
 
 
@@ -502,7 +501,6 @@ def actual_view(kind, source):
         if not path.exists():
             pytest.skip(f"pod/clinical/{kind}.ttl is not there yet: the committed views have not landed")
         return entries(Graph().parse(path, format="turtle", publicID=POD_BASE + f"clinical/{kind}.ttl"))
-    listing()
     return entries(build(source, "everyday", "E15").views[VIEW_OF_FILE[kind]])
 
 

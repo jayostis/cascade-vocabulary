@@ -65,8 +65,8 @@ def load(base, name, graph):
 
 def save_queries(base):
     saved = {entry["name"] for entry in json.loads(request("GET", f"{base}/rest/sparql/saved-queries", accept="application/json"))}
-    for path in sorted((EXAMPLE / "queries" / "people").glob("*.rq")):
-        name = path.relative_to(EXAMPLE / "queries").with_suffix("").as_posix()
+    for path in sorted((build.QUERIES / "people").glob("*.rq")):
+        name = path.relative_to(build.QUERIES).with_suffix("").as_posix()
         query = {"name": name, "body": path.read_text(encoding="utf-8"), "shared": True}
         method = "PUT" if name in saved else "POST"
         request(method, f"{base}/rest/sparql/saved-queries", json.dumps(query).encode("utf-8"), "application/json")

@@ -1,0 +1,17 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?arrived ?recordLabel ?versionLabel ?change ?broughtBy ?record ?version ?revision
+WHERE {
+  { SELECT ?version (MIN(?t0) AS ?first)
+    WHERE { ?r0 a rec:Revision ; rec:version ?version ; prov:generatedAtTime ?t0 . }
+    GROUP BY ?version }
+  ?revision a rec:Revision ; rec:version ?version ; rec:revisionOf ?record ;
+            prov:generatedAtTime ?arrived ; prov:wasGeneratedBy ?activity .
+  ?activity rdfs:label ?broughtBy .
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { ?version rdfs:label ?versionLabel }
+  BIND (IF(?arrived = ?first, "a new version", "an earlier version again") AS ?change)
+}
+ORDER BY ?arrived ?recordLabel

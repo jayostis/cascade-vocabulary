@@ -1,0 +1,10 @@
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?record rec:excluded true }
+WHERE {
+  ?record pav:hasCurrentVersion ?v .
+  ?v clinical:verificationStatus ?vs .
+  FILTER (?vs IN ("entered-in-error", "refuted"))
+}

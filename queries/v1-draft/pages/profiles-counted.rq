@@ -1,0 +1,13 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?subject ?profile ?about ?hospital
+WHERE {
+  ?about a jdg:Judgment ; rec:counts true ; jdg:verdict jdg:About ;
+         prov:hadMember ?profile ; jdg:subject ?subject .
+  OPTIONAL { ?version rec:patient ?profile .
+             ?revision rec:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+             ?attribution prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
+}

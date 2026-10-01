@@ -1,0 +1,15 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?given ?vaccine ?code ?status (COUNT(?record) AS ?records) ?label ?entry
+WHERE {
+  ?entry a health:ImmunizationRecord ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry health:administrationDate ?given }
+  OPTIONAL { ?entry health:vaccineName ?vaccine }
+  OPTIONAL { ?entry health:vaccineCode ?code }
+  OPTIONAL { ?entry health:status ?status }
+  OPTIONAL { ?entry rdfs:label ?label }
+}
+GROUP BY ?entry ?given ?vaccine ?code ?status ?label
+ORDER BY DESC(?given) ?vaccine

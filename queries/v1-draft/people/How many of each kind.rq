@@ -1,0 +1,6 @@
+SELECT ?type (COUNT(DISTINCT ?thing) AS ?things)
+WHERE {
+  ?thing a ?type .
+}
+GROUP BY ?type
+ORDER BY ?type

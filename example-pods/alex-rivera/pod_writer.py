@@ -58,7 +58,7 @@ FOLDERS = {
 OWNED_POD_FOLDERS = ["subject", "records", "provenance", "attachments"]
 ADAPTER = "<cascade-bridge-adapter-fhir-r4>"
 VOCABULARIES = "<cascade-vocabulary at the adapter's pin>"
-FORMATS = {".csv": "text/csv", ".json": "application/json", ".py": "text/x-python", ".rq": "application/sparql-query",
+FORMATS = {".csv": "text/csv", ".json": "application/json", ".py": "text/x-python",
            ".ttl": "text/turtle", ".xml": "application/xml"}
 
 
