@@ -98,9 +98,10 @@ class Oxigraph:
         names = [v.value for v in solutions.variables]
         return [{name: self._term(row[name]) for name in names if row[name] is not None} for row in solutions]
 
-    def triples(self):
+    def triples(self, graph=None):
+        named = pyoxigraph.NamedNode(graph) if graph else pyoxigraph.DefaultGraph()
         return {tuple(self._term(t) for t in (x.subject, x.predicate, x.object))
-                for x in self.store.quads_for_pattern(None, None, None, pyoxigraph.DefaultGraph())}
+                for x in self.store.quads_for_pattern(None, None, None, named)}
 
     def graphs(self):
         return sorted(graph.value for graph in self.store.named_graphs())
@@ -141,8 +142,8 @@ class Rdflib:
         names, rows = self._query(query)
         return [{name: from_rdflib(row[name]) for name in names if row[name] is not None} for row in rows]
 
-    def triples(self):
-        return {tuple(from_rdflib(t) for t in triple) for triple in self.graph()}
+    def triples(self, graph=None):
+        return {tuple(from_rdflib(t) for t in triple) for triple in self.graph(graph)}
 
     def graphs(self):
         return sorted(str(g.identifier) for g in self.dataset.graphs() if g.identifier != rdflib.graph.DATASET_DEFAULT_GRAPH_ID)

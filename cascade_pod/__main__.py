@@ -2,8 +2,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import Failure, ask, derive, graphdb, match, vocabulary, write
-from .pod import Example
+from . import Failure, ask, graphdb, match, vocabulary, write
+from .pod import Example, save
 from .store import ENGINES
 
 
@@ -25,7 +25,7 @@ def parser():
     matching.add_argument("--at", required=True)
     matching.add_argument("--out", type=Path, required=True)
     build = command("build", "writes the views, the labels, index.ttl and manifest.ttl",
-                    lambda example, a: derive.write(example, a.engine, a.out))
+                    lambda example, a: save(example.built(a.engine), a.out or example.pod))
     build.add_argument("--engine", choices=sorted(ENGINES), required=True)
     build.add_argument("--out", type=Path)
     command("graphdb", "creates and fills the example's repository",

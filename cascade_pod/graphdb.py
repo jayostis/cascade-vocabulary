@@ -11,7 +11,7 @@ import uuid
 from rdflib import BNode, Literal, Namespace
 from rdflib.namespace import RDF, RDFS
 
-from . import Failure, derive, turtle, vocabulary
+from . import Failure, turtle, vocabulary
 
 CONFIG, GRAPHDB = Namespace(turtle.PREFIXES["config"]), Namespace(turtle.PREFIXES["graphdb"])
 
@@ -57,7 +57,7 @@ class GraphDB:
         request("DELETE", f"{self.base}/rest/repositories/{self.example.name}")
 
     def fill(self):
-        store = derive.build(self.example, "oxigraph", vocabulary.DEFAULT_LENS).store
+        store = self.example.store("oxigraph", vocabulary.DEFAULT_LENS)
         graphs = store.graphs()
         for graph in graphs:
             context = urllib.parse.quote(f"<{graph}>", safe="")

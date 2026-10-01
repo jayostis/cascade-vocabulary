@@ -126,14 +126,14 @@ def test_a_load_into_an_empty_graphdb_creates_the_repository_and_saves_the_queri
 
 def test_a_load_adds_the_derived_state_under_the_everyday_lens_as_a_graph_of_its_own(graphdb):
     assert load(graphdb.url).returncode == 0
-    derived = derive.derive(derive.loaded(ALEX, "oxigraph"), "everyday")
+    derived = derive.derive(ALEX.loaded("oxigraph"), vocabulary.DEFAULT_LENS)
     posted = Graph().parse(data=graphdb.graphs["urn:cascade:derived:everyday"], format="nt")
     assert {tuple(store.from_rdflib(t) for t in triple) for triple in posted} == derived
 
 
 def test_a_load_fills_one_graph_for_each_graph_of_the_pod_in_the_builders_store(graphdb):
     assert load(graphdb.url).returncode == 0
-    assert sorted(graphdb.graphs) == derive.build(ALEX, "oxigraph", vocabulary.DEFAULT_LENS).store.graphs()
+    assert sorted(graphdb.graphs) == ALEX.store("oxigraph", vocabulary.DEFAULT_LENS).graphs()
 
 
 def test_a_load_saves_every_question_under_its_path_in_questions(graphdb):

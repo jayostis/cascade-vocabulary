@@ -2,7 +2,7 @@
 
 import sys
 
-from . import Failure, derive, store, turtle, vocabulary
+from . import Failure, store, turtle, vocabulary
 
 
 def line(row):
@@ -13,7 +13,7 @@ def ask(example, question, lens, engine):
     questions = vocabulary.questions()
     if question not in questions:
         raise Failure(f"no question {question}; there are {', '.join(sorted(questions))}")
-    held = derive.build(example, engine, lens).store
+    held = example.store(engine, lens)
     for row in held.select(vocabulary.query(questions[question])):
         sys.stdout.buffer.write((line(row) + "\n").encode("utf-8"))
     return 0

@@ -10,7 +10,8 @@ from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
 from cascade_pod import store
-from cascade_pod.pod import NOT_RDF, VIEW_FILES, Example
+from cascade_pod.build import VIEW_FILES
+from cascade_pod.pod import NOT_RDF, Example
 
 ROOT = Path(__file__).absolute().parent.parent
 ONTOLOGIES = ROOT / "ontologies"

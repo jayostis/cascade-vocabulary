@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from rdflib import URIRef
 
-from cascade_pod import ask, derive, match, store, turtle, vocabulary
+from cascade_pod import ask, match, store, turtle, vocabulary
 from cascade_pod.pod import Example
 
 ROOT = Path(__file__).absolute().parent.parent
@@ -34,7 +34,7 @@ def test_ask_prints_the_rows_the_builders_store_returns(engine):
     result = subprocess.run([sys.executable, "-m", "cascade_pod", "ask", str(EXAMPLE), question, "--engine", engine],
                             capture_output=True, cwd=ROOT)
     assert result.returncode == 0, result.stderr
-    held = derive.build(Example(EXAMPLE), engine, vocabulary.DEFAULT_LENS).store
+    held = Example(EXAMPLE).store(engine, vocabulary.DEFAULT_LENS)
     rows = held.select(vocabulary.query(vocabulary.questions()[question]))
     assert rows and result.stdout.decode("utf-8").splitlines() == [ask.line(row) for row in rows]
 
@@ -138,6 +138,6 @@ def test_an_unknown_lens_is_refused_by_name_without_a_traceback():
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))
 def test_a_store_holding_the_pod_holds_nothing_of_the_vocabularys(engine):
     terms = {store.from_rdflib(subject) for path in vocabulary.ontologies().values() for subject in store.parsed(path).subjects()}
-    held = derive.build(Example(EXAMPLE), engine, vocabulary.DEFAULT_LENS).store
+    held = Example(EXAMPLE).store(engine, vocabulary.DEFAULT_LENS)
     assert {triple[0] for triple in held.triples()} & terms == set()
     assert not set(held.graphs()) & set(vocabulary.ontologies())

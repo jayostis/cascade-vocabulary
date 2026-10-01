@@ -9,7 +9,8 @@ import pytest
 from rdflib import Graph, URIRef
 
 from cascade_pod import derive, graphdb, store, vocabulary
-from cascade_pod.pod import LABEL_FILE, NOT_RDF, VIEW_FILES, Example
+from cascade_pod.build import LABEL_FILE, VIEW_FILES
+from cascade_pod.pod import NOT_RDF, Example
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
@@ -50,7 +51,7 @@ NEEDS_REVIEW = [relative for name, relative in vocabulary.questions().items() if
 
 
 def derived_state_views_and_reviews(engine, lens, through):
-    held = derive.loaded(ALEX, engine, through)
+    held = ALEX.loaded(engine, through)
     derived = derive.derive(held, lens)
     views = {view: triples(held.construct(vocabulary.query(r))) for view, r in vocabulary.named("views").items()}
     reviews = {relative: rows(held.select(vocabulary.query(relative))) for relative in NEEDS_REVIEW}
@@ -65,7 +66,7 @@ def test_the_derived_state_each_view_and_what_needs_review_are_the_same_on_oxigr
 
 @lru_cache(maxsize=None)
 def answers(engine, lens, through=None):
-    held = derive.build(ALEX, engine, lens, through).store
+    held = ALEX.store(engine, lens, through)
     return {name: rows(held.select(vocabulary.query(relative))) for name, relative in vocabulary.questions().items()}
 
 
@@ -85,7 +86,7 @@ def test_every_question_has_an_answer_at_some_event():
 @pytest.mark.parametrize("lens", LENSES)
 @pytest.mark.parametrize("engine", ENGINES)
 def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_pods_own(engine, lens):
-    held = derive.loaded(ALEX, engine)
+    held = ALEX.loaded(engine)
     pod = held.triples()
     derived = derive.derive(held, lens)
     assert derived and derived.isdisjoint(pod)
@@ -103,7 +104,7 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(en
 
 
 def test_every_committed_view_is_marked_rebuildable_and_registered():
-    held = derive.build(ALEX, "oxigraph", vocabulary.DEFAULT_LENS).store
+    held = ALEX.store("oxigraph", vocabulary.DEFAULT_LENS)
     current = {URIRef(row["version"][1]) for row in held.select(vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"]))}
     for relative in sorted(set(VIEW_FILES.values()) | {LABEL_FILE}):
         address = URIRef(ALEX.address + relative)

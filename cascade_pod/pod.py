@@ -1,10 +1,12 @@
-"""An example's pod: its address, its story's events and the files each adds, and where each kind of thing is filed."""
+"""An example's pod: its address, its story's events and the files each adds, where each kind of thing is filed, and
+the pod in a store."""
 
 import base64
 import json
 from pathlib import Path
 
-from . import Failure
+from . import Failure, build, derive, turtle, vocabulary
+from .store import ENGINES, to_rdflib
 from .turtle import PREFIXES
 
 RECORD_FOLDERS = {
@@ -13,14 +15,6 @@ RECORD_FOLDERS = {
     PREFIXES["health"] + "ImmunizationRecord": "immunizations",
     PREFIXES["clinical"] + "Procedure": "procedures",
 }
-VIEW_FILES = {
-    "allergies": "clinical/allergies.ttl",
-    "conditions": "clinical/conditions.ttl",
-    "immunizations": "clinical/immunizations.ttl",
-    "procedures": "clinical/procedures.ttl",
-    "patients": "clinical/patient-profile.ttl",
-}
-LABEL_FILE = "clinical/labels.ttl"
 NOT_RDF = ("attachments/", ".well-known/")
 
 
@@ -31,6 +25,14 @@ def stem(name):
         encoded = name[len("ni:///sha-256;"):]
         return base64.urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4)).hex()
     raise Failure(f"no file name for {name}")
+
+
+def save(files, folder):
+    """Writes each file's bytes at its path under the folder."""
+    for path, octets in sorted(files.items()):
+        target = folder / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(octets)
 
 
 def fanned(folder, name):
@@ -69,3 +71,22 @@ class Example:
         for path in self.files(event):
             if not path.startswith(NOT_RDF):
                 store.load(self.pod / path, self.address + path)
+
+    def loaded(self, engine, through=None):
+        store = ENGINES[engine]()
+        self.load(store, through)
+        return store
+
+    def store(self, engine, lens, through=None):
+        """The pod as every tool and question sees it: each file through the event, the lens's derived state and the
+        files built from them, each in a graph of its own and all of them in the default graph."""
+        store = self.loaded(engine, through)
+        derive.derive(store, lens)
+        build.add(self, store, through)
+        return store
+
+    def built(self, engine):
+        """Each file built from the whole pod under the default lens, as Turtle, by its path within pod/."""
+        store = self.store(engine, vocabulary.DEFAULT_LENS)
+        return {path: turtle.write({tuple(map(to_rdflib, triple)) for triple in store.triples(self.address + path)},
+                                   self.address + path) for path in self.derived}
