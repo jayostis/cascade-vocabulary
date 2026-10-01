@@ -104,13 +104,14 @@ class Site:
         return list(found)
 
     def _links(self):
-        """Each thing's page, the Turtle copy of the first file that states each thing, and where a cell naming each IRI
+        """Each thing's page, the Turtle copy of the first file each thing arrived in, and where a cell naming each IRI
         links to: a file's Turtle, a thing's page, the step that writes a term, a document's stored bytes, or the
         Turtle that states it."""
         copies = {URIRef(self.example.address + path): COPY + path for path in self.copied}
         turtles = {}
         for row in self.questions[STATED].rows:
-            turtles.setdefault(row["thing"], copies[row["file"]])
+            if not row["named"].toPython() and not row["rebuilt"].toPython():
+                turtles.setdefault(row["thing"], copies[row["file"]])
         stored = {URIRef(names.document((self.example.pod / path).read_bytes())): COPY + path
                   for path in self.copied if path.startswith("attachments/")}
         made = {}

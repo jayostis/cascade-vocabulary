@@ -1,8 +1,8 @@
 # The store loads each file twice: into the default graph, which the other questions read, and into a graph named by its address,
 # which GRAPH ?file reads. A file states a thing when it says something about it, or names it as the value of a statement:
 # a patient profile has no file of its own, so the files that name it are where it is stated.
-# Named marks a row for a file that names the thing, and rebuilt a view or the labels, which the build writes; the file a
-# thing arrived in comes first.
+# Named marks a row for a file that names the thing, and rebuilt a view or the labels, which the build writes. Files the
+# build did not write come first, and among them the file a thing arrived in, if it has one.
 PREFIX pim: <http://www.w3.org/ns/pim/space#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
@@ -20,4 +20,4 @@ WHERE {
     BIND (true AS ?named)
     BIND (EXISTS { ?file a rec:View } AS ?rebuilt) }
 }
-ORDER BY ?thing ?named ?rebuilt ?file
+ORDER BY ?thing ?rebuilt ?named ?file

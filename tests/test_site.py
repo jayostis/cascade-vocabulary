@@ -405,3 +405,12 @@ def test_a_block_asked_under_the_other_lens_links_to_no_page_of_this_site(pages)
     other = [b for b in blocks(pages["pipeline.html"]) if b["command"] and "--lens" in b["command"]]
     assert other and not [href for b in other for row in b["rows"] for cell in row.values() for href in cell["hrefs"]
                           if href.endswith(".html")]
+
+
+def test_a_turtle_link_opens_a_file_the_thing_arrived_in_and_a_thing_only_named_has_none(pages):
+    [folders] = [b for b in blocks(pages["index.html"]) if b["title"] == "What each folder holds"]
+    assert not [href for row in folders["rows"] if "type" in row for href in row["type"]["hrefs"]]
+    profile = "urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada"
+    cells = [cell for page in pages.values() for block in blocks(page) for row in block["rows"] for cell in row.values()
+             if cell["value"] == f"<{profile}>"]
+    assert cells and not [href for cell in cells for href in cell["hrefs"] if href.startswith(site.COPY)]
