@@ -49,11 +49,11 @@ def code(iri):
 
 
 class Query:
-    """A query of the vocabulary with its prose and, for a question, its name and its answer: all its rows, or those
-    whose column `about` is `thing`."""
+    """A query of the vocabulary with its prose and, for a question, its name, the lens it was asked under and its
+    answer: all its rows, or those whose column `about` is `thing`."""
 
-    def __init__(self, relative, name=None, columns=(), rows=(), about=None, thing=None):
-        self.relative, self.question = relative, name
+    def __init__(self, relative, name=None, lens=vocabulary.DEFAULT_LENS, columns=(), rows=(), about=None, thing=None):
+        self.relative, self.question, self.lens = relative, name, lens
         self.columns, self.rows, self.about, self.thing = list(columns), list(rows), about, thing
         self.text = vocabulary.query(relative)
         self.prose = vocabulary.prose(self.text)
@@ -66,25 +66,28 @@ class Query:
         return [c for c in self.columns if c != self.about and not (c.endswith("Label") and c[:-5] in self.columns)]
 
     def of(self, column, thing):
-        return Query(self.relative, self.question, self.columns, [row for row in self.rows if row.get(column) == thing],
-                     column, thing)
+        return Query(self.relative, self.question, self.lens, self.columns,
+                     [row for row in self.rows if row.get(column) == thing], column, thing)
 
 
 class Site:
     def __init__(self, example):
         self.example = example
-        held = example.store(ENGINE, vocabulary.DEFAULT_LENS)
-        self.questions = {name: Query(relative, name, *held.answer(vocabulary.query(relative)))
-                          for name, relative in vocabulary.questions().items()}
+        lenses = sorted(vocabulary.named("lenses"), key=lambda lens: lens != vocabulary.DEFAULT_LENS)
+        held = {lens: example.store(ENGINE, lens) for lens in lenses}
+        self.answers = {lens: {name: Query(relative, name, lens, *held[lens].answer(vocabulary.query(relative)))
+                               for name, relative in vocabulary.questions().items()} for lens in lenses}
+        self.questions = self.answers[vocabulary.DEFAULT_LENS]
         self.terms = self._terms()
         self.names = {row["thing"]: row["label"] for row in self.questions[CALLED].rows}
         self.things = {kind: self._things(kind) for kind in sorted({name.split("/")[0] for name in self.questions} - {"pod"})}
         writers = {path: vocabulary.named("views")[view] for view, path in VIEW_FILES.items()} | {LABEL_FILE: "labels.rq"}
-        self.built = {URIRef(example.address + path): (Query(relative), len(held.triples(example.address + path)))
+        built = held[vocabulary.DEFAULT_LENS]
+        self.built = {URIRef(example.address + path): (Query(relative), len(built.triples(example.address + path)))
                       for path, relative in writers.items()}
         self.views = [URIRef(example.address + path) for path in VIEW_FILES.values()]
         self.pipeline = {lens: [(Query(relative), added) for relative, added in derive.steps(example.loaded(ENGINE), lens)]
-                         for lens in vocabulary.named("lenses")}
+                         for lens in lenses}
         self.copied = example.files() + example.derived
         self.pages, self.turtles, self.links = self._links()
 
@@ -124,8 +127,8 @@ class Site:
     def environment(self):
         environment = jinja2.Environment(loader=jinja2.FileSystemLoader(HERE / "templates"), autoescape=True,
                                          undefined=jinja2.StrictUndefined, trim_blocks=True, lstrip_blocks=True)
-        environment.filters.update(href=self.links.get, page=self.pages.get, turtle=self.turtles.get, shown=shown, code=code, nt=turtle.term,
-                                   prefixed=lambda iri: turtle.prefixed(str(iri)))
+        environment.filters.update(href=self.links.get, page=self.pages.get, turtle=self.turtles.get, shown=shown,
+                                   code=code, nt=turtle.term, prefixed=lambda iri: turtle.prefixed(str(iri)))
         environment.tests.update(iri=lambda term: isinstance(term, URIRef), literal=lambda term: isinstance(term, Literal))
         environment.globals.update(
             site=self, example=self.example, terms=self.terms, copy=COPY, lens=vocabulary.DEFAULT_LENS,

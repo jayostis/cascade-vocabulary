@@ -384,3 +384,10 @@ def test_a_block_about_one_thing_says_its_command_prints_every_things_rows(pages
     [block] = [b for b in blocks(pages[page_of(record)]) if b["title"] == "Which judgments name it"]
     assert (f"It prints the rows for every record; this block keeps those whose ?record is {record}."
             in block["paras"])
+
+
+
+def test_the_pipeline_page_asks_the_same_question_under_each_lens_side_by_side(pages):
+    shown = {("--lens export" in b["command"], len(b["rows"])) for b in blocks(pages["pipeline.html"])
+             if b["title"] == "My immunizations"}
+    assert shown == {(False, 1), (True, 2)}

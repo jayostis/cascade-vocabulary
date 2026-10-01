@@ -30,19 +30,26 @@
 <pre><code>{{ query.text }}</code></pre>
 {% if query.question %}
 <p>Run it yourself, from the repository's root:</p>
-<pre><code>python -m cascade_pod ask {{ folder }} "{{ query.question }}"</code></pre>
+<pre><code>python -m cascade_pod ask {{ folder }} "{{ query.question }}"{% if query.lens != lens %} --lens {{ query.lens }}{% endif %}</code></pre>
 {% if query.about %}
 <p>It prints the rows for every {{ query.about }}; this block keeps those whose <code>?{{ query.about }}</code> is
 <code>{{ query.thing }}</code>.</p>
 {% endif %}
+{% if query.lens == lens %}
 <p>Or in GraphDB, open the saved query <code>{{ query.question }}</code> in the repository <code>{{ example.name }}</code>.</p>
+{% else %}
+<p>GraphDB holds the pod under the {{ lens }} lens only.</p>
+{% endif %}
 {% endif %}
 </details>
 </section>
 {% endmacro %}
 
-{% macro question(q) %}
+{% macro question(q, lensed=false) %}
 {% call block(q) %}
+{% if lensed %}
+<p class="lens">Under the {{ q.lens }} lens.</p>
+{% endif %}
 {% if q.about %}
 <p class="about">Only the rows whose <code>?{{ q.about }}</code> is this one.</p>
 {% endif %}
