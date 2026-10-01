@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from rdflib import URIRef
 
-from cascade_pod import ask, match, store, turtle, vocabulary
+from cascade_pod import Failure, ask, match, store, turtle, vocabulary
 from cascade_pod.pod import Example
 
 ROOT = Path(__file__).absolute().parent.parent
@@ -141,3 +141,10 @@ def test_a_store_holding_the_pod_holds_nothing_of_the_vocabularys(engine):
     held = Example(EXAMPLE).store(engine, vocabulary.DEFAULT_LENS)
     assert {triple[0] for triple in held.triples()} & terms == set()
     assert not set(held.graphs()) & set(vocabulary.ontologies())
+
+
+def test_a_derived_file_events_json_lists_and_the_build_does_not_make_is_a_failure():
+    example = Example(EXAMPLE)
+    example.derived = [*example.derived, "clinical/extra.ttl"]
+    with pytest.raises(Failure, match="clinical/extra.ttl"):
+        example.built("oxigraph")

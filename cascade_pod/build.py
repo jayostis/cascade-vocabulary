@@ -29,9 +29,9 @@ def add(example, store, through=None):
     files["index.ttl"] = index(example.address, example.files(through) + example.derived)
     files["manifest.ttl"] = manifest(example.address + "manifest.ttl", example.title, example.through(through)[-1]["at"])
     _add(store, example, {path: files[path] for path in (LABEL_FILE, "index.ttl", "manifest.ttl")})
-    unlisted = sorted(set(files) - set(example.derived))
-    if unlisted:
-        raise Failure(f"events.json lists none of these under derived: {unlisted}")
+    unlisted, unmade = sorted(set(files) - set(example.derived)), sorted(set(example.derived) - set(files))
+    if unlisted or unmade:
+        raise Failure(f"events.json's derived does not list {unlisted} and lists {unmade}, which nothing builds")
     return files
 
 
