@@ -34,7 +34,7 @@ def test_ask_prints_the_rows_the_builders_store_returns(engine):
     result = subprocess.run([sys.executable, "-m", "cascade_pod", "ask", str(EXAMPLE), question, "--engine", engine],
                             capture_output=True, cwd=ROOT)
     assert result.returncode == 0, result.stderr
-    held = derive.build(Example(EXAMPLE), engine).store
+    held = derive.build(Example(EXAMPLE), engine, vocabulary.DEFAULT_LENS).store
     rows = held.select(vocabulary.query(vocabulary.questions()[question]))
     assert rows and result.stdout.decode("utf-8").splitlines() == [ask.line(row) for row in rows]
 
@@ -126,3 +126,10 @@ def test_a_folder_that_is_no_example_is_refused_in_one_line_without_a_traceback(
                              "--engine", "oxigraph"], capture_output=True, text=True, cwd=ROOT)
     assert result.returncode == 2
     assert result.stderr.startswith("cascade_pod build: ") and "Traceback" not in result.stderr, result.stderr
+
+
+def test_an_unknown_lens_is_refused_by_name_without_a_traceback():
+    result = subprocess.run([sys.executable, "-m", "cascade_pod", "ask", str(EXAMPLE), "record/Why it is in no view",
+                             "--lens", "nope"], capture_output=True, text=True, cwd=ROOT)
+    assert result.returncode == 2
+    assert "invalid choice: 'nope'" in result.stderr and "Traceback" not in result.stderr, result.stderr

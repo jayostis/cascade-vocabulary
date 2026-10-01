@@ -133,7 +133,7 @@ def test_a_load_adds_the_derived_state_under_the_everyday_lens_as_a_graph_of_its
 
 def test_a_load_fills_one_graph_for_each_graph_of_the_pod_in_the_builders_store(graphdb):
     assert load(graphdb.url).returncode == 0
-    assert sorted(graphdb.graphs) == derive.build(ALEX, "oxigraph").store.graphs()
+    assert sorted(graphdb.graphs) == derive.build(ALEX, "oxigraph", vocabulary.DEFAULT_LENS).store.graphs()
 
 
 def test_a_load_saves_every_question_under_its_path_in_questions(graphdb):

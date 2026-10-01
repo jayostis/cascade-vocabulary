@@ -103,7 +103,7 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(en
 
 
 def test_every_committed_view_is_marked_rebuildable_and_registered():
-    held = derive.build(ALEX, "oxigraph").store
+    held = derive.build(ALEX, "oxigraph", vocabulary.DEFAULT_LENS).store
     current = {URIRef(row["version"][1]) for row in held.select(vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"]))}
     for relative in sorted(set(VIEW_FILES.values()) | {LABEL_FILE}):
         address = URIRef(ALEX.address + relative)

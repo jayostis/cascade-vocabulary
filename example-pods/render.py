@@ -20,7 +20,7 @@ from cascade_pod import derive, vocabulary  # noqa: E402
 from cascade_pod.pod import VIEW_FILES, Example  # noqa: E402
 from cascade_pod.store import Oxigraph  # noqa: E402
 
-LENS = "everyday"
+LENS = vocabulary.DEFAULT_LENS
 ONTOLOGIES = Path(__file__).absolute().parent.parent / "ontologies"
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 XSD_DATE_TIME = "http://www.w3.org/2001/XMLSchema#dateTime"

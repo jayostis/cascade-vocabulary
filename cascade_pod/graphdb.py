@@ -14,7 +14,6 @@ from rdflib.namespace import RDF, RDFS
 from . import Failure, derive, turtle, vocabulary
 
 CONFIG, GRAPHDB = Namespace(turtle.PREFIXES["config"]), Namespace(turtle.PREFIXES["graphdb"])
-LENS = "everyday"
 
 
 def configuration(example):
@@ -58,7 +57,7 @@ class GraphDB:
         request("DELETE", f"{self.base}/rest/repositories/{self.example.name}")
 
     def fill(self):
-        store = derive.build(self.example, "oxigraph", LENS).store
+        store = derive.build(self.example, "oxigraph", vocabulary.DEFAULT_LENS).store
         graphs = store.graphs()
         for graph in graphs:
             context = urllib.parse.quote(f"<{graph}>", safe="")

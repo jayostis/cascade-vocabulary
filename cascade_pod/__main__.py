@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import Failure, ask, derive, graphdb, match, write
+from . import Failure, ask, derive, graphdb, match, vocabulary, write
 from .pod import Example
 from .store import ENGINES
 
@@ -33,7 +33,7 @@ def parser():
     question = command("ask", "prints one question's rows",
                        lambda example, a: ask.ask(example, a.question, a.lens, a.engine))
     question.add_argument("question", help='its path under questions/, such as "record/Why it is in no view"')
-    question.add_argument("--lens", default="everyday")
+    question.add_argument("--lens", choices=sorted(vocabulary.named("lenses")), default=vocabulary.DEFAULT_LENS)
     question.add_argument("--engine", choices=sorted(ENGINES), default="oxigraph")
     return top
 

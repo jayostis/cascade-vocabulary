@@ -34,7 +34,7 @@ class Built(NamedTuple):
     files: dict
 
 
-def build(example, engine, lens="everyday", through=None):
+def build(example, engine, lens, through=None):
     """The pod as every tool and question sees it: each file through the event, the lens's derived state, the files
     built from them and the vocabulary, each in a graph of its own and all of them in the default graph."""
     store = loaded(example, engine, through)
@@ -84,7 +84,7 @@ def manifest(address, title, created):
 
 def written(example, engine):
     """Every file the build writes, by its path within pod/."""
-    files = build(example, engine).files
+    files = build(example, engine, vocabulary.DEFAULT_LENS).files
     unlisted = sorted(set(files) - set(example.derived))
     if unlisted:
         raise Failure(f"events.json lists none of these under derived: {unlisted}")

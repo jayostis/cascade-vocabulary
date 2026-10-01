@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).absolute().parent.parent
 QUERIES = ROOT / "queries" / "v1-draft"
+DEFAULT_LENS = "everyday"
 
 
 def _crate():
