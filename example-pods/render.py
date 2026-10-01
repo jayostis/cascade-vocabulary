@@ -161,8 +161,8 @@ class Site:
         self.counting = {row["judgment"][1] for row in standing if row.get("counts") == TRUE}
         self.lapsed = defaultdict(set)
         for row in standing:
-            if "why" in row:
-                self.lapsed[row["judgment"][1]].add((row["why"][1], row["by"]))
+            if "happened" in row:
+                self.lapsed[row["judgment"][1]].add((row["happened"][1], row["by"]))
         self.judgments = defaultdict(lambda: {"members": set(), "supersedes": set(), "retracts": set()})
         for row in pod.rows("questions/judgment/Who judged what.rq"):
             j = self.judgments[row["judgment"][1]]
