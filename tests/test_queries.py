@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 from pyparsing import ParseResults
-from rdflib import RDF, URIRef
+from rdflib import RDF, Graph, URIRef
 from rdflib.paths import Path as PropertyPath
 from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
@@ -182,6 +182,22 @@ def declared(relative):
     return [(declaration["prefix"], str(declaration["iri"])) for declaration in prolog]
 
 
+@lru_cache(maxsize=None)
+def namespaces():
+    bindings = [binding for relative in every_query() for binding in declared(relative)]
+    for path in ROOT.glob("ontologies/**/*.ttl"):
+        graph = Graph(bind_namespaces="none").parse(path)
+        bindings += [(prefix, str(namespace)) for prefix, namespace in graph.namespaces()]
+    found = {}
+    for prefix, namespace in bindings:
+        found.setdefault(prefix, set()).add(namespace)
+    return found
+
+
+def test_every_prefix_names_the_same_namespace_in_every_query_and_every_vocabulary_file():
+    assert {prefix: bound for prefix, bound in namespaces().items() if len(bound) > 1} == {}
+
+
 @pytest.mark.parametrize("relative", every_query())
 def test_every_query_declares_exactly_the_prefixes_it_uses_in_alphabetical_order(relative):
     _, query = parsed(relative)
@@ -191,6 +207,7 @@ def test_every_query_declares_exactly_the_prefixes_it_uses_in_alphabetical_order
 
 @pytest.mark.parametrize("relative", every_query())
 def test_no_query_spells_out_an_iri_in_a_namespace_the_queries_declare(relative):
-    namespaces = {namespace for other in every_query() for _, namespace in declared(other)}
+    prefixes = {prefix for other in every_query() for prefix, _ in declared(other)}
+    declared_namespaces = tuple(namespace for prefix in prefixes for namespace in namespaces()[prefix])
     _, query = parsed(relative)
-    assert {str(iri) for iri in iris(query) if str(iri).startswith(tuple(namespaces))} == set()
+    assert {str(iri) for iri in iris(query) if str(iri).startswith(declared_namespaces)} == set()
