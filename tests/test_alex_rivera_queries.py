@@ -36,7 +36,7 @@ def every_query():
 
 def listed():
     listing = build.listing()
-    paths = [listing["labels"], *listing["people"]]
+    paths = [listing["labels"], *listing["people"], *listing["pages"]]
     for lens in listing["lenses"].values():
         paths += lens["derivations"] + list(lens["views"].values()) + list(lens["reviews"].values())
     return paths
