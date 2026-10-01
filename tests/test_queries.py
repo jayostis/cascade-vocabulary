@@ -1,5 +1,6 @@
 import json
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
@@ -15,7 +16,6 @@ sys.path.insert(0, str(ROOT / "example-pods" / "alex-rivera" / "queries"))
 import build  # noqa: E402
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
-RDF_TYPE = RDF.type
 IN_ENTRY = URIRef(REC + "inEntry")
 FORMATS = {".rq": "application/sparql-query", ".ttl": "text/turtle"}
 
@@ -97,7 +97,7 @@ def test_every_query_reading_in_entry_names_its_type(relative):
     algebra = prepareQuery(build.query_text(relative)).algebra
     patterns = [t for node in nodes(algebra["p"]) if node.name == "BGP" for t in node["triples"]]
     bound_by_values = {v for node in nodes(algebra["p"]) if node.name == "values" for row in node["res"] for v in row}
-    typed = {s for s, p, o in patterns if p == RDF_TYPE and (isinstance(o, URIRef) or o in bound_by_values)}
+    typed = {s for s, p, o in patterns if p == RDF.type and (isinstance(o, URIRef) or o in bound_by_values)}
     readers = {s for s, p, o in patterns if p == IN_ENTRY}
     assert readers <= typed, relative
 
@@ -139,7 +139,7 @@ def reads(relative):
 
 def writes(relative):
     template = prepareQuery(build.query_text(relative)).algebra["template"]
-    return {o if p == RDF_TYPE else p for s, p, o in template}
+    return {o if p == RDF.type else p for s, p, o in template}
 
 
 @pytest.mark.parametrize("lens", sorted(build.named("lenses")))
@@ -170,3 +170,27 @@ def test_the_crate_lists_every_ontology_file_and_every_query_and_nothing_else():
     listed = {part["@id"]: entities[part["@id"]]["encodingFormat"] for part in entities["./"]["hasPart"]}
     files = sorted(ROOT.glob("ontologies/**/*.ttl")) + sorted(build.QUERIES.rglob("*.rq"))
     assert listed == {path.relative_to(ROOT).as_posix(): FORMATS[path.suffix] for path in files}
+
+
+@lru_cache(maxsize=None)
+def parsed(relative):
+    return parseQuery(build.query_text(relative))
+
+
+def declared(relative):
+    prolog, _ = parsed(relative)
+    return [(declaration["prefix"], str(declaration["iri"])) for declaration in prolog]
+
+
+@pytest.mark.parametrize("relative", every_query())
+def test_every_query_declares_exactly_the_prefixes_it_uses_in_alphabetical_order(relative):
+    _, query = parsed(relative)
+    used = {node["prefix"] for node in nodes(query) if node.name == "pname"}
+    assert [prefix for prefix, _ in declared(relative)] == sorted(used)
+
+
+@pytest.mark.parametrize("relative", every_query())
+def test_no_query_spells_out_an_iri_in_a_namespace_the_queries_declare(relative):
+    namespaces = {namespace for other in every_query() for _, namespace in declared(other)}
+    _, query = parsed(relative)
+    assert {str(iri) for iri in iris(query) if str(iri).startswith(tuple(namespaces))} == set()
