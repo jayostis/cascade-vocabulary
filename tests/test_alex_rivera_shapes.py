@@ -4,19 +4,17 @@ from functools import lru_cache
 from pathlib import Path
 
 import pytest
-import rdflib
 from pyshacl import validate
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
+from cascade_pod import store
 from cascade_pod.pod import NOT_RDF, VIEW_FILES, Example
 
 ROOT = Path(__file__).absolute().parent.parent
 ONTOLOGIES = ROOT / "ontologies"
 ALEX = Example(ROOT / "example-pods" / "alex-rivera")
-
-rdflib.NORMALIZE_LITERALS = False
 
 HEALTH = "https://ns.cascadeprotocol.org/health/v1#"
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
@@ -164,7 +162,7 @@ def with_types(graph):
 def violations(graph):
     """Every result about a node the graph itself describes, and not about a node it only names."""
     conforms, report, _ = validate(with_types(graph), shacl_graph=shapes(), ont_graph=ontology(), advanced=True)
-    rdflib.NORMALIZE_LITERALS = False
+    store.keep_literals_as_written()
     own = set(graph.subjects())
     return sorted((str(report.value(r, SH.focusNode)), str(report.value(r, SH.resultPath)), str(report.value(r, SH.resultMessage)))
                   for r in report.subjects(RDF.type, SH.ValidationResult) if report.value(r, SH.focusNode) in own)

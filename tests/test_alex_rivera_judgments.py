@@ -3,15 +3,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-import rdflib
 from pyshacl import validate
 from rdflib import Graph, URIRef
-
-rdflib.NORMALIZE_LITERALS = False
 
 ROOT = Path(__file__).absolute().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 import recomputed  # noqa: E402
+from cascade_pod import store  # noqa: E402
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 POD = EXAMPLE / "pod"
@@ -156,7 +154,7 @@ def test_every_judgment_and_reference_conforms_to_the_judgments_and_records_shap
     for relative in listed("judgments/", "references/"):
         data += load(relative)
     conforms, _, report = validate(data, shacl_graph=shapes, advanced=True)
-    rdflib.NORMALIZE_LITERALS = False
+    store.keep_literals_as_written()
     assert conforms, report
     assert len(set(data.subjects(RDF_TYPE, URIRef(JDG + "Judgment")))) == len(EVERY_JUDGMENT)
     assert len(set(data.subjects(RDF_TYPE, URIRef(REC + "ReferenceSeries")))) == 3
