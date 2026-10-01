@@ -1,5 +1,6 @@
 import ast
 import json
+import re
 from functools import lru_cache
 from pathlib import Path
 
@@ -309,3 +310,32 @@ def test_the_held_query_check_finds_a_query_in_a_string_and_nothing_else():
                                          for folder in ("cascade_pod", "example-pods") for p in (ROOT / folder).rglob("*.py")))
 def test_no_tool_holds_a_query(tool):
     assert queries_held((ROOT / tool).read_text(encoding="utf-8")) == []
+
+
+def words(text):
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def missing_prose(relative, text):
+    """Why the query's leading comment does not do its job, or None."""
+    prose = vocabulary.prose(text)
+    if not prose:
+        return "no prose"
+    name = words(Path(relative).stem)
+    if words(prose)[:len(name)] == name:
+        return "prose opening with its name"
+    return None
+
+
+def test_the_prose_check_refuses_a_query_with_no_prose_or_prose_opening_with_its_name():
+    query = "SELECT ?s WHERE { ?s ?p ?o }"
+    assert missing_prose("pod/Which file states each thing.rq", query) == "no prose"
+    assert missing_prose("pod/Which file states each thing.rq", "# Which file states each thing.\n" + query) == \
+        "prose opening with its name"
+    assert missing_prose("derivations/same-pairs.rq", "# Same pairs: ...\n" + query) == "prose opening with its name"
+    assert missing_prose("pod/Which file states each thing.rq", "# Each file is its own graph.\n" + query) is None
+
+
+@pytest.mark.parametrize("relative", every_query())
+def test_every_query_opens_with_prose_that_does_not_restate_its_name(relative):
+    assert missing_prose(relative, vocabulary.query(relative)) is None
