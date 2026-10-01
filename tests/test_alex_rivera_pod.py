@@ -524,3 +524,10 @@ def test_every_handle_an_expected_file_or_planted_case_names_is_in_the_handle_ta
             named.update(str(o)[len("urn:example:alex-rivera:handle:"):] for _, o in entry if str(o).startswith("urn:example:alex-rivera:handle:"))
     missing = sorted(named - set(handle_table()))
     assert not missing, f"handles not in handles.json: {missing}"
+
+
+@engines
+def test_the_state_a_build_gives_is_the_pod_with_its_derived_state_and_none_of_the_files_built_from_them(engine):
+    b = build(engine, "everyday", "E15")
+    assert (None, MERGED_FROM, None) not in b.state
+    assert (None, REC.counts, None) in b.state
