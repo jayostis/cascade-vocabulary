@@ -133,3 +133,11 @@ def test_an_unknown_lens_is_refused_by_name_without_a_traceback():
                              "--lens", "nope"], capture_output=True, text=True, cwd=ROOT)
     assert result.returncode == 2
     assert "invalid choice: 'nope'" in result.stderr and "Traceback" not in result.stderr, result.stderr
+
+
+@pytest.mark.parametrize("engine", sorted(store.ENGINES))
+def test_a_store_holding_the_pod_holds_nothing_of_the_vocabularys(engine):
+    terms = {store.from_rdflib(subject) for path in vocabulary.ontologies().values() for subject in store.parsed(path).subjects()}
+    held = derive.build(Example(EXAMPLE), engine, vocabulary.DEFAULT_LENS).store
+    assert {triple[0] for triple in held.triples()} & terms == set()
+    assert not set(held.graphs()) & set(vocabulary.ontologies())

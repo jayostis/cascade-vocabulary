@@ -35,8 +35,8 @@ class Built(NamedTuple):
 
 
 def build(example, engine, lens, through=None):
-    """The pod as every tool and question sees it: each file through the event, the lens's derived state, the files
-    built from them and the vocabulary, each in a graph of its own and all of them in the default graph."""
+    """The pod as every tool and question sees it: each file through the event, the lens's derived state and the
+    files built from them, each in a graph of its own and all of them in the default graph."""
     store = loaded(example, engine, through)
     derived = derive(store, lens)
     current = vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"])
@@ -49,7 +49,6 @@ def build(example, engine, lens, through=None):
     files["index.ttl"] = index(example.address, example.files(through) + example.derived)
     files["manifest.ttl"] = manifest(example.address + "manifest.ttl", example.title, example.through(through)[-1]["at"])
     _add(store, example, {path: files[path] for path in (LABEL_FILE, "index.ttl", "manifest.ttl")})
-    vocabulary.load(store)
     return Built(store, derived, files)
 
 

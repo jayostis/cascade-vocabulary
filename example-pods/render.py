@@ -21,7 +21,6 @@ from cascade_pod.pod import VIEW_FILES, Example  # noqa: E402
 from cascade_pod.store import Oxigraph  # noqa: E402
 
 LENS = vocabulary.DEFAULT_LENS
-ONTOLOGIES = Path(__file__).absolute().parent.parent / "ontologies"
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 XSD_DATE_TIME = "http://www.w3.org/2001/XMLSchema#dateTime"
 TRUE = ("literal", "true", "http://www.w3.org/2001/XMLSchema#boolean", None)
@@ -118,9 +117,7 @@ class Pod:
 
     def _labels(self):
         terms = Oxigraph()
-        for path in sorted(ONTOLOGIES.rglob("*.ttl")):
-            if not path.name.endswith(".shapes.ttl"):
-                terms.load(path, path.absolute().as_uri())
+        vocabulary.load(terms)
         text = vocabulary.query("questions/pod/What everything is called.rq")
         labels = {}
         for source in (terms.select(text), self.store.select(text)):
