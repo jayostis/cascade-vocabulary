@@ -17,7 +17,7 @@ import build  # noqa: E402
 
 class GraphDB:
     """Answers load.py as a GraphDB does: a repository by its id, statements into it by graph, and workbench-global
-    saved queries whose names POST refuses twice."""
+    saved queries whose names POST refuses twice and PUT replaces by the oldQueryName it is given."""
 
     def __init__(self):
         self.repositories, self.saved, self.refuse_statements_after, self.refuse_delete = set(), {}, None, False
@@ -74,8 +74,12 @@ class GraphDB:
                     self.answer(404)
 
             def do_PUT(self):
-                query = json.loads(self.body())
-                if urlparse(self.path).path == "/rest/sparql/saved-queries" and query["name"] in graphdb.saved:
+                url, query = urlparse(self.path), json.loads(self.body())
+                [old] = parse_qs(url.query).get("oldQueryName", [None])
+                if old is None:
+                    self.answer(500, b"Required request parameter 'oldQueryName' is not present")
+                elif url.path == "/rest/sparql/saved-queries" and old in graphdb.saved:
+                    del graphdb.saved[old]
                     graphdb.saved[query["name"]] = query["body"]
                     self.answer(200)
                 else:

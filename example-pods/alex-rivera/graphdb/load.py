@@ -72,8 +72,12 @@ def save_questions(base):
     saved = {entry["name"] for entry in json.loads(request("GET", f"{base}/rest/sparql/saved-queries", accept="application/json"))}
     for name, relative in build.questions().items():
         query = {"name": name, "body": build.query_text(relative), "shared": True}
-        method = "PUT" if name in saved else "POST"
-        request(method, f"{base}/rest/sparql/saved-queries", json.dumps(query).encode("utf-8"), "application/json")
+        body = json.dumps(query).encode("utf-8")
+        if name in saved:
+            replacing = urllib.parse.urlencode({"oldQueryName": name})
+            request("PUT", f"{base}/rest/sparql/saved-queries?{replacing}", body, "application/json")
+        else:
+            request("POST", f"{base}/rest/sparql/saved-queries", body, "application/json")
         yield name
 
 
