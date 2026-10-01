@@ -11,7 +11,7 @@ import uuid
 from rdflib import BNode, Literal, Namespace
 from rdflib.namespace import RDF, RDFS
 
-from . import derive, turtle, vocabulary
+from . import Failure, derive, turtle, vocabulary
 
 CONFIG, GRAPHDB = Namespace(turtle.PREFIXES["config"]), Namespace(turtle.PREFIXES["graphdb"])
 LENS = "everyday"
@@ -88,12 +88,10 @@ def refusal(error):
 
 
 def load(example, base):
-    graphdb = GraphDB(base.rstrip("/"), example)
-    name = example.name
+    graphdb, name = GraphDB(base.rstrip("/"), example), example.name
     try:
         if graphdb.holds_repository():
-            print(f"cascade_pod graphdb: {base} already has a repository {name}; nothing changed", file=sys.stderr)
-            return 1
+            raise Failure(f"{base} already has a repository {name}; nothing changed")
         graphdb.create()
         try:
             loaded, saved, size = graphdb.fill()
@@ -101,13 +99,11 @@ def load(example, base):
             try:
                 graphdb.delete()
             except urllib.error.URLError as cleanup:
-                print(f"cascade_pod graphdb: could not remove the repository {name} it had created: "
-                      f"{refusal(cleanup)}", file=sys.stderr)
+                print(f"could not remove the repository {name} it had created: {refusal(cleanup)}", file=sys.stderr)
             else:
-                print(f"cascade_pod graphdb: removed the repository {name} it had created", file=sys.stderr)
+                print(f"removed the repository {name} it had created", file=sys.stderr)
             raise
     except urllib.error.URLError as error:
-        print(f"cascade_pod graphdb: {refusal(error)}", file=sys.stderr)
-        return 2
+        raise Failure(refusal(error)) from error
     print(f"{name}: {loaded} graphs, {size} statements, {len(saved)} saved queries")
     return 0

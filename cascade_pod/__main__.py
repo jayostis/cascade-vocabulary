@@ -10,22 +10,28 @@ from .store import ENGINES
 def parser():
     top = argparse.ArgumentParser(prog="python -m cascade_pod")
     commands = top.add_subparsers(dest="command", required=True)
-    commands.add_parser("write", help="files the story into pod/").add_argument("example", type=Path)
-    matching = commands.add_parser("match", help="writes the matcher's judgments")
-    matching.add_argument("example", type=Path)
+
+    def command(name, help, run):
+        sub = commands.add_parser(name, help=help)
+        sub.add_argument("example", type=Path)
+        sub.set_defaults(run=run)
+        return sub
+
+    command("write", "files the story into pod/", lambda example, _: write.run(example))
+    matching = command("match", "writes the matcher's judgments",
+                       lambda example, a: match.run(example, a.read_through, a.takes, a.at, a.out))
     matching.add_argument("--read-through", required=True)
     matching.add_argument("--takes")
     matching.add_argument("--at", required=True)
     matching.add_argument("--out", type=Path, required=True)
-    build = commands.add_parser("build", help="writes the views, the labels, index.ttl and manifest.ttl")
-    build.add_argument("example", type=Path)
+    build = command("build", "writes the views, the labels, index.ttl and manifest.ttl",
+                    lambda example, a: derive.write(example, a.engine, a.out))
     build.add_argument("--engine", choices=sorted(ENGINES), required=True)
     build.add_argument("--out", type=Path)
-    load = commands.add_parser("graphdb", help="creates and fills the example's repository")
-    load.add_argument("example", type=Path)
-    load.add_argument("url", help="the GraphDB's base URL")
-    question = commands.add_parser("ask", help="prints one question's rows")
-    question.add_argument("example", type=Path)
+    command("graphdb", "creates and fills the example's repository",
+            lambda example, a: graphdb.load(example, a.url)).add_argument("url", help="the GraphDB's base URL")
+    question = command("ask", "prints one question's rows",
+                       lambda example, a: ask.ask(example, a.question, a.lens, a.engine))
     question.add_argument("question", help='its path under questions/, such as "record/Why it is in no view"')
     question.add_argument("--lens", default="everyday")
     question.add_argument("--engine", choices=sorted(ENGINES), default="oxigraph")
@@ -35,17 +41,7 @@ def parser():
 def main(argv=None):
     arguments = parser().parse_args(argv)
     try:
-        example = Example(arguments.example)
-        if arguments.command == "write":
-            return write.run(example)
-        if arguments.command == "match":
-            return match.run(example, arguments.read_through, arguments.takes, arguments.at, arguments.out)
-        if arguments.command == "build":
-            return derive.write(example, arguments.engine, arguments.out)
-        if arguments.command == "graphdb":
-            return graphdb.load(example, arguments.url)
-        if arguments.command == "ask":
-            return ask.ask(example, arguments.question, arguments.lens, arguments.engine)
+        return arguments.run(Example(arguments.example), arguments)
     except Failure as failure:
         print(f"cascade_pod {arguments.command}: {failure}", file=sys.stderr)
         return 2

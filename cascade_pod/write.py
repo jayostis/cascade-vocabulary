@@ -22,8 +22,7 @@ ADAPTER = "<cascade-bridge-adapter-fhir-r4>"
 VOCABULARIES = "<cascade-vocabulary at the adapter's pin>"
 TRANSMITTER = "Apple Health"
 IMPORT_LABEL = "Apple Health export"
-FORMATS = {".csv": "text/csv", ".json": "application/json", ".py": "text/x-python",
-           ".ttl": "text/turtle", ".xml": "application/xml"}
+FORMATS = {".csv": "text/csv", ".json": "application/json", ".ttl": "text/turtle", ".xml": "application/xml"}
 
 
 def closure(graph, subject):

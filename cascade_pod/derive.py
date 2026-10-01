@@ -1,4 +1,4 @@
-"""Runs a lens over an example's pod: the derivations in order, then the views and the labels."""
+"""Builds the pod in a store: a lens's derivations in order, then the views, the labels, the index and the manifest."""
 
 from typing import NamedTuple
 
@@ -35,9 +35,8 @@ class Built(NamedTuple):
 
 
 def build(example, engine, lens="everyday", through=None):
-    """The pod in a store, as every tool and question sees it: each file of the pod through the event, the views,
-    the labels, the index and the manifest built from them, the lens's derived state and the vocabulary, each in a
-    graph of its own and all of them in the default graph."""
+    """The pod as every tool and question sees it: each file through the event, the lens's derived state, the files
+    built from them and the vocabulary, each in a graph of its own and all of them in the default graph."""
     store = loaded(example, engine, through)
     derived = derive(store, lens)
     current = vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"])

@@ -5,14 +5,13 @@ import json
 from pathlib import Path
 
 from . import Failure
+from .turtle import PREFIXES
 
-CLINICAL = "https://ns.cascadeprotocol.org/clinical/v1#"
-HEALTH = "https://ns.cascadeprotocol.org/health/v1#"
 RECORD_FOLDERS = {
-    HEALTH + "AllergyRecord": "allergies",
-    HEALTH + "ConditionRecord": "conditions",
-    HEALTH + "ImmunizationRecord": "immunizations",
-    CLINICAL + "Procedure": "procedures",
+    PREFIXES["health"] + "AllergyRecord": "allergies",
+    PREFIXES["health"] + "ConditionRecord": "conditions",
+    PREFIXES["health"] + "ImmunizationRecord": "immunizations",
+    PREFIXES["clinical"] + "Procedure": "procedures",
 }
 VIEW_FILES = {
     "allergies": "clinical/allergies.ttl",
