@@ -1,11 +1,15 @@
 PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT DISTINCT ?judgment
+SELECT DISTINCT ?judgment ?judgmentLabel ?needs
 WHERE {
   ?judgment rec:counts true ; jdg:verdict jdg:Same ; prov:hadMember ?record .
   ?record pav:hasCurrentVersion ?now .
   FILTER NOT EXISTS { ?judgment prov:used ?now }
+  BIND ("a member changed since it was judged" AS ?needs)
+  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
 }
+ORDER BY ?judgmentLabel ?judgment

@@ -1,0 +1,11 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?entry ?entryLabel ?role ?record ?recordLabel
+WHERE {
+  VALUES ?role { rec:latestMember rec:statusFrom rec:dateFrom }
+  ?entry ?role ?record .
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+}
+ORDER BY ?entryLabel ?entry ?role ?record

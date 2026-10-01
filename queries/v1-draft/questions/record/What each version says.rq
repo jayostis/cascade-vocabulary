@@ -2,9 +2,11 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT DISTINCT ?version ?field ?value
+SELECT DISTINCT ?record ?recordLabel ?version ?field ?value
 WHERE {
-  ?revision rec:version ?version .
+  ?revision rec:revisionOf ?record ; rec:version ?version .
   ?version ?field ?value .
   FILTER (?field NOT IN (prov:specializationOf, rdfs:label))
+  OPTIONAL { ?record rdfs:label ?recordLabel }
 }
+ORDER BY ?recordLabel ?record ?version ?field ?value

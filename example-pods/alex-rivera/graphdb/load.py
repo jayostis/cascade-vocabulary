@@ -1,4 +1,4 @@
-"""Creates the alex-rivera repository in a GraphDB, loads the finished pod into it, and saves the queries for people.
+"""Creates the alex-rivera repository in a GraphDB, loads the finished pod and its derived state, and saves every question.
 
 python3 example-pods/alex-rivera/graphdb/load.py <GraphDB URL>
 """
@@ -24,6 +24,8 @@ sys.path.insert(0, str(EXAMPLE / "queries"))
 import build  # noqa: E402
 
 REPOSITORY = "alex-rivera"
+LENS = "everyday"
+DERIVED = f"urn:cascade:derived:{LENS}"
 
 
 def request(method, url, body=None, content_type=None, accept=None):
@@ -45,40 +47,46 @@ def create(base):
 
 
 def graphs():
-    """Each graph to load, by its name: every RDF file of the finished pod at its address, and each vocabulary."""
+    """Each graph to load, by its name, as N-Triples: every RDF file of the finished pod at its address, each
+    vocabulary, and the derived state."""
     manifest = build.events()
     for path in sorted(build.pod_files() + manifest["derived"]):
         if not path.startswith(build.NOT_RDF):
             address = build.POD_BASE + path
-            yield address, rdflib.Graph().parse(build.POD / path, format="turtle", publicID=address)
+            graph = rdflib.Graph().parse(build.POD / path, format="turtle", publicID=address)
+            yield address, graph.serialize(format="nt", encoding="utf-8")
     for path in sorted((ROOT / "ontologies").glob("*/*/*.ttl")):
         if not path.name.endswith(".shapes.ttl"):
             graph = rdflib.Graph().parse(path, format="turtle")
-            yield str(next(graph.subjects(RDF.type, OWL.Ontology))), graph
+            yield str(next(graph.subjects(RDF.type, OWL.Ontology))), graph.serialize(format="nt", encoding="utf-8")
+    derived = build.derive(build.loaded("oxigraph"), LENS)
+    yield DERIVED, "".join(line + "\n" for line in build.ntriples(derived)).encode("utf-8")
 
 
-def load(base, name, graph):
+def load(base, name, body):
     context = urllib.parse.quote(f"<{name}>", safe="")
-    body = graph.serialize(format="nt", encoding="utf-8")
     request("POST", f"{base}/repositories/{REPOSITORY}/statements?context={context}", body, "application/n-triples")
 
 
-def save_queries(base):
+def save_questions(base):
     saved = {entry["name"] for entry in json.loads(request("GET", f"{base}/rest/sparql/saved-queries", accept="application/json"))}
-    for path in sorted((build.QUERIES / "people").glob("*.rq")):
-        name = path.relative_to(build.QUERIES).with_suffix("").as_posix()
-        query = {"name": name, "body": path.read_text(encoding="utf-8"), "shared": True}
-        method = "PUT" if name in saved else "POST"
-        request(method, f"{base}/rest/sparql/saved-queries", json.dumps(query).encode("utf-8"), "application/json")
+    for name, relative in build.questions().items():
+        query = {"name": name, "body": build.query_text(relative), "shared": True}
+        body = json.dumps(query).encode("utf-8")
+        if name in saved:
+            replacing = urllib.parse.urlencode({"oldQueryName": name})
+            request("PUT", f"{base}/rest/sparql/saved-queries?{replacing}", body, "application/json")
+        else:
+            request("POST", f"{base}/rest/sparql/saved-queries", body, "application/json")
         yield name
 
 
 def fill(base):
     loaded = 0
-    for name, graph in graphs():
-        load(base, name, graph)
+    for name, body in graphs():
+        load(base, name, body)
         loaded += 1
-    saved = list(save_queries(base))
+    saved = list(save_questions(base))
     size = request("GET", f"{base}/repositories/{REPOSITORY}/size").decode("utf-8").strip()
     return loaded, saved, size
 

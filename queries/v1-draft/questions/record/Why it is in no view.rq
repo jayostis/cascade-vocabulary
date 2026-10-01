@@ -3,38 +3,48 @@ PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT ?record ?why ?because
+SELECT ?record ?recordLabel ?why ?because ?becauseLabel
 WHERE {
   { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
     ?record a ?type ; rec:excluded true ; pav:hasCurrentVersion/clinical:verificationStatus ?status .
     FILTER NOT EXISTS { ?record rec:inEntry [] }
     FILTER (?status IN ("entered-in-error", "refuted"))
-    BIND (CONCAT(?status, " at its source") AS ?why) }
+    BIND (CONCAT(?status, " at its source") AS ?why)
+    OPTIONAL { ?record rdfs:label ?recordLabel } }
   UNION
   { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
     ?record a ?type ; rec:excluded true .
     ?because rec:counts true ; jdg:verdict jdg:Erroneous ; prov:hadMember ?record .
     FILTER NOT EXISTS { ?record rec:inEntry [] }
-    BIND ("judged erroneous" AS ?why) }
+    BIND ("judged erroneous" AS ?why)
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?because rdfs:label ?becauseLabel } }
   UNION
   { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
     ?record a ?type ; rec:excluded true ; rec:currentRevision/prov:wasGeneratedBy ?import .
     ?because rec:counts true ; jdg:verdict jdg:Erroneous ; prov:hadMember ?import .
     FILTER NOT EXISTS { ?record rec:inEntry [] }
-    BIND ("the import that brought it was judged erroneous" AS ?why) }
+    BIND ("the import that brought it was judged erroneous" AS ?why)
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?because rdfs:label ?becauseLabel } }
   UNION
   { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
     ?record a ?type ; pav:hasCurrentVersion/rec:patient ?because .
     FILTER NOT EXISTS { ?record rec:subject [] }
     FILTER NOT EXISTS { ?record rec:inEntry [] }
-    BIND ("its patient profile has no counting About" AS ?why) }
+    BIND ("its patient profile has no counting About" AS ?why)
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?because rdfs:label ?becauseLabel } }
   UNION
   { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
     ?record a ?type ; pav:hasCurrentVersion ?version .
     FILTER NOT EXISTS { ?version rec:patient [] }
     FILTER NOT EXISTS { ?record rec:subject [] }
     FILTER NOT EXISTS { ?record rec:inEntry [] }
-    BIND ("it names no patient" AS ?why) }
+    BIND ("it names no patient" AS ?why)
+    OPTIONAL { ?record rdfs:label ?recordLabel } }
 }
+ORDER BY ?why ?recordLabel ?record ?because

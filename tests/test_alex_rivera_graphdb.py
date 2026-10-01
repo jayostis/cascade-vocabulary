@@ -5,20 +5,23 @@ import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-LOAD = Path(__file__).absolute().parent.parent / "example-pods" / "alex-rivera" / "graphdb" / "load.py"
+EXAMPLE = Path(__file__).absolute().parent.parent / "example-pods" / "alex-rivera"
+LOAD = EXAMPLE / "graphdb" / "load.py"
+sys.path.insert(0, str(EXAMPLE / "queries"))
+import build  # noqa: E402
 
 
 class GraphDB:
-    """Answers load.py as a GraphDB does: a repository by its id, statements into it, and workbench-global saved
-    queries whose names POST refuses twice."""
+    """Answers load.py as a GraphDB does: a repository by its id, statements into it by graph, and workbench-global
+    saved queries whose names POST refuses twice and PUT replaces by the oldQueryName it is given."""
 
     def __init__(self):
         self.repositories, self.saved, self.refuse_statements_after, self.refuse_delete = set(), {}, None, False
-        self.statements = 0
+        self.statements, self.graphs = 0, {}
         graphdb = self
 
         class Handler(BaseHTTPRequestHandler):
@@ -57,6 +60,8 @@ class GraphDB:
                         self.answer(500, b"refused")
                     else:
                         graphdb.statements += 1
+                        [context] = parse_qs(urlparse(self.path).query)["context"]
+                        graphdb.graphs[context.strip("<>")] = body.decode("utf-8")
                         self.answer(204)
                 elif path == "/rest/sparql/saved-queries":
                     query = json.loads(body)
@@ -69,8 +74,12 @@ class GraphDB:
                     self.answer(404)
 
             def do_PUT(self):
-                query = json.loads(self.body())
-                if urlparse(self.path).path == "/rest/sparql/saved-queries" and query["name"] in graphdb.saved:
+                url, query = urlparse(self.path), json.loads(self.body())
+                [old] = parse_qs(url.query).get("oldQueryName", [None])
+                if old is None:
+                    self.answer(500, b"Required request parameter 'oldQueryName' is not present")
+                elif url.path == "/rest/sparql/saved-queries" and old in graphdb.saved:
+                    del graphdb.saved[old]
                     graphdb.saved[query["name"]] = query["body"]
                     self.answer(200)
                 else:
@@ -108,6 +117,17 @@ def test_a_load_into_an_empty_graphdb_creates_the_repository_and_saves_the_queri
     result = load(graphdb.url)
     assert result.returncode == 0, result.stderr
     assert graphdb.repositories == {"alex-rivera"} and graphdb.saved
+
+
+def test_a_load_adds_the_derived_state_under_the_everyday_lens_as_a_graph_of_its_own(graphdb):
+    assert load(graphdb.url).returncode == 0
+    derived = build.derive(build.loaded("oxigraph"), "everyday")
+    assert graphdb.graphs["urn:cascade:derived:everyday"].splitlines() == build.ntriples(derived)
+
+
+def test_a_load_saves_every_question_under_its_path_in_questions(graphdb):
+    assert load(graphdb.url).returncode == 0
+    assert graphdb.saved == {name: build.query_text(relative) for name, relative in build.questions().items()}
 
 
 def test_a_load_refused_partway_removes_the_repository_it_created_so_a_rerun_loads(graphdb):

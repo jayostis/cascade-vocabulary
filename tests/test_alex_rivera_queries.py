@@ -32,16 +32,7 @@ def triples(found):
 
 
 def rows(found):
-    return sorted(sorted((name, canonical(term)) for name, term in row.items()) for row in found)
-
-
-@lru_cache(maxsize=None)
-def final_pod(engine):
-    store = build.ENGINES[engine]()
-    for path in build.pod_files() + build.events()["derived"]:
-        if not path.startswith(build.NOT_RDF):
-            store.load(build.POD / path, build.POD_BASE + path)
-    return store
+    return [sorted((name, canonical(term)) for name, term in row.items()) for row in found]
 
 
 def final_graph():
@@ -52,23 +43,54 @@ def final_graph():
     return graph
 
 
+EVENTS = [e["event"] for e in build.events()["events"]]
+LENSES = ["everyday", "export"]
+
+
+NEEDS_REVIEW = [relative for name, relative in build.questions().items() if name.endswith("/What needs review")]
+
 
 def derived_state_views_and_reviews(engine, lens, through):
     store = build.loaded(engine, through)
-    derived = []
-    for relative in build.derivations(lens):
-        found = store.construct(build.query_text(relative))
-        derived.append((relative, triples(found)))
-        store.add(found)
-    views = {v: triples(store.construct(build.query_text(r))) for v, r in build.named("views").items()}
-    reviews = {v: rows(store.select(build.query_text(r))) for v, r in build.named("review").items()}
-    return derived, views, reviews
+    derived = build.derive(store, lens)
+    views = {view: triples(store.construct(build.query_text(r))) for view, r in build.named("views").items()}
+    reviews = {relative: rows(store.select(build.query_text(relative))) for relative in NEEDS_REVIEW}
+    return triples(derived), views, reviews
 
 
-@pytest.mark.parametrize("lens", ["everyday", "export"])
-@pytest.mark.parametrize("event", [e["event"] for e in build.events()["events"]])
-def test_each_derivation_view_and_review_is_the_same_on_oxigraph_and_rdflib(event, lens):
+@pytest.mark.parametrize("lens", LENSES)
+@pytest.mark.parametrize("event", EVENTS)
+def test_the_derived_state_each_view_and_what_needs_review_are_the_same_on_oxigraph_and_rdflib(event, lens):
     assert derived_state_views_and_reviews("oxigraph", lens, event) == derived_state_views_and_reviews("rdflib", lens, event)
+
+
+@lru_cache(maxsize=None)
+def answers(engine, lens, through=None):
+    store = build.build(engine, lens, through).store
+    return {name: rows(store.select(build.query_text(relative))) for name, relative in build.questions().items()}
+
+
+@pytest.mark.parametrize("lens", LENSES)
+def test_every_question_gives_the_same_rows_in_the_same_order_on_oxigraph_and_rdflib(lens):
+    assert answers("oxigraph", lens) == answers("rdflib", lens)
+
+
+def test_every_question_has_an_answer_at_some_event():
+    unanswered = set(build.questions())
+    for event in EVENTS:
+        for lens in LENSES:
+            unanswered -= {name for name, found in answers("oxigraph", lens, event).items() if found}
+    assert unanswered == set()
+
+
+@pytest.mark.parametrize("lens", LENSES)
+@pytest.mark.parametrize("engine", ENGINES)
+def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_pods_own(engine, lens):
+    store = build.loaded(engine)
+    pod = store.triples()
+    derived = build.derive(store, lens)
+    assert derived and derived.isdisjoint(pod)
+    assert store.triples() == pod | derived
 
 
 @pytest.mark.parametrize("engine", ENGINES)
@@ -81,8 +103,8 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(en
 
 
 def test_every_committed_view_is_marked_rebuildable_and_registered():
-    store = build.derive(build.loaded("oxigraph"), "everyday")
-    current = {URIRef(row["v"][1]) for row in store.select(build.CURRENT_REFERENCE_VERSIONS)}
+    store = build.build("oxigraph").store
+    current = {URIRef(row["version"][1]) for row in store.select(build.query_text(build.questions()["pod/Which reference versions are current"]))}
     for relative in sorted(set(build.VIEW_FILES.values()) | {build.LABEL_FILE}):
         address = URIRef(build.POD_BASE + relative)
         graph = Graph().parse(build.POD / relative, format="turtle", publicID=str(address))
@@ -146,16 +168,49 @@ def test_no_two_labelled_things_share_a_label():
     assert {label: n for label, n in things.items() if n > 1} == {}
 
 
-@pytest.mark.parametrize("relative", build.named("people").values())
-def test_every_query_for_people_runs_on_the_final_pod_and_both_engines_agree(relative):
-    text = build.query_text(relative)
-    found = {engine: rows(final_pod(engine).select(text)) for engine in ENGINES}
-    assert found["oxigraph"] != []
-    assert found["oxigraph"] == found["rdflib"]
-
-
 def test_the_graphdb_config_names_no_machine():
     Graph().parse(EXAMPLE / "graphdb" / "repository.ttl", format="turtle")
     machine = re.compile(r"file:|(?<![A-Za-z])[A-Za-z]:[\\/]|localhost|127\.0\.0\.1|0\.0\.0\.0|/(?:home|Users|tmp)/|:\d{2,5}\b")
     for name in ("repository.ttl", "load.py"):
         assert machine.findall((EXAMPLE / "graphdb" / name).read_text(encoding="utf-8")) == [], name
+
+
+UNIT_PREFIXES = """
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix : <urn:x:> .
+"""
+
+
+def answer(engine, question, turtle, tmp_path):
+    path = tmp_path / f"{engine}.ttl"
+    path.write_text(UNIT_PREFIXES + turtle, encoding="utf-8")
+    store = build.ENGINES[engine]()
+    store.load(path, "urn:x:")
+    return [{name: term[1] for name, term in row.items()}
+            for row in store.select(build.query_text(build.questions()[question]))]
+
+
+@pytest.mark.parametrize("engine", ENGINES)
+def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_total_of_its_records(engine, tmp_path):
+    found = answer(engine, "profile/Whose it is counted as", """
+        :about a jdg:Judgment ; rec:counts true ; jdg:verdict jdg:About ; prov:hadMember :p ; jdg:subject :s .
+        :v1 rec:patient :p ; prov:specializationOf :r1 . :rev1 rec:version :v1 ; prov:wasDerivedFrom :d1 .
+        :v2 rec:patient :p ; prov:specializationOf :r2 . :rev2 rec:version :v2 ; prov:wasDerivedFrom :d2 .
+        :v3 rec:patient :p ; prov:specializationOf :r3 . :rev3 rec:version :v3 ; prov:wasDerivedFrom :d2 .
+        :d1 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Meridian" ] ] .
+        :d2 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Larkspur" ] ] .
+    """, tmp_path)
+    assert sorted((row["hospital"], row["records"]) for row in found) == [("Larkspur", "3"), ("Meridian", "3")]
+
+
+@pytest.mark.parametrize("engine", ENGINES)
+def test_an_entry_lists_a_pair_still_joined_by_what_the_derivations_judged_currently_different(engine, tmp_path):
+    found = answer(engine, "entry/What needs review", """
+        @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+        :a a health:AllergyRecord ; rec:inEntry :entry ; jdg:currentlyDifferent :b .
+        :b a health:AllergyRecord ; rec:inEntry :entry ; jdg:currentlyDifferent :a .
+    """, tmp_path)
+    assert [(row["entry"], row["record"], row["otherRecord"]) for row in found] == [("urn:x:entry", "urn:x:a", "urn:x:b")]
