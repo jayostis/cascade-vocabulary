@@ -147,4 +147,4 @@ def test_a_derived_file_events_json_lists_and_the_build_does_not_make_is_a_failu
     example = Example(EXAMPLE)
     example.derived = [*example.derived, "clinical/extra.ttl"]
     with pytest.raises(Failure, match="clinical/extra.ttl"):
-        example.built("oxigraph")
+        example.derived_turtle("oxigraph")

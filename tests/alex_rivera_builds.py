@@ -7,9 +7,8 @@ import pytest
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.namespace import XSD
 
-from cascade_pod import build as build_files
-from cascade_pod import derive, store, vocabulary
-from cascade_pod.build import VIEW_FILES
+from cascade_pod import derive, derived_files, store, vocabulary
+from cascade_pod.derived_files import VIEW_FILES
 from cascade_pod.pod import NOT_RDF, Example
 
 ROOT = Path(__file__).absolute().parent.parent
@@ -106,7 +105,7 @@ def build(engine, lens, event):
     held = ALEX.loaded(engine, event)
     derive.derive(held, lens)
     state = graph(held.triples())
-    files = build_files.add(ALEX, held, event)
+    files = derived_files.add(ALEX, held, event)
     needs_review = {kind: [{key: store.to_rdflib(value) for key, value in row.items()}
                            for row in held.select(vocabulary.query(vocabulary.questions()[f"{kind}/What needs review"]))]
                     for kind in ("entry", "judgment")}

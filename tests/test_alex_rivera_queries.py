@@ -9,7 +9,7 @@ import pytest
 from rdflib import Graph, URIRef
 
 from cascade_pod import derive, graphdb, store, vocabulary
-from cascade_pod.build import LABEL_FILE, VIEW_FILES
+from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
 from cascade_pod.pod import NOT_RDF, Example
 
 ROOT = Path(__file__).absolute().parent.parent

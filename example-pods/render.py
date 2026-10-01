@@ -17,7 +17,7 @@ import pyoxigraph
 
 sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
 from cascade_pod import vocabulary  # noqa: E402
-from cascade_pod.build import VIEW_FILES  # noqa: E402
+from cascade_pod.derived_files import VIEW_FILES  # noqa: E402
 from cascade_pod.pod import Example  # noqa: E402
 from cascade_pod.store import Oxigraph  # noqa: E402
 

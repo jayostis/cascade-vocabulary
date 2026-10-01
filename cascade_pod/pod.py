@@ -5,7 +5,7 @@ import base64
 import json
 from pathlib import Path
 
-from . import Failure, build, derive, turtle, vocabulary
+from . import Failure, derive, derived_files, turtle, vocabulary
 from .store import ENGINES, to_rdflib
 from .turtle import PREFIXES
 
@@ -80,15 +80,15 @@ class Example:
     def store(self, engine, lens, through=None):
         """The pod as every tool and question sees it: each file through the event, the lens's derived state and the
         files built from them, each in a graph of its own and all of them in the default graph."""
-        return self._with_built_files(engine, lens, through)[0]
+        return self._with_derived_files(engine, lens, through)[0]
 
-    def built(self, engine):
-        """Each file built from the whole pod under the default lens, as Turtle, by its path within pod/."""
-        _, files = self._with_built_files(engine, vocabulary.DEFAULT_LENS)
+    def derived_turtle(self, engine):
+        """Each derived file of the whole pod under the default lens, as Turtle, by its path within pod/."""
+        _, files = self._with_derived_files(engine, vocabulary.DEFAULT_LENS)
         return {path: turtle.write({tuple(map(to_rdflib, triple)) for triple in triples}, self.address + path)
                 for path, triples in files.items()}
 
-    def _with_built_files(self, engine, lens, through=None):
+    def _with_derived_files(self, engine, lens, through=None):
         store = self.loaded(engine, through)
         derive.derive(store, lens)
-        return store, build.add(self, store, through)
+        return store, derived_files.add(self, store, through)
