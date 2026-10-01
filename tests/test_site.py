@@ -343,3 +343,10 @@ def test_an_entrys_page_puts_each_chosen_value_beside_the_member_it_came_from(pa
     allergen = "<https://ns.cascadeprotocol.org/health/v1#allergen>"
     assert [(row["value"]["value"], row["from"]["value"]) for row in shows["rows"]
             if row["field"]["value"] == allergen] == [('"Penicillin"', "<urn:uuid:68e6a49e-2908-89ab-ba61-19385e7a8268>")]
+
+
+def test_the_folder_table_names_a_records_folders_untyped_versions_and_leaves_out_the_labels_file(pages):
+    [folders] = [b for b in blocks(pages["index.html"]) if b["title"] == "What each folder holds"]
+    rows = {(row["folder"]["value"], row["type"]["value"]) for row in folders["rows"]}
+    assert ('"/records/allergies/"', '"no type stated"') in rows
+    assert not {row for row in rows if row[0] == '"/clinical/"' and not row[1].startswith("<")}
