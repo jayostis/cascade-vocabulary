@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from . import Failure, derive, derived_files, turtle, vocabulary
-from .store import ENGINES, to_rdflib
+from .store import ENGINES
 from .turtle import PREFIXES
 
 RECORD_FOLDERS = {
@@ -85,7 +85,7 @@ class Example:
     def derived_turtle(self, engine):
         """Each derived file of the whole pod under the default lens, as Turtle, by its path within pod/."""
         _, files = self._with_derived_files(engine, vocabulary.DEFAULT_LENS)
-        return {path: turtle.write({tuple(map(to_rdflib, triple)) for triple in triples}, self.address + path)
+        return {path: turtle.write(triples, self.address + path)
                 for path, triples in files.items()}
 
     def _with_derived_files(self, engine, lens, through=None):

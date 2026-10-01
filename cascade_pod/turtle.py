@@ -17,19 +17,30 @@ PREFIXES = {
     "clinical": "https://ns.cascadeprotocol.org/clinical/v1#",
     "config": "tag:rdf4j.org,2023:config/",
     "dct": "http://purl.org/dc/terms/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
     "graphdb": "http://www.ontotext.com/config/graphdb#",
     "health": "https://ns.cascadeprotocol.org/health/v1#",
     "jdg": "https://ns.cascadeprotocol.org/judgments/v1-draft#",
     "ldp": "http://www.w3.org/ns/ldp#",
     "npx": "http://purl.org/nanopub/x/",
     "pav": "http://purl.org/pav/",
+    "pim": "http://www.w3.org/ns/pim/space#",
     "prov": "http://www.w3.org/ns/prov#",
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "rec": "https://ns.cascadeprotocol.org/records/v1-draft#",
+    "solid": "http://www.w3.org/ns/solid/terms#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
 }
 LOCAL_NAME = re.compile(r"[A-Za-z](?:[A-Za-z0-9_.-]*[A-Za-z0-9_-])?")
+
+
+def prefixed(iri):
+    """The IRI as prefix:name by the prefix table, or None."""
+    for prefix, namespace in PREFIXES.items():
+        if iri.startswith(namespace) and LOCAL_NAME.fullmatch(iri[len(namespace):]):
+            return f"{prefix}:{iri[len(namespace):]}"
+    return None
 
 
 def _string(text):
@@ -133,8 +144,8 @@ class _Document:
         relative = _relative(iri, self.base) if self.base else None
         if relative is not None:
             return f"<{relative}>"
-        for prefix, namespace in PREFIXES.items():
-            if iri.startswith(namespace) and LOCAL_NAME.fullmatch(iri[len(namespace):]):
-                self.used.add(prefix)
-                return f"{prefix}:{iri[len(namespace):]}"
-        return f"<{iri}>"
+        written = prefixed(iri)
+        if written is None:
+            return f"<{iri}>"
+        self.used.add(written.split(":", 1)[0])
+        return written

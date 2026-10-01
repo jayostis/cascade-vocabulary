@@ -1,12 +1,16 @@
+# A version is named by a hash of its content, so two arrivals saying the same thing share one version. Each row is one
+# statement of one version.
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT DISTINCT ?record ?recordLabel ?version ?field ?value
+SELECT DISTINCT ?record ?recordLabel ?version ?versionLabel ?field ?value ?valueLabel
 WHERE {
   ?revision rec:revisionOf ?record ; rec:version ?version .
   ?version ?field ?value .
   FILTER (?field NOT IN (prov:specializationOf, rdfs:label))
   OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { ?version rdfs:label ?versionLabel }
+  OPTIONAL { ?value rdfs:label ?valueLabel }
 }
 ORDER BY ?recordLabel ?record ?version ?field ?value

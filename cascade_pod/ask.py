@@ -2,11 +2,11 @@
 
 import sys
 
-from . import Failure, store, turtle, vocabulary
+from . import Failure, turtle, vocabulary
 
 
 def line(row):
-    return "\t".join(f"?{name}={turtle.term(store.to_rdflib(term))}" for name, term in row.items())
+    return "\t".join(f"?{name}={turtle.term(term)}" for name, term in row.items())
 
 
 def ask(example, question, lens, engine):

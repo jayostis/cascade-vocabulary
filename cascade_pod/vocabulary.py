@@ -1,5 +1,6 @@
 """The ontologies and standard queries this repository publishes, as its root crate lists them."""
 
+import itertools
 import json
 from pathlib import Path
 
@@ -25,6 +26,12 @@ def load(store):
 
 def query(relative):
     return (QUERIES / relative).read_text(encoding="utf-8")
+
+
+def prose(text):
+    """A query's leading comment, as one paragraph."""
+    lines = itertools.takewhile(lambda line: line.startswith("#"), text.splitlines())
+    return " ".join(line.lstrip("#").strip() for line in lines)
 
 
 def named(folder):

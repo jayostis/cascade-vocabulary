@@ -76,7 +76,7 @@ def load_pod_file(relative):
 def graph(triples):
     found = Graph()
     for triple in triples:
-        found.add(tuple(store.to_rdflib(t) for t in triple))
+        found.add(triple)
     return found
 
 
@@ -106,8 +106,7 @@ def build(engine, lens, event):
     derive.derive(held, lens)
     state = graph(held.triples())
     files = derived_files.add(ALEX, held, event)
-    needs_review = {kind: [{key: store.to_rdflib(value) for key, value in row.items()}
-                           for row in held.select(vocabulary.query(vocabulary.questions()[f"{kind}/What needs review"]))]
+    needs_review = {kind: held.select(vocabulary.query(vocabulary.questions()[f"{kind}/What needs review"]))
                     for kind in ("entry", "judgment")}
     views = {view: graph(files[path]) for view, path in VIEW_FILES.items()}
     return Build(state, views, needs_review)

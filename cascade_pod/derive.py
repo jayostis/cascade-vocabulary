@@ -5,11 +5,18 @@ from . import vocabulary
 DERIVED = "urn:cascade:derived:"
 
 
-def derive(store, lens):
-    """Adds the lens's derived state to the store, as a graph of its own, and returns it."""
+def steps(store, lens):
+    """Runs each derivation in turn, adding its triples to the store, and yields its path with the triples it added."""
     held = store.triples()
     for relative in vocabulary.derivations(lens):
-        store.add(store.construct(vocabulary.query(relative)))
-    derived = store.triples() - held
+        added = store.construct(vocabulary.query(relative)) - held
+        store.add(added)
+        held |= added
+        yield relative, added
+
+
+def derive(store, lens):
+    """Adds the lens's derived state to the store, as a graph of its own, and returns it."""
+    derived = set().union(*(added for _, added in steps(store, lens)))
     store.add(derived, DERIVED + lens)
     return derived

@@ -1,3 +1,5 @@
+# How many things of each type the pod holds. Records and entries share a type, so Allergy Record counts both
+# the allergies each source sent and the entries the allergies view joins them into.
 SELECT ?type (COUNT(DISTINCT ?thing) AS ?things)
 WHERE {
   ?thing a ?type .

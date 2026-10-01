@@ -11,7 +11,7 @@ import pytest
 
 from rdflib import Graph
 
-from cascade_pod import derive, store, vocabulary
+from cascade_pod import derive, vocabulary
 from cascade_pod.pod import Example
 
 ROOT = Path(__file__).absolute().parent.parent
@@ -128,7 +128,7 @@ def test_a_load_adds_the_derived_state_under_the_everyday_lens_as_a_graph_of_its
     assert load(graphdb.url).returncode == 0
     derived = derive.derive(ALEX.loaded("oxigraph"), vocabulary.DEFAULT_LENS)
     posted = Graph().parse(data=graphdb.graphs["urn:cascade:derived:everyday"], format="nt")
-    assert {tuple(store.from_rdflib(t) for t in triple) for triple in posted} == derived
+    assert set(posted) == derived
 
 
 def test_a_load_fills_one_graph_for_each_graph_of_the_pod_in_the_builders_store(graphdb):

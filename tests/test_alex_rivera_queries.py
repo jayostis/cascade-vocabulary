@@ -23,18 +23,6 @@ RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 COMMITTED = sorted(set(VIEW_FILES.values()) | {LABEL_FILE, "index.ttl", "manifest.ttl"})
 
 
-def canonical(term):
-    return term if term[0] != "literal" else ("literal", term[1], term[2] or store.XSD_STRING, term[3])
-
-
-def triples(found):
-    return sorted(tuple(canonical(t) for t in triple) for triple in found)
-
-
-def rows(found):
-    return [sorted((name, canonical(term)) for name, term in row.items()) for row in found]
-
-
 def final_graph():
     graph = Graph()
     for path in ALEX.files() + ALEX.derived:
@@ -53,9 +41,9 @@ NEEDS_REVIEW = [relative for name, relative in vocabulary.questions().items() if
 def derived_state_views_and_reviews(engine, lens, through):
     held = ALEX.loaded(engine, through)
     derived = derive.derive(held, lens)
-    views = {view: triples(held.construct(vocabulary.query(r))) for view, r in vocabulary.named("views").items()}
-    reviews = {relative: rows(held.select(vocabulary.query(relative))) for relative in NEEDS_REVIEW}
-    return triples(derived), views, reviews
+    views = {view: held.construct(vocabulary.query(r)) for view, r in vocabulary.named("views").items()}
+    reviews = {relative: held.select(vocabulary.query(relative)) for relative in NEEDS_REVIEW}
+    return derived, views, reviews
 
 
 @pytest.mark.parametrize("lens", LENSES)
@@ -67,7 +55,7 @@ def test_the_derived_state_each_view_and_what_needs_review_are_the_same_on_oxigr
 @lru_cache(maxsize=None)
 def answers(engine, lens, through=None):
     held = ALEX.store(engine, lens, through)
-    return {name: rows(held.select(vocabulary.query(relative))) for name, relative in vocabulary.questions().items()}
+    return {name: held.select(vocabulary.query(relative)) for name, relative in vocabulary.questions().items()}
 
 
 @pytest.mark.parametrize("lens", LENSES)
@@ -105,7 +93,7 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(en
 
 def test_every_committed_view_is_marked_rebuildable_and_registered():
     held = ALEX.store("oxigraph", vocabulary.DEFAULT_LENS)
-    current = {URIRef(row["version"][1]) for row in held.select(vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"]))}
+    current = {row["version"] for row in held.select(vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"]))}
     for relative in sorted(set(VIEW_FILES.values()) | {LABEL_FILE}):
         address = URIRef(ALEX.address + relative)
         graph = Graph().parse(ALEX.pod / relative, format="turtle", publicID=str(address))
@@ -178,6 +166,7 @@ def test_the_graphdb_config_names_no_machine():
 
 UNIT_PREFIXES = """
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
@@ -190,12 +179,12 @@ def answer(engine, question, turtle, tmp_path):
     path.write_text(UNIT_PREFIXES + turtle, encoding="utf-8")
     held = store.ENGINES[engine]()
     held.load(path, "urn:x:")
-    return [{name: term[1] for name, term in row.items()}
+    return [{name: str(term) for name, term in row.items()}
             for row in held.select(vocabulary.query(vocabulary.questions()[question]))]
 
 
 @pytest.mark.parametrize("engine", ENGINES)
-def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_total_of_its_records(engine, tmp_path):
+def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_number_of_its_own_records(engine, tmp_path):
     found = answer(engine, "profile/Whose it is counted as", """
         :about a jdg:Judgment ; rec:counts true ; jdg:verdict jdg:About ; prov:hadMember :p ; jdg:subject :s .
         :v1 rec:patient :p ; prov:specializationOf :r1 . :rev1 rec:version :v1 ; prov:wasDerivedFrom :d1 .
@@ -204,7 +193,7 @@ def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_t
         :d1 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Meridian" ] ] .
         :d2 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Larkspur" ] ] .
     """, tmp_path)
-    assert sorted((row["hospital"], row["records"]) for row in found) == [("Larkspur", "3"), ("Meridian", "3")]
+    assert sorted((row["hospital"], row["records"]) for row in found) == [("Larkspur", "2"), ("Meridian", "1")]
 
 
 @pytest.mark.parametrize("engine", ENGINES)
@@ -215,3 +204,13 @@ def test_an_entry_lists_a_pair_still_joined_by_what_the_derivations_judged_curre
         :b a health:AllergyRecord ; rec:inEntry :entry ; jdg:currentlyDifferent :a .
     """, tmp_path)
     assert [(row["entry"], row["record"], row["otherRecord"]) for row in found] == [("urn:x:entry", "urn:x:a", "urn:x:b")]
+
+
+@pytest.mark.parametrize("engine", ENGINES)
+def test_every_row_of_a_judgment_says_whether_it_counts_beside_what_happened_to_it(engine, tmp_path):
+    found = answer(engine, "judgment/Whether it counts", """
+        :old a jdg:Judgment .
+        :new a jdg:Judgment ; rec:counts true ; npx:supersedes :old .
+    """, tmp_path)
+    assert sorted((row["judgment"], row["counts"], row.get("happened", "")) for row in found) == [
+        ("urn:x:new", "true", ""), ("urn:x:old", "false", ""), ("urn:x:old", "false", "superseded")]

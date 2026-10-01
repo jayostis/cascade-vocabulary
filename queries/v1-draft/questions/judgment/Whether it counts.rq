@@ -1,3 +1,6 @@
+# Each judgment has one row saying whether it counts under the lens the pod was built with, and one more row for each thing
+# that happened to it: a later judgment superseded it, one retracted it, or the reference table it was made with has a newer
+# version. Only judgments that count shape the views.
 PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -13,11 +16,15 @@ WHERE {
   UNION
   { ?by npx:supersedes ?judgment .
     BIND ("superseded" AS ?happened)
+    OPTIONAL { ?judgment rec:counts ?counted }
+    BIND (COALESCE(?counted, false) AS ?counts)
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?by rdfs:label ?byLabel } }
   UNION
   { ?by npx:retracts ?judgment .
     BIND ("retracted" AS ?happened)
+    OPTIONAL { ?judgment rec:counts ?counted }
+    BIND (COALESCE(?counted, false) AS ?counts)
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?by rdfs:label ?byLabel } }
   UNION
@@ -25,6 +32,8 @@ WHERE {
     ?replaced prov:specializationOf/a rec:ReferenceSeries .
     ?by prov:wasRevisionOf ?replaced .
     BIND ("made under a reference version since replaced" AS ?happened)
+    OPTIONAL { ?judgment rec:counts ?counted }
+    BIND (COALESCE(?counted, false) AS ?counts)
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?by rdfs:label ?byLabel } }
 }
