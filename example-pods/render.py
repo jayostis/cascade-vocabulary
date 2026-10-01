@@ -94,10 +94,7 @@ def attachment(document):
 def when(text):
     if len(text) < 16 or text[10] != "T":
         return text
-    moment = datetime.fromisoformat(text)
-    offset = moment.utcoffset()
-    zone = "" if offset is None else " UTC" if not offset else " " + moment.isoformat()[-6:]
-    return moment.strftime("%Y-%m-%d %H:%M") + zone
+    return instant(text).astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 
 def instant(text):
@@ -308,7 +305,7 @@ class Site:
 
     def judgment_rows(self, judgments):
         rows = []
-        for judgment in sorted(judgments, key=lambda j: (self.judgments[j].get("made", ("", ""))[1], self.label(j))):
+        for judgment in sorted(judgments, key=lambda j: (instant(self.judgments[j]["made"][1]), self.label(j), j)):
             j = self.judgments[judgment]
             rows.append([self.link(judgment), e(self.label(j["verdict"])) if "verdict" in j else "",
                          e(when(j["made"][1])) if "made" in j else "", self.made_by(judgment), self.standing(judgment)])
@@ -415,7 +412,8 @@ class Site:
                 facts.append(("Document", text))
                 for key, title in (("hospital", "Hospital"), ("transmitter", "Transmitter")):
                     facts.extend((title, e(value[1])) for value in sorted(held[key], key=term_key))
-                facts.extend(("Retrieved", e(when(value[1]))) for value in sorted(held["retrieved"], key=term_key))
+                facts.extend(("Retrieved", e(when(value[1])))
+                             for value in sorted(held["retrieved"], key=lambda v: (instant(v[1]), term_key(v))))
             if "import" in row:
                 started = f' <span class="quiet">started {e(when(row["started"][1]))}</span>' if "started" in row else ""
                 facts.append(("Import", e(self.label(row["import"])) + started))

@@ -166,8 +166,19 @@ def test_a_literal_is_shown_as_a_time_only_when_it_is_an_xsd_date_time(tmp_path)
     assert site.label(("literal", "2027-01-01T09:00:00Z", XSD + "dateTime", None)) == "2027-01-01 09:00 UTC"
 
 
-def test_a_time_keeps_its_offset(tmp_path):
-    assert render.when("2027-01-01T09:00:00+05:00") == "2027-01-01 09:00 +05:00"
+def test_a_time_is_shown_in_utc_whatever_its_offset(tmp_path):
+    assert render.when("2027-01-01T09:00:00+05:00") == "2027-01-01 04:00 UTC"
+    assert render.when("2027-01-01T09:00:00") == "2027-01-01 09:00 UTC"
+    assert render.when("2027-01-01") == "2027-01-01"
+
+
+def test_judgments_are_listed_in_the_order_they_were_made_whatever_the_offsets(tmp_path):
+    site = site_over(tmp_path, """
+        :early a jdg:Judgment ; prov:generatedAtTime "2027-01-01T10:00:00+05:00"^^xsd:dateTime ; prov:wasAttributedTo :someone .
+        :late a jdg:Judgment ; prov:generatedAtTime "2027-01-01T06:00:00Z"^^xsd:dateTime ; prov:wasAttributedTo :someone .
+    """)
+    rows = Page(site.judgment_rows({"https://pod.example/late", "https://pod.example/early"})).rows
+    assert [row[0][0] for row in rows[1:]] == ["early", "late"]
 
 
 def test_the_current_revision_is_the_one_that_arrived_last_whatever_the_offsets(tmp_path):
