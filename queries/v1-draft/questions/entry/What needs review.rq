@@ -6,7 +6,7 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?otherRecord
+SELECT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
 WHERE {
   { { SELECT ?entry
       WHERE {
@@ -37,6 +37,8 @@ WHERE {
     BIND ("judged different, still joined" AS ?needs)
     OPTIONAL { ?judgment rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?record , ?otherRecord }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
-    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
 }
 ORDER BY ?needs ?entryLabel ?entry ?judgment ?record ?otherRecord

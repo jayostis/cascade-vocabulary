@@ -1,0 +1,21 @@
+# Every judgment with this record among its members, in the order they were made: that two records are the same, that they are different, or that one is wrong.
+# Counts says whether the judgment counts under the lens the pod was built with; one that does not was superseded, retracted, or made with a reference table since replaced.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?recordLabel ?made ?judgment ?judgmentLabel ?verdict ?counts
+WHERE {
+  VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+  ?record a ?type .
+  ?judgment a jdg:Judgment ; prov:hadMember ?record ; prov:generatedAtTime ?made .
+  OPTIONAL { ?judgment jdg:verdict ?verdict }
+  OPTIONAL { ?judgment rec:counts ?counted }
+  BIND (COALESCE(?counted, false) AS ?counts)
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+}
+ORDER BY ?recordLabel ?record ?made ?judgment

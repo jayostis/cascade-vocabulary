@@ -1,7 +1,9 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT ?subject
+SELECT ?subject ?subjectLabel
 WHERE {
   ?subject a rec:Subject .
+  OPTIONAL { ?subject rdfs:label ?subjectLabel }
 }
 ORDER BY ?subject

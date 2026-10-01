@@ -1,0 +1,17 @@
+# Every judgment with this patient profile among its members, in the order they were made. An About judgment says whose profile it is; until one counts, the records that name the profile are in no view.
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?profile ?profileLabel ?made ?judgment ?judgmentLabel ?verdict ?counts
+WHERE {
+  ?version rec:patient ?profile .
+  ?judgment a jdg:Judgment ; prov:hadMember ?profile ; prov:generatedAtTime ?made .
+  OPTIONAL { ?judgment jdg:verdict ?verdict }
+  OPTIONAL { ?judgment rec:counts ?counted }
+  BIND (COALESCE(?counted, false) AS ?counts)
+  OPTIONAL { ?profile rdfs:label ?profileLabel }
+  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+}
+ORDER BY ?profileLabel ?profile ?made ?judgment

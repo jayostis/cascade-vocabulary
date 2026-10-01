@@ -4,16 +4,20 @@ PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?judgment ?judgmentLabel ?made ?verdict ?author ?role ?member ?memberLabel ?reason ?supersedes ?retracts
+SELECT ?judgment ?judgmentLabel ?made ?verdict ?author ?authorLabel ?role ?member ?memberLabel ?reason
+       ?supersedes ?supersedesLabel ?retracts ?retractsLabel
 WHERE {
   ?judgment a jdg:Judgment ; prov:generatedAtTime ?made ; prov:wasAttributedTo ?author .
   OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+  OPTIONAL { ?author rdfs:label ?authorLabel }
   OPTIONAL { ?judgment jdg:verdict ?verdict }
   OPTIONAL { ?judgment prov:qualifiedAttribution/prov:hadRole ?role }
   OPTIONAL { ?judgment prov:hadMember ?member .
              OPTIONAL { ?member rdfs:label ?memberLabel } }
   OPTIONAL { ?judgment dct:description ?reason }
-  OPTIONAL { ?judgment npx:supersedes ?supersedes }
-  OPTIONAL { ?judgment npx:retracts ?retracts }
+  OPTIONAL { ?judgment npx:supersedes ?supersedes .
+             OPTIONAL { ?supersedes rdfs:label ?supersedesLabel } }
+  OPTIONAL { ?judgment npx:retracts ?retracts .
+             OPTIONAL { ?retracts rdfs:label ?retractsLabel } }
 }
 ORDER BY ?made ?judgmentLabel ?judgment ?memberLabel ?member ?role ?supersedes ?retracts

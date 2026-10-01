@@ -1,8 +1,11 @@
 PREFIX pav: <http://purl.org/pav/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT ?series ?version
+SELECT ?series ?seriesLabel ?version ?versionLabel
 WHERE {
   ?series a rec:ReferenceSeries ; pav:hasCurrentVersion ?version .
+  OPTIONAL { ?series rdfs:label ?seriesLabel }
+  OPTIONAL { ?version rdfs:label ?versionLabel }
 }
 ORDER BY ?series ?version

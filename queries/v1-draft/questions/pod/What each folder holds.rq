@@ -1,0 +1,14 @@
+# Each row is one folder of the pod, one type its files state, and how many things of that type those files describe, in how many files.
+# Every file is loaded as a graph named by its address, so GRAPH ?file reads one file at a time, and a file's folder is its address after the storage root the owner's profile names.
+# A two-character folder only spreads files out, so its files count toward the folder above it. A row with no type counts the things described without a type stated for them.
+PREFIX pim: <http://www.w3.org/ns/pim/space#>
+
+SELECT ?folder ?type (COUNT(DISTINCT ?thing) AS ?things) (COUNT(DISTINCT ?file) AS ?files)
+WHERE {
+  GRAPH ?file { ?thing ?property ?value OPTIONAL { ?thing a ?type } }
+  ?owner pim:storage ?root .
+  FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
+  BIND (CONCAT("/", REPLACE(STRAFTER(STR(?file), STR(?root)), "([0-9a-f]{2}/)?[^/]*$", "")) AS ?folder)
+}
+GROUP BY ?folder ?type
+ORDER BY ?folder ?type
