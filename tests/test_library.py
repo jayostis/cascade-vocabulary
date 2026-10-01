@@ -109,3 +109,13 @@ def test_every_turtle_file_a_tool_writes_comes_from_the_one_writer():
     files = written_by_a_tool(Example(EXAMPLE))
     assert len(files) > 100
     assert [path for path, address in files.items() if rewritten(path, address) != path.read_bytes()] == []
+
+
+@pytest.mark.parametrize("iri", ["https://pod.example/clinical/allergies.ttl", "https://pod.example/clinical/allergies.ttl#x",
+                                 "https://pod.example/clinical/", "https://pod.example/clinical/other.ttl",
+                                 "https://pod.example/clinical/#x", "https://pod.example/clinical//x",
+                                 "https://pod.example/clinical/a:b", "https://pod.example/clinical/?q"])
+def test_every_iri_the_writer_writes_reads_back_as_itself(iri):
+    base = "https://pod.example/clinical/allergies.ttl"
+    triple = (URIRef(iri), URIRef("urn:x:p"), URIRef(iri))
+    assert set(store.parsed_text(turtle.write({triple}, base), base)) == {triple}

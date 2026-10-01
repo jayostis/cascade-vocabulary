@@ -32,8 +32,12 @@ def literal(text, datatype=XSD_STRING):
 
 
 def parsed(path, base=None):
+    return parsed_text(path.read_bytes(), base)
+
+
+def parsed_text(octets, base=None):
     keep_literals_as_written()
-    return rdflib.Graph().parse(data=path.read_bytes(), format="turtle", publicID=base)
+    return rdflib.Graph().parse(data=octets, format="turtle", publicID=base)
 
 
 def from_rdflib(node):

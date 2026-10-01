@@ -4,6 +4,7 @@ folder relative to the file."""
 
 import re
 from collections import defaultdict
+from urllib.parse import urljoin
 
 from rdflib import BNode, URIRef
 from rdflib.namespace import RDF, XSD
@@ -58,13 +59,16 @@ def ntriples(triples):
 
 
 def _relative(iri, base):
-    if iri == base or iri.startswith(base + "#"):
-        return iri[len(base):]
+    """The shortest form of the IRI relative to the file that reads back as the IRI, or None."""
     folder = base[: base.rindex("/") + 1]
-    if not iri.startswith(folder):
+    if iri == base or iri.startswith(base + "#"):
+        written = iri[len(base):]
+    elif iri.startswith(folder):
+        rest = iri[len(folder):]
+        written = rest if rest and ":" not in rest.split("/")[0] else "./" + rest
+    else:
         return None
-    rest = iri[len(folder):]
-    return rest if rest and ":" not in rest.split("/")[0] else "./" + rest
+    return written if urljoin(base, written) == iri else None
 
 
 def write(triples, base=None):
