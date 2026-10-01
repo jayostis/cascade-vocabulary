@@ -399,3 +399,9 @@ def test_text_from_the_pod_is_escaped_wherever_the_site_shows_it(tmp_path):
     text = (folder / "site" / page_of("urn:x:record")).read_text(encoding="utf-8")
     assert "<script>" not in text and "<b>" not in text and 'onmouseover="x' not in text
     assert "&lt;script&gt;" in text and "&lt;b&gt;bold&lt;/b&gt;" in text
+
+
+def test_a_block_asked_under_the_other_lens_links_to_no_page_of_this_site(pages):
+    other = [b for b in blocks(pages["pipeline.html"]) if b["command"] and "--lens" in b["command"]]
+    assert other and not [href for b in other for row in b["rows"] for cell in row.values() for href in cell["hrefs"]
+                          if href.endswith(".html")]

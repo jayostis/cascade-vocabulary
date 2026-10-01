@@ -1,4 +1,4 @@
-{% macro term(value, label=none) -%}
+{% macro term(value, label=none, linked=true) -%}
 <data value="{{ value|nt }}">
 {%- if value is literal -%}
 {{ value|shown }}
@@ -6,7 +6,7 @@
 {%- set system, number = value|code -%}
 <a href="{{ value }}">{{ system }} {{ number }}</a>
 {%- else -%}
-{%- set href, page, turtle = value|href, value|page, value|turtle -%}
+{%- set href, page, turtle = (value|href, value|page, value|turtle) if linked else (none, none, none) -%}
 {%- if href %}<a href="{{ href }}">{% endif -%}
 {%- if label %}{{ label }}
 {%- elif value in terms %}{{ terms[value] }} <code>{{ value|prefixed }}</code>
@@ -59,7 +59,7 @@
 <thead><tr>{% for column in q.shown %}<th>?{{ column }}</th>{% endfor %}</tr></thead>
 <tbody>
 {% for row in q.rows %}
-<tr>{% for column in q.shown %}<td data-label="?{{ column }}">{% if column in row %}{{ term(row[column], row.get(column ~ "Label")) }}{% endif %}</td>{% endfor %}</tr>
+<tr>{% for column in q.shown %}<td data-label="?{{ column }}">{% if column in row %}{{ term(row[column], row.get(column ~ "Label"), q.lens == lens) }}{% endif %}</td>{% endfor %}</tr>
 {% endfor %}
 </tbody>
 </table>
