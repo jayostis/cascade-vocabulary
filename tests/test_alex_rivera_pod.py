@@ -186,7 +186,7 @@ def test_where_hospitals_disagree_on_criticality_the_entry_shows_the_most_severe
     b = build(engine, lens, event)
     key = entry_holding(b, "allergies", "H1-ALG-SULFA")
     assert values(entries(b.views["allergies"])[key], CLINICAL.criticality) == {string("high")}
-    assert key in listed_entries(b, "criticality-disagreements")
+    assert key in listed_entries(b, "members disagree on criticality")
 
 
 # P5
@@ -275,14 +275,14 @@ def test_a_group_joined_through_two_kinds_of_machine_sameness_is_one_entry_liste
     flu = frozenset({"H1-IMM-FLU25", "H2O-IMM-FLU25", "H2F-IMM-FLU25"})
     everyday = build(engine, "everyday", "E13")
     assert entry_keys(everyday, "immunizations") == {flu}
-    assert listed_entries(everyday, "mixed-justifications") == {flu}
+    assert listed_entries(everyday, "joined through two kinds of machine sameness") == {flu}
 
     export = build(engine, "export", "E13")
     assert entry_keys(export, "immunizations") == {
         frozenset({"H1-IMM-FLU25", "H2O-IMM-FLU25"}),
         frozenset({"H2F-IMM-FLU25"}),
     }
-    assert listed_entries(export, "mixed-justifications") == set()
+    assert listed_entries(export, "joined through two kinds of machine sameness") == set()
     assert not counts(export, "J17")
 
 

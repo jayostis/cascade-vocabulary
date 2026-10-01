@@ -1,4 +1,4 @@
-"""Creates the alex-rivera repository in a GraphDB, loads the finished pod into it, and saves the queries for people.
+"""Creates the alex-rivera repository in a GraphDB, loads the finished pod into it, and saves every question.
 
 python3 example-pods/alex-rivera/graphdb/load.py <GraphDB URL>
 """
@@ -63,11 +63,10 @@ def load(base, name, graph):
     request("POST", f"{base}/repositories/{REPOSITORY}/statements?context={context}", body, "application/n-triples")
 
 
-def save_queries(base):
+def save_questions(base):
     saved = {entry["name"] for entry in json.loads(request("GET", f"{base}/rest/sparql/saved-queries", accept="application/json"))}
-    for path in sorted((build.QUERIES / "people").glob("*.rq")):
-        name = path.relative_to(build.QUERIES).with_suffix("").as_posix()
-        query = {"name": name, "body": path.read_text(encoding="utf-8"), "shared": True}
+    for name, relative in build.questions().items():
+        query = {"name": name, "body": build.query_text(relative), "shared": True}
         method = "PUT" if name in saved else "POST"
         request(method, f"{base}/rest/sparql/saved-queries", json.dumps(query).encode("utf-8"), "application/json")
         yield name
@@ -78,7 +77,7 @@ def fill(base):
     for name, graph in graphs():
         load(base, name, graph)
         loaded += 1
-    saved = list(save_queries(base))
+    saved = list(save_questions(base))
     size = request("GET", f"{base}/repositories/{REPOSITORY}/size").decode("utf-8").strip()
     return loaded, saved, size
 

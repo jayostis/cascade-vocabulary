@@ -210,6 +210,72 @@ def test_no_query_spells_out_an_iri_in_a_namespace_the_queries_declare(relative)
     assert {str(iri) for iri in iris(query) if str(iri).startswith(declared_namespaces)} == set()
 
 
+KINDS = ("entry", "record", "judgment", "profile")
+DERIVED_ABSENCES = {URIRef("http://purl.org/nanopub/x/supersedes"), URIRef("http://purl.org/nanopub/x/retracts"),
+                    URIRef("http://www.w3.org/ns/prov#wasRevisionOf")}
+RESTATING = {
+    "not-exists": "SELECT ?j WHERE { ?j ?p ?o FILTER NOT EXISTS { ?s <http://purl.org/nanopub/x/supersedes> ?j } }",
+    "minus": "SELECT ?j WHERE { ?j ?p ?o MINUS { ?s <http://purl.org/nanopub/x/retracts> ?j } }",
+    "optional-bound": """SELECT ?r WHERE { ?r ?p ?o OPTIONAL { ?later <http://www.w3.org/ns/prov#wasRevisionOf> ?r }
+                         FILTER (!BOUND(?later)) }""",
+}
+
+
+def every_question():
+    return list(build.questions().values())
+
+
+def restated_absences(text):
+    algebra = prepareQuery(text).algebra
+    bound = {node["arg"] for node in nodes(algebra) if node.name == "Builtin_BOUND"}
+    found = []
+    for node in nodes(algebra):
+        if node.name == "Builtin_NOTEXISTS" and DERIVED_ABSENCES & set(iris(node["graph"])):
+            found.append("not-exists")
+        if node.name == "Minus" and DERIVED_ABSENCES & set(iris(node["p2"])):
+            found.append("minus")
+        if node.name == "LeftJoin" and DERIVED_ABSENCES & set(iris(node["p2"])) and bound & node["p2"]["_vars"]:
+            found.append("optional-bound")
+    return found
+
+
+@pytest.mark.parametrize("form", sorted(RESTATING))
+def test_the_restating_check_refuses_each_way_of_asking_for_an_absence(form):
+    assert restated_absences(RESTATING[form]) == [form]
+
+
+def test_the_restating_check_accepts_a_term_the_query_only_reads():
+    assert restated_absences("""SELECT ?j ?by WHERE {
+      ?j ?p ?o OPTIONAL { ?by <http://purl.org/nanopub/x/supersedes> ?j } FILTER (BOUND(?o)) }""") == []
+
+
+@pytest.mark.parametrize("relative", every_question())
+def test_no_question_restates_a_derivation(relative):
+    assert restated_absences(build.query_text(relative)) == []
+
+
+@pytest.mark.parametrize("relative", every_question())
+def test_every_question_is_a_select(relative):
+    assert prepareQuery(build.query_text(relative)).algebra.name == "SelectQuery"
+
+
+def test_every_question_is_filed_under_the_pod_or_a_kind():
+    assert {Path(relative).parent.name for relative in every_question()} == {"pod", *KINDS}
+
+
+@pytest.mark.parametrize("relative", [q for q in every_question() if Path(q).parent.name in KINDS])
+def test_every_question_outside_pod_returns_the_column_of_its_kind(relative):
+    columns = [str(v) for v in prepareQuery(build.query_text(relative)).algebra["PV"]]
+    assert Path(relative).parent.name in columns
+
+
+@pytest.mark.parametrize("relative", every_question())
+def test_every_label_column_labels_a_column_of_the_question(relative):
+    columns = {str(v) for v in prepareQuery(build.query_text(relative)).algebra["PV"]}
+    labelled = {column[:-len("Label")] for column in columns if column.endswith("Label")}
+    assert labelled <= columns
+
+
 def queries_held(source):
     found = []
     for node in ast.walk(ast.parse(source)):

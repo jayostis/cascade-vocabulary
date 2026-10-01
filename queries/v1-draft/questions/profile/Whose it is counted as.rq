@@ -1,0 +1,19 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?profile ?profileLabel ?subject ?counts ?about ?aboutLabel ?hospital (COUNT(DISTINCT ?record) AS ?records)
+WHERE {
+  ?about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember ?profile ; jdg:subject ?subject .
+  OPTIONAL { ?about rec:counts ?counted }
+  BIND (COALESCE(?counted, false) AS ?counts)
+  OPTIONAL { ?profile rdfs:label ?profileLabel }
+  OPTIONAL { ?about rdfs:label ?aboutLabel }
+  OPTIONAL { ?version rec:patient ?profile ; prov:specializationOf ?record }
+  OPTIONAL { ?version rec:patient ?profile .
+             ?revision rec:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+             ?attribution prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
+}
+GROUP BY ?profile ?profileLabel ?subject ?counts ?about ?aboutLabel ?hospital
+ORDER BY ?profileLabel ?profile ?aboutLabel ?about ?hospital

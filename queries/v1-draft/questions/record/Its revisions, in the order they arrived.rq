@@ -1,0 +1,27 @@
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?recordLabel ?arrived ?revision ?previous ?version ?versionLabel ?change
+       ?document ?retrieved ?hospital ?transmitter ?import ?importLabel ?started
+WHERE {
+  { SELECT ?version (MIN(?received) AS ?first)
+    WHERE { ?any rec:version ?version ; prov:generatedAtTime ?received . }
+    GROUP BY ?version }
+  ?revision rec:revisionOf ?record ; rec:version ?version ; prov:generatedAtTime ?arrived .
+  BIND (IF(?arrived = ?first, "a new version", "an earlier version again") AS ?change)
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { ?version rdfs:label ?versionLabel }
+  OPTIONAL { ?revision prov:wasRevisionOf ?previous }
+  OPTIONAL { ?revision prov:wasDerivedFrom ?document .
+             OPTIONAL { ?document pav:retrievedOn ?retrieved }
+             OPTIONAL { ?document prov:qualifiedAttribution ?author .
+                        ?author prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
+             OPTIONAL { ?document prov:qualifiedAttribution ?sender .
+                        ?sender prov:hadRole rec:transmitter ; prov:agent/rdfs:label ?transmitter } }
+  OPTIONAL { ?revision prov:wasGeneratedBy ?import .
+             OPTIONAL { ?import rdfs:label ?importLabel }
+             OPTIONAL { ?import prov:startedAtTime ?started } }
+}
+ORDER BY ?recordLabel ?record ?arrived ?revision ?document ?retrieved ?hospital ?transmitter

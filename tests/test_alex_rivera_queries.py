@@ -32,16 +32,7 @@ def triples(found):
 
 
 def rows(found):
-    return sorted(sorted((name, canonical(term)) for name, term in row.items()) for row in found)
-
-
-@lru_cache(maxsize=None)
-def final_pod(engine):
-    store = build.ENGINES[engine]()
-    for path in build.pod_files() + build.events()["derived"]:
-        if not path.startswith(build.NOT_RDF):
-            store.load(build.POD / path, build.POD_BASE + path)
-    return store
+    return [sorted((name, canonical(term)) for name, term in row.items()) for row in found]
 
 
 def final_graph():
@@ -52,26 +43,42 @@ def final_graph():
     return graph
 
 
+EVENTS = [e["event"] for e in build.events()["events"]]
+LENSES = ["everyday", "export"]
 
-def derived_state_views_and_reviews(engine, lens, through):
+
+def derived_state_and_views(engine, lens, through):
     store = build.loaded(engine, through)
-    derived = []
-    for relative in build.derivations(lens):
-        found = store.construct(build.query_text(relative))
-        derived.append((relative, triples(found)))
-        store.add(found)
-    views = {v: triples(store.construct(build.query_text(r))) for v, r in build.named("views").items()}
-    reviews = {v: rows(store.select(build.query_text(r))) for v, r in build.named("review").items()}
-    return derived, views, reviews
+    derived = build.derive(store, lens)
+    return triples(derived), {view: triples(store.construct(build.query_text(r))) for view, r in build.named("views").items()}
 
 
-@pytest.mark.parametrize("lens", ["everyday", "export"])
-@pytest.mark.parametrize("event", [e["event"] for e in build.events()["events"]])
-def test_each_derivation_view_and_review_is_the_same_on_oxigraph_and_rdflib(event, lens):
-    assert derived_state_views_and_reviews("oxigraph", lens, event) == derived_state_views_and_reviews("rdflib", lens, event)
+@pytest.mark.parametrize("lens", LENSES)
+@pytest.mark.parametrize("event", EVENTS)
+def test_the_derived_state_and_each_view_are_the_same_on_oxigraph_and_rdflib(event, lens):
+    assert derived_state_and_views("oxigraph", lens, event) == derived_state_and_views("rdflib", lens, event)
 
 
-@pytest.mark.parametrize("lens", ["everyday", "export"])
+@lru_cache(maxsize=None)
+def answers(engine, lens, through=None):
+    store = build.build(engine, lens, through).store
+    return {name: rows(store.select(build.query_text(relative))) for name, relative in build.questions().items()}
+
+
+@pytest.mark.parametrize("lens", LENSES)
+def test_every_question_gives_the_same_rows_in_the_same_order_on_oxigraph_and_rdflib(lens):
+    assert answers("oxigraph", lens) == answers("rdflib", lens)
+
+
+def test_every_question_has_an_answer_at_some_event():
+    unanswered = set(build.questions())
+    for event in EVENTS:
+        for lens in LENSES:
+            unanswered -= {name for name, found in answers("oxigraph", lens, event).items() if found}
+    assert unanswered == set()
+
+
+@pytest.mark.parametrize("lens", LENSES)
 @pytest.mark.parametrize("engine", ENGINES)
 def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_pods_own(engine, lens):
     store = build.loaded(engine)
@@ -92,7 +99,7 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(en
 
 def test_every_committed_view_is_marked_rebuildable_and_registered():
     store = build.build("oxigraph").store
-    current = {URIRef(row["version"][1]) for row in store.select(build.query_text(build.CURRENT_REFERENCE_VERSIONS))}
+    current = {URIRef(row["version"][1]) for row in store.select(build.query_text(build.questions()["pod/Which reference versions are current"]))}
     for relative in sorted(set(build.VIEW_FILES.values()) | {build.LABEL_FILE}):
         address = URIRef(build.POD_BASE + relative)
         graph = Graph().parse(build.POD / relative, format="turtle", publicID=str(address))
@@ -154,14 +161,6 @@ def test_no_two_labelled_things_share_a_label():
     graph = Graph().parse(build.POD / build.LABEL_FILE, publicID=build.POD_BASE + build.LABEL_FILE)
     things = Counter(str(label) for label in graph.objects(None, URIRef(RDFS_LABEL)))
     assert {label: n for label, n in things.items() if n > 1} == {}
-
-
-@pytest.mark.parametrize("relative", build.named("people").values())
-def test_every_query_for_people_runs_on_the_final_pod_and_both_engines_agree(relative):
-    text = build.query_text(relative)
-    found = {engine: rows(final_pod(engine).select(text)) for engine in ENGINES}
-    assert found["oxigraph"] != []
-    assert found["oxigraph"] == found["rdflib"]
 
 
 def test_the_graphdb_config_names_no_machine():

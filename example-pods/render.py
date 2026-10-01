@@ -20,6 +20,7 @@ LENS = "everyday"
 ONTOLOGIES = Path(__file__).absolute().parent.parent / "ontologies"
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 XSD_DATE_TIME = "http://www.w3.org/2001/XMLSchema#dateTime"
+TRUE = ("literal", "true", "http://www.w3.org/2001/XMLSchema#boolean", None)
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 MERGED_FROM = "https://ns.cascadeprotocol.org/core/v1#mergedFrom"
 SOURCES = {REC + "latestMember": "Latest member", REC + "statusFrom": "Status from", REC + "dateFrom": "Date from"}
@@ -129,7 +130,7 @@ class Pod:
         for path in sorted(ONTOLOGIES.rglob("*.ttl")):
             if not path.name.endswith(".shapes.ttl"):
                 vocabulary.load(path, path.absolute().as_uri())
-        text = self.build.query_text("pages/display-labels.rq")
+        text = self.build.query_text("questions/pod/What everything is called.rq")
         labels = {}
         for source in (vocabulary.select(text), self.store.select(text)):
             for row in sorted(source, key=lambda r: r["label"][1]):
@@ -156,12 +157,14 @@ class Site:
 
     def _collect(self):
         pod = self.pod
-        self.counting = {row["judgment"][1] for row in pod.rows("pages/counting-judgments.rq")}
+        standing = pod.rows("questions/judgment/Whether it counts.rq")
+        self.counting = {row["judgment"][1] for row in standing if row.get("counts") == TRUE}
         self.lapsed = defaultdict(set)
-        for row in pod.rows("people/Judgments that no longer count.rq"):
-            self.lapsed[row["judgment"][1]].add((row["why"][1], row["by"]))
+        for row in standing:
+            if "why" in row:
+                self.lapsed[row["judgment"][1]].add((row["why"][1], row["by"]))
         self.judgments = defaultdict(lambda: {"members": set(), "supersedes": set(), "retracts": set()})
-        for row in pod.rows("people/Who judged what.rq"):
+        for row in pod.rows("questions/judgment/Who judged what.rq"):
             j = self.judgments[row["judgment"][1]]
             for key in ("made", "verdict", "author", "role", "reason"):
                 if key in row:
@@ -179,7 +182,7 @@ class Site:
         self.revisions = defaultdict(list)
         self.current = {}
         revisions = {}
-        for row in pod.rows("pages/revisions.rq"):
+        for row in pod.rows("questions/record/Its revisions, in the order they arrived.rq"):
             revision = revisions.get(row["revision"])
             if revision is None:
                 revision = revisions[row["revision"]] = {
@@ -197,18 +200,20 @@ class Site:
             currents = [r for r in rows if not any(o.get("previous") == r["revision"] for o in rows)]
             self.current[record] = currents[-1]
         self.content = defaultdict(list)
-        for row in pod.rows("pages/version-content.rq"):
+        for row in pod.rows("questions/record/What each version says.rq"):
             self.content[row["version"][1]].append((row["field"][1], row["value"]))
         self.sources = defaultdict(list)
-        for row in pod.rows("pages/entry-sources.rq"):
+        for row in pod.rows("questions/entry/Which member each chosen value came from.rq"):
             self.sources[row["entry"][1]].append((row["role"][1], row["record"][1]))
         self.profile_records = defaultdict(set)
-        for row in pod.rows("pages/profiles.rq"):
+        for row in pod.rows("questions/profile/Which records name it.rq"):
             self.profile_records[row["profile"][1]].add(row["record"][1])
-        self.not_shown = pod.rows("pages/not-shown.rq")
-        self.subjects = [row["subject"][1] for row in pod.rows("pages/subjects.rq")]
+        self.not_shown = pod.rows("questions/record/Why it is in no view.rq")
+        self.subjects = [row["subject"][1] for row in pod.rows("questions/pod/The person this pod is about.rq")]
         self.counted_profiles = defaultdict(set)
-        for row in pod.rows("pages/profiles-counted.rq"):
+        for row in pod.rows("questions/profile/Whose it is counted as.rq"):
+            if row["counts"] != TRUE:
+                continue
             hospitals = self.counted_profiles[(row["profile"], row["about"])]
             if "hospital" in row:
                 hospitals.add(row["hospital"][1])

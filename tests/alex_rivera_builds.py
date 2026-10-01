@@ -171,7 +171,7 @@ class Rdflib:
 class Build:
     state: Graph
     views: dict
-    reviews: dict
+    needs_review: dict
 
 
 @lru_cache(maxsize=None)
@@ -183,8 +183,9 @@ def _build(engine, lens, files):
     for relative in example_build.derivations(lens):
         store.derive(example_build.query_text(relative))
     views = {view: store.construct(example_build.query_text(r)) for view, r in example_build.named("views").items()}
-    reviews = {review: store.select(example_build.query_text(r)) for review, r in example_build.named("review").items()}
-    return Build(store.state(), views, reviews)
+    needs_review = {kind: store.select(example_build.query_text(example_build.questions()[f"{kind}/What needs review"]))
+                    for kind in ("entry", "judgment")}
+    return Build(store.state(), views, needs_review)
 
 
 def build(engine, lens, event):
@@ -240,19 +241,24 @@ def entry_members(build, entry):
     return frozenset(_member_handle(m) for m in members)
 
 
-def listed_entries(build, review):
-    return {entry_members(build, row["entry"]) for row in build.reviews[review]}
+def entries_needing(build, needs):
+    return [row for row in build.needs_review["entry"] if str(row["needs"]) == needs]
+
+
+def listed_entries(build, needs):
+    return {entry_members(build, row["entry"]) for row in entries_needing(build, needs)}
 
 
 def listed_judgments(build):
-    return {handle(row["judgment"]) for row in build.reviews["changed-since-judged"]}
+    return {handle(row["judgment"]) for row in build.needs_review["judgment"]}
 
 
 def listed_pairs(build):
     pairs = set()
-    for row in build.reviews["different-pairs-joined"]:
-        assert str(row["a"]) < str(row["b"]), f"?a {row['a']} is not the smaller of the pair by STR"
-        pairs.add((handle(row["a"]), handle(row["b"]), entry_members(build, row["entry"])))
+    for row in entries_needing(build, "judged different, still joined"):
+        record, other = row["record"], row["otherRecord"]
+        assert str(record) < str(other), f"?record {record} is not the smaller of the pair by STR"
+        pairs.add((handle(record), handle(other), entry_members(build, row["entry"])))
     return pairs
 
 

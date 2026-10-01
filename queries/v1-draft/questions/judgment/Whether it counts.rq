@@ -4,8 +4,13 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT ?judgmentLabel ?why ?byLabel ?judgment ?by
+SELECT ?judgment ?judgmentLabel ?counts ?why ?by ?byLabel
 WHERE {
+  { ?judgment a jdg:Judgment .
+    OPTIONAL { ?judgment rec:counts ?counted }
+    BIND (COALESCE(?counted, false) AS ?counts)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
+  UNION
   { ?by npx:supersedes ?judgment .
     BIND ("superseded" AS ?why)
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
@@ -23,4 +28,4 @@ WHERE {
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?by rdfs:label ?byLabel } }
 }
-ORDER BY ?judgmentLabel ?why
+ORDER BY ?judgmentLabel ?judgment ?why ?by

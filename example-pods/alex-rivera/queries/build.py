@@ -27,7 +27,6 @@ LABEL_FILE = "clinical/labels.ttl"
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 PROV_USED = "http://www.w3.org/ns/prov#used"
 REC_VIEW = "https://ns.cascadeprotocol.org/records/v1-draft#View"
-CURRENT_REFERENCE_VERSIONS = "questions/pod/Which reference versions are current.rq"
 
 
 def events():
@@ -57,6 +56,13 @@ def query_text(relative):
 
 def named(folder):
     return {path.stem: path.relative_to(QUERIES).as_posix() for path in sorted((QUERIES / folder).glob("*.rq"))}
+
+
+def questions():
+    """Each question's path under QUERIES, by its path under questions/ without the suffix."""
+    folder = QUERIES / "questions"
+    return {path.relative_to(folder).with_suffix("").as_posix(): path.relative_to(QUERIES).as_posix()
+            for path in sorted(folder.rglob("*.rq"))}
 
 
 def positions():
@@ -262,7 +268,8 @@ def manifest_ttl(created):
 def written(engine):
     """Every file the build writes, by its path within pod/."""
     built = build(engine)
-    used = [row["version"][1] for row in built.store.select(query_text(CURRENT_REFERENCE_VERSIONS))]
+    current = query_text(questions()["pod/Which reference versions are current"])
+    used = [row["version"][1] for row in built.store.select(current)]
     files = {VIEW_FILES[view]: turtle(triples, used) for view, triples in built.views.items()}
     files[LABEL_FILE] = turtle(built.labels, used)
     manifest = events()
