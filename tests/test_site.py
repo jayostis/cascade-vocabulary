@@ -357,3 +357,10 @@ def test_no_template_and_not_the_stylesheet_holds_an_iri():
     found = {path.name: re.findall(r"\w+://[^\s\"'<>]+", path.read_text(encoding="utf-8"))
              for path in [*(site.HERE / "templates").glob("*.html"), site.HERE / site.STYLESHEET]}
     assert {name: iris for name, iris in found.items() if iris} == {}
+
+
+
+def test_no_things_page_shows_what_everything_is_called_and_the_pipeline_page_does(pages):
+    titles = {name: {b["title"] for b in blocks(page)} for name, page in pages.items()}
+    assert not [name for name in thing_pages(pages) if "What everything is called" in titles[name]]
+    assert "What everything is called" in titles["pipeline.html"]

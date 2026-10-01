@@ -19,7 +19,6 @@ ENGINE = "oxigraph"
 HERE = Path(__file__).absolute().parent
 STYLESHEET = "site.css"
 COPY = "pod/"
-ANY_THING = "thing"
 STATED = "pod/Which file states each thing"
 CALLED = "pod/What everything is called"
 CODE_SYSTEMS = {
@@ -117,13 +116,9 @@ class Site:
         return {thing: copies[file] for thing, file in stated.items()} | copies | stored | made | pages
 
     def about(self, thing, kind=None):
-        """Which files state it, each other pod question about any thing, then each question of the kind, with only the
-        rows about this one."""
-        anything = sorted((name != STATED, name) for name, q in self.questions.items()
-                          if name.startswith("pod/") and ANY_THING in q.columns)
-        asked = [(ANY_THING, self.questions[name]) for _, name in anything]
-        asked += [(kind, q) for name, q in self.questions.items() if kind and name.startswith(kind + "/")]
-        return [question.of(column, thing) for column, question in asked]
+        """Which files state it, then each question of the kind, with only the rows about this one."""
+        asked = [self.questions[STATED].of("thing", thing)]
+        return asked + [q.of(kind, thing) for name, q in self.questions.items() if kind and name.startswith(kind + "/")]
 
     def environment(self):
         environment = jinja2.Environment(loader=jinja2.FileSystemLoader(HERE / "templates"), autoescape=True,
