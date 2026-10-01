@@ -199,3 +199,13 @@ def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_t
         :d2 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Larkspur" ] ] .
     """, tmp_path)
     assert sorted((row["hospital"], row["records"]) for row in found) == [("Larkspur", "3"), ("Meridian", "3")]
+
+
+@pytest.mark.parametrize("engine", ENGINES)
+def test_an_entry_lists_a_pair_still_joined_by_what_the_derivations_judged_currently_different(engine, tmp_path):
+    found = answer(engine, "entry/What needs review", """
+        @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+        :a a health:AllergyRecord ; rec:inEntry :entry ; jdg:currentlyDifferent :b .
+        :b a health:AllergyRecord ; rec:inEntry :entry ; jdg:currentlyDifferent :a .
+    """, tmp_path)
+    assert [(row["entry"], row["record"], row["otherRecord"]) for row in found] == [("urn:x:entry", "urn:x:a", "urn:x:b")]

@@ -31,11 +31,11 @@ WHERE {
     OPTIONAL { ?entry rdfs:label ?entryLabel } }
   UNION
   { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
-    ?judgment rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?record , ?otherRecord .
-    ?record a ?type ; rec:inEntry ?entry .
+    ?record jdg:currentlyDifferent ?otherRecord ; a ?type ; rec:inEntry ?entry .
     ?otherRecord a ?type ; rec:inEntry ?entry .
     FILTER (STR(?record) < STR(?otherRecord))
     BIND ("judged different, still joined" AS ?needs)
+    OPTIONAL { ?judgment rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?record , ?otherRecord }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
 }
