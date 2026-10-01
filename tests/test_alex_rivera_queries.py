@@ -47,16 +47,21 @@ EVENTS = [e["event"] for e in build.events()["events"]]
 LENSES = ["everyday", "export"]
 
 
-def derived_state_and_views(engine, lens, through):
+NEEDS_REVIEW = [relative for name, relative in build.questions().items() if name.endswith("/What needs review")]
+
+
+def derived_state_views_and_reviews(engine, lens, through):
     store = build.loaded(engine, through)
     derived = build.derive(store, lens)
-    return triples(derived), {view: triples(store.construct(build.query_text(r))) for view, r in build.named("views").items()}
+    views = {view: triples(store.construct(build.query_text(r))) for view, r in build.named("views").items()}
+    reviews = {relative: rows(store.select(build.query_text(relative))) for relative in NEEDS_REVIEW}
+    return triples(derived), views, reviews
 
 
 @pytest.mark.parametrize("lens", LENSES)
 @pytest.mark.parametrize("event", EVENTS)
-def test_the_derived_state_and_each_view_are_the_same_on_oxigraph_and_rdflib(event, lens):
-    assert derived_state_and_views("oxigraph", lens, event) == derived_state_and_views("rdflib", lens, event)
+def test_the_derived_state_each_view_and_what_needs_review_are_the_same_on_oxigraph_and_rdflib(event, lens):
+    assert derived_state_views_and_reviews("oxigraph", lens, event) == derived_state_views_and_reviews("rdflib", lens, event)
 
 
 @lru_cache(maxsize=None)
