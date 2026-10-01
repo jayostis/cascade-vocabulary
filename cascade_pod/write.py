@@ -5,23 +5,17 @@ import json
 import re
 import shutil
 import sys
-import xml.etree.ElementTree as ElementTree
 from collections import defaultdict
-from datetime import datetime, timezone
 
 from rdflib import BNode, Literal, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
 
-from . import Failure, names, store, turtle
+from . import Failure, apple_health, names, store, turtle
 from .pod import RECORD_FOLDERS, fanned, save, stem
 
 BRIDGE, PAV, PROV, RDFS, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rdfs", "rec"))
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
 OWNED_POD_FOLDERS = ["subject", "records", "provenance", "attachments"]
-ADAPTER = "<cascade-bridge-adapter-fhir-r4>"
-VOCABULARIES = "<cascade-vocabulary at the adapter's pin>"
-TRANSMITTER = "Apple Health"
-IMPORT_LABEL = "Apple Health export"
 FORMATS = {".csv": "text/csv", ".json": "application/json", ".ttl": "text/turtle", ".xml": "application/xml"}
 
 
@@ -32,40 +26,6 @@ def closure(graph, subject):
         if isinstance(triple[2], BNode):
             found |= closure(graph, triple[2])
     return found
-
-
-# An Apple Health export
-
-def clinical_records(export_xml):
-    root = ElementTree.parse(export_xml).getroot()
-    return {entry.get("resourceFilePath"): dict(entry.attrib) for entry in root.iter("ClinicalRecord")}
-
-
-def utc(apple_date):
-    moment = datetime.strptime(apple_date, "%Y-%m-%d %H:%M:%S %z").astimezone(timezone.utc)
-    return moment.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def _attribution(document, label, role):
-    attribution, agent = BNode(), BNode()
-    return {(document, PROV.qualifiedAttribution, attribution), (attribution, PROV.agent, agent),
-            (agent, RDFS.label, Literal(label)), (attribution, PROV.hadRole, role)}
-
-
-def facts(entry, import_started_at):
-    """What the export says of one document and of its import, for the Bridge to state."""
-    document, this_import = BRIDGE.thisDocument, BRIDGE.thisImport
-    triples = {(this_import, RDFS.label, Literal(IMPORT_LABEL)),
-               (this_import, PROV.startedAtTime, Literal(import_started_at, datatype=XSD.dateTime)),
-               *_attribution(document, TRANSMITTER, REC.transmitter)}
-    if entry is not None:
-        source_url = entry["sourceURL"]
-        triples |= {*_attribution(document, entry["sourceName"], REC.author),
-                    (document, BRIDGE.serverBaseUrl, Literal(source_url.rsplit("/", 2)[0])),
-                    (document, PAV.retrievedFrom, URIRef(source_url)),
-                    (document, PAV.retrievedOn, Literal(utc(entry["receivedDate"]), datatype=XSD.dateTime)),
-                    (document, BRIDGE.sourceFormatVersion, Literal(entry["fhirVersion"]))}
-    return triples
 
 
 # The pod as it grows
@@ -147,38 +107,20 @@ def file_entry(filing, event):
                       str(graph.value(activity, PROV.startedAtTime)), str(activity), folder)
 
 
-def convert_command(repository, document, conversion):
-    def relative(path):
-        return path.relative_to(repository).as_posix()
-
-    return " \\\n  ".join([
-        f"cascade-bridge convert {ADAPTER}",
-        relative(document),
-        "--envelope '#envelope-resource'",
-        f"--facts {relative(conversion / 'facts.ttl')}",
-        f"--vocabularies {VOCABULARIES}",
-        f"--out {relative(conversion / 'graph.ttl')}",
-        f"--findings {relative(conversion / 'findings.ttl')}",
-    ])
-
-
 def file_export(filing, event, facts_files):
     example = filing.example.folder
     export = example / event["export"]
-    entries = clinical_records(export / "export.xml")
-    documents = sorted(export.glob("clinical-records/*.json"), key=lambda path: f"/clinical-records/{path.name}")
     import_name = event.get("import")
     stored, import_descriptions, missing = [], {}, []
-    for document in documents:
+    for document, entry in apple_health.documents(export):
         octets = document.read_bytes()
         name = names.document(octets)
         if name in filing.stored:
             continue
         conversion = example / "conversions" / event["event"].lower() / document.stem
-        entry = entries.get(f"/clinical-records/{document.name}")
-        facts_files[conversion / "facts.ttl"] = turtle.write(facts(entry, event["at"]))
+        facts_files[conversion / "facts.ttl"] = turtle.write(apple_health.facts(entry, event["at"]))
         if not (conversion / "graph.ttl").exists():
-            missing.append(convert_command(example.parent.parent, document, conversion))
+            missing.append(apple_health.convert_command(example.parent.parent, document, conversion))
             continue
         graph = store.parsed(conversion / "graph.ttl")
         found = (conversion / "findings.ttl").exists() and len(store.parsed(conversion / "findings.ttl"))
