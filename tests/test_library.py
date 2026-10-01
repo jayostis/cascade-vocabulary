@@ -119,3 +119,10 @@ def test_every_iri_the_writer_writes_reads_back_as_itself(iri):
     base = "https://pod.example/clinical/allergies.ttl"
     triple = (URIRef(iri), URIRef("urn:x:p"), URIRef(iri))
     assert set(store.parsed_text(turtle.write({triple}, base), base)) == {triple}
+
+
+def test_a_folder_that_is_no_example_is_refused_in_one_line_without_a_traceback():
+    result = subprocess.run([sys.executable, "-m", "cascade_pod", "build", str(EXAMPLE.parent / "alex-rivra"),
+                             "--engine", "oxigraph"], capture_output=True, text=True, cwd=ROOT)
+    assert result.returncode == 2
+    assert result.stderr.startswith("cascade_pod build: ") and "Traceback" not in result.stderr, result.stderr

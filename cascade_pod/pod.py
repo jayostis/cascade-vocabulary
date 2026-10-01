@@ -43,6 +43,8 @@ class Example:
         self.folder = Path(folder).absolute()
         self.name = self.folder.name
         self.pod = self.folder / "pod"
+        if not (self.folder / "events.json").is_file():
+            raise Failure(f"{self.folder} has no events.json")
         story = json.loads((self.folder / "events.json").read_text(encoding="utf-8"))
         self.address, self.events, self.derived = story["address"], story["events"], story["derived"]
 
