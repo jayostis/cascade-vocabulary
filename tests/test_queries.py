@@ -24,10 +24,6 @@ def every_query():
     return sorted(p.relative_to(build.QUERIES).as_posix() for p in build.QUERIES.rglob("*.rq"))
 
 
-def in_the_crate(relative):
-    return (build.QUERIES / relative).relative_to(ROOT).as_posix()
-
-
 def crate():
     return {entity["@id"]: entity for entity in json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]}
 
@@ -156,9 +152,9 @@ def test_every_lens_writes_rec_counts_and_nothing_else(lens):
 
 
 def test_each_derivation_has_a_position_of_its_own_and_every_lens_the_same_one():
-    positions = {key: entity["position"] for key, entity in crate().items() if "position" in entity}
-    derivations = [in_the_crate(r) for r in build.named("derivations").values()]
-    lenses = [in_the_crate(r) for r in build.named("lenses").values()]
+    positions = build.positions()
+    derivations = list(build.named("derivations").values())
+    lenses = list(build.named("lenses").values())
     assert sorted(positions) == sorted(derivations + lenses)
     assert len({positions[lens] for lens in lenses}) == 1
     steps = sorted(positions[step] for step in derivations + lenses[:1])

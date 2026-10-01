@@ -61,12 +61,16 @@ def named(folder):
     return {path.stem: path.relative_to(QUERIES).as_posix() for path in sorted((QUERIES / folder).glob("*.rq"))}
 
 
-def derivations(lens):
-    """The shared derivations and the lens, in the order of their positions in the root crate."""
+def positions():
+    """Each query the root crate gives a position, by its path under QUERIES."""
     crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
-    positions = {entity["@id"]: entity["position"] for entity in crate["@graph"] if "position" in entity}
+    return {(ROOT / entity["@id"]).relative_to(QUERIES).as_posix(): entity["position"]
+            for entity in crate["@graph"] if "position" in entity}
+
+
+def derivations(lens):
     steps = [*named("derivations").values(), named("lenses")[lens]]
-    return sorted(steps, key=lambda relative: positions[(QUERIES / relative).relative_to(ROOT).as_posix()])
+    return sorted(steps, key=positions().__getitem__)
 
 
 # Terms are ("iri", value), ("blank", id) or ("literal", lexical form, datatype, language), whichever engine made them.
