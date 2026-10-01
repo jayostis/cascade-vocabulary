@@ -86,8 +86,7 @@ class Site:
         self.pipeline = {lens: [(Query(relative), added) for relative, added in derive.steps(example.loaded(ENGINE), lens)]
                          for lens in vocabulary.named("lenses")}
         self.copied = example.files() + example.derived
-        self.links = self._links()
-
+        self.pages, self.turtles, self.links = self._links()
 
     def _terms(self):
         terms = ENGINES[ENGINE]()
@@ -101,12 +100,13 @@ class Site:
         return list(found)
 
     def _links(self):
-        """Where a cell naming each IRI links to: its page, the step that writes it, its stored bytes, its copy if it is
-        a file, or the first file that states it."""
+        """Each thing's page, the Turtle copy of the first file that states each thing, and where a cell naming each IRI
+        links to: a file's Turtle, a thing's page, the step that writes a term, a document's stored bytes, or the
+        Turtle that states it."""
         copies = {URIRef(self.example.address + path): COPY + path for path in self.copied}
-        stated = {}
+        turtles = {}
         for row in self.questions[STATED].rows:
-            stated.setdefault(row["thing"], row["file"])
+            turtles.setdefault(row["thing"], copies[row["file"]])
         stored = {URIRef(names.document((self.example.pod / path).read_bytes())): COPY + path
                   for path in self.copied if path.startswith("attachments/")}
         made = {}
@@ -114,7 +114,7 @@ class Site:
             for _, predicate, _ in added:
                 made.setdefault(predicate, f"pipeline.html#{query.title}")
         pages = {thing: page(thing) for things in [*self.things.values(), self.views] for thing in things}
-        return {thing: copies[file] for thing, file in stated.items()} | copies | stored | made | pages
+        return pages, turtles, turtles | stored | made | pages | copies
 
     def about(self, thing, kind=None):
         """Which files state it, then each question of the kind, with only the rows about this one."""
@@ -124,7 +124,7 @@ class Site:
     def environment(self):
         environment = jinja2.Environment(loader=jinja2.FileSystemLoader(HERE / "templates"), autoescape=True,
                                          undefined=jinja2.StrictUndefined, trim_blocks=True, lstrip_blocks=True)
-        environment.filters.update(href=self.links.get, shown=shown, code=code, nt=turtle.term,
+        environment.filters.update(href=self.links.get, page=self.pages.get, turtle=self.turtles.get, shown=shown, code=code, nt=turtle.term,
                                    prefixed=lambda iri: turtle.prefixed(str(iri)))
         environment.tests.update(iri=lambda term: isinstance(term, URIRef), literal=lambda term: isinstance(term, Literal))
         environment.globals.update(

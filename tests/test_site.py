@@ -15,7 +15,7 @@ from rdflib.namespace import XSD
 
 from cascade_pod import graphdb, site, store, turtle, vocabulary
 from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
-from cascade_pod.pod import Example, save, stem
+from cascade_pod.pod import Example, fanned, save, stem
 
 sys.path.insert(0, str(Path(__file__).absolute().parent))
 from test_alex_rivera_graphdb import GraphDB  # noqa: E402
@@ -178,12 +178,13 @@ def thing_pages(pages):
     return [name for name in pages if re.fullmatch(r"[0-9a-f]{64}\.html", name)]
 
 
-def test_every_things_page_names_the_pod_file_that_states_it_and_the_link_resolves(pages, built):
+def test_every_things_page_names_the_pod_file_that_states_it_and_links_to_its_turtle(pages, built):
     assert len(thing_pages(pages)) > 50
     for name in thing_pages(pages):
         [stated] = [b for b in blocks(pages[name]) if b["title"] == "Which file states each thing"]
-        files = [href for row in stated["rows"] for href in row["file"]["hrefs"]]
-        assert files and all((built / href).is_file() for href in files), name
+        files = [row["file"]["hrefs"][0] for row in stated["rows"]]
+        assert files and all(href.startswith(site.COPY) for href in files), name
+        assert all((built / href).read_bytes() == (ALEX.pod / href[len(site.COPY):]).read_bytes() for href in files), name
 
 
 def test_every_internal_link_resolves(pages, built):
@@ -200,12 +201,13 @@ def test_every_internal_link_resolves(pages, built):
 
 
 def stored_documents(record, graph):
+    """The copy of each stored document a revision of the record was derived from, and of the Turtle describing it."""
     documents = {d for revision in graph.subjects(REVISION_OF, record) for d in graph.objects(revision, DERIVED_FROM)}
-    return {f"pod/attachments/sha-256/{stem(str(d))}" for d in documents
-            if (ALEX.pod / "attachments" / "sha-256" / stem(str(d))).is_file()}
+    return {path for d in documents if (ALEX.pod / "attachments" / "sha-256" / stem(str(d))).is_file()
+            for path in (f"pod/attachments/sha-256/{stem(str(d))}", "pod/" + fanned("provenance/documents", str(d)))}
 
 
-def test_an_entrys_page_reaches_the_source_file_of_each_member_by_links_alone(pages):
+def test_an_entrys_page_reaches_each_members_source_file_and_its_turtle_by_links_alone(pages):
     graph = ALEX.loaded("rdflib").graph()
     entries = {entry for path in VIEW_FILES.values()
                for entry in store.parsed(ALEX.pod / path, ALEX.address + path).subjects(MERGED_FROM, None)}

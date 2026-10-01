@@ -57,7 +57,7 @@ everything. These are the pod's only files the build writes, and each says it is
 {% set path = file[example.address|length:] %}
 {% call block(query, query.title) %}
 <p class="answer">It wrote <a href="{{ copy }}{{ path }}"><code>{{ path }}</code></a>, {{ wrote }} statements.
-{% if file in site.views %}<a href="{{ file|href }}">The view's page</a> shows its entries.{% endif %}</p>
+{% if file in site.views %}<a href="{{ file|page }}">The view's page</a> shows its entries.{% endif %}</p>
 {% endcall %}
 {% endfor %}
 <p>Every page of this site names a thing by the label the labels file gives it, read with this question.</p>

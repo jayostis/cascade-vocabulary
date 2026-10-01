@@ -6,10 +6,16 @@
 {%- set system, number = value|code -%}
 <a href="{{ value }}">{{ system }} {{ number }}</a>
 {%- else -%}
-{%- set href = value|href -%}
+{%- set href, page, turtle = value|href, value|page, value|turtle -%}
 {%- if href %}<a href="{{ href }}">{% endif -%}
-{%- if label %}{{ label }}{% elif value in terms %}{{ terms[value] }} <code>{{ value|prefixed }}</code>{% else %}<code>{{ value|prefixed or value }}</code>{% endif -%}
+{%- if label %}{{ label }}
+{%- elif value in terms %}{{ terms[value] }} <code>{{ value|prefixed }}</code>
+{%- elif value.startswith(example.address) %}<code>{{ value[example.address|length:] }}</code>
+{%- else %}<code>{{ value|prefixed or value }}</code>
+{%- endif -%}
 {%- if href %}</a>{% endif -%}
+{%- if page and page != href %} <a class="also" href="{{ page }}">page</a>{% endif -%}
+{%- if turtle and turtle != href %} <a class="also" href="{{ turtle }}">Turtle</a>{% endif -%}
 {%- endif -%}
 </data>
 {%- endmacro %}
