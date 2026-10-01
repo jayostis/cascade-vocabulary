@@ -25,6 +25,10 @@
 {% if query.question %}
 <p>Run it yourself, from the repository's root:</p>
 <pre><code>python -m cascade_pod ask {{ folder }} "{{ query.question }}"</code></pre>
+{% if query.about %}
+<p>It prints the rows for every {{ query.about }}; this block keeps those whose <code>?{{ query.about }}</code> is
+<code>{{ query.thing }}</code>.</p>
+{% endif %}
 <p>Or in GraphDB, open the saved query <code>{{ query.question }}</code> in the repository <code>{{ example.name }}</code>.</p>
 {% endif %}
 </details>

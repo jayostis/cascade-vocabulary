@@ -49,15 +49,15 @@ def code(iri):
 
 
 class Query:
-    """A query of the vocabulary with its prose and, for a question, its name and its answer, all its rows or those
-    about one thing."""
+    """A query of the vocabulary with its prose and, for a question, its name and its answer: all its rows, or those
+    whose column `about` is `thing`."""
 
-    def __init__(self, relative, columns=(), rows=(), about=None):
-        self.relative, self.columns, self.rows, self.about = relative, list(columns), list(rows), about
+    def __init__(self, relative, name=None, columns=(), rows=(), about=None, thing=None):
+        self.relative, self.question = relative, name
+        self.columns, self.rows, self.about, self.thing = list(columns), list(rows), about, thing
         self.text = vocabulary.query(relative)
         self.prose = vocabulary.prose(self.text)
         self.title = Path(relative).stem
-        self.question = relative[len("questions/"):-len(".rq")] if relative.startswith("questions/") else None
 
     @property
     def shown(self):
@@ -66,14 +66,15 @@ class Query:
         return [c for c in self.columns if c != self.about and not (c.endswith("Label") and c[:-5] in self.columns)]
 
     def of(self, column, thing):
-        return Query(self.relative, self.columns, [row for row in self.rows if row.get(column) == thing], column)
+        return Query(self.relative, self.question, self.columns, [row for row in self.rows if row.get(column) == thing],
+                     column, thing)
 
 
 class Site:
     def __init__(self, example):
         self.example = example
         held = example.store(ENGINE, vocabulary.DEFAULT_LENS)
-        self.questions = {name: Query(relative, *held.answer(vocabulary.query(relative)))
+        self.questions = {name: Query(relative, name, *held.answer(vocabulary.query(relative)))
                           for name, relative in vocabulary.questions().items()}
         self.terms = self._terms()
         self.names = {row["thing"]: row["label"] for row in self.questions[CALLED].rows}

@@ -46,7 +46,7 @@ class Page(HTMLParser):
         if "id" in attrs:
             self.ids.add(attrs["id"])
         if tag == "section":
-            self._block = {"rows": [], "columns": [], "codes": [], "pres": []}
+            self._block = {"rows": [], "columns": [], "codes": [], "pres": [], "paras": []}
             self.blocks.append(self._block)
         elif tag == "a":
             self.hrefs.append(attrs["href"])
@@ -58,6 +58,8 @@ class Page(HTMLParser):
             self._cell = {"label": attrs["data-label"][1:], "value": None, "hrefs": []}
         elif tag == "code" and "pre" in self._in:
             self._pre = ""
+        elif tag == "p":
+            self._para = ""
         elif tag == "data" and self._cell is not None:
             self._cell["value"] = attrs["value"]
 
@@ -72,6 +74,8 @@ class Page(HTMLParser):
                 self._block["codes"].append(text)
             elif tag == "pre":
                 self._block["pres"].append(self._pre)
+            elif tag == "p":
+                self._block["paras"].append(" ".join(self._para.split()))
             elif tag == "td":
                 if self._cell["value"] is not None:
                     self._block["rows"][-1][self._cell["label"]] = self._cell
@@ -84,6 +88,11 @@ class Page(HTMLParser):
         self._text += data
         if self._in and self._in[-1] == "code" and "pre" in self._in:
             self._pre += data
+        if "p" in self._in:
+            self._para += data
+
+
+SAVED = re.compile(r"Or in GraphDB, open the saved query (.+) in the repository ")
 
 
 def blocks(page):
@@ -93,7 +102,8 @@ def blocks(page):
             block["path"] = paths[0]
             commands = [pre for pre in block["pres"] if pre.startswith("python -m cascade_pod ask")]
             block["command"] = commands[0] if commands else None
-            block["saved"] = block["codes"][-2] if block["command"] else None
+            saved = [m.group(1) for para in block["paras"] for m in [SAVED.match(para)] if m]
+            block["saved"] = saved[0] if saved else None
             yield block
 
 
@@ -364,3 +374,11 @@ def test_no_things_page_shows_what_everything_is_called_and_the_pipeline_page_do
     titles = {name: {b["title"] for b in blocks(page)} for name, page in pages.items()}
     assert not [name for name in thing_pages(pages) if "What everything is called" in titles[name]]
     assert "What everything is called" in titles["pipeline.html"]
+
+
+
+def test_a_block_about_one_thing_says_its_command_prints_every_things_rows(pages):
+    record = "urn:uuid:68e6a49e-2908-89ab-ba61-19385e7a8268"
+    [block] = [b for b in blocks(pages[page_of(record)]) if b["title"] == "Which judgments name it"]
+    assert (f"It prints the rows for every record; this block keeps those whose ?record is {record}."
+            in block["paras"])
