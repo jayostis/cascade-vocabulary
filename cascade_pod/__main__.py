@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import Failure, derive, graphdb, match, write
+from . import Failure, ask, derive, graphdb, match, write
 from .pod import Example
 from .store import ENGINES
 
@@ -24,6 +24,11 @@ def parser():
     load = commands.add_parser("graphdb", help="creates and fills the example's repository")
     load.add_argument("example", type=Path)
     load.add_argument("url", help="the GraphDB's base URL")
+    question = commands.add_parser("ask", help="prints one question's rows")
+    question.add_argument("example", type=Path)
+    question.add_argument("question", help='its path under questions/, such as "record/Why it is in no view"')
+    question.add_argument("--lens", default="everyday")
+    question.add_argument("--engine", choices=sorted(ENGINES), default="oxigraph")
     return top
 
 
@@ -39,6 +44,8 @@ def main(argv=None):
             return derive.write(example, arguments.engine, arguments.out)
         if arguments.command == "graphdb":
             return graphdb.load(example, arguments.url)
+        if arguments.command == "ask":
+            return ask.ask(example, arguments.question, arguments.lens, arguments.engine)
     except Failure as failure:
         print(f"cascade_pod {arguments.command}: {failure}", file=sys.stderr)
         return 2
