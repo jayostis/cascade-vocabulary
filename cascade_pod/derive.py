@@ -68,7 +68,7 @@ def manifest(address, title, created):
             (manifest, iri(DCT + "created"), at), (manifest, iri(CASCADE + "schemaVersion"), literal("1.8")),
             (manifest, iri(PROV + "wasGeneratedBy"), activity), (activity, TYPE, iri(PROV + "Activity")),
             (activity, iri(PROV + "startedAtTime"), at), (activity, iri(PROV + "wasAssociatedWith"), agent),
-            (agent, TYPE, iri(PROV + "SoftwareAgent")), (agent, iri(RDFS + "label"), literal("build.py"))}
+            (agent, TYPE, iri(PROV + "SoftwareAgent")), (agent, iri(RDFS + "label"), literal("cascade_pod"))}
 
 
 def written(example, engine):
