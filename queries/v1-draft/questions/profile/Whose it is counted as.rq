@@ -1,24 +1,23 @@
-# Whose each patient profile is, by the About judgments that name it, whether that judgment counts, and the hospitals and
-# number of records behind the profile. Records naming a profile no counting About judgment claims stay out of every view.
+# Whose each patient profile is, by the About judgments that name it, and whether that judgment counts. Each row is one
+# hospital whose records name the profile, with how many of them it sent. Records naming a profile no counting About judgment
+# claims stay out of every view.
 PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT DISTINCT ?profile ?profileLabel ?subject ?subjectLabel ?counts ?about ?aboutLabel ?hospital ?records
+SELECT ?profile ?profileLabel ?subject ?subjectLabel ?counts ?about ?aboutLabel ?hospital ?records
 WHERE {
-  { SELECT ?profile (COUNT(DISTINCT ?record) AS ?records)
-    WHERE { ?version rec:patient ?profile .
-            OPTIONAL { ?version prov:specializationOf ?record } }
-    GROUP BY ?profile }
+  { SELECT ?profile ?hospital (COUNT(DISTINCT ?record) AS ?records)
+    WHERE { ?version rec:patient ?profile ; prov:specializationOf ?record .
+            OPTIONAL { ?revision rec:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+                       ?attribution prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital } }
+    GROUP BY ?profile ?hospital }
   ?about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember ?profile ; jdg:subject ?subject .
   OPTIONAL { ?about rec:counts ?counted }
   BIND (COALESCE(?counted, false) AS ?counts)
   OPTIONAL { ?profile rdfs:label ?profileLabel }
   OPTIONAL { ?subject rdfs:label ?subjectLabel }
   OPTIONAL { ?about rdfs:label ?aboutLabel }
-  OPTIONAL { ?named rec:patient ?profile .
-             ?revision rec:version ?named ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
-             ?attribution prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
 }
 ORDER BY ?profileLabel ?profile ?aboutLabel ?about ?hospital

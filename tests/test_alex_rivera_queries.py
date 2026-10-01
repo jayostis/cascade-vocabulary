@@ -166,6 +166,7 @@ def test_the_graphdb_config_names_no_machine():
 
 UNIT_PREFIXES = """
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
@@ -183,7 +184,7 @@ def answer(engine, question, turtle, tmp_path):
 
 
 @pytest.mark.parametrize("engine", ENGINES)
-def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_total_of_its_records(engine, tmp_path):
+def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_number_of_its_own_records(engine, tmp_path):
     found = answer(engine, "profile/Whose it is counted as", """
         :about a jdg:Judgment ; rec:counts true ; jdg:verdict jdg:About ; prov:hadMember :p ; jdg:subject :s .
         :v1 rec:patient :p ; prov:specializationOf :r1 . :rev1 rec:version :v1 ; prov:wasDerivedFrom :d1 .
@@ -192,7 +193,7 @@ def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_t
         :d1 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Meridian" ] ] .
         :d2 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Larkspur" ] ] .
     """, tmp_path)
-    assert sorted((row["hospital"], row["records"]) for row in found) == [("Larkspur", "3"), ("Meridian", "3")]
+    assert sorted((row["hospital"], row["records"]) for row in found) == [("Larkspur", "2"), ("Meridian", "1")]
 
 
 @pytest.mark.parametrize("engine", ENGINES)
@@ -203,3 +204,13 @@ def test_an_entry_lists_a_pair_still_joined_by_what_the_derivations_judged_curre
         :b a health:AllergyRecord ; rec:inEntry :entry ; jdg:currentlyDifferent :a .
     """, tmp_path)
     assert [(row["entry"], row["record"], row["otherRecord"]) for row in found] == [("urn:x:entry", "urn:x:a", "urn:x:b")]
+
+
+@pytest.mark.parametrize("engine", ENGINES)
+def test_every_row_of_a_judgment_says_whether_it_counts_beside_what_happened_to_it(engine, tmp_path):
+    found = answer(engine, "judgment/Whether it counts", """
+        :old a jdg:Judgment .
+        :new a jdg:Judgment ; rec:counts true ; npx:supersedes :old .
+    """, tmp_path)
+    assert sorted((row["judgment"], row["counts"], row.get("happened", "")) for row in found) == [
+        ("urn:x:new", "true", ""), ("urn:x:old", "false", ""), ("urn:x:old", "false", "superseded")]
