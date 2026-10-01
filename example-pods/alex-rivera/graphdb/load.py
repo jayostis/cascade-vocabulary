@@ -1,4 +1,4 @@
-"""Creates the alex-rivera repository in a GraphDB, loads the finished pod into it, and saves every question.
+"""Creates the alex-rivera repository in a GraphDB, loads the finished pod and its derived state, and saves every question.
 
 python3 example-pods/alex-rivera/graphdb/load.py <GraphDB URL>
 """
@@ -24,6 +24,8 @@ sys.path.insert(0, str(EXAMPLE / "queries"))
 import build  # noqa: E402
 
 REPOSITORY = "alex-rivera"
+LENS = "everyday"
+DERIVED = f"urn:cascade:derived:{LENS}"
 
 
 def request(method, url, body=None, content_type=None, accept=None):
@@ -45,21 +47,24 @@ def create(base):
 
 
 def graphs():
-    """Each graph to load, by its name: every RDF file of the finished pod at its address, and each vocabulary."""
+    """Each graph to load, by its name, as N-Triples: every RDF file of the finished pod at its address, each
+    vocabulary, and the derived state."""
     manifest = build.events()
     for path in sorted(build.pod_files() + manifest["derived"]):
         if not path.startswith(build.NOT_RDF):
             address = build.POD_BASE + path
-            yield address, rdflib.Graph().parse(build.POD / path, format="turtle", publicID=address)
+            graph = rdflib.Graph().parse(build.POD / path, format="turtle", publicID=address)
+            yield address, graph.serialize(format="nt", encoding="utf-8")
     for path in sorted((ROOT / "ontologies").glob("*/*/*.ttl")):
         if not path.name.endswith(".shapes.ttl"):
             graph = rdflib.Graph().parse(path, format="turtle")
-            yield str(next(graph.subjects(RDF.type, OWL.Ontology))), graph
+            yield str(next(graph.subjects(RDF.type, OWL.Ontology))), graph.serialize(format="nt", encoding="utf-8")
+    derived = build.derive(build.loaded("oxigraph"), LENS)
+    yield DERIVED, "".join(line + "\n" for line in build.ntriples(derived)).encode("utf-8")
 
 
-def load(base, name, graph):
+def load(base, name, body):
     context = urllib.parse.quote(f"<{name}>", safe="")
-    body = graph.serialize(format="nt", encoding="utf-8")
     request("POST", f"{base}/repositories/{REPOSITORY}/statements?context={context}", body, "application/n-triples")
 
 
@@ -74,8 +79,8 @@ def save_questions(base):
 
 def fill(base):
     loaded = 0
-    for name, graph in graphs():
-        load(base, name, graph)
+    for name, body in graphs():
+        load(base, name, body)
         loaded += 1
     saved = list(save_questions(base))
     size = request("GET", f"{base}/repositories/{REPOSITORY}/size").decode("utf-8").strip()
