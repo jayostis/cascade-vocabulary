@@ -8,10 +8,6 @@ import json
 import sys
 from pathlib import Path
 
-import rdflib
-
-rdflib.NORMALIZE_LITERALS = False
-
 QUERIES = Path(__file__).absolute().parent
 EXAMPLE = QUERIES.parent
 POD = EXAMPLE / "pod"
@@ -105,13 +101,16 @@ class Oxigraph:
 
 class Rdflib:
     def __init__(self):
+        import rdflib
+        rdflib.NORMALIZE_LITERALS = False
+        self.rdflib = rdflib
         self.graph = rdflib.Graph()
 
     def load(self, path, base):
         self.graph.parse(data=path.read_bytes(), format="turtle", publicID=base)
 
-    @staticmethod
-    def _term(term):
+    def _term(self, term):
+        rdflib = self.rdflib
         if isinstance(term, rdflib.URIRef):
             return ("iri", str(term))
         if isinstance(term, rdflib.BNode):
@@ -119,8 +118,8 @@ class Rdflib:
         datatype = str(term.datatype) if term.datatype else (None if term.language else XSD_STRING)
         return ("literal", str(term), datatype, term.language)
 
-    @staticmethod
-    def _node(term):
+    def _node(self, term):
+        rdflib = self.rdflib
         if term[0] == "iri":
             return rdflib.URIRef(term[1])
         if term[0] == "blank":
