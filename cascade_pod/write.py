@@ -13,7 +13,7 @@ from rdflib import BNode, Literal, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
 
 from . import Failure, names, store, turtle
-from .pod import RECORD_FOLDERS, fanned, stem
+from .pod import RECORD_FOLDERS, fanned, save, stem
 
 BRIDGE, PAV, PROV, RDFS, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rdfs", "rec"))
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
@@ -376,10 +376,7 @@ def run(example):
         return 1
     for folder_name in OWNED_POD_FOLDERS:
         shutil.rmtree(example.pod / folder_name, ignore_errors=True)
-    for path, (_, content) in sorted(filing.files.items()):
-        target = example.pod / path
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(content)
+    save({path: content for path, (_, content) in filing.files.items()}, example.pod)
     write_json(example.folder / "events.json", events_manifest(example, filing))
     write_json(example.folder / "handles.json", handle_table(handles, example.events, filing))
     crate = json.loads((example.folder / "ro-crate-metadata.json").read_text(encoding="utf-8"))

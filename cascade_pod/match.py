@@ -7,7 +7,7 @@ from rdflib import Literal, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
 
 from . import Failure, names, turtle
-from .pod import NOT_RDF, RECORD_FOLDERS, fanned
+from .pod import NOT_RDF, RECORD_FOLDERS, fanned, save
 from .store import Rdflib
 
 CLINICAL, HEALTH, JDG, NPX, PAV, PROV, RDFS, REC = (
@@ -219,8 +219,5 @@ def run(example, read_through, takes, at, out):
         matcher.take(takes)
     else:
         matcher.recheck()
-    for path, content in sorted(matcher.files.items()):
-        target = out / path
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(content)
+    save(matcher.files, out)
     return 0
