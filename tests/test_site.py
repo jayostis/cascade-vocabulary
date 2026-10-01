@@ -336,3 +336,10 @@ def test_a_thing_only_ever_named_by_others_is_stated_by_the_files_that_name_it(t
     stated = profile["Which file states each thing"]
     assert ("<https://pod.example/data.ttl>", '"true"^^<http://www.w3.org/2001/XMLSchema#boolean>') in list(
         zip(column(stated, "file"), column(stated, "named")))
+
+
+def test_an_entrys_page_puts_each_chosen_value_beside_the_member_it_came_from(pages):
+    [shows] = [b for b in blocks(pages[page_of(PENICILLIN)]) if b["title"] == "What it shows"]
+    allergen = "<https://ns.cascadeprotocol.org/health/v1#allergen>"
+    assert [(row["value"]["value"], row["from"]["value"]) for row in shows["rows"]
+            if row["field"]["value"] == allergen] == [('"Penicillin"', "<urn:uuid:68e6a49e-2908-89ab-ba61-19385e7a8268>")]
