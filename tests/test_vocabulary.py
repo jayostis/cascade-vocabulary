@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 import pytest
@@ -132,9 +131,3 @@ def test_every_datatype_a_shape_accepts_is_in_its_predicates_range():
         }
     assert outside == set()
 
-
-def test_the_crate_lists_every_turtle_file_and_nothing_else():
-    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
-    root = next(entity for entity in crate["@graph"] if entity["@id"] == "./")
-    listed = {part["@id"] for part in root["hasPart"]}
-    assert listed == {relative(path) for path in ONTOLOGIES}

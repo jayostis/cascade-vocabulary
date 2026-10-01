@@ -1,4 +1,5 @@
 import json
+import sys
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -14,10 +15,11 @@ rdflib.NORMALIZE_LITERALS = False
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 POD = EXAMPLE / "pod"
-QUERIES = EXAMPLE / "queries"
 EXPECTED = EXAMPLE / "expected"
 POD_BASE = "https://pod.alex-rivera.example/"
 HANDLE_NS = "urn:example:alex-rivera:handle:"
+sys.path.insert(0, str(EXAMPLE / "queries"))
+import build as example_build  # noqa: E402
 
 ENGINES = ("oxigraph", "rdflib")
 LENSES = ("everyday", "export")
@@ -94,17 +96,6 @@ def _pod(files):
 
 def pod(event):
     return _pod(files_through(event))
-
-
-def listing():
-    path = QUERIES / "listing.json"
-    if not path.exists():
-        pytest.skip("queries/listing.json is not there yet: the queries of 'Derivations and views' have not landed")
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def query_text(relative):
-    return (QUERIES / relative).read_text(encoding="utf-8")
 
 
 def _string_typed(term):
@@ -185,15 +176,14 @@ class Build:
 
 @lru_cache(maxsize=None)
 def _build(engine, lens, files):
-    queries = listing()["lenses"][lens]
     store = {"oxigraph": Oxigraph, "rdflib": Rdflib}[engine]()
     for relative in files:
         if is_rdf(relative):
             store.load(relative)
-    for relative in queries["derivations"]:
-        store.derive(query_text(relative))
-    views = {view: store.construct(query_text(relative)) for view, relative in queries["views"].items()}
-    reviews = {review: store.select(query_text(relative)) for review, relative in queries["reviews"].items()}
+    for relative in example_build.derivations(lens):
+        store.derive(example_build.query_text(relative))
+    views = {view: store.construct(example_build.query_text(r)) for view, r in example_build.named("views").items()}
+    reviews = {review: store.select(example_build.query_text(r)) for review, r in example_build.named("review").items()}
     return Build(store.state(), views, reviews)
 
 
@@ -255,12 +245,12 @@ def listed_entries(build, review):
 
 
 def listed_judgments(build):
-    return {handle(row["judgment"]) for row in build.reviews["changedSinceJudged"]}
+    return {handle(row["judgment"]) for row in build.reviews["changed-since-judged"]}
 
 
 def listed_pairs(build):
     pairs = set()
-    for row in build.reviews["differentPairJoined"]:
+    for row in build.reviews["different-pairs-joined"]:
         assert str(row["a"]) < str(row["b"]), f"?a {row['a']} is not the smaller of the pair by STR"
         pairs.add((handle(row["a"]), handle(row["b"]), entry_members(build, row["entry"])))
     return pairs

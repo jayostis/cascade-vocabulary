@@ -8,8 +8,9 @@ import json
 import sys
 from pathlib import Path
 
-QUERIES = Path(__file__).absolute().parent
-EXAMPLE = QUERIES.parent
+EXAMPLE = Path(__file__).absolute().parent.parent
+ROOT = EXAMPLE.parent.parent
+QUERIES = ROOT / "queries" / "v1-draft"
 POD = EXAMPLE / "pod"
 POD_BASE = "https://pod.alex-rivera.example/"
 NOT_RDF = ("attachments/", ".well-known/")
@@ -25,13 +26,10 @@ LABEL_FILE = "clinical/labels.ttl"
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 PROV_USED = "http://www.w3.org/ns/prov#used"
 REC_VIEW = "https://ns.cascadeprotocol.org/records/v1-draft#View"
-PREFIXES = (QUERIES / "derivations" / "current-revisions.rq").read_text(encoding="utf-8").split("\n\n", 1)[0]
-CURRENT_REFERENCE_VERSIONS = PREFIXES + """
+CURRENT_REFERENCE_VERSIONS = """PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
 SELECT ?v WHERE { ?series a rec:ReferenceSeries ; pav:hasCurrentVersion ?v }"""
-
-
-def listing():
-    return json.loads((QUERIES / "listing.json").read_text(encoding="utf-8"))
 
 
 def events():
@@ -57,6 +55,18 @@ def rdf_files(through=None):
 
 def query_text(relative):
     return (QUERIES / relative).read_text(encoding="utf-8")
+
+
+def named(folder):
+    return {path.stem: path.relative_to(QUERIES).as_posix() for path in sorted((QUERIES / folder).glob("*.rq"))}
+
+
+def derivations(lens):
+    """The shared derivations and the lens, in the order of their positions in the root crate."""
+    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
+    positions = {entity["@id"]: entity["position"] for entity in crate["@graph"] if "position" in entity}
+    steps = [*named("derivations").values(), named("lenses")[lens]]
+    return sorted(steps, key=lambda relative: positions[(QUERIES / relative).relative_to(ROOT).as_posix()])
 
 
 # Terms are ("iri", value), ("blank", id) or ("literal", lexical form, datatype, language), whichever engine made them.
@@ -152,7 +162,7 @@ def loaded(engine, through=None):
 
 
 def derive(store, lens):
-    for relative in listing()["lenses"][lens]["derivations"]:
+    for relative in derivations(lens):
         store.add(store.construct(query_text(relative)))
     return store
 
@@ -160,9 +170,8 @@ def derive(store, lens):
 def build(engine, lens="everyday", through=None):
     """The store after the lens's derivations, each view's triples, and each review's rows."""
     store = derive(loaded(engine, through), lens)
-    queries = listing()["lenses"][lens]
-    views = {view: store.construct(query_text(relative)) for view, relative in queries["views"].items()}
-    reviews = {review: store.select(query_text(relative)) for review, relative in queries["reviews"].items()}
+    views = {view: store.construct(query_text(relative)) for view, relative in named("views").items()}
+    reviews = {review: store.select(query_text(relative)) for review, relative in named("review").items()}
     return store, views, reviews
 
 
@@ -230,7 +239,7 @@ def written(engine):
     store, views, _ = build(engine)
     for triples in views.values():
         store.add(triples)
-    labels = store.construct(query_text(listing()["labels"]))
+    labels = store.construct(query_text("labels.rq"))
     used = [row["v"][1] for row in store.select(CURRENT_REFERENCE_VERSIONS)]
     files = {VIEW_FILES[view]: turtle(triples, used) for view, triples in views.items()}
     files[LABEL_FILE] = turtle(labels, used)

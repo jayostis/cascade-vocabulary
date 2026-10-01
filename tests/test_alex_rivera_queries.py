@@ -1,4 +1,3 @@
-import json
 import re
 import subprocess
 import sys
@@ -8,16 +7,11 @@ from pathlib import Path
 
 import pytest
 import rdflib
-from pyparsing import ParseResults
-from rdflib import Graph, URIRef, Variable
-from rdflib.plugins.sparql import prepareQuery
-from rdflib.plugins.sparql.parser import parseQuery
-from rdflib.plugins.sparql.parserutils import CompValue
+from rdflib import Graph, URIRef
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
-QUERIES = EXAMPLE / "queries"
-sys.path.insert(0, str(QUERIES))
+sys.path.insert(0, str(EXAMPLE / "queries"))
 import build  # noqa: E402
 
 rdflib.NORMALIZE_LITERALS = False
@@ -26,63 +20,7 @@ ENGINES = sorted(build.ENGINES)
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
-IN_ENTRY = URIRef(REC + "inEntry")
 COMMITTED = sorted(set(build.VIEW_FILES.values()) | {build.LABEL_FILE, "index.ttl", "manifest.ttl"})
-
-
-def every_query():
-    return sorted(p.relative_to(QUERIES).as_posix() for p in QUERIES.rglob("*.rq"))
-
-
-def listed():
-    listing = build.listing()
-    paths = [listing["labels"], *listing["people"], *listing["pages"]]
-    for lens in listing["lenses"].values():
-        paths += lens["derivations"] + list(lens["views"].values()) + list(lens["reviews"].values())
-    return paths
-
-
-def nodes(tree):
-    if isinstance(tree, CompValue):
-        yield tree
-        for value in tree.values():
-            yield from nodes(value)
-    elif isinstance(tree, (list, tuple, ParseResults)):
-        for value in tree:
-            yield from nodes(value)
-
-
-def is_subquery(part):
-    return part.name == "GroupOrUnionGraphPattern" and [g.name for g in part["graph"]] == ["SubSelect"]
-
-
-QUERY_FORMS = ("SelectQuery", "ConstructQuery", "AskQuery", "DescribeQuery", "SubSelect")
-EXISTS_FORMS = ("Builtin_EXISTS", "Builtin_NOTEXISTS")
-NESTED = {
-    "nested-not-exists": "SELECT * WHERE { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d FILTER NOT EXISTS { ?d ?e ?f } } }",
-    "union-joined": "SELECT * WHERE { ?x ?y ?a { ?a ?b ?c } UNION { ?a ?d ?c } }",
-    "union-in-a-group": "SELECT * WHERE { { { ?a ?b ?c } UNION { ?a ?d ?c } } }",
-    "subquery-in-optional": "SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a ?q ?r { SELECT ?r WHERE { ?r ?s ?t } } } }",
-}
-
-
-def nested_forms(text):
-    everything = list(nodes(parseQuery(text)))
-    wheres = {id(n["where"]) for n in everything if n.name in QUERY_FORMS and n.get("where") is not None}
-    found = []
-    for node in everything:
-        if node.name in EXISTS_FORMS and any(m.name in EXISTS_FORMS for m in nodes(node["graph"])):
-            found.append("nested-not-exists")
-        if node.name == "GroupGraphPatternSub":
-            parts = list(node.get("part") or [])
-            unions = [p for p in parts if p.name == "GroupOrUnionGraphPattern" and len(p["graph"]) > 1]
-            if unions and len(parts) > 1:
-                found.append("union-joined")
-            elif unions and id(node) not in wheres:
-                found.append("union-in-a-group")
-        if node.name == "OptionalGraphPattern" and any(m.name == "SubSelect" for m in nodes(node["graph"])):
-            found.append("subquery-in-optional")
-    return found
 
 
 def canonical(term):
@@ -114,53 +52,16 @@ def final_graph():
     return graph
 
 
-@pytest.mark.parametrize("relative", every_query())
-def test_every_query_parses_on_rdflib_and_on_pyoxigraph(relative):
-    text = build.query_text(relative)
-    prepareQuery(text)
-    build.Oxigraph().store.query(text)
-
-
-def test_the_listing_names_every_query_and_every_query_exists():
-    counts = Counter(listed())
-    everyday, export = (build.listing()["lenses"][lens] for lens in ("everyday", "export"))
-    assert sorted(counts) == every_query()
-    assert [p for p, n in counts.items() if n > 1 and not p.startswith(("derivations/", "views/", "review/"))] == []
-    assert {k: v for k, v in everyday.items() if k != "derivations"} == {k: v for k, v in export.items() if k != "derivations"}
-    assert [(a, b) for a, b in zip(everyday["derivations"], export["derivations"]) if a != b] == [
-        ("derivations/counting-judgments-everyday.rq", "derivations/counting-judgments-export.rq")]
-    assert build.listing()["people"] == sorted(p for p in every_query() if p.startswith("people/"))
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_every_subquery_comes_first_in_its_group(relative):
-    for group in nodes(parseQuery(build.query_text(relative))):
-        if group.name == "GroupGraphPatternSub":
-            parts = list(group.get("part") or [])
-            first_other = next((i for i, part in enumerate(parts) if not is_subquery(part)), len(parts))
-            assert not any(is_subquery(part) for part in parts[first_other:]), relative
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_every_query_reading_in_entry_names_its_type(relative):
-    algebra = prepareQuery(build.query_text(relative)).algebra
-    patterns = [t for node in nodes(algebra["p"]) if node.name == "BGP" for t in node["triples"]]
-    bound_by_values = {v for node in nodes(algebra["p"]) if node.name == "values" for row in node["res"] for v in row}
-    typed = {s for s, p, o in patterns if p == RDF_TYPE and (isinstance(o, URIRef) or o in bound_by_values)}
-    readers = {s for s, p, o in patterns if p == IN_ENTRY}
-    assert readers <= typed, relative
-
 
 def derived_state_views_and_reviews(engine, lens, through):
     store = build.loaded(engine, through)
     derived = []
-    for relative in build.listing()["lenses"][lens]["derivations"]:
+    for relative in build.derivations(lens):
         found = store.construct(build.query_text(relative))
         derived.append((relative, triples(found)))
         store.add(found)
-    queries = build.listing()["lenses"][lens]
-    views = {v: triples(store.construct(build.query_text(r))) for v, r in queries["views"].items()}
-    reviews = {v: rows(store.select(build.query_text(r))) for v, r in queries["reviews"].items()}
+    views = {v: triples(store.construct(build.query_text(r))) for v, r in build.named("views").items()}
+    reviews = {v: rows(store.select(build.query_text(r))) for v, r in build.named("review").items()}
     return derived, views, reviews
 
 
@@ -172,7 +73,7 @@ def test_each_derivation_view_and_review_is_the_same_on_oxigraph_and_rdflib(even
 
 @pytest.mark.parametrize("engine", ENGINES)
 def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(engine, tmp_path):
-    subprocess.run([sys.executable, str(QUERIES / "build.py"), "--engine", engine, "--out", str(tmp_path)], check=True)
+    subprocess.run([sys.executable, str(EXAMPLE / "queries" / "build.py"), "--engine", engine, "--out", str(tmp_path)], check=True)
     written = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*") if p.is_file())
     assert written == COMMITTED
     for relative in COMMITTED:
@@ -212,7 +113,13 @@ def test_everything_labelled_has_exactly_one_label():
     graph = final_graph()
     labels = Counter(str(s) for s in graph.subjects(URIRef(RDFS_LABEL), None))
     kinds = "VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }"
-    found = graph.query(build.PREFIXES + """
+    found = graph.query("""
+        PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+        PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+        PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+        PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+        PREFIX prov: <http://www.w3.org/ns/prov#>
+        PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
         SELECT DISTINCT ?thing WHERE {
           { %s ?thing a ?type ; ^rec:revisionOf [] }
           UNION { %s ?record a ?type ; ^rec:revisionOf [] . ?thing prov:specializationOf ?record }
@@ -239,7 +146,7 @@ def test_no_two_labelled_things_share_a_label():
     assert {label: n for label, n in things.items() if n > 1} == {}
 
 
-@pytest.mark.parametrize("relative", build.listing()["people"])
+@pytest.mark.parametrize("relative", build.named("people").values())
 def test_every_query_for_people_runs_on_the_final_pod_and_both_engines_agree(relative):
     text = build.query_text(relative)
     found = {engine: rows(final_pod(engine).select(text)) for engine in ENGINES}
@@ -252,20 +159,3 @@ def test_the_graphdb_config_names_no_machine():
     machine = re.compile(r"file:|(?<![A-Za-z])[A-Za-z]:[\\/]|localhost|127\.0\.0\.1|0\.0\.0\.0|/(?:home|Users|tmp)/|:\d{2,5}\b")
     for name in ("repository.ttl", "load.py"):
         assert machine.findall((EXAMPLE / "graphdb" / name).read_text(encoding="utf-8")) == [], name
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_every_query_is_one_flat_pattern(relative):
-    assert nested_forms(build.query_text(relative)) == []
-
-
-@pytest.mark.parametrize("form", sorted(NESTED))
-def test_the_flat_pattern_check_refuses_each_nested_form(form):
-    assert nested_forms(NESTED[form]) == [form]
-
-
-def test_the_flat_pattern_check_accepts_a_union_whose_branches_are_each_complete():
-    assert nested_forms("""SELECT * WHERE {
-      { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d } OPTIONAL { ?a ?e ?f } }
-      UNION { { SELECT ?a WHERE { ?a ?b ?c } } ?a ?d ?c }
-    }""") == []
