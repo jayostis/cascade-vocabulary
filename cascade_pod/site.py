@@ -80,7 +80,8 @@ class Site:
         self.questions = self.answers[vocabulary.DEFAULT_LENS]
         self.terms = self._terms()
         self.names = {row["thing"]: row["label"] for row in self.questions[CALLED].rows}
-        self.things = {kind: self._things(kind) for kind in sorted({name.split("/")[0] for name in self.questions} - {"pod"})}
+        kinds = sorted({name.split("/")[0] for name in self.questions} - {"pod"})
+        self.things = {kind: self._things(kind) for kind in kinds}
         writers = {path: vocabulary.named("views")[view] for view, path in VIEW_FILES.items()} | {LABEL_FILE: "labels.rq"}
         built = held[vocabulary.DEFAULT_LENS]
         self.built = {URIRef(example.address + path): (Query(relative), len(built.triples(example.address + path)))

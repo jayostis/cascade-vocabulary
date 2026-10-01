@@ -133,11 +133,9 @@ def test_every_block_shows_its_querys_text_and_its_path(pages):
     found = [block for page in pages.values() for block in page.blocks]
     assert found and all("path" in block for page in pages.values() for block in blocks(page))
     assert len(found) == sum(1 for page in pages.values() for _ in blocks(page))
-    for block in blocks(pages["index.html"]):
-        assert block["pres"][0] == (ROOT / block["path"]).read_text(encoding="utf-8"), block["path"]
     for page in pages.values():
         for block in blocks(page):
-            assert (ROOT / block["path"]).is_file() and block["pres"][0].strip(), block["path"]
+            assert block["pres"][0] == (ROOT / block["path"]).read_text(encoding="utf-8"), block["path"]
 
 
 def asked(command):
@@ -291,6 +289,7 @@ def tiny(tmp_path, turtle_text, thing="urn:x:record"):
     example = Example(folder)
     save(example.derived_turtle("oxigraph"), example.pod)
     built = site.Site(example).files()
+    save(built, folder / "site")
     return {block["title"]: block for block in blocks(Page(built[page_of(thing)].decode("utf-8")))}
 
 
@@ -364,19 +363,16 @@ def test_the_folder_table_names_a_records_folders_untyped_versions_and_leaves_ou
     assert not {row for row in rows if row[0] == '"/clinical/"' and not row[1].startswith("<")}
 
 
-
 def test_no_template_and_not_the_stylesheet_holds_an_iri():
     found = {path.name: re.findall(r"\w+://[^\s\"'<>]+", path.read_text(encoding="utf-8"))
              for path in [*(site.HERE / "templates").glob("*.html"), site.HERE / site.STYLESHEET]}
     assert {name: iris for name, iris in found.items() if iris} == {}
 
 
-
 def test_no_things_page_shows_what_everything_is_called_and_the_pipeline_page_does(pages):
     titles = {name: {b["title"] for b in blocks(page)} for name, page in pages.items()}
     assert not [name for name in thing_pages(pages) if "What everything is called" in titles[name]]
     assert "What everything is called" in titles["pipeline.html"]
-
 
 
 def test_a_block_about_one_thing_says_its_command_prints_every_things_rows(pages):
@@ -386,8 +382,20 @@ def test_a_block_about_one_thing_says_its_command_prints_every_things_rows(pages
             in block["paras"])
 
 
-
 def test_the_pipeline_page_asks_the_same_question_under_each_lens_side_by_side(pages):
     shown = {("--lens export" in b["command"], len(b["rows"])) for b in blocks(pages["pipeline.html"])
              if b["title"] == "My immunizations"}
     assert shown == {(False, 1), (True, 2)}
+
+
+def test_text_from_the_pod_is_escaped_wherever_the_site_shows_it(tmp_path):
+    label = '<script>alert(1)</script> " onmouseover="x'
+    folder = tmp_path / "tiny"
+    tiny(tmp_path, f"""
+        :revision rec:revisionOf :record ; rec:version :version ; prov:generatedAtTime "2027-01-01T09:00:00Z"^^xsd:dateTime .
+        :version :said "a \\"quoted\\" <b>bold</b> & x" .
+        :record rdfs:label "{label.replace('"', '\\"')}" .
+    """)
+    text = (folder / "site" / page_of("urn:x:record")).read_text(encoding="utf-8")
+    assert "<script>" not in text and "<b>" not in text and 'onmouseover="x' not in text
+    assert "&lt;script&gt;" in text and "&lt;b&gt;bold&lt;/b&gt;" in text
