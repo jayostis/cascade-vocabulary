@@ -1,22 +1,21 @@
 import base64
-import sys
 from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
 
 import pytest
-import rdflib
 from pyshacl import validate
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
+from cascade_pod import store
+from cascade_pod.derived_files import VIEW_FILES
+from cascade_pod.pod import NOT_RDF, Example
+
 ROOT = Path(__file__).absolute().parent.parent
 ONTOLOGIES = ROOT / "ontologies"
-sys.path.insert(0, str(ROOT / "example-pods" / "alex-rivera" / "queries"))
-import build  # noqa: E402
-
-rdflib.NORMALIZE_LITERALS = False
+ALEX = Example(ROOT / "example-pods" / "alex-rivera")
 
 HEALTH = "https://ns.cascadeprotocol.org/health/v1#"
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
@@ -53,7 +52,7 @@ NOT_CHECKED_FOR_CONFORMANCE = (
 
 
 def every_rdf_file():
-    return sorted(p for p in build.pod_files() + build.events()["derived"] if not p.startswith(build.NOT_RDF))
+    return sorted(p for p in ALEX.files() + ALEX.derived if not p.startswith(NOT_RDF))
 
 
 def shapes_file(vocabulary):
@@ -79,7 +78,7 @@ def ontology():
 
 @lru_cache(maxsize=None)
 def loaded(relative):
-    return Graph().parse(build.POD / relative, format="turtle", publicID=build.POD_BASE + relative)
+    return Graph().parse(ALEX.pod / relative, format="turtle", publicID=ALEX.address + relative)
 
 
 @lru_cache(maxsize=None)
@@ -103,7 +102,7 @@ def named_for(relative):
 
 
 def things(relative, graph):
-    if relative in build.VIEW_FILES.values():
+    if relative in VIEW_FILES.values():
         return set(graph.subjects(MERGED_FROM, None))
     thing = named_for(relative)
     return {thing} if (thing, None, None) in graph else set()
@@ -112,7 +111,7 @@ def things(relative, graph):
 def kind_of(relative, graph):
     if unshaped(relative):
         return None
-    if relative in build.VIEW_FILES.values():
+    if relative in VIEW_FILES.values():
         return "view"
     [thing] = things(relative, graph) or [None]
     if relative.startswith("records/"):
@@ -164,7 +163,7 @@ def with_types(graph):
 def violations(graph):
     """Every result about a node the graph itself describes, and not about a node it only names."""
     conforms, report, _ = validate(with_types(graph), shacl_graph=shapes(), ont_graph=ontology(), advanced=True)
-    rdflib.NORMALIZE_LITERALS = False
+    store.keep_literals_as_written()
     own = set(graph.subjects())
     return sorted((str(report.value(r, SH.focusNode)), str(report.value(r, SH.resultPath)), str(report.value(r, SH.resultMessage)))
                   for r in report.subjects(RDF.type, SH.ValidationResult) if report.value(r, SH.focusNode) in own)

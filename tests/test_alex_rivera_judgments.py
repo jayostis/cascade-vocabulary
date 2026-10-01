@@ -3,20 +3,17 @@ import subprocess
 import sys
 from pathlib import Path
 
-import rdflib
 from pyshacl import validate
 from rdflib import Graph, URIRef
-
-rdflib.NORMALIZE_LITERALS = False
 
 ROOT = Path(__file__).absolute().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 import recomputed  # noqa: E402
+from cascade_pod import store  # noqa: E402
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 POD = EXAMPLE / "pod"
 POD_BASE = "https://pod.alex-rivera.example/"
-MATCH = EXAMPLE / "matcher" / "match.py"
 
 JDG = "https://ns.cascadeprotocol.org/judgments/v1-draft#"
 NPX = "http://purl.org/nanopub/x/"
@@ -157,7 +154,7 @@ def test_every_judgment_and_reference_conforms_to_the_judgments_and_records_shap
     for relative in listed("judgments/", "references/"):
         data += load(relative)
     conforms, _, report = validate(data, shacl_graph=shapes, advanced=True)
-    rdflib.NORMALIZE_LITERALS = False
+    store.keep_literals_as_written()
     assert conforms, report
     assert len(set(data.subjects(RDF_TYPE, URIRef(JDG + "Judgment")))) == len(EVERY_JUDGMENT)
     assert len(set(data.subjects(RDF_TYPE, URIRef(REC + "ReferenceSeries")))) == 3
@@ -193,7 +190,7 @@ def test_the_judgments_are_the_scenarios_author_verdict_members_justification_us
 
 
 def test_each_matcher_judgment_names_the_rule_set_the_table_its_rule_applied_and_each_members_current_version():
-    references = json.loads((EXAMPLE / "matcher" / "references.json").read_text(encoding="utf-8"))
+    references = json.loads((EXAMPLE / "references" / "references.json").read_text(encoding="utf-8"))
     version = {v["handle"]: v["name"] for s in references["series"] for v in s["versions"]}
     tables = {"SameCode": [], "SameCodeAndDate": [], "SameMappedCode": [version["RS-XWALK-2026-09"]],
               "SameMappedCodeAndDate": [version["RS-CVXG-2026-08"]]}
@@ -213,8 +210,10 @@ def test_each_matcher_judgment_names_the_rule_set_the_table_its_rule_applied_and
 def test_the_matcher_reproduces_every_file_it_wrote_and_writes_nothing_on_its_other_runs(tmp_path):
     for read_through, takes, at, event in RUNS:
         out = tmp_path / read_through
-        command = [sys.executable, str(MATCH), "--read-through", read_through, "--at", at, "--out", str(out)]
-        result = subprocess.run(command + (["--takes", takes] if takes else []), capture_output=True, text=True)
+        command = [sys.executable, "-m", "cascade_pod", "match", str(EXAMPLE),
+                   "--read-through", read_through, "--at", at, "--out", str(out)]
+        result = subprocess.run(command + (["--takes", takes] if takes else []), capture_output=True, text=True,
+                                cwd=ROOT)
         assert result.returncode == 0, result.stderr
         written = sorted(p.relative_to(out).as_posix() for p in out.rglob("*") if p.is_file())
         expected = [p for p, e in sorted(added_by().items()) if e == event]

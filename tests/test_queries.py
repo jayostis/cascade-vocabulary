@@ -1,6 +1,5 @@
 import ast
 import json
-import sys
 from functools import lru_cache
 from pathlib import Path
 
@@ -12,9 +11,10 @@ from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
 
+from cascade_pod import vocabulary
+from cascade_pod.store import Oxigraph
+
 ROOT = Path(__file__).absolute().parent.parent
-sys.path.insert(0, str(ROOT / "example-pods" / "alex-rivera" / "queries"))
-import build  # noqa: E402
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 IN_ENTRY = URIRef(REC + "inEntry")
@@ -22,7 +22,7 @@ FORMATS = {".rq": "application/sparql-query", ".ttl": "text/turtle"}
 
 
 def every_query():
-    return sorted(p.relative_to(build.QUERIES).as_posix() for p in build.QUERIES.rglob("*.rq"))
+    return sorted(p.relative_to(vocabulary.QUERIES).as_posix() for p in vocabulary.QUERIES.rglob("*.rq"))
 
 
 def crate():
@@ -75,14 +75,14 @@ def nested_forms(text):
 
 @pytest.mark.parametrize("relative", every_query())
 def test_every_query_parses_on_rdflib_and_on_pyoxigraph(relative):
-    text = build.query_text(relative)
+    text = vocabulary.query(relative)
     prepareQuery(text)
-    build.Oxigraph().store.query(text)
+    Oxigraph().store.query(text)
 
 
 @pytest.mark.parametrize("relative", every_query())
 def test_every_subquery_comes_first_in_its_group(relative):
-    for group in nodes(parseQuery(build.query_text(relative))):
+    for group in nodes(parseQuery(vocabulary.query(relative))):
         if group.name == "GroupGraphPatternSub":
             parts = list(group.get("part") or [])
             first_other = next((i for i, part in enumerate(parts) if not is_subquery(part)), len(parts))
@@ -91,7 +91,7 @@ def test_every_subquery_comes_first_in_its_group(relative):
 
 @pytest.mark.parametrize("relative", every_query())
 def test_every_query_reading_in_entry_names_its_type(relative):
-    algebra = prepareQuery(build.query_text(relative)).algebra
+    algebra = prepareQuery(vocabulary.query(relative)).algebra
     patterns = [t for node in nodes(algebra["p"]) if node.name == "BGP" for t in node["triples"]]
     bound_by_values = {v for node in nodes(algebra["p"]) if node.name == "values" for row in node["res"] for v in row}
     typed = {s for s, p, o in patterns if p == RDF.type and (isinstance(o, URIRef) or o in bound_by_values)}
@@ -102,7 +102,7 @@ def test_every_query_reading_in_entry_names_its_type(relative):
 
 @pytest.mark.parametrize("relative", every_query())
 def test_every_query_is_one_flat_pattern(relative):
-    assert nested_forms(build.query_text(relative)) == []
+    assert nested_forms(vocabulary.query(relative)) == []
 
 
 @pytest.mark.parametrize("form", sorted(NESTED))
@@ -131,31 +131,31 @@ def iris(tree):
 
 
 def reads(relative):
-    return set(iris(prepareQuery(build.query_text(relative)).algebra["p"]))
+    return set(iris(prepareQuery(vocabulary.query(relative)).algebra["p"]))
 
 
 def writes(relative):
-    template = prepareQuery(build.query_text(relative)).algebra["template"]
+    template = prepareQuery(vocabulary.query(relative)).algebra["template"]
     return {o if p == RDF.type else p for s, p, o in template}
 
 
-@pytest.mark.parametrize("lens", sorted(build.named("lenses")))
+@pytest.mark.parametrize("lens", sorted(vocabulary.named("lenses")))
 def test_no_derivation_reads_a_term_a_later_derivation_writes(lens):
-    steps = build.derivations(lens)
+    steps = vocabulary.derivations(lens)
     found = {(step, later, str(term)) for i, step in enumerate(steps) for later in steps[i + 1:]
              for term in reads(step) & writes(later)}
     assert found == set()
 
 
-@pytest.mark.parametrize("lens", sorted(build.named("lenses")))
+@pytest.mark.parametrize("lens", sorted(vocabulary.named("lenses")))
 def test_every_lens_writes_rec_counts_and_nothing_else(lens):
-    assert writes(build.named("lenses")[lens]) == {URIRef(REC + "counts")}
+    assert writes(vocabulary.named("lenses")[lens]) == {URIRef(REC + "counts")}
 
 
 def test_each_derivation_has_a_position_of_its_own_and_every_lens_the_same_one():
-    positions = build.positions()
-    derivations = list(build.named("derivations").values())
-    lenses = list(build.named("lenses").values())
+    positions = vocabulary.positions()
+    derivations = list(vocabulary.named("derivations").values())
+    lenses = list(vocabulary.named("lenses").values())
     assert sorted(positions) == sorted(derivations + lenses)
     assert len({positions[lens] for lens in lenses}) == 1
     steps = sorted(positions[step] for step in derivations + lenses[:1])
@@ -165,13 +165,13 @@ def test_each_derivation_has_a_position_of_its_own_and_every_lens_the_same_one()
 def test_the_crate_lists_every_ontology_file_and_every_query_and_nothing_else():
     entities = crate()
     listed = {part["@id"]: entities[part["@id"]]["encodingFormat"] for part in entities["./"]["hasPart"]}
-    files = sorted(ROOT.glob("ontologies/**/*.ttl")) + sorted(build.QUERIES.rglob("*.rq"))
+    files = sorted(ROOT.glob("ontologies/**/*.ttl")) + sorted(vocabulary.QUERIES.rglob("*.rq"))
     assert listed == {path.relative_to(ROOT).as_posix(): FORMATS[path.suffix] for path in files}
 
 
 @lru_cache(maxsize=None)
 def parsed(relative):
-    return parseQuery(build.query_text(relative))
+    return parseQuery(vocabulary.query(relative))
 
 
 def declared(relative):
@@ -222,7 +222,7 @@ RESTATING = {
 
 
 def every_question():
-    return list(build.questions().values())
+    return list(vocabulary.questions().values())
 
 
 def restated_absences(text):
@@ -251,12 +251,12 @@ def test_the_restating_check_accepts_a_term_the_query_only_reads():
 
 @pytest.mark.parametrize("relative", every_question())
 def test_no_question_restates_a_derivation(relative):
-    assert restated_absences(build.query_text(relative)) == []
+    assert restated_absences(vocabulary.query(relative)) == []
 
 
 @pytest.mark.parametrize("relative", every_question())
 def test_every_question_is_a_select(relative):
-    assert prepareQuery(build.query_text(relative)).algebra.name == "SelectQuery"
+    assert prepareQuery(vocabulary.query(relative)).algebra.name == "SelectQuery"
 
 
 def test_every_question_is_filed_under_the_pod_or_a_kind():
@@ -265,13 +265,13 @@ def test_every_question_is_filed_under_the_pod_or_a_kind():
 
 @pytest.mark.parametrize("relative", [q for q in every_question() if Path(q).parent.name in KINDS])
 def test_every_question_outside_pod_returns_the_column_of_its_kind(relative):
-    columns = [str(v) for v in prepareQuery(build.query_text(relative)).algebra["PV"]]
+    columns = [str(v) for v in prepareQuery(vocabulary.query(relative)).algebra["PV"]]
     assert Path(relative).parent.name in columns
 
 
 @pytest.mark.parametrize("relative", every_question())
 def test_every_label_column_labels_a_column_of_the_question(relative):
-    columns = {str(v) for v in prepareQuery(build.query_text(relative)).algebra["PV"]}
+    columns = {str(v) for v in prepareQuery(vocabulary.query(relative)).algebra["PV"]}
     labelled = {column[:-len("Label")] for column in columns if column.endswith("Label")}
     assert labelled <= columns
 
@@ -293,6 +293,7 @@ def test_the_held_query_check_finds_a_query_in_a_string_and_nothing_else():
     assert queries_held(source) == ["SELECT ?s WHERE { ?s ?p ?o }"]
 
 
-@pytest.mark.parametrize("tool", sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "example-pods").rglob("*.py")))
+@pytest.mark.parametrize("tool", sorted(p.relative_to(ROOT).as_posix()
+                                         for folder in ("cascade_pod", "example-pods") for p in (ROOT / folder).rglob("*.py")))
 def test_no_tool_holds_a_query(tool):
     assert queries_held((ROOT / tool).read_text(encoding="utf-8")) == []

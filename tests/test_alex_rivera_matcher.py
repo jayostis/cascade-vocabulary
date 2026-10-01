@@ -5,16 +5,14 @@ import sys
 from pathlib import Path
 
 import pytest
-import rdflib
 from rdflib import Graph, URIRef
 
-rdflib.NORMALIZE_LITERALS = False
+from cascade_pod import Failure, match, turtle
+from cascade_pod.pod import Example, fanned
 
 ROOT = Path(__file__).absolute().parent.parent
-MATCHER_FOLDER = ROOT / "example-pods" / "alex-rivera" / "matcher"
+REFERENCES = ROOT / "example-pods" / "alex-rivera" / "references"
 sys.path.insert(0, str(ROOT / "tests"))
-sys.path.insert(0, str(MATCHER_FOLDER))
-import match  # noqa: E402
 import recomputed  # noqa: E402
 
 JDG = "https://ns.cascadeprotocol.org/judgments/v1-draft#"
@@ -45,6 +43,11 @@ def version(key):
 class SmallPod:
     def __init__(self, root):
         self.root, self.events, self.arrivals = root, [{"event": "E1", "subject": SUBJECT, "adds": []}], 0
+        shutil.copytree(REFERENCES, root / "references")
+
+    def tell(self):
+        story = {"address": "https://pod.example/", "events": self.events, "derived": []}
+        (self.root / "events.json").write_text(json.dumps(story), encoding="utf-8")
 
     def event(self, name):
         self.events.append({"event": name, "adds": []})
@@ -83,12 +86,13 @@ class SmallPod:
         self.events[-1]["adds"].append(path)
 
     def match(self, takes=None):
-        (self.root / "events.json").write_text(json.dumps({"events": self.events}), encoding="utf-8")
+        self.tell()
         out = self.root / "out"
         shutil.rmtree(out, ignore_errors=True)
-        command = [sys.executable, str(MATCHER_FOLDER / "match.py"), "--example", str(self.root),
+        command = [sys.executable, "-m", "cascade_pod", "match", str(self.root),
                    "--read-through", self.events[-1]["event"], "--at", "2026-02-01T00:00:00Z", "--out", str(out)]
-        result = subprocess.run(command + (["--takes", takes] if takes else []), capture_output=True, text=True)
+        result = subprocess.run(command + (["--takes", takes] if takes else []), capture_output=True, text=True,
+                                cwd=ROOT)
         assert result.returncode == 0, result.stderr
         return {p.relative_to(out).as_posix(): p for p in out.rglob("*") if p.is_file()}
 
@@ -140,15 +144,15 @@ def test_the_ingredient_map_pairs_only_its_rows_under_its_current_version(tmp_pa
     pod.record("unpaired", "allergies", f"health:allergenCode <{SNOMED}91936005>")
     written = pod.match("E2")
     assert sames(written) == {(frozenset({"first", "second"}), "SameMappedCode")}
-    references = match.References()
+    references = match.References(REFERENCES)
     ingredient_map = references.by_key["ingredient-map"]
     old, new = ingredient_map["versions"]
-    assert match.fanned("references", old["name"]) in written and match.fanned("references", new["name"]) not in written
+    assert fanned("references", old["name"]) in written and fanned("references", new["name"]) not in written
 
-    pod.reference(match.fanned("references", ingredient_map["name"]), match.series_file(ingredient_map))
-    pod.reference(match.fanned("references", old["name"]), match.version_file(ingredient_map, old))
+    pod.reference(fanned("references", ingredient_map["name"]), turtle.write(match.series_triples(ingredient_map)))
+    pod.reference(fanned("references", old["name"]), turtle.write(match.version_triples(ingredient_map, old)))
     pod.event("E3")
-    pod.reference(match.fanned("references", new["name"]), match.version_file(ingredient_map, new))
+    pod.reference(fanned("references", new["name"]), turtle.write(match.version_triples(ingredient_map, new)))
     pod.record("third", "allergies", f"health:allergenCode <{RXNORM}7980>")
     assert sames(pod.match("E3")) == {(frozenset({"third", "second"}), "SameCode")}
 
@@ -194,27 +198,29 @@ def test_a_matcher_judgments_name_is_the_record_name_of_its_inputs(tmp_path):
     [(relative, path)] = [(r, p) for r, p in pod.match("E2").items() if r.startswith("judgments/")]
     graph = Graph().parse(path, format="turtle")
     [judgment] = graph.subjects(RDF_TYPE, URIRef(JDG + "Judgment"))
-    rules, ingredient_map = (match.References().by_key[key]["versions"][0]["name"] for key in ("rules", "ingredient-map"))
+    rules, ingredient_map = (match.References(REFERENCES).by_key[key]["versions"][0]["name"]
+                             for key in ("rules", "ingredient-map"))
     inputs = [match.MATCHER, JDG + "SameMappedCode", *sorted([record("first"), record("second")]),
               *sorted([rules, ingredient_map, version("first"), version("second")])]
     assert str(judgment) == recomputed.record_name(inputs)
-    assert relative == match.fanned("judgments", str(judgment))
+    assert relative == fanned("judgments", str(judgment))
 
 
 def rechecked_after_the_ingredient_map_keeps_its_row(pod, monkeypatch):
-    references = match.References().by_key["ingredient-map"]
+    references = match.References(REFERENCES).by_key["ingredient-map"]
     old, new = references["versions"]
     written = pod.match("E2")
     [same] = [r for r in written if r.startswith("judgments/")]
     for relative, path in written.items():
         pod.reference(relative, path.read_bytes())
     pod.event("E3")
-    pod.reference(match.fanned("references", new["name"]), match.version_file(references, new))
+    pod.reference(fanned("references", new["name"]), turtle.write(match.version_triples(references, new)))
     yield str(next(Graph().parse(written[same], format="turtle").subjects(RDF_TYPE, URIRef(JDG + "Judgment"))))
-    (pod.root / "events.json").write_text(json.dumps({"events": pod.events}), encoding="utf-8")
-    kept = match.read_csv
-    monkeypatch.setattr(match, "read_csv", lambda relative: kept(old["table"] if relative == new["table"] else relative))
-    matcher = match.Matcher(match.Pod(pod.root, "E3"), "2026-03-01T00:00:00Z")
+    pod.tell()
+    kept = match.References.table
+    monkeypatch.setattr(match.References, "table",
+                        lambda self, version: kept(self, old if version["name"] == new["name"] else version))
+    matcher = match.Matcher(match.Reading(Example(pod.root), "E3"), "2026-03-01T00:00:00Z")
     matcher.recheck()
     yield {relative for relative in matcher.files if relative.startswith("judgments/")}
 
@@ -255,9 +261,9 @@ def test_a_recheck_never_joins_a_record_whose_about_was_retracted(tmp_path, monk
 
 
 def test_a_series_that_ships_with_a_version_it_does_not_list_is_a_failure_not_a_traceback(tmp_path):
-    references = match.References()
+    references = match.References(REFERENCES)
     references.by_key["rules"]["ships_with"] = "no such version"
     pod = SmallPod(tmp_path)
-    (tmp_path / "events.json").write_text(json.dumps({"events": pod.events}), encoding="utf-8")
-    with pytest.raises(match.Failure):
-        references.current("rules", match.Pod(tmp_path, "E1"))
+    pod.tell()
+    with pytest.raises(Failure):
+        references.current("rules", match.Reading(Example(tmp_path), "E1"))

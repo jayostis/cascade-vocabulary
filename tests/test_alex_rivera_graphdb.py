@@ -9,14 +9,18 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-EXAMPLE = Path(__file__).absolute().parent.parent / "example-pods" / "alex-rivera"
-LOAD = EXAMPLE / "graphdb" / "load.py"
-sys.path.insert(0, str(EXAMPLE / "queries"))
-import build  # noqa: E402
+from rdflib import Graph
+
+from cascade_pod import derive, store, vocabulary
+from cascade_pod.pod import Example
+
+ROOT = Path(__file__).absolute().parent.parent
+EXAMPLE = ROOT / "example-pods" / "alex-rivera"
+ALEX = Example(EXAMPLE)
 
 
 class GraphDB:
-    """Answers load.py as a GraphDB does: a repository by its id, statements into it by graph, and workbench-global
+    """Answers the loader as a GraphDB does: a repository by its id, statements into it by graph, and workbench-global
     saved queries whose names POST refuses twice and PUT replaces by the oldQueryName it is given."""
 
     def __init__(self):
@@ -110,7 +114,8 @@ def graphdb():
 
 
 def load(url):
-    return subprocess.run([sys.executable, str(LOAD), url], capture_output=True, text=True)
+    return subprocess.run([sys.executable, "-m", "cascade_pod", "graphdb", str(EXAMPLE), url],
+                          capture_output=True, text=True, cwd=ROOT)
 
 
 def test_a_load_into_an_empty_graphdb_creates_the_repository_and_saves_the_queries(graphdb):
@@ -121,13 +126,19 @@ def test_a_load_into_an_empty_graphdb_creates_the_repository_and_saves_the_queri
 
 def test_a_load_adds_the_derived_state_under_the_everyday_lens_as_a_graph_of_its_own(graphdb):
     assert load(graphdb.url).returncode == 0
-    derived = build.derive(build.loaded("oxigraph"), "everyday")
-    assert graphdb.graphs["urn:cascade:derived:everyday"].splitlines() == build.ntriples(derived)
+    derived = derive.derive(ALEX.loaded("oxigraph"), vocabulary.DEFAULT_LENS)
+    posted = Graph().parse(data=graphdb.graphs["urn:cascade:derived:everyday"], format="nt")
+    assert {tuple(store.from_rdflib(t) for t in triple) for triple in posted} == derived
+
+
+def test_a_load_fills_one_graph_for_each_graph_of_the_pod_in_the_builders_store(graphdb):
+    assert load(graphdb.url).returncode == 0
+    assert sorted(graphdb.graphs) == ALEX.store("oxigraph", vocabulary.DEFAULT_LENS).graphs()
 
 
 def test_a_load_saves_every_question_under_its_path_in_questions(graphdb):
     assert load(graphdb.url).returncode == 0
-    assert graphdb.saved == {name: build.query_text(relative) for name, relative in build.questions().items()}
+    assert graphdb.saved == {name: vocabulary.query(relative) for name, relative in vocabulary.questions().items()}
 
 
 def test_a_load_refused_partway_removes_the_repository_it_created_so_a_rerun_loads(graphdb):
@@ -155,7 +166,7 @@ def test_a_graphdb_that_does_not_answer_is_reported_without_a_traceback():
         url = f"http://127.0.0.1:{closed.getsockname()[1]}"
     result = load(url)
     assert result.returncode == 2
-    assert "Traceback" not in result.stderr and result.stderr.startswith("load.py: ")
+    assert "Traceback" not in result.stderr and result.stderr.startswith("cascade_pod graphdb: ")
 
 
 def test_a_load_whose_cleanup_is_refused_still_reports_why_the_load_failed(graphdb):

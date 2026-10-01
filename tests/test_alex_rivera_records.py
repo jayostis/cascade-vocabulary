@@ -8,16 +8,14 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-import rdflib
 from pyshacl import validate
 from rdflib import BNode, Graph, URIRef
 from rdflib.compare import isomorphic
 
-rdflib.NORMALIZE_LITERALS = False
-
 ROOT = Path(__file__).absolute().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 import recomputed  # noqa: E402
+from cascade_pod import names, store, write  # noqa: E402
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 POD = EXAMPLE / "pod"
@@ -119,13 +117,16 @@ def test_each_event_adds_the_scenarios_count_of_records_layer_files():
 def test_every_record_is_named_by_recomputed_record_name_of_its_inputs_in_the_handle_table():
     for handle, row in handles().items():
         if "inputs" in row:
-            assert row["name"] == recomputed.record_name(row["inputs"]), handle
+            assert row["name"] == recomputed.record_name(row["inputs"]) == names.record(row["inputs"]), handle
 
 
 def test_every_version_file_passed_through_recomputed_versions_gives_its_own_name():
     for name, (relative, graph) in versions().items():
         named, _ = recomputed.versions(recomputed.parsed_ntriples(graph.serialize(format="nt")))
         assert list(named) == [name], relative
+        content = {tuple(URIRef(names.THIS_VERSION + str(t)[len(name):]) if str(t).split("#")[0] == name else t
+                         for t in triple) for triple in graph}
+        assert names.content(content) == name, relative
 
 
 def test_every_file_under_attachments_is_named_by_the_hex_digest_of_its_bytes():
@@ -133,6 +134,7 @@ def test_every_file_under_attachments_is_named_by_the_hex_digest_of_its_bytes():
         if relative.startswith("attachments/"):
             octets = (POD / relative).read_bytes()
             assert relative == "attachments/sha-256/" + hashlib.sha256(octets).hexdigest()
+            assert recomputed.ni_name(octets) == names.document(octets)
             assert recomputed.ni_name(octets) in {row["name"] for row in handles().values()}
 
 
@@ -141,6 +143,7 @@ def test_every_revision_is_named_by_the_hash_of_its_own_triples_with_a_placehold
         content = {tuple(("iri", "urn:cascade:this-revision") if t == ("iri", name) else t for t in map(_term, triple))
                    for triple in graph}
         assert recomputed.ni_name(recomputed.canonical_nquads(content).encode("utf-8")) == name
+        assert names.content({(URIRef(names.THIS_REVISION) if s == URIRef(name) else s, p, o) for s, p, o in graph}) == name
 
 
 def test_each_revision_sets_a_version_of_its_record_and_follows_an_earlier_revision_of_the_same_record():
@@ -311,14 +314,15 @@ def test_every_name_in_the_handle_table_names_a_pod_file_but_a_profiles_and_ever
 def test_the_records_layer_conforms_to_the_records_shapes():
     shapes = Graph().parse(ROOT / "ontologies" / "records" / "v1-draft" / "records.shapes.ttl", format="turtle")
     conforms, _, report = validate(pod_graph(), shacl_graph=shapes, advanced=True)
+    store.keep_literals_as_written()
     assert conforms, report
 
 
 def test_running_the_writer_once_on_a_copy_reproduces_the_example_byte_for_byte(tmp_path):
     copy = tmp_path / "alex-rivera"
     shutil.copytree(EXAMPLE, copy, ignore=shutil.ignore_patterns("__pycache__"))
-    result = subprocess.run([sys.executable, str(EXAMPLE / "pod_writer.py"), "--example", str(copy)],
-                            capture_output=True, text=True)
+    result = subprocess.run([sys.executable, "-m", "cascade_pod", "write", str(copy)],
+                            capture_output=True, text=True, cwd=ROOT)
     assert result.returncode == 0, result.stderr
     differences = []
 
@@ -333,10 +337,7 @@ def test_running_the_writer_once_on_a_copy_reproduces_the_example_byte_for_byte(
 
 
 def test_every_filed_entry_activity_gets_its_own_handle():
-    sys.path.insert(0, str(EXAMPLE))
-    import pod_writer
-
-    pod = pod_writer.Pod()
-    pod.activities = {"entries/a1.ttl": "urn:example:activity:1", "entries/a2.ttl": "urn:example:activity:2"}
-    table = pod_writer.handle_table({}, {"events": [{"event": "E1", "subject": "urn:example:subject"}]}, pod)
+    filing = write.Filing(None)
+    filing.activities = {"entries/a1.ttl": "urn:example:activity:1", "entries/a2.ttl": "urn:example:activity:2"}
+    table = write.handle_table({}, [{"event": "E1", "subject": "urn:example:subject"}], filing)
     assert {table[h]["name"] for h in ("A1", "A2")} == {"urn:example:activity:1", "urn:example:activity:2"}

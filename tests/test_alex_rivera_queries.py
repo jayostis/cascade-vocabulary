@@ -6,25 +6,25 @@ from functools import lru_cache
 from pathlib import Path
 
 import pytest
-import rdflib
 from rdflib import Graph, URIRef
+
+from cascade_pod import derive, graphdb, store, vocabulary
+from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
+from cascade_pod.pod import NOT_RDF, Example
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
-sys.path.insert(0, str(EXAMPLE / "queries"))
-import build  # noqa: E402
+ALEX = Example(EXAMPLE)
 
-rdflib.NORMALIZE_LITERALS = False
-
-ENGINES = sorted(build.ENGINES)
+ENGINES = sorted(store.ENGINES)
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
-COMMITTED = sorted(set(build.VIEW_FILES.values()) | {build.LABEL_FILE, "index.ttl", "manifest.ttl"})
+COMMITTED = sorted(set(VIEW_FILES.values()) | {LABEL_FILE, "index.ttl", "manifest.ttl"})
 
 
 def canonical(term):
-    return term if term[0] != "literal" else ("literal", term[1], term[2] or build.XSD_STRING, term[3])
+    return term if term[0] != "literal" else ("literal", term[1], term[2] or store.XSD_STRING, term[3])
 
 
 def triples(found):
@@ -37,24 +37,24 @@ def rows(found):
 
 def final_graph():
     graph = Graph()
-    for path in build.pod_files() + build.events()["derived"]:
-        if not path.startswith(build.NOT_RDF):
-            graph.parse(build.POD / path, format="turtle", publicID=build.POD_BASE + path)
+    for path in ALEX.files() + ALEX.derived:
+        if not path.startswith(NOT_RDF):
+            graph.parse(ALEX.pod / path, format="turtle", publicID=ALEX.address + path)
     return graph
 
 
-EVENTS = [e["event"] for e in build.events()["events"]]
+EVENTS = [e["event"] for e in ALEX.events]
 LENSES = ["everyday", "export"]
 
 
-NEEDS_REVIEW = [relative for name, relative in build.questions().items() if name.endswith("/What needs review")]
+NEEDS_REVIEW = [relative for name, relative in vocabulary.questions().items() if name.endswith("/What needs review")]
 
 
 def derived_state_views_and_reviews(engine, lens, through):
-    store = build.loaded(engine, through)
-    derived = build.derive(store, lens)
-    views = {view: triples(store.construct(build.query_text(r))) for view, r in build.named("views").items()}
-    reviews = {relative: rows(store.select(build.query_text(relative))) for relative in NEEDS_REVIEW}
+    held = ALEX.loaded(engine, through)
+    derived = derive.derive(held, lens)
+    views = {view: triples(held.construct(vocabulary.query(r))) for view, r in vocabulary.named("views").items()}
+    reviews = {relative: rows(held.select(vocabulary.query(relative))) for relative in NEEDS_REVIEW}
     return triples(derived), views, reviews
 
 
@@ -66,8 +66,8 @@ def test_the_derived_state_each_view_and_what_needs_review_are_the_same_on_oxigr
 
 @lru_cache(maxsize=None)
 def answers(engine, lens, through=None):
-    store = build.build(engine, lens, through).store
-    return {name: rows(store.select(build.query_text(relative))) for name, relative in build.questions().items()}
+    held = ALEX.store(engine, lens, through)
+    return {name: rows(held.select(vocabulary.query(relative))) for name, relative in vocabulary.questions().items()}
 
 
 @pytest.mark.parametrize("lens", LENSES)
@@ -76,7 +76,7 @@ def test_every_question_gives_the_same_rows_in_the_same_order_on_oxigraph_and_rd
 
 
 def test_every_question_has_an_answer_at_some_event():
-    unanswered = set(build.questions())
+    unanswered = set(vocabulary.questions())
     for event in EVENTS:
         for lens in LENSES:
             unanswered -= {name for name, found in answers("oxigraph", lens, event).items() if found}
@@ -86,32 +86,33 @@ def test_every_question_has_an_answer_at_some_event():
 @pytest.mark.parametrize("lens", LENSES)
 @pytest.mark.parametrize("engine", ENGINES)
 def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_pods_own(engine, lens):
-    store = build.loaded(engine)
-    pod = store.triples()
-    derived = build.derive(store, lens)
+    held = ALEX.loaded(engine)
+    pod = held.triples()
+    derived = derive.derive(held, lens)
     assert derived and derived.isdisjoint(pod)
-    assert store.triples() == pod | derived
+    assert held.triples() == pod | derived
 
 
 @pytest.mark.parametrize("engine", ENGINES)
 def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(engine, tmp_path):
-    subprocess.run([sys.executable, str(EXAMPLE / "queries" / "build.py"), "--engine", engine, "--out", str(tmp_path)], check=True)
+    subprocess.run([sys.executable, "-m", "cascade_pod", "build", str(EXAMPLE), "--engine", engine, "--out", str(tmp_path)],
+                   check=True, cwd=ROOT)
     written = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*") if p.is_file())
     assert written == COMMITTED
     for relative in COMMITTED:
-        assert (tmp_path / relative).read_bytes() == (build.POD / relative).read_bytes(), relative
+        assert (tmp_path / relative).read_bytes() == (ALEX.pod / relative).read_bytes(), relative
 
 
 def test_every_committed_view_is_marked_rebuildable_and_registered():
-    store = build.build("oxigraph").store
-    current = {URIRef(row["version"][1]) for row in store.select(build.query_text(build.questions()["pod/Which reference versions are current"]))}
-    for relative in sorted(set(build.VIEW_FILES.values()) | {build.LABEL_FILE}):
-        address = URIRef(build.POD_BASE + relative)
-        graph = Graph().parse(build.POD / relative, format="turtle", publicID=str(address))
+    held = ALEX.store("oxigraph", vocabulary.DEFAULT_LENS)
+    current = {URIRef(row["version"][1]) for row in held.select(vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"]))}
+    for relative in sorted(set(VIEW_FILES.values()) | {LABEL_FILE}):
+        address = URIRef(ALEX.address + relative)
+        graph = Graph().parse(ALEX.pod / relative, format="turtle", publicID=str(address))
         assert (address, RDF_TYPE, URIRef(REC + "View")) in graph, relative
         assert set(graph.objects(address, URIRef("http://www.w3.org/ns/prov#used"))) == current, relative
     solid = "http://www.w3.org/ns/solid/terms#"
-    index = Graph().parse(build.POD / "settings/privateTypeIndex.ttl", publicID=build.POD_BASE + "settings/privateTypeIndex.ttl")
+    index = Graph().parse(ALEX.pod / "settings/privateTypeIndex.ttl", publicID=ALEX.address + "settings/privateTypeIndex.ttl")
     registered = {(str(index.value(r, URIRef(solid + "forClass"))), str(index.value(r, URIRef(solid + "instance"))))
                   for r in index.subjects(RDF_TYPE, URIRef(solid + "TypeRegistration"))}
     classes = {"allergies": "https://ns.cascadeprotocol.org/health/v1#AllergyRecord",
@@ -119,16 +120,15 @@ def test_every_committed_view_is_marked_rebuildable_and_registered():
                "immunizations": "https://ns.cascadeprotocol.org/health/v1#ImmunizationRecord",
                "procedures": "https://ns.cascadeprotocol.org/clinical/v1#Procedure",
                "patients": "https://ns.cascadeprotocol.org/core/v1#PatientProfile"}
-    for view, relative in build.VIEW_FILES.items():
-        assert (classes[view], build.POD_BASE + relative) in registered
+    for view, relative in VIEW_FILES.items():
+        assert (classes[view], ALEX.address + relative) in registered
     containers = {(str(index.value(r, URIRef(solid + "forClass"))), str(index.value(r, URIRef(solid + "instanceContainer"))))
                   for r in index.subjects(RDF_TYPE, URIRef(solid + "TypeRegistration"))}
-    assert (REC + "View", build.POD_BASE + "clinical/") in containers
-    root = Graph().parse(build.POD / "index.ttl", publicID=build.POD_BASE + "index.ttl")
-    assert URIRef(build.POD_BASE + "clinical/") in set(root.objects(None, URIRef("http://www.w3.org/ns/ldp#contains")))
-    derived = build.events()["derived"]
-    assert set(COMMITTED) == set(derived)
-    assert set(derived).isdisjoint(build.pod_files())
+    assert (REC + "View", ALEX.address + "clinical/") in containers
+    root = Graph().parse(ALEX.pod / "index.ttl", publicID=ALEX.address + "index.ttl")
+    assert URIRef(ALEX.address + "clinical/") in set(root.objects(None, URIRef("http://www.w3.org/ns/ldp#contains")))
+    assert set(COMMITTED) == set(ALEX.derived)
+    assert set(ALEX.derived).isdisjoint(ALEX.files())
 
 
 def test_everything_labelled_has_exactly_one_label():
@@ -156,23 +156,24 @@ def test_everything_labelled_has_exactly_one_label():
     everything = {str(row[0]) for row in found}
     assert everything
     assert {thing: labels[thing] for thing in everything if labels[thing] != 1} == {}
-    address = build.POD_BASE + build.LABEL_FILE
-    own = Graph().parse(build.POD / build.LABEL_FILE, publicID=address)
+    address = ALEX.address + LABEL_FILE
+    own = Graph().parse(ALEX.pod / LABEL_FILE, publicID=address)
     predicates = {(str(s) == address, str(p)) for s, p, _ in own}
     assert predicates == {(False, RDFS_LABEL), (True, str(RDF_TYPE)), (True, "http://www.w3.org/ns/prov#used")}
 
 
 def test_no_two_labelled_things_share_a_label():
-    graph = Graph().parse(build.POD / build.LABEL_FILE, publicID=build.POD_BASE + build.LABEL_FILE)
+    graph = Graph().parse(ALEX.pod / LABEL_FILE, publicID=ALEX.address + LABEL_FILE)
     things = Counter(str(label) for label in graph.objects(None, URIRef(RDFS_LABEL)))
     assert {label: n for label, n in things.items() if n > 1} == {}
 
 
 def test_the_graphdb_config_names_no_machine():
-    Graph().parse(EXAMPLE / "graphdb" / "repository.ttl", format="turtle")
+    configuration = graphdb.configuration(ALEX).decode("utf-8")
+    Graph().parse(data=configuration, format="turtle")
     machine = re.compile(r"file:|(?<![A-Za-z])[A-Za-z]:[\\/]|localhost|127\.0\.0\.1|0\.0\.0\.0|/(?:home|Users|tmp)/|:\d{2,5}\b")
-    for name in ("repository.ttl", "load.py"):
-        assert machine.findall((EXAMPLE / "graphdb" / name).read_text(encoding="utf-8")) == [], name
+    for name, text in (("the configuration", configuration), ("graphdb.py", Path(graphdb.__file__).read_text(encoding="utf-8"))):
+        assert machine.findall(text) == [], name
 
 
 UNIT_PREFIXES = """
@@ -187,10 +188,10 @@ UNIT_PREFIXES = """
 def answer(engine, question, turtle, tmp_path):
     path = tmp_path / f"{engine}.ttl"
     path.write_text(UNIT_PREFIXES + turtle, encoding="utf-8")
-    store = build.ENGINES[engine]()
-    store.load(path, "urn:x:")
+    held = store.ENGINES[engine]()
+    held.load(path, "urn:x:")
     return [{name: term[1] for name, term in row.items()}
-            for row in store.select(build.query_text(build.questions()[question]))]
+            for row in held.select(vocabulary.query(vocabulary.questions()[question]))]
 
 
 @pytest.mark.parametrize("engine", ENGINES)
