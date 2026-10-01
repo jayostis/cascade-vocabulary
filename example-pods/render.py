@@ -114,7 +114,8 @@ class Pod:
     def __init__(self, folder):
         self.folder = Path(folder)
         build = self.build = example_build(self.folder)
-        self.store = build.derive(build.loaded("oxigraph"), LENS)
+        self.store = build.loaded("oxigraph")
+        build.derive(self.store, LENS)
         self.store.load(build.POD / build.LABEL_FILE, build.POD_BASE + build.LABEL_FILE)
         self.labels = self._labels()
         self.views = {view: self._view(relative) for view, relative in sorted(build.VIEW_FILES.items())}

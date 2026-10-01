@@ -7,6 +7,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import NamedTuple
 
 EXAMPLE = Path(__file__).absolute().parent.parent
 ROOT = EXAMPLE.parent.parent
@@ -101,6 +102,10 @@ class Oxigraph:
     def construct(self, query):
         return {tuple(self._term(t) for t in (x.subject, x.predicate, x.object)) for x in self.store.query(query)}
 
+    def triples(self):
+        return {tuple(self._term(t) for t in (x.subject, x.predicate, x.object))
+                for x in self.store.quads_for_pattern(None, None, None, self.ox.DefaultGraph())}
+
     def add(self, triples):
         self.store.extend([self.ox.Quad(*(self._node(t) for t in triple), self.ox.DefaultGraph()) for triple in triples])
 
@@ -142,6 +147,9 @@ class Rdflib:
     def construct(self, query):
         return {tuple(self._term(t) for t in triple) for triple in self.graph.query(query)}
 
+    def triples(self):
+        return {tuple(self._term(t) for t in triple) for triple in self.graph}
+
     def add(self, triples):
         for triple in triples:
             self.graph.add(tuple(self._node(t) for t in triple))
@@ -163,17 +171,30 @@ def loaded(engine, through=None):
 
 
 def derive(store, lens):
+    """The triples the lens's derivations add to the store, apart from those it already held."""
+    held = store.triples()
     for relative in derivations(lens):
         store.add(store.construct(query_text(relative)))
-    return store
+    return store.triples() - held
+
+
+class Built(NamedTuple):
+    store: object
+    derived: set
+    views: dict
+    labels: set
 
 
 def build(engine, lens="everyday", through=None):
-    """The store after the lens's derivations, each view's triples, and each review's rows."""
-    store = derive(loaded(engine, through), lens)
+    """The pod's store with the lens's derived state, its views and the labels added."""
+    store = loaded(engine, through)
+    derived = derive(store, lens)
     views = {view: store.construct(query_text(relative)) for view, relative in named("views").items()}
-    reviews = {review: store.select(query_text(relative)) for review, relative in named("review").items()}
-    return store, views, reviews
+    for triples in views.values():
+        store.add(triples)
+    labels = store.construct(query_text("labels.rq"))
+    store.add(labels)
+    return Built(store, derived, views, labels)
 
 
 # Writing
@@ -193,10 +214,13 @@ def ntriples_term(term):
     return text if term[2] == XSD_STRING else f"{text}^^<{term[2]}>"
 
 
+def ntriples(triples):
+    return sorted({" ".join(ntriples_term(t) for t in triple) + " ." for triple in triples})
+
+
 def turtle(triples, reference_versions):
     mark = [f"<> <{RDF_TYPE}> <{REC_VIEW}> ."] + sorted(f"<> <{PROV_USED}> <{v}> ." for v in reference_versions)
-    lines = sorted({" ".join(ntriples_term(t) for t in triple) + " ." for triple in triples})
-    return ("\n".join(mark + lines) + "\n").encode("utf-8")
+    return ("\n".join(mark + ntriples(triples)) + "\n").encode("utf-8")
 
 
 def index_ttl(files):
@@ -237,13 +261,10 @@ def manifest_ttl(created):
 
 def written(engine):
     """Every file the build writes, by its path within pod/."""
-    store, views, _ = build(engine)
-    for triples in views.values():
-        store.add(triples)
-    labels = store.construct(query_text("labels.rq"))
-    used = [row["version"][1] for row in store.select(query_text(CURRENT_REFERENCE_VERSIONS))]
-    files = {VIEW_FILES[view]: turtle(triples, used) for view, triples in views.items()}
-    files[LABEL_FILE] = turtle(labels, used)
+    built = build(engine)
+    used = [row["version"][1] for row in built.store.select(query_text(CURRENT_REFERENCE_VERSIONS))]
+    files = {VIEW_FILES[view]: turtle(triples, used) for view, triples in built.views.items()}
+    files[LABEL_FILE] = turtle(built.labels, used)
     manifest = events()
     everything = pod_files() + manifest["derived"]
     missing = sorted((set(files) | {"index.ttl", "manifest.ttl"}) - set(manifest["derived"]))

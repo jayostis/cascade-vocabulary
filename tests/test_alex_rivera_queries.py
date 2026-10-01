@@ -71,6 +71,16 @@ def test_each_derivation_view_and_review_is_the_same_on_oxigraph_and_rdflib(even
     assert derived_state_views_and_reviews("oxigraph", lens, event) == derived_state_views_and_reviews("rdflib", lens, event)
 
 
+@pytest.mark.parametrize("lens", ["everyday", "export"])
+@pytest.mark.parametrize("engine", ENGINES)
+def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_pods_own(engine, lens):
+    store = build.loaded(engine)
+    pod = store.triples()
+    derived = build.derive(store, lens)
+    assert derived and derived.isdisjoint(pod)
+    assert store.triples() == pod | derived
+
+
 @pytest.mark.parametrize("engine", ENGINES)
 def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(engine, tmp_path):
     subprocess.run([sys.executable, str(EXAMPLE / "queries" / "build.py"), "--engine", engine, "--out", str(tmp_path)], check=True)
@@ -81,7 +91,7 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(en
 
 
 def test_every_committed_view_is_marked_rebuildable_and_registered():
-    store = build.derive(build.loaded("oxigraph"), "everyday")
+    store = build.build("oxigraph").store
     current = {URIRef(row["version"][1]) for row in store.select(build.query_text(build.CURRENT_REFERENCE_VERSIONS))}
     for relative in sorted(set(build.VIEW_FILES.values()) | {build.LABEL_FILE}):
         address = URIRef(build.POD_BASE + relative)
