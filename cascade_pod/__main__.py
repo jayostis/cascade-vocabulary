@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import Failure, ask, graphdb, match, vocabulary, write
+from . import Failure, ask, graphdb, match, site, vocabulary, write
 from .pod import Example, save
 from .store import ENGINES
 
@@ -35,6 +35,8 @@ def parser():
     question.add_argument("question", help='its path under questions/, such as "record/Why it is in no view"')
     question.add_argument("--lens", choices=sorted(vocabulary.named("lenses")), default=vocabulary.DEFAULT_LENS)
     question.add_argument("--engine", choices=sorted(ENGINES), default="oxigraph")
+    command("site", "writes the site that documents the pod and its queries",
+            lambda example, a: site.build(example, a.out)).add_argument("--out", type=Path, required=True)
     return top
 
 

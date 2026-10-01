@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% from "question.html" import question %}
+{% set name = site.names.get(thing, thing) %}
+{% block title %}{{ name }}{% endblock %}
+{% block main %}
+<p class="kind">{{ kind|capitalize }}</p>
+<h1>{{ name }}</h1>
+<p class="iri"><code>{{ thing }}</code></p>
+{% if kind == "entry" %}
+<p>An entry is what an app shows: one allergy, one condition, one vaccination. The build makes it in a view by joining the
+records judged to be the same thing, and takes each of its values from one of them. Follow a member to see where it came from.</p>
+{% elif kind == "record" %}
+<p>A record is one thing a source told the pod about, such as one hospital's note of a penicillin allergy. Its file says only
+what type it is. Each time the source sends it, a revision arrives: it carries a version, which is the content, and names the
+document it was derived from. A document whose bytes the pod keeps links to them.</p>
+{% elif kind == "judgment" %}
+<p>A judgment is a decision about records or patient profiles: that two are the same, that they differ, that one is wrong,
+or whose a profile is. A machine or a person makes it. It is never edited; a later judgment supersedes or retracts it.</p>
+{% elif kind == "profile" %}
+<p>A patient profile is how one hospital names the person. Each record names a profile as its patient, and an About
+judgment says whose the profile is. Until one counts, the records naming it stay out of every view.</p>
+{% endif %}
+<p>Every section below is one question with only the rows about this {{ kind }}. The first says which files of the pod
+state it.</p>
+{% for q in questions %}
+{{ question(q) }}
+{% endfor %}
+{% endblock %}
