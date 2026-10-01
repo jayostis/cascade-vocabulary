@@ -1,26 +1,17 @@
-"""The Cascade matcher: writes a Same wherever one of rule set 2026.1's four rules joins two records.
+"""The Cascade matcher: writes a Same wherever one of its four rules joins two records."""
 
-python3 example-pods/alex-rivera/matcher/match.py --read-through <event> [--takes <event>] --at <time> --out <directory>
-"""
-
-import argparse
 import csv
-import hashlib
 import json
 import re
-import sys
-from pathlib import Path
 
-import rdflib
-from rdflib import Graph, URIRef
+from rdflib import URIRef
 from rdflib.namespace import RDF
 
-rdflib.NORMALIZE_LITERALS = False
+from . import Failure, names
+from .pod import CLINICAL, HEALTH, NOT_RDF, RECORD_FOLDERS, fanned
+from .store import Rdflib
 
 MATCHER = "urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76"
-POD_BASE = "https://pod.alex-rivera.example/"
-RECORD_NAMESPACE = "90c60849-c5ef-4ca6-bfb8-8662bd07d2b5"
-HERE = Path(__file__).absolute().parent
 
 PREFIXES = {
     "dct": "http://purl.org/dc/terms/",
@@ -32,37 +23,12 @@ PREFIXES = {
     "rec": "https://ns.cascadeprotocol.org/records/v1-draft#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
 }
-CLINICAL = "https://ns.cascadeprotocol.org/clinical/v1#"
-HEALTH = "https://ns.cascadeprotocol.org/health/v1#"
 JDG, NPX, PROV, REC = (PREFIXES[p] for p in ("jdg", "npx", "prov", "rec"))
 PAV_VERSION = URIRef(PREFIXES["pav"] + "version")
 SPECIALIZATION_OF, WAS_REVISION_OF = URIRef(PROV + "specializationOf"), URIRef(PROV + "wasRevisionOf")
-FOLDERS = {
-    HEALTH + "AllergyRecord": "allergies",
-    HEALTH + "ConditionRecord": "conditions",
-    HEALTH + "ImmunizationRecord": "immunizations",
-    CLINICAL + "Procedure": "procedures",
-}
 CODES = [URIRef(HEALTH + "allergenCode"), URIRef(HEALTH + "snomedCode"), URIRef(CLINICAL + "snomedCode")]
 VACCINE_CODE, ADMINISTRATION_DATE = URIRef(HEALTH + "vaccineCode"), URIRef(HEALTH + "administrationDate")
 SNOMED, RXNORM = "http://snomed.info/sct/", "http://www.nlm.nih.gov/research/umls/rxnorm/"
-
-
-class Failure(Exception):
-    pass
-
-
-def record_name(inputs):
-    digest = bytearray(hashlib.sha256("|".join([RECORD_NAMESPACE, *inputs]).encode("utf-8")).digest()[:16])
-    digest[6] = (digest[6] & 0x0F) | 0x80
-    digest[8] = (digest[8] & 0x3F) | 0x80
-    text = digest.hex()
-    return f"urn:uuid:{text[:8]}-{text[8:12]}-{text[12:16]}-{text[16:20]}-{text[20:]}"
-
-
-def fanned(folder, name):
-    stem = name[len("urn:uuid:"):]
-    return f"{folder}/{stem[:2]}/{stem}.ttl"
 
 
 # Turtle in one fixed layout, shared by every judgment and reference file
@@ -103,27 +69,16 @@ def _file(blocks):
     return (head + "\n" + text + "\n").encode("utf-8")
 
 
-def judgment_file(name, *, author, person, at, verdict=None, subject=None, basis=None, members=(),
-                  justification=None, supersedes=(), retracts=(), description=None, used=()):
+def judgment_file(name, *, at, members, justification, used):
     statements = {
-        "jdg:verdict": [_iri(JDG + verdict)] if verdict else [],
-        "jdg:subject": [_iri(subject)] if subject else [],
-        "jdg:basis": [_iri(JDG + basis)] if basis else [],
+        "jdg:verdict": [_iri(JDG + "Same")],
         "prov:hadMember": [_iri(m) for m in members],
-        "jdg:justification": [_iri(JDG + justification)] if justification else [],
-        "npx:supersedes": [_iri(j) for j in supersedes],
-        "npx:retracts": [_iri(j) for j in retracts],
-        "dct:description": [_string(description) + "@en"] if description else [],
+        "jdg:justification": [_iri(JDG + justification)],
         "prov:used": [_iri(u) for u in used],
-        "prov:wasAttributedTo": [_iri(author)],
+        "prov:wasAttributedTo": [_iri(MATCHER)],
         "prov:generatedAtTime": [_string(at) + "^^xsd:dateTime"],
     }
-    if person:
-        statements["prov:qualifiedAttribution"] = [
-            f"[ a prov:Attribution ;\n        prov:agent {_iri(author)} ;\n        prov:hadRole jdg:patient ]"]
-        author_block = f"{_iri(author)} a prov:Person ."
-    else:
-        author_block = f'{_iri(author)} a prov:SoftwareAgent ;\n    rdfs:label "Cascade matcher" .'
+    author_block = f'{_iri(MATCHER)} a prov:SoftwareAgent ;\n    rdfs:label "Cascade matcher" .'
     return _file([_block(name, "jdg:Judgment", statements, JUDGMENT_ORDER), author_block])
 
 
@@ -141,18 +96,18 @@ def version_file(series, version):
     }, REFERENCE_ORDER)])
 
 
-# What the matcher knows: its references and their tables
-
-def read_csv(relative):
-    with open(HERE / relative, newline="", encoding="utf-8") as table:
-        return list(csv.DictReader(table))
-
+# What the matcher knows: the example's references and their tables
 
 class References:
-    def __init__(self):
-        self.series = json.loads((HERE / "references.json").read_text(encoding="utf-8"))["series"]
+    def __init__(self, folder):
+        self.folder = folder
+        self.series = json.loads((folder / "references.json").read_text(encoding="utf-8"))["series"]
         self.by_key = {s["key"]: s for s in self.series}
         self.versions = {v["name"]: (s, v) for s in self.series for v in s["versions"]}
+
+    def table(self, version):
+        with open(self.folder / version["table"], newline="", encoding="utf-8") as table:
+            return list(csv.DictReader(table))
 
     def current(self, key, pod):
         series = self.by_key[key]
@@ -171,27 +126,24 @@ class References:
 
 # The pod through one event
 
-class Pod:
+class Reading:
     def __init__(self, example, read_through):
-        manifest = json.loads((example / "events.json").read_text(encoding="utf-8"))
-        events = [e["event"] for e in manifest["events"]]
-        if read_through not in events:
-            raise Failure(f"no event {read_through}")
-        self.subject = URIRef(next(e["subject"] for e in manifest["events"] if "subject" in e))
-        self.added_by, self.graph, self.defined_in = {}, Graph(), {}
-        for event in manifest["events"][: events.index(read_through) + 1]:
-            for path in event["adds"]:
-                self.added_by[path] = event["event"]
-                if path.startswith(("records/", "judgments/", "references/")):
-                    graph = Graph().parse(example / "pod" / path, format="turtle", publicID=POD_BASE + path)
-                    for subject in graph.subjects(RDF.type, None):
-                        self.defined_in.setdefault(subject, path)
-                    self.graph += graph
+        self.example = example
+        events = example.through(read_through)
+        self.subject = URIRef(next(e["subject"] for e in events if "subject" in e))
+        self.added_by = {path: event["event"] for event in events for path in event["adds"]}
+        store = Rdflib()
+        example.load(store, read_through)
+        self.graph, self.defined_in = store.graph(), {}
+        for event in events:
+            for path in (p for p in event["adds"] if not p.startswith(NOT_RDF)):
+                for subject in store.graph(example.address + path).subjects(RDF.type, None):
+                    self.defined_in.setdefault(subject, path)
         self.records = self._records()
 
     def _records(self):
         g, records = self.graph, {}
-        for kind, folder in FOLDERS.items():
+        for kind, folder in RECORD_FOLDERS.items():
             for record in g.subjects(RDF.type, URIRef(kind)):
                 revisions = set(g.subjects(URIRef(REC + "revisionOf"), record))
                 followed = {o for r in revisions for o in g.objects(r, WAS_REVISION_OF)}
@@ -258,9 +210,9 @@ MATCHES = {"R1": same_code, "R2": same_code_and_date, "R3": mapped_code, "R4": v
 
 class Matcher:
     def __init__(self, pod, at):
-        self.pod, self.at, self.references = pod, at, References()
+        self.pod, self.at, self.references = pod, at, References(pod.example.folder / "references")
         self.rules_version = self.references.current("rules", pod)
-        self.rules = read_csv(self.rules_version["table"])
+        self.rules = self.references.table(self.rules_version)
         if sorted(r["rule"] for r in self.rules) != sorted(MATCHES):
             raise Failure(f"rule set {self.rules_version['version']} names rules this matcher does not apply")
         self.files = {}
@@ -270,18 +222,17 @@ class Matcher:
 
     def matches(self, rule, a, b):
         version = self.table_version(rule)
-        table = read_csv(version["table"]) if version else None
+        table = self.references.table(version) if version else None
         return a["folder"] == b["folder"] and a["folder"] in rule["applies_to"].split() and MATCHES[rule["rule"]](a, b, table)
 
     def same(self, rule, members):
         applied = [self.rules_version] + ([self.table_version(rule)] if rule["table"] else [])
         used = sorted({v["name"] for v in applied} | {m["version"] for m in members})
         justification = JDG + rule["justification"]
-        names = sorted(m["name"] for m in members)
-        name = record_name([MATCHER, justification, *names, *used])
+        member_names = sorted(m["name"] for m in members)
+        name = names.record([MATCHER, justification, *member_names, *used])
         self.files[fanned("judgments", name)] = judgment_file(
-            name, author=MATCHER, person=False, at=self.at, verdict="Same", members=names,
-            justification=rule["justification"], used=used)
+            name, at=self.at, members=member_names, justification=rule["justification"], used=used)
         for version in applied:
             series, _ = self.references.versions[version["name"]]
             for thing, content in ((series, series_file(series)), (version, version_file(series, version))):
@@ -317,29 +268,14 @@ class Matcher:
                 self.same(rule, still)
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--read-through", required=True)
-    parser.add_argument("--takes")
-    parser.add_argument("--at", required=True)
-    parser.add_argument("--out", required=True, type=Path)
-    parser.add_argument("--example", type=Path, default=HERE.parent)
-    arguments = parser.parse_args()
-    try:
-        matcher = Matcher(Pod(arguments.example.absolute(), arguments.read_through), arguments.at)
-        if arguments.takes:
-            matcher.take(arguments.takes)
-        else:
-            matcher.recheck()
-    except Failure as failure:
-        print(f"match.py: {failure}", file=sys.stderr)
-        return 2
+def run(example, read_through, takes, at, out):
+    matcher = Matcher(Reading(example, read_through), at)
+    if takes:
+        matcher.take(takes)
+    else:
+        matcher.recheck()
     for path, content in sorted(matcher.files.items()):
-        target = arguments.out / path
+        target = out / path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(content)
     return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())

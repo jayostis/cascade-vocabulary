@@ -83,7 +83,7 @@ def graph(triples):
 def pod(event):
     engine = store.Rdflib()
     ALEX.load(engine, event)
-    return engine.dataset.default_graph
+    return engine.graph()
 
 
 def _string_typed(term):

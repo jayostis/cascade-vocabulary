@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import Failure, derive, graphdb, write
+from . import Failure, derive, graphdb, match, write
 from .pod import Example
 from .store import ENGINES
 
@@ -11,6 +11,12 @@ def parser():
     top = argparse.ArgumentParser(prog="python -m cascade_pod")
     commands = top.add_subparsers(dest="command", required=True)
     commands.add_parser("write", help="files the story into pod/").add_argument("example", type=Path)
+    matching = commands.add_parser("match", help="writes the matcher's judgments")
+    matching.add_argument("example", type=Path)
+    matching.add_argument("--read-through", required=True)
+    matching.add_argument("--takes")
+    matching.add_argument("--at", required=True)
+    matching.add_argument("--out", type=Path, required=True)
     build = commands.add_parser("build", help="writes the views, the labels, index.ttl and manifest.ttl")
     build.add_argument("example", type=Path)
     build.add_argument("--engine", choices=sorted(ENGINES), required=True)
@@ -24,9 +30,11 @@ def parser():
 def main(argv=None):
     arguments = parser().parse_args(argv)
     try:
-        if arguments.command == "write":
-            return write.run(arguments.example)
         example = Example(arguments.example)
+        if arguments.command == "write":
+            return write.run(example)
+        if arguments.command == "match":
+            return match.run(example, arguments.read_through, arguments.takes, arguments.at, arguments.out)
         if arguments.command == "build":
             return derive.write(example, arguments.engine, arguments.out)
         if arguments.command == "graphdb":

@@ -98,6 +98,9 @@ class Rdflib:
         keep_literals_as_written()
         self.dataset = rdflib.Dataset()
 
+    def graph(self, name=None):
+        return self.dataset.graph(rdflib.URIRef(name)) if name else self.dataset.default_graph
+
     def load(self, path, graph):
         self._extend(parsed(path, graph), graph)
 
@@ -105,7 +108,7 @@ class Rdflib:
         self._extend([tuple(to_rdflib(t) for t in triple) for triple in triples], graph)
 
     def _extend(self, triples, graph):
-        graphs = [self.dataset.default_graph] + ([self.dataset.graph(rdflib.URIRef(graph))] if graph else [])
+        graphs = [self.graph()] + ([self.graph(graph)] if graph else [])
         self.dataset.addN((*triple, g) for triple in triples for g in graphs)
 
     def _query(self, query):
@@ -123,13 +126,13 @@ class Rdflib:
         return [{name: from_rdflib(row[name]) for name in names if row[name] is not None} for row in rows]
 
     def triples(self):
-        return {tuple(from_rdflib(t) for t in triple) for triple in self.dataset.default_graph}
+        return {tuple(from_rdflib(t) for t in triple) for triple in self.graph()}
 
     def graphs(self):
         return sorted(str(g.identifier) for g in self.dataset.graphs() if g.identifier != rdflib.graph.DATASET_DEFAULT_GRAPH_ID)
 
     def ntriples(self, graph):
-        return self.dataset.graph(rdflib.URIRef(graph)).serialize(format="nt", encoding="utf-8")
+        return self.graph(graph).serialize(format="nt", encoding="utf-8")
 
 
 ENGINES = {"oxigraph": Oxigraph, "rdflib": Rdflib}

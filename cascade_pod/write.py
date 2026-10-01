@@ -13,7 +13,7 @@ from rdflib import BNode, Literal, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
 
 from . import Failure, names, store, turtle
-from .pod import RECORD_FOLDERS, Example, fanned, stem
+from .pod import RECORD_FOLDERS, fanned, stem
 
 BRIDGE, PAV, PROV, RDFS, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rdfs", "rec"))
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
@@ -354,8 +354,7 @@ def crate_with_files(crate, example):
 
 # One run
 
-def run(folder):
-    example = Example(folder)
+def run(example):
     handles = json.loads((example.folder / "handles.json").read_text(encoding="utf-8"))
     filing, facts_files, missing = Filing(example), {}, []
     for event in example.events:
