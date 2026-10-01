@@ -13,7 +13,7 @@ from rdflib.namespace import XSD
 from . import derive, names, turtle, vocabulary
 from .derived_files import LABEL_FILE, VIEW_FILES
 from .pod import save
-from .store import ENGINES, to_rdflib
+from .store import ENGINES
 
 ENGINE = "oxigraph"
 HERE = Path(__file__).absolute().parent
@@ -62,7 +62,7 @@ class Site:
     def __init__(self, example):
         self.example = example
         held = example.store(ENGINE, vocabulary.DEFAULT_LENS)
-        self.questions = {name: Query(relative, *self._answer(held, relative))
+        self.questions = {name: Query(relative, *held.answer(vocabulary.query(relative)))
                           for name, relative in vocabulary.questions().items()}
         self.terms = self._terms()
         self.names = {row["thing"]: row["label"] for row in self.questions[CALLED].rows}
@@ -71,25 +71,17 @@ class Site:
         self.built = {URIRef(example.address + path): (Query(relative), len(held.triples(example.address + path)))
                       for path, relative in writers.items()}
         self.views = [URIRef(example.address + path) for path in VIEW_FILES.values()]
-        self.pipeline = {lens: [(Query(relative), added) for relative, added in self._steps(lens)]
+        self.pipeline = {lens: [(Query(relative), added) for relative, added in derive.steps(example.loaded(ENGINE), lens)]
                          for lens in vocabulary.named("lenses")}
         self.copied = example.files() + example.derived
         self.links = self._links()
 
-    @staticmethod
-    def _answer(held, relative):
-        columns, rows = held.answer(vocabulary.query(relative))
-        return columns, [{name: to_rdflib(term) for name, term in row.items()} for row in rows]
 
     def _terms(self):
         terms = ENGINES[ENGINE]()
         vocabulary.load(terms)
-        _, rows = self._answer(terms, vocabulary.questions()[CALLED])
+        _, rows = terms.answer(vocabulary.query(vocabulary.questions()[CALLED]))
         return {row["thing"]: row["label"] for row in rows}
-
-    def _steps(self, lens):
-        return [(relative, {tuple(map(to_rdflib, triple)) for triple in added})
-                for relative, added in derive.steps(self.example.loaded(ENGINE), lens)]
 
     def _things(self, kind):
         found = {row[kind]: None for name, question in self.questions.items() if name.startswith(kind + "/")

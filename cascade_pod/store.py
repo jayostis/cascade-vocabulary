@@ -1,6 +1,4 @@
-"""Two SPARQL engines behind one interface.
-
-A term is ("iri", value), ("blank", id) or ("literal", lexical form, datatype, language), whichever engine made it.
+"""Two SPARQL engines behind one interface, each taking and giving rdflib terms; a string literal has no datatype.
 Every triple added under a graph's name is in the default graph as well, and queries read the default graph.
 """
 
@@ -8,8 +6,7 @@ import warnings
 
 import pyoxigraph
 import rdflib
-
-XSD_STRING = "http://www.w3.org/2001/XMLSchema#string"
+from rdflib.namespace import XSD
 
 
 def keep_literals_as_written():
@@ -17,18 +14,6 @@ def keep_literals_as_written():
 
 
 keep_literals_as_written()
-
-
-def iri(value):
-    return ("iri", value)
-
-
-def blank(name):
-    return ("blank", name)
-
-
-def literal(text, datatype=XSD_STRING):
-    return ("literal", text, datatype, None)
 
 
 def parsed(path, base=None):
@@ -40,23 +25,10 @@ def parsed_text(octets, base=None):
     return rdflib.Graph().parse(data=octets, format="turtle", publicID=base)
 
 
-def from_rdflib(node):
-    if isinstance(node, rdflib.URIRef):
-        return ("iri", str(node))
-    if isinstance(node, rdflib.BNode):
-        return ("blank", str(node))
-    datatype = str(node.datatype) if node.datatype else (None if node.language else XSD_STRING)
-    return ("literal", str(node), datatype, node.language)
-
-
-def to_rdflib(term):
-    if term[0] == "iri":
-        return rdflib.URIRef(term[1])
-    if term[0] == "blank":
-        return rdflib.BNode(term[1])
-    if term[3]:
-        return rdflib.Literal(term[1], lang=term[3])
-    return rdflib.Literal(term[1], datatype=None if term[2] == XSD_STRING else rdflib.URIRef(term[2]))
+def plain(node):
+    if isinstance(node, rdflib.Literal) and node.datatype == XSD.string:
+        return rdflib.Literal(str(node))
+    return node
 
 
 class Oxigraph:
@@ -74,21 +46,25 @@ class Oxigraph:
         graphs = [pyoxigraph.DefaultGraph()] + ([pyoxigraph.NamedNode(graph)] if graph else [])
         self.store.extend([pyoxigraph.Quad(*triple, g) for triple in triples for g in graphs])
 
-    def _term(self, term):
+    @staticmethod
+    def _term(term):
         if isinstance(term, pyoxigraph.NamedNode):
-            return ("iri", term.value)
+            return rdflib.URIRef(term.value)
         if isinstance(term, pyoxigraph.BlankNode):
-            return ("blank", term.value)
-        return ("literal", term.value, term.datatype.value if not term.language else None, term.language)
+            return rdflib.BNode(term.value)
+        if term.language:
+            return rdflib.Literal(term.value, lang=term.language)
+        return plain(rdflib.Literal(term.value, datatype=rdflib.URIRef(term.datatype.value)))
 
-    def _node(self, term):
-        if term[0] == "iri":
-            return pyoxigraph.NamedNode(term[1])
-        if term[0] == "blank":
-            return pyoxigraph.BlankNode(term[1])
-        if term[3]:
-            return pyoxigraph.Literal(term[1], language=term[3])
-        return pyoxigraph.Literal(term[1], datatype=pyoxigraph.NamedNode(term[2] or XSD_STRING))
+    @staticmethod
+    def _node(term):
+        if isinstance(term, rdflib.URIRef):
+            return pyoxigraph.NamedNode(str(term))
+        if isinstance(term, rdflib.BNode):
+            return pyoxigraph.BlankNode(str(term))
+        if term.language:
+            return pyoxigraph.Literal(str(term), language=term.language)
+        return pyoxigraph.Literal(str(term), datatype=pyoxigraph.NamedNode(str(term.datatype or XSD.string)))
 
     def construct(self, query):
         return {tuple(self._term(t) for t in (x.subject, x.predicate, x.object)) for x in self.store.query(query)}
@@ -123,10 +99,10 @@ class Rdflib:
         return self.dataset.graph(rdflib.URIRef(name)) if name else self.dataset.default_graph
 
     def load(self, path, graph):
-        self._extend(parsed(path, graph), graph)
+        self._extend([tuple(map(plain, triple)) for triple in parsed(path, graph)], graph)
 
     def add(self, triples, graph=None):
-        self._extend([tuple(to_rdflib(t) for t in triple) for triple in triples], graph)
+        self._extend(list(triples), graph)
 
     def _extend(self, triples, graph):
         graphs = [self.graph()] + ([self.graph(graph)] if graph else [])
@@ -140,17 +116,17 @@ class Rdflib:
 
     def construct(self, query):
         _, found = self._query(query)
-        return {tuple(from_rdflib(t) for t in triple) for triple in found}
+        return {tuple(map(plain, triple)) for triple in found}
 
     def answer(self, query):
         names, rows = self._query(query)
-        return names, [{name: from_rdflib(row[name]) for name in names if row[name] is not None} for row in rows]
+        return names, [{name: plain(row[name]) for name in names if row[name] is not None} for row in rows]
 
     def select(self, query):
         return self.answer(query)[1]
 
     def triples(self, graph=None):
-        return {tuple(from_rdflib(t) for t in triple) for triple in self.graph(graph)}
+        return {tuple(map(plain, triple)) for triple in self.graph(graph)}
 
     def graphs(self):
         return sorted(str(g.identifier) for g in self.dataset.graphs() if g.identifier != rdflib.graph.DATASET_DEFAULT_GRAPH_ID)

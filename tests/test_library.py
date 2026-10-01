@@ -6,14 +6,14 @@ import xml.etree.ElementTree as ElementTree
 from pathlib import Path
 
 import pytest
-from rdflib import URIRef
+from rdflib import Literal, URIRef
+from rdflib.namespace import XSD
 
 from cascade_pod import Failure, ask, match, store, turtle, vocabulary
 from cascade_pod.pod import Example
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
-XSD_INTEGER = "http://www.w3.org/2001/XMLSchema#integer"
 
 
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))
@@ -23,9 +23,9 @@ def test_a_triple_stated_in_two_files_is_counted_once_by_a_query_over_the_defaul
         path = tmp_path / f"{name}.ttl"
         path.write_text("<urn:x:s> <urn:x:p> <urn:x:o> .\n", encoding="utf-8")
         held.load(path, f"urn:x:{name}")
-    assert held.select("SELECT (COUNT(*) AS ?n) WHERE { ?s ?p ?o }") == [{"n": store.literal("1", XSD_INTEGER)}]
+    assert held.select("SELECT (COUNT(*) AS ?n) WHERE { ?s ?p ?o }") == [{"n": Literal("1", datatype=XSD.integer)}]
     assert held.select("SELECT ?g WHERE { GRAPH ?g { ?s ?p ?o } } ORDER BY ?g") == [
-        {"g": store.iri("urn:x:one")}, {"g": store.iri("urn:x:two")}]
+        {"g": URIRef("urn:x:one")}, {"g": URIRef("urn:x:two")}]
 
 
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))
@@ -137,7 +137,7 @@ def test_an_unknown_lens_is_refused_by_name_without_a_traceback():
 
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))
 def test_a_store_holding_the_pod_holds_nothing_of_the_vocabularys(engine):
-    terms = {store.from_rdflib(subject) for path in vocabulary.ontologies().values() for subject in store.parsed(path).subjects()}
+    terms = {subject for path in vocabulary.ontologies().values() for subject in store.parsed(path).subjects()}
     held = Example(EXAMPLE).store(engine, vocabulary.DEFAULT_LENS)
     assert {triple[0] for triple in held.triples()} & terms == set()
     assert not set(held.graphs()) & set(vocabulary.ontologies())
