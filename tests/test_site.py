@@ -2,21 +2,28 @@ import ast
 import hashlib
 import json
 import re
+import shlex
+import subprocess
+import sys
 from functools import lru_cache
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
 
 import pytest
-from rdflib import Literal
+from rdflib import Literal, URIRef
 from rdflib.namespace import XSD
 
 from cascade_pod import graphdb, site, turtle, vocabulary
 from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
-from cascade_pod.pod import Example, save
-from examples import EXAMPLES, ROOT
+from cascade_pod.pod import Example, fanned, save, stem
+from examples import EXAMPLES, ROOT, pod_file
 from test_library_graphdb import GraphDB
 from test_queries import queries_held
+
+MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
+REVISION_OF = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#revisionOf")
+DERIVED_FROM = URIRef("http://www.w3.org/ns/prov#wasDerivedFrom")
 
 
 class Page(HTMLParser):
@@ -151,6 +158,67 @@ def test_the_names_graphdb_saves_the_questions_under_are_the_names_the_site_prin
         server.server.shutdown()
     printed = {block["saved"] for page in pages.values() for block in blocks(page) if block["saved"]}
     assert printed == set(server.saved)
+
+
+def entries_and_members(example, views=tuple(VIEW_FILES)):
+    return sorted((entry, member) for view in views
+                  for entry, member in pod_file(example, VIEW_FILES[view]).subject_objects(MERGED_FROM))
+
+
+def asked(command):
+    arguments = shlex.split(command)
+    result = subprocess.run([sys.executable, *arguments[1:]], capture_output=True, cwd=ROOT)
+    assert result.returncode == 0, result.stderr
+    return [dict(cell[1:].split("=", 1) for cell in line.split("\t"))
+            for line in result.stdout.decode("utf-8").splitlines()]
+
+
+def samples(example):
+    """Blocks of the home and not-shown pages, and the first entry's "Where it came from", with the thing each is
+    about."""
+    [(entry, _), *_] = entries_and_members(example)
+    return [("index.html", "What each folder holds", None), ("index.html", "How many of each kind", None),
+            ("index.html", "What each import brought in", None), ("not-shown.html", "Why it is in no view", None),
+            (page_of(entry), "Where it came from", entry)]
+
+
+@pytest.mark.parametrize("example, page, title, thing", [(e, *s) for e in EXAMPLES for s in samples(e)],
+                         ids=[f"{e.name}-{s[0]}-{s[1]}" for e in EXAMPLES for s in samples(e)], scope="module")
+def test_every_run_it_yourself_command_prints_the_rows_the_block_shows(pages, page, title, thing):
+    [block] = [b for b in blocks(pages[page]) if b["title"] == title]
+    printed = asked(block["command"])
+    about = [code[1:] for code in block["codes"] if code.startswith("?")]
+    if about:
+        printed = [row for row in printed if row.get(about[0]) == f"<{thing}>"]
+    shown = [{column: cell["value"] for column, cell in row.items()} for row in block["rows"]]
+    assert shown and shown == [{c: row[c] for c in block["columns"] if c in row} for row in printed]
+
+
+def stored_documents(example, record, graph):
+    """The copy of each stored document a revision of the record was derived from, and of the Turtle describing it."""
+    documents = {d for revision in graph.subjects(REVISION_OF, record) for d in graph.objects(revision, DERIVED_FROM)}
+    return {path for d in documents if (example.pod / "attachments" / "sha-256" / stem(str(d))).is_file()
+            for path in (f"pod/attachments/sha-256/{stem(str(d))}", "pod/" + fanned("provenance/documents", str(d)))}
+
+
+def test_an_entrys_page_reaches_each_members_source_file_and_its_turtle_by_links_alone(example, pages):
+    graph = example.loaded("rdflib").graph()
+    walked = entries_and_members(example)
+    unreached = []
+    for entry, member in walked:
+        if page_of(member) not in pages[page_of(entry)].hrefs:
+            unreached.append((str(entry), str(member)))
+        elif not stored_documents(example, member, graph) <= set(pages[page_of(member)].hrefs):
+            unreached.append((str(entry), str(member), "document"))
+    assert walked and unreached == []
+    assert any(stored_documents(example, member, graph) for _, member in walked)
+
+
+def test_a_block_about_one_thing_says_its_command_prints_every_things_rows(example, pages):
+    for record in {member for _, member in entries_and_members(example, set(VIEW_FILES) - {"patients"})}:
+        [block] = [b for b in blocks(pages[page_of(record)]) if b["title"] == "Which judgments name it"]
+        assert (f"It prints the rows for every record; this block keeps those whose ?record is {record}."
+                in block["paras"])
 
 
 def thing_pages(pages):
