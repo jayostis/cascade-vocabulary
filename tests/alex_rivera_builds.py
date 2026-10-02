@@ -118,7 +118,7 @@ def _judgment(graph, handle, named):
 
 @lru_cache(maxsize=None)
 def handles():
-    graph = pod(events()[-1]["event"])
+    graph = final_pod()
     named = {h: source_name(row) for kind in ("records", "profiles") for h, row in sources()[kind].items()}
     for h in sources()["records"]:
         versions = []
@@ -195,6 +195,10 @@ def pod(event):
     engine = store.Rdflib()
     ALEX.load(engine, event)
     return engine.graph()
+
+
+def final_pod():
+    return pod(events()[-1]["event"])
 
 
 def _string_typed(term):

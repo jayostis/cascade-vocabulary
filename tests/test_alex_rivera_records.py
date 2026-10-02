@@ -15,7 +15,7 @@ from rdflib.compare import isomorphic
 ROOT = Path(__file__).absolute().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 import recomputed  # noqa: E402
-from alex_rivera_builds import arrivals, events, handles, pod, source_name, sources  # noqa: E402
+from alex_rivera_builds import arrivals, final_pod, handles, source_name, sources  # noqa: E402
 from cascade_pod import names, store  # noqa: E402
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
@@ -117,7 +117,7 @@ def test_each_event_adds_the_scenarios_count_of_records_layer_files():
 
 
 def test_each_records_first_revision_came_from_what_its_row_in_expected_handles_says_its_source_calls_it():
-    graph = pod(events()[-1]["event"])
+    graph = final_pod()
     for handle, row in sources()["records"].items():
         record = handles()[handle]
         first = arrivals(graph, record)[0]
@@ -307,7 +307,7 @@ def test_each_revision_holds_its_arrivals_triples():
 
 
 def test_every_handle_in_expected_handles_names_one_thing_in_the_pod_and_every_record_and_profile_has_one_handle():
-    graph = pod(events()[-1]["event"])
+    graph = final_pod()
     named = {handle: source_name(row) for kind in ("records", "profiles") for handle, row in sources()[kind].items()}
     records = set(graph.objects(None, REVISION_OF))
     profiles = set(graph.objects(None, URIRef(REC + "patient"))) - set(graph.subjects(RDF_TYPE, URIRef(REC + "Subject")))
