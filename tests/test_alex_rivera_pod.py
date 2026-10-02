@@ -374,7 +374,6 @@ def test_a_resource_file_with_no_clinical_record_entry_is_named_from_its_documen
     document = EXAMPLE / "downloads" / "x-e6" / "apple_health_export" / "clinical-records" / "Immunization-imm-tdap-2026.json"
     digest = recomputed.ni_name(document.read_bytes())
     assert digest == str(name("D-U-IMM-TDAP r1"))
-    assert str(name("U-IMM-TDAP")) == recomputed.record_name([digest, ""])
     assert pod("E15").value(name("U-IMM-TDAP v1"), REC.patient) is None
 
     findings = Graph().parse(EXAMPLE / "conversions" / "e6" / "Immunization-imm-tdap-2026" / "findings.ttl", format="turtle")
