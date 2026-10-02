@@ -3,17 +3,24 @@ Every triple added under a graph's name is in the default graph as well, and que
 """
 
 import warnings
+from contextlib import contextmanager
 
 import pyoxigraph
 import rdflib
 from rdflib.namespace import XSD
 
 
-def keep_literals_as_written():
-    rdflib.NORMALIZE_LITERALS = False
+@contextmanager
+def literals_as_written():
+    was, rdflib.NORMALIZE_LITERALS = rdflib.NORMALIZE_LITERALS, False
+    try:
+        yield
+    finally:
+        rdflib.NORMALIZE_LITERALS = was
 
 
-keep_literals_as_written()
+def literal(value, datatype=None, lang=None):
+    return rdflib.Literal(value, datatype=datatype, lang=lang, normalize=False)
 
 
 def parsed(path, base=None):
@@ -21,13 +28,13 @@ def parsed(path, base=None):
 
 
 def parsed_text(octets, base=None):
-    keep_literals_as_written()
-    return rdflib.Graph().parse(data=octets, format="turtle", publicID=base)
+    with literals_as_written():
+        return rdflib.Graph().parse(data=octets, format="turtle", publicID=base)
 
 
 def plain(node):
     if isinstance(node, rdflib.Literal) and node.datatype == XSD.string:
-        return rdflib.Literal(str(node))
+        return literal(str(node))
     return node
 
 
@@ -53,8 +60,8 @@ class Oxigraph:
         if isinstance(term, pyoxigraph.BlankNode):
             return rdflib.BNode(term.value)
         if term.language:
-            return rdflib.Literal(term.value, lang=term.language)
-        return plain(rdflib.Literal(term.value, datatype=rdflib.URIRef(term.datatype.value)))
+            return literal(term.value, lang=term.language)
+        return plain(literal(term.value, datatype=rdflib.URIRef(term.datatype.value)))
 
     @staticmethod
     def _node(term):
@@ -92,7 +99,6 @@ class Oxigraph:
 
 class Rdflib:
     def __init__(self):
-        keep_literals_as_written()
         self.dataset = rdflib.Dataset()
 
     def graph(self, name=None):
@@ -111,8 +117,9 @@ class Rdflib:
     def _query(self, query):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", r"Dataset\.\w+ is deprecated", DeprecationWarning)
-            result = self.dataset.query(query)
-            return [str(v) for v in result.vars or ()], list(result)
+            with literals_as_written():
+                result = self.dataset.query(query)
+                return [str(v) for v in result.vars or ()], list(result)
 
     def construct(self, query):
         _, found = self._query(query)

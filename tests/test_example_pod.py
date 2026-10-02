@@ -172,7 +172,7 @@ def test_each_stored_conversion_is_in_the_pod_less_its_arrivals_with_the_import_
     imports = {e["event"].lower(): URIRef(e["import"]) for e in example.events if "import" in e}
     stored = {p.name for p in (example.pod / "attachments" / "sha-256").iterdir()}
     for folder in conversions(example):
-        graph = Graph().parse(folder / "graph.ttl", format="turtle")
+        graph = store.parsed(folder / "graph.ttl")
         document = next(graph.subjects(RDF_TYPE, URIRef(PROV + "Entity")))
         if _hex(str(document)) not in stored:
             text = "".join((example.pod / r).read_text(encoding="utf-8") for r in ttl_files(example, ""))
@@ -198,7 +198,7 @@ def test_each_stored_conversion_is_in_the_pod_less_its_arrivals_with_the_import_
 def test_each_revision_holds_its_arrivals_triples(example):
     arrivals = {}
     for folder in conversions(example):
-        graph = Graph().parse(folder / "graph.ttl", format="turtle")
+        graph = store.parsed(folder / "graph.ttl")
         for arrival in graph.subjects(ARRIVED_AS, None):
             key = (str(graph.value(arrival, ARRIVED_AS)), str(graph.value(arrival, DERIVED_FROM)))
             arrivals[key] = {(p, o) for p, o in graph.predicate_objects(arrival) if p not in (ARRIVED_AS, GENERATED_BY)}
@@ -292,5 +292,4 @@ def test_every_entity_in_the_crate_is_reached_from_its_metadata_descriptor(examp
 def test_the_records_layer_conforms_to_the_records_shapes(example):
     shapes = Graph().parse(ROOT / "ontologies" / "records" / "v1-draft" / "records.shapes.ttl", format="turtle")
     conforms, _, report = validate(pod_graph(example), shacl_graph=shapes, advanced=True)
-    store.keep_literals_as_written()
     assert conforms, report

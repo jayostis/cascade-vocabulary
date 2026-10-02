@@ -5,7 +5,6 @@ from pyshacl import validate
 from rdflib import Graph, URIRef
 
 import recomputed
-from cascade_pod import store
 from examples import ROOT, pod_file
 from test_alex_rivera_handles import ALEX, EVERY_JUDGMENT, EXAMPLE, MATCHER, handles
 
@@ -93,7 +92,6 @@ def test_every_judgment_and_reference_conforms_to_the_judgments_and_records_shap
     for relative in listed("judgments/", "references/"):
         data += pod_file(ALEX, relative)
     conforms, _, report = validate(data, shacl_graph=shapes, advanced=True)
-    store.keep_literals_as_written()
     assert conforms, report
     assert len(set(data.subjects(RDF_TYPE, URIRef(JDG + "Judgment")))) == len(EVERY_JUDGMENT)
     assert len(set(data.subjects(RDF_TYPE, URIRef(REC + "ReferenceSeries")))) == 3

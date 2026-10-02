@@ -5,10 +5,12 @@ import subprocess
 import sys
 
 import pytest
-from rdflib import Literal, URIRef
+from pyshacl import validate
+from rdflib import Graph, Literal, URIRef
+from rdflib.compare import to_isomorphic
 from rdflib.namespace import XSD
 
-from cascade_pod import Failure, ask, derive, match, store, turtle, vocabulary
+from cascade_pod import Failure, ask, derive, match, site, store, turtle, vocabulary
 from cascade_pod.pod import Example
 from examples import ROOT, every_example
 
@@ -147,3 +149,22 @@ def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_p
     derived = derive.derive(held, lens)
     assert derived and derived.isdisjoint(pod)
     assert held.triples() == pod | derived
+
+
+@every_example
+def test_a_shacl_validation_in_the_same_process_changes_no_term_the_store_gives_and_no_byte_of_the_site(example):
+    def made():
+        return ({engine: to_isomorphic(graph_of(example.store(engine, vocabulary.DEFAULT_LENS).triples()))
+                 for engine in sorted(store.ENGINES)},
+                site.Site(example).files())
+
+    before = made()
+    validate(Graph(), shacl_graph=Graph())
+    assert made() == before
+
+
+def graph_of(triples):
+    found = Graph()
+    for triple in triples:
+        found.add(triple)
+    return found

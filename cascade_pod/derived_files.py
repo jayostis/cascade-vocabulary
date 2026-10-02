@@ -56,7 +56,7 @@ def index(address, files):
 
 def manifest(address, title, created):
     manifest, activity, agent = URIRef(address + "#manifest"), BNode("activity"), BNode("agent")
-    at = Literal(created, datatype=URIRef(XSD + "dateTime"))
+    at = Literal(created, datatype=URIRef(XSD + "dateTime"), normalize=False)
     return {(manifest, TYPE, URIRef(CASCADE + "ExportManifest")), (manifest, URIRef(DCT + "title"), Literal(title)),
             (manifest, URIRef(DCT + "created"), at), (manifest, URIRef(CASCADE + "schemaVersion"), Literal("1.8")),
             (manifest, URIRef(PROV + "wasGeneratedBy"), activity), (activity, TYPE, URIRef(PROV + "Activity")),

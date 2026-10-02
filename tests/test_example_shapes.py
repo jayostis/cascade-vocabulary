@@ -9,7 +9,6 @@ from rdflib import Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
-from cascade_pod import store
 from cascade_pod.derived_files import VIEW_FILES
 from cascade_pod.pod import NOT_RDF
 from examples import ROOT, every_example, every_example_and, pod_file
@@ -162,7 +161,6 @@ def with_types(example, graph):
 def violations(example, graph):
     """Every result about a node the graph itself describes, and not about a node it only names."""
     conforms, report, _ = validate(with_types(example, graph), shacl_graph=shapes(), ont_graph=ontology(), advanced=True)
-    store.keep_literals_as_written()
     own = set(graph.subjects())
     return sorted((str(report.value(r, SH.focusNode)), str(report.value(r, SH.resultPath)), str(report.value(r, SH.resultMessage)))
                   for r in report.subjects(RDF.type, SH.ValidationResult) if report.value(r, SH.focusNode) in own)
