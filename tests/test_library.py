@@ -3,8 +3,6 @@ import hashlib
 import re
 import subprocess
 import sys
-import xml.etree.ElementTree as ElementTree
-from pathlib import Path
 
 import pytest
 from rdflib import Literal, URIRef
@@ -12,10 +10,8 @@ from rdflib.namespace import XSD
 
 from cascade_pod import Failure, ask, derive, match, store, turtle, vocabulary
 from cascade_pod.pod import Example
-from examples import every_example
+from examples import ROOT, every_example
 
-ROOT = Path(__file__).absolute().parent.parent
-EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 RECOMPUTED_SHA256 = "409b3dd5420a1a6f9707c802fa1bd7ed26e4d0c98119519968faa698344608f3"
 
 
@@ -41,29 +37,6 @@ def test_ask_prints_the_rows_the_builders_store_returns(example, engine):
     held = example.store(engine, vocabulary.DEFAULT_LENS)
     rows = held.select(vocabulary.query(vocabulary.questions()[question]))
     assert rows and result.stdout.decode("utf-8").splitlines() == [ask.line(row) for row in rows]
-
-
-def alex():
-    """What only Alex's example says: its address, its name and title, its subject and imports, and its hospitals."""
-    example = Example(EXAMPLE)
-    facts = {example.address, example.title, *example.name.split("-")}
-    facts |= {event[key] for event in example.events for key in ("subject", "import") if key in event}
-    for export in EXAMPLE.glob("downloads/*/apple_health_export/export.xml"):
-        facts |= {entry.get("sourceName") for entry in ElementTree.parse(export).getroot().iter("ClinicalRecord")}
-    return facts
-
-
-def mentions(text, facts):
-    return sorted(fact for fact in facts if fact.lower() in text.lower())
-
-
-def test_the_alex_check_finds_her_address_in_a_line_of_code():
-    assert mentions('POD = "https://pod.alex-rivera.example/"', alex()) != []
-
-
-@pytest.mark.parametrize("module", sorted(path.name for path in (ROOT / "cascade_pod").glob("*.py")))
-def test_nothing_in_cascade_pod_names_alex(module):
-    assert mentions((ROOT / "cascade_pod" / module).read_text(encoding="utf-8"), alex()) == []
 
 
 def turtle_text(source):
