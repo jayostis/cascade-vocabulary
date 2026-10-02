@@ -14,7 +14,7 @@ from rdflib.compare import isomorphic
 import recomputed
 from cascade_pod import names, store, vocabulary
 from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
-from examples import ROOT, every_example
+from examples import ROOT, every_example, pod_file
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 PROV = "http://www.w3.org/ns/prov#"
@@ -31,10 +31,6 @@ def pod_files(example):
     return sorted(p.relative_to(example.pod).as_posix() for p in example.pod.rglob("*") if p.is_file())
 
 
-def load(example, relative):
-    return Graph().parse(example.pod / relative, format="turtle", publicID=example.address + relative)
-
-
 def ttl_files(example, *folders):
     return [f for f in pod_files(example) if f.startswith(folders) and f.endswith(".ttl")]
 
@@ -42,7 +38,7 @@ def ttl_files(example, *folders):
 def revisions(example):
     found = {}
     for relative in ttl_files(example, "records/"):
-        graph = load(example, relative)
+        graph = pod_file(example, relative)
         for subject in graph.subjects(RDF_TYPE, REVISION):
             found[str(subject)] = graph
     return found
@@ -51,7 +47,7 @@ def revisions(example):
 def versions(example):
     found = {}
     for relative in ttl_files(example, "records/"):
-        graph = load(example, relative)
+        graph = pod_file(example, relative)
         for subject in graph.subjects(SPECIALIZATION_OF, None):
             found[str(subject)] = (relative, graph)
     return found
@@ -84,7 +80,7 @@ def expected_path(relative, name):
 def pod_graph(example):
     graph = Graph()
     for relative in ttl_files(example, "subject/", "records/", "provenance/"):
-        graph += load(example, relative)
+        graph += pod_file(example, relative)
     return graph
 
 
@@ -158,7 +154,7 @@ def test_each_revision_sets_a_version_of_its_record_and_follows_an_earlier_revis
 @every_example
 def test_every_file_holds_exactly_the_triples_of_its_thing_and_is_at_the_path_its_name_gives(example):
     for relative in ttl_files(example, "subject/", "records/", "provenance/"):
-        graph = load(example, relative)
+        graph = pod_file(example, relative)
         named = {s for s in graph.subjects() if not isinstance(s, BNode)}
         things = {URIRef(str(s).split("#")[0]) for s in named}
         assert len(things) == 1, relative

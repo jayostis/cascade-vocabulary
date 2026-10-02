@@ -8,9 +8,10 @@ from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
 
 import recomputed
-from cascade_pod import derive, derived_files, store, vocabulary
+from cascade_pod import derive, derived_files, vocabulary
 from cascade_pod.derived_files import VIEW_FILES
 from cascade_pod.pod import NOT_RDF
+from examples import pod_file
 from test_alex_rivera_handles import ALEX, EXAMPLE, handle, handles, handles_by_name, name, pod
 
 EXPECTED = EXAMPLE / "expected"
@@ -66,10 +67,6 @@ def files_through(event):
 
 def is_rdf(relative):
     return not relative.startswith(NOT_RDF)
-
-
-def load_pod_file(relative):
-    return store.parsed(POD / relative, POD_BASE + relative)
 
 
 def graph(triples):
@@ -241,7 +238,7 @@ def added_graph(event):
     graph = Graph()
     for relative in adds(event):
         if is_rdf(relative):
-            graph += load_pod_file(relative)
+            graph += pod_file(ALEX, relative)
     return graph
 
 
@@ -427,7 +424,7 @@ def test_a_retracted_same_stops_joining_its_records_and_nothing_replaces_it(engi
 def test_a_machine_judgment_stops_counting_under_everyday_when_a_reference_version_it_used_is_replaced_and_nothing_is_written_but_the_new_version(engine):
     added = adds("E9")
     assert len(added) == 1
-    assert names(load_pod_file(added[0]), name("RS-XWALK-2027-01"))
+    assert names(pod_file(ALEX, added[0]), name("RS-XWALK-2027-01"))
 
     assert is_judgment(pod("E9"), "J4")
     assert not counts(build(engine, "everyday", "E9"), "J4")

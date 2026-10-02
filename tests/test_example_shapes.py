@@ -12,7 +12,7 @@ from rdflib.namespace import OWL, RDF, SH
 from cascade_pod import store
 from cascade_pod.derived_files import VIEW_FILES
 from cascade_pod.pod import NOT_RDF
-from examples import ROOT, every_example, every_example_and
+from examples import ROOT, every_example, every_example_and, pod_file
 
 ONTOLOGIES = ROOT / "ontologies"
 
@@ -77,7 +77,7 @@ def ontology():
 
 @lru_cache(maxsize=None)
 def loaded(example, relative):
-    return Graph().parse(example.pod / relative, format="turtle", publicID=example.address + relative)
+    return pod_file(example, relative)
 
 
 @lru_cache(maxsize=None)
