@@ -11,8 +11,6 @@ from cascade_pod import Failure, match, turtle
 from cascade_pod.pod import Example, fanned
 from examples import ROOT
 
-[REFERENCES] = ROOT.glob("example-pods/*/references")
-
 JDG = "https://ns.cascadeprotocol.org/judgments/v1-draft#"
 PROV = "http://www.w3.org/ns/prov#"
 RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
@@ -30,6 +28,36 @@ KINDS = {"allergies": "health:AllergyRecord", "conditions": "health:ConditionRec
          "immunizations": "health:ImmunizationRecord", "procedures": "clinical:Procedure"}
 
 
+def uuid(n):
+    return f"urn:uuid:00000000-0000-4000-8000-{n:012d}"
+
+
+SERIES = [
+    {"key": "rules", "name": uuid(1), "label": "Matcher rules", "ships_with": "1",
+     "versions": [{"name": uuid(2), "version": "1", "table": "rules-1.csv"}]},
+    {"key": "ingredient-map", "name": uuid(3), "label": "Ingredient map", "ships_with": "1",
+     "versions": [{"name": uuid(4), "version": "1", "table": "ingredient-map-1.csv"},
+                  {"name": uuid(5), "version": "2", "revises": "1", "table": "ingredient-map-2.csv"}]},
+    {"key": "cvx-vaccine-groups", "name": uuid(6), "label": "Vaccine groups", "ships_with": "1",
+     "versions": [{"name": uuid(7), "version": "1", "table": "cvx-vaccine-groups-1.csv"}]},
+]
+TABLES = {
+    "rules-1.csv": "rule,applies_to,justification,table\nR1,allergies conditions procedures,SameCode,\n"
+                   "R2,immunizations,SameCodeAndDate,\nR3,allergies,SameMappedCode,ingredient-map\n"
+                   "R4,immunizations,SameMappedCodeAndDate,cvx-vaccine-groups\n",
+    "ingredient-map-1.csv": f"snomed,rxnorm\n{SNOMED}373270004,{RXNORM}7980\n",
+    "ingredient-map-2.csv": "snomed,rxnorm\n",
+    "cvx-vaccine-groups-1.csv": "cvx,group\n141,INFLUENZA\n150,INFLUENZA\n",
+}
+
+
+def reference_tables(folder):
+    folder.mkdir(parents=True)
+    (folder / "references.json").write_text(json.dumps({"series": SERIES}), encoding="utf-8")
+    for name, text in TABLES.items():
+        (folder / name).write_text(text, encoding="utf-8")
+
+
 def record(key):
     return f"urn:example:record:{key}"
 
@@ -41,7 +69,7 @@ def version(key):
 class SmallPod:
     def __init__(self, root):
         self.root, self.events, self.arrivals = root, [{"event": "E1", "subject": SUBJECT, "adds": []}], 0
-        shutil.copytree(REFERENCES, root / "references")
+        reference_tables(root / "references")
 
     def tell(self):
         story = {"address": "https://pod.example/", "events": self.events, "derived": []}
@@ -142,7 +170,7 @@ def test_the_ingredient_map_pairs_only_its_rows_under_its_current_version(tmp_pa
     pod.record("unpaired", "allergies", f"health:allergenCode <{SNOMED}91936005>")
     written = pod.match("E2")
     assert sames(written) == {(frozenset({"first", "second"}), "SameMappedCode")}
-    references = match.References(REFERENCES)
+    references = match.References(pod.root / "references")
     ingredient_map = references.by_key["ingredient-map"]
     old, new = ingredient_map["versions"]
     assert fanned("references", old["name"]) in written and fanned("references", new["name"]) not in written
@@ -196,7 +224,7 @@ def test_a_matcher_judgments_name_is_the_record_name_of_its_inputs(tmp_path):
     [(relative, path)] = [(r, p) for r, p in pod.match("E2").items() if r.startswith("judgments/")]
     graph = Graph().parse(path, format="turtle")
     [judgment] = graph.subjects(RDF_TYPE, URIRef(JDG + "Judgment"))
-    rules, ingredient_map = (match.References(REFERENCES).by_key[key]["versions"][0]["name"]
+    rules, ingredient_map = (match.References(pod.root / "references").by_key[key]["versions"][0]["name"]
                              for key in ("rules", "ingredient-map"))
     inputs = [match.MATCHER, JDG + "SameMappedCode", *sorted([record("first"), record("second")]),
               *sorted([rules, ingredient_map, version("first"), version("second")])]
@@ -205,7 +233,7 @@ def test_a_matcher_judgments_name_is_the_record_name_of_its_inputs(tmp_path):
 
 
 def rechecked_after_the_ingredient_map_keeps_its_row(pod, monkeypatch):
-    references = match.References(REFERENCES).by_key["ingredient-map"]
+    references = match.References(pod.root / "references").by_key["ingredient-map"]
     old, new = references["versions"]
     written = pod.match("E2")
     [same] = [r for r in written if r.startswith("judgments/")]
@@ -259,9 +287,9 @@ def test_a_recheck_never_joins_a_record_whose_about_was_retracted(tmp_path, monk
 
 
 def test_a_series_that_ships_with_a_version_it_does_not_list_is_a_failure_not_a_traceback(tmp_path):
-    references = match.References(REFERENCES)
-    references.by_key["rules"]["ships_with"] = "no such version"
     pod = SmallPod(tmp_path)
+    references = match.References(pod.root / "references")
+    references.by_key["rules"]["ships_with"] = "no such version"
     pod.tell()
     with pytest.raises(Failure):
         references.current("rules", match.Reading(Example(tmp_path), "E1"))
