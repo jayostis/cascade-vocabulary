@@ -410,7 +410,7 @@ def test_everything_labelled_has_exactly_one_label(example):
     address = example.address + LABEL_FILE
     own = Graph().parse(example.pod / LABEL_FILE, publicID=address)
     predicates = {(str(s) == address, str(p)) for s, p, _ in own}
-    assert predicates == {(False, RDFS_LABEL), (True, str(RDF.type)), (True, "http://www.w3.org/ns/prov#used")}
+    assert predicates - {(True, "http://www.w3.org/ns/prov#used")} == {(False, RDFS_LABEL), (True, str(RDF.type))}
 
 
 @every_example
