@@ -2,18 +2,16 @@ import json
 import shutil
 import subprocess
 import sys
-from pathlib import Path
 
 import pytest
 from rdflib import Graph, URIRef
 
+import recomputed
 from cascade_pod import Failure, match, turtle
 from cascade_pod.pod import Example, fanned
+from examples import ROOT
 
-ROOT = Path(__file__).absolute().parent.parent
-REFERENCES = ROOT / "example-pods" / "alex-rivera" / "references"
-sys.path.insert(0, str(ROOT / "tests"))
-import recomputed  # noqa: E402
+[REFERENCES] = ROOT.glob("example-pods/*/references")
 
 JDG = "https://ns.cascadeprotocol.org/judgments/v1-draft#"
 PROV = "http://www.w3.org/ns/prov#"

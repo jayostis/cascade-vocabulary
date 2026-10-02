@@ -19,7 +19,7 @@ from cascade_pod.pod import Example, fanned, save, stem
 
 sys.path.insert(0, str(Path(__file__).absolute().parent))
 from alex_rivera_builds import name as name_of  # noqa: E402
-from test_alex_rivera_graphdb import GraphDB  # noqa: E402
+from test_library_graphdb import GraphDB  # noqa: E402
 from test_queries import queries_held  # noqa: E402
 
 ROOT = Path(__file__).absolute().parent.parent

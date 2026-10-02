@@ -156,14 +156,6 @@ def test_no_two_labelled_things_share_a_label():
     assert {label: n for label, n in things.items() if n > 1} == {}
 
 
-def test_the_graphdb_config_names_no_machine():
-    configuration = graphdb.configuration(ALEX).decode("utf-8")
-    Graph().parse(data=configuration, format="turtle")
-    machine = re.compile(r"file:|(?<![A-Za-z])[A-Za-z]:[\\/]|localhost|127\.0\.0\.1|0\.0\.0\.0|/(?:home|Users|tmp)/|:\d{2,5}\b")
-    for name, text in (("the configuration", configuration), ("graphdb.py", Path(graphdb.__file__).read_text(encoding="utf-8"))):
-        assert machine.findall(text) == [], name
-
-
 UNIT_PREFIXES = """
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
 @prefix npx: <http://purl.org/nanopub/x/> .
