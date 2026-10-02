@@ -15,6 +15,7 @@ from rdflib.compare import isomorphic
 ROOT = Path(__file__).absolute().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 import recomputed  # noqa: E402
+from alex_rivera_builds import arrivals, events, handles, name, pod, source_name, sources  # noqa: E402
 from cascade_pod import names, store, write  # noqa: E402
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
@@ -31,20 +32,16 @@ REVISION, REVISION_OF, VERSION = URIRef(REC + "Revision"), URIRef(REC + "revisio
 SPECIALIZATION_OF, WAS_REVISION_OF = URIRef(PROV + "specializationOf"), URIRef(PROV + "wasRevisionOf")
 DERIVED_FROM, GENERATED_BY, USED = URIRef(PROV + "wasDerivedFrom"), URIRef(PROV + "wasGeneratedBy"), URIRef(PROV + "used")
 ARRIVED_AS = URIRef(BRIDGE + "arrivedAs")
+REC_SOURCE_URL = URIRef(REC + "sourceUrl")
 OWNED = ("subject/", "records/", "provenance/", "attachments/")
 
 FILES_PER_EVENT = {"E1": 1, "E2": 46, "E3": 4, "E4": 31, "E6": 31, "E7": 0, "E10": 16, "E12": 31, "E15": 4}
 CONVERSIONS_PER_EVENT = {"e2": 9, "e4": 6, "e6": 8, "e7": 1, "e10": 4, "e12": 7, "e15": 2}
 TWO_VERSIONS = {"H1-ALG-SULFA", "H1-ALG-LATEX", "H1-ALG-CODEINE", "H1-CON-BRONCH", "H1-CON-BACK"}
-PROFILES = {"H1-PAT", "H1P-PAT", "H2O-PAT", "H2F-PAT"}
 
 
 def manifest():
     return json.loads((EXAMPLE / "events.json").read_text(encoding="utf-8"))
-
-
-def handles():
-    return json.loads((EXAMPLE / "handles.json").read_text(encoding="utf-8"))
 
 
 def pod_files():
@@ -82,7 +79,7 @@ def added_by():
 
 
 def name_of(handle):
-    return handles()[handle]["name"]
+    return str(name(handle))
 
 
 def revisions_of(record):
@@ -114,10 +111,19 @@ def test_each_event_adds_the_scenarios_count_of_records_layer_files():
     assert set(counts) <= set(FILES_PER_EVENT)
 
 
-def test_every_record_is_named_by_recomputed_record_name_of_its_inputs_in_the_handle_table():
-    for handle, row in handles().items():
-        if "inputs" in row:
-            assert row["name"] == recomputed.record_name(row["inputs"]) == names.record(row["inputs"]), handle
+def test_each_records_first_revision_came_from_what_its_row_in_expected_handles_says_its_source_calls_it():
+    graph = pod(events()[-1]["event"])
+    for handle, row in sources()["records"].items():
+        record = name(handle)
+        first = arrivals(graph, record)[0]
+        if "server" in row:
+            assert str(graph.value(record, REC_SOURCE_URL)) == f"{row['server']}/{row['type']}/{row['id']}", handle
+        elif "download" in row:
+            octets = (EXAMPLE / row["download"]).read_bytes()
+            assert str(graph.value(first, DERIVED_FROM)) == recomputed.ni_name(octets), handle
+        else:
+            [activity] = store.parsed(EXAMPLE / row["entry"]).subjects(RDF_TYPE, URIRef(PROV + "Activity"))
+            assert graph.value(first, GENERATED_BY) == activity, handle
 
 
 def test_every_version_file_passed_through_recomputed_versions_gives_its_own_name():
@@ -135,7 +141,7 @@ def test_every_file_under_attachments_is_named_by_the_hex_digest_of_its_bytes():
             octets = (POD / relative).read_bytes()
             assert relative == "attachments/sha-256/" + hashlib.sha256(octets).hexdigest()
             assert recomputed.ni_name(octets) == names.document(octets)
-            assert recomputed.ni_name(octets) in {row["name"] for row in handles().values()}
+            assert recomputed.ni_name(octets) in {str(term) for term in handles().values()}
 
 
 def test_every_revision_is_named_by_the_hash_of_its_own_triples_with_a_placeholder_for_its_iri():
@@ -160,10 +166,8 @@ def test_each_revision_sets_a_version_of_its_record_and_follows_an_earlier_revis
 
 
 def test_each_record_has_the_scenarios_versions_and_revisions():
-    for handle, row in handles().items():
-        if "first" not in row:
-            continue
-        found = revisions_of(row["name"])
+    for handle in sources()["records"]:
+        found = revisions_of(name_of(handle))
         versions_seen = {str(g.value(URIRef(n), VERSION)) for n, g in found.items()}
         expected = (2, 3) if handle == "H1-CON-BACK" else (2, 2) if handle in TWO_VERSIONS else (1, 1)
         assert (len(versions_seen), len(found)) == expected, handle
@@ -193,9 +197,8 @@ def test_nothing_is_written_for_h1_alg_latex_at_e15():
 
 
 def test_u_imm_tdap_is_named_from_its_document_with_no_patient_and_one_revision():
-    row = handles()["U-IMM-TDAP"]
-    assert row["inputs"] == [name_of("D-U-IMM-TDAP r1"), ""]
-    assert len(revisions_of(row["name"])) == 1
+    assert name_of("U-IMM-TDAP") == recomputed.record_name([name_of("D-U-IMM-TDAP r1"), ""])
+    assert len(revisions_of(name_of("U-IMM-TDAP"))) == 1
     _, graph = versions()[name_of("U-IMM-TDAP v1")]
     assert graph.value(URIRef(name_of("U-IMM-TDAP v1")), URIRef(REC + "patient")) is None
 
@@ -298,17 +301,15 @@ def test_each_revision_holds_its_arrivals_triples():
         assert arrivals[key] <= set(graph.predicate_objects(revision)), name
 
 
-def test_every_name_in_the_handle_table_names_a_pod_file_but_a_profiles_and_every_thing_has_a_handle():
-    names = {row["name"] for row in handles().values()}
-    for handle, row in handles().items():
-        if handle in PROFILES:
-            continue
-        stem = _stem(row["name"])
-        assert any(Path(f).name in (stem, f"{stem}.ttl") for f in pod_files()), handle
-    things = set()
-    for relative in ttl_files("records/", "provenance/"):
-        things |= {str(s).split("#")[0] for s in load(relative).subjects() if not isinstance(s, BNode)}
-    assert sorted(things - names) == []
+def test_every_handle_in_expected_handles_names_one_thing_in_the_pod_and_every_record_and_profile_has_one_handle():
+    graph = pod(events()[-1]["event"])
+    named = {handle: source_name(row) for kind in ("records", "profiles") for handle, row in sources()[kind].items()}
+    records = set(graph.objects(None, REVISION_OF))
+    profiles = set(graph.objects(None, URIRef(REC + "patient"))) - set(graph.subjects(RDF_TYPE, URIRef(REC + "Subject")))
+    assert records | profiles == set(named.values())
+    named |= {handle: name(handle) for handle in sources()["series"]}
+    assert len(set(named.values())) == len(named)
+    assert [handle for handle in sources()["series"] if (named[handle], None, None) not in graph] == []
 
 
 def test_the_records_layer_conforms_to_the_records_shapes():
