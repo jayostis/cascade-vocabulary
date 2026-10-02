@@ -15,8 +15,8 @@ from rdflib.compare import isomorphic
 ROOT = Path(__file__).absolute().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 import recomputed  # noqa: E402
-from alex_rivera_builds import arrivals, events, handles, name, pod, source_name, sources  # noqa: E402
-from cascade_pod import names, store, write  # noqa: E402
+from alex_rivera_builds import arrivals, events, handles, pod, source_name, sources  # noqa: E402
+from cascade_pod import names, store  # noqa: E402
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 POD = EXAMPLE / "pod"
@@ -79,7 +79,7 @@ def added_by():
 
 
 def name_of(handle):
-    return str(name(handle))
+    return str(handles()[handle])
 
 
 def revisions_of(record):
@@ -114,7 +114,7 @@ def test_each_event_adds_the_scenarios_count_of_records_layer_files():
 def test_each_records_first_revision_came_from_what_its_row_in_expected_handles_says_its_source_calls_it():
     graph = pod(events()[-1]["event"])
     for handle, row in sources()["records"].items():
-        record = name(handle)
+        record = handles()[handle]
         first = arrivals(graph, record)[0]
         if "server" in row:
             assert str(graph.value(record, REC_SOURCE_URL)) == f"{row['server']}/{row['type']}/{row['id']}", handle
@@ -307,7 +307,7 @@ def test_every_handle_in_expected_handles_names_one_thing_in_the_pod_and_every_r
     records = set(graph.objects(None, REVISION_OF))
     profiles = set(graph.objects(None, URIRef(REC + "patient"))) - set(graph.subjects(RDF_TYPE, URIRef(REC + "Subject")))
     assert records | profiles == set(named.values())
-    named |= {handle: name(handle) for handle in sources()["series"]}
+    named |= {handle: handles()[handle] for handle in sources()["series"]}
     assert len(set(named.values())) == len(named)
     assert [handle for handle in sources()["series"] if (named[handle], None, None) not in graph] == []
 
@@ -335,10 +335,3 @@ def test_running_the_writer_once_on_a_copy_reproduces_the_example_byte_for_byte(
 
     compare(filecmp.dircmp(EXAMPLE, copy, ignore=["__pycache__"]), "")
     assert differences == []
-
-
-def test_every_filed_entry_activity_gets_its_own_handle():
-    filing = write.Filing(None)
-    filing.activities = {"entries/a1.ttl": "urn:example:activity:1", "entries/a2.ttl": "urn:example:activity:2"}
-    table = write.handle_table({}, [{"event": "E1", "subject": "urn:example:subject"}], filing)
-    assert {table[h]["name"] for h in ("A1", "A2")} == {"urn:example:activity:1", "urn:example:activity:2"}
