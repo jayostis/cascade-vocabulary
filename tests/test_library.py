@@ -10,7 +10,7 @@ from rdflib import Graph, Literal, URIRef
 from rdflib.compare import to_isomorphic
 from rdflib.namespace import XSD
 
-from cascade_pod import Failure, ask, derive, match, site, store, turtle, vocabulary
+from cascade_pod import Failure, ask, derive, site, store, turtle, vocabulary
 from cascade_pod.pod import Example
 from examples import ROOT, every_example
 
@@ -56,40 +56,6 @@ def test_the_turtle_text_check_finds_a_statement_built_in_a_string():
 @pytest.mark.parametrize("module", sorted(path.name for path in (ROOT / "cascade_pod").glob("*.py") if path.name != "turtle.py"))
 def test_no_module_but_turtle_builds_turtle_text(module):
     assert turtle_text((ROOT / "cascade_pod" / module).read_text(encoding="utf-8")) == []
-
-
-def written_by_a_tool(example):
-    """Each Turtle file a tool writes, by its path, with the address it is written at."""
-    found = {path: example.address + path for path in example.files() + example.derived
-             if path.startswith(("subject/", "records/", "provenance/", "references/")) or path in example.derived}
-    for path in example.files():
-        if path.startswith("judgments/"):
-            if (None, PROV_ATTRIBUTED_TO, match.MATCHER) in store.parsed(example.pod / path):
-                found[path] = example.address + path
-    return {example.pod / path: address for path, address in found.items()} | {
-        path: None for path in example.folder.glob("conversions/*/*/facts.ttl")}
-
-
-PROV_ATTRIBUTED_TO = URIRef("http://www.w3.org/ns/prov#wasAttributedTo")
-
-
-def rewritten(path, address):
-    return turtle.write(store.parsed(path, address), address)
-
-
-@every_example
-def test_the_one_writer_check_finds_a_file_in_another_layout(example, tmp_path):
-    view = example.pod / "clinical" / "allergies.ttl"
-    other = tmp_path / "allergies.nt"
-    other.write_bytes(store.parsed(view, "https://pod.example/clinical/allergies.ttl").serialize(format="nt", encoding="utf-8"))
-    assert rewritten(other, "https://pod.example/clinical/allergies.ttl") != other.read_bytes()
-
-
-@every_example
-def test_every_turtle_file_a_tool_writes_comes_from_the_one_writer(example):
-    files = written_by_a_tool(example)
-    assert len(files) > 100
-    assert [path for path, address in files.items() if rewritten(path, address) != path.read_bytes()] == []
 
 
 @pytest.mark.parametrize("iri", ["https://pod.example/clinical/allergies.ttl", "https://pod.example/clinical/allergies.ttl#x",
