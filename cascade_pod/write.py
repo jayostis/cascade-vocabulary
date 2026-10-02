@@ -1,6 +1,5 @@
 """Files an example's story into its pod/."""
 
-import hashlib
 import json
 import re
 import shutil
@@ -16,7 +15,6 @@ from .pod import RECORD_FOLDERS, fanned, save, stem
 BRIDGE, PAV, PROV, RDFS, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rdfs", "rec"))
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
 OWNED_POD_FOLDERS = ["subject", "records", "provenance", "attachments"]
-FORMATS = {".csv": "text/csv", ".json": "application/json", ".ttl": "text/turtle", ".xml": "application/xml"}
 
 
 def closure(graph, subject):
@@ -196,7 +194,7 @@ def file_conversion(filing, event, graph, document, import_name, source):
     return wrote
 
 
-# The events manifest, the handle table and the crate
+# The events manifest and the handle table
 
 EVENT_KEYS = ["event", "at", "subject", "export", "import", "entry", "adds"]
 COMPUTED_ROW = re.compile(r"^D-| [vr]\d+$")
@@ -258,41 +256,6 @@ def handle_table(handles, events, filing):
     return {handle: {key: table[handle][key] for key in sorted(table[handle])} for handle in sorted(table)}
 
 
-def encoding_format(relative, path):
-    if relative == "pod/.well-known/solid":
-        return "application/ld+json"
-    if relative == "pod/settings/preferences":
-        return "text/turtle"
-    if relative.startswith("pod/attachments/sha-256/") or (relative.startswith("downloads/") and path.suffix == ".json"):
-        return "application/fhir+json"
-    return FORMATS.get(path.suffix, "application/octet-stream")
-
-
-def _is_file(entity):
-    kinds = entity.get("@type")
-    return "File" in (kinds if isinstance(kinds, list) else [kinds])
-
-
-def crate_with_files(crate, example):
-    found = {entity["@id"]: entity for entity in crate["@graph"] if _is_file(entity)}
-    descriptor = next(e for e in crate["@graph"] if e["@id"] == "ro-crate-metadata.json")
-    root = next(e for e in crate["@graph"] if e["@id"] == "./")
-    others = [e for e in crate["@graph"] if not _is_file(e) and e["@id"] not in ("ro-crate-metadata.json", "./")]
-    files = []
-    for path in sorted(example.rglob("*"), key=lambda p: p.relative_to(example).as_posix()):
-        relative = path.relative_to(example).as_posix()
-        if not path.is_file() or relative == "ro-crate-metadata.json" or "__pycache__" in path.parts:
-            continue
-        octets = path.read_bytes()
-        entity = {"@id": relative, "@type": "File", "encodingFormat": encoding_format(relative, path),
-                  "contentSize": str(len(octets)), "sha256": hashlib.sha256(octets).hexdigest()}
-        kept = found.get(relative, {})
-        entity.update({key: kept[key] for key in kept if key not in entity or key == "@type"})
-        files.append(entity)
-    root = {**root, "hasPart": [{"@id": entity["@id"]} for entity in files]}
-    return {**crate, "@graph": [descriptor, root, *files, *others]}
-
-
 # One run
 
 def run(example):
@@ -321,6 +284,4 @@ def run(example):
     save({path: content for path, (_, content) in filing.files.items()}, example.pod)
     write_json(example.folder / "events.json", events_manifest(example, filing))
     write_json(example.folder / "handles.json", handle_table(handles, example.events, filing))
-    crate = json.loads((example.folder / "ro-crate-metadata.json").read_text(encoding="utf-8"))
-    write_json(example.folder / "ro-crate-metadata.json", crate_with_files(crate, example.folder))
     return 0

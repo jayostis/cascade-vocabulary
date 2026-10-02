@@ -1,4 +1,3 @@
-import hashlib
 import json
 import xml.etree.ElementTree as ElementTree
 from datetime import datetime, timedelta
@@ -328,12 +327,9 @@ def test_every_file_is_utf8_with_lf_endings_and_one_final_newline():
             assert data.decode("utf-8") == json.dumps(json.loads(data), indent=2, ensure_ascii=False) + "\n", path
 
 
-def test_every_file_under_downloads_is_listed_once_in_the_crate_with_its_sha256():
-    listed = [e["@id"] for e in crate_files() if e["@id"].startswith("downloads/")]
-    assert sorted(listed) == sorted(p.relative_to(EXAMPLE).as_posix() for p in every_download())
-    digests = {e["@id"]: e["sha256"] for e in crate_files()}
-    for path in every_download():
-        assert digests[path.relative_to(EXAMPLE).as_posix()] == hashlib.sha256(path.read_bytes()).hexdigest()
+def test_every_is_based_on_and_citation_in_the_crate_is_on_a_file_that_exists():
+    described = [e["@id"] for e in crate()["@graph"] if "isBasedOn" in e or "citation" in e]
+    assert described and [f for f in described if not (EXAMPLE / f).is_file()] == []
 
 
 def test_every_resource_that_starts_from_a_fixture_names_it_by_is_based_on():
