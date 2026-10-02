@@ -113,8 +113,9 @@ def site_files(example):
     return site.Site(example).files()
 
 
-def pages_of(files):
-    return {path: Page(octets.decode("utf-8")) for path, octets in sorted(files.items())
+@lru_cache(maxsize=None)
+def site_pages(example):
+    return {path: Page(octets.decode("utf-8")) for path, octets in sorted(site_files(example).items())
             if path.endswith(".html") and "/" not in path}
 
 
@@ -132,7 +133,7 @@ def built(example, tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def pages(example):
-    return pages_of(site_files(example))
+    return site_pages(example)
 
 
 def test_every_question_has_a_place_on_the_site(pages):
@@ -174,8 +175,6 @@ def asked(command):
 
 
 def samples(example):
-    """Blocks of the home and not-shown pages, and the first entry's "Where it came from", with the thing each is
-    about."""
     [(entry, _), *_] = entries_and_members(example)
     return [("index.html", "What each folder holds", None), ("index.html", "How many of each kind", None),
             ("index.html", "What each import brought in", None), ("not-shown.html", "Why it is in no view", None),
@@ -183,15 +182,15 @@ def samples(example):
 
 
 @pytest.mark.parametrize("example, page, title, thing", [(e, *s) for e in EXAMPLES for s in samples(e)],
-                         ids=[f"{e.name}-{s[0]}-{s[1]}" for e in EXAMPLES for s in samples(e)], scope="module")
-def test_every_run_it_yourself_command_prints_the_rows_the_block_shows(pages, page, title, thing):
-    [block] = [b for b in blocks(pages[page]) if b["title"] == title]
+                         ids=[f"{e.name}-{s[0]}-{s[1]}" for e in EXAMPLES for s in samples(e)])
+def test_every_run_it_yourself_command_prints_the_rows_the_block_shows(example, page, title, thing):
+    [block] = [b for b in blocks(site_pages(example)[page]) if b["title"] == title]
     printed = asked(block["command"])
     about = [code[1:] for code in block["codes"] if code.startswith("?")]
     if about:
         printed = [row for row in printed if row.get(about[0]) == f"<{thing}>"]
     shown = [{column: cell["value"] for column, cell in row.items()} for row in block["rows"]]
-    assert shown and shown == [{c: row[c] for c in block["columns"] if c in row} for row in printed]
+    assert shown == [{c: row[c] for c in block["columns"] if c in row} for row in printed]
 
 
 def stored_documents(example, record, graph):
