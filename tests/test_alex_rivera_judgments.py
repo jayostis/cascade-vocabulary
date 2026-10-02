@@ -1,18 +1,15 @@
 import json
 import subprocess
 import sys
-from pathlib import Path
 
 from pyshacl import validate
 from rdflib import Graph, URIRef
 
-ROOT = Path(__file__).absolute().parent.parent
-sys.path.insert(0, str(ROOT / "tests"))
-import recomputed  # noqa: E402
-from alex_rivera_builds import EVERY_JUDGMENT, MATCHER, handles  # noqa: E402
-from cascade_pod import store  # noqa: E402
+import recomputed
+from cascade_pod import store
+from examples import ROOT
+from test_alex_rivera_handles import EVERY_JUDGMENT, EXAMPLE, MATCHER, handles
 
-EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 POD = EXAMPLE / "pod"
 POD_BASE = "https://pod.alex-rivera.example/"
 

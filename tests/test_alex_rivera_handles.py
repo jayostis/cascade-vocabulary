@@ -1,33 +1,18 @@
 import json
-import sys
-from dataclasses import dataclass
 from functools import lru_cache
-from pathlib import Path
 
 import pytest
-from rdflib import BNode, Graph, Literal, Namespace, URIRef
-from rdflib.namespace import RDF, XSD
+from rdflib import Namespace, URIRef
+from rdflib.namespace import RDF
 
-from cascade_pod import derive, derived_files, store, vocabulary
-from cascade_pod.derived_files import VIEW_FILES
-from cascade_pod.pod import NOT_RDF, Example
+import recomputed
+from cascade_pod import store
+from cascade_pod.pod import Example
+from examples import ROOT
 
-sys.path.insert(0, str(Path(__file__).absolute().parent))
-import recomputed  # noqa: E402
-
-ROOT = Path(__file__).absolute().parent.parent
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 ALEX = Example(EXAMPLE)
-POD = ALEX.pod
-EXPECTED = EXAMPLE / "expected"
-POD_BASE = ALEX.address
-HANDLE_NS = "urn:example:alex-rivera:handle:"
 
-ENGINES = ("oxigraph", "rdflib")
-LENSES = ("everyday", "export")
-
-MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
-IN_ENTRY = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#inEntry")
 REC = Namespace("https://ns.cascadeprotocol.org/records/v1-draft#")
 JDG = Namespace("https://ns.cascadeprotocol.org/judgments/v1-draft#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
@@ -80,8 +65,19 @@ EVERY_JUDGMENT = {
 
 
 @lru_cache(maxsize=None)
+def pod(event):
+    engine = store.Rdflib()
+    ALEX.load(engine, event)
+    return engine.graph()
+
+
+def final_pod():
+    return pod(ALEX.events[-1]["event"])
+
+
+@lru_cache(maxsize=None)
 def sources():
-    return json.loads((EXPECTED / "handles.json").read_text(encoding="utf-8"))
+    return json.loads((EXAMPLE / "expected" / "handles.json").read_text(encoding="utf-8"))
 
 
 def source_name(row):
@@ -121,15 +117,15 @@ def handles():
         [series] = [s for s in references if s["key"] == key]
         named[h] = URIRef(series["name"])
         named |= {f"{h}-{v['version']}": URIRef(v["name"]) for v in series["versions"]}
-    named |= {f"I-{e['event']}": URIRef(e["import"]) for e in events() if "import" in e}
-    named |= {"S": URIRef(e["subject"]) for e in events() if "subject" in e}
+    named |= {f"I-{e['event']}": URIRef(e["import"]) for e in ALEX.events if "import" in e}
+    named |= {"S": URIRef(e["subject"]) for e in ALEX.events if "subject" in e}
     named |= {h: URIRef(n) for h, n in sources()["judgments"].items()}
     named |= {h: _matcher_judgment(h, named) for h, row in EVERY_JUDGMENT.items() if row[2] == "matcher"}
     return named
 
 
 @lru_cache(maxsize=None)
-def _handles_by_name():
+def handles_by_name():
     return {str(term): handle for handle, term in handles().items()}
 
 
@@ -141,162 +137,34 @@ def name(handle):
 
 
 def handle(term):
-    found = _handles_by_name().get(str(term))
+    found = handles_by_name().get(str(term))
     if found is None:
         pytest.fail(f"{term} has no handle")
     return found
 
 
-def events():
-    return ALEX.events
+def test_each_records_first_revision_came_from_what_its_row_in_expected_handles_says_its_source_calls_it():
+    graph = final_pod()
+    for handle, row in sources()["records"].items():
+        record = handles()[handle]
+        first = arrivals(graph, record)[0]
+        if "server" in row:
+            assert str(graph.value(record, REC.sourceUrl)) == f"{row['server']}/{row['type']}/{row['id']}", handle
+        elif "download" in row:
+            octets = (EXAMPLE / row["download"]).read_bytes()
+            assert str(graph.value(first, PROV.wasDerivedFrom)) == recomputed.ni_name(octets), handle
+        else:
+            [activity] = store.parsed(EXAMPLE / row["entry"]).subjects(RDF.type, PROV.Activity)
+            assert graph.value(first, PROV.wasGeneratedBy) == activity, handle
 
 
-def adds(event):
-    for row in events():
-        if row["event"] == event:
-            return row["adds"]
-    pytest.fail(f"events.json lists no event {event}")
-
-
-def files_through(event):
-    return tuple(ALEX.files(event))
-
-
-def is_rdf(relative):
-    return not relative.startswith(NOT_RDF)
-
-
-def load_pod_file(relative):
-    return store.parsed(POD / relative, POD_BASE + relative)
-
-
-def graph(triples):
-    found = Graph()
-    for triple in triples:
-        found.add(triple)
-    return found
-
-
-@lru_cache(maxsize=None)
-def pod(event):
-    engine = store.Rdflib()
-    ALEX.load(engine, event)
-    return engine.graph()
-
-
-def final_pod():
-    return pod(events()[-1]["event"])
-
-
-def _string_typed(term):
-    if isinstance(term, Literal) and term.datatype is None and term.language is None:
-        return Literal(str(term), datatype=XSD.string)
-    return term
-
-
-@dataclass(frozen=True)
-class Build:
-    state: Graph
-    views: dict
-    needs_review: dict
-
-
-@lru_cache(maxsize=None)
-def build(engine, lens, event):
-    held = ALEX.loaded(engine, event)
-    derive.derive(held, lens)
-    state = graph(held.triples())
-    files = derived_files.add(ALEX, held, event)
-    needs_review = {kind: held.select(vocabulary.query(vocabulary.questions()[f"{kind}/What needs review"]))
-                    for kind in ("entry", "judgment")}
-    views = {view: graph(files[path]) for view, path in VIEW_FILES.items()}
-    return Build(state, views, needs_review)
-
-
-def comparable(term):
-    if isinstance(term, BNode):
-        pytest.fail(f"a view names a blank node, {term}, as an object")
-    if isinstance(term, URIRef):
-        found = _handles_by_name().get(str(term))
-        return URIRef(HANDLE_NS + found) if found is not None else term
-    return _string_typed(term)
-
-
-def _member_handle(term):
-    if str(term).startswith(HANDLE_NS):
-        return str(term)[len(HANDLE_NS):]
-    found = _handles_by_name().get(str(term))
-    if found is None:
-        pytest.fail(f"entry member {term} has no handle")
-    return found
-
-
-def entries(graph):
-    found = {}
-    for subject in set(graph.subjects(MERGED_FROM, None)):
-        members = frozenset(_member_handle(m) for m in graph.objects(subject, MERGED_FROM))
-        if members in found:
-            pytest.fail(f"two entries have the members {sorted(members)}")
-        found[members] = {(p, comparable(o)) for p, o in graph.predicate_objects(subject)}
-    return found
-
-
-def values(pairs, predicate):
-    return {o for p, o in pairs if p == predicate}
-
-
-def members_shown(build):
-    return {member for graph in build.views.values() for key in entries(graph) for member in key}
-
-
-def entry_holding(build, view, member):
-    held = [key for key in entries(build.views[view]) if member in key]
-    assert len(held) == 1, f"{member} is in {len(held)} entries of the {view} view"
-    return held[0]
-
-
-def entry_members(build, entry):
-    members = set(build.state.subjects(IN_ENTRY, entry))
-    for graph in build.views.values():
-        members.update(graph.objects(entry, MERGED_FROM))
-    return frozenset(_member_handle(m) for m in members)
-
-
-def entries_needing(build, needs):
-    return [row for row in build.needs_review["entry"] if str(row["needs"]) == needs]
-
-
-def listed_entries(build, needs):
-    return {entry_members(build, row["entry"]) for row in entries_needing(build, needs)}
-
-
-def listed_judgments(build):
-    return {handle(row["judgment"]) for row in build.needs_review["judgment"]}
-
-
-def listed_pairs(build):
-    pairs = set()
-    for row in entries_needing(build, "judged different, still joined"):
-        record, other = row["record"], row["otherRecord"]
-        assert str(record) < str(other), f"?record {record} is not the smaller of the pair by STR"
-        pairs.add((handle(record), handle(other), entry_members(build, row["entry"])))
-    return pairs
-
-
-def describe(key, expected, actual):
-    lines = [f"entry {sorted(key)}:"]
-    lines += [f"  missing {p.n3()} {o.n3()}" for p, o in sorted(expected - actual, key=str)]
-    lines += [f"  should not have {p.n3()} {o.n3()}" for p, o in sorted(actual - expected, key=str)]
-    return "\n".join(lines)
-
-
-def view_differences(expected, actual):
-    report = []
-    for key in sorted(set(expected) | set(actual), key=sorted):
-        if key not in actual:
-            report.append(f"entry {sorted(key)} is missing")
-        elif key not in expected:
-            report.append(f"entry {sorted(key)} should not be there")
-        elif expected[key] != actual[key]:
-            report.append(describe(key, expected[key], actual[key]))
-    return report
+def test_every_handle_in_expected_handles_names_one_thing_in_the_pod_and_every_record_and_profile_has_one_handle():
+    graph = final_pod()
+    named = {handle: source_name(row) for kind in ("records", "profiles") for handle, row in sources()[kind].items()}
+    records = set(graph.objects(None, REC.revisionOf))
+    profiles = set(graph.objects(None, REC.patient)) - set(graph.subjects(RDF.type, REC.Subject))
+    assert records | profiles == set(named.values())
+    named |= {handle: handles()[handle] for kind in ("series", "judgments") for handle in sources()[kind]}
+    assert len(set(named.values())) == len(named)
+    assert [handle for kind in ("series", "judgments") for handle in sources()[kind]
+            if (named[handle], None, None) not in graph] == []
