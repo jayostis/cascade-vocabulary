@@ -32,13 +32,13 @@ def test_a_triple_stated_in_two_files_is_counted_once_by_a_query_over_the_defaul
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))
 @every_example
 def test_ask_prints_the_rows_the_builders_store_returns(example, engine):
-    question = "record/Why it is in no view"
+    held = example.store(engine, vocabulary.DEFAULT_LENS)
+    question, rows = next((name, rows) for name, relative in sorted(vocabulary.questions().items())
+                          for rows in [held.select(vocabulary.query(relative))] if rows)
     result = subprocess.run([sys.executable, "-m", "cascade_pod", "ask", str(example.folder), question, "--engine", engine],
                             capture_output=True, cwd=ROOT)
     assert result.returncode == 0, result.stderr
-    held = example.store(engine, vocabulary.DEFAULT_LENS)
-    rows = held.select(vocabulary.query(vocabulary.questions()[question]))
-    assert rows and result.stdout.decode("utf-8").splitlines() == [ask.line(row) for row in rows]
+    assert result.stdout.decode("utf-8").splitlines() == [ask.line(row) for row in rows]
 
 
 def turtle_text(source):
