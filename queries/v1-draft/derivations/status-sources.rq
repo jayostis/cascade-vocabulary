@@ -1,0 +1,26 @@
+# A condition, vaccination or procedure entry takes its status from the member whose current revision arrived last,
+# among those that state one.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?entry rec:statusFrom ?from }
+WHERE {
+  { SELECT ?entry (IRI(MIN(STR(?r))) AS ?from)
+    WHERE {
+      { SELECT ?entry (MAX(?t2) AS ?t)
+        WHERE {
+          VALUES (?type2 ?status2) { (health:ConditionRecord health:status) (health:ImmunizationRecord health:status) (clinical:Procedure clinical:status) }
+          ?r2 a ?type2 ; rec:inEntry ?entry ;
+              rec:currentRevision/prov:generatedAtTime ?t2 ; pav:hasCurrentVersion ?v2 .
+          ?v2 ?status2 [] . }
+        GROUP BY ?entry }
+      VALUES (?type ?status) { (health:ConditionRecord health:status) (health:ImmunizationRecord health:status) (clinical:Procedure clinical:status) }
+      ?r a ?type ; rec:inEntry ?entry ;
+         rec:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion ?v .
+      ?v ?status [] .
+    }
+    GROUP BY ?entry }
+}

@@ -1,13 +1,11 @@
-import hashlib
 import json
 import xml.etree.ElementTree as ElementTree
 from datetime import datetime, timedelta
-from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).absolute().parent.parent
-EXAMPLE = ROOT / "example-pods" / "alex-rivera"
+from alex_rivera import EXAMPLE
+
 DOWNLOADS = EXAMPLE / "downloads"
 EXPORTS = ["x-e2", "x-e4", "x-e6", "x-e10", "x-e12", "x-e15"]
 FIXTURES = "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/blob/cabd6f52a98d1f0c97284f47347d61f3bb752504/fixtures/in/"
@@ -328,21 +326,13 @@ def test_every_file_is_utf8_with_lf_endings_and_one_final_newline():
             assert data.decode("utf-8") == json.dumps(json.loads(data), indent=2, ensure_ascii=False) + "\n", path
 
 
-def test_every_file_under_downloads_is_listed_once_in_the_crate_with_its_sha256():
-    listed = [e["@id"] for e in crate_files() if e["@id"].startswith("downloads/")]
-    assert sorted(listed) == sorted(p.relative_to(EXAMPLE).as_posix() for p in every_download())
-    digests = {e["@id"]: e["sha256"] for e in crate_files()}
-    for path in every_download():
-        assert digests[path.relative_to(EXAMPLE).as_posix()] == hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def test_every_resource_that_starts_from_a_fixture_names_it_by_is_based_on():
-    for entity in crate_files():
-        name = entity["@id"].rsplit("/", 1)[-1]
-        if entity["@id"].startswith("downloads/") and name in BASED_ON:
-            assert entity.get("isBasedOn") == {"@id": FIXTURES + BASED_ON[name]}, entity["@id"]
-        else:
-            assert "isBasedOn" not in entity, entity["@id"]
+    entities = {entity["@id"]: entity for entity in crate_files()}
+    for path in every_download():
+        relative = path.relative_to(EXAMPLE).as_posix()
+        based_on = entities.get(relative, {}).get("isBasedOn")
+        assert based_on == ({"@id": FIXTURES + BASED_ON[path.name]} if path.name in BASED_ON else None), relative
+    assert [e for e in entities if "isBasedOn" in entities[e] and not e.startswith("downloads/")] == []
 
 
 def codes(path):

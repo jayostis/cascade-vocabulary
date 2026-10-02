@@ -1,0 +1,21 @@
+# A file's folder is its address after the storage root the owner's profile names, and GRAPH ?file reads one file at a time.
+# Each row is one folder, one type of thing its files describe, and how many of them. A two-character folder only spreads
+# files out, so its files count toward the folder above it.
+# A version states no type of its own, so in a records folder the row with no type stated is its versions. The labels file
+# names nearly everything, and is left out here; so is a thing described in a folder other than its own, such as the owner
+# in each judgment they made.
+PREFIX pim: <http://www.w3.org/ns/pim/space#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?folder ?type (COUNT(DISTINCT ?thing) AS ?things)
+WHERE {
+  GRAPH ?file { ?thing ?property ?value OPTIONAL { ?thing a ?stated } }
+  ?owner pim:storage ?root .
+  BIND (CONCAT("/", REPLACE(STRAFTER(STR(?file), STR(?root)), "([0-9a-f]{2}/)?[^/]*$", "")) AS ?folder)
+  BIND (COALESCE(?stated, "no type stated") AS ?type)
+  FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
+  FILTER (BOUND(?stated) || NOT EXISTS { ?file a rec:View })
+  FILTER (!STRSTARTS(STR(?thing), STR(?root)) || STRSTARTS(STR(?thing), CONCAT(STR(?root), SUBSTR(?folder, 2))))
+}
+GROUP BY ?folder ?type
+ORDER BY ?folder ?type

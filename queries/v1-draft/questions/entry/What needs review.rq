@@ -1,0 +1,47 @@
+# Entries a person should look at, and why: its members disagree on how severe an allergy is,
+# the matcher joined it for two different reasons, or two records judged different are still joined in it.
+# The build never settles these itself; a person does, with a judgment.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
+WHERE {
+  { { SELECT ?entry
+      WHERE {
+        ?member a health:AllergyRecord ; rec:inEntry ?entry ;
+                pav:hasCurrentVersion/clinical:criticality ?criticality .
+      }
+      GROUP BY ?entry
+      HAVING (COUNT(DISTINCT ?criticality) > 1) }
+    BIND ("members disagree on criticality" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel } }
+  UNION
+  { { SELECT ?entry
+      WHERE {
+        VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+        ?same rec:counts true ; jdg:verdict jdg:Same ; jdg:justification ?why ;
+              prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
+        ?member a ?type ; rec:inEntry ?entry .
+      }
+      GROUP BY ?entry
+      HAVING (COUNT(DISTINCT ?why) > 1) }
+    BIND ("joined through two kinds of machine sameness" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel } }
+  UNION
+  { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+    ?record jdg:currentlyDifferent ?otherRecord ; a ?type ; rec:inEntry ?entry .
+    ?otherRecord a ?type ; rec:inEntry ?entry .
+    FILTER (STR(?record) < STR(?otherRecord))
+    BIND ("judged different, still joined" AS ?needs)
+    OPTIONAL { ?judgment rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?record , ?otherRecord }
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+}
+ORDER BY ?needs ?entryLabel ?entry ?judgment ?record ?otherRecord

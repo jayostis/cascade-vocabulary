@@ -1,0 +1,20 @@
+# An entry's latest member is the member whose current revision arrived last. The entry shows its name and code.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?entry rec:latestMember ?latest }
+WHERE {
+  { SELECT ?entry (IRI(MIN(STR(?r))) AS ?latest)
+    WHERE {
+      { SELECT ?entry (MAX(?t2) AS ?t)
+        WHERE {
+          VALUES ?type2 { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+          ?r2 a ?type2 ; rec:inEntry ?entry ; rec:currentRevision/prov:generatedAtTime ?t2 . }
+        GROUP BY ?entry }
+      VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+      ?r a ?type ; rec:inEntry ?entry ; rec:currentRevision/prov:generatedAtTime ?t .
+    }
+    GROUP BY ?entry }
+}

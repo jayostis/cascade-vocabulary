@@ -1,0 +1,34 @@
+# A revision is one arrival: it carries a version, which is the content, and names the document it was derived from.
+# A version seen before is named again, not copied, and Current marks the revision the views read.
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?recordLabel ?arrived ?revision ?revisionLabel ?current ?previous ?previousLabel ?version ?versionLabel
+       ?change ?document ?documentLabel ?retrieved ?hospital ?transmitter ?import ?importLabel ?started
+WHERE {
+  { SELECT ?version (MIN(?received) AS ?first)
+    WHERE { ?any rec:version ?version ; prov:generatedAtTime ?received . }
+    GROUP BY ?version }
+  ?revision rec:revisionOf ?record ; rec:version ?version ; prov:generatedAtTime ?arrived .
+  ?record rec:currentRevision ?now .
+  BIND (?revision = ?now AS ?current)
+  BIND (IF(?arrived = ?first, "a new version", "an earlier version again") AS ?change)
+  OPTIONAL { ?revision rdfs:label ?revisionLabel }
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { ?version rdfs:label ?versionLabel }
+  OPTIONAL { ?revision prov:wasRevisionOf ?previous .
+             OPTIONAL { ?previous rdfs:label ?previousLabel } }
+  OPTIONAL { ?revision prov:wasDerivedFrom ?document .
+             OPTIONAL { ?document rdfs:label ?documentLabel }
+             OPTIONAL { ?document pav:retrievedOn ?retrieved }
+             OPTIONAL { ?document prov:qualifiedAttribution ?author .
+                        ?author prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
+             OPTIONAL { ?document prov:qualifiedAttribution ?sender .
+                        ?sender prov:hadRole rec:transmitter ; prov:agent/rdfs:label ?transmitter } }
+  OPTIONAL { ?revision prov:wasGeneratedBy ?import .
+             OPTIONAL { ?import rdfs:label ?importLabel }
+             OPTIONAL { ?import prov:startedAtTime ?started } }
+}
+ORDER BY ?recordLabel ?record ?arrived ?revision ?document ?retrieved ?hospital ?transmitter
