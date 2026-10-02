@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 import pytest
 from pyshacl import validate
@@ -8,8 +7,8 @@ from rdflib.collection import Collection
 from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, XSD
 
 from cascade_pod.vocabulary import QUERIES
+from examples import ROOT
 
-ROOT = Path(__file__).resolve().parent.parent
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
 SHAPES = [path for path in ONTOLOGIES if path.name.endswith(".shapes.ttl")]
 COPIED = [
@@ -134,7 +133,6 @@ def test_every_datatype_a_shape_accepts_is_in_its_predicates_range():
             (predicate, d) for d in accepted for r in datatype_ranges if d not in r
         }
     assert outside == set()
-
 
 
 def test_the_crate_lists_every_ontology_file_and_every_query_and_nothing_else():

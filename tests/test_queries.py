@@ -74,7 +74,6 @@ def nested_forms(text):
     return found
 
 
-
 @pytest.mark.parametrize("relative", every_query())
 def test_every_query_parses_on_rdflib_and_on_pyoxigraph(relative):
     text = vocabulary.query(relative)
@@ -99,7 +98,6 @@ def test_every_query_reading_in_entry_names_its_type(relative):
     typed = {s for s, p, o in patterns if p == RDF.type and (isinstance(o, URIRef) or o in bound_by_values)}
     readers = {s for s, p, o in patterns if p == IN_ENTRY}
     assert readers <= typed, relative
-
 
 
 @pytest.mark.parametrize("relative", every_query())

@@ -1,12 +1,11 @@
 import json
 import xml.etree.ElementTree as ElementTree
 from datetime import datetime, timedelta
-from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).absolute().parent.parent
-EXAMPLE = ROOT / "example-pods" / "alex-rivera"
+from test_alex_rivera_handles import EXAMPLE
+
 DOWNLOADS = EXAMPLE / "downloads"
 EXPORTS = ["x-e2", "x-e4", "x-e6", "x-e10", "x-e12", "x-e15"]
 FIXTURES = "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/blob/cabd6f52a98d1f0c97284f47347d61f3bb752504/fixtures/in/"
