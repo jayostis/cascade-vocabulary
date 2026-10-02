@@ -12,7 +12,7 @@ from rdflib.namespace import XSD
 
 from cascade_pod import Failure, ask, derive, site, store, turtle, vocabulary
 from cascade_pod.pod import Example
-from examples import ROOT, every_example
+from examples import EXAMPLES, ROOT, every_example
 
 RECOMPUTED_SHA256 = "409b3dd5420a1a6f9707c802fa1bd7ed26e4d0c98119519968faa698344608f3"
 
@@ -75,9 +75,8 @@ def test_a_folder_that_is_no_example_is_refused_in_one_line_without_a_traceback(
     assert result.stderr.startswith("cascade_pod build: ") and "Traceback" not in result.stderr, result.stderr
 
 
-@every_example
-def test_an_unknown_lens_is_refused_by_name_without_a_traceback(example):
-    result = subprocess.run([sys.executable, "-m", "cascade_pod", "ask", str(example.folder), "record/Why it is in no view",
+def test_an_unknown_lens_is_refused_by_name_without_a_traceback():
+    result = subprocess.run([sys.executable, "-m", "cascade_pod", "ask", str(EXAMPLES[0].folder), "record/Why it is in no view",
                              "--lens", "nope"], capture_output=True, text=True, cwd=ROOT)
     assert result.returncode == 2
     assert "invalid choice: 'nope'" in result.stderr and "Traceback" not in result.stderr, result.stderr

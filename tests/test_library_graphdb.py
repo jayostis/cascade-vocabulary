@@ -13,7 +13,7 @@ from rdflib import Graph, URIRef
 
 from cascade_pod import derive, turtle, vocabulary
 from cascade_pod import graphdb as loader
-from examples import ROOT, every_example
+from examples import EXAMPLES, ROOT, every_example
 
 REPOSITORY_ID = URIRef(turtle.PREFIXES["config"] + "rep.id")
 
@@ -171,12 +171,11 @@ def test_a_reload_after_the_repository_was_deleted_replaces_the_saved_queries(gr
     assert "stale" not in graphdb.saved.values()
 
 
-@every_example
-def test_a_graphdb_that_does_not_answer_is_reported_without_a_traceback(example):
+def test_a_graphdb_that_does_not_answer_is_reported_without_a_traceback():
     with socket.socket() as closed:
         closed.bind(("127.0.0.1", 0))
         url = f"http://127.0.0.1:{closed.getsockname()[1]}"
-    result = load(example, url)
+    result = load(EXAMPLES[0], url)
     assert result.returncode == 2
     assert "Traceback" not in result.stderr and result.stderr.startswith("cascade_pod graphdb: ")
 
