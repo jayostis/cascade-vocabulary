@@ -1,6 +1,6 @@
 # cascade-vocabulary — Agent Context
 
-How a Cascade pod is described and queried; [`README.md`](README.md) names the four parts.
+How a Cascade pod is described and queried; [`README.md`](README.md) names the parts.
 
 ## The rules
 
@@ -16,9 +16,10 @@ How a Cascade pod is described and queried; [`README.md`](README.md) names the f
 - **Each question is asked once.** Before adding one, look under its kind for the question that
   already returns those rows.
 - **What two tools share is written once, in its own `cascade_pod` module.**
-- **`expected/` and the planted cases are written from the scenario**, never from what the tools
-  produce. Every file under `pod/` is a tool's output: rerun the tool, never edit the file.
-- **A test true of any example runs over every folder under `example-pods/`.**
+- **`expected/` and the planted cases come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,
+  never from the tools. Every file under `example-pods/*/pod/` is a tool's output: rerun the tool, never edit it.
+- **A test true of any example runs over every one**, with `every_example` or `every_example_and`
+  from [`tests/examples.py`](tests/examples.py).
 
 ## Conventions
 
