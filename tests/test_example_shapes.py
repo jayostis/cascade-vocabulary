@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 from pyshacl import validate
-from rdflib import BNode, Graph, Literal, URIRef
+from rdflib import Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 

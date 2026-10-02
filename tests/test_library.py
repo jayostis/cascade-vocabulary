@@ -1,4 +1,5 @@
 import ast
+import hashlib
 import re
 import subprocess
 import sys
@@ -14,6 +15,7 @@ from cascade_pod.pod import Example
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
+RECOMPUTED_SHA256 = "409b3dd5420a1a6f9707c802fa1bd7ed26e4d0c98119519968faa698344608f3"
 
 
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))
@@ -148,3 +150,9 @@ def test_a_derived_file_events_json_lists_and_the_build_does_not_make_is_a_failu
     example.derived = [*example.derived, "clinical/extra.ttl"]
     with pytest.raises(Failure, match="clinical/extra.ttl"):
         example.derived_turtle("oxigraph")
+
+
+def test_recomputed_py_less_its_first_line_is_the_source_file_at_the_commit_it_names():
+    lines = (ROOT / "tests" / "recomputed.py").read_bytes().split(b"\n", 1)
+    assert lines[0].startswith(b"# https://github.com/jayostis/cascade-bridge-spec/blob/2249a3aec0aa9dfe6a8c5b8a5cabf8855c97c190/")
+    assert hashlib.sha256(lines[1]).hexdigest() == RECOMPUTED_SHA256

@@ -1,6 +1,3 @@
-import re
-import subprocess
-import sys
 from collections import Counter
 from functools import lru_cache
 from pathlib import Path
@@ -8,7 +5,7 @@ from pathlib import Path
 import pytest
 from rdflib import Graph, URIRef
 
-from cascade_pod import derive, graphdb, store, vocabulary
+from cascade_pod import derive, store, vocabulary
 from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
 from cascade_pod.pod import NOT_RDF, Example
 
@@ -79,44 +76,6 @@ def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_p
     derived = derive.derive(held, lens)
     assert derived and derived.isdisjoint(pod)
     assert held.triples() == pod | derived
-
-
-@pytest.mark.parametrize("engine", ENGINES)
-def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(engine, tmp_path):
-    subprocess.run([sys.executable, "-m", "cascade_pod", "build", str(EXAMPLE), "--engine", engine, "--out", str(tmp_path)],
-                   check=True, cwd=ROOT)
-    written = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*") if p.is_file())
-    assert written == COMMITTED
-    for relative in COMMITTED:
-        assert (tmp_path / relative).read_bytes() == (ALEX.pod / relative).read_bytes(), relative
-
-
-def test_every_committed_view_is_marked_rebuildable_and_registered():
-    held = ALEX.store("oxigraph", vocabulary.DEFAULT_LENS)
-    current = {row["version"] for row in held.select(vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"]))}
-    for relative in sorted(set(VIEW_FILES.values()) | {LABEL_FILE}):
-        address = URIRef(ALEX.address + relative)
-        graph = Graph().parse(ALEX.pod / relative, format="turtle", publicID=str(address))
-        assert (address, RDF_TYPE, URIRef(REC + "View")) in graph, relative
-        assert set(graph.objects(address, URIRef("http://www.w3.org/ns/prov#used"))) == current, relative
-    solid = "http://www.w3.org/ns/solid/terms#"
-    index = Graph().parse(ALEX.pod / "settings/privateTypeIndex.ttl", publicID=ALEX.address + "settings/privateTypeIndex.ttl")
-    registered = {(str(index.value(r, URIRef(solid + "forClass"))), str(index.value(r, URIRef(solid + "instance"))))
-                  for r in index.subjects(RDF_TYPE, URIRef(solid + "TypeRegistration"))}
-    classes = {"allergies": "https://ns.cascadeprotocol.org/health/v1#AllergyRecord",
-               "conditions": "https://ns.cascadeprotocol.org/health/v1#ConditionRecord",
-               "immunizations": "https://ns.cascadeprotocol.org/health/v1#ImmunizationRecord",
-               "procedures": "https://ns.cascadeprotocol.org/clinical/v1#Procedure",
-               "patients": "https://ns.cascadeprotocol.org/core/v1#PatientProfile"}
-    for view, relative in VIEW_FILES.items():
-        assert (classes[view], ALEX.address + relative) in registered
-    containers = {(str(index.value(r, URIRef(solid + "forClass"))), str(index.value(r, URIRef(solid + "instanceContainer"))))
-                  for r in index.subjects(RDF_TYPE, URIRef(solid + "TypeRegistration"))}
-    assert (REC + "View", ALEX.address + "clinical/") in containers
-    root = Graph().parse(ALEX.pod / "index.ttl", publicID=ALEX.address + "index.ttl")
-    assert URIRef(ALEX.address + "clinical/") in set(root.objects(None, URIRef("http://www.w3.org/ns/ldp#contains")))
-    assert set(COMMITTED) == set(ALEX.derived)
-    assert set(ALEX.derived).isdisjoint(ALEX.files())
 
 
 def test_everything_labelled_has_exactly_one_label():

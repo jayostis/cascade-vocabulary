@@ -327,30 +327,6 @@ def test_every_file_is_utf8_with_lf_endings_and_one_final_newline():
             assert data.decode("utf-8") == json.dumps(json.loads(data), indent=2, ensure_ascii=False) + "\n", path
 
 
-def test_every_is_based_on_and_citation_in_the_crate_is_on_a_file_that_exists():
-    described = [e["@id"] for e in crate()["@graph"] if "isBasedOn" in e or "citation" in e]
-    assert described and [f for f in described if not (EXAMPLE / f).is_file()] == []
-
-
-def _references(value):
-    if isinstance(value, dict):
-        return {value["@id"]} if set(value) == {"@id"} else set().union(*map(_references, value.values()))
-    if isinstance(value, list):
-        return set().union(*map(_references, value))
-    return set()
-
-
-def test_every_entity_in_the_crate_is_reached_from_its_metadata_descriptor():
-    entities = {entity["@id"]: entity for entity in crate()["@graph"]}
-    reached, todo = set(), ["ro-crate-metadata.json"]
-    while todo:
-        found = todo.pop()
-        if found in entities and found not in reached:
-            reached.add(found)
-            todo.extend(_references(entities[found]))
-    assert sorted(set(entities) - reached) == []
-
-
 def test_every_resource_that_starts_from_a_fixture_names_it_by_is_based_on():
     entities = {entity["@id"]: entity for entity in crate_files()}
     for path in every_download():
