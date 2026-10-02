@@ -9,7 +9,7 @@ from rdflib import Graph, URIRef
 ROOT = Path(__file__).absolute().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 import recomputed  # noqa: E402
-from alex_rivera_builds import EVERY_JUDGMENT, handles  # noqa: E402
+from alex_rivera_builds import EVERY_JUDGMENT, MATCHER, handles  # noqa: E402
 from cascade_pod import store  # noqa: E402
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
@@ -22,7 +22,6 @@ PROV = "http://www.w3.org/ns/prov#"
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 DESCRIPTION = URIRef("http://purl.org/dc/terms/description")
-MATCHER = "urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76"
 ALEX = "https://pod.alex-rivera.example/profile/card.ttl#me"
 
 RUNS = [

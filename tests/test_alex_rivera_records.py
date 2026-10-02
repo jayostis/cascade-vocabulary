@@ -312,9 +312,10 @@ def test_every_handle_in_expected_handles_names_one_thing_in_the_pod_and_every_r
     records = set(graph.objects(None, REVISION_OF))
     profiles = set(graph.objects(None, URIRef(REC + "patient"))) - set(graph.subjects(RDF_TYPE, URIRef(REC + "Subject")))
     assert records | profiles == set(named.values())
-    named |= {handle: handles()[handle] for handle in sources()["series"]}
+    named |= {handle: handles()[handle] for kind in ("series", "judgments") for handle in sources()[kind]}
     assert len(set(named.values())) == len(named)
-    assert [handle for handle in sources()["series"] if (named[handle], None, None) not in graph] == []
+    assert [handle for kind in ("series", "judgments") for handle in sources()[kind]
+            if (named[handle], None, None) not in graph] == []
 
 
 def test_the_records_layer_conforms_to_the_records_shapes():

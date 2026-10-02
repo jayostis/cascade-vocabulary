@@ -30,10 +30,8 @@ MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
 IN_ENTRY = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#inEntry")
 REC = Namespace("https://ns.cascadeprotocol.org/records/v1-draft#")
 JDG = Namespace("https://ns.cascadeprotocol.org/judgments/v1-draft#")
-NPX = Namespace("http://purl.org/nanopub/x/")
 PROV = Namespace("http://www.w3.org/ns/prov#")
-AUTHORS = {"Alex": URIRef(POD_BASE + "profile/card.ttl#me"),
-           "matcher": URIRef("urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76")}
+MATCHER = "urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76"
 
 # J: event, time, author, verdict, members, justification, used, supersedes or retracts, a reason given
 EVERY_JUDGMENT = {
@@ -99,21 +97,10 @@ def arrivals(graph, record):
     return sorted(graph.subjects(REC.revisionOf, record), key=lambda r: str(graph.value(r, PROV.generatedAtTime)))
 
 
-def _judgment(graph, handle, named):
-    _, at, author, verdict, members, _, _, replaces, _ = EVERY_JUDGMENT[handle]
-
-    def is_it(judgment):
-        return (str(graph.value(judgment, PROV.generatedAtTime)) == at
-                and graph.value(judgment, PROV.wasAttributedTo) == AUTHORS[author]
-                and graph.value(judgment, JDG.verdict) == (JDG[verdict] if verdict else None)
-                and set(graph.objects(judgment, PROV.hadMember)) == {named[m] for m in members}
-                and {(p, o) for p in (NPX.supersedes, NPX.retracts) for o in graph.objects(judgment, p)}
-                == {(NPX[kind], named[target]) for kind, target in replaces})
-
-    found = [j for j in graph.subjects(RDF.type, JDG.Judgment) if is_it(j)]
-    if len(found) != 1:
-        pytest.fail(f"{handle} is {len(found)} judgments of the pod, not one")
-    return found[0]
+def _matcher_judgment(handle, named):
+    _, _, _, _, members, justification, used, _, _ = EVERY_JUDGMENT[handle]
+    return URIRef(recomputed.record_name([MATCHER, JDG[justification], *sorted(str(named[m]) for m in members),
+                                          *sorted(str(named[u]) for u in used)]))
 
 
 @lru_cache(maxsize=None)
@@ -136,8 +123,8 @@ def handles():
         named |= {f"{h}-{v['version']}": URIRef(v["name"]) for v in series["versions"]}
     named |= {f"I-{e['event']}": URIRef(e["import"]) for e in events() if "import" in e}
     named |= {"S": URIRef(e["subject"]) for e in events() if "subject" in e}
-    for h in EVERY_JUDGMENT:
-        named[h] = _judgment(graph, h, named)
+    named |= {h: URIRef(n) for h, n in sources()["judgments"].items()}
+    named |= {h: _matcher_judgment(h, named) for h, row in EVERY_JUDGMENT.items() if row[2] == "matcher"}
     return named
 
 
