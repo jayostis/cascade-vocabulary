@@ -1,20 +1,14 @@
-import json
 import subprocess
 import sys
-from pathlib import Path
 
 from pyshacl import validate
 from rdflib import Graph, URIRef
 
-ROOT = Path(__file__).absolute().parent.parent
-sys.path.insert(0, str(ROOT / "tests"))
-import recomputed  # noqa: E402
-from alex_rivera_builds import EVERY_JUDGMENT, MATCHER, handles  # noqa: E402
-from cascade_pod import store  # noqa: E402
+import recomputed
+from examples import ROOT, pod_file
+from alex_rivera import ALEX, EVERY_JUDGMENT, EXAMPLE, MATCHER, handles
 
-EXAMPLE = ROOT / "example-pods" / "alex-rivera"
 POD = EXAMPLE / "pod"
-POD_BASE = "https://pod.alex-rivera.example/"
 
 JDG = "https://ns.cascadeprotocol.org/judgments/v1-draft#"
 NPX = "http://purl.org/nanopub/x/"
@@ -22,7 +16,7 @@ PROV = "http://www.w3.org/ns/prov#"
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 DESCRIPTION = URIRef("http://purl.org/dc/terms/description")
-ALEX = "https://pod.alex-rivera.example/profile/card.ttl#me"
+WEBID = ALEX.address + "profile/card.ttl#me"
 
 RUNS = [
     ("E2", "E2", "2026-09-01T10:00:04Z", None),
@@ -41,16 +35,8 @@ EVERY_REFERENCE = {
 }
 
 
-def manifest():
-    return json.loads((EXAMPLE / "events.json").read_text(encoding="utf-8"))
-
-
 def added_by():
-    return {path: event["event"] for event in manifest()["events"] for path in event["adds"]}
-
-
-def load(relative):
-    return Graph().parse(POD / relative, format="turtle", publicID=POD_BASE + relative)
+    return {path: event["event"] for event in ALEX.events for path in event["adds"]}
 
 
 def listed(*folders):
@@ -65,19 +51,19 @@ def path_of(folder, name):
 def judgments():
     found = {}
     for relative in listed("judgments/"):
-        graph = load(relative)
+        graph = pod_file(ALEX, relative)
         [judgment] = graph.subjects(RDF_TYPE, URIRef(JDG + "Judgment"))
         found[str(judgment)] = (relative, graph)
     return found
 
 
 def through(event, *folders):
-    events = [e["event"] for e in manifest()["events"]]
+    events = [e["event"] for e in ALEX.events]
     graph = Graph()
-    for e in manifest()["events"][: events.index(event) + 1]:
+    for e in ALEX.events[: events.index(event) + 1]:
         for relative in e["adds"]:
             if relative.startswith(folders):
-                graph += load(relative)
+                graph += pod_file(ALEX, relative)
     return graph
 
 
@@ -104,9 +90,8 @@ def test_every_judgment_and_reference_conforms_to_the_judgments_and_records_shap
         shapes.parse(ROOT / "ontologies" / vocabulary / "v1-draft" / f"{vocabulary}.shapes.ttl", format="turtle")
     data = Graph()
     for relative in listed("judgments/", "references/"):
-        data += load(relative)
+        data += pod_file(ALEX, relative)
     conforms, _, report = validate(data, shacl_graph=shapes, advanced=True)
-    store.keep_literals_as_written()
     assert conforms, report
     assert len(set(data.subjects(RDF_TYPE, URIRef(JDG + "Judgment")))) == len(EVERY_JUDGMENT)
     assert len(set(data.subjects(RDF_TYPE, URIRef(REC + "ReferenceSeries")))) == 3
@@ -126,7 +111,7 @@ def test_the_judgments_are_the_scenarios_author_verdict_members_justification_us
         assert added_by()[relative] == event, j
         assert f'prov:generatedAtTime "{at}"^^xsd:dateTime' in (POD / relative).read_text(encoding="utf-8"), j
         assert len(values(PROV + "generatedAtTime")) == 1, j
-        assert values(PROV + "wasAttributedTo") == [ALEX if author == "Alex" else MATCHER], j
+        assert values(PROV + "wasAttributedTo") == [WEBID if author == "Alex" else MATCHER], j
         kind = "Person" if author == "Alex" else "SoftwareAgent"
         assert (URIRef(values(PROV + "wasAttributedTo")[0]), RDF_TYPE, URIRef(PROV + kind)) in graph, j
         assert values(JDG + "verdict") == ([JDG + verdict] if verdict else []), j

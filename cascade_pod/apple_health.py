@@ -43,14 +43,14 @@ def facts(entry, import_started_at):
     """What the export says of one document and of its import, for the Bridge to state."""
     document, this_import = BRIDGE.thisDocument, BRIDGE.thisImport
     triples = {(this_import, RDFS.label, Literal(IMPORT_LABEL)),
-               (this_import, PROV.startedAtTime, Literal(import_started_at, datatype=XSD.dateTime)),
+               (this_import, PROV.startedAtTime, Literal(import_started_at, datatype=XSD.dateTime, normalize=False)),
                *_attribution(document, TRANSMITTER, REC.transmitter)}
     if entry is not None:
         source_url = entry["sourceURL"]
         triples |= {*_attribution(document, entry["sourceName"], REC.author),
                     (document, BRIDGE.serverBaseUrl, Literal(source_url.rsplit("/", 2)[0])),
                     (document, PAV.retrievedFrom, URIRef(source_url)),
-                    (document, PAV.retrievedOn, Literal(utc(entry["receivedDate"]), datatype=XSD.dateTime)),
+                    (document, PAV.retrievedOn, Literal(utc(entry["receivedDate"]), datatype=XSD.dateTime, normalize=False)),
                     (document, BRIDGE.sourceFormatVersion, Literal(entry["fhirVersion"]))}
     return triples
 

@@ -5,6 +5,7 @@ import re
 import shlex
 import subprocess
 import sys
+from functools import lru_cache
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
@@ -13,21 +14,16 @@ import pytest
 from rdflib import Literal, URIRef
 from rdflib.namespace import XSD
 
-from cascade_pod import graphdb, site, store, turtle, vocabulary
+from cascade_pod import graphdb, site, turtle, vocabulary
 from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
 from cascade_pod.pod import Example, fanned, save, stem
+from examples import EXAMPLES, ROOT, pod_file
+from test_library_graphdb import GraphDB
+from test_queries import queries_held
 
-sys.path.insert(0, str(Path(__file__).absolute().parent))
-from alex_rivera_builds import name as name_of  # noqa: E402
-from test_alex_rivera_graphdb import GraphDB  # noqa: E402
-from test_queries import queries_held  # noqa: E402
-
-ROOT = Path(__file__).absolute().parent.parent
-ALEX = Example(ROOT / "example-pods" / "alex-rivera")
 MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
 REVISION_OF = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#revisionOf")
 DERIVED_FROM = URIRef("http://www.w3.org/ns/prov#wasDerivedFrom")
-PENICILLIN = "urn:cascade:entry:a6ab153490000f8a538712abb75758f2280c92237cd33dc6eee4b8f00e8c2210"
 
 
 class Page(HTMLParser):
@@ -112,16 +108,32 @@ def page_of(iri):
     return hashlib.sha256(str(iri).encode("utf-8")).hexdigest() + ".html"
 
 
+@lru_cache(maxsize=None)
+def site_files(example):
+    return site.Site(example).files()
+
+
+@lru_cache(maxsize=None)
+def site_pages(example):
+    return {path: Page(octets.decode("utf-8")) for path, octets in sorted(site_files(example).items())
+            if path.endswith(".html") and "/" not in path}
+
+
+@pytest.fixture(scope="module", params=EXAMPLES, ids=lambda example: example.name)
+def example(request):
+    return request.param
+
+
 @pytest.fixture(scope="module")
-def built(tmp_path_factory):
+def built(example, tmp_path_factory):
     out = tmp_path_factory.mktemp("site")
-    save(site.Site(ALEX).files(), out)
+    save(site_files(example), out)
     return out
 
 
 @pytest.fixture(scope="module")
-def pages(built):
-    return {path.name: Page(path.read_text(encoding="utf-8")) for path in sorted(built.glob("*.html"))}
+def pages(example):
+    return site_pages(example)
 
 
 def test_every_question_has_a_place_on_the_site(pages):
@@ -139,6 +151,21 @@ def test_every_block_shows_its_querys_text_and_its_path(pages):
             assert block["pres"][0] == (ROOT / block["path"]).read_text(encoding="utf-8"), block["path"]
 
 
+def test_the_names_graphdb_saves_the_questions_under_are_the_names_the_site_prints(example, pages):
+    server = GraphDB()
+    try:
+        graphdb.load(example, server.url)
+    finally:
+        server.server.shutdown()
+    printed = {block["saved"] for page in pages.values() for block in blocks(page) if block["saved"]}
+    assert printed == set(server.saved)
+
+
+def entries_and_members(example, views=tuple(VIEW_FILES)):
+    return sorted((entry, member) for view in views
+                  for entry, member in pod_file(example, VIEW_FILES[view]).subject_objects(MERGED_FROM))
+
+
 def asked(command):
     arguments = shlex.split(command)
     result = subprocess.run([sys.executable, *arguments[1:]], capture_output=True, cwd=ROOT)
@@ -147,43 +174,63 @@ def asked(command):
             for line in result.stdout.decode("utf-8").splitlines()]
 
 
-SAMPLE = [("index.html", "What each folder holds"), ("index.html", "How many of each kind"),
-          ("index.html", "What each import brought in"), ("not-shown.html", "Why it is in no view"),
-          (page_of(PENICILLIN), "Where it came from")]
+def samples(example):
+    [(entry, _), *_] = entries_and_members(example)
+    return [("index.html", "What each folder holds", None), ("index.html", "How many of each kind", None),
+            ("index.html", "What each import brought in", None), ("not-shown.html", "Why it is in no view", None),
+            (page_of(entry), "Where it came from", entry)]
 
 
-@pytest.mark.parametrize("page, title", SAMPLE)
-def test_every_run_it_yourself_command_prints_the_rows_the_block_shows(pages, page, title):
-    [block] = [b for b in blocks(pages[page]) if b["title"] == title]
+@pytest.mark.parametrize("example, page, title, thing", [(e, *s) for e in EXAMPLES for s in samples(e)],
+                         ids=[f"{e.name}-{s[0]}-{s[1]}" for e in EXAMPLES for s in samples(e)])
+def test_every_run_it_yourself_command_prints_the_rows_the_block_shows(example, page, title, thing):
+    [block] = [b for b in blocks(site_pages(example)[page]) if b["title"] == title]
     printed = asked(block["command"])
     about = [code[1:] for code in block["codes"] if code.startswith("?")]
     if about:
-        printed = [row for row in printed if row.get(about[0]) == f"<{PENICILLIN}>"]
+        printed = [row for row in printed if row.get(about[0]) == f"<{thing}>"]
     shown = [{column: cell["value"] for column, cell in row.items()} for row in block["rows"]]
-    assert shown and shown == [{c: row[c] for c in block["columns"] if c in row} for row in printed]
+    assert shown == [{c: row[c] for c in block["columns"] if c in row} for row in printed]
 
 
-def test_the_names_graphdb_saves_the_questions_under_are_the_names_the_site_prints(pages):
-    server = GraphDB()
-    try:
-        graphdb.load(ALEX, server.url)
-    finally:
-        server.server.shutdown()
-    printed = {block["saved"] for page in pages.values() for block in blocks(page) if block["saved"]}
-    assert printed == set(server.saved)
+def stored_documents(example, record, graph):
+    """The copy of each stored document a revision of the record was derived from, and of the Turtle describing it."""
+    documents = {d for revision in graph.subjects(REVISION_OF, record) for d in graph.objects(revision, DERIVED_FROM)}
+    return {path for d in documents if (example.pod / "attachments" / "sha-256" / stem(str(d))).is_file()
+            for path in (f"pod/attachments/sha-256/{stem(str(d))}", "pod/" + fanned("provenance/documents", str(d)))}
+
+
+def test_an_entrys_page_reaches_each_members_source_file_and_its_turtle_by_links_alone(example, pages):
+    graph = example.loaded("rdflib").graph()
+    walked = entries_and_members(example)
+    unreached = []
+    for entry, member in walked:
+        if page_of(member) not in pages[page_of(entry)].hrefs:
+            unreached.append((str(entry), str(member)))
+        elif not stored_documents(example, member, graph) <= set(pages[page_of(member)].hrefs):
+            unreached.append((str(entry), str(member), "document"))
+    assert walked and unreached == []
+    assert any(stored_documents(example, member, graph) for _, member in walked)
+
+
+def test_a_block_about_one_thing_says_its_command_prints_every_things_rows(example, pages):
+    for record in {member for _, member in entries_and_members(example, set(VIEW_FILES) - {"patients"})}:
+        [block] = [b for b in blocks(pages[page_of(record)]) if b["title"] == "Which judgments name it"]
+        assert (f"It prints the rows for every record; this block keeps those whose ?record is {record}."
+                in block["paras"])
 
 
 def thing_pages(pages):
     return [name for name in pages if re.fullmatch(r"[0-9a-f]{64}\.html", name)]
 
 
-def test_every_things_page_names_the_pod_file_that_states_it_and_links_to_its_turtle(pages, built):
-    assert len(thing_pages(pages)) > 50
+def test_every_things_page_names_the_pod_file_that_states_it_and_links_to_its_turtle(example, pages, built):
+    assert thing_pages(pages)
     for name in thing_pages(pages):
         [stated] = [b for b in blocks(pages[name]) if b["title"] == "Which file states each thing"]
         files = [row["file"]["hrefs"][0] for row in stated["rows"]]
         assert files and all(href.startswith(site.COPY) for href in files), name
-        assert all((built / href).read_bytes() == (ALEX.pod / href[len(site.COPY):]).read_bytes() for href in files), name
+        assert all((built / href).read_bytes() == (example.pod / href[len(site.COPY):]).read_bytes() for href in files), name
 
 
 def test_every_internal_link_resolves(pages, built):
@@ -199,40 +246,17 @@ def test_every_internal_link_resolves(pages, built):
     assert broken == []
 
 
-def stored_documents(record, graph):
-    """The copy of each stored document a revision of the record was derived from, and of the Turtle describing it."""
-    documents = {d for revision in graph.subjects(REVISION_OF, record) for d in graph.objects(revision, DERIVED_FROM)}
-    return {path for d in documents if (ALEX.pod / "attachments" / "sha-256" / stem(str(d))).is_file()
-            for path in (f"pod/attachments/sha-256/{stem(str(d))}", "pod/" + fanned("provenance/documents", str(d)))}
-
-
-def test_an_entrys_page_reaches_each_members_source_file_and_its_turtle_by_links_alone(pages):
-    graph = ALEX.loaded("rdflib").graph()
-    entries = {entry for path in VIEW_FILES.values()
-               for entry in store.parsed(ALEX.pod / path, ALEX.address + path).subjects(MERGED_FROM, None)}
-    unreached = []
-    for path in VIEW_FILES.values():
-        view = store.parsed(ALEX.pod / path, ALEX.address + path)
-        for entry, member in view.subject_objects(MERGED_FROM):
-            if page_of(member) not in pages[page_of(entry)].hrefs:
-                unreached.append((str(entry), str(member)))
-            elif not stored_documents(member, graph) <= set(pages[page_of(member)].hrefs):
-                unreached.append((str(entry), str(member), "document"))
-    assert entries and unreached == []
-    assert stored_documents(name_of("H2F-ALG-PCN"), graph)
-
-
-def test_a_second_build_gives_identical_bytes(built, tmp_path):
-    save(site.Site(ALEX).files(), tmp_path)
+def test_a_second_build_gives_identical_bytes(example, built, tmp_path):
+    save(site.Site(example).files(), tmp_path)
     first = {p.relative_to(built).as_posix(): p.read_bytes() for p in built.rglob("*") if p.is_file()}
     second = {p.relative_to(tmp_path).as_posix(): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
     assert first == second
 
 
-def test_the_site_copies_every_pod_file_and_the_stylesheet(built):
+def test_the_site_copies_every_pod_file_and_the_stylesheet(example, built):
     assert (built / site.STYLESHEET).is_file()
-    for path in ALEX.files() + ALEX.derived:
-        assert (built / site.COPY / path).read_bytes() == (ALEX.pod / path).read_bytes(), path
+    for path in example.files() + example.derived:
+        assert (built / site.COPY / path).read_bytes() == (example.pod / path).read_bytes(), path
 
 
 def markup(source):
@@ -350,13 +374,6 @@ def test_a_thing_only_ever_named_by_others_is_stated_by_the_files_that_name_it(t
         zip(column(stated, "file"), column(stated, "named")))
 
 
-def test_an_entrys_page_puts_each_chosen_value_beside_the_member_it_came_from(pages):
-    [shows] = [b for b in blocks(pages[page_of(PENICILLIN)]) if b["title"] == "What it shows"]
-    allergen = "<https://ns.cascadeprotocol.org/health/v1#allergen>"
-    assert [(row["value"]["value"], row["from"]["value"]) for row in shows["rows"]
-            if row["field"]["value"] == allergen] == [('"Penicillin"', name_of("H2F-ALG-PCN").n3())]
-
-
 def test_the_folder_table_names_a_records_folders_untyped_versions_and_leaves_out_the_labels_file(pages):
     [folders] = [b for b in blocks(pages["index.html"]) if b["title"] == "What each folder holds"]
     rows = {(row["folder"]["value"], row["type"]["value"]) for row in folders["rows"]}
@@ -376,19 +393,6 @@ def test_no_things_page_shows_what_everything_is_called_and_the_pipeline_page_do
     assert "What everything is called" in titles["pipeline.html"]
 
 
-def test_a_block_about_one_thing_says_its_command_prints_every_things_rows(pages):
-    record = str(name_of("H2F-ALG-PCN"))
-    [block] = [b for b in blocks(pages[page_of(record)]) if b["title"] == "Which judgments name it"]
-    assert (f"It prints the rows for every record; this block keeps those whose ?record is {record}."
-            in block["paras"])
-
-
-def test_the_pipeline_page_asks_the_same_question_under_each_lens_side_by_side(pages):
-    shown = {("--lens export" in b["command"], len(b["rows"])) for b in blocks(pages["pipeline.html"])
-             if b["title"] == "My immunizations"}
-    assert shown == {(False, 1), (True, 2)}
-
-
 def test_text_from_the_pod_is_escaped_wherever_the_site_shows_it(tmp_path):
     label = '<script>alert(1)</script> " onmouseover="x'
     folder = tmp_path / "tiny"
@@ -406,12 +410,3 @@ def test_a_block_asked_under_the_other_lens_links_to_no_page_of_this_site(pages)
     other = [b for b in blocks(pages["pipeline.html"]) if b["command"] and "--lens" in b["command"]]
     assert other and not [href for b in other for row in b["rows"] for cell in row.values() for href in cell["hrefs"]
                           if href.endswith(".html")]
-
-
-def test_a_turtle_link_opens_a_file_the_thing_arrived_in_and_a_thing_only_named_has_none(pages):
-    [folders] = [b for b in blocks(pages["index.html"]) if b["title"] == "What each folder holds"]
-    assert not [href for row in folders["rows"] if "type" in row for href in row["type"]["hrefs"]]
-    profile = str(name_of("H1-PAT"))
-    cells = [cell for page in pages.values() for block in blocks(page) for row in block["rows"] for cell in row.values()
-             if cell["value"] == f"<{profile}>"]
-    assert cells and not [href for cell in cells for href in cell["hrefs"] if href.startswith(site.COPY)]

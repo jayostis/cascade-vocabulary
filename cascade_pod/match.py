@@ -21,7 +21,7 @@ def judgment(name, *, at, members, justification, used):
     same = URIRef(name)
     return {(same, RDF.type, JDG.Judgment), (same, JDG.verdict, JDG.Same), (same, JDG.justification, justification),
             *((same, PROV.hadMember, URIRef(m)) for m in members), *((same, PROV.used, URIRef(u)) for u in used),
-            (same, PROV.wasAttributedTo, MATCHER), (same, PROV.generatedAtTime, Literal(at, datatype=XSD.dateTime)),
+            (same, PROV.wasAttributedTo, MATCHER), (same, PROV.generatedAtTime, Literal(at, datatype=XSD.dateTime, normalize=False)),
             (MATCHER, RDF.type, PROV.SoftwareAgent), (MATCHER, RDFS.label, Literal("Cascade matcher"))}
 
 

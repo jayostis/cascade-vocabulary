@@ -1,4 +1,4 @@
-from pathlib import Path
+import json
 
 import pytest
 from pyshacl import validate
@@ -6,7 +6,9 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, XSD
 
-ROOT = Path(__file__).resolve().parent.parent
+from cascade_pod.vocabulary import QUERIES
+from examples import ROOT
+
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
 SHAPES = [path for path in ONTOLOGIES if path.name.endswith(".shapes.ttl")]
 COPIED = [
@@ -16,6 +18,7 @@ SOURCE_COMMIT = "https://github.com/the-cascade-protocol/spec/blob/d819bc2c04526
 FOAF_RELEASE = "http://xmlns.com/foaf/spec/20140114.rdf"
 CASCADE = "https://ns.cascadeprotocol.org/"
 PROV = Namespace("http://www.w3.org/ns/prov#")
+FORMATS = {".rq": "application/sparql-query", ".ttl": "text/turtle"}
 DECLARES_A_PREDICATE = (
     RDF.Property,
     OWL.DatatypeProperty,
@@ -131,3 +134,9 @@ def test_every_datatype_a_shape_accepts_is_in_its_predicates_range():
         }
     assert outside == set()
 
+
+def test_the_crate_lists_every_ontology_file_and_every_query_and_nothing_else():
+    entities = {entity["@id"]: entity for entity in json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]}
+    listed = {part["@id"]: entities[part["@id"]]["encodingFormat"] for part in entities["./"]["hasPart"]}
+    files = sorted(ROOT.glob("ontologies/**/*.ttl")) + sorted(QUERIES.rglob("*.rq"))
+    assert listed == {path.relative_to(ROOT).as_posix(): FORMATS[path.suffix] for path in files}

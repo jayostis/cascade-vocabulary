@@ -1,40 +1,27 @@
 import re
-import sys
+from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
-from rdflib import Graph, Literal, Namespace, URIRef
+from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
 
-sys.path.insert(0, str(Path(__file__).absolute().parent))
-import recomputed  # noqa: E402
-from alex_rivera_builds import (  # noqa: E402
-    ENGINES,
-    MERGED_FROM,
-    EXAMPLE,
-    EXPECTED,
-    LENSES,
-    POD,
-    POD_BASE,
-    adds,
-    build,
-    entries,
-    entry_holding,
-    files_through,
-    handle,
-    handles,
-    is_rdf,
-    listed_entries,
-    listed_judgments,
-    listed_pairs,
-    load_pod_file,
-    members_shown,
-    name,
-    pod,
-    values,
-    view_differences,
-)
+import recomputed
+from cascade_pod import derive, derived_files, vocabulary
+from cascade_pod.derived_files import VIEW_FILES
+from cascade_pod.pod import NOT_RDF
+from examples import pod_file
+from alex_rivera import ALEX, EXAMPLE, handle, handles, handles_by_name, name, pod
 
+EXPECTED = EXAMPLE / "expected"
+POD = ALEX.pod
+POD_BASE = ALEX.address
+HANDLE_NS = "urn:example:alex-rivera:handle:"
+ENGINES = ("oxigraph", "rdflib")
+LENSES = ("everyday", "export")
+MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
+IN_ENTRY = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#inEntry")
 REC = Namespace("https://ns.cascadeprotocol.org/records/v1-draft#")
 JDG = Namespace("https://ns.cascadeprotocol.org/judgments/v1-draft#")
 HEALTH = Namespace("https://ns.cascadeprotocol.org/health/v1#")
@@ -67,6 +54,142 @@ engines = pytest.mark.parametrize("engine", ENGINES)
 lenses = pytest.mark.parametrize("lens", LENSES)
 
 
+def adds(event):
+    for row in ALEX.events:
+        if row["event"] == event:
+            return row["adds"]
+    pytest.fail(f"events.json lists no event {event}")
+
+
+def files_through(event):
+    return tuple(ALEX.files(event))
+
+
+def is_rdf(relative):
+    return not relative.startswith(NOT_RDF)
+
+
+def graph(triples):
+    found = Graph()
+    for triple in triples:
+        found.add(triple)
+    return found
+
+
+def _string_typed(term):
+    if isinstance(term, Literal) and term.datatype is None and term.language is None:
+        return Literal(str(term), datatype=XSD.string)
+    return term
+
+
+@dataclass(frozen=True)
+class Build:
+    state: Graph
+    views: dict
+    needs_review: dict
+
+
+@lru_cache(maxsize=None)
+def build(engine, lens, event):
+    held = ALEX.loaded(engine, event)
+    derive.derive(held, lens)
+    state = graph(held.triples())
+    files = derived_files.add(ALEX, held, event)
+    needs_review = {kind: held.select(vocabulary.query(vocabulary.questions()[f"{kind}/What needs review"]))
+                    for kind in ("entry", "judgment")}
+    views = {view: graph(files[path]) for view, path in VIEW_FILES.items()}
+    return Build(state, views, needs_review)
+
+
+def comparable(term):
+    if isinstance(term, BNode):
+        pytest.fail(f"a view names a blank node, {term}, as an object")
+    if isinstance(term, URIRef):
+        found = handles_by_name().get(str(term))
+        return URIRef(HANDLE_NS + found) if found is not None else term
+    return _string_typed(term)
+
+
+def _member_handle(term):
+    if str(term).startswith(HANDLE_NS):
+        return str(term)[len(HANDLE_NS):]
+    found = handles_by_name().get(str(term))
+    if found is None:
+        pytest.fail(f"entry member {term} has no handle")
+    return found
+
+
+def entries(graph):
+    found = {}
+    for subject in set(graph.subjects(MERGED_FROM, None)):
+        members = frozenset(_member_handle(m) for m in graph.objects(subject, MERGED_FROM))
+        if members in found:
+            pytest.fail(f"two entries have the members {sorted(members)}")
+        found[members] = {(p, comparable(o)) for p, o in graph.predicate_objects(subject)}
+    return found
+
+
+def values(pairs, predicate):
+    return {o for p, o in pairs if p == predicate}
+
+
+def members_shown(build):
+    return {member for graph in build.views.values() for key in entries(graph) for member in key}
+
+
+def entry_holding(build, view, member):
+    held = [key for key in entries(build.views[view]) if member in key]
+    assert len(held) == 1, f"{member} is in {len(held)} entries of the {view} view"
+    return held[0]
+
+
+def entry_members(build, entry):
+    members = set(build.state.subjects(IN_ENTRY, entry))
+    for graph in build.views.values():
+        members.update(graph.objects(entry, MERGED_FROM))
+    return frozenset(_member_handle(m) for m in members)
+
+
+def entries_needing(build, needs):
+    return [row for row in build.needs_review["entry"] if str(row["needs"]) == needs]
+
+
+def listed_entries(build, needs):
+    return {entry_members(build, row["entry"]) for row in entries_needing(build, needs)}
+
+
+def listed_judgments(build):
+    return {handle(row["judgment"]) for row in build.needs_review["judgment"]}
+
+
+def listed_pairs(build):
+    pairs = set()
+    for row in entries_needing(build, "judged different, still joined"):
+        record, other = row["record"], row["otherRecord"]
+        assert str(record) < str(other), f"?record {record} is not the smaller of the pair by STR"
+        pairs.add((handle(record), handle(other), entry_members(build, row["entry"])))
+    return pairs
+
+
+def describe(key, expected, actual):
+    lines = [f"entry {sorted(key)}:"]
+    lines += [f"  missing {p.n3()} {o.n3()}" for p, o in sorted(expected - actual, key=str)]
+    lines += [f"  should not have {p.n3()} {o.n3()}" for p, o in sorted(actual - expected, key=str)]
+    return "\n".join(lines)
+
+
+def view_differences(expected, actual):
+    report = []
+    for key in sorted(set(expected) | set(actual), key=sorted):
+        if key not in actual:
+            report.append(f"entry {sorted(key)} is missing")
+        elif key not in expected:
+            report.append(f"entry {sorted(key)} should not be there")
+        elif expected[key] != actual[key]:
+            report.append(describe(key, expected[key], actual[key]))
+    return report
+
+
 def date(text):
     return Literal(text, datatype=XSD.date)
 
@@ -76,7 +199,7 @@ def string(text):
 
 
 def handle_iri(h):
-    return URIRef("urn:example:alex-rivera:handle:" + h)
+    return URIRef(HANDLE_NS + h)
 
 
 def versions_of(graph, record):
@@ -115,7 +238,7 @@ def added_graph(event):
     graph = Graph()
     for relative in adds(event):
         if is_rdf(relative):
-            graph += load_pod_file(relative)
+            graph += pod_file(ALEX, relative)
     return graph
 
 
@@ -301,7 +424,7 @@ def test_a_retracted_same_stops_joining_its_records_and_nothing_replaces_it(engi
 def test_a_machine_judgment_stops_counting_under_everyday_when_a_reference_version_it_used_is_replaced_and_nothing_is_written_but_the_new_version(engine):
     added = adds("E9")
     assert len(added) == 1
-    assert names(load_pod_file(added[0]), name("RS-XWALK-2027-01"))
+    assert names(pod_file(ALEX, added[0]), name("RS-XWALK-2027-01"))
 
     assert is_judgment(pod("E9"), "J4")
     assert not counts(build(engine, "everyday", "E9"), "J4")
@@ -520,7 +643,7 @@ def test_every_handle_an_expected_file_or_planted_case_names_names_something_in_
     for path in EXPECTED.glob("*.ttl"):
         for members, entry in expected_view(path.stem).items():
             named.update(members)
-            named.update(str(o)[len("urn:example:alex-rivera:handle:"):] for _, o in entry if str(o).startswith("urn:example:alex-rivera:handle:"))
+            named.update(str(o)[len(HANDLE_NS):] for _, o in entry if str(o).startswith(HANDLE_NS))
     missing = sorted(named - set(handles()))
     assert not missing, f"handles that name nothing in the pod: {missing}"
 

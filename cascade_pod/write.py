@@ -51,7 +51,7 @@ class Filing:
             (this, RDF.type, REC.Revision),
             (this, REC.revisionOf, URIRef(record)),
             (this, REC.version, URIRef(version)),
-            (this, PROV.generatedAtTime, Literal(generated_at, datatype=XSD.dateTime)),
+            (this, PROV.generatedAtTime, Literal(generated_at, datatype=XSD.dateTime, normalize=False)),
             (this, PROV.wasGeneratedBy, URIRef(generated_by)),
         }
         if history:
