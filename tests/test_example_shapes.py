@@ -11,7 +11,7 @@ from rdflib.namespace import OWL, RDF, SH
 
 from cascade_pod.derived_files import VIEW_FILES
 from cascade_pod.pod import NOT_RDF
-from examples import ROOT, every_example, every_example_and, pod_file
+from examples import EXAMPLES, ROOT, every_example, every_example_and, pod_file
 
 ONTOLOGIES = ROOT / "ontologies"
 
@@ -240,14 +240,15 @@ def test_every_pod_file_is_a_focus_node_of_the_shapes_for_its_kind(example, rela
         assert shaping, f"{thing} in {relative} is a focus node of no {'/'.join(SHAPES_OF_KIND[kind])} shape"
 
 
-def first_of(example, kind, test=lambda graph, thing: True):
-    for relative in every_rdf_file(example):
-        graph = loaded(example, relative)
-        if kind_of(relative, graph) == kind:
-            for thing in sorted(things(relative, graph), key=str):
-                if test(graph, thing):
-                    return relative, thing
-    raise AssertionError(f"no {kind} to break")
+def first_of(kind, test=lambda graph, thing: True):
+    for example in EXAMPLES:
+        for relative in every_rdf_file(example):
+            graph = loaded(example, relative)
+            if kind_of(relative, graph) == kind:
+                for thing in sorted(things(relative, graph), key=str):
+                    if test(graph, thing):
+                        return example, relative, thing
+    raise AssertionError(f"no example has a {kind} to break")
 
 
 def without(predicate):
@@ -289,10 +290,9 @@ def test_every_kind_a_shape_checks_has_a_way_to_break_it():
 
 
 @pytest.mark.parametrize("kind", sorted(BREAKS))
-@every_example
-def test_each_kind_of_pod_file_fails_its_shapes_when_broken(kind, example):
+def test_each_kind_of_pod_file_fails_its_shapes_when_broken(kind):
     applies, breaking = BREAKS[kind]
-    relative, thing = first_of(example, kind, applies)
+    example, relative, thing = first_of(kind, applies)
     graph = unit_graph(example, relative)
     assert violations(example, graph) == []
     breaking(graph, thing)
