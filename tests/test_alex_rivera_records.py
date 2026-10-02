@@ -98,6 +98,11 @@ def test_recomputed_py_less_its_first_line_is_the_source_file_at_the_commit_it_n
     assert hashlib.sha256(lines[1]).hexdigest() == RECOMPUTED_SHA256
 
 
+def test_the_example_holds_data_only():
+    assert sorted(p.relative_to(EXAMPLE.parent).as_posix() for pattern in ("*.py", "*.rq")
+                  for p in EXAMPLE.parent.rglob(pattern)) == []
+
+
 def test_every_pod_file_is_listed_once_under_one_event_or_under_derived_and_every_listed_path_exists():
     listed = [p for e in manifest()["events"] for p in e["adds"]] + manifest()["derived"]
     assert [p for p, n in Counter(listed).items() if n > 1] == []
