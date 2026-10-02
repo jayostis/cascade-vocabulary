@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from test_alex_rivera_handles import EXAMPLE
+from alex_rivera import EXAMPLE
 
 DOWNLOADS = EXAMPLE / "downloads"
 EXPORTS = ["x-e2", "x-e4", "x-e6", "x-e10", "x-e12", "x-e15"]

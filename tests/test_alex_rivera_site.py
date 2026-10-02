@@ -1,8 +1,8 @@
 import pytest
 
 from cascade_pod import site
-from test_alex_rivera_handles import ALEX
-from test_alex_rivera_handles import name as name_of
+from alex_rivera import ALEX
+from alex_rivera import name as name_of
 from test_site import blocks, page_of, pages_of, site_files
 
 PENICILLIN = "urn:cascade:entry:a6ab153490000f8a538712abb75758f2280c92237cd33dc6eee4b8f00e8c2210"

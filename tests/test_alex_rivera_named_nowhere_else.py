@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ElementTree
 import pytest
 
 from examples import ROOT
-from test_alex_rivera_handles import ALEX, EXAMPLE
+from alex_rivera import ALEX, EXAMPLE
 
 
 def alex():
@@ -30,6 +30,6 @@ def test_nothing_in_cascade_pod_names_alex(module):
 
 
 @pytest.mark.parametrize("module", sorted(path.name for path in (ROOT / "tests").glob("*.py")
-                                          if not path.name.startswith("test_alex_rivera_")))
-def test_nothing_in_the_tests_outside_test_alex_rivera_files_names_alex(module):
+                                          if not path.name.startswith(("alex_rivera", "test_alex_rivera_"))))
+def test_nothing_in_the_tests_but_alex_riveras_own_files_names_alex(module):
     assert mentions((ROOT / "tests" / module).read_text(encoding="utf-8"), alex()) == []

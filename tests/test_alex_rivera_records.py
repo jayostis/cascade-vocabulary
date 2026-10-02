@@ -5,7 +5,7 @@ from rdflib import URIRef
 
 import recomputed
 from cascade_pod import names
-from test_alex_rivera_handles import ALEX, EXAMPLE, handles, sources
+from alex_rivera import ALEX, EXAMPLE, handles, sources
 from test_example_pod import conversions, pod_files, revisions, versions
 
 POD = EXAMPLE / "pod"

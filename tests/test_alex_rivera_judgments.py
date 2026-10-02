@@ -6,7 +6,7 @@ from rdflib import Graph, URIRef
 
 import recomputed
 from examples import ROOT, pod_file
-from test_alex_rivera_handles import ALEX, EVERY_JUDGMENT, EXAMPLE, MATCHER, handles
+from alex_rivera import ALEX, EVERY_JUDGMENT, EXAMPLE, MATCHER, handles
 
 POD = EXAMPLE / "pod"
 

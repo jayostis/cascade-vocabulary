@@ -12,7 +12,7 @@ from cascade_pod import derive, derived_files, vocabulary
 from cascade_pod.derived_files import VIEW_FILES
 from cascade_pod.pod import NOT_RDF
 from examples import pod_file
-from test_alex_rivera_handles import ALEX, EXAMPLE, handle, handles, handles_by_name, name, pod
+from alex_rivera import ALEX, EXAMPLE, handle, handles, handles_by_name, name, pod
 
 EXPECTED = EXAMPLE / "expected"
 POD = ALEX.pod
