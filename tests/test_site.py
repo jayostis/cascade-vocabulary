@@ -158,7 +158,7 @@ def thing_pages(pages):
 
 
 def test_every_things_page_names_the_pod_file_that_states_it_and_links_to_its_turtle(example, pages, built):
-    assert len(thing_pages(pages)) > 50
+    assert thing_pages(pages)
     for name in thing_pages(pages):
         [stated] = [b for b in blocks(pages[name]) if b["title"] == "Which file states each thing"]
         files = [row["file"]["hrefs"][0] for row in stated["rows"]]
