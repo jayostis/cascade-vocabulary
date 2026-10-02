@@ -1,27 +1,27 @@
 # cascade-vocabulary — Agent Context
 
-The vocabulary jayostis/cascade-bridge-adapter-fhir-r4 is read against, as a package a
-program loads. Holds exactly the terms an adapter pinned to it, or an example pod,
-writes, and nothing more.
+How a Cascade pod is described and queried; [`README.md`](README.md) names the four parts.
 
 ## The rules
 
-- **A term arrives because an adapter, or an example pod, writes it.** No
-  term for later, none for completeness. Removing a term an adapter still lists is a breaking change for it.
-- **A copied term keeps its IRI** and names the file and commit it came from with
-  `dct:source`. It carries its type, label, domain, range and superclasses, and nothing
-  else: the rest is at its source. Its shape is the source's, trimmed to the terms here,
-  and names its source the same way.
-- **A new term goes in a namespace first declared here** (`records`, `judgments`), never
-  in a copied one. Where PROV-O or PAV has a term, that term is used instead.
-- **Content is on a version, not on its record.** A class's shape targets the class and
-  the subjects of the properties only that class's content carries; nothing about a
-  version's content is required, because a source may omit any of it.
-- **The crate lists every file.** A file an adapter lists is named by its path from this
-  repository's root, as `ontologies/<name>/<version>/<name>.ttl` and `<name>.shapes.ttl`.
+- **A term arrives because an adapter, or an example pod, writes it**, and none for later.
+  An adapter names a file by its path here: removing a term or moving a file it lists breaks it.
+- **A copied term keeps its IRI** and carries its type, label, domain, range and superclasses,
+  and nothing else. Its shape is the source's, trimmed to the terms here.
+- **A new term goes in a namespace first declared here** (`records`, `judgments`). Where PROV-O
+  or PAV has a term, that term is used instead.
+- **Content is on a version, not on its record.** A class's shape targets the class and the
+  subjects of the properties only that class's content carries; nothing about a version's
+  content is required, because a source may omit any of it.
+- **Each question is asked once.** Before adding one, look under its kind for the question that
+  already returns those rows.
+- **What two tools share is written once, in its own `cascade_pod` module.**
+- **`expected/` and the planted cases are written from the scenario**, never from what the tools
+  produce. Every file under `pod/` is a tool's output: rerun the tool, never edit the file.
+- **A test true of any example runs over every folder under `example-pods/`.**
 
 ## Conventions
 
-- Conventional commits: `feat(vocab): ...`, `fix(shapes): ...`; a change to a term or a
-  shape says why in its message, never in the file.
+- Conventional commits: `feat(vocab): ...`, `fix(shapes): ...`; a change to a term, a shape or a
+  query says why in its message, never in the file.
 - No comment that restates a name, a constraint or another file.
