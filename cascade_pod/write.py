@@ -1,11 +1,9 @@
 """Files an example's story into its pod/."""
 
-import hashlib
 import json
 import re
 import shutil
 import sys
-from collections import defaultdict
 
 from rdflib import BNode, Literal, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
@@ -16,7 +14,6 @@ from .pod import RECORD_FOLDERS, fanned, save, stem
 BRIDGE, PAV, PROV, RDFS, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rdfs", "rec"))
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
 OWNED_POD_FOLDERS = ["subject", "records", "provenance", "attachments"]
-FORMATS = {".csv": "text/csv", ".json": "application/json", ".ttl": "text/turtle", ".xml": "application/xml"}
 
 
 def closure(graph, subject):
@@ -36,9 +33,6 @@ class Filing:
         self.files = {}
         self.records = {}
         self.stored = set()
-        self.revisions = []
-        self.first_records = {}
-        self.activities = {}
 
     def add(self, event, path, content):
         if path in self.files and self.files[path][1] != content:
@@ -65,11 +59,7 @@ class Filing:
         name = names.content(triples)
         named = {(URIRef(name), p, o) for _, p, o in triples}
         source_version = next((str(o) for p, o in content if p == PAV.version), None)
-        document = next((str(o) for p, o in content if p == PROV.wasDerivedFrom), None)
-        selector = next((str(o) for p, o in content if p == BRIDGE.selector), None)
         history.append({"name": name, "version": version, "source_version": source_version})
-        self.revisions.append({"record": record, "name": name, "version": version,
-                               "document": document, "selector": selector})
         self.add_turtle(event, fanned(f"records/{folder}", name), named)
 
 
@@ -84,7 +74,6 @@ def file_entry(filing, event):
     if len(activities) != 1:
         raise Failure(f"{event['entry']} holds {len(activities)} activities, not one")
     activity = activities[0]
-    filing.activities[event["entry"]] = str(activity)
     filing.add_turtle(event["event"], fanned("provenance/activities", str(activity)), closure(graph, activity))
     drafts = {}
     for draft in set(graph.subjects(RDF.type, None)):
@@ -99,7 +88,6 @@ def file_entry(filing, event):
         content = {(placeholder, p, drafts.get(o, o)) for p, o in graph.predicate_objects(draft_version)}
         version = URIRef(names.content(content))
         filing.records.setdefault(str(record), {"folder": folder, "revisions": []})
-        filing.first_records.setdefault(event["entry"], str(record))
         filing.add_turtle(event["event"], fanned(f"records/{folder}", str(record)), {(record, RDF.type, kind)})
         filing.add_turtle(event["event"], fanned(f"records/{folder}", str(version)),
                           {(version, p, o) for _, p, o in content})
@@ -175,7 +163,6 @@ def file_conversion(filing, event, graph, document, import_name, source):
         if kind not in RECORD_FOLDERS:
             raise Failure(f"{source}: {record} is of no type the pod files: {kind}")
         folder = RECORD_FOLDERS[kind]
-        filing.first_records.setdefault(source, str(record))
         history = filing.records.get(str(record), {"revisions": []})["revisions"]
         source_version = graph.value(arrival, PAV.version)
         if source_version is not None and any(r["source_version"] == str(source_version) for r in history):
@@ -196,10 +183,9 @@ def file_conversion(filing, event, graph, document, import_name, source):
     return wrote
 
 
-# The events manifest, the handle table and the crate
+# The events manifest
 
 EVENT_KEYS = ["event", "at", "subject", "export", "import", "entry", "adds"]
-COMPUTED_ROW = re.compile(r"^D-| [vr]\d+$")
 
 
 def owned(path):
@@ -220,83 +206,9 @@ def events_manifest(example, filing):
     return {"address": example.address, "events": events, "derived": sorted(example.derived)}
 
 
-def handle_table(handles, events, filing):
-    table = {handle: dict(row) for handle, row in handles.items() if not COMPUTED_ROW.search(handle)}
-    for handle, row in table.items():
-        if "first" in row or "inputs" in row:
-            row.pop("name", None)
-        if row.get("inputs", [""])[0].startswith("ni:"):
-            row.pop("inputs", None)
-    named = {"S": next(e["subject"] for e in events if "subject" in e)}
-    named.update({f"I-{e['event']}": e["import"] for e in events if "import" in e})
-    named.update({f"A{n}": activity for n, activity in enumerate(filing.activities.values(), 1)})
-    for handle, row in table.items():
-        if "first" in row:
-            if row["first"] not in filing.first_records:
-                raise Failure(f"{handle}'s first arrival, {row['first']}, wrote no record")
-            named[handle] = filing.first_records[row["first"]]
-        elif "inputs" in row:
-            named[handle] = names.record(row["inputs"])
-    for handle, name in named.items():
-        table.setdefault(handle, {})["name"] = name
-    handle_of = {table[handle]["name"]: handle for handle in table if "first" in table[handle]}
-    unnamed = set(filing.records) - set(handle_of)
-    if unnamed:
-        raise Failure(f"records with no handle: {sorted(unnamed)}")
-    versions, counts = defaultdict(list), defaultdict(int)
-    for revision in filing.revisions:
-        handle = handle_of[revision["record"]]
-        counts[handle] += 1
-        if revision["version"] not in versions[handle]:
-            versions[handle].append(revision["version"])
-            table[f"{handle} v{len(versions[handle])}"] = {"name": revision["version"]}
-        table[f"{handle} r{counts[handle]}"] = {"name": revision["name"]}
-        if revision["document"]:
-            table[f"D-{handle} r{counts[handle]}"] = {"name": revision["document"]}
-            if counts[handle] == 1 and "inputs" not in table[handle]:
-                table[handle]["inputs"] = [revision["document"], revision["selector"]]
-    return {handle: {key: table[handle][key] for key in sorted(table[handle])} for handle in sorted(table)}
-
-
-def encoding_format(relative, path):
-    if relative == "pod/.well-known/solid":
-        return "application/ld+json"
-    if relative == "pod/settings/preferences":
-        return "text/turtle"
-    if relative.startswith("pod/attachments/sha-256/") or (relative.startswith("downloads/") and path.suffix == ".json"):
-        return "application/fhir+json"
-    return FORMATS.get(path.suffix, "application/octet-stream")
-
-
-def _is_file(entity):
-    kinds = entity.get("@type")
-    return "File" in (kinds if isinstance(kinds, list) else [kinds])
-
-
-def crate_with_files(crate, example):
-    found = {entity["@id"]: entity for entity in crate["@graph"] if _is_file(entity)}
-    descriptor = next(e for e in crate["@graph"] if e["@id"] == "ro-crate-metadata.json")
-    root = next(e for e in crate["@graph"] if e["@id"] == "./")
-    others = [e for e in crate["@graph"] if not _is_file(e) and e["@id"] not in ("ro-crate-metadata.json", "./")]
-    files = []
-    for path in sorted(example.rglob("*"), key=lambda p: p.relative_to(example).as_posix()):
-        relative = path.relative_to(example).as_posix()
-        if not path.is_file() or relative == "ro-crate-metadata.json" or "__pycache__" in path.parts:
-            continue
-        octets = path.read_bytes()
-        entity = {"@id": relative, "@type": "File", "encodingFormat": encoding_format(relative, path),
-                  "contentSize": str(len(octets)), "sha256": hashlib.sha256(octets).hexdigest()}
-        kept = found.get(relative, {})
-        entity.update({key: kept[key] for key in kept if key not in entity or key == "@type"})
-        files.append(entity)
-    root = {**root, "hasPart": [{"@id": entity["@id"]} for entity in files]}
-    return {**crate, "@graph": [descriptor, root, *files, *others]}
-
-
 # One run
 
 def run(example):
-    handles = json.loads((example.folder / "handles.json").read_text(encoding="utf-8"))
     filing, facts_files, missing = Filing(example), {}, []
     for event in example.events:
         if "subject" in event:
@@ -320,7 +232,4 @@ def run(example):
         shutil.rmtree(example.pod / folder_name, ignore_errors=True)
     save({path: content for path, (_, content) in filing.files.items()}, example.pod)
     write_json(example.folder / "events.json", events_manifest(example, filing))
-    write_json(example.folder / "handles.json", handle_table(handles, example.events, filing))
-    crate = json.loads((example.folder / "ro-crate-metadata.json").read_text(encoding="utf-8"))
-    write_json(example.folder / "ro-crate-metadata.json", crate_with_files(crate, example.folder))
     return 0

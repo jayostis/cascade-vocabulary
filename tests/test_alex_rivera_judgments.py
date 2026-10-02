@@ -9,6 +9,7 @@ from rdflib import Graph, URIRef
 ROOT = Path(__file__).absolute().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 import recomputed  # noqa: E402
+from alex_rivera_builds import EVERY_JUDGMENT, MATCHER, handles  # noqa: E402
 from cascade_pod import store  # noqa: E402
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
@@ -21,7 +22,6 @@ PROV = "http://www.w3.org/ns/prov#"
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 DESCRIPTION = URIRef("http://purl.org/dc/terms/description")
-MATCHER = "urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76"
 ALEX = "https://pod.alex-rivera.example/profile/card.ttl#me"
 
 RUNS = [
@@ -35,50 +35,6 @@ RUNS = [
     ("E15", "E15", "2027-08-20T08:00:04Z", None),
 ]
 
-# J: event, time, author, verdict, members, justification, used, supersedes or retracts, a reason given
-EVERY_JUDGMENT = {
-    "J1": ("E2", "2026-09-01T10:00:30Z", "Alex", "About", ["H1-PAT"], None, [], [], False),
-    "J2": ("E4", "2026-10-14T15:42:30Z", "Alex", "About", ["H2O-PAT"], None, [], [], False),
-    "J3": ("E5", "2026-10-14T15:43:00Z", "matcher", "Same", ["H1-ALG-SULFA", "H2O-ALG-SULFA"], "SameCode",
-           ["RS-RULES-2026.1", "H1-ALG-SULFA v1", "H2O-ALG-SULFA v1"], [], False),
-    "J4": ("E5", "2026-10-14T15:43:00Z", "matcher", "Same", ["H1-ALG-PCN", "H2O-ALG-PCN"], "SameMappedCode",
-           ["RS-RULES-2026.1", "RS-XWALK-2026-09", "H1-ALG-PCN v1", "H2O-ALG-PCN v1"], [], False),
-    "J5": ("E5", "2026-10-14T15:43:00Z", "matcher", "Same", ["H1-CON-HTN", "H2O-CON-HTN"], "SameCode",
-           ["RS-RULES-2026.1", "H1-CON-HTN v1", "H2O-CON-HTN v1"], [], False),
-    "J6": ("E5", "2026-10-14T15:43:00Z", "matcher", "Same", ["H1-IMM-FLU25", "H2O-IMM-FLU25"], "SameCodeAndDate",
-           ["RS-RULES-2026.1", "H1-IMM-FLU25 v1", "H2O-IMM-FLU25 v1"], [], False),
-    "J7": ("E5", "2026-10-14T15:43:00Z", "matcher", "Same", ["H1-PROC-COLO", "H2O-PROC-COLO"], "SameCode",
-           ["RS-RULES-2026.1", "H1-PROC-COLO v1", "H2O-PROC-COLO v1"], [], False),
-    "J8": ("E8", "2026-12-02T19:00:00Z", "Alex", "Different", ["H1-PROC-COLO", "H2O-PROC-COLO"], None,
-           ["H1-PROC-COLO v1", "H2O-PROC-COLO v1"], [], True),
-    "J9": ("E8", "2026-12-02T19:00:00Z", "Alex", "Same", ["H1-ALG-SULFA", "H2O-ALG-SULFA"], None,
-           ["H1-ALG-SULFA v2", "H2O-ALG-SULFA v1"], [("supersedes", "J3")], False),
-    "J10": ("E8", "2026-12-02T19:00:00Z", "Alex", "Same", ["H1-CON-BRONCH", "H2O-CON-ASTHMA"], None,
-            ["H1-CON-BRONCH v2", "H2O-CON-ASTHMA v1"], [], True),
-    "J12": ("E12", "2027-03-18T12:00:30Z", "Alex", "About", ["H2F-PAT"], None, [], [], False),
-    "J13": ("E13", "2027-03-18T12:01:00Z", "matcher", "Same", ["H1-ALG-SULFA", "H2O-ALG-SULFA", "H2F-ALG-SULFA"],
-            "SameCode", ["RS-RULES-2026.1", "H1-ALG-SULFA v2", "H2O-ALG-SULFA v1", "H2F-ALG-SULFA v1"], [], False),
-    "J14": ("E13", "2027-03-18T12:01:00Z", "matcher", "Same", ["H2O-ALG-PCN", "H2F-ALG-PCN"], "SameCode",
-            ["RS-RULES-2026.1", "H2O-ALG-PCN v1", "H2F-ALG-PCN v1"], [], False),
-    "J15": ("E13", "2027-03-18T12:01:00Z", "matcher", "Same", ["H1-CON-HTN", "H2O-CON-HTN", "H2F-CON-HTN"],
-            "SameCode", ["RS-RULES-2026.1", "H1-CON-HTN v1", "H2O-CON-HTN v1", "H2F-CON-HTN v1"], [], False),
-    "J16": ("E13", "2027-03-18T12:01:00Z", "matcher", "Same", ["H2O-CON-ASTHMA", "H2F-CON-ASTHMA"], "SameCode",
-            ["RS-RULES-2026.1", "H2O-CON-ASTHMA v1", "H2F-CON-ASTHMA v1"], [], False),
-    "J17": ("E13", "2027-03-18T12:01:00Z", "matcher", "Same", ["H1-IMM-FLU25", "H2O-IMM-FLU25", "H2F-IMM-FLU25"],
-            "SameMappedCodeAndDate",
-            ["RS-RULES-2026.1", "RS-CVXG-2026-08", "H1-IMM-FLU25 v1", "H2O-IMM-FLU25 v1", "H2F-IMM-FLU25 v1"],
-            [], False),
-    "J18": ("E13", "2027-03-18T12:01:00Z", "matcher", "Same", ["H1-PROC-COLO", "H2O-PROC-COLO", "H2F-PROC-COLO"],
-            "SameCode", ["RS-RULES-2026.1", "H1-PROC-COLO v1", "H2O-PROC-COLO v1", "H2F-PROC-COLO v1"], [], False),
-    "J19": ("E14", "2027-04-02T20:00:00Z", "Alex", "Different", ["H1-PROC-COLO", "H2F-PROC-COLO"], None,
-            ["H1-PROC-COLO v1", "H2F-PROC-COLO v1"], [], False),
-    "J20": ("E14", "2027-04-02T20:00:00Z", "Alex", None, [], None, [], [("retracts", "J10")], True),
-    "J21": ("E14", "2027-04-02T20:00:00Z", "Alex", "Same", ["H1-ALG-PCN", "H2O-ALG-PCN", "H2F-ALG-PCN"], None,
-            ["H1-ALG-PCN v1", "H2O-ALG-PCN v1", "H2F-ALG-PCN v1"], [], False),
-    "J22": ("E10", "2027-02-10T17:21:30Z", "Alex", "About", ["H1P-PAT"], None, [], [], False),
-    "J23": ("E14", "2027-04-02T20:00:00Z", "Alex", None, [], None, [], [("retracts", "J22")], True),
-    "J24": ("E14", "2027-04-02T20:00:00Z", "Alex", "Erroneous", ["H1-PROC-ECHO"], None, ["H1-PROC-ECHO v1"], [], True),
-}
 EVERY_REFERENCE = {
     "RS-RULES": "E5", "RS-RULES-2026.1": "E5", "RS-XWALK": "E5", "RS-XWALK-2026-09": "E5",
     "RS-XWALK-2027-01": "E9", "RS-CVXG": "E13", "RS-CVXG-2026-08": "E13",
@@ -87,10 +43,6 @@ EVERY_REFERENCE = {
 
 def manifest():
     return json.loads((EXAMPLE / "events.json").read_text(encoding="utf-8"))
-
-
-def handles():
-    return json.loads((EXAMPLE / "handles.json").read_text(encoding="utf-8"))
 
 
 def added_by():
@@ -137,7 +89,7 @@ def current_version(graph, record):
 
 
 def test_every_judgment_and_reference_file_is_named_for_its_one_thing_and_listed_under_the_scenarios_event():
-    names = {h: row["name"] for h, row in handles().items()}
+    names = {h: str(term) for h, term in handles().items()}
     expected = {path_of("judgments", names[j]): row[0] for j, row in EVERY_JUDGMENT.items()}
     expected |= {path_of("references", names[r]): event for r, event in EVERY_REFERENCE.items()}
     assert {p: e for p, e in added_by().items() if p.startswith(("judgments/", "references/"))} == expected
@@ -161,7 +113,7 @@ def test_every_judgment_and_reference_conforms_to_the_judgments_and_records_shap
 
 
 def test_the_judgments_are_the_scenarios_author_verdict_members_justification_used_and_time_by_handle():
-    names = {h: row["name"] for h, row in handles().items()}
+    names = {h: str(term) for h, term in handles().items()}
     found = judgments()
     assert sorted(found) == sorted(names[j] for j in EVERY_JUDGMENT)
     for j, (event, at, author, verdict, members, justification, used, replaces, reason) in EVERY_JUDGMENT.items():
@@ -190,10 +142,9 @@ def test_the_judgments_are_the_scenarios_author_verdict_members_justification_us
 
 
 def test_each_matcher_judgment_names_the_rule_set_the_table_its_rule_applied_and_each_members_current_version():
-    references = json.loads((EXAMPLE / "references" / "references.json").read_text(encoding="utf-8"))
-    version = {v["handle"]: v["name"] for s in references["series"] for v in s["versions"]}
-    tables = {"SameCode": [], "SameCodeAndDate": [], "SameMappedCode": [version["RS-XWALK-2026-09"]],
-              "SameMappedCodeAndDate": [version["RS-CVXG-2026-08"]]}
+    names = {h: str(term) for h, term in handles().items()}
+    tables = {"SameCode": [], "SameCodeAndDate": [], "SameMappedCode": [names["RS-XWALK-2026-09"]],
+              "SameMappedCodeAndDate": [names["RS-CVXG-2026-08"]]}
     for name, (relative, graph) in judgments().items():
         judgment = URIRef(name)
         if str(graph.value(judgment, URIRef(PROV + "wasAttributedTo"))) != MATCHER:
@@ -202,7 +153,7 @@ def test_each_matcher_judgment_names_the_rule_set_the_table_its_rule_applied_and
         justification = str(graph.value(judgment, URIRef(JDG + "justification")))[len(JDG):]
         members = sorted(str(m) for m in graph.objects(judgment, URIRef(PROV + "hadMember")))
         used = sorted(str(u) for u in graph.objects(judgment, URIRef(PROV + "used")))
-        assert used == sorted([version["RS-RULES-2026.1"], *tables[justification],
+        assert used == sorted([names["RS-RULES-2026.1"], *tables[justification],
                                *(current_version(records, m) for m in members)]), relative
         assert name == recomputed.record_name([MATCHER, JDG + justification, *members, *used]), relative
 

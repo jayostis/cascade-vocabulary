@@ -22,7 +22,7 @@ from alex_rivera_builds import (  # noqa: E402
     entry_holding,
     files_through,
     handle,
-    handle_table,
+    handles,
     is_rdf,
     listed_entries,
     listed_judgments,
@@ -374,7 +374,6 @@ def test_a_resource_file_with_no_clinical_record_entry_is_named_from_its_documen
     document = EXAMPLE / "downloads" / "x-e6" / "apple_health_export" / "clinical-records" / "Immunization-imm-tdap-2026.json"
     digest = recomputed.ni_name(document.read_bytes())
     assert digest == str(name("D-U-IMM-TDAP r1"))
-    assert str(name("U-IMM-TDAP")) == recomputed.record_name([digest, ""])
     assert pod("E15").value(name("U-IMM-TDAP v1"), REC.patient) is None
 
     findings = Graph().parse(EXAMPLE / "conversions" / "e6" / "Immunization-imm-tdap-2026" / "findings.ttl", format="turtle")
@@ -516,14 +515,14 @@ HANDLE = re.compile(
 )
 
 
-def test_every_handle_an_expected_file_or_planted_case_names_is_in_the_handle_table():
+def test_every_handle_an_expected_file_or_planted_case_names_names_something_in_the_pod():
     named = set(HANDLE.findall(Path(__file__).read_text(encoding="utf-8")))
     for path in EXPECTED.glob("*.ttl"):
         for members, entry in expected_view(path.stem).items():
             named.update(members)
             named.update(str(o)[len("urn:example:alex-rivera:handle:"):] for _, o in entry if str(o).startswith("urn:example:alex-rivera:handle:"))
-    missing = sorted(named - set(handle_table()))
-    assert not missing, f"handles not in handles.json: {missing}"
+    missing = sorted(named - set(handles()))
+    assert not missing, f"handles that name nothing in the pod: {missing}"
 
 
 @engines

@@ -18,6 +18,7 @@ from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
 from cascade_pod.pod import Example, fanned, save, stem
 
 sys.path.insert(0, str(Path(__file__).absolute().parent))
+from alex_rivera_builds import name as name_of  # noqa: E402
 from test_alex_rivera_graphdb import GraphDB  # noqa: E402
 from test_queries import queries_held  # noqa: E402
 
@@ -218,7 +219,7 @@ def test_an_entrys_page_reaches_each_members_source_file_and_its_turtle_by_links
             elif not stored_documents(member, graph) <= set(pages[page_of(member)].hrefs):
                 unreached.append((str(entry), str(member), "document"))
     assert entries and unreached == []
-    assert stored_documents(URIRef("urn:uuid:68e6a49e-2908-89ab-ba61-19385e7a8268"), graph)
+    assert stored_documents(name_of("H2F-ALG-PCN"), graph)
 
 
 def test_a_second_build_gives_identical_bytes(built, tmp_path):
@@ -353,7 +354,7 @@ def test_an_entrys_page_puts_each_chosen_value_beside_the_member_it_came_from(pa
     [shows] = [b for b in blocks(pages[page_of(PENICILLIN)]) if b["title"] == "What it shows"]
     allergen = "<https://ns.cascadeprotocol.org/health/v1#allergen>"
     assert [(row["value"]["value"], row["from"]["value"]) for row in shows["rows"]
-            if row["field"]["value"] == allergen] == [('"Penicillin"', "<urn:uuid:68e6a49e-2908-89ab-ba61-19385e7a8268>")]
+            if row["field"]["value"] == allergen] == [('"Penicillin"', name_of("H2F-ALG-PCN").n3())]
 
 
 def test_the_folder_table_names_a_records_folders_untyped_versions_and_leaves_out_the_labels_file(pages):
@@ -376,7 +377,7 @@ def test_no_things_page_shows_what_everything_is_called_and_the_pipeline_page_do
 
 
 def test_a_block_about_one_thing_says_its_command_prints_every_things_rows(pages):
-    record = "urn:uuid:68e6a49e-2908-89ab-ba61-19385e7a8268"
+    record = str(name_of("H2F-ALG-PCN"))
     [block] = [b for b in blocks(pages[page_of(record)]) if b["title"] == "Which judgments name it"]
     assert (f"It prints the rows for every record; this block keeps those whose ?record is {record}."
             in block["paras"])
@@ -410,7 +411,7 @@ def test_a_block_asked_under_the_other_lens_links_to_no_page_of_this_site(pages)
 def test_a_turtle_link_opens_a_file_the_thing_arrived_in_and_a_thing_only_named_has_none(pages):
     [folders] = [b for b in blocks(pages["index.html"]) if b["title"] == "What each folder holds"]
     assert not [href for row in folders["rows"] if "type" in row for href in row["type"]["hrefs"]]
-    profile = "urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada"
+    profile = str(name_of("H1-PAT"))
     cells = [cell for page in pages.values() for block in blocks(page) for row in block["rows"] for cell in row.values()
              if cell["value"] == f"<{profile}>"]
     assert cells and not [href for cell in cells for href in cell["hrefs"] if href.startswith(site.COPY)]
