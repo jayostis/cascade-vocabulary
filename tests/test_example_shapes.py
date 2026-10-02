@@ -11,11 +11,10 @@ from rdflib.namespace import OWL, RDF, SH
 
 from cascade_pod import store
 from cascade_pod.derived_files import VIEW_FILES
-from cascade_pod.pod import NOT_RDF, Example
+from cascade_pod.pod import NOT_RDF
+from examples import ROOT, every_example, every_example_and
 
-ROOT = Path(__file__).absolute().parent.parent
 ONTOLOGIES = ROOT / "ontologies"
-ALEX = Example(ROOT / "example-pods" / "alex-rivera")
 
 HEALTH = "https://ns.cascadeprotocol.org/health/v1#"
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
@@ -51,8 +50,8 @@ NOT_CHECKED_FOR_CONFORMANCE = (
 )
 
 
-def every_rdf_file():
-    return sorted(p for p in ALEX.files() + ALEX.derived if not p.startswith(NOT_RDF))
+def every_rdf_file(example):
+    return sorted(p for p in example.files() + example.derived if not p.startswith(NOT_RDF))
 
 
 def shapes_file(vocabulary):
@@ -77,15 +76,15 @@ def ontology():
 
 
 @lru_cache(maxsize=None)
-def loaded(relative):
-    return Graph().parse(ALEX.pod / relative, format="turtle", publicID=ALEX.address + relative)
+def loaded(example, relative):
+    return Graph().parse(example.pod / relative, format="turtle", publicID=example.address + relative)
 
 
 @lru_cache(maxsize=None)
-def types():
+def types(example):
     found = defaultdict(set)
-    for relative in every_rdf_file():
-        for node, kind in loaded(relative).subject_objects(RDF.type):
+    for relative in every_rdf_file(example):
+        for node, kind in loaded(example, relative).subject_objects(RDF.type):
             found[node].add(kind)
     return found
 
@@ -127,52 +126,52 @@ def kind_of(relative, graph):
     return None
 
 
-def series_of(relative):
-    graph = loaded(relative)
+def series_of(example, relative):
+    graph = loaded(example, relative)
     return graph.value(named_for(relative), SPECIALIZATION_OF) or named_for(relative)
 
 
 @lru_cache(maxsize=None)
-def defining_file():
+def defining_file(example):
     found = {}
-    for relative in every_rdf_file():
-        for thing in things(relative, loaded(relative)):
+    for relative in every_rdf_file(example):
+        for thing in things(relative, loaded(example, relative)):
             found.setdefault(thing, relative)
     return found
 
 
-def unit(relative):
+def unit(example, relative):
     """A file with the files that define what it describes but is not named for, and a reference series with its
     versions, which its shape reaches through an inverse path."""
     if relative.startswith("references/"):
-        series = series_of(relative)
-        return [r for r in every_rdf_file() if r.startswith("references/") and series_of(r) == series]
-    others = {defining_file().get(s) for s in loaded(relative).subjects()} - {None, relative}
+        series = series_of(example, relative)
+        return [r for r in every_rdf_file(example) if r.startswith("references/") and series_of(example, r) == series]
+    others = {defining_file(example).get(s) for s in loaded(example, relative).subjects()} - {None, relative}
     return [relative, *sorted(others)]
 
 
-def with_types(graph):
+def with_types(example, graph):
     data = Graph()
     data += graph
     for node in set(graph.subjects()) | set(graph.objects()):
-        for kind in types().get(node, ()):
+        for kind in types(example).get(node, ()):
             data.add((node, RDF.type, kind))
     return data
 
 
-def violations(graph):
+def violations(example, graph):
     """Every result about a node the graph itself describes, and not about a node it only names."""
-    conforms, report, _ = validate(with_types(graph), shacl_graph=shapes(), ont_graph=ontology(), advanced=True)
+    conforms, report, _ = validate(with_types(example, graph), shacl_graph=shapes(), ont_graph=ontology(), advanced=True)
     store.keep_literals_as_written()
     own = set(graph.subjects())
     return sorted((str(report.value(r, SH.focusNode)), str(report.value(r, SH.resultPath)), str(report.value(r, SH.resultMessage)))
                   for r in report.subjects(RDF.type, SH.ValidationResult) if report.value(r, SH.focusNode) in own)
 
 
-def unit_graph(relative):
+def unit_graph(example, relative):
     graph = Graph()
-    for part in unit(relative):
-        graph += loaded(part)
+    for part in unit(example, relative):
+        graph += loaded(example, part)
     return graph
 
 
@@ -213,38 +212,39 @@ def defined_in(vocabularies):
     return set(graph.subjects(RDF.type, SH.NodeShape)) | set(graph.objects(None, SH.node))
 
 
-def test_every_term_the_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it():
+@every_example
+def test_every_term_the_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it(example):
     namespaces = tuple(str(n) for n in ontology().subjects(RDF.type, OWL.Ontology))
     declared = set(ontology().subjects(RDF.type, None))
-    written = {(str(term), relative) for relative in every_rdf_file() for triple in loaded(relative)
+    written = {(str(term), relative) for relative in every_rdf_file(example) for triple in loaded(example, relative)
                for term in triple if isinstance(term, URIRef) and str(term).startswith(namespaces)}
     assert sorted((term, relative) for term, relative in written if URIRef(term) not in declared) == []
 
 
-@pytest.mark.parametrize("relative", [r for r in every_rdf_file() if r not in NOT_CHECKED_FOR_CONFORMANCE])
-def test_every_pod_file_conforms_to_the_vocabularys_shapes(relative):
-    assert violations(unit_graph(relative)) == []
+@every_example_and("relative", lambda example: [r for r in every_rdf_file(example) if r not in NOT_CHECKED_FOR_CONFORMANCE])
+def test_every_pod_file_conforms_to_the_vocabularys_shapes(example, relative):
+    assert violations(example, unit_graph(example, relative)) == []
 
 
-@pytest.mark.parametrize("relative", every_rdf_file())
-def test_every_pod_file_is_a_focus_node_of_the_shapes_for_its_kind(relative):
-    graph = unit_graph(relative)
-    kind = kind_of(relative, loaded(relative))
+@every_example_and("relative", every_rdf_file)
+def test_every_pod_file_is_a_focus_node_of_the_shapes_for_its_kind(example, relative):
+    graph = unit_graph(example, relative)
+    kind = kind_of(relative, loaded(example, relative))
     if unshaped(relative):
         assert kind is None
         return
     assert kind is not None, f"{relative} is neither of a kind a shape checks nor named as one no shape targets"
-    focus = focus_nodes(with_types(graph))
-    mine = things(relative, loaded(relative))
+    focus = focus_nodes(with_types(example, graph))
+    mine = things(relative, loaded(example, relative))
     assert mine, f"{relative} describes nothing named for it"
     for thing in sorted(mine, key=str):
         shaping = sorted(str(s) for s in defined_in(SHAPES_OF_KIND[kind]) if thing in focus.get(s, ()))
         assert shaping, f"{thing} in {relative} is a focus node of no {'/'.join(SHAPES_OF_KIND[kind])} shape"
 
 
-def first_of(kind, test=lambda graph, thing: True):
-    for relative in every_rdf_file():
-        graph = loaded(relative)
+def first_of(example, kind, test=lambda graph, thing: True):
+    for relative in every_rdf_file(example):
+        graph = loaded(example, relative)
         if kind_of(relative, graph) == kind:
             for thing in sorted(things(relative, graph), key=str):
                 if test(graph, thing):
@@ -276,9 +276,9 @@ CATEGORY, ALLERGEN = URIRef(HEALTH + "allergyCategory"), URIRef(HEALTH + "allerg
 BREAKS = {
     "version": (lambda g, t: (t, CATEGORY, None) in g, replacing(CATEGORY, Literal("drug"))),
     "record": (lambda g, t: (t, URIRef(REC + "sourceUrl"), None) in g,
-               replacing(URIRef(REC + "sourceUrl"), Literal("https://fhir.meridian.example/"))),
+               replacing(URIRef(REC + "sourceUrl"), Literal("https://fhir.example/"))),
     "revision": (lambda g, t: True, without(URIRef(REC + "version"))),
-    "subject": (lambda g, t: True, adding(URIRef("http://xmlns.com/foaf/0.1/name"), Literal("Alex Rivera"))),
+    "subject": (lambda g, t: True, adding(URIRef("http://xmlns.com/foaf/0.1/name"), Literal("A name"))),
     "judgment": (lambda g, t: True, without(URIRef(PROV + "generatedAtTime"))),
     "reference-series": (lambda g, t: True, without(URIRef("http://www.w3.org/2000/01/rdf-schema#label"))),
     "reference-version": (lambda g, t: True, without(URIRef("http://purl.org/pav/version"))),
@@ -291,10 +291,11 @@ def test_every_kind_a_shape_checks_has_a_way_to_break_it():
 
 
 @pytest.mark.parametrize("kind", sorted(BREAKS))
-def test_each_kind_of_pod_file_fails_its_shapes_when_broken(kind):
+@every_example
+def test_each_kind_of_pod_file_fails_its_shapes_when_broken(kind, example):
     applies, breaking = BREAKS[kind]
-    relative, thing = first_of(kind, applies)
-    graph = unit_graph(relative)
-    assert violations(graph) == []
+    relative, thing = first_of(example, kind, applies)
+    graph = unit_graph(example, relative)
+    assert violations(example, graph) == []
     breaking(graph, thing)
-    assert violations(graph) != [], relative
+    assert violations(example, graph) != [], relative
