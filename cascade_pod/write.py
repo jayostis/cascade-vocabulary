@@ -94,7 +94,8 @@ class Filing:
         self.add_turtle(event, fanned(revision.folder, str(name)), {(name, p, o) for _, p, o in triples})
         self.last_revision[revision.record] = name
         self.last_version[revision.record] = revision.version
-        self.source_versions[revision.record].add(revision.source_version)
+        if revision.source_version is not None:
+            self.source_versions[revision.record].add(revision.source_version)
 
 
 # A subject and an entry
@@ -232,21 +233,15 @@ def accounted_for(graph, document):
 def file_revisions(filing, event, conversion):
     wrote = False
     for revision in conversion.revisions(event.get("import")):
-        if repeats_a_source_version(filing, revision) or repeats_the_version_the_record_is_at(filing, revision):
+        repeats_a_source_version = revision.source_version in filing.source_versions[revision.record]
+        repeats_the_version_the_record_is_at = filing.last_version.get(revision.record) == revision.version
+        if repeats_a_source_version or repeats_the_version_the_record_is_at:
             continue
         if event.get("import") is None:
             raise Failure(f"{event['event']} has no import, and {conversion.source} would write a revision")
         filing.revise(event["event"], revision)
         wrote = True
     return wrote
-
-
-def repeats_a_source_version(filing, revision):
-    return revision.source_version is not None and revision.source_version in filing.source_versions[revision.record]
-
-
-def repeats_the_version_the_record_is_at(filing, revision):
-    return filing.last_version.get(revision.record) == revision.version
 
 
 def is_kept(conversion, wrote):

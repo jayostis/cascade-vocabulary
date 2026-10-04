@@ -35,8 +35,9 @@ def conversion(text, *arrivals, label="Apple Health export", stray=""):
     for index, (allergen, source_version) in enumerate(arrivals):
         lines += [f"<{RECORD}> a health:AllergyRecord .",
                   f'<{version(allergen)}> prov:specializationOf <{RECORD}> ; health:allergen "{allergen}" .',
-                  f'_:arrival{index} bridge:arrivedAs <{version(allergen)}> ; pav:version "{source_version}" ; '
-                  f"prov:wasGeneratedBy _:import ."]
+                  f"_:arrival{index} bridge:arrivedAs <{version(allergen)}> ; prov:wasGeneratedBy _:import ."]
+        if source_version is not None:
+            lines.append(f'_:arrival{index} pav:version "{source_version}" .')
     return "\n".join(lines) + "\n"
 
 
@@ -143,6 +144,13 @@ def test_an_arrival_of_new_content_under_a_new_source_version_writes_a_revision_
     assert code == 0
     assert versions_revised(example) == [version("Peanuts"), version("Tree nuts")]
     assert any(path.startswith("attachments/") for path in added_at(example, "E3"))
+
+
+def test_arrivals_whose_source_names_no_version_are_told_apart_by_their_content_alone(tmp_path):
+    story = Story(tmp_path).export("E2", {"a": (PEANUTS, conversion(PEANUTS, ("Peanuts", None)), None)})
+    code, example = story.export("E3", {"a": (PEANUTS_AGAIN, conversion(PEANUTS_AGAIN, ("Tree nuts", None)), None)}).write()
+    assert code == 0
+    assert versions_revised(example) == [version("Peanuts"), version("Tree nuts")]
 
 
 def test_a_file_the_bridge_raised_findings_on_is_kept_though_it_writes_no_revision(tmp_path):
