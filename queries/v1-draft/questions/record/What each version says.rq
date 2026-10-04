@@ -1,5 +1,5 @@
 # A version is named by a hash of its content, so two arrivals saying the same thing share one version. Each row is one
-# statement of one version.
+# statement of one version, as its file states it: the name, status and date the derivations copy are left out.
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
@@ -8,7 +8,7 @@ SELECT DISTINCT ?record ?recordLabel ?version ?versionLabel ?field ?value ?value
 WHERE {
   ?revision rec:revisionOf ?record ; rec:version ?version .
   ?version ?field ?value .
-  FILTER (?field NOT IN (prov:specializationOf, rdfs:label))
+  FILTER (?field NOT IN (prov:specializationOf, rdfs:label, rec:name, rec:status, rec:date))
   OPTIONAL { ?record rdfs:label ?recordLabel }
   OPTIONAL { ?version rdfs:label ?versionLabel }
   OPTIONAL { ?value rdfs:label ?valueLabel }
