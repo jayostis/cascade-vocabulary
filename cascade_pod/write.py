@@ -139,7 +139,9 @@ class Conversion:
         self.repository = example.folder.parent.parent
         self.octets = path.read_bytes()
         self.document = URIRef(names.document(self.octets))
-        self.folder = example.folder / "conversions" / event["event"].lower() / path.stem
+        folder = example.folder / "conversions" / event["event"].lower() / path.stem
+        self.facts_file, self.graph_file, self.findings_file = (folder / "facts.ttl", folder / "graph.ttl",
+                                                                folder / "findings.ttl")
         self.source = f"{(example.folder / event['export']).parent.name}/{path.name}"
 
     @property
@@ -148,15 +150,16 @@ class Conversion:
 
     @property
     def command(self):
-        return apple_health.convert_command(self.repository, self.path, self.folder)
+        return apple_health.convert_command(self.repository, self.path,
+                                            self.facts_file, self.graph_file, self.findings_file)
 
     @cached_property
     def graph(self):
-        return store.parsed(self.folder / "graph.ttl")
+        return store.parsed(self.graph_file)
 
     @cached_property
     def has_findings(self):
-        return (self.folder / "findings.ttl").exists() and len(store.parsed(self.folder / "findings.ttl")) > 0
+        return self.findings_file.exists() and len(store.parsed(self.findings_file)) > 0
 
     def revisions(self, import_name):
         graph = self.graph
@@ -185,7 +188,7 @@ def file_export(filing, event, facts_files):
         conversion = Conversion(filing.example, event, path, entry)
         if brings_nothing_new(filing, conversion):
             continue
-        facts_files[conversion.folder / "facts.ttl"] = conversion.facts
+        facts_files[conversion.facts_file] = conversion.facts
         if not is_converted(conversion):
             to_convert.append(conversion.command)
             continue
@@ -204,12 +207,12 @@ def brings_nothing_new(filing, conversion):
 
 
 def is_converted(conversion):
-    return (conversion.folder / "graph.ttl").exists()
+    return conversion.graph_file.exists()
 
 
 def refuse_unaccounted_statements(conversion):
     if (conversion.document, RDF.type, PROV.Entity) not in conversion.graph:
-        raise Failure(f"{conversion.folder / 'graph.ttl'} does not describe the document {conversion.document}")
+        raise Failure(f"{conversion.graph_file} does not describe the document {conversion.document}")
     if set(conversion.graph) - accounted_for(conversion.graph, conversion.document):
         raise Failure(f"{conversion.source}'s graph holds triples of no record, version, arrival, document or import")
 
