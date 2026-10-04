@@ -9,7 +9,6 @@ from rdflib import Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
-from cascade_pod.derived_files import VIEW_FILES
 from cascade_pod.pod import NOT_RDF
 from examples import EXAMPLES, ROOT, every_example, every_example_and, pod_file
 
@@ -99,8 +98,12 @@ def named_for(relative):
     return URIRef("urn:uuid:" + stem)
 
 
+def is_view(graph):
+    return (None, RDF.type, URIRef(REC + "View")) in graph
+
+
 def things(relative, graph):
-    if relative in VIEW_FILES.values():
+    if is_view(graph):
         return set(graph.subjects(MERGED_FROM, None))
     thing = named_for(relative)
     return {thing} if (thing, None, None) in graph else set()
@@ -109,7 +112,7 @@ def things(relative, graph):
 def kind_of(relative, graph):
     if unshaped(relative):
         return None
-    if relative in VIEW_FILES.values():
+    if is_view(graph):
         return "view"
     [thing] = things(relative, graph) or [None]
     if relative.startswith("records/"):

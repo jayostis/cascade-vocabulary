@@ -14,10 +14,12 @@ from rdflib.compare import isomorphic
 
 import recomputed
 from cascade_pod import match, names, store, turtle, vocabulary
-from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
+from cascade_pod.derived_files import LABEL_FILE
+from cascade_pod.pod import TYPE_INDEX
 from examples import ROOT, every_example, every_example_and, pod_file, run_matcher
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
+CASCADE = "https://ns.cascadeprotocol.org/core/v1#"
 PROV = "http://www.w3.org/ns/prov#"
 BRIDGE = "https://ns.cascadeprotocol.org/bridge/v1-draft#"
 RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
@@ -25,7 +27,6 @@ REVISION, REVISION_OF, VERSION = URIRef(REC + "Revision"), URIRef(REC + "revisio
 SPECIALIZATION_OF, WAS_REVISION_OF = URIRef(PROV + "specializationOf"), URIRef(PROV + "wasRevisionOf")
 DERIVED_FROM, GENERATED_BY, USED = URIRef(PROV + "wasDerivedFrom"), URIRef(PROV + "wasGeneratedBy"), URIRef(PROV + "used")
 ARRIVED_AS = URIRef(BRIDGE + "arrivedAs")
-COMMITTED = sorted(set(VIEW_FILES.values()) | {LABEL_FILE, "index.ttl", "manifest.ttl"})
 
 
 def pod_files(example):
@@ -255,38 +256,31 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(ex
     subprocess.run([sys.executable, "-m", "cascade_pod", "build", str(example.folder), "--engine", engine,
                     "--out", str(tmp_path)], check=True, cwd=ROOT)
     written = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*") if p.is_file())
-    assert written == COMMITTED
-    for relative in COMMITTED:
+    assert written == sorted(example.derived)
+    for relative in written:
         assert (tmp_path / relative).read_bytes() == (example.pod / relative).read_bytes(), relative
 
 
 @every_example
-def test_every_committed_view_is_marked_rebuildable_and_registered(example):
+def test_every_committed_view_is_marked_rebuildable_and_lists_only_the_kind_the_type_index_registers_it_for(example):
     held = example.store("oxigraph", vocabulary.DEFAULT_LENS)
     current = {row["version"] for row in held.select(vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"]))}
-    for relative in sorted(set(VIEW_FILES.values()) | {LABEL_FILE}):
+    for relative in sorted(set(example.view_files.values()) | {LABEL_FILE}):
         address = URIRef(example.address + relative)
         graph = Graph().parse(example.pod / relative, format="turtle", publicID=str(address))
         assert (address, RDF_TYPE, URIRef(REC + "View")) in graph, relative
         assert set(graph.objects(address, URIRef("http://www.w3.org/ns/prov#used"))) == current, relative
     solid = "http://www.w3.org/ns/solid/terms#"
-    index = Graph().parse(example.pod / "settings/privateTypeIndex.ttl",
-                          publicID=example.address + "settings/privateTypeIndex.ttl")
-    registered = {(str(index.value(r, URIRef(solid + "forClass"))), str(index.value(r, URIRef(solid + "instance"))))
-                  for r in index.subjects(RDF_TYPE, URIRef(solid + "TypeRegistration"))}
-    classes = {"allergies": "https://ns.cascadeprotocol.org/health/v1#AllergyRecord",
-               "conditions": "https://ns.cascadeprotocol.org/health/v1#ConditionRecord",
-               "immunizations": "https://ns.cascadeprotocol.org/health/v1#ImmunizationRecord",
-               "procedures": "https://ns.cascadeprotocol.org/clinical/v1#Procedure",
-               "patients": "https://ns.cascadeprotocol.org/core/v1#PatientProfile"}
-    for view, relative in VIEW_FILES.items():
-        assert (classes[view], example.address + relative) in registered
-    containers = {(str(index.value(r, URIRef(solid + "forClass"))), str(index.value(r, URIRef(solid + "instanceContainer"))))
-                  for r in index.subjects(RDF_TYPE, URIRef(solid + "TypeRegistration"))}
-    assert (REC + "View", example.address + "clinical/") in containers
+    index = pod_file(example, TYPE_INDEX)
+    for registration, listed in index.subject_objects(URIRef(solid + "instance")):
+        view = pod_file(example, listed[len(example.address):])
+        kinds = {view.value(entry, RDF_TYPE) for entry in view.subjects(URIRef(CASCADE + "mergedFrom"), None)}
+        assert kinds == {index.value(registration, URIRef(solid + "forClass"))}, listed
+    [views] = [folder for registration, folder in index.subject_objects(URIRef(solid + "instanceContainer"))
+               if index.value(registration, URIRef(solid + "forClass")) == URIRef(REC + "View")]
+    assert all((example.address + relative).startswith(views) for relative in example.view_files.values())
     root = Graph().parse(example.pod / "index.ttl", publicID=example.address + "index.ttl")
-    assert URIRef(example.address + "clinical/") in set(root.objects(None, URIRef("http://www.w3.org/ns/ldp#contains")))
-    assert set(COMMITTED) == set(example.derived)
+    assert views in set(root.objects(None, URIRef("http://www.w3.org/ns/ldp#contains")))
     assert set(example.derived).isdisjoint(example.files())
 
 

@@ -9,7 +9,6 @@ from rdflib.namespace import RDF, XSD
 
 import recomputed
 from cascade_pod import derive, derived_files, vocabulary
-from cascade_pod.derived_files import VIEW_FILES
 from cascade_pod.pod import NOT_RDF
 from examples import pod_file
 from alex_rivera import ALEX, EXAMPLE, handle, handles, handles_by_name, name, pod
@@ -41,13 +40,6 @@ ARRIVED = {
 }
 BUILT = ("E1", "E3", "E5", "E6", "E7", "E8", "E9", "E10", "E12", "E13", "E14", "E15")
 FROM_E5 = BUILT[BUILT.index("E5"):]
-VIEW_OF_FILE = {
-    "allergies": "allergies",
-    "conditions": "conditions",
-    "immunizations": "immunizations",
-    "procedures": "procedures",
-    "patient-profile": "patients",
-}
 SAM = ("H1P-PAT", "H1P-ALG-AMOX", "H1P-CON-OTITIS", "H1P-CON-ECZEMA")
 
 engines = pytest.mark.parametrize("engine", ENGINES)
@@ -97,7 +89,7 @@ def build(engine, lens, event):
     files = derived_files.add(ALEX, held, event)
     needs_review = {kind: held.select(vocabulary.query(vocabulary.questions()[f"{kind}/What needs review"]))
                     for kind in ("entry", "judgment")}
-    views = {view: graph(files[path]) for view, path in VIEW_FILES.items()}
+    views = {view: graph(files[path]) for view, path in ALEX.view_files.items()}
     return Build(state, views, needs_review)
 
 
@@ -353,12 +345,12 @@ def test_every_profile_an_about_makes_the_subjects_makes_the_records_naming_it_h
     for record in naming:
         assert (record, REC.subject, name("S")) in b.state, handle(record)
 
-    patients = entries(b.views["patients"])
+    patients = entries(b.views["patient-profile"])
     assert set(patients) == {frozenset({"H1-PAT", "H2O-PAT", "H1P-PAT", "H2F-PAT"})}
     for pairs in patients.values():
         assert {p for p, _ in pairs} <= {RDF.type, MERGED_FROM}
 
-    assert entries(build(engine, "everyday", "E1").views["patients"]) == {}
+    assert entries(build(engine, "everyday", "E1").views["patient-profile"]) == {}
 
 
 # P9
@@ -574,7 +566,7 @@ def test_an_unchanged_record_arriving_again_keeps_the_arrival_it_had(engine):
 def test_a_family_members_records_imported_as_the_patients_are_in_her_views_until_she_retracts_the_about_and_nothing_is_deleted(engine, lens):
     for event in ("E10", "E13"):
         b = build(engine, lens, event)
-        assert "H1P-PAT" in {m for key in entry_keys(b, "patients") for m in key}, event
+        assert "H1P-PAT" in {m for key in entry_keys(b, "patient-profile") for m in key}, event
         assert frozenset({"H1P-ALG-AMOX"}) in entry_keys(b, "allergies"), event
         assert frozenset({"H1P-CON-OTITIS"}) in entry_keys(b, "conditions"), event
         assert frozenset({"H1P-CON-ECZEMA"}) in entry_keys(b, "conditions"), event
@@ -582,7 +574,7 @@ def test_a_family_members_records_imported_as_the_patients_are_in_her_views_unti
     for event in ("E14", "E15"):
         b = build(engine, lens, event)
         assert not set(SAM) & members_shown(b), event
-        assert entry_keys(b, "patients") == {frozenset({"H1-PAT", "H2O-PAT", "H2F-PAT"})}, event
+        assert entry_keys(b, "patient-profile") == {frozenset({"H1-PAT", "H2O-PAT", "H2F-PAT"})}, event
         assert not counts(b, "J22"), event
 
     final = pod("E15")
@@ -619,15 +611,13 @@ def expected_view(kind):
 
 def actual_view(kind, source):
     if source == "committed":
-        path = POD / "clinical" / f"{kind}.ttl"
-        if not path.exists():
-            pytest.skip(f"pod/clinical/{kind}.ttl is not there yet: the committed views have not landed")
-        return entries(Graph().parse(path, format="turtle", publicID=POD_BASE + f"clinical/{kind}.ttl"))
-    return entries(build(source, "everyday", "E15").views[VIEW_OF_FILE[kind]])
+        relative = ALEX.view_files[kind]
+        return entries(Graph().parse(POD / relative, format="turtle", publicID=POD_BASE + relative))
+    return entries(build(source, "everyday", "E15").views[kind])
 
 
 @pytest.mark.parametrize("source", ("committed",) + ENGINES)
-@pytest.mark.parametrize("kind", tuple(VIEW_OF_FILE))
+@pytest.mark.parametrize("kind", tuple(ALEX.view_files))
 def test_each_final_view_equals_its_expected_view(kind, source):
     differences = view_differences(expected_view(kind), actual_view(kind, source))
     assert not differences, "\n".join(differences)
