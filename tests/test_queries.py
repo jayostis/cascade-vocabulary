@@ -213,12 +213,22 @@ def test_no_query_spells_out_an_iri_in_a_namespace_the_queries_declare(relative)
 RECORDS = "derivations/records.rq"
 
 
+def kinds_of_record():
+    """Each row of the table in the derivation that says what a record is."""
+    return [row for node in nodes(prepareQuery(vocabulary.query(RECORDS)).algebra) if node.name == "values"
+            for row in node["res"]]
+
+
 def record_types():
     """Each type the derivation that says what a record is lists, by the name of the view that writes it, if one does."""
-    listed = {row[Variable("type")] for node in nodes(prepareQuery(vocabulary.query(RECORDS)).algebra)
-              if node.name == "values" for row in node["res"]}
+    listed = {row[Variable("type")] for row in kinds_of_record()}
     views = {kind: name for name, view in vocabulary.named("views").items() for kind in writes(view)}
     return {kind: views.get(kind) for kind in listed}
+
+
+def test_no_two_kinds_of_record_share_a_word():
+    words = [str(row[Variable("kind")]) for row in kinds_of_record()]
+    assert sorted(words) == sorted(set(words))
 
 
 def kinds_named_out_of_place(relative, text):
