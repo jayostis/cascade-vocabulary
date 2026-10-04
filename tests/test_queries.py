@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 from pyparsing import ParseResults
-from rdflib import RDF, Graph, URIRef
+from rdflib import RDF, Graph, URIRef, Variable
 from rdflib.paths import Path as PropertyPath
 from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
@@ -208,6 +208,41 @@ def test_no_query_spells_out_an_iri_in_a_namespace_the_queries_declare(relative)
     declared_namespaces = tuple(namespace for prefix in prefixes for namespace in namespaces()[prefix])
     _, query = parsed(relative)
     assert {str(iri) for iri in iris(query) if str(iri).startswith(declared_namespaces)} == set()
+
+
+RECORDS = "derivations/records.rq"
+
+
+def record_types():
+    """Each type the derivation that says what a record is lists, by the name of the view that writes it, if one does."""
+    listed = {row[Variable("type")] for node in nodes(prepareQuery(vocabulary.query(RECORDS)).algebra)
+              if node.name == "values" for row in node["res"]}
+    views = {kind: name for name, view in vocabulary.named("views").items() for kind in writes(view)}
+    return {kind: views.get(kind) for kind in listed}
+
+
+def kinds_named_out_of_place(relative, text):
+    """The record types the query names though it is not about that one kind: only the derivation that lists them, a
+    view, and a question named for a view may name its kind."""
+    if relative == RECORDS:
+        return set()
+    views = record_types()
+    named = set(iris(prepareQuery(text).algebra)) & set(views)
+    return {kind for kind in named if views[kind] not in words(Path(relative).stem)}
+
+
+def test_the_kind_check_refuses_a_record_type_named_by_a_query_not_about_that_one_kind():
+    allergy = URIRef("https://ns.cascadeprotocol.org/health/v1#AllergyRecord")
+    query = f"SELECT ?r WHERE {{ ?r a <{allergy}> }}"
+    assert kinds_named_out_of_place("derivations/entries.rq", query) == {allergy}
+    assert kinds_named_out_of_place("questions/pod/My active conditions.rq", query) == {allergy}
+    assert kinds_named_out_of_place("questions/pod/My active allergies.rq", query) == set()
+    assert kinds_named_out_of_place("views/allergies.rq", query) == set()
+
+
+@pytest.mark.parametrize("relative", every_query())
+def test_a_query_names_a_record_type_only_when_it_is_about_that_one_kind(relative):
+    assert kinds_named_out_of_place(relative, vocabulary.query(relative)) == set()
 
 
 KINDS = ("entry", "record", "judgment", "profile")
