@@ -22,8 +22,6 @@ PREFIXES = """@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 """
-KINDS = {"allergies": "health:AllergyRecord", "conditions": "health:ConditionRecord",
-         "immunizations": "health:ImmunizationRecord", "procedures": "clinical:Procedure"}
 
 
 def uuid(n):
@@ -40,9 +38,9 @@ SERIES = [
      "versions": [{"name": uuid(7), "version": "1", "table": "cvx-vaccine-groups-1.csv"}]},
 ]
 TABLES = {
-    "rules-1.csv": "rule,applies_to,justification,table\nR1,allergies conditions procedures,SameCode,\n"
-                   "R2,immunizations,SameCodeAndDate,\nR3,allergies,SameMappedCode,ingredient-map\n"
-                   "R4,immunizations,SameMappedCodeAndDate,cvx-vaccine-groups\n",
+    "rules-1.csv": "rule,applies_to,justification,table\nR1,Allergy Condition Procedure,SameCode,\n"
+                   "R2,Immunization,SameCodeAndDate,\nR3,Allergy,SameMappedCode,ingredient-map\n"
+                   "R4,Immunization,SameMappedCodeAndDate,cvx-vaccine-groups\n",
     "ingredient-map-1.csv": f"snomed,rxnorm\n{SNOMED}373270004,{RXNORM}7980\n",
     "ingredient-map-2.csv": "snomed,rxnorm\n",
     "cvx-vaccine-groups-1.csv": "cvx,group\n141,INFLUENZA\n150,INFLUENZA\n",
@@ -83,11 +81,11 @@ class SmallPod:
         target.write_text(PREFIXES + text, encoding="utf-8")
         self.events[-1]["adds"].append(path)
 
-    def record(self, key, folder, content, profile="urn:example:profile:a"):
+    def record(self, key, kind, content, profile="urn:example:profile:a"):
         self.arrivals += 1
         patient = f" ;\n  rec:patient <{profile}>" if profile else ""
-        self.write(f"records/{folder}/{key}.ttl", f"""
-<{record(key)}> a {KINDS[folder]} .
+        self.write(f"records/{key}.ttl", f"""
+<{record(key)}> a {kind} .
 <urn:example:revision:{key}> a rec:Revision ;
   rec:revisionOf <{record(key)}> ;
   rec:version <{version(key)}> ;
@@ -127,40 +125,40 @@ def sames(written):
     return found
 
 
-def pod_of_two(tmp_path, folder, first, second, **later):
+def pod_of_two(tmp_path, kind, first, second, **later):
     pod = SmallPod(tmp_path)
     pod.about("about-a")
-    pod.record("first", folder, first)
+    pod.record("first", kind, first)
     pod.event("E2")
-    pod.record("second", folder, second, **later)
+    pod.record("second", kind, second, **later)
     return pod
 
 
 def test_same_code_joins_two_records_with_one_code(tmp_path):
-    pod = pod_of_two(tmp_path, "allergies", f"health:allergenCode <{RXNORM}10180>", f"health:allergenCode <{RXNORM}10180>")
-    pod.record("third", "allergies", f"health:allergenCode <{RXNORM}7980>")
+    pod = pod_of_two(tmp_path, "health:AllergyRecord", f"health:allergenCode <{RXNORM}10180>", f"health:allergenCode <{RXNORM}10180>")
+    pod.record("third", "health:AllergyRecord", f"health:allergenCode <{RXNORM}7980>")
     assert sames(pod.match("E2")) == {(frozenset({"first", "second"}), "SameCode")}
 
 
 def test_same_code_ignores_a_procedures_date(tmp_path):
-    pod = pod_of_two(tmp_path, "procedures",
+    pod = pod_of_two(tmp_path, "clinical:Procedure",
                      'clinical:snomedCode "73761001" ; clinical:procedureDate "2025-03-01"^^xsd:date',
                      'clinical:snomedCode "73761001" ; clinical:procedureDate "2026-09-01"^^xsd:date')
     assert sames(pod.match("E2")) == {(frozenset({"first", "second"}), "SameCode")}
 
 
 def test_same_cvx_code_needs_the_same_administration_date(tmp_path):
-    pod = pod_of_two(tmp_path, "immunizations",
+    pod = pod_of_two(tmp_path, "health:ImmunizationRecord",
                      'health:vaccineCode "150" ; health:administrationDate "2025-10-01"^^xsd:date',
                      'health:vaccineCode "150" ; health:administrationDate "2025-10-01"^^xsd:date')
-    pod.record("later", "immunizations",
+    pod.record("later", "health:ImmunizationRecord",
                'health:vaccineCode "150" ; health:administrationDate "2025-10-02"^^xsd:date')
     assert sames(pod.match("E2")) == {(frozenset({"first", "second"}), "SameCodeAndDate")}
 
 
 def test_the_ingredient_map_pairs_only_its_rows_under_its_current_version(tmp_path):
-    pod = pod_of_two(tmp_path, "allergies", f"health:allergenCode <{SNOMED}373270004>", f"health:allergenCode <{RXNORM}7980>")
-    pod.record("unpaired", "allergies", f"health:allergenCode <{SNOMED}91936005>")
+    pod = pod_of_two(tmp_path, "health:AllergyRecord", f"health:allergenCode <{SNOMED}373270004>", f"health:allergenCode <{RXNORM}7980>")
+    pod.record("unpaired", "health:AllergyRecord", f"health:allergenCode <{SNOMED}91936005>")
     written = pod.match("E2")
     assert sames(written) == {(frozenset({"first", "second"}), "SameMappedCode")}
     references = match.References(pod.root / "references")
@@ -172,15 +170,15 @@ def test_the_ingredient_map_pairs_only_its_rows_under_its_current_version(tmp_pa
     pod.reference(fanned("references", old["name"]), turtle.write(match.version_triples(ingredient_map, old)))
     pod.event("E3")
     pod.reference(fanned("references", new["name"]), turtle.write(match.version_triples(ingredient_map, new)))
-    pod.record("third", "allergies", f"health:allergenCode <{RXNORM}7980>")
+    pod.record("third", "health:AllergyRecord", f"health:allergenCode <{RXNORM}7980>")
     assert sames(pod.match("E3")) == {(frozenset({"third", "second"}), "SameCode")}
 
 
 def test_a_vaccine_group_needs_two_different_codes_and_one_date(tmp_path):
     cvx = 'health:vaccineCode "{}" ; health:administrationDate "2025-10-{}"^^xsd:date'
-    pod = pod_of_two(tmp_path, "immunizations", cvx.format(141, "01"), cvx.format(150, "01"))
-    pod.record("other-day", "immunizations", cvx.format(141, "02"))
-    pod.record("same-code", "immunizations", cvx.format(141, "01"))
+    pod = pod_of_two(tmp_path, "health:ImmunizationRecord", cvx.format(141, "01"), cvx.format(150, "01"))
+    pod.record("other-day", "health:ImmunizationRecord", cvx.format(141, "02"))
+    pod.record("same-code", "health:ImmunizationRecord", cvx.format(141, "01"))
     assert sames(pod.match("E2")) == {
         (frozenset({"first", "second"}), "SameMappedCodeAndDate"),
         (frozenset({"same-code", "first"}), "SameCodeAndDate"),
@@ -190,14 +188,14 @@ def test_a_vaccine_group_needs_two_different_codes_and_one_date(tmp_path):
 
 def test_a_record_nobody_is_named_for_is_never_taken(tmp_path):
     code = f"health:allergenCode <{RXNORM}10180>"
-    pod = pod_of_two(tmp_path, "allergies", code, code, profile="urn:example:profile:nobodys")
-    pod.record("no-patient", "allergies", code, profile=None)
+    pod = pod_of_two(tmp_path, "health:AllergyRecord", code, code, profile="urn:example:profile:nobodys")
+    pod.record("no-patient", "health:AllergyRecord", code, profile=None)
     assert pod.match("E2") == {}
 
 
 def test_a_retracted_about_stops_the_matcher_taking_that_profiles_new_records(tmp_path):
     code = f"health:allergenCode <{RXNORM}10180>"
-    pod = pod_of_two(tmp_path, "allergies", code, code, profile="urn:example:profile:b")
+    pod = pod_of_two(tmp_path, "health:AllergyRecord", code, code, profile="urn:example:profile:b")
     pod.about("about-b", profile="urn:example:profile:b")
     assert sames(pod.match("E2")) == {(frozenset({"first", "second"}), "SameCode")}
     pod.judgment("retraction", "npx:retracts <urn:example:judgment:about-b>")
@@ -205,15 +203,15 @@ def test_a_retracted_about_stops_the_matcher_taking_that_profiles_new_records(tm
 
 
 def test_the_matcher_reads_no_persons_same_or_different(tmp_path):
-    pod = pod_of_two(tmp_path, "allergies", f"health:allergenCode <{RXNORM}10180>", f"health:allergenCode <{RXNORM}10180>")
-    pod.record("third", "allergies", f"health:allergenCode <{RXNORM}7980>")
+    pod = pod_of_two(tmp_path, "health:AllergyRecord", f"health:allergenCode <{RXNORM}10180>", f"health:allergenCode <{RXNORM}10180>")
+    pod.record("third", "health:AllergyRecord", f"health:allergenCode <{RXNORM}7980>")
     pod.judgment("different", f"jdg:verdict jdg:Different ; prov:hadMember <{record('first')}> , <{record('second')}>")
     pod.judgment("same", f"jdg:verdict jdg:Same ; prov:hadMember <{record('first')}> , <{record('third')}>")
     assert sames(pod.match("E2")) == {(frozenset({"first", "second"}), "SameCode")}
 
 
 def test_a_matcher_judgments_name_is_the_record_name_of_its_inputs(tmp_path):
-    pod = pod_of_two(tmp_path, "allergies", f"health:allergenCode <{SNOMED}373270004>", f"health:allergenCode <{RXNORM}7980>")
+    pod = pod_of_two(tmp_path, "health:AllergyRecord", f"health:allergenCode <{SNOMED}373270004>", f"health:allergenCode <{RXNORM}7980>")
     [(relative, path)] = [(r, p) for r, p in pod.match("E2").items() if r.startswith("judgments/")]
     graph = Graph().parse(path, format="turtle")
     [judgment] = graph.subjects(RDF_TYPE, URIRef(JDG + "Judgment"))
@@ -245,7 +243,7 @@ def rechecked_after_the_ingredient_map_keeps_its_row(pod, monkeypatch):
 
 
 def mapped_pair(tmp_path, **later):
-    return pod_of_two(tmp_path, "allergies", f"health:allergenCode <{SNOMED}373270004>",
+    return pod_of_two(tmp_path, "health:AllergyRecord", f"health:allergenCode <{SNOMED}373270004>",
                       f"health:allergenCode <{RXNORM}7980>", **later)
 
 
