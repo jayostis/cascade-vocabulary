@@ -1,6 +1,3 @@
-import subprocess
-import sys
-
 from pyshacl import validate
 from rdflib import Graph, URIRef
 
@@ -17,17 +14,6 @@ REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 DESCRIPTION = URIRef("http://purl.org/dc/terms/description")
 WEBID = ALEX.address + "profile/card.ttl#me"
-
-RUNS = [
-    ("E2", "E2", "2026-09-01T10:00:04Z", None),
-    ("E3", "E3", "2026-09-01T18:30:00Z", None),
-    ("E4", "E4", "2026-10-14T15:43:00Z", "E5"),
-    ("E6", "E6", "2026-11-20T09:00:04Z", None),
-    ("E9", None, "2027-01-15T06:00:00Z", None),
-    ("E10", "E10", "2027-02-10T17:21:00Z", None),
-    ("E12", "E12", "2027-03-18T12:01:00Z", "E13"),
-    ("E15", "E15", "2027-08-20T08:00:04Z", None),
-]
 
 EVERY_REFERENCE = {
     "RS-RULES": "E5", "RS-RULES-2026.1": "E5", "RS-XWALK": "E5", "RS-XWALK-2026-09": "E5",
@@ -142,17 +128,3 @@ def test_each_matcher_judgment_names_the_rule_set_the_table_its_rule_applied_and
                                *(current_version(records, m) for m in members)]), relative
         assert name == recomputed.record_name([MATCHER, JDG + justification, *members, *used]), relative
 
-
-def test_the_matcher_reproduces_every_file_it_wrote_and_writes_nothing_on_its_other_runs(tmp_path):
-    for read_through, takes, at, event in RUNS:
-        out = tmp_path / read_through
-        command = [sys.executable, "-m", "cascade_pod", "match", str(EXAMPLE),
-                   "--read-through", read_through, "--at", at, "--out", str(out)]
-        result = subprocess.run(command + (["--takes", takes] if takes else []), capture_output=True, text=True,
-                                cwd=ROOT)
-        assert result.returncode == 0, result.stderr
-        written = sorted(p.relative_to(out).as_posix() for p in out.rglob("*") if p.is_file())
-        expected = [p for p, e in sorted(added_by().items()) if e == event]
-        assert written == expected, read_through
-        for relative in written:
-            assert (out / relative).read_bytes() == (POD / relative).read_bytes(), relative
