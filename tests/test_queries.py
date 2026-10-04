@@ -504,3 +504,30 @@ def test_every_row_of_a_judgment_says_whether_it_counts_beside_what_happened_to_
     """, tmp_path)
     assert sorted((row["judgment"], row["counts"], row.get("happened", "")) for row in found) == [
         ("urn:x:new", "true", ""), ("urn:x:old", "false", ""), ("urn:x:old", "false", "superseded")]
+
+
+ENTERED_BY_THE_PERSON = """
+    @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+    @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    :subject a rec:Subject .
+    :condition a health:ConditionRecord .
+    :conditionVersion prov:specializationOf :condition ; rec:patient :subject ; health:status "active" .
+    :conditionRevision a rec:Revision ; rec:revisionOf :condition ; rec:version :conditionVersion ;
+        prov:generatedAtTime "2027-01-01T00:00:00Z"^^xsd:dateTime .
+    :allergy a health:AllergyRecord .
+    :allergyVersion prov:specializationOf :allergy ; rec:patient :subject ; clinical:status "active" .
+    :allergyRevision a rec:Revision ; rec:revisionOf :allergy ; rec:version :allergyVersion ;
+        prov:generatedAtTime "2027-01-01T00:00:00Z"^^xsd:dateTime .
+"""
+
+
+@pytest.mark.parametrize("lens", LENSES)
+@pytest.mark.parametrize("engine", ENGINES)
+def test_a_status_the_person_entered_sets_a_conditions_entry_and_never_an_allergys(engine, lens, tmp_path):
+    path = tmp_path / "pod.ttl"
+    path.write_text(UNIT_PREFIXES + ENTERED_BY_THE_PERSON, encoding="utf-8")
+    held = store.ENGINES[engine]()
+    held.load(path, "urn:x:")
+    derived = derive.derive(held, lens)
+    assert {str(o) for _, p, o in derived if p == URIRef(REC + "statusFrom")} == {"urn:x:condition"}

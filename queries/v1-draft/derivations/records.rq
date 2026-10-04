@@ -9,15 +9,15 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 CONSTRUCT {
-  ?record a rec:Record ; rec:kind ?kind .
+  ?record a rec:Record ; rec:kind ?kind ; rec:statusOnlyFromDocuments ?statusOnlyFromDocuments .
   ?version rec:name ?name ; rec:status ?status ; rec:date ?date .
 }
 WHERE {
-  VALUES (?type ?kind ?nameProperty ?statusProperty ?dateProperty) {
-    (health:AllergyRecord      "Allergy"      health:allergen        clinical:status UNDEF)
-    (health:ConditionRecord    "Condition"    health:conditionName   health:status   health:onsetDate)
-    (health:ImmunizationRecord "Immunization" health:vaccineName     health:status   health:administrationDate)
-    (clinical:Procedure        "Procedure"    clinical:procedureName clinical:status clinical:procedureDate)
+  VALUES (?type ?kind ?nameProperty ?statusProperty ?statusOnlyFromDocuments ?dateProperty) {
+    (health:AllergyRecord      "Allergy"      health:allergen        clinical:status true  UNDEF)
+    (health:ConditionRecord    "Condition"    health:conditionName   health:status   false health:onsetDate)
+    (health:ImmunizationRecord "Immunization" health:vaccineName     health:status   false health:administrationDate)
+    (clinical:Procedure        "Procedure"    clinical:procedureName clinical:status false clinical:procedureDate)
   }
   ?record a ?type .
   OPTIONAL { ?version prov:specializationOf ?record }

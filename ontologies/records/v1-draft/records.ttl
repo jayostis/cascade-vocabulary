@@ -41,6 +41,12 @@ rec:kind a owl:DatatypeProperty ;
     rdfs:domain rec:Record ;
     rdfs:range xsd:string .
 
+rec:statusOnlyFromDocuments a owl:DatatypeProperty ;
+    rdfs:label "status only from documents"@en ;
+    rdfs:comment "Derived: whether the record's kind takes a status only from a member translated from a document, never from one the person entered."@en ;
+    rdfs:domain rec:Record ;
+    rdfs:range xsd:boolean .
+
 rec:name a owl:DatatypeProperty ;
     rdfs:label "name"@en ;
     rdfs:comment "Derived: the version's name, copied from the property its kind names things with."@en .
