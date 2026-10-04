@@ -531,3 +531,11 @@ def test_a_status_the_person_entered_sets_a_conditions_entry_and_never_an_allerg
     held.load(path, "urn:x:")
     derived = derive.derive(held, lens)
     assert {str(o) for _, p, o in derived if p == URIRef(REC + "statusFrom")} == {"urn:x:condition"}
+
+
+@every_example
+def test_how_many_of_each_kind_counts_what_the_pods_files_state_and_no_type_only_the_derivations_state(example):
+    held = example.store("oxigraph", vocabulary.DEFAULT_LENS)
+    derived_only = {o for s, p, o in held.triples(derive.DERIVED + vocabulary.DEFAULT_LENS) if p == RDF.type}
+    counted = {row["type"] for row in answers(example, "oxigraph", vocabulary.DEFAULT_LENS)["pod/How many of each kind"]}
+    assert derived_only and not counted & derived_only
