@@ -19,7 +19,6 @@ from cascade_pod.store import Oxigraph
 from examples import EXAMPLES, ROOT, every_example, every_example_and
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
-IN_ENTRY = URIRef(REC + "inEntry")
 
 
 def every_query():
@@ -88,16 +87,6 @@ def test_every_subquery_comes_first_in_its_group(relative):
             parts = list(group.get("part") or [])
             first_other = next((i for i, part in enumerate(parts) if not is_subquery(part)), len(parts))
             assert not any(is_subquery(part) for part in parts[first_other:]), relative
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_every_query_reading_in_entry_names_its_type(relative):
-    algebra = prepareQuery(vocabulary.query(relative)).algebra
-    patterns = [t for node in nodes(algebra["p"]) if node.name == "BGP" for t in node["triples"]]
-    bound_by_values = {v for node in nodes(algebra["p"]) if node.name == "values" for row in node["res"] for v in row}
-    typed = {s for s, p, o in patterns if p == RDF.type and (isinstance(o, URIRef) or o in bound_by_values)}
-    readers = {s for s, p, o in patterns if p == IN_ENTRY}
-    assert readers <= typed, relative
 
 
 @pytest.mark.parametrize("relative", every_query())
@@ -498,8 +487,8 @@ def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_n
 @pytest.mark.parametrize("engine", ENGINES)
 def test_an_entry_lists_a_pair_still_joined_by_what_the_derivations_judged_currently_different(engine, tmp_path):
     found = answer(engine, "entry/What needs review", """
-        :a a rec:Record ; rec:inEntry :entry ; jdg:currentlyDifferent :b .
-        :b a rec:Record ; rec:inEntry :entry ; jdg:currentlyDifferent :a .
+        :a rec:inEntry :entry ; jdg:currentlyDifferent :b .
+        :b rec:inEntry :entry ; jdg:currentlyDifferent :a .
     """, tmp_path)
     assert [(row["entry"], row["record"], row["otherRecord"]) for row in found] == [("urn:x:entry", "urn:x:a", "urn:x:b")]
 

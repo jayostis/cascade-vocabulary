@@ -7,7 +7,7 @@ PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT ?entry ?entryLabel ?record ?recordLabel ?arrived ?import ?importLabel ?document ?documentLabel ?hospital ?retrieved
 WHERE {
-  ?record a rec:Record ; rec:inEntry ?entry ; rec:currentRevision ?revision .
+  ?record rec:inEntry ?entry ; rec:currentRevision ?revision .
   ?revision prov:generatedAtTime ?arrived .
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   OPTIONAL { ?record rdfs:label ?recordLabel }

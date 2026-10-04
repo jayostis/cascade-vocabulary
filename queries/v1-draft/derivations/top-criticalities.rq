@@ -7,7 +7,7 @@ CONSTRUCT { ?entry rec:topCriticality ?top }
 WHERE {
   { SELECT ?entry (MAX(?rank) AS ?top)
     WHERE {
-      ?r a rec:Record ; rec:inEntry ?entry ;
+      ?r rec:inEntry ?entry ;
          pav:hasCurrentVersion/clinical:criticality ?c .
       BIND (IF(?c = "high", 2, IF(?c = "low", 1, 0)) AS ?rank)
     }

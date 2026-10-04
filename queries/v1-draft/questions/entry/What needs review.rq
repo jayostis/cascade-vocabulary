@@ -12,7 +12,7 @@ SELECT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?
 WHERE {
   { { SELECT ?entry
       WHERE {
-        ?member a rec:Record ; rec:inEntry ?entry ;
+        ?member rec:inEntry ?entry ;
                 pav:hasCurrentVersion/clinical:criticality ?criticality .
       }
       GROUP BY ?entry
@@ -24,15 +24,15 @@ WHERE {
       WHERE {
         ?same rec:counts true ; jdg:verdict jdg:Same ; jdg:justification ?why ;
               prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
-        ?member a rec:Record ; rec:inEntry ?entry .
+        ?member rec:inEntry ?entry .
       }
       GROUP BY ?entry
       HAVING (COUNT(DISTINCT ?why) > 1) }
     BIND ("joined through two kinds of machine sameness" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel } }
   UNION
-  { ?record jdg:currentlyDifferent ?otherRecord ; a rec:Record ; rec:inEntry ?entry .
-    ?otherRecord a rec:Record ; rec:inEntry ?entry .
+  { ?record jdg:currentlyDifferent ?otherRecord ; rec:inEntry ?entry .
+    ?otherRecord rec:inEntry ?entry .
     FILTER (STR(?record) < STR(?otherRecord))
     BIND ("judged different, still joined" AS ?needs)
     OPTIONAL { ?judgment rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?record , ?otherRecord }

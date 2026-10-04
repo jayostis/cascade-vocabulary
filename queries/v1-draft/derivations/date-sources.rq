@@ -9,10 +9,10 @@ WHERE {
     WHERE {
       { SELECT ?entry (MAX(?t2) AS ?t)
         WHERE {
-          ?r2 a rec:Record ; rec:inEntry ?entry ;
+          ?r2 rec:inEntry ?entry ;
               rec:currentRevision/prov:generatedAtTime ?t2 ; pav:hasCurrentVersion/rec:date [] . }
         GROUP BY ?entry }
-      ?r a rec:Record ; rec:inEntry ?entry ;
+      ?r rec:inEntry ?entry ;
          rec:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion/rec:date [] .
     }
     GROUP BY ?entry }

@@ -10,12 +10,12 @@ WHERE {
     WHERE {
       { SELECT ?entry (MAX(?t2) AS ?t)
         WHERE {
-          ?r2 a rec:Record ; rec:inEntry ?entry ; rec:statusOnlyFromDocuments ?documentsOnly2 ;
+          ?r2 rec:inEntry ?entry ; rec:statusOnlyFromDocuments ?documentsOnly2 ;
               rec:currentRevision ?rev2 ; pav:hasCurrentVersion/rec:status [] .
           ?rev2 prov:generatedAtTime ?t2 .
           FILTER (!?documentsOnly2 || EXISTS { ?rev2 prov:wasDerivedFrom [] }) }
         GROUP BY ?entry }
-      ?r a rec:Record ; rec:inEntry ?entry ; rec:statusOnlyFromDocuments ?documentsOnly ;
+      ?r rec:inEntry ?entry ; rec:statusOnlyFromDocuments ?documentsOnly ;
          rec:currentRevision ?rev ; pav:hasCurrentVersion/rec:status [] .
       ?rev prov:generatedAtTime ?t .
       FILTER (!?documentsOnly || EXISTS { ?rev prov:wasDerivedFrom [] })
