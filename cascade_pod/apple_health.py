@@ -55,7 +55,7 @@ def facts(entry, import_started_at):
     return triples
 
 
-def convert_command(repository, document, conversion):
+def convert_command(repository, document, facts, graph, findings):
     def relative(path):
         return path.relative_to(repository).as_posix()
 
@@ -63,8 +63,8 @@ def convert_command(repository, document, conversion):
         f"cascade-bridge convert {ADAPTER}",
         relative(document),
         "--envelope '#envelope-resource'",
-        f"--facts {relative(conversion / 'facts.ttl')}",
+        f"--facts {relative(facts)}",
         f"--vocabularies {VOCABULARIES}",
-        f"--out {relative(conversion / 'graph.ttl')}",
-        f"--findings {relative(conversion / 'findings.ttl')}",
+        f"--out {relative(graph)}",
+        f"--findings {relative(findings)}",
     ])
