@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import sys
 from collections import Counter
+from datetime import datetime
 
 import pytest
 from pyshacl import validate
@@ -14,7 +15,7 @@ from rdflib.compare import isomorphic
 import recomputed
 from cascade_pod import match, names, store, turtle, vocabulary
 from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
-from examples import ROOT, every_example, pod_file
+from examples import ROOT, every_example, every_example_and, pod_file, run_matcher
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 PROV = "http://www.w3.org/ns/prov#"
@@ -108,6 +109,12 @@ def _references(value):
 def test_the_example_holds_data_only():
     examples = ROOT / "example-pods"
     assert sorted(p.relative_to(examples).as_posix() for pattern in ("*.py", "*.rq") for p in examples.rglob(pattern)) == []
+
+
+@every_example
+def test_the_storys_events_are_in_time_order(example):
+    times = [datetime.fromisoformat(event["at"]) for event in example.events]
+    assert times == sorted(times)
 
 
 @every_example
@@ -227,6 +234,19 @@ def test_running_the_writer_once_on_a_copy_reproduces_the_example_byte_for_byte(
 
     compare(filecmp.dircmp(example.folder, copy, ignore=["__pycache__"]), "")
     assert differences == []
+
+
+def matcher_runs(example):
+    return [event["event"] for event in example.events if "read_through" in event]
+
+
+@every_example_and("run", matcher_runs)
+def test_each_matcher_run_in_the_story_writes_exactly_the_files_its_event_adds_byte_for_byte(example, run, tmp_path):
+    event = example.event(run)
+    written = sorted(run_matcher(example.folder, event["read_through"], event["at"], tmp_path, event.get("takes")))
+    assert written == sorted(event["adds"])
+    for relative in written:
+        assert (tmp_path / relative).read_bytes() == (example.pod / relative).read_bytes(), relative
 
 
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))

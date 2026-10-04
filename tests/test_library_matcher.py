@@ -1,7 +1,5 @@
 import json
 import shutil
-import subprocess
-import sys
 
 import pytest
 from rdflib import Graph, URIRef
@@ -9,7 +7,7 @@ from rdflib import Graph, URIRef
 import recomputed
 from cascade_pod import Failure, match, turtle
 from cascade_pod.pod import Example, fanned
-from examples import ROOT
+from examples import run_matcher
 
 JDG = "https://ns.cascadeprotocol.org/judgments/v1-draft#"
 PROV = "http://www.w3.org/ns/prov#"
@@ -115,12 +113,7 @@ class SmallPod:
         self.tell()
         out = self.root / "out"
         shutil.rmtree(out, ignore_errors=True)
-        command = [sys.executable, "-m", "cascade_pod", "match", str(self.root),
-                   "--read-through", self.events[-1]["event"], "--at", "2026-02-01T00:00:00Z", "--out", str(out)]
-        result = subprocess.run(command + (["--takes", takes] if takes else []), capture_output=True, text=True,
-                                cwd=ROOT)
-        assert result.returncode == 0, result.stderr
-        return {p.relative_to(out).as_posix(): p for p in out.rglob("*") if p.is_file()}
+        return run_matcher(self.root, self.events[-1]["event"], "2026-02-01T00:00:00Z", out, takes)
 
 
 def sames(written):

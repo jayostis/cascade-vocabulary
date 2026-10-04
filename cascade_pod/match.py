@@ -72,7 +72,7 @@ class Reading:
         self.example = example
         events = example.through(read_through)
         self.subject = URIRef(next(e["subject"] for e in events if "subject" in e))
-        self.added_by = {path: event["event"] for event in events for path in event["adds"]}
+        self.added_by = example.added_by(read_through)
         store = Rdflib()
         example.load(store, read_through)
         self.graph, self.defined_in = store.graph(), {}

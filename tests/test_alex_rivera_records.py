@@ -21,10 +21,6 @@ CONVERSIONS_PER_EVENT = {"e2": 9, "e4": 6, "e6": 8, "e7": 1, "e10": 4, "e12": 7,
 TWO_VERSIONS = {"H1-ALG-SULFA", "H1-ALG-LATEX", "H1-ALG-CODEINE", "H1-CON-BRONCH", "H1-CON-BACK"}
 
 
-def added_by():
-    return {path: event["event"] for event in ALEX.events for path in event["adds"]}
-
-
 def name_of(handle):
     return str(handles()[handle])
 
@@ -34,7 +30,7 @@ def revisions_of(record):
 
 
 def test_each_event_adds_the_scenarios_count_of_records_layer_files():
-    counts = Counter(event for path, event in added_by().items() if path.startswith(OWNED))
+    counts = Counter(event for path, event in ALEX.added_by().items() if path.startswith(OWNED))
     assert {e: counts.get(e, 0) for e in FILES_PER_EVENT} == FILES_PER_EVENT
     assert set(counts) <= set(FILES_PER_EVENT)
 
@@ -70,12 +66,12 @@ def test_h1_con_htn_has_one_revision_and_none_of_its_later_files_is_stored():
 
 def test_importing_x_e6_again_at_e7_writes_nothing():
     assert "import" not in next(e for e in ALEX.events if e["event"] == "E7")
-    assert [p for p, e in added_by().items() if e == "E7"] == []
+    assert [p for p, e in ALEX.added_by().items() if e == "E7"] == []
 
 
 def test_nothing_is_written_for_h1_alg_latex_at_e15():
     latex = name_of("H1-ALG-LATEX")
-    for relative in [p for p, e in added_by().items() if e == "E15" and p.endswith(".ttl")]:
+    for relative in [p for p, e in ALEX.added_by().items() if e == "E15" and p.endswith(".ttl")]:
         assert latex not in (POD / relative).read_text(encoding="utf-8"), relative
 
 

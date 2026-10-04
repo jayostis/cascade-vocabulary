@@ -55,17 +55,23 @@ class Example:
         crate = json.loads((self.folder / "ro-crate-metadata.json").read_text(encoding="utf-8"))
         return next(entity["name"] for entity in crate["@graph"] if entity["@id"] == "./")
 
+    def event(self, name):
+        found = next((event for event in self.events if event["event"] == name), None)
+        if found is None:
+            raise Failure(f"no event {name}")
+        return found
+
     def through(self, event=None):
         """The events up to and including `event`, every event when it is None."""
-        names = [e["event"] for e in self.events]
         if event is None:
             return self.events
-        if event not in names:
-            raise Failure(f"no event {event}")
-        return self.events[: names.index(event) + 1]
+        return self.events[: self.events.index(self.event(event)) + 1]
 
     def files(self, event=None):
         return sorted(path for e in self.through(event) for path in e["adds"])
+
+    def added_by(self, event=None):
+        return {path: e["event"] for e in self.through(event) for path in e["adds"]}
 
     def load(self, store, event=None):
         for path in self.files(event):

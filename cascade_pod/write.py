@@ -267,7 +267,7 @@ def file_import(filing, event, kept):
 
 # The events manifest
 
-EVENT_KEYS = ["event", "at", "subject", "export", "import", "entry", "adds"]
+EVENT_KEYS = ["event", "at", "subject", "export", "import", "entry", "read_through", "takes", "adds"]
 
 
 def owned(path):
