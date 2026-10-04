@@ -3,12 +3,13 @@ the pod and its query, under the default lens."""
 
 import hashlib
 import os
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
 import jinja2
 from rdflib import Literal, URIRef
-from rdflib.namespace import XSD
+from rdflib.namespace import RDF, XSD
 
 from . import derive, names, turtle, vocabulary
 from .derived_files import LABEL_FILE, VIEW_FILES
@@ -40,6 +41,11 @@ def shown(literal):
     moment = datetime.fromisoformat(str(literal))
     return (moment if moment.tzinfo else moment.replace(tzinfo=timezone.utc)).astimezone(timezone.utc).strftime(
         "%Y-%m-%d %H:%M UTC")
+
+
+def written(added):
+    """Each term the statements a step added write, a type's class or else the predicate, with how many write it."""
+    return sorted(Counter(value if predicate == RDF.type else predicate for _, predicate, value in added).items())
 
 
 def code(iri):
@@ -116,8 +122,8 @@ class Site:
                   for path in self.copied if path.startswith("attachments/")}
         made = {}
         for query, added in self.pipeline[vocabulary.DEFAULT_LENS]:
-            for _, predicate, _ in added:
-                made.setdefault(predicate, f"pipeline.html#{query.title}")
+            for term, _ in written(added):
+                made.setdefault(term, f"pipeline.html#{query.title}")
         pages = {thing: page(thing) for things in [*self.things.values(), self.views] for thing in things}
         return pages, turtles, turtles | stored | made | pages | copies
 
@@ -130,7 +136,8 @@ class Site:
         environment = jinja2.Environment(loader=jinja2.FileSystemLoader(HERE / "templates"), autoescape=True,
                                          undefined=jinja2.StrictUndefined, trim_blocks=True, lstrip_blocks=True)
         environment.filters.update(href=self.links.get, page=self.pages.get, turtle=self.turtles.get, shown=shown,
-                                   code=code, nt=turtle.term, prefixed=lambda iri: turtle.prefixed(str(iri)))
+                                   written=written, code=code, nt=turtle.term,
+                                   prefixed=lambda iri: turtle.prefixed(str(iri)))
         environment.tests.update(iri=lambda term: isinstance(term, URIRef), literal=lambda term: isinstance(term, Literal))
         environment.globals.update(
             site=self, example=self.example, terms=self.terms, copy=COPY, lens=vocabulary.DEFAULT_LENS,

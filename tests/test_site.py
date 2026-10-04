@@ -410,3 +410,13 @@ def test_a_block_asked_under_the_other_lens_links_to_no_page_of_this_site(pages)
     other = [b for b in blocks(pages["pipeline.html"]) if b["command"] and "--lens" in b["command"]]
     assert other and not [href for b in other for row in b["rows"] for cell in row.values() for href in cell["hrefs"]
                           if href.endswith(".html")]
+
+
+def test_a_cell_naming_a_class_a_step_writes_links_to_that_step_and_rdf_type_links_to_no_step(pages):
+    steps = {}
+    for page in pages.values():
+        for block in blocks(page):
+            for cell in (cell for row in block["rows"] for cell in row.values()):
+                steps.setdefault(cell["value"], set()).update(h for h in cell["hrefs"] if h.startswith("pipeline.html"))
+    assert steps["<https://ns.cascadeprotocol.org/records/v1-draft#Record>"] == {"pipeline.html#records"}
+    assert steps["<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"] == set()

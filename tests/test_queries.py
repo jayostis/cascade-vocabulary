@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 from pyparsing import ParseResults
-from rdflib import RDF, Graph, URIRef
+from rdflib import RDF, Graph, URIRef, Variable
 from rdflib.paths import Path as PropertyPath
 from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
@@ -19,7 +19,6 @@ from cascade_pod.store import Oxigraph
 from examples import EXAMPLES, ROOT, every_example, every_example_and
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
-IN_ENTRY = URIRef(REC + "inEntry")
 
 
 def every_query():
@@ -90,14 +89,12 @@ def test_every_subquery_comes_first_in_its_group(relative):
             assert not any(is_subquery(part) for part in parts[first_other:]), relative
 
 
-@pytest.mark.parametrize("relative", every_query())
-def test_every_query_reading_in_entry_names_its_type(relative):
-    algebra = prepareQuery(vocabulary.query(relative)).algebra
-    patterns = [t for node in nodes(algebra["p"]) if node.name == "BGP" for t in node["triples"]]
-    bound_by_values = {v for node in nodes(algebra["p"]) if node.name == "values" for row in node["res"] for v in row}
-    typed = {s for s, p, o in patterns if p == RDF.type and (isinstance(o, URIRef) or o in bound_by_values)}
-    readers = {s for s, p, o in patterns if p == IN_ENTRY}
-    assert readers <= typed, relative
+@pytest.mark.parametrize("relative", sorted(vocabulary.named("views").values()))
+def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
+    patterns = [t for node in nodes(prepareQuery(vocabulary.query(relative)).algebra["p"]) if node.name == "BGP"
+                for t in node["triples"]]
+    typed = {s for s, p, o in patterns if p == RDF.type and isinstance(o, URIRef)}
+    assert {s for s, p, o in patterns if p == URIRef(REC + "inEntry")} <= typed
 
 
 @pytest.mark.parametrize("relative", every_query())
@@ -208,6 +205,51 @@ def test_no_query_spells_out_an_iri_in_a_namespace_the_queries_declare(relative)
     declared_namespaces = tuple(namespace for prefix in prefixes for namespace in namespaces()[prefix])
     _, query = parsed(relative)
     assert {str(iri) for iri in iris(query) if str(iri).startswith(declared_namespaces)} == set()
+
+
+RECORDS = "derivations/records.rq"
+
+
+def kinds_of_record():
+    """Each row of the table in the derivation that says what a record is."""
+    return [row for node in nodes(prepareQuery(vocabulary.query(RECORDS)).algebra) if node.name == "values"
+            for row in node["res"]]
+
+
+def record_types():
+    """Each type the derivation that says what a record is lists, by the name of the view that writes it, if one does."""
+    listed = {row[Variable("type")] for row in kinds_of_record()}
+    views = {kind: name for name, view in vocabulary.named("views").items() for kind in writes(view)}
+    return {kind: views.get(kind) for kind in listed}
+
+
+def test_no_two_kinds_of_record_share_a_word():
+    words = [str(row[Variable("kind")]) for row in kinds_of_record()]
+    assert sorted(words) == sorted(set(words))
+
+
+def kinds_named_out_of_place(relative, text):
+    """The record types the query names though it is not about that one kind: only the derivation that lists them, a
+    view, and a question named for a view may name its kind."""
+    if relative == RECORDS:
+        return set()
+    views = record_types()
+    named = set(iris(prepareQuery(text).algebra)) & set(views)
+    return {kind for kind in named if views[kind] not in words(Path(relative).stem)}
+
+
+def test_the_kind_check_refuses_a_record_type_named_by_a_query_not_about_that_one_kind():
+    allergy = URIRef("https://ns.cascadeprotocol.org/health/v1#AllergyRecord")
+    query = f"SELECT ?r WHERE {{ ?r a <{allergy}> }}"
+    assert kinds_named_out_of_place("derivations/entries.rq", query) == {allergy}
+    assert kinds_named_out_of_place("questions/pod/My active conditions.rq", query) == {allergy}
+    assert kinds_named_out_of_place("questions/pod/My active allergies.rq", query) == set()
+    assert kinds_named_out_of_place("views/allergies.rq", query) == set()
+
+
+@pytest.mark.parametrize("relative", every_query())
+def test_a_query_names_a_record_type_only_when_it_is_about_that_one_kind(relative):
+    assert kinds_named_out_of_place(relative, vocabulary.query(relative)) == set()
 
 
 KINDS = ("entry", "record", "judgment", "profile")
@@ -385,11 +427,9 @@ RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 def test_everything_labelled_has_exactly_one_label(example):
     graph = final_graph(example)
     labels = Counter(str(s) for s in graph.subjects(URIRef(RDFS_LABEL), None))
-    kinds = "VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }"
+    kinds = "VALUES ?type { %s }" % " ".join(f"<{kind}>" for kind in sorted(record_types()))
     found = graph.query("""
         PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-        PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-        PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
         PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
         PREFIX prov: <http://www.w3.org/ns/prov#>
         PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
@@ -455,9 +495,8 @@ def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_n
 @pytest.mark.parametrize("engine", ENGINES)
 def test_an_entry_lists_a_pair_still_joined_by_what_the_derivations_judged_currently_different(engine, tmp_path):
     found = answer(engine, "entry/What needs review", """
-        @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-        :a a health:AllergyRecord ; rec:inEntry :entry ; jdg:currentlyDifferent :b .
-        :b a health:AllergyRecord ; rec:inEntry :entry ; jdg:currentlyDifferent :a .
+        :a rec:inEntry :entry ; jdg:currentlyDifferent :b .
+        :b rec:inEntry :entry ; jdg:currentlyDifferent :a .
     """, tmp_path)
     assert [(row["entry"], row["record"], row["otherRecord"]) for row in found] == [("urn:x:entry", "urn:x:a", "urn:x:b")]
 
@@ -470,3 +509,38 @@ def test_every_row_of_a_judgment_says_whether_it_counts_beside_what_happened_to_
     """, tmp_path)
     assert sorted((row["judgment"], row["counts"], row.get("happened", "")) for row in found) == [
         ("urn:x:new", "true", ""), ("urn:x:old", "false", ""), ("urn:x:old", "false", "superseded")]
+
+
+ENTERED_BY_THE_PERSON = """
+    @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+    @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    :subject a rec:Subject .
+    :condition a health:ConditionRecord .
+    :conditionVersion prov:specializationOf :condition ; rec:patient :subject ; health:status "active" .
+    :conditionRevision a rec:Revision ; rec:revisionOf :condition ; rec:version :conditionVersion ;
+        prov:generatedAtTime "2027-01-01T00:00:00Z"^^xsd:dateTime .
+    :allergy a health:AllergyRecord .
+    :allergyVersion prov:specializationOf :allergy ; rec:patient :subject ; clinical:status "active" .
+    :allergyRevision a rec:Revision ; rec:revisionOf :allergy ; rec:version :allergyVersion ;
+        prov:generatedAtTime "2027-01-01T00:00:00Z"^^xsd:dateTime .
+"""
+
+
+@pytest.mark.parametrize("lens", LENSES)
+@pytest.mark.parametrize("engine", ENGINES)
+def test_a_status_the_person_entered_sets_a_conditions_entry_and_never_an_allergys(engine, lens, tmp_path):
+    path = tmp_path / "pod.ttl"
+    path.write_text(UNIT_PREFIXES + ENTERED_BY_THE_PERSON, encoding="utf-8")
+    held = store.ENGINES[engine]()
+    held.load(path, "urn:x:")
+    derived = derive.derive(held, lens)
+    assert {str(o) for _, p, o in derived if p == URIRef(REC + "statusFrom")} == {"urn:x:condition"}
+
+
+@every_example
+def test_how_many_of_each_kind_counts_what_the_pods_files_state_and_no_type_only_the_derivations_state(example):
+    held = example.store("oxigraph", vocabulary.DEFAULT_LENS)
+    derived_only = {o for s, p, o in held.triples(derive.DERIVED + vocabulary.DEFAULT_LENS) if p == RDF.type}
+    counted = {row["type"] for row in answers(example, "oxigraph", vocabulary.DEFAULT_LENS)["pod/How many of each kind"]}
+    assert derived_only and not counted & derived_only

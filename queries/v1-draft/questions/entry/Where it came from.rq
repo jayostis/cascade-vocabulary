@@ -1,7 +1,5 @@
 # For each member of an entry: when its current revision arrived, the import that brought it, and the document it was derived from,
 # with the hospital that wrote that document and when it was retrieved. A record the person entered has no document.
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -9,8 +7,7 @@ PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT ?entry ?entryLabel ?record ?recordLabel ?arrived ?import ?importLabel ?document ?documentLabel ?hospital ?retrieved
 WHERE {
-  VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
-  ?record a ?type ; rec:inEntry ?entry ; rec:currentRevision ?revision .
+  ?record rec:inEntry ?entry ; rec:currentRevision ?revision .
   ?revision prov:generatedAtTime ?arrived .
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   OPTIONAL { ?record rdfs:label ?recordLabel }

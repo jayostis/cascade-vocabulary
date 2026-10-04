@@ -1,0 +1,29 @@
+# The table is the one place that says which types are records and, for each kind, the word for it, the properties
+# that hold its name, status and date, and whether its status comes only from documents. Every record becomes a
+# rec:Record, and every version of one gets rec:name, rec:status and rec:date, so later steps read any record alike.
+# The first OPTIONAL finds every version, so one with no name still gets its status; each later OPTIONAL names the
+# version again, so a record with no version copies nothing that is not its own. A property is matched with a FILTER:
+# as the pattern's predicate, an UNDEF cell such as an allergy's date would match every statement, and rdflib would drop
+# a version that lacks the property.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT {
+  ?record a rec:Record ; rec:kind ?kind ; rec:statusOnlyFromDocuments ?statusOnlyFromDocuments .
+  ?version rec:name ?name ; rec:status ?status ; rec:date ?date .
+}
+WHERE {
+  VALUES (?type ?kind ?nameProperty ?statusProperty ?statusOnlyFromDocuments ?dateProperty) {
+    (health:AllergyRecord      "Allergy"      health:allergen        clinical:status true  UNDEF)
+    (health:ConditionRecord    "Condition"    health:conditionName   health:status   false health:onsetDate)
+    (health:ImmunizationRecord "Immunization" health:vaccineName     health:status   false health:administrationDate)
+    (clinical:Procedure        "Procedure"    clinical:procedureName clinical:status false clinical:procedureDate)
+  }
+  ?record a ?type .
+  OPTIONAL { ?version prov:specializationOf ?record }
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasName ?name FILTER (?hasName = ?nameProperty) }
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasStatus ?status FILTER (?hasStatus = ?statusProperty) }
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasDate ?date FILTER (?hasDate = ?dateProperty) }
+}
