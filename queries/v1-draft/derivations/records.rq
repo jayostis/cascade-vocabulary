@@ -1,8 +1,8 @@
-# The table is the one place that says which types are records, and how each kind holds its name, status and date. Every
-# record becomes a rec:Record with the word for its kind, and every version of one gets rec:name, rec:status and rec:date,
-# so every later step reads any record the same way. Each property is matched through a FILTER: a cell left UNDEF, as an
-# allergy's date is, then matches nothing, where in the pattern itself it would match every statement; and rdflib keeps a
-# version that lacks one only in this form.
+# The table is the one place that says which types are records, and which property holds each kind's name, status and
+# date. Every record becomes a rec:Record with the word for its kind, and every version of one gets rec:name, rec:status
+# and rec:date, so later steps read any record alike. Each OPTIONAL names the version again, so a record with none is
+# still a rec:Record. A property is matched with a FILTER, not as the pattern's predicate: there an UNDEF cell, as an
+# allergy's date is, would match every statement, and rdflib would drop a version that lacks the property.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
