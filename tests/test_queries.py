@@ -420,11 +420,9 @@ RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 def test_everything_labelled_has_exactly_one_label(example):
     graph = final_graph(example)
     labels = Counter(str(s) for s in graph.subjects(URIRef(RDFS_LABEL), None))
-    kinds = "VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }"
+    kinds = "VALUES ?type { %s }" % " ".join(f"<{kind}>" for kind in sorted(record_types()))
     found = graph.query("""
         PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-        PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-        PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
         PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
         PREFIX prov: <http://www.w3.org/ns/prov#>
         PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
