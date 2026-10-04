@@ -1,6 +1,4 @@
 # An entry takes its date from the member whose current revision arrived last, among those that state a date.
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
@@ -11,15 +9,11 @@ WHERE {
     WHERE {
       { SELECT ?entry (MAX(?t2) AS ?t)
         WHERE {
-          VALUES (?type2 ?date2) { (health:ConditionRecord health:onsetDate) (health:ImmunizationRecord health:administrationDate) (clinical:Procedure clinical:procedureDate) }
-          ?r2 a ?type2 ; rec:inEntry ?entry ;
-              rec:currentRevision/prov:generatedAtTime ?t2 ; pav:hasCurrentVersion ?v2 .
-          ?v2 ?date2 [] . }
+          ?r2 a rec:Record ; rec:inEntry ?entry ;
+              rec:currentRevision/prov:generatedAtTime ?t2 ; pav:hasCurrentVersion/rec:date [] . }
         GROUP BY ?entry }
-      VALUES (?type ?date) { (health:ConditionRecord health:onsetDate) (health:ImmunizationRecord health:administrationDate) (clinical:Procedure clinical:procedureDate) }
-      ?r a ?type ; rec:inEntry ?entry ;
-         rec:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion ?v .
-      ?v ?date [] .
+      ?r a rec:Record ; rec:inEntry ?entry ;
+         rec:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion/rec:date [] .
     }
     GROUP BY ?entry }
 }

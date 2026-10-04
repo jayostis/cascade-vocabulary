@@ -1,7 +1,5 @@
-# A condition, vaccination or procedure entry takes its status from the member whose current revision arrived last,
-# among those that state one.
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+# An entry takes its status from the member whose current revision arrived last, among those that state one and came
+# from a document: what the person entered never sets a status.
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
@@ -12,15 +10,13 @@ WHERE {
     WHERE {
       { SELECT ?entry (MAX(?t2) AS ?t)
         WHERE {
-          VALUES (?type2 ?status2) { (health:ConditionRecord health:status) (health:ImmunizationRecord health:status) (clinical:Procedure clinical:status) }
-          ?r2 a ?type2 ; rec:inEntry ?entry ;
-              rec:currentRevision/prov:generatedAtTime ?t2 ; pav:hasCurrentVersion ?v2 .
-          ?v2 ?status2 [] . }
+          ?r2 a rec:Record ; rec:inEntry ?entry ;
+              rec:currentRevision ?rev2 ; pav:hasCurrentVersion/rec:status [] .
+          ?rev2 prov:generatedAtTime ?t2 ; prov:wasDerivedFrom [] . }
         GROUP BY ?entry }
-      VALUES (?type ?status) { (health:ConditionRecord health:status) (health:ImmunizationRecord health:status) (clinical:Procedure clinical:status) }
-      ?r a ?type ; rec:inEntry ?entry ;
-         rec:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion ?v .
-      ?v ?status [] .
+      ?r a rec:Record ; rec:inEntry ?entry ;
+         rec:currentRevision ?rev ; pav:hasCurrentVersion/rec:status [] .
+      ?rev prov:generatedAtTime ?t ; prov:wasDerivedFrom [] .
     }
     GROUP BY ?entry }
 }
