@@ -15,7 +15,7 @@ from rdflib.compare import isomorphic
 import recomputed
 from cascade_pod import match, names, store, turtle, vocabulary
 from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
-from examples import ROOT, every_example, every_example_and, pod_file
+from examples import ROOT, every_example, every_example_and, pod_file, run_matcher
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 PROV = "http://www.w3.org/ns/prov#"
@@ -242,13 +242,8 @@ def matcher_runs(example):
 
 @every_example_and("run", matcher_runs)
 def test_each_matcher_run_in_the_story_writes_exactly_the_files_its_event_adds_byte_for_byte(example, run, tmp_path):
-    event = example.through(run)[-1]
-    options = ["--read-through", event["read_through"], "--at", event["at"], "--out", str(tmp_path)]
-    options += ["--takes", event["takes"]] if "takes" in event else []
-    result = subprocess.run([sys.executable, "-m", "cascade_pod", "match", str(example.folder), *options],
-                            capture_output=True, text=True, cwd=ROOT)
-    assert result.returncode == 0, result.stderr
-    written = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*") if p.is_file())
+    event = example.event(run)
+    written = sorted(run_matcher(example.folder, event["read_through"], event["at"], tmp_path, event.get("takes")))
     assert written == sorted(event["adds"])
     for relative in written:
         assert (tmp_path / relative).read_bytes() == (example.pod / relative).read_bytes(), relative

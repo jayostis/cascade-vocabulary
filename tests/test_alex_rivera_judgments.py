@@ -21,12 +21,8 @@ EVERY_REFERENCE = {
 }
 
 
-def added_by():
-    return {path: event["event"] for event in ALEX.events for path in event["adds"]}
-
-
 def listed(*folders):
-    return sorted(p for p in added_by() if p.startswith(folders))
+    return sorted(p for p in ALEX.files() if p.startswith(folders))
 
 
 def path_of(folder, name):
@@ -43,16 +39,6 @@ def judgments():
     return found
 
 
-def through(event, *folders):
-    events = [e["event"] for e in ALEX.events]
-    graph = Graph()
-    for e in ALEX.events[: events.index(event) + 1]:
-        for relative in e["adds"]:
-            if relative.startswith(folders):
-                graph += pod_file(ALEX, relative)
-    return graph
-
-
 def current_version(graph, record):
     revisions = set(graph.subjects(URIRef(REC + "revisionOf"), URIRef(record)))
     followed = {o for r in revisions for o in graph.objects(r, URIRef(PROV + "wasRevisionOf"))}
@@ -64,7 +50,7 @@ def test_every_judgment_and_reference_file_is_named_for_its_one_thing_and_listed
     names = {h: str(term) for h, term in handles().items()}
     expected = {path_of("judgments", names[j]): row[0] for j, row in EVERY_JUDGMENT.items()}
     expected |= {path_of("references", names[r]): event for r, event in EVERY_REFERENCE.items()}
-    assert {p: e for p, e in added_by().items() if p.startswith(("judgments/", "references/"))} == expected
+    assert {p: e for p, e in ALEX.added_by().items() if p.startswith(("judgments/", "references/"))} == expected
     on_disk = sorted(p.relative_to(POD).as_posix() for folder in ("judgments", "references")
                      for p in (POD / folder).rglob("*") if p.is_file())
     assert on_disk == sorted(expected)
@@ -94,7 +80,7 @@ def test_the_judgments_are_the_scenarios_author_verdict_members_justification_us
         def values(predicate):
             return sorted(str(o) for o in graph.objects(judgment, URIRef(predicate)))
 
-        assert added_by()[relative] == event, j
+        assert ALEX.added_by()[relative] == event, j
         assert f'prov:generatedAtTime "{at}"^^xsd:dateTime' in (POD / relative).read_text(encoding="utf-8"), j
         assert len(values(PROV + "generatedAtTime")) == 1, j
         assert values(PROV + "wasAttributedTo") == [WEBID if author == "Alex" else MATCHER], j
@@ -120,7 +106,7 @@ def test_each_matcher_judgment_names_the_rule_set_the_table_its_rule_applied_and
         judgment = URIRef(name)
         if str(graph.value(judgment, URIRef(PROV + "wasAttributedTo"))) != MATCHER:
             continue
-        records = through(added_by()[relative], "records/")
+        records = ALEX.loaded("rdflib", ALEX.added_by()[relative]).graph()
         justification = str(graph.value(judgment, URIRef(JDG + "justification")))[len(JDG):]
         members = sorted(str(m) for m in graph.objects(judgment, URIRef(PROV + "hadMember")))
         used = sorted(str(u) for u in graph.objects(judgment, URIRef(PROV + "used")))
