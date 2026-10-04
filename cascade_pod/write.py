@@ -192,7 +192,8 @@ def file_export(filing, event, facts_files):
         refuse_unaccounted_statements(conversion)
         wrote = file_revisions(filing, event, conversion)
         if is_kept(conversion, wrote):
-            kept[conversion.document] = keep(filing, event, conversion)
+            keep(filing, event, conversion)
+            kept[conversion.document] = conversion.import_description(event["import"])
     if kept and not to_convert:
         file_import(filing, event, kept)
     return to_convert
@@ -259,7 +260,6 @@ def keep(filing, event, conversion):
     filing.add(event["event"], f"attachments/sha-256/{stem(conversion.document)}", conversion.octets)
     filing.add_turtle(event["event"], fanned("provenance/documents", conversion.document),
                       closure(conversion.graph, conversion.document))
-    return conversion.import_description(event["import"])
 
 
 def file_import(filing, event, kept):
