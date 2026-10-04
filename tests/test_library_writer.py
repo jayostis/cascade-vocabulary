@@ -62,6 +62,12 @@ class Story:
                             "import": f"urn:uuid:00000000-0000-4000-8000-0000000000{len(self.events):02d}"})
         return self
 
+    def entry(self, event, text):
+        (self.root / "entries").mkdir(exist_ok=True)
+        (self.root / "entries" / f"{event.lower()}.ttl").write_text(PREFIXES + text, encoding="utf-8")
+        self.events.append({"event": event, "at": "2026-01-01T00:00:00Z", "adds": [], "entry": f"entries/{event.lower()}.ttl"})
+        return self
+
     def write(self):
         story = {"address": "https://pod.example/", "events": self.events, "derived": []}
         (self.root / "events.json").write_text(json.dumps(story), encoding="utf-8")
@@ -158,3 +164,13 @@ def test_an_import_that_describes_itself_differently_in_two_files_of_one_export_
              "b": (PEANUTS_AGAIN, conversion(PEANUTS_AGAIN, ("Tree nuts", "2"), label="Another export"), None)}
     with pytest.raises(Failure, match="disagree on the import's label, start or association"):
         Story(tmp_path).export("E2", files).write()
+
+
+def test_an_entry_of_a_type_the_pod_files_nowhere_is_refused_in_one_line(tmp_path):
+    entry = """<urn:uuid:00000000-0000-4000-8000-000000000009> a prov:Activity ;
+  prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+<urn:cascade:output-0> a <urn:example:NoSuchRecord> .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> .
+"""
+    with pytest.raises(Failure, match="entries/e2.ttl: urn:uuid:.* is of no type the pod files: urn:example:NoSuchRecord"):
+        Story(tmp_path).entry("E2", entry).write()
