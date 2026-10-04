@@ -1,15 +1,13 @@
-# A record is shown in at most one entry, in the view of its type. The entry joins it with every record judged to be the same thing.
+# A record is shown in at most one entry, in the view of its kind. The entry joins it with every record judged to be the same thing.
 # A record in no entry is hidden, and Not shown says why.
 PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT ?record ?recordLabel ?entry ?entryLabel ?view
 WHERE {
-  VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
   GRAPH ?view { ?entry cascade:mergedFrom ?record }
-  ?record a ?type .
+  ?record a rec:Record .
   OPTIONAL { ?record rdfs:label ?recordLabel }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
 }
