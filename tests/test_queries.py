@@ -89,6 +89,14 @@ def test_every_subquery_comes_first_in_its_group(relative):
             assert not any(is_subquery(part) for part in parts[first_other:]), relative
 
 
+@pytest.mark.parametrize("relative", sorted(vocabulary.named("views").values()))
+def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
+    patterns = [t for node in nodes(prepareQuery(vocabulary.query(relative)).algebra["p"]) if node.name == "BGP"
+                for t in node["triples"]]
+    typed = {s for s, p, o in patterns if p == RDF.type and isinstance(o, URIRef)}
+    assert {s for s, p, o in patterns if p == URIRef(REC + "inEntry")} <= typed
+
+
 @pytest.mark.parametrize("relative", every_query())
 def test_every_query_is_one_flat_pattern(relative):
     assert nested_forms(vocabulary.query(relative)) == []
