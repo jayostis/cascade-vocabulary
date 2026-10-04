@@ -1,8 +1,10 @@
-# The table is the one place that says which types are records, and which property holds each kind's name, status and
-# date. Every record becomes a rec:Record with the word for its kind, and every version of one gets rec:name, rec:status
-# and rec:date, so later steps read any record alike. Each OPTIONAL names the version again, so a record with none is
-# still a rec:Record. A property is matched with a FILTER, not as the pattern's predicate: there an UNDEF cell, as an
-# allergy's date is, would match every statement, and rdflib would drop a version that lacks the property.
+# The table is the one place that says which types are records and, for each kind, the word for it, the properties
+# that hold its name, status and date, and whether its status comes only from documents. Every record becomes a
+# rec:Record, and every version of one gets rec:name, rec:status and rec:date, so later steps read any record alike.
+# The first OPTIONAL finds every version, so one with no name still gets its status; each later OPTIONAL names the
+# version again, so a record with no version copies nothing that is not its own. A property is matched with a FILTER:
+# as the pattern's predicate, an UNDEF cell such as an allergy's date would match every statement, and rdflib would drop
+# a version that lacks the property.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
