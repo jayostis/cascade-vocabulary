@@ -229,7 +229,7 @@ def accounted_for(graph, document):
 def file_revisions(filing, event, conversion):
     wrote = False
     for revision in conversion.revisions(event.get("import")):
-        if repeats_a_source_version(filing, revision) or sets_the_version_it_holds(filing, revision):
+        if repeats_a_source_version(filing, revision) or repeats_the_version_the_record_is_at(filing, revision):
             continue
         if revision.by is None:
             raise Failure(f"{event['event']} has no import, and {conversion.source} would write a revision")
@@ -242,7 +242,7 @@ def repeats_a_source_version(filing, revision):
     return revision.source_version is not None and revision.source_version in filing.source_versions[revision.record]
 
 
-def sets_the_version_it_holds(filing, revision):
+def repeats_the_version_the_record_is_at(filing, revision):
     return filing.last_version.get(revision.record) == revision.version
 
 
