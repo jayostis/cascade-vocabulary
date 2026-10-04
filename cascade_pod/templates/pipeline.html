@@ -9,8 +9,8 @@
 <table>
 <thead><tr><th>Term</th><th>Statements added</th></tr></thead>
 <tbody>
-{% for predicate, statements in added|groupby(1) %}
-<tr><td data-label="Term">{{ term(predicate) }}</td><td data-label="Statements added">{{ statements|length }}</td></tr>
+{% for written, count in added|written %}
+<tr><td data-label="Term">{{ term(written) }}</td><td data-label="Statements added">{{ count }}</td></tr>
 {% endfor %}
 </tbody>
 </table>
