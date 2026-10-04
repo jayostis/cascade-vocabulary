@@ -31,6 +31,28 @@ rec:version a owl:ObjectProperty ;
     rdfs:label "version"@en ;
     rdfs:domain rec:Revision .
 
+rec:Record a owl:Class ;
+    rdfs:label "record"@en ;
+    rdfs:comment "Derived: a thing of a type the first derivation lists as a kind of record."@en .
+
+rec:kind a owl:DatatypeProperty ;
+    rdfs:label "kind"@en ;
+    rdfs:comment "Derived: the word for the record's kind, one for each type of record."@en ;
+    rdfs:domain rec:Record ;
+    rdfs:range xsd:string .
+
+rec:name a owl:DatatypeProperty ;
+    rdfs:label "name"@en ;
+    rdfs:comment "Derived: the version's name, copied from the property its kind names things with."@en .
+
+rec:status a owl:DatatypeProperty ;
+    rdfs:label "status"@en ;
+    rdfs:comment "Derived: the version's status, copied from the property its kind states one with."@en .
+
+rec:date a owl:DatatypeProperty ;
+    rdfs:label "date"@en ;
+    rdfs:comment "Derived: the version's date, copied from the property its kind dates things with, if it has one."@en .
+
 rec:currentRevision a owl:ObjectProperty ;
     rdfs:label "current revision"@en ;
     rdfs:comment "Derived: the revision of a record no other revision follows. Never written to a pod file."@en ;
