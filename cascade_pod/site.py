@@ -5,6 +5,7 @@ import hashlib
 import os
 from collections import Counter
 from datetime import datetime, timezone
+from functools import cached_property
 from pathlib import Path
 
 import jinja2
@@ -79,53 +80,102 @@ class Query:
 class Site:
     def __init__(self, example):
         self.example = example
-        lenses = sorted(vocabulary.named("lenses"), key=lambda lens: lens != vocabulary.DEFAULT_LENS)
-        held = {lens: example.store(ENGINE, lens) for lens in lenses}
-        self.answers = {lens: {name: Query(relative, name, lens, *held[lens].answer(vocabulary.query(relative)))
-                               for name, relative in vocabulary.questions().items()} for lens in lenses}
-        self.questions = self.answers[vocabulary.DEFAULT_LENS]
-        self.terms = self._terms()
-        self.names = {row["thing"]: row["label"] for row in self.questions[CALLED].rows}
-        kinds = sorted({name.split("/")[0] for name in self.questions} - {"pod"})
-        self.things = {kind: self._things(kind) for kind in kinds}
-        writers = {path: vocabulary.named("views")[view] for view, path in VIEW_FILES.items()} | {LABEL_FILE: "labels.rq"}
-        built = held[vocabulary.DEFAULT_LENS]
-        self.built = {URIRef(example.address + path): (Query(relative), len(built.triples(example.address + path)))
-                      for path, relative in writers.items()}
-        self.views = [URIRef(example.address + path) for path in VIEW_FILES.values()]
-        self.pipeline = {lens: [(Query(relative), added) for relative, added in derive.steps(example.loaded(ENGINE), lens)]
-                         for lens in lenses}
-        self.copied = example.files() + example.derived
-        self.pages, self.turtles, self.links = self._links()
+        self.lenses = sorted(vocabulary.named("lenses"), key=lambda lens: lens != vocabulary.DEFAULT_LENS)
 
-    def _terms(self):
+    def iri(self, path):
+        return URIRef(self.example.address + path)
+
+    # The questions, asked of the pod under each lens
+
+    @cached_property
+    def stores(self):
+        return {lens: self.example.store(ENGINE, lens) for lens in self.lenses}
+
+    @cached_property
+    def answers(self):
+        return {lens: {name: Query(relative, name, lens, *self.stores[lens].answer(vocabulary.query(relative)))
+                       for name, relative in vocabulary.questions().items()} for lens in self.lenses}
+
+    @cached_property
+    def questions(self):
+        return self.answers[vocabulary.DEFAULT_LENS]
+
+    # What things are called, and which have a page
+
+    @cached_property
+    def terms(self):
         terms = ENGINES[ENGINE]()
         vocabulary.load(terms)
         _, rows = terms.answer(vocabulary.query(vocabulary.questions()[CALLED]))
         return {row["thing"]: row["label"] for row in rows}
 
-    def _things(self, kind):
-        found = {row[kind]: None for name, question in self.questions.items() if name.startswith(kind + "/")
-                 for row in question.rows if isinstance(row.get(kind), URIRef)}
-        return list(found)
+    @cached_property
+    def names(self):
+        return {row["thing"]: row["label"] for row in self.questions[CALLED].rows}
 
-    def _links(self):
-        """Each thing's page, the Turtle copy of the first file each thing arrived in, and where a cell naming each IRI
-        links to: a file's Turtle, a thing's page, the step that writes a term, a document's stored bytes, or the
-        Turtle that states it."""
-        copies = {URIRef(self.example.address + path): COPY + path for path in self.copied}
-        turtles = {}
-        for row in self.questions[STATED].rows:
-            if not row["named"].toPython() and not row["rebuilt"].toPython():
-                turtles.setdefault(row["thing"], copies[row["file"]])
-        stored = {URIRef(names.document((self.example.pod / path).read_bytes())): COPY + path
-                  for path in self.copied if path.startswith("attachments/")}
-        made = {}
+    @cached_property
+    def things(self):
+        kinds = sorted({name.split("/")[0] for name in self.questions} - {"pod"})
+        return {kind: list({row[kind]: None for name, question in self.questions.items() if name.startswith(kind + "/")
+                            for row in question.rows if isinstance(row.get(kind), URIRef)}) for kind in kinds}
+
+    @cached_property
+    def views(self):
+        return [self.iri(path) for path in VIEW_FILES.values()]
+
+    # How the views are built
+
+    @cached_property
+    def pipeline(self):
+        return {lens: [(Query(relative), added) for relative, added in derive.steps(self.example.loaded(ENGINE), lens)]
+                for lens in self.lenses}
+
+    @cached_property
+    def built(self):
+        writers = {path: vocabulary.named("views")[view] for view, path in VIEW_FILES.items()} | {LABEL_FILE: "labels.rq"}
+        held = self.stores[vocabulary.DEFAULT_LENS]
+        return {self.iri(path): (Query(relative), len(held.triples(self.example.address + path)))
+                for path, relative in writers.items()}
+
+    # Where a link goes
+
+    def href(self, iri):
+        preferred = (self.copies, self.pages, self.step_writing, self.stored_bytes, self.turtles)
+        return next((targets[iri] for targets in preferred if iri in targets), None)
+
+    @cached_property
+    def copied(self):
+        return self.example.files() + self.example.derived
+
+    @cached_property
+    def copies(self):
+        return {self.iri(path): COPY + path for path in self.copied}
+
+    @cached_property
+    def pages(self):
+        return {thing: page(thing) for things in [*self.things.values(), self.views] for thing in things}
+
+    @cached_property
+    def step_writing(self):
+        found = {}
         for query, added in self.pipeline[vocabulary.DEFAULT_LENS]:
             for term, _ in written(added):
-                made.setdefault(term, f"pipeline.html#{query.title}")
-        pages = {thing: page(thing) for things in [*self.things.values(), self.views] for thing in things}
-        return pages, turtles, turtles | stored | made | pages | copies
+                found.setdefault(term, f"pipeline.html#{query.title}")
+        return found
+
+    @cached_property
+    def stored_bytes(self):
+        return {URIRef(names.document((self.example.pod / path).read_bytes())): COPY + path
+                for path in self.copied if path.startswith("attachments/")}
+
+    @cached_property
+    def turtles(self):
+        """The copy of the first file each thing arrived in, for a thing a file states rather than only names."""
+        found = {}
+        for row in self.questions[STATED].rows:
+            if not row["named"].toPython() and not row["rebuilt"].toPython():
+                found.setdefault(row["thing"], self.copies[row["file"]])
+        return found
 
     def about(self, thing, kind=None):
         """Which files state it, then each question of the kind, with only the rows about this one."""
@@ -135,7 +185,7 @@ class Site:
     def environment(self):
         environment = jinja2.Environment(loader=jinja2.FileSystemLoader(HERE / "templates"), autoescape=True,
                                          undefined=jinja2.StrictUndefined, trim_blocks=True, lstrip_blocks=True)
-        environment.filters.update(href=self.links.get, page=self.pages.get, turtle=self.turtles.get, shown=shown,
+        environment.filters.update(href=self.href, page=self.pages.get, turtle=self.turtles.get, shown=shown,
                                    written=written, code=code, nt=turtle.term,
                                    prefixed=lambda iri: turtle.prefixed(str(iri)))
         environment.tests.update(iri=lambda term: isinstance(term, URIRef), literal=lambda term: isinstance(term, Literal))
