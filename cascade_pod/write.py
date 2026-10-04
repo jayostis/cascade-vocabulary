@@ -49,7 +49,7 @@ class Revision:
     version_triples: frozenset
     statements: frozenset
     at: str
-    by: str
+    by: str | None
 
     @property
     def source_version(self):
@@ -231,7 +231,7 @@ def file_revisions(filing, event, conversion):
     for revision in conversion.revisions(event.get("import")):
         if repeats_a_source_version(filing, revision) or repeats_the_version_the_record_is_at(filing, revision):
             continue
-        if revision.by is None:
+        if event.get("import") is None:
             raise Failure(f"{event['event']} has no import, and {conversion.source} would write a revision")
         filing.revise(event["event"], revision)
         wrote = True
