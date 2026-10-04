@@ -20,8 +20,8 @@ WHERE {
     (clinical:Procedure        "Procedure"    clinical:procedureName clinical:status clinical:procedureDate)
   }
   ?record a ?type .
-  ?version prov:specializationOf ?record .
-  OPTIONAL { ?version ?hasName ?name FILTER (?hasName = ?nameProperty) }
-  OPTIONAL { ?version ?hasStatus ?status FILTER (?hasStatus = ?statusProperty) }
-  OPTIONAL { ?version ?hasDate ?date FILTER (?hasDate = ?dateProperty) }
+  OPTIONAL { ?version prov:specializationOf ?record }
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasName ?name FILTER (?hasName = ?nameProperty) }
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasStatus ?status FILTER (?hasStatus = ?statusProperty) }
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasDate ?date FILTER (?hasDate = ?dateProperty) }
 }
