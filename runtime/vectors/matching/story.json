@@ -1,0 +1,87 @@
+{
+  "address": "https://pod.example/",
+  "subject": "urn:uuid:e3b7a9c2-4d16-4f85-9a3e-7c1b5d9f2e48",
+  "steps": [
+    {
+      "name": "create",
+      "when": "2026-03-01T09:00:00Z",
+      "creation": {}
+    },
+    {
+      "name": "about-p",
+      "when": "2026-03-01T09:05:00Z",
+      "judgment": "scripted-input/about-p.ttl"
+    },
+    {
+      "name": "first-export",
+      "when": "2026-03-02T10:00:00Z",
+      "import": {
+        "export": "scripted-input/first-export/apple_health_export",
+        "converted": "scripted-input/first-export/bridge"
+      }
+    },
+    {
+      "name": "persons-different",
+      "when": "2026-03-02T12:00:00Z",
+      "judgment": "scripted-input/persons-different.ttl"
+    },
+    {
+      "name": "persons-same",
+      "when": "2026-03-02T12:05:00Z",
+      "judgment": "scripted-input/persons-same.ttl"
+    },
+    {
+      "name": "entry",
+      "when": "2026-03-03T08:00:00Z",
+      "entry": "scripted-input/entry.ttl"
+    },
+    {
+      "name": "match-entry",
+      "when": "2026-03-03T08:01:00Z",
+      "matcher": {
+        "takes": "entry"
+      }
+    },
+    {
+      "name": "match-entry-again",
+      "when": "2026-03-03T09:00:00Z",
+      "matcher": {
+        "takes": "entry"
+      }
+    },
+    {
+      "name": "about-r",
+      "when": "2026-03-04T07:00:00Z",
+      "judgment": "scripted-input/about-r.ttl"
+    },
+    {
+      "name": "second-entry",
+      "when": "2026-03-04T08:00:00Z",
+      "entry": "scripted-input/second-entry.ttl"
+    },
+    {
+      "name": "match-second-entry",
+      "when": "2026-03-04T08:01:00Z",
+      "matcher": {
+        "takes": "second-entry"
+      }
+    },
+    {
+      "name": "retract-about-r",
+      "when": "2026-03-04T12:00:00Z",
+      "judgment": "scripted-input/retract-about-r.ttl"
+    },
+    {
+      "name": "third-entry",
+      "when": "2026-03-05T08:00:00Z",
+      "entry": "scripted-input/third-entry.ttl"
+    },
+    {
+      "name": "match-third-entry",
+      "when": "2026-03-05T08:01:00Z",
+      "matcher": {
+        "takes": "third-entry"
+      }
+    }
+  ]
+}

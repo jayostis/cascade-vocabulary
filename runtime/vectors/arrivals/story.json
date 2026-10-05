@@ -1,0 +1,75 @@
+{
+  "address": "https://pod.example/",
+  "subject": "urn:uuid:1b4e6a52-8c3f-4d71-9e0a-5f2c7d8b9a10",
+  "steps": [
+    {
+      "name": "create",
+      "when": "2026-01-01T09:00:00Z",
+      "creation": {}
+    },
+    {
+      "name": "first-export",
+      "when": "2026-01-02T10:00:00Z",
+      "import": {
+        "export": "scripted-input/first-export/apple_health_export",
+        "converted": "scripted-input/first-export/bridge"
+      }
+    },
+    {
+      "name": "same-bytes",
+      "when": "2026-01-03T10:00:00Z",
+      "import": {
+        "export": "scripted-input/same-bytes/apple_health_export",
+        "converted": "scripted-input/same-bytes/bridge"
+      }
+    },
+    {
+      "name": "known-source-version",
+      "when": "2026-01-04T10:00:00Z",
+      "import": {
+        "export": "scripted-input/known-source-version/apple_health_export",
+        "converted": "scripted-input/known-source-version/bridge"
+      }
+    },
+    {
+      "name": "current-version-again",
+      "when": "2026-01-05T10:00:00Z",
+      "import": {
+        "export": "scripted-input/current-version-again/apple_health_export",
+        "converted": "scripted-input/current-version-again/bridge"
+      }
+    },
+    {
+      "name": "new-content",
+      "when": "2026-01-06T10:00:00Z",
+      "import": {
+        "export": "scripted-input/new-content/apple_health_export",
+        "converted": "scripted-input/new-content/bridge"
+      }
+    },
+    {
+      "name": "no-source-version",
+      "when": "2026-01-07T10:00:00Z",
+      "import": {
+        "export": "scripted-input/no-source-version/apple_health_export",
+        "converted": "scripted-input/no-source-version/bridge"
+      }
+    },
+    {
+      "name": "no-source-version-again",
+      "when": "2026-01-07T12:00:00Z",
+      "import": {
+        "export": "scripted-input/no-source-version-again/apple_health_export",
+        "converted": "scripted-input/no-source-version-again/bridge"
+      }
+    },
+    {
+      "name": "change-undone",
+      "when": "2026-01-08T10:00:00Z",
+      "import": {
+        "export": "scripted-input/change-undone/apple_health_export",
+        "converted": "scripted-input/change-undone/bridge"
+      }
+    }
+  ]
+}

@@ -4,8 +4,7 @@ How a Cascade pod is described and queried; [`README.md`](README.md) names the p
 
 ## The rules
 
-- **A term arrives because an adapter, or an example pod, writes it**, and none for later.
-  An adapter names a file by its path here: removing a term or moving a file it lists breaks it.
+- **An adapter names a file by its path here:** removing a term or moving a file it lists breaks it.
 - **A copied term keeps its IRI** and carries its type, label, domain, range and superclasses,
   and nothing else. Its shape is the source's, trimmed to the terms here.
 - **A new term goes in a namespace first declared here** (`records`, `judgments`). Where PROV-O
@@ -17,7 +16,8 @@ How a Cascade pod is described and queried; [`README.md`](README.md) names the p
   already returns those rows.
 - **What two tools share is written once, in its own `cascade_pod` module.**
 - **`expected/` and the planted cases come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,
-  never from the tools. Every file under `example-pods/*/pod/` is a tool's output: rerun the tool, never edit it.
+  and a vector's expected rows under `runtime/vectors/` from [`runtime/rules.md`](runtime/rules.md), never from the
+  tools. Every file under `example-pods/*/pod/` is a tool's output: rerun the tool, never edit it.
 - **A test true of any example runs over every one**, with `every_example` or `every_example_and`
   from [`tests/examples.py`](tests/examples.py).
 

@@ -96,8 +96,12 @@ def source_name(row):
         return URIRef(recomputed.record_name([row["server"], row["type"], row["id"]]))
     if "download" in row:
         return URIRef(recomputed.record_name([recomputed.ni_name((EXAMPLE / row["download"]).read_bytes()), ""]))
-    [activity] = store.parsed(EXAMPLE / row["entry"]).subjects(RDF.type, PROV.Activity)
-    return URIRef(recomputed.record_name([str(activity), str(row["position"])]))
+    entry = store.parsed(EXAMPLE / row["entry"])
+    [activity] = entry.subjects(RDF.type, PROV.Activity)
+    subject = next(event["subject"] for event in ALEX.events if "subject" in event)
+    started = str(entry.value(activity, PROV.startedAtTime))
+    assert started.endswith("Z"), started
+    return URIRef(recomputed.record_name([subject, started, str(row["position"])]))
 
 
 def arrivals(graph, record):

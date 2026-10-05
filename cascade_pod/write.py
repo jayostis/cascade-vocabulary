@@ -8,7 +8,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
 
-from rdflib import BNode, URIRef
+from rdflib import BNode, Graph, URIRef
 from rdflib.namespace import RDF
 
 from . import Failure, apple_health, names, store, turtle
@@ -66,6 +66,7 @@ class Revision:
 class Filing:
     def __init__(self, example):
         self.example = example
+        self.subject = None
         self.files = {}
         self.stored = set()
         self.last_revision = {}
@@ -95,6 +96,7 @@ class Filing:
 
 def file_subject(filing, event):
     subject = URIRef(event["subject"])
+    filing.subject = subject
     filing.add_turtle(event["event"], fanned(FOLDERS["subject"], str(subject)), {(subject, RDF.type, REC.Subject)})
 
 
@@ -103,14 +105,29 @@ def file_entry(filing, event):
     activities = list(graph.subjects(RDF.type, PROV.Activity))
     if len(activities) != 1:
         raise Failure(f"{event['entry']} holds {len(activities)} activities, not one")
+    if filing.subject is None:
+        raise Failure(f"{event['entry']} is entered before the pod is created")
     activity = activities[0]
+    if activity == URIRef(names.THIS_ENTRY):
+        graph, activity = this_entry(graph, event["at"])
     filing.add_turtle(event["event"], fanned(FOLDERS["activities"], str(activity)), closure(graph, activity))
-    for revision in entry_revisions(graph, activity, event["entry"], filing.example.records_folders):
+    for revision in entry_revisions(graph, activity, event["entry"], filing.example.records_folders, filing.subject):
         filing.revise(event["event"], revision)
 
 
-def entry_revisions(graph, activity, source, folders):
-    records = {draft: URIRef(names.record([str(activity), position.group(1)]))
+def this_entry(graph, at):
+    """The entry with its session given a new ID in place of THIS_ENTRY and started at `at`."""
+    placeholder, session = URIRef(names.THIS_ENTRY), URIRef(names.new_id())
+    renamed = Graph()
+    for triple in graph:
+        renamed.add(tuple(session if term == placeholder else term for term in triple))
+    renamed.set((session, PROV.startedAtTime, store.date_time(at)))
+    return renamed, session
+
+
+def entry_revisions(graph, activity, source, folders, subject):
+    started = names.in_utc(str(graph.value(activity, PROV.startedAtTime)))
+    records = {draft: URIRef(names.record([str(subject), started, position.group(1)]))
                for draft in set(graph.subjects(RDF.type, None))
                for position in [DRAFT_OUTPUT.match(str(draft))] if position}
     placeholder = URIRef(names.THIS_VERSION)

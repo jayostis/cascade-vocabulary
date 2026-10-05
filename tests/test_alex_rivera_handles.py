@@ -1,3 +1,4 @@
+from rdflib import URIRef
 from rdflib.namespace import RDF
 
 import recomputed
@@ -30,3 +31,14 @@ def test_every_handle_in_expected_handles_names_one_thing_in_the_pod_and_every_r
     assert len(set(named.values())) == len(named)
     assert [handle for kind in ("series", "judgments") for handle in sources()[kind]
             if (named[handle], None, None) not in graph] == []
+
+
+def test_a_record_an_entry_adds_is_not_named_from_the_activity_of_the_session_that_wrote_it():
+    graph = final_pod()
+    for handle, row in sources()["records"].items():
+        if "entry" not in row:
+            continue
+        [activity] = store.parsed(EXAMPLE / row["entry"]).subjects(RDF.type, PROV.Activity)
+        written = {graph.value(revision, REC.revisionOf) for revision in graph.subjects(PROV.wasGeneratedBy, activity)}
+        assert written, handle
+        assert URIRef(recomputed.record_name([str(activity), str(row["position"])])) not in written, handle

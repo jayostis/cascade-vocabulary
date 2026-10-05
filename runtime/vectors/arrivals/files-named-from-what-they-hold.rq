@@ -1,0 +1,12 @@
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?thing ?fileName WHERE {
+  GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
+  FILTER NOT EXISTS { GRAPH ?file { ?revision a rec:Revision } }
+  FILTER NOT EXISTS { GRAPH ?file { ?import prov:used ?document } }
+  OPTIONAL { GRAPH ?file { ?thing a ?type FILTER (?type IN (health:AllergyRecord, prov:Entity)) } }
+  OPTIONAL { GRAPH ?file { ?thing prov:specializationOf ?record } }
+  BIND(REPLACE(STR(?file), "^.*/", "") AS ?fileName)
+}

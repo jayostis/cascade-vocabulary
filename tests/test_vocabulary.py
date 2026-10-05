@@ -18,7 +18,15 @@ SOURCE_COMMIT = "https://github.com/the-cascade-protocol/spec/blob/d819bc2c04526
 FOAF_RELEASE = "http://xmlns.com/foaf/spec/20140114.rdf"
 CASCADE = "https://ns.cascadeprotocol.org/"
 PROV = Namespace("http://www.w3.org/ns/prov#")
-FORMATS = {".rq": "application/sparql-query", ".ttl": "text/turtle"}
+FORMATS = {
+    ".csv": "text/csv",
+    ".json": "application/json",
+    ".md": "text/markdown",
+    ".rq": "application/sparql-query",
+    ".srj": "application/sparql-results+json",
+    ".ttl": "text/turtle",
+    ".xml": "application/xml",
+}
 DECLARES_A_PREDICATE = (
     RDF.Property,
     OWL.DatatypeProperty,
@@ -138,5 +146,6 @@ def test_every_datatype_a_shape_accepts_is_in_its_predicates_range():
 def test_the_crate_lists_every_ontology_file_and_every_query_and_nothing_else():
     entities = {entity["@id"]: entity for entity in json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]}
     listed = {part["@id"]: entities[part["@id"]]["encodingFormat"] for part in entities["./"]["hasPart"]}
-    files = sorted(ROOT.glob("ontologies/**/*.ttl")) + sorted(QUERIES.rglob("*.rq"))
+    files = (sorted(ROOT.glob("ontologies/**/*.ttl")) + sorted(QUERIES.rglob("*.rq"))
+             + sorted(path for path in (ROOT / "runtime").rglob("*") if path.is_file()))
     assert listed == {path.relative_to(ROOT).as_posix(): FORMATS[path.suffix] for path in files}

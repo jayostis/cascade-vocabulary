@@ -1,5 +1,6 @@
 """Two SPARQL engines behind one interface, each taking and giving rdflib terms; a string literal has no datatype.
-Every triple added under a graph's name is in the default graph as well, and queries read the default graph.
+Every triple added under a graph's name is in the default graph as well, unless it is added to that graph alone, and
+queries read the default graph.
 """
 
 import warnings
@@ -60,11 +61,11 @@ class Oxigraph(Store):
         parsed = pyoxigraph.parse(path.read_bytes(), format=pyoxigraph.RdfFormat.TURTLE, base_iri=graph)
         self._extend([(q.subject, q.predicate, q.object) for q in parsed], graph)
 
-    def add(self, triples, graph=None):
-        self._extend([tuple(self._node(t) for t in triple) for triple in triples], graph)
+    def add(self, triples, graph=None, alone=False):
+        self._extend([tuple(self._node(t) for t in triple) for triple in triples], graph, alone)
 
-    def _extend(self, triples, graph):
-        graphs = [pyoxigraph.DefaultGraph()] + ([pyoxigraph.NamedNode(graph)] if graph else [])
+    def _extend(self, triples, graph, alone=False):
+        graphs = ([] if alone else [pyoxigraph.DefaultGraph()]) + ([pyoxigraph.NamedNode(graph)] if graph else [])
         self.store.extend([pyoxigraph.Quad(*triple, g) for triple in triples for g in graphs])
 
     @staticmethod
@@ -94,6 +95,9 @@ class Oxigraph(Store):
         solutions = self.store.query(query)
         return [v.value for v in solutions.variables], solutions
 
+    def ask(self, query):
+        return bool(self.store.query(query))
+
     def triples(self, graph=None):
         named = pyoxigraph.NamedNode(graph) if graph else pyoxigraph.DefaultGraph()
         return {tuple(self._term(t) for t in (x.subject, x.predicate, x.object))
@@ -118,11 +122,11 @@ class Rdflib(Store):
     def load(self, path, graph):
         self._extend([tuple(map(plain, triple)) for triple in parsed(path, graph)], graph)
 
-    def add(self, triples, graph=None):
-        self._extend(list(triples), graph)
+    def add(self, triples, graph=None, alone=False):
+        self._extend(list(triples), graph, alone)
 
-    def _extend(self, triples, graph):
-        graphs = [self.graph()] + ([self.graph(graph)] if graph else [])
+    def _extend(self, triples, graph, alone=False):
+        graphs = ([] if alone else [self.graph()]) + ([self.graph(graph)] if graph else [])
         self.dataset.addN((*triple, g) for triple in triples for g in graphs)
 
     def _solutions(self, query):
@@ -131,6 +135,11 @@ class Rdflib(Store):
             with literals_as_written():
                 result = self.dataset.query(query)
                 return [str(v) for v in result.vars or ()], list(result)
+
+    def ask(self, query):
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", r"Dataset\.\w+ is deprecated", DeprecationWarning)
+            return bool(self.dataset.query(query).askAnswer)
 
     def construct(self, query):
         _, found = self._solutions(query)

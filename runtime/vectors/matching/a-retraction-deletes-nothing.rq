@@ -1,0 +1,8 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?step ?judgment ?verdict WHERE {
+  GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
+  GRAPH ?file { ?judgment a jdg:Judgment OPTIONAL { ?judgment jdg:verdict ?verdict } }
+  FILTER (?judgment IN (<urn:uuid:b8d3f1a7-2c69-4e5b-9f14-3a7e6d2c8b91>, <urn:uuid:f2b6d9a4-7e3c-4815-b9d7-5a8e2c6f1d43>))
+}

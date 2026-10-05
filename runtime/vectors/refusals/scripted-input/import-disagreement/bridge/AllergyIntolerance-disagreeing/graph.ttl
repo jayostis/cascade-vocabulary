@@ -1,0 +1,33 @@
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+
+<ni:///sha-256;NfA_8nllfGjz8tuc7oYlGxZzSqW7zVIG4ic-8K8cMYE> a prov:Entity ;
+  pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/disagreeing> ;
+  pav:retrievedOn "2026-06-04T09:00:00Z"^^xsd:dateTime ;
+  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Apple Health" ] ; prov:hadRole rec:transmitter ] ,
+    [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole rec:author ] ;
+  bridge:serverBaseUrl "https://fhir.example.org/r4" ;
+  bridge:sourceFormatVersion "4.0.1" .
+_:import a prov:Activity ; rdfs:label "Another export" ;
+  prov:startedAtTime "2026-06-04T09:00:00Z"^^xsd:dateTime ;
+  prov:used <ni:///sha-256;NfA_8nllfGjz8tuc7oYlGxZzSqW7zVIG4ic-8K8cMYE> ;
+  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "fhir-r4" ; pav:version "0.1.0" ] ;
+    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
+<urn:uuid:4f03180a-64ce-8022-8c5e-3e1174f610c1> a <https://ns.cascadeprotocol.org/health/v1#AllergyRecord> ; health:sourceRecordId "disagreeing" ; rec:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/disagreeing> .
+<ni:///sha-256;fA6YxaUqz-JsARKxU77t0EGlfK-jytRRUjobKutwRHw> prov:specializationOf <urn:uuid:4f03180a-64ce-8022-8c5e-3e1174f610c1> ;
+  <https://ns.cascadeprotocol.org/health/v1#allergen> "Latex" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  rec:patient <urn:uuid:eb313649-c6ff-8ffa-93e2-2898fe91b570> .
+_:arrival bridge:arrivedAs <ni:///sha-256;fA6YxaUqz-JsARKxU77t0EGlfK-jytRRUjobKutwRHw> ; prov:wasGeneratedBy _:import ;
+  bridge:selector "" ; prov:wasDerivedFrom <ni:///sha-256;NfA_8nllfGjz8tuc7oYlGxZzSqW7zVIG4ic-8K8cMYE> ;
+  pav:version "1" ;
+  pav:lastUpdateOn "2026-05-01T00:00:00Z"^^xsd:dateTime .

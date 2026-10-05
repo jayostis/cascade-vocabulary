@@ -1,0 +1,6 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?predicate ?value WHERE {
+  GRAPH <urn:cascade:steps> { <urn:cascade:step:match-entry> prov:generated ?file }
+  GRAPH ?file { <urn:uuid:5299e444-b87a-8bcd-8375-476624f6b583> ?predicate ?value }
+}
