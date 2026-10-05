@@ -109,7 +109,7 @@ class Run:
         key = Path(story_file).resolve()
         if key not in self.replays:
             try:
-                self.replays[key] = story.Replay(key, self.scratch / str(len(self.replays))).run()
+                self.replays[key] = story.Replay(key, self.scratch / str(len(self.replays)), self.engine).run()
             except Exception:
                 self.replays[key] = traceback.format_exc()
         if isinstance(self.replays[key], str):

@@ -6,9 +6,12 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path, PurePosixPath
 
-from . import Failure, derive, derived_files, turtle, vocabulary
+from rdflib.namespace import RDF
+
+from . import Failure, derive, derived_files, store, turtle, vocabulary
 from .pod import LAYOUT, LAYOUT_GRAPH, NOT_RDF
 from .store import ENGINES, Store
+from .turtle import PROV
 
 
 class Example:
@@ -47,6 +50,18 @@ class Example:
         if event is None:
             return self.events
         return self.events[: self.events.index(self.event(event)) + 1]
+
+    def activity(self, name):
+        """The import or entry session the event made, or None if it filed none."""
+        event = self.event(name)
+        if "import" in event:
+            return event["import"]
+        folder = LAYOUT.place(PROV.Activity).folder
+        found = {str(session) for path in event["adds"] if path.startswith(folder)
+                 for session in store.parsed(self.pod / path).subjects(RDF.type, PROV.Activity)}
+        if len(found) > 1:
+            raise Failure(f"{name} filed {len(found)} entry sessions, not one")
+        return found.pop() if found else None
 
     def files(self, event=None):
         return sorted(path for e in self.through(event) for path in e["adds"])
