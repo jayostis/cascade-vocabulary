@@ -1,0 +1,249 @@
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+health:AllergyRecordShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ;
+    sh:targetClass health:AllergyRecord ;
+    sh:targetSubjectsOf health:allergen , health:allergenCode , health:reaction , health:manifestationCode ,
+        health:allergySeverity , health:allergyCategory , clinical:allergyType , clinical:criticality ;
+
+    sh:property [
+        sh:path health:allergen ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "An allergy states at most one non-empty allergen"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:reaction ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:allergySeverity ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("mild" "moderate" "severe") ;
+        sh:message "Allergy severity must be one of the FHIR R4 AllergyIntoleranceSeverity codes: mild, moderate, severe"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:allergyCategory ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("food" "medication" "environment" "biologic") ;
+        sh:message "Allergy category must be one of the FHIR R4 AllergyIntoleranceCategory codes: food, medication, environment, biologic"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:onsetDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "Onset Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path clinical:status ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("active" "inactive" "resolved") ;
+        sh:message "Allergy clinical status should be one of the FHIR R4 AllergyIntolerance clinical status codes: active, inactive, resolved. A repudiated record is entered-in-error on clinical:verificationStatus, which is a different element"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path clinical:verificationStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("unconfirmed" "confirmed" "refuted" "entered-in-error") ;
+        sh:message "Allergy verification status should be one of the FHIR R4 AllergyIntolerance verification status codes: unconfirmed, confirmed, refuted, entered-in-error"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path health:allergenCode ;
+        sh:nodeKind sh:IRI ;
+        sh:message "Allergen code should be an IRI in the code system's own IRI space (for example http://snomed.info/sct/373270004 or http://www.nlm.nih.gov/research/umls/rxnorm/7980), carrying one FHIR R4 AllergyIntolerance.code.coding per value. The IPS value set is allergies-intolerances-uv-ips"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path health:manifestationCode ;
+        sh:nodeKind sh:IRI ;
+        sh:message "Manifestation code should be an IRI in the code system's own IRI space (for example http://snomed.info/sct/247472004 for hives), carrying one FHIR R4 AllergyIntolerance.reaction.manifestation.coding per value. The IPS value set is allergy-reaction-uv-ips"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path clinical:allergyType ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("allergy" "intolerance") ;
+        sh:message "Allergy type should be one of the FHIR R4 AllergyIntoleranceType codes: allergy, intolerance"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path clinical:criticality ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("low" "high" "unable-to-assess") ;
+        sh:message "Allergy criticality should be one of the FHIR R4 AllergyIntoleranceCriticality codes: low, high, unable-to-assess. An observed reaction's severity is a different element and belongs on health:allergySeverity"@en ;
+        sh:severity sh:Warning
+    ] .
+
+health:ConditionRecordShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ,
+        <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
+    sh:targetClass health:ConditionRecord ;
+    sh:targetSubjectsOf health:conditionName , health:icd10Code , health:snomedCode , clinical:category ,
+        clinical:abatementDate ;
+
+    sh:property [
+        sh:path health:conditionName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A condition states at most one non-empty conditionName"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:status ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("active" "recurrence" "relapse" "inactive" "remission" "resolved") ;
+        sh:message "Condition status must be one of the FHIR R4 ConditionClinicalStatusCodes: active, recurrence, relapse, inactive, remission, resolved"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path clinical:verificationStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("unconfirmed" "provisional" "differential" "confirmed" "refuted" "entered-in-error") ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:onsetDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "Onset Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path clinical:abatementDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "Abatement Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path clinical:category ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("problem-list-item" "encounter-diagnosis") ;
+        sh:message "Condition category should be one of the two FHIR R4 condition-category codes: problem-list-item, encounter-diagnosis (https://hl7.org/fhir/R4/valueset-condition-category.html). C-CDA section words such as \"diagnosis\" or \"problem\" are not members of this value set."@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path health:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] .
+
+health:ImmunizationRecordShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ;
+    sh:targetClass health:ImmunizationRecord ;
+    sh:targetSubjectsOf health:vaccineName , health:vaccineCode , health:administrationDate , health:lotNumber ,
+        health:doseQuantity , health:route , health:site ;
+
+    sh:property [
+        sh:path health:vaccineName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "An immunization states at most one non-empty vaccineName"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:administrationDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "Administration Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:status ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("completed" "entered-in-error" "not-done") ;
+        sh:message "Immunization status must be one of the FHIR R4 ImmunizationStatusCodes: completed, entered-in-error, not-done"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:vaccineCode ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:lotNumber ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:message "Immunization must not carry more than one lotNumber; a lot number identifies a single administered dose"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:doseQuantity ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:route ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:site ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path health:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] .
