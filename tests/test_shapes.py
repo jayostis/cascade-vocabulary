@@ -150,6 +150,11 @@ def fixture_pod(fixture):
     return graph
 
 
+def test_every_fixture_pod_conforms_to_the_shapes():
+    reports = {fixture.name: validate(fixture_pod(fixture), shacl_graph=shapes()) for fixture in FIXTURES}
+    assert {name: text for name, (conforms, _, text) in reports.items() if not conforms} == {}
+
+
 def test_every_subject_of_a_kind_the_shapes_cover_in_a_fixture_or_a_valid_case_is_a_focus_node_of_its_shape():
     pods = {fixture.name: fixture_pod(fixture) for fixture in FIXTURES}
     pods |= {name: parsed(file) for name, (file, expected) in cases().items() if not expected}
