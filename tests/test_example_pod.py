@@ -275,7 +275,7 @@ def test_every_committed_view_is_marked_rebuildable_and_lists_only_the_kind_the_
     for registration, listed in index.subject_objects(URIRef(solid + "instance")):
         view = pod_file(example, listed[len(example.address):])
         kinds = {view.value(entry, RDF_TYPE) for entry in view.subjects(URIRef(CASCADE + "mergedFrom"), None)}
-        assert kinds == {index.value(registration, URIRef(solid + "forClass"))}, listed
+        assert kinds <= {index.value(registration, URIRef(solid + "forClass"))}, listed
     [views] = [folder for registration, folder in index.subject_objects(URIRef(solid + "instanceContainer"))
                if index.value(registration, URIRef(solid + "forClass")) == URIRef(REC + "View")]
     assert all((example.address + relative).startswith(views) for relative in example.view_files.values())

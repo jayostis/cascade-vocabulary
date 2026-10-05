@@ -75,7 +75,7 @@ class Reading:
         self.added_by = example.added_by(read_through)
         store = Rdflib()
         example.load(store, read_through)
-        store.add(store.construct(vocabulary.query(vocabulary.named("derivations")["records"])))
+        store.add(store.construct(vocabulary.query("derivations/records.rq")))
         self.graph, self.defined_in = store.graph(), {}
         for event in events:
             for path in (p for p in event["adds"] if not p.startswith(NOT_RDF)):

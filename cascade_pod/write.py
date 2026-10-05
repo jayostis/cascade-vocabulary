@@ -112,7 +112,7 @@ def file_entry(filing, event):
         raise Failure(f"{event['entry']} holds {len(activities)} activities, not one")
     activity = activities[0]
     filing.add_turtle(event["event"], fanned("provenance/activities", str(activity)), closure(graph, activity))
-    for revision in entry_revisions(graph, activity, event["entry"], filing.example.folders):
+    for revision in entry_revisions(graph, activity, event["entry"], filing.example.records_folders):
         filing.revise(event["event"], revision)
 
 
@@ -139,7 +139,7 @@ class Conversion:
     def __init__(self, example, event, path, entry):
         self.path, self.entry, self.import_started_at = path, entry, event["at"]
         self.repository = example.folder.parent.parent
-        self.folders = example.folders
+        self.records_folders = example.records_folders
         self.octets = path.read_bytes()
         self.document = URIRef(names.document(self.octets))
         folder = example.folder / "conversions" / event["event"].lower() / path.stem
@@ -172,7 +172,7 @@ class Conversion:
             if record is None:
                 raise Failure(f"{self.source}: {version} is the version of no record")
             yield Revision(
-                record=record, folder=records_folder(self.folders, self.source, record, graph.value(record, RDF.type)),
+                record=record, folder=records_folder(self.records_folders, self.source, record, graph.value(record, RDF.type)),
                 record_triples=frozenset(graph.triples((record, None, None))),
                 version=version, version_triples=frozenset(t for t in graph if in_version(t[0], version)),
                 statements=frozenset((p, o) for p, o in graph.predicate_objects(arrival)

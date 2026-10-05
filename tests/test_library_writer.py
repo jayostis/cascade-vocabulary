@@ -13,8 +13,10 @@ REVISION, VERSION, WAS_REVISION_OF = URIRef(REC + "Revision"), URIRef(REC + "ver
 SUBJECT = "urn:uuid:00000000-0000-4000-8000-000000000001"
 RECORD = "urn:uuid:00000000-0000-4000-8000-000000000002"
 ALLERGIES_TYPE_INDEX = """@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix solid: <http://www.w3.org/ns/solid/terms#> .
-<#allergy-records> solid:forClass health:AllergyRecord ; solid:instanceContainer </records/allergies/> .
+<#views> solid:forClass rec:View ; solid:instanceContainer </clinical/> .
+<#allergies> solid:forClass health:AllergyRecord ; solid:instance </clinical/allergies.ttl> .
 """
 PREFIXES = """@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
