@@ -363,7 +363,7 @@ NEEDS_REVIEW = [relative for name, relative in vocabulary.questions().items() if
 
 
 def derived_state_views_and_reviews(example, engine, lens, through):
-    held = example.pod_only(engine, through)
+    held = example.story_store(engine, through)
     derived = derive.derive(held, lens).triples
     views = {view: held.construct(vocabulary.query(r)) for view, r in vocabulary.named("views").items()}
     reviews = {relative: held.select(vocabulary.query(relative)) for relative in NEEDS_REVIEW}
@@ -379,7 +379,7 @@ def test_the_derived_state_each_view_and_what_needs_review_are_the_same_on_oxigr
 
 @lru_cache(maxsize=None)
 def answers(example, engine, lens, through=None):
-    held = example.pod_with_derived_state(engine, lens, through)
+    held = example.build(engine, lens, through).store
     return {name: held.select(vocabulary.query(relative)) for name, relative in vocabulary.questions().items()}
 
 
@@ -526,7 +526,7 @@ def test_a_status_the_person_entered_sets_a_conditions_entry_and_never_an_allerg
 
 @every_example
 def test_how_many_of_each_kind_counts_what_the_pods_files_state_and_no_type_only_the_derivations_state(example):
-    held = example.pod_with_derived_state("oxigraph", vocabulary.DEFAULT_LENS)
+    held = example.build("oxigraph", vocabulary.DEFAULT_LENS).store
     derived_only = {o for s, p, o in held.triples(derive.DERIVED + vocabulary.DEFAULT_LENS) if p == RDF.type}
     counted = {row["type"] for row in answers(example, "oxigraph", vocabulary.DEFAULT_LENS)["pod/How many of each kind"]}
     assert derived_only and not counted & derived_only

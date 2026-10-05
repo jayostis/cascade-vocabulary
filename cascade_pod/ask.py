@@ -13,7 +13,7 @@ def ask(example, question, lens, engine):
     questions = vocabulary.questions()
     if question not in questions:
         raise Failure(f"no question {question}; there are {', '.join(sorted(questions))}")
-    held = example.pod_with_derived_state(engine, lens)
+    held = example.build(engine, lens).store
     for row in held.select(vocabulary.query(questions[question])):
         sys.stdout.buffer.write((line(row) + "\n").encode("utf-8"))
     return 0

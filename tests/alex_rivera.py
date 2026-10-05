@@ -79,7 +79,7 @@ EVERY_JUDGMENT = {handle: Judgment(*row) for handle, row in {
 
 @lru_cache(maxsize=None)
 def pod(event):
-    return ALEX.pod_only("rdflib", event).graph()
+    return ALEX.story_store("rdflib", event).graph()
 
 
 def final_pod():

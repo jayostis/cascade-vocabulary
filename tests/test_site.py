@@ -199,7 +199,7 @@ def stored_documents(example, record, graph):
 
 
 def test_an_entrys_page_reaches_each_members_source_file_and_its_turtle_by_links_alone(example, pages):
-    graph = example.pod_only("rdflib").graph()
+    graph = example.story_store("rdflib").graph()
     walked = entries_and_members(example)
     unreached = []
     for entry, member in walked:

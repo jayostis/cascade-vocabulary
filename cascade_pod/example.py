@@ -64,8 +64,9 @@ class Example:
     def added_by(self, event=None):
         return {path: e["event"] for e in self.through(event) for path in e["adds"]}
 
-    def pod_only(self, engine, through=None):
-        """A store holding each of the pod's files through the event, each in a graph of its own."""
+    def story_store(self, engine, through=None):
+        """A store holding each file the story adds through the event, and none the build writes, each in a graph of
+        its own."""
         store = ENGINES[engine]()
         for path in self.files(through):
             if not path.startswith(NOT_RDF):
@@ -73,14 +74,11 @@ class Example:
         return store
 
     def build(self, engine, lens, through=None):
-        store = self.pod_only(engine, through)
+        """The pod as every tool and question sees it, in its store: each file through the event, the lens's derived
+        state and the files built from them, each in a graph of its own and all of them in the default graph."""
+        store = self.story_store(engine, through)
         derived = derive.derive(store, lens)
         return Build(store, derived, derived_files.add(self, store, through))
-
-    def pod_with_derived_state(self, engine, lens, through=None):
-        """The pod as every tool and question sees it: each file through the event, the lens's derived state and the
-        files built from them, each in a graph of its own and all of them in the default graph."""
-        return self.build(engine, lens, through).store
 
     def derived_turtle(self, engine):
         """Each derived file of the whole pod under the default lens, as Turtle, by its path within pod/."""

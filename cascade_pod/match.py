@@ -66,7 +66,7 @@ class Reading:
         events = example.through(read_through)
         self.subject = URIRef(next(e["subject"] for e in events if "subject" in e))
         self.added_by = example.added_by(read_through)
-        store = example.pod_only("rdflib", read_through)
+        store = example.story_store("rdflib", read_through)
         derive.run(store, vocabulary.derivations_before_the_lens())
         self.graph, self.defined_in = store.graph(), {}
         for event in events:
