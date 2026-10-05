@@ -16,3 +16,8 @@
 :rules a rec:ReferenceSeries ; rdfs:label "Rules" .
 :rules-1 prov:specializationOf :rules ; pav:version "1" .
 :rules-2 prov:specializationOf :rules ; pav:version "2" ; prov:wasRevisionOf :rules-1 .
+
+:other a health:AllergyRecord .
+:otherVersion prov:specializationOf :other ; rec:patient :subject ; health:allergen "Peanut oil" .
+:otherRevision a rec:Revision ; rec:revisionOf :other ; rec:version :otherVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

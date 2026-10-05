@@ -4,6 +4,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :profile ; jdg:subject :subject ;
+    jdg:basis jdg:OwnerStatement ;
     prov:wasAttributedTo <https://pod.example/profile/card.ttl#me> ;
     prov:qualifiedAttribution [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole jdg:patient ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

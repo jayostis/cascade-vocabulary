@@ -10,9 +10,11 @@
 :person a prov:Person .
 
 :about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :claimed ; jdg:subject :subject ;
+    jdg:basis jdg:OwnerStatement ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :aboutRetracted a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :retracted ; jdg:subject :subject ;
+    jdg:basis jdg:OwnerStatement ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :retraction a jdg:Judgment ; npx:retracts :aboutRetracted ;

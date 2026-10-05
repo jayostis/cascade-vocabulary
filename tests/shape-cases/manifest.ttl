@@ -1,0 +1,211 @@
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+<#record-allergy/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-allergy/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-allergy/source-url-a-literal> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-allergy/source-url-a-literal.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:SourceUrlShape ; sh:resultPath rec:sourceUrl ] ] .
+
+<#record-allergy/two-source-record-ids> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-allergy/two-source-record-ids.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape health:AllergyRecordShape ; sh:resultPath health:sourceRecordId ] ] .
+
+<#record-condition/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-condition/two-source-record-ids> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/two-source-record-ids.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape health:ConditionRecordShape ; sh:resultPath health:sourceRecordId ] ] .
+
+<#record-immunization/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-immunization/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-immunization/two-source-record-ids> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-immunization/two-source-record-ids.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape health:ImmunizationRecordShape ; sh:resultPath health:sourceRecordId ] ] .
+
+<#record-procedure/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-procedure/two-source-record-ids> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/two-source-record-ids.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape clinical:ProcedureShape ; sh:resultPath clinical:sourceRecordId ] ] .
+
+<#version/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <version/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#version/patient-a-literal> a sht:Validate ;
+  mf:action [ sht:dataGraph <version/patient-a-literal.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:PatientShape ; sh:resultPath rec:patient ] ] .
+
+<#version/allergen-twice> a sht:Validate ;
+  mf:action [ sht:dataGraph <version/allergen-twice.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape health:AllergyRecordShape ; sh:resultPath health:allergen ] ] .
+
+<#version/onset-date-a-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <version/onset-date-a-string.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape health:AllergyRecordShape ; sh:resultPath health:onsetDate ] ] .
+
+<#revision/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#revision/no-version> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/no-version.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:RevisionShape ; sh:resultPath rec:version ] ] .
+
+<#revision/arrival-time-a-date> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/arrival-time-a-date.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:RevisionShape ; sh:resultPath prov:generatedAtTime ] ] .
+
+<#revision/two-earlier-revisions> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/two-earlier-revisions.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:RevisionShape ; sh:resultPath prov:wasRevisionOf ] ] .
+
+<#derived-current-revision/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <derived-current-revision/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#derived-current-revision/two-current-revisions> a sht:Validate ;
+  mf:action [ sht:dataGraph <derived-current-revision/two-current-revisions.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:CurrentRevisionShape ; sh:resultPath rec:currentRevision ] ] .
+
+<#subject/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <subject/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#subject/a-name> a sht:Validate ;
+  mf:action [ sht:dataGraph <subject/a-name.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:SubjectShape ; sh:resultPath foaf:name ] ] .
+
+<#reference-series/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <reference-series/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#reference-series/unnamed> a sht:Validate ;
+  mf:action [ sht:dataGraph <reference-series/unnamed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:ReferenceSeriesShape ; sh:resultPath rdfs:label ] ] .
+
+<#reference-series/version-unnumbered> a sht:Validate ;
+  mf:action [ sht:dataGraph <reference-series/version-unnumbered.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:ReferenceSeriesShape ;
+                          sh:resultPath [ sh:inversePath prov:specializationOf ] ] ] .
+
+<#judgment-erroneous/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-erroneous/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-erroneous/no-time> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-erroneous/no-time.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:JudgmentShape ; sh:resultPath prov:generatedAtTime ] ] .
+
+<#judgment-erroneous/no-verdict> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-erroneous/no-verdict.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:VerdictOrRetractionShape ] ] .
+
+<#judgment-erroneous/no-member> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-erroneous/no-member.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:VerdictMembersShape ] ] .
+
+<#judgment-erroneous/no-role> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-erroneous/no-role.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:PersonJudgmentShape ] ] .
+
+<#judgment-same-by-the-matcher/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-same-by-the-matcher/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-same-by-the-matcher/one-member> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-same-by-the-matcher/one-member.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:SetVerdictShape ] ] .
+
+<#judgment-same-by-the-matcher/no-justification> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-same-by-the-matcher/no-justification.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:MachineSameShape ] ] .
+
+<#judgment-different/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-different/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-different/a-justification> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-different/a-justification.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:JustificationShape ; sh:resultPath jdg:verdict ] ] .
+
+<#judgment-about/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-about/no-basis> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/no-basis.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:AboutVerdictShape ] ] .
+
+<#judgment-about/subject-is-its-author> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/subject-is-its-author.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:AboutShape ; sh:resultPath jdg:subject ] ] .
+
+<#judgment-retraction/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-retraction/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-retraction/a-member> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-retraction/a-member.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape jdg:RetractionShape ; sh:resultPath prov:hadMember ] ] .
+
+<#view-allergies/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <view-allergies/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#view-allergies/category-not-a-fhir-code> a sht:Validate ;
+  mf:action [ sht:dataGraph <view-allergies/category-not-a-fhir-code.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape health:AllergyRecordShape ; sh:resultPath health:allergyCategory ] ] .
+
+<#view-patient-profile/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <view-patient-profile/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#view-patient-profile/date-of-birth-a-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <view-patient-profile/date-of-birth-a-string.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PatientProfileShape ; sh:resultPath cascade:dateOfBirth ] ] .

@@ -1,0 +1,12 @@
+@prefix : <#> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:alex a prov:Person .
+
+:judgment a jdg:Judgment ;
+    prov:hadMember :record ;
+    prov:wasAttributedTo :alex ;
+    prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

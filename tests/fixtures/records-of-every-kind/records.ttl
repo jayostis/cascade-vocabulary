@@ -6,13 +6,13 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :allergy a health:AllergyRecord .
-:allergyVersion prov:specializationOf :allergy ; health:allergen "Peanut"@en , "Peanut" ; clinical:status "active" .
+:allergyVersion prov:specializationOf :allergy ; health:allergen "Peanut" ; clinical:status "active" .
 :allergyRevision a rec:Revision ; rec:revisionOf :allergy ; rec:version :allergyVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :condition a health:ConditionRecord .
 :conditionVersion prov:specializationOf :condition ; health:conditionName "Asthma" ; health:status "active" ;
-    health:onsetDate "2020-05-01"^^xsd:date , "2020-05-01" .
+    health:onsetDate "2020-05-01"^^xsd:date .
 :conditionRevision a rec:Revision ; rec:revisionOf :condition ; rec:version :conditionVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 

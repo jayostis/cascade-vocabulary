@@ -7,6 +7,8 @@
 :matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
 
 :byCode a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameCodeAndDate ; prov:hadMember :flu1 , :flu2 ;
+    prov:used :flu1Version , :flu2Version ;
     prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :byMappedCode a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCodeAndDate ;
-    prov:hadMember :flu2 , :flu3 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:hadMember :flu2 , :flu3 ; prov:used :flu2Version , :flu3Version ;
+    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

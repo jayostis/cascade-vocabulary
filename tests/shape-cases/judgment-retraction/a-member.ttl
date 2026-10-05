@@ -1,0 +1,21 @@
+@prefix : <#> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+
+:alex a prov:Person .
+
+:retracted a jdg:Judgment ;
+    jdg:verdict jdg:Erroneous ;
+    prov:hadMember :record ;
+    prov:wasAttributedTo :alex ;
+    prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:retraction a jdg:Judgment ;
+    npx:retracts :retracted ;
+    prov:hadMember :record ;
+    prov:wasAttributedTo :alex ;
+    prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .

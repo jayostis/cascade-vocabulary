@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "records-of-every-kind" ;
-  rdfs:comment "One record of each kind records.rq lists, each with one revision and a version stating its name, status and date; the allergen differs only in language and the onset only in datatype." ;
+  rdfs:comment "One record of each kind records.rq lists, each with one revision and a version stating its name, status and date." ;
   mf:entries (
     <#what-each-record-is>
     <#the-name-status-and-date-of-each-version>
@@ -21,14 +21,14 @@
 
 <#the-name-status-and-date-of-each-version> a mf:QueryEvaluationTest ;
   mf:name "the-name-status-and-date-of-each-version" ;
-  rdfs:comment "Each version gets rec:name, rec:status and rec:date from its kind's own properties, keeping values that differ only in language or datatype; an allergy states no date." ;
+  rdfs:comment "Each version gets rec:name, rec:status and rec:date from its kind's own properties; an allergy states no date." ;
   mf:action [ qt:query <the-name-status-and-date-of-each-version.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <the-name-status-and-date-of-each-version.srj> .
 
 <#what-each-version-says> a mf:QueryEvaluationTest ;
   mf:name "what-each-version-says" ;
-  rdfs:comment "One row per statement of each version as its file states it, values differing only in language or datatype each a row of their own, and none of the name, status and date the derivations copy." ;
+  rdfs:comment "One row per statement of each version as its file states it, and none of the name, status and date the derivations copy." ;
   mf:action [ qt:query <../../../queries/v1-draft/questions/record/What%20each%20version%20says.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <what-each-version-says.srj> .
