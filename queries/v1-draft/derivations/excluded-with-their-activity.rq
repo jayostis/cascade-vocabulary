@@ -1,12 +1,14 @@
 # Every record whose current revision an import brought is left out of every view when a counting Erroneous judgment
-# names that import.
+# names that import, because of that judgment.
 PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-CONSTRUCT { ?record rec:excluded true }
+CONSTRUCT { ?record rec:leftOutFor ?leftOut . ?leftOut rec:reason rec:ImportJudgedErroneous ; rec:because ?e }
 WHERE {
   ?e rec:counts true ; jdg:verdict jdg:Erroneous ; prov:hadMember ?act .
   ?r prov:wasGeneratedBy ?act .
   ?record rec:currentRevision ?r .
+  BIND (IRI(CONCAT("urn:cascade:left-out:",
+                   SHA256(CONCAT(STR(?record), " ", STR(rec:ImportJudgedErroneous), " ", STR(?e))))) AS ?leftOut)
 }

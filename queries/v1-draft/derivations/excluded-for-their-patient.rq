@@ -1,0 +1,15 @@
+# A record about no one known to be the subject is left out of every view: its current version names a patient profile
+# no counting About ties to the subject, and the reason rests on that profile; or it names no patient, and a record with
+# no current version names none.
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?record rec:leftOutFor ?leftOut . ?leftOut rec:reason ?reason ; rec:because ?profile }
+WHERE {
+  ?record a rec:Record .
+  FILTER NOT EXISTS { ?record rec:subject [] }
+  OPTIONAL { ?record pav:hasCurrentVersion/rec:patient ?profile }
+  BIND (IF(BOUND(?profile), rec:PatientNotClaimed, rec:NoPatient) AS ?reason)
+  BIND (IRI(CONCAT("urn:cascade:left-out:",
+                   SHA256(CONCAT(STR(?record), " ", STR(?reason), COALESCE(CONCAT(" ", STR(?profile)), ""))))) AS ?leftOut)
+}

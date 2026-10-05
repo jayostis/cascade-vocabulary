@@ -111,10 +111,36 @@ rec:counts a owl:DatatypeProperty ;
     rdfs:domain jdg:Judgment ;
     rdfs:range xsd:boolean .
 
-rec:excluded a owl:DatatypeProperty ;
-    rdfs:label "excluded"@en ;
-    rdfs:comment "Derived: no view shows the record."@en ;
-    rdfs:range xsd:boolean .
+rec:leftOutFor a owl:ObjectProperty ;
+    rdfs:label "left out for"@en ;
+    rdfs:comment "Derived: one reason no view shows the record, in this build."@en ;
+    rdfs:domain rec:Record .
+
+rec:reason a owl:ObjectProperty ;
+    rdfs:label "reason"@en ;
+    rdfs:comment "Derived: which of the reasons a record can be left out for this one is."@en .
+
+rec:because a owl:ObjectProperty ;
+    rdfs:label "because"@en ;
+    rdfs:comment "Derived: the thing a reason for leaving a record out rests on, where it rests on one."@en .
+
+rec:EnteredInErrorAtSource a owl:NamedIndividual ;
+    rdfs:label "entered-in-error at its source"@en .
+
+rec:RefutedAtSource a owl:NamedIndividual ;
+    rdfs:label "refuted at its source"@en .
+
+rec:JudgedErroneous a owl:NamedIndividual ;
+    rdfs:label "judged erroneous"@en .
+
+rec:ImportJudgedErroneous a owl:NamedIndividual ;
+    rdfs:label "the import that brought it was judged erroneous"@en .
+
+rec:PatientNotClaimed a owl:NamedIndividual ;
+    rdfs:label "its patient profile has no counting About"@en .
+
+rec:NoPatient a owl:NamedIndividual ;
+    rdfs:label "it names no patient"@en .
 
 rec:subject a owl:ObjectProperty ;
     rdfs:label "subject"@en ;
