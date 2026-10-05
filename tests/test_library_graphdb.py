@@ -9,7 +9,8 @@ from rdflib import Graph
 
 from cascade_pod import derive, vocabulary
 from cascade_pod import graphdb as loader
-from examples import EXAMPLES, ROOT, GraphDB, every_example
+from examples import EXAMPLES, ROOT, every_example
+from fake_graphdb import GraphDB
 
 
 @pytest.fixture
