@@ -378,8 +378,13 @@ def test_the_derived_state_each_view_and_what_needs_review_are_the_same_on_oxigr
 
 
 @lru_cache(maxsize=None)
+def built(example, engine, lens, through=None):
+    return example.build(engine, lens, through).store
+
+
+@lru_cache(maxsize=None)
 def answers(example, engine, lens, through=None):
-    held = example.build(engine, lens, through).store
+    held = built(example, engine, lens, through)
     return {name: held.select(vocabulary.query(relative)) for name, relative in vocabulary.questions().items()}
 
 
@@ -530,3 +535,107 @@ def test_how_many_of_each_kind_counts_what_the_pods_files_state_and_no_type_only
     derived_only = {o for s, p, o in held.triples(derive.DERIVED + vocabulary.DEFAULT_LENS) if p == RDF.type}
     counted = {row["type"] for row in answers(example, "oxigraph", vocabulary.DEFAULT_LENS)["pod/How many of each kind"]}
     assert derived_only and not counted & derived_only
+
+
+IN_NO_VIEW = """
+    @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+    @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    :subject a rec:Subject .
+    :person a prov:Person .
+    :r a health:AllergyRecord .
+    :rRevision a rec:Revision ; rec:revisionOf :r ; rec:version :rVersion ; prov:wasGeneratedBy :import ;
+        prov:generatedAtTime "2027-01-01T00:00:00Z"^^xsd:dateTime .
+"""
+LEFT_OUT = {
+    "entered-in-error": (""":rVersion prov:specializationOf :r ; rec:patient :subject ;
+                               clinical:verificationStatus "entered-in-error" .""",
+                         [("r", "EnteredInErrorAtSource", None)]),
+    "refuted": (""":rVersion prov:specializationOf :r ; rec:patient :subject ; clinical:verificationStatus "refuted" .""",
+                [("r", "RefutedAtSource", None)]),
+    "judged-erroneous": (""":rVersion prov:specializationOf :r ; rec:patient :subject .
+                            :j a jdg:Judgment ; jdg:verdict jdg:Erroneous ; prov:hadMember :r ; prov:wasAttributedTo :person .""",
+                         [("r", "JudgedErroneous", "j")]),
+    "import-judged-erroneous": (""":rVersion prov:specializationOf :r ; rec:patient :subject .
+                                   :j a jdg:Judgment ; jdg:verdict jdg:Erroneous ; prov:hadMember :import ;
+                                       prov:wasAttributedTo :person .""",
+                                [("r", "ImportJudgedErroneous", "j")]),
+    "patient-not-claimed": (""":rVersion prov:specializationOf :r ; rec:patient :p .
+                               :about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :p ; jdg:subject :subject ;
+                                   prov:wasAttributedTo :person .
+                               :retraction npx:retracts :about .""",
+                            [("r", "PatientNotClaimed", "p")]),
+    "no-patient": (":rVersion prov:specializationOf :r .", [("r", "NoPatient", None)]),
+    "no-revision": (":unrevised a health:AllergyRecord . :rVersion prov:specializationOf :r ; rec:patient :subject .",
+                    [("unrevised", "NoPatient", None)]),
+    "judged-and-import-judged-erroneous": (""":rVersion prov:specializationOf :r ; rec:patient :subject .
+                                              :j1 a jdg:Judgment ; jdg:verdict jdg:Erroneous ; prov:hadMember :r ;
+                                                  prov:wasAttributedTo :person .
+                                              :j2 a jdg:Judgment ; jdg:verdict jdg:Erroneous ; prov:hadMember :import ;
+                                                  prov:wasAttributedTo :person .""",
+                                           [("r", "ImportJudgedErroneous", "j2"), ("r", "JudgedErroneous", "j1")]),
+    "about-the-subject": (":rVersion prov:specializationOf :r ; rec:patient :subject .", []),
+}
+
+
+def short(term):
+    return None if term is None else str(term).rsplit("#", 1)[-1].removeprefix("urn:x:")
+
+
+@pytest.mark.parametrize("case", sorted(LEFT_OUT))
+@pytest.mark.parametrize("engine", ENGINES)
+def test_why_a_record_is_in_no_view_is_one_row_for_each_reason_the_derivations_recorded(engine, case, tmp_path):
+    turtle, expected = LEFT_OUT[case]
+    path = tmp_path / "pod.ttl"
+    path.write_text(UNIT_PREFIXES + IN_NO_VIEW + turtle, encoding="utf-8")
+    held = store.ENGINES[engine]()
+    held.load(path, "urn:x:")
+    derived = derive.derive(held, vocabulary.DEFAULT_LENS).triples
+    found = held.select(vocabulary.query(vocabulary.questions()["record/Why it is in no view"]))
+    assert sorted((short(row["record"]), short(row["why"]), short(row.get("because"))) for row in found) == expected
+    records = {short(s) for s, p, o in held.triples() if p == RDF.type and o == URIRef(REC + "Record")}
+    shown = {short(s) for s, p, _ in derived if p == URIRef(REC + "inEntry")}
+    assert shown == records - {record for record, _, _ in expected}
+
+
+SHOWN_AND_LEFT_OUT_ALIKE = """
+    PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+    SELECT ?record WHERE {
+      ?record a rec:Record .
+      BIND (EXISTS { ?record rec:inEntry [] } AS ?shown)
+      BIND (EXISTS { ?record rec:leftOutFor [] } AS ?leftOut)
+      FILTER (?shown = ?leftOut)
+    }"""
+
+
+@pytest.mark.parametrize("lens", LENSES)
+@every_example
+def test_a_record_is_in_no_view_exactly_when_the_derivations_recorded_a_reason(example, lens):
+    assert built(example, "oxigraph", lens).select(SHOWN_AND_LEFT_OUT_ALIKE) == []
+
+
+def reasons():
+    graph = Graph().parse(ROOT / "ontologies" / "records" / "v1-draft" / "records.ttl")
+    return frozenset(s for s in graph.subjects(RDF.type, URIRef("http://www.w3.org/2002/07/owl#NamedIndividual"))
+                     if str(s).startswith(REC))
+
+
+def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no_other_query():
+    declared = reasons()
+    named = {short(reason): [] for reason in declared}
+    for relative in every_query():
+        for reason in declared & set(iris(prepareQuery(vocabulary.query(relative)).algebra)):
+            named[short(reason)].append(relative)
+    assert named == {
+        "EnteredInErrorAtSource": ["derivations/excluded-at-source.rq"],
+        "RefutedAtSource": ["derivations/excluded-at-source.rq"],
+        "JudgedErroneous": ["derivations/excluded-by-judgment.rq"],
+        "ImportJudgedErroneous": ["derivations/excluded-with-their-activity.rq"],
+        "PatientNotClaimed": ["derivations/excluded-for-their-patient.rq"],
+        "NoPatient": ["derivations/excluded-for-their-patient.rq"],
+    }
+
+
+def test_why_it_is_in_no_view_reads_only_the_recorded_reasons_and_labels():
+    terms = {URIRef(REC + term) for term in ("Record", "leftOutFor", "reason", "because")}
+    assert reads(vocabulary.questions()["record/Why it is in no view"]) == terms | {RDF.type, URIRef(RDFS_LABEL)}

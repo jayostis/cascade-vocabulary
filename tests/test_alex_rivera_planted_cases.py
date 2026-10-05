@@ -214,6 +214,13 @@ def currently_same(b, one, other):
     return (name(one), JDG.currentlySame, name(other)) in b.state or (name(other), JDG.currentlySame, name(one)) in b.state
 
 
+def reasons(b, record):
+    """Each reason the derivations left the record out for, with the handle of the thing it rests on, or None."""
+    return {(reason, handle(because) if because is not None else None)
+            for left in b.state.objects(name(record), REC.leftOutFor) for reason in b.state.objects(left, REC.reason)
+            for because in set(b.state.objects(left, REC.because)) or {None}}
+
+
 def entry_keys(b, view):
     return set(entries(b.views[view]))
 
@@ -319,6 +326,7 @@ def test_a_record_missing_from_a_later_export_stays_in_the_view_from_its_last_ve
 @pytest.mark.parametrize("event", ("E6", "E15"))
 def test_an_allergy_entered_in_error_at_its_source_is_left_out_of_every_view_and_stays_in_the_pod(engine, lens, event):
     assert "H1-ALG-CODEINE" not in members_shown(build(engine, lens, event))
+    assert reasons(build(engine, lens, event), "H1-ALG-CODEINE") == {(REC.EnteredInErrorAtSource, None)}
     final = pod("E15")
     assert (name("H1-ALG-CODEINE"), RDF.type, HEALTH.AllergyRecord) in final
     assert versions_of(final, "H1-ALG-CODEINE") == {"H1-ALG-CODEINE v1", "H1-ALG-CODEINE v2"}
@@ -497,6 +505,9 @@ def test_a_resource_file_with_no_clinical_record_entry_is_named_from_its_documen
     for event in BUILT:
         for lens in LENSES:
             assert "U-IMM-TDAP" not in members_shown(build(engine, lens, event)), (event, lens)
+    for event in BUILT[BUILT.index("E6"):]:
+        for lens in LENSES:
+            assert reasons(build(engine, lens, event), "U-IMM-TDAP") == {(REC.NoPatient, None)}, (event, lens)
     for event in ("E10", "E12", "E15"):
         assert not names(added_graph(event), name("U-IMM-TDAP")), event
 
@@ -574,6 +585,8 @@ def test_a_family_members_records_imported_as_the_patients_are_in_her_views_unti
     for event in ("E14", "E15"):
         b = build(engine, lens, event)
         assert not set(SAM) & members_shown(b), event
+        for record in SAM[1:]:
+            assert reasons(b, record) == {(REC.PatientNotClaimed, "H1P-PAT")}, (event, record)
         assert entry_keys(b, "patient-profile") == {frozenset({"H1-PAT", "H2O-PAT", "H2F-PAT"})}, event
         assert not counts(b, "J22"), event
 
@@ -595,6 +608,7 @@ def test_a_record_the_patient_judges_erroneous_leaves_every_view_stays_in_the_po
     for event in ("E14", "E15"):
         for lens in LENSES:
             assert "H1-PROC-ECHO" not in members_shown(build(engine, lens, event)), (event, lens)
+            assert reasons(build(engine, lens, event), "H1-PROC-ECHO") == {(REC.JudgedErroneous, "J24")}, (event, lens)
 
     final = pod("E15")
     assert (name("H1-PROC-ECHO"), RDF.type, CLINICAL.Procedure) in final
