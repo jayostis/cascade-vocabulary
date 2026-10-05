@@ -1,0 +1,23 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+:badImport a prov:Activity .
+:laterImport a prov:Activity .
+
+:brought a health:AllergyRecord .
+:broughtVersion prov:specializationOf :brought ; rec:patient :subject .
+:broughtRevision a rec:Revision ; rec:revisionOf :brought ; rec:version :broughtVersion ;
+    prov:wasGeneratedBy :badImport ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:revisedSince a health:AllergyRecord .
+:revisedSinceFirst prov:specializationOf :revisedSince ; rec:patient :subject ; health:allergen "Latex" .
+:revisedSinceSecond prov:specializationOf :revisedSince ; rec:patient :subject ; health:allergen "Latex rubber" .
+:revisedSinceR1 a rec:Revision ; rec:revisionOf :revisedSince ; rec:version :revisedSinceFirst ;
+    prov:wasGeneratedBy :badImport ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:revisedSinceR2 a rec:Revision ; rec:revisionOf :revisedSince ; rec:version :revisedSinceSecond ;
+    prov:wasRevisionOf :revisedSinceR1 ; prov:wasGeneratedBy :laterImport ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

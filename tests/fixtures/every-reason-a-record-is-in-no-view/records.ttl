@@ -1,0 +1,48 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+:import a prov:Activity .
+
+:inError a health:AllergyRecord .
+:inErrorVersion prov:specializationOf :inError ; rec:patient :subject ; health:allergen "Peanut" ;
+    clinical:verificationStatus "entered-in-error" .
+:inErrorRevision a rec:Revision ; rec:revisionOf :inError ; rec:version :inErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:refuted a health:AllergyRecord .
+:refutedVersion prov:specializationOf :refuted ; rec:patient :subject ; health:allergen "Latex" ;
+    clinical:verificationStatus "refuted" .
+:refutedRevision a rec:Revision ; rec:revisionOf :refuted ; rec:version :refutedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:judged a health:AllergyRecord .
+:judgedVersion prov:specializationOf :judged ; rec:patient :subject ; health:allergen "Egg" .
+:judgedRevision a rec:Revision ; rec:revisionOf :judged ; rec:version :judgedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fromTheImport a health:AllergyRecord .
+:fromTheImportVersion prov:specializationOf :fromTheImport ; rec:patient :subject ; health:allergen "Soy" .
+:fromTheImportRevision a rec:Revision ; rec:revisionOf :fromTheImport ; rec:version :fromTheImportVersion ;
+    prov:wasGeneratedBy :import ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:unclaimed a health:AllergyRecord .
+:unclaimedVersion prov:specializationOf :unclaimed ; rec:patient :profile ; health:allergen "Wheat" .
+:unclaimedRevision a rec:Revision ; rec:revisionOf :unclaimed ; rec:version :unclaimedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:noPatient a health:AllergyRecord .
+:noPatientVersion prov:specializationOf :noPatient ; health:allergen "Fish" .
+:noPatientRevision a rec:Revision ; rec:revisionOf :noPatient ; rec:version :noPatientVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:unrevised a health:AllergyRecord .
+
+:shown a health:AllergyRecord .
+:shownVersion prov:specializationOf :shown ; rec:patient :subject ; health:allergen "Sesame" .
+:shownRevision a rec:Revision ; rec:revisionOf :shown ; rec:version :shownVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,0 +1,26 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "two-kinds-of-machine-sameness" ;
+  rdfs:comment "An immunization entry the machine joined through SameCodeAndDate and SameMappedCodeAndDate." ;
+  mf:entries (
+    <#two-kinds-under-everyday>
+    <#one-kind-under-export>
+  ) .
+
+<#two-kinds-under-everyday> a mf:QueryEvaluationTest ;
+  mf:name "two-kinds-under-everyday" ;
+  rdfs:comment "Under everyday both judgments count, and the entry they join is listed for review." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/entry/What%20needs%20review.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <two-kinds-under-everyday.srj> .
+
+<#one-kind-under-export> a mf:QueryEvaluationTest ;
+  mf:name "one-kind-under-export" ;
+  rdfs:comment "Under export the mapped code does not count, and nothing is listed." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/entry/What%20needs%20review.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/export.rq> ] ;
+  mf:result <one-kind-under-export.srj> .

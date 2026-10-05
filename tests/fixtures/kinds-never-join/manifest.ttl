@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "kinds-never-join" ;
+  rdfs:comment "A Same naming one of the subject's allergies and one of their conditions." ;
+  mf:entries (
+    <#an-entry-each>
+  ) .
+
+<#an-entry-each> a mf:QueryEvaluationTest ;
+  mf:name "an-entry-each" ;
+  rdfs:comment "Records of two kinds are never joined: each is in an entry of its own." ;
+  mf:action [ qt:query <an-entry-each.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <an-entry-each.srj> .

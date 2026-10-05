@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "latest-member" ;
+  rdfs:comment "Two of the subject's allergies a Same joins: the one first seen earlier was revised since, so its current revision arrived last." ;
+  mf:entries (
+    <#the-latest-member>
+  ) .
+
+<#the-latest-member> a mf:QueryEvaluationTest ;
+  mf:name "the-latest-member" ;
+  rdfs:comment "The latest member is the one whose current revision arrived last, not the one first seen last." ;
+  mf:action [ qt:query <the-latest-member.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <the-latest-member.srj> .

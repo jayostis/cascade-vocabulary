@@ -1,0 +1,23 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:asthmaOld a health:ConditionRecord .
+:asthmaOldVersion prov:specializationOf :asthmaOld ; rec:patient :subject ; health:conditionName "Asthma" ; health:status "active" ; health:onsetDate "2019-04-01"^^xsd:date .
+:asthmaOldRevision a rec:Revision ; rec:revisionOf :asthmaOld ; rec:version :asthmaOldVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:asthmaNew a health:ConditionRecord .
+:asthmaNewVersion prov:specializationOf :asthmaNew ; rec:patient :subject ; health:conditionName "Asthma, allergic" ; health:snomedCode <http://snomed.info/id/389145006> .
+:asthmaNewRevision a rec:Revision ; rec:revisionOf :asthmaNew ; rec:version :asthmaNewVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:sinusitis a health:ConditionRecord .
+:sinusitisVersion prov:specializationOf :sinusitis ; rec:patient :subject ; health:conditionName "Sinusitis" ; health:status "resolved" ; clinical:abatementDate "2023-01-01"^^xsd:date .
+:sinusitisRevision a rec:Revision ; rec:revisionOf :sinusitis ; rec:version :sinusitisVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

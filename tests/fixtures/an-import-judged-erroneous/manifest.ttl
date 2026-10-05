@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "an-import-judged-erroneous" ;
+  rdfs:comment "An import an Erroneous judgment names: it brought one record's current revision, and another record's first revision, which a later import has revised." ;
+  mf:entries (
+    <#left-out-with-the-import>
+  ) .
+
+<#left-out-with-the-import> a mf:QueryEvaluationTest ;
+  mf:name "left-out-with-the-import" ;
+  rdfs:comment "A record whose current revision the import brought is left out because of the judgment naming the import; one revised since by another import is not." ;
+  mf:action [ qt:query <left-out-with-the-import.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <left-out-with-the-import.srj> .

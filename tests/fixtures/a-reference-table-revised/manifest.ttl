@@ -1,0 +1,26 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-reference-table-revised" ;
+  rdfs:comment "One reference series whose second version revises its first." ;
+  mf:entries (
+    <#the-current-reference-version>
+    <#which-reference-versions-are-current>
+  ) .
+
+<#the-current-reference-version> a mf:QueryEvaluationTest ;
+  mf:name "the-current-reference-version" ;
+  rdfs:comment "A series' current version is the one no newer version revises." ;
+  mf:action [ qt:query <the-current-reference-version.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <the-current-reference-version.srj> .
+
+<#which-reference-versions-are-current> a mf:QueryEvaluationTest ;
+  mf:name "which-reference-versions-are-current" ;
+  rdfs:comment "The question lists the series and its current version only." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/Which%20reference%20versions%20are%20current.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <which-reference-versions-are-current.srj> .

@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-change-undone-reuses-its-first-version" ;
+  rdfs:comment "One record whose source changed it and changed it back: revisions r1, r2 and r3 carry v1, v2 and v1 again." ;
+  mf:entries (
+    <#the-current-version-is-the-first-again>
+  ) .
+
+<#the-current-version-is-the-first-again> a mf:QueryEvaluationTest ;
+  mf:name "the-current-version-is-the-first-again" ;
+  rdfs:comment "The third revision is current, and the record's current version is the first one again." ;
+  mf:action [ qt:query <the-current-version-is-the-first-again.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <the-current-version-is-the-first-again.srj> .

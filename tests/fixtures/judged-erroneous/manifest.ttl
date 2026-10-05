@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "judged-erroneous" ;
+  rdfs:comment "Two of the subject's records, each named by an Erroneous judgment; the second judgment is superseded." ;
+  mf:entries (
+    <#left-out-because-of-the-judgment>
+  ) .
+
+<#left-out-because-of-the-judgment> a mf:QueryEvaluationTest ;
+  mf:name "left-out-because-of-the-judgment" ;
+  rdfs:comment "A record a counting Erroneous judgment names is left out because of that judgment; one named only by a superseded one is not." ;
+  mf:action [ qt:query <left-out-because-of-the-judgment.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <left-out-because-of-the-judgment.srj> .

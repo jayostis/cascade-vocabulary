@@ -1,0 +1,4 @@
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?reason ?because
+WHERE { ?record rec:leftOutFor ?leftOut . ?leftOut rec:reason ?reason OPTIONAL { ?leftOut rec:because ?because } }

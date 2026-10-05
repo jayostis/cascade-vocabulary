@@ -1,0 +1,33 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:northImport a prov:Activity ; rdfs:label "Northgate download" ;
+    prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:session a prov:Activity ; rdfs:label "Entry session" ; prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:peanutFromDocument a health:AllergyRecord .
+:peanutFromDocumentVersion prov:specializationOf :peanutFromDocument ; rec:patient :subject ; health:allergen "Peanut" ;
+    clinical:status "active" ; clinical:criticality "high" .
+:peanutFromDocumentRevision a rec:Revision ; rec:revisionOf :peanutFromDocument ;
+    rec:version :peanutFromDocumentVersion ; prov:wasDerivedFrom :peanutDocument ; prov:wasGeneratedBy :northImport ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+
+:peanutEntered a health:AllergyRecord .
+:peanutEnteredVersion prov:specializationOf :peanutEntered ; rec:patient :subject ; health:allergen "Peanut allergy" ;
+    health:allergenCode <http://snomed.info/id/91935009> .
+:peanutEnteredRevision a rec:Revision ; rec:revisionOf :peanutEntered ; rec:version :peanutEnteredVersion ;
+    prov:wasGeneratedBy :session ; prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime .
+
+:latex a health:AllergyRecord .
+:latexVersion prov:specializationOf :latex ; rec:patient :subject ; health:allergen "Latex" ;
+    clinical:status "inactive" .
+:latexRevision a rec:Revision ; rec:revisionOf :latex ; rec:version :latexVersion ;
+    prov:wasDerivedFrom :latexDocument ; prov:wasGeneratedBy :northImport ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .

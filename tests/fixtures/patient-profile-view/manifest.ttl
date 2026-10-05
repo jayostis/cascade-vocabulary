@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "patient-profile-view" ;
+  rdfs:comment "Two patient profiles counting About judgments tie to the subject." ;
+  mf:entries (
+    <#one-entry-for-the-person>
+  ) .
+
+<#one-entry-for-the-person> a mf:QueryEvaluationTest ;
+  mf:name "one-entry-for-the-person" ;
+  rdfs:comment "One patient profile entry, named from the subject, joins both profiles." ;
+  mf:action [ qt:query <one-entry-for-the-person.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <one-entry-for-the-person.srj> .

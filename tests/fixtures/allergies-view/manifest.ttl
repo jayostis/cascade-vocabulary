@@ -1,0 +1,34 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "allergies-view" ;
+  rdfs:comment "An active allergy entry of two members, the later one entered by the person and stating no status; and an inactive allergy." ;
+  mf:entries (
+    <#what-it-shows>
+    <#where-it-came-from>
+    <#my-active-allergies>
+  ) .
+
+<#what-it-shows> a mf:QueryEvaluationTest ;
+  mf:name "what-it-shows" ;
+  rdfs:comment "Each statement of each allergy entry in its view, with the member it was taken from: the allergen and code from the latest member, the status from the latest derived from a document, and the highest criticality." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/entry/What%20it%20shows.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <what-it-shows.srj> .
+
+<#where-it-came-from> a mf:QueryEvaluationTest ;
+  mf:name "where-it-came-from" ;
+  rdfs:comment "Each member of each entry: when its current revision arrived, the import or session that brought it, and its document with the hospital that wrote it; the one the person entered has no document." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/entry/Where%20it%20came%20from.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <where-it-came-from.srj> .
+
+<#my-active-allergies> a mf:QueryEvaluationTest ;
+  mf:name "my-active-allergies" ;
+  rdfs:comment "Only the active entry, with its code, its highest criticality and how many records it joins." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20active%20allergies.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <my-active-allergies.srj> .

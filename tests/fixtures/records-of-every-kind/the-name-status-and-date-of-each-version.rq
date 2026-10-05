@@ -1,0 +1,4 @@
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?version ?property ?value
+WHERE { VALUES ?property { rec:name rec:status rec:date } ?version ?property ?value }

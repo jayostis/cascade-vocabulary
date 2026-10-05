@@ -1,0 +1,20 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:older a health:AllergyRecord .
+:olderFirst prov:specializationOf :older ; rec:patient :subject ; health:allergen "Pollen" .
+:olderSecond prov:specializationOf :older ; rec:patient :subject ; health:allergen "Grass pollen" .
+:olderR1 a rec:Revision ; rec:revisionOf :older ; rec:version :olderFirst ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:olderR2 a rec:Revision ; rec:revisionOf :older ; rec:version :olderSecond ; prov:wasRevisionOf :olderR1 ;
+    prov:generatedAtTime "2026-06-01T00:00:00Z"^^xsd:dateTime .
+
+:newer a health:AllergyRecord .
+:newerVersion prov:specializationOf :newer ; rec:patient :subject ; health:allergen "Pollen" .
+:newerRevision a rec:Revision ; rec:revisionOf :newer ; rec:version :newerVersion ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .

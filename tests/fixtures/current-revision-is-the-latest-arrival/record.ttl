@@ -1,0 +1,14 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:record a health:ConditionRecord .
+:first prov:specializationOf :record ; health:conditionName "Asthma" .
+:second prov:specializationOf :record ; health:conditionName "Asthma, mild" .
+:earlier a rec:Revision ; rec:revisionOf :record ; rec:version :first ;
+    prov:generatedAtTime "2026-03-01T10:00:00Z"^^xsd:dateTime .
+:later a rec:Revision ; rec:revisionOf :record ; rec:version :second ;
+    prov:generatedAtTime "2026-03-01T09:30:00-02:00"^^xsd:dateTime ;
+    prov:wasDerivedFrom :north , :south .

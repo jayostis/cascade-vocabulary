@@ -1,0 +1,58 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "which-judgments-count" ;
+  rdfs:comment "A person's Same, a superseded one and the one superseding it, a retracted one and the retraction; a machine's SameCode and SameMappedCode made with the current reference version, and a SameCode made with the one it replaced." ;
+  mf:entries (
+    <#everyday-counts>
+    <#export-counts>
+    <#whether-it-counts>
+    <#who-judged-what>
+    <#how-many-count-everyday>
+    <#how-many-count-for-export>
+  ) .
+
+<#everyday-counts> a mf:QueryEvaluationTest ;
+  mf:name "everyday-counts" ;
+  rdfs:comment "Everyday counts every judgment not superseded or retracted, unless a machine made it with a reference version since replaced." ;
+  mf:action [ qt:query <everyday-counts.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <everyday-counts.srj> .
+
+<#export-counts> a mf:QueryEvaluationTest ;
+  mf:name "export-counts" ;
+  rdfs:comment "Export counts a person's judgment not superseded or retracted, and a machine's only when it rests on the same code, made with the current reference version." ;
+  mf:action [ qt:query <export-counts.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/export.rq> ] ;
+  mf:result <export-counts.srj> .
+
+<#whether-it-counts> a mf:QueryEvaluationTest ;
+  mf:name "whether-it-counts" ;
+  rdfs:comment "One row per judgment saying whether it counts, and one more for each thing that happened to it, with what did it." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/judgment/Whether%20it%20counts.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <whether-it-counts.srj> .
+
+<#who-judged-what> a mf:QueryEvaluationTest ;
+  mf:name "who-judged-what" ;
+  rdfs:comment "Everything each judgment says: when, by whom and in what role, its verdict and member, and what it supersedes or retracts." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/judgment/Who%20judged%20what.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <who-judged-what.srj> .
+
+<#how-many-count-everyday> a mf:QueryEvaluationTest ;
+  mf:name "how-many-count-everyday" ;
+  rdfs:comment "Under everyday, the judgments that count by verdict, justification and who made them." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/How%20many%20judgments%20count.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <how-many-count-everyday.srj> .
+
+<#how-many-count-for-export> a mf:QueryEvaluationTest ;
+  mf:name "how-many-count-for-export" ;
+  rdfs:comment "Under export, the machine's SameMappedCode does not count." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/How%20many%20judgments%20count.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/export.rq> ] ;
+  mf:result <how-many-count-for-export.srj> .

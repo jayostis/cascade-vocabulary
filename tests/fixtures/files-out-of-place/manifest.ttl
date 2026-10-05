@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "files-out-of-place" ;
+  rdfs:comment "A revision filed in another kind's records folder, a judgment filed in the reference series' folder, a record where the layout files it, and a file another app wrote: a thing of a class the layout does not place, and a type registration filing allergies somewhere else." ;
+  mf:entries (
+    <#which-files-are-out-of-place>
+  ) .
+
+<#which-files-are-out-of-place> a mf:QueryEvaluationTest ;
+  mf:name "which-files-are-out-of-place" ;
+  rdfs:comment "The revision belongs in its record's kind's folder and the judgment in the judgments folder; the record, the other app's file and the files the build writes are where the layout puts them, or hold nothing it places." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/Which%20files%20are%20out%20of%20place.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <which-files-are-out-of-place.srj> .

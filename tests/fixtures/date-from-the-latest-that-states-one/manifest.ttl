@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "date-from-the-latest-that-states-one" ;
+  rdfs:comment "A condition entry whose latest member states no date." ;
+  mf:entries (
+    <#where-the-entry-takes-its-date-from>
+  ) .
+
+<#where-the-entry-takes-its-date-from> a mf:QueryEvaluationTest ;
+  mf:name "where-the-entry-takes-its-date-from" ;
+  rdfs:comment "The entry takes its date from the latest member that states one." ;
+  mf:action [ qt:query <where-the-entry-takes-its-date-from.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <where-the-entry-takes-its-date-from.srj> .

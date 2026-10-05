@@ -1,0 +1,13 @@
+@prefix : <urn:x:> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:peanutDocument pav:retrievedFrom <https://north.example/fhir/AllergyIntolerance/peanut> ;
+    pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Northgate" ] ] .
+:latexDocument pav:retrievedFrom <https://north.example/fhir/AllergyIntolerance/latex> ;
+    pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Northgate" ] ] .

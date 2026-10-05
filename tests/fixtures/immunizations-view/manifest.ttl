@@ -1,0 +1,26 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "immunizations-view" ;
+  rdfs:comment "An immunization entry of two members, the later naming it and stating no status and no date; and one not done." ;
+  mf:entries (
+    <#the-immunizations-view>
+    <#my-immunizations>
+  ) .
+
+<#the-immunizations-view> a mf:QueryEvaluationTest ;
+  mf:name "the-immunizations-view" ;
+  rdfs:comment "Each entry takes the vaccine and code of its latest member, the status of the member chosen for status, and the date of the member chosen for the date." ;
+  mf:action [ qt:query <the-immunizations-view.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <the-immunizations-view.srj> .
+
+<#my-immunizations> a mf:QueryEvaluationTest ;
+  mf:name "my-immunizations" ;
+  rdfs:comment "Every entry, newest first, with how many records it joins." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20immunizations.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <my-immunizations.srj> .

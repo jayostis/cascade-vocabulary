@@ -1,0 +1,37 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:a1 a health:AllergyRecord .
+:a1Version prov:specializationOf :a1 ; rec:patient :subject ; health:allergen "Almond" .
+:a1Revision a rec:Revision ; rec:revisionOf :a1 ; rec:version :a1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:a2 a health:AllergyRecord .
+:a2Version prov:specializationOf :a2 ; rec:patient :subject ; health:allergen "Almond" .
+:a2Revision a rec:Revision ; rec:revisionOf :a2 ; rec:version :a2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:b1 a health:AllergyRecord .
+:b1Version prov:specializationOf :b1 ; rec:patient :subject ; health:allergen "Birch" .
+:b1Revision a rec:Revision ; rec:revisionOf :b1 ; rec:version :b1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:b2 a health:AllergyRecord .
+:b2Version prov:specializationOf :b2 ; rec:patient :subject ; health:allergen "Birch pollen" .
+:b2Revision a rec:Revision ; rec:revisionOf :b2 ; rec:version :b2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:c1 a health:AllergyRecord .
+:c1Version prov:specializationOf :c1 ; rec:patient :subject ; health:allergen "Cedar" .
+:c1Revision a rec:Revision ; rec:revisionOf :c1 ; rec:version :c1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:c2 a health:AllergyRecord .
+:c2Version prov:specializationOf :c2 ; rec:patient :subject ; health:allergen "Cedar" .
+:c2Revision a rec:Revision ; rec:revisionOf :c2 ; rec:version :c2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

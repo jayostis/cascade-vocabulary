@@ -1,0 +1,25 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:fluOld a health:ImmunizationRecord .
+:fluOldVersion prov:specializationOf :fluOld ; rec:patient :subject ; health:vaccineName "Influenza" ; health:status "completed" ;
+    health:administrationDate "2025-10-01"^^xsd:date .
+:fluOldRevision a rec:Revision ; rec:revisionOf :fluOld ; rec:version :fluOldVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fluNew a health:ImmunizationRecord .
+:fluNewVersion prov:specializationOf :fluNew ; rec:patient :subject ; health:vaccineName "Influenza, quadrivalent" ;
+    health:vaccineCode <http://hl7.org/fhir/sid/cvx/150> .
+:fluNewRevision a rec:Revision ; rec:revisionOf :fluNew ; rec:version :fluNewVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:tdap a health:ImmunizationRecord .
+:tdapVersion prov:specializationOf :tdap ; rec:patient :subject ; health:vaccineName "Tdap" ; health:status "not-done" ;
+    health:administrationDate "2015-01-01"^^xsd:date .
+:tdapRevision a rec:Revision ; rec:revisionOf :tdap ; rec:version :tdapVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
