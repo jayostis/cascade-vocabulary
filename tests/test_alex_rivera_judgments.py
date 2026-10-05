@@ -48,7 +48,7 @@ def current_version(graph, record):
 
 def test_every_judgment_and_reference_file_is_named_for_its_one_thing_and_listed_under_the_scenarios_event():
     names = {h: str(term) for h, term in handles().items()}
-    expected = {path_of("judgments", names[j]): row[0] for j, row in EVERY_JUDGMENT.items()}
+    expected = {path_of("judgments", names[j]): judgment.event for j, judgment in EVERY_JUDGMENT.items()}
     expected |= {path_of("references", names[r]): event for r, event in EVERY_REFERENCE.items()}
     assert {p: e for p, e in ALEX.added_by().items() if p.startswith(("judgments/", "references/"))} == expected
     on_disk = sorted(p.relative_to(POD).as_posix() for folder in ("judgments", "references")

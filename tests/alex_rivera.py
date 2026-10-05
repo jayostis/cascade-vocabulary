@@ -1,5 +1,6 @@
 import json
 from functools import lru_cache
+from typing import NamedTuple
 
 import pytest
 from rdflib import Namespace, URIRef
@@ -18,8 +19,20 @@ JDG = Namespace("https://ns.cascadeprotocol.org/judgments/v1-draft#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
 MATCHER = "urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76"
 
-# J: event, time, author, verdict, members, justification, used, supersedes or retracts, a reason given
-EVERY_JUDGMENT = {
+
+class Judgment(NamedTuple):
+    event: str
+    at: str
+    author: str
+    verdict: str | None
+    members: list
+    justification: str | None
+    used: list
+    supersedes_or_retracts: list
+    reason_given: bool
+
+
+EVERY_JUDGMENT = {handle: Judgment(*row) for handle, row in {
     "J1": ("E2", "2026-09-01T10:00:30Z", "Alex", "About", ["H1-PAT"], None, [], [], False),
     "J2": ("E4", "2026-10-14T15:42:30Z", "Alex", "About", ["H2O-PAT"], None, [], [], False),
     "J3": ("E5", "2026-10-14T15:43:00Z", "matcher", "Same", ["H1-ALG-SULFA", "H2O-ALG-SULFA"], "SameCode",
@@ -61,7 +74,7 @@ EVERY_JUDGMENT = {
     "J22": ("E10", "2027-02-10T17:21:30Z", "Alex", "About", ["H1P-PAT"], None, [], [], False),
     "J23": ("E14", "2027-04-02T20:00:00Z", "Alex", None, [], None, [], [("retracts", "J22")], True),
     "J24": ("E14", "2027-04-02T20:00:00Z", "Alex", "Erroneous", ["H1-PROC-ECHO"], None, ["H1-PROC-ECHO v1"], [], True),
-}
+}.items()}
 
 
 @lru_cache(maxsize=None)
@@ -92,9 +105,10 @@ def arrivals(graph, record):
 
 
 def _matcher_judgment(handle, named):
-    _, _, _, _, members, justification, used, _, _ = EVERY_JUDGMENT[handle]
-    return URIRef(recomputed.record_name([MATCHER, JDG[justification], *sorted(str(named[m]) for m in members),
-                                          *sorted(str(named[u]) for u in used)]))
+    judgment = EVERY_JUDGMENT[handle]
+    return URIRef(recomputed.record_name([MATCHER, JDG[judgment.justification],
+                                          *sorted(str(named[m]) for m in judgment.members),
+                                          *sorted(str(named[u]) for u in judgment.used)]))
 
 
 @lru_cache(maxsize=None)
@@ -118,7 +132,7 @@ def handles():
     named |= {f"I-{e['event']}": URIRef(e["import"]) for e in ALEX.events if "import" in e}
     named |= {"S": URIRef(e["subject"]) for e in ALEX.events if "subject" in e}
     named |= {h: URIRef(n) for h, n in sources()["judgments"].items()}
-    named |= {h: _matcher_judgment(h, named) for h, row in EVERY_JUDGMENT.items() if row[2] == "matcher"}
+    named |= {h: _matcher_judgment(h, named) for h, row in EVERY_JUDGMENT.items() if row.author == "matcher"}
     return named
 
 
