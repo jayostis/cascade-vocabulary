@@ -1,0 +1,47 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix solid: <http://www.w3.org/ns/solid/terms#> .
+
+<>
+  a
+    solid:TypeIndex ,
+    solid:UnlistedDocument .
+
+<#allergies>
+  dct:title "Allergies" ;
+  a solid:TypeRegistration ;
+  solid:forClass health:AllergyRecord ;
+  solid:instance <https://pod.example/clinical/allergies.ttl> .
+
+<#clinical>
+  dct:title "Rebuildable views" ;
+  a solid:TypeRegistration ;
+  solid:forClass rec:View ;
+  solid:instanceContainer <https://pod.example/clinical/> .
+
+<#conditions>
+  dct:title "Conditions" ;
+  a solid:TypeRegistration ;
+  solid:forClass health:ConditionRecord ;
+  solid:instance <https://pod.example/clinical/conditions.ttl> .
+
+<#immunizations>
+  dct:title "Immunizations" ;
+  a solid:TypeRegistration ;
+  solid:forClass health:ImmunizationRecord ;
+  solid:instance <https://pod.example/clinical/immunizations.ttl> .
+
+<#patient-profile>
+  dct:title "Patient profile" ;
+  a solid:TypeRegistration ;
+  solid:forClass cascade:PatientProfile ;
+  solid:instance <https://pod.example/clinical/patient-profile.ttl> .
+
+<#procedures>
+  dct:title "Procedures" ;
+  a solid:TypeRegistration ;
+  solid:forClass clinical:Procedure ;
+  solid:instance <https://pod.example/clinical/procedures.ttl> .

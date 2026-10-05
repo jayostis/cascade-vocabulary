@@ -26,23 +26,22 @@ def literal(value, datatype=None, lang=None):
     return rdflib.Literal(value, datatype=datatype, lang=lang, normalize=False)
 
 
-def date_time(value):
-    return literal(value, XSD.dateTime)
-
-
 def parsed(path, base=None):
-    return parsed_text(path.read_bytes(), base)
-
-
-def parsed_text(octets, base=None):
     with literals_as_written():
-        return rdflib.Graph().parse(data=octets, format="turtle", publicID=base)
+        return rdflib.Graph().parse(data=path.read_bytes(), format="turtle", publicID=base)
 
 
 def plain(node):
     if isinstance(node, rdflib.Literal) and node.datatype == XSD.string:
         return literal(str(node))
     return node
+
+
+@lru_cache(maxsize=None)
+def prepared(query):
+    """A query parsed once, with no prefix but those it declares."""
+    with literals_as_written():
+        return prepareQuery(query)
 
 
 class Store:
@@ -105,19 +104,6 @@ class Oxigraph(Store):
         return {tuple(self._term(t) for t in (x.subject, x.predicate, x.object))
                 for x in self.store.quads_for_pattern(None, None, None, named)}
 
-    def graphs(self):
-        return sorted(graph.value for graph in self.store.named_graphs())
-
-    def ntriples(self, graph):
-        return self.store.dump(format=pyoxigraph.RdfFormat.N_TRIPLES, from_graph=pyoxigraph.NamedNode(graph))
-
-
-@lru_cache(maxsize=None)
-def prepared(query):
-    """A query parsed once, with no prefix but those it declares."""
-    with literals_as_written():
-        return prepareQuery(query)
-
 
 class Rdflib(Store):
     _term = staticmethod(plain)
@@ -139,6 +125,7 @@ class Rdflib(Store):
         self.dataset.addN((*triple, g) for triple in triples for g in graphs)
 
     def _solutions(self, query):
+        """The query's columns, and its rows or triples, each made while literals are kept as written."""
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", r"Dataset\.\w+ is deprecated", DeprecationWarning)
             with literals_as_written():
@@ -156,12 +143,6 @@ class Rdflib(Store):
 
     def triples(self, graph=None):
         return {tuple(map(plain, triple)) for triple in self.graph(graph)}
-
-    def graphs(self):
-        return sorted(str(g.identifier) for g in self.dataset.graphs() if g.identifier != rdflib.graph.DATASET_DEFAULT_GRAPH_ID)
-
-    def ntriples(self, graph):
-        return self.graph(graph).serialize(format="nt", encoding="utf-8")
 
 
 ENGINES = {"oxigraph": Oxigraph, "rdflib": Rdflib}

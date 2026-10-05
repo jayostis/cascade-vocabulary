@@ -1,26 +1,61 @@
 # cascade-vocabulary
 
-How a Cascade pod is described and queried.
-[`ro-crate-metadata.json`](ro-crate-metadata.json) lists the package a program loads:
+The contract a Cascade pod is built and read by. It holds no code that builds a pod, and nothing generated.
+[`ro-crate-metadata.json`](ro-crate-metadata.json) lists the package a runtime loads:
 
 - [`ontologies/`](ontologies): the terms and shapes a
-  [Cascade Bridge Adapter](https://github.com/jayostis/cascade-bridge-spec)'s output is read against.
+  [Cascade Bridge Adapter](https://github.com/jayostis/cascade-bridge-spec)'s output and a pod are read against.
   `core`, `health` and `clinical` are copied from
   [the-cascade-protocol/spec](https://github.com/the-cascade-protocol/spec) (CC BY 4.0);
   `records` and `judgments` are first declared here (Apache-2.0).
-- [`queries/v1-draft/`](queries/v1-draft): the standard queries over a pod.
-- [`runtime/`](runtime): the rules a runtime follows when it fills a pod, the vectors that show them, and where a
-  pod files each kind of thing, [`pod-layout.ttl`](runtime/pod-layout.ttl).
-- [`conformance/`](conformance): the scenario every runtime must pass, Alex Rivera's: her story, its scripted input and
-  its right answers. [`runtime/rules.md`](runtime/rules.md#the-conformance-kit) says what passing it means.
+- [`queries/v1-draft/`](queries/v1-draft): the standard queries over a pod: the derivations and lenses, the views and
+  labels, the matcher's comparisons, and the questions.
+- [`runtime/rules.md`](runtime/rules.md): what a runtime does when something arrives, as numbered rules, and
+  [`runtime/vectors/`](runtime/vectors) the small cases that show each, in the test format the rules describe.
+- [`runtime/pod-layout.ttl`](runtime/pod-layout.ttl): where a pod files each kind of thing, as RDF.
+- [`conformance/alex-rivera/`](conformance/alex-rivera): the conformance kit, the scenario every runtime must pass: Alex
+  Rivera's story, its scripted input and its right answers.
 
-Beside it are one library and the reference tools on it, [`cascade_pod/`](cascade_pod), and the small pods each query
-is tested on, [`tests/fixtures/`](tests/fixtures). No pod is committed: the tools replay Alex's story into `build/`.
+Beside them, [`tests/fixtures/`](tests/fixtures) holds the small hand-made pods each query is tested on.
+
+## How a runtime proves it conforms
+
+It replays the vectors' stories and the kit's, and passes what
+[the conformance kit](runtime/rules.md#the-conformance-kit) says: every vector and every case, the final views equal to
+`expected/`, every file conforming to the shapes, every name following its rule, and every file where the layout says.
+It reports each in EARL.
+
+The reference runtime is [cascade-runtime-js](https://github.com/jayostis/cascade-runtime-js). To see it build Alex's
+pod and the site that documents it:
+
+```sh
+npm install
+npm run build:example alex-rivera
+```
+
+## Trying a change against the runtime
+
+Every pull request here runs the reference runtime, at its default branch, over the pull request's checkout: the
+`compatibility` check, through [cascade-bridge-spec's compatibility tooling](https://github.com/jayostis/cascade-bridge-spec/blob/main/compatibility.md),
+which [`compatibility.json`](compatibility.json) names it to. A change to a rule, a vector, a case or a query that
+breaks the runtime fails that check.
+
+A change the runtime must follow lands as a pair: this repository's pull request and the runtime's, each naming the
+other on a `Depends-On:` line. The check then runs the runtime's pull request, and `ready-to-merge` holds each until the
+other can merge.
+
+Locally, with cascade-runtime-js cloned beside this checkout, the runtime reads this checkout as it is on disk:
+
+```sh
+npm run conformance -- --report earl.nt   # in cascade-runtime-js
+```
+
+## The vocabulary's own tests
 
 ```sh
 python3 -m pip install -r requirements.txt
-python3 -m cascade_pod replay conformance/alex-rivera --out build/alex-rivera
-python3 -m cascade_pod site build/alex-rivera --out build/alex-rivera/site   # then open build/alex-rivera/site/index.html
-python3 -m cascade_pod ask build/alex-rivera "record/Why it is in no view"
-python3 -m cascade_pod graphdb build/alex-rivera http://localhost:7200
+python3 -m pytest -n auto --dist loadgroup
 ```
+
+They check the ontologies, the shapes and the crate; that the vectors and the kit are well formed; and each query, over
+the fixtures, on two SPARQL engines.

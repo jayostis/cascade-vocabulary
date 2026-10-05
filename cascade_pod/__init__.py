@@ -1,2 +1,0 @@
-class Failure(Exception):
-    pass
