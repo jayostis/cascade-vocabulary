@@ -37,8 +37,6 @@ def records_folder(folders, source, record, kind):
     return folders[kind]
 
 
-# What a revision sets
-
 @dataclass(frozen=True)
 class Revision:
     record: URIRef
@@ -64,8 +62,6 @@ class Revision:
             (this, PROV.wasGeneratedBy, URIRef(self.by)),
         } | ({(this, PROV.wasRevisionOf, previous)} if previous else set())
 
-
-# The pod as it grows
 
 class Filing:
     def __init__(self, example):
@@ -96,8 +92,6 @@ class Filing:
         if revision.source_version is not None:
             self.source_versions[revision.record].add(revision.source_version)
 
-
-# A subject and an entry
 
 def file_subject(filing, event):
     subject = URIRef(event["subject"])
@@ -131,8 +125,6 @@ def entry_revisions(graph, activity, source, folders):
             version=version, version_triples=frozenset((version, p, o) for _, p, o in content),
             statements=frozenset(), at=str(graph.value(activity, PROV.startedAtTime)), by=str(activity))
 
-
-# An export: each of its files, and what the Bridge made of it
 
 class Conversion:
     def __init__(self, example, event, path, entry):
@@ -266,8 +258,6 @@ def file_import(filing, event, kept):
     filing.add_turtle(event["event"], fanned(FOLDERS["imports"], event["import"]), descriptions[0] | used)
 
 
-# The events manifest
-
 EVENT_KEYS = ["event", "at", "subject", "export", "import", "entry", "read_through", "takes", "adds"]
 
 
@@ -288,8 +278,6 @@ def events_manifest(example, filing):
         events.append({key: event[key] for key in EVENT_KEYS + sorted(set(event) - set(EVENT_KEYS)) if key in event})
     return {"address": example.address, "events": events, "derived": sorted(example.derived)}
 
-
-# One run
 
 def run(example):
     filing, facts_files, to_convert = file_story(example)
