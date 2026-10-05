@@ -1,6 +1,5 @@
 import json
 import re
-from functools import cache
 
 import pytest
 from rdflib import Graph, Namespace, URIRef
@@ -8,8 +7,7 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF
 
 from cascade_pod import manifest, story
-from cascade_pod.store import ENGINES
-from examples import ROOT
+from examples import FIXTURES, ROOT
 
 RUNTIME = ROOT / "runtime"
 MANIFEST = RUNTIME / "vectors" / "manifest.ttl"
@@ -22,9 +20,11 @@ EARL = Namespace("http://www.w3.org/ns/earl#")
 ENTRIES = manifest.entries(MANIFEST)
 
 
-@cache
-def report(engine):
-    return manifest.run(MANIFEST, engine)
+@pytest.fixture(scope="session")
+def replaying(tmp_path_factory):
+    """One engine replays each story once: a vector shows what a runtime writes, which no engine changes, and the
+    fixtures show where the engines could disagree."""
+    return manifest.Run("oxigraph", tmp_path_factory.mktemp("replays"))
 
 
 def outcomes(earl):
@@ -86,18 +86,18 @@ def test_every_entry_is_named_by_a_rule_and_every_rule_names_an_entry_or_says_wh
         assert by_rule[rule].strip(), rule
 
 
-@pytest.mark.parametrize("engine", sorted(ENGINES))
-def test_the_earl_report_has_one_passed_assertion_per_entry_and_no_other(engine):
-    assert ENTRIES
-    found = outcomes(report(engine))
-    assert sorted(str(test) for test, _ in found) == sorted(entry.iri for entry in ENTRIES)
+def test_the_earl_report_has_one_passed_assertion_per_entry_and_no_other():
+    [fixture] = [fixture for fixture in FIXTURES if fixture.name == "a-change-undone-reuses-its-first-version"]
+    found = outcomes(manifest.run(fixture.manifest, "oxigraph"))
+    assert sorted(str(test) for test, _ in found) == sorted(entry.iri for entry in manifest.entries(fixture.manifest))
     assert {outcome for _, outcome in found} == {EARL.passed}
 
 
-@pytest.mark.parametrize("engine, entry", [(engine, entry) for engine in sorted(ENGINES) for entry in ENTRIES],
-                         ids=[f"{engine}-{entry.name}" for engine in sorted(ENGINES) for entry in ENTRIES])
-def test_the_entry_passes(engine, entry):
-    assert [outcome for test, outcome in outcomes(report(engine)) if str(test) == entry.iri] == [EARL.passed]
+@pytest.mark.parametrize("entry", [pytest.param(entry, id=entry.name, marks=pytest.mark.xdist_group(entry.story.parent.name))
+                                   for entry in ENTRIES])
+def test_the_entry_passes(entry, replaying):
+    outcome, why = replaying.outcome(entry)
+    assert outcome == EARL.passed, why
 
 
 def test_a_story_whose_first_step_is_a_matcher_step_is_rejected_naming_the_step(tmp_path):

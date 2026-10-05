@@ -12,8 +12,9 @@ How a Cascade pod is described and queried.
 - [`runtime/`](runtime): the rules a runtime follows when it fills a pod, the vectors that show them, and where a
   pod files each kind of thing, [`pod-layout.ttl`](runtime/pod-layout.ttl).
 
-Beside it are one library and the reference tools on it, [`cascade_pod/`](cascade_pod), and one
-example pod, as data, [`example-pods/alex-rivera/`](example-pods/alex-rivera).
+Beside it are one library and the reference tools on it, [`cascade_pod/`](cascade_pod), one
+example pod, as data, [`example-pods/alex-rivera/`](example-pods/alex-rivera), and the small pods each query is
+tested on, [`tests/fixtures/`](tests/fixtures).
 
 ```sh
 python3 -m pip install -r requirements.txt

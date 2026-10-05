@@ -1,19 +1,14 @@
 import ast
 import re
-from pathlib import PurePosixPath
 
 import pytest
 from pyshacl import validate
 from rdflib import Graph, URIRef
-from rdflib.namespace import RDF
 
-from cascade_pod import store, vocabulary
+from cascade_pod import vocabulary
 from cascade_pod.pod import LAYOUT, LAYOUT_FILE
-from examples import ROOT, every_example, pod_file
-from test_queries import answers
+from examples import ROOT, every_example
 
-REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
-JDG = "https://ns.cascadeprotocol.org/judgments/v1-draft#"
 SOLID = "http://www.w3.org/ns/solid/terms#"
 OUT_OF_PLACE = "pod/Which files are out of place"
 SHAPES = ROOT / "ontologies" / "records" / "v1-draft" / "records.shapes.ttl"
@@ -66,16 +61,5 @@ def test_no_module_keeps_a_layout_of_its_own():
 
 @every_example
 def test_no_file_of_an_example_is_out_of_place(example):
-    assert answers(example, "oxigraph", vocabulary.DEFAULT_LENS)[OUT_OF_PLACE] == []
-
-
-@pytest.mark.parametrize("engine", sorted(store.ENGINES))
-def test_a_moved_revision_and_a_moved_judgment_are_each_out_of_place_where_the_layout_files_them(misplaced, engine):
-    for example, moves in misplaced:
-        found = sorted((str(row["file"]), str(row["thing"]), str(row["place"]))
-                       for row in answers(example, engine, vocabulary.DEFAULT_LENS)[OUT_OF_PLACE])
-        things = {target: str(pod_file(example, target).value(predicate=RDF.type, object=URIRef(kind)))
-                  for target, kind in zip(moves.values(), (REC + "Revision", JDG + "Judgment"))}
-        assert found == sorted((example.address + target, things[target],
-                                example.address + str(PurePosixPath(path).parent.parent) + "/")
-                               for path, target in moves.items())
+    held = example.build("oxigraph", vocabulary.DEFAULT_LENS).store
+    assert held.select(vocabulary.query(vocabulary.questions()[OUT_OF_PLACE])) == []
