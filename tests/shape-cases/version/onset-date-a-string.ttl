@@ -1,0 +1,13 @@
+@prefix : <#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:version prov:specializationOf :record ;
+    rec:patient :patient ;
+    health:allergen "Peanut" ;
+    health:allergyCategory "food" ;
+    health:onsetDate "2019-06-14" ;
+    clinical:status "active" .
