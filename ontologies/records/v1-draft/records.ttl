@@ -215,6 +215,60 @@ solid:instanceContainer a rdf:Property ;
     rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
     dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> .
 
+# Reference tables and the matcher's rule list, as a runtime is given them; none of these is written to a pod
+
+rec:shipsWith a owl:ObjectProperty ;
+    rdfs:label "ships with"@en ;
+    rdfs:comment "The version of the series a runtime uses until the pod names another as current."@en ;
+    rdfs:domain rec:ReferenceSeries ;
+    rdfs:range prov:Entity .
+
+rec:MatcherRule a owl:Class ;
+    rdfs:label "matcher rule"@en ;
+    rdfs:comment "One row of a version of the matcher's rule list: the justification it gives, the kinds of record it applies to, the comparison query it runs and the hash of that query's bytes, and the series of the table the query reads, if any."@en .
+
+rec:justifiedAs a owl:ObjectProperty ;
+    rdfs:label "justified as"@en ;
+    rdfs:comment "The justification a judgment the rule writes gives."@en ;
+    rdfs:domain rec:MatcherRule .
+
+rec:appliesTo a owl:DatatypeProperty ;
+    rdfs:label "applies to"@en ;
+    rdfs:comment "A kind of record, as rec:kind words it, that the rule compares."@en ;
+    rdfs:domain rec:MatcherRule ;
+    rdfs:range xsd:string .
+
+rec:query a owl:DatatypeProperty ;
+    rdfs:label "query"@en ;
+    rdfs:comment "The path under queries/v1-draft/ of the comparison query the rule runs."@en ;
+    rdfs:domain rec:MatcherRule ;
+    rdfs:range xsd:string .
+
+rec:queryHash a owl:ObjectProperty ;
+    rdfs:label "query hash"@en ;
+    rdfs:comment "The ni:///sha-256; name of the bytes of the rule's query file; a run whose file does not hash to it is refused."@en ;
+    rdfs:domain rec:MatcherRule .
+
+rec:table a owl:ObjectProperty ;
+    rdfs:label "table"@en ;
+    rdfs:comment "The series whose current version's rows the rule's query reads."@en ;
+    rdfs:domain rec:MatcherRule ;
+    rdfs:range rec:ReferenceSeries .
+
+rec:sameIngredientAs a owl:ObjectProperty ;
+    rdfs:label "same ingredient as"@en ;
+    rdfs:comment "A row of an ingredient map: the table pairs this SNOMED CT code with that RxNorm code."@en .
+
+rec:cvxCode a owl:DatatypeProperty ;
+    rdfs:label "CVX code"@en ;
+    rdfs:comment "The CVX code a row of a vaccine group table places in its group."@en ;
+    rdfs:range xsd:string .
+
+rec:vaccineGroup a owl:DatatypeProperty ;
+    rdfs:label "vaccine group"@en ;
+    rdfs:comment "The group a row of a vaccine group table places its CVX code in."@en ;
+    rdfs:range xsd:string .
+
 # Test terms, used with W3C's mf: test-manifest vocabulary
 
 rec:ReplayTest a owl:Class ;
