@@ -205,11 +205,12 @@ Vectors: `creation-files-the-subject`. Planted cases: none.
 ### A14. Some steps are refused, and a refused step writes no revision and no import
 
 Refused are: a graph holding a statement about no record, version, arrival, document or import; a record or draft of a
-type the pod files nowhere; one import's documents disagreeing on the import's description; and an entry holding other
-than one activity.
+type the pod files nowhere; one import's documents disagreeing on the import's description; an entry holding other
+than one activity; and an entry whose activity states a property by which [the layout](pod-layout.ttl) files an
+activity elsewhere than an entry's.
 
 Vectors: `refused-stray-statement`, `refused-type-filed-nowhere`, `refused-import-disagreement`,
-`refused-entry-of-two-activities`. Planted cases: none.
+`refused-entry-of-two-activities`, `refused-entry-session-filed-elsewhere`. Planted cases: none.
 
 ## The matcher's procedure
 

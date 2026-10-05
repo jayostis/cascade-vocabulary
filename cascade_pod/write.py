@@ -123,7 +123,10 @@ def file_entry(filing, event):
     activity = activities[0]
     if activity == URIRef(names.THIS_ENTRY):
         graph, activity = this_entry(graph, event["at"])
-    filing.add_turtle(event["event"], LAYOUT.place(PROV.Activity).path(activity), closure(graph, activity))
+    place, stated = LAYOUT.place(PROV.Activity), LAYOUT.place(PROV.Activity, set(graph.predicates(activity)))
+    if stated != place:
+        raise Failure(f"{event['entry']}: its activity states what the layout files in {stated.folder}, not {place.folder}")
+    filing.add_turtle(event["event"], place.path(activity), closure(graph, activity))
     for revision in entry_revisions(graph, activity, event["entry"], filing.example.records_folders, filing.subject):
         filing.revise(event["event"], revision)
 

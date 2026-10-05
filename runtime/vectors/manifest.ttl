@@ -34,6 +34,7 @@
     <#refused-type-filed-nowhere>
     <#refused-import-disagreement>
     <#refused-entry-of-two-activities>
+    <#refused-entry-session-filed-elsewhere>
     <#judgment-name>
     <#takes-only-its-steps-records>
     <#a-record-nobody-is-named-for-is-never-taken>
@@ -253,6 +254,13 @@
   mf:action [ rec:story <refusals/story.json> ; rec:step "entry-of-two-activities" ;
               rec:lens <../../queries/v1-draft/lenses/everyday.rq> ; qt:query <refusals/refused-entry-of-two-activities.rq> ] ;
   mf:result <refusals/refused-entry-of-two-activities.srj> .
+
+<#refused-entry-session-filed-elsewhere> a rec:ReplayTest ;
+  mf:name "refused-entry-session-filed-elsewhere" ;
+  rdfs:comment "An entry whose session states prov:used, which the layout files an import by, is refused, and its step writes nothing." ;
+  mf:action [ rec:story <refusals/story.json> ; rec:step "entry-session-filed-elsewhere" ;
+              rec:lens <../../queries/v1-draft/lenses/everyday.rq> ; qt:query <refusals/refused-entry-session-filed-elsewhere.rq> ] ;
+  mf:result <refusals/refused-entry-session-filed-elsewhere.srj> .
 
 <#judgment-name> a rec:ReplayTest ;
   mf:name "judgment-name" ;
