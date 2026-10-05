@@ -1,0 +1,30 @@
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+
+SELECT ?judgmentLabel ?why ?byLabel ?judgment ?by
+WHERE {
+  { ?by npx:supersedes ?judgment .
+    BIND ("superseded" AS ?why)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+  UNION
+  { ?by npx:retracts ?judgment .
+    BIND ("retracted" AS ?why)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+  UNION
+  { ?judgment a jdg:Judgment ; prov:used ?replaced .
+    ?replaced prov:specializationOf/a rec:ReferenceSeries .
+    ?by prov:wasRevisionOf ?replaced .
+    BIND ("made under a reference version since replaced" AS ?why)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+}
+ORDER BY ?judgmentLabel ?why

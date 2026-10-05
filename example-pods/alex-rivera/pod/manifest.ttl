@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<#manifest> a cascade:ExportManifest ;
+    dct:title "Alex Rivera's example pod" ;
+    dct:created "2027-08-20T08:00:04Z"^^xsd:dateTime ;
+    cascade:schemaVersion "1.8" ;
+    prov:wasGeneratedBy [
+        a prov:Activity ;
+        prov:startedAtTime "2027-08-20T08:00:04Z"^^xsd:dateTime ;
+        prov:wasAssociatedWith [
+            a prov:SoftwareAgent ;
+            rdfs:label "build.py"
+        ]
+    ] .

@@ -1,7 +1,12 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://ns.cascadeprotocol.org/records/v1-draft#> a owl:Ontology .
 
@@ -42,3 +47,67 @@ rec:author a prov:Role ;
 rec:transmitter a prov:Role ;
     rdfs:label "transmitter"@en ;
     rdfs:comment "The party that fetched and delivered a document, as US Core's provenance agent type transmitter."@en .
+
+rec:ReferenceSeries a owl:Class ;
+    rdfs:label "reference series"@en ;
+    rdfs:comment "A versioned reference table or rule set a machine applies; each of its versions is a prov:specializationOf it."@en .
+
+pav:version a owl:DatatypeProperty ;
+    rdfs:label "Version"@en ;
+    rdfs:isDefinedBy <http://purl.org/pav/> ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> .
+
+rdfs:label a rdf:Property ;
+    rdfs:label "label"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2000/01/rdf-schema#> ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Literal ;
+    dct:source <https://www.w3.org/TR/2014/REC-rdf-schema-20140225/> .
+
+pav:hasCurrentVersion a owl:ObjectProperty ;
+    rdfs:label "Has current version"@en ;
+    rdfs:isDefinedBy <http://purl.org/pav/> ;
+    rdfs:subPropertyOf pav:hasVersion ;
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> .
+
+rec:View a owl:Class ;
+    rdfs:label "view"@en ;
+    rdfs:comment "A file the view queries build from the pod's records and judgments: deleting it loses nothing, and rerunning them rebuilds it."@en .
+
+rec:counts a owl:DatatypeProperty ;
+    rdfs:label "counts"@en ;
+    rdfs:comment "Derived: the judgment counts under the lens the build used."@en ;
+    rdfs:domain jdg:Judgment ;
+    rdfs:range xsd:boolean .
+
+rec:excluded a owl:DatatypeProperty ;
+    rdfs:label "excluded"@en ;
+    rdfs:comment "Derived: no view shows the record."@en ;
+    rdfs:range xsd:boolean .
+
+rec:subject a owl:ObjectProperty ;
+    rdfs:label "subject"@en ;
+    rdfs:comment "Derived: whose record it is."@en ;
+    rdfs:range rec:Subject .
+
+rec:inEntry a owl:ObjectProperty ;
+    rdfs:label "in entry"@en ;
+    rdfs:comment "Derived: the view entry the record belongs to in this build."@en .
+
+rec:latestMember a owl:ObjectProperty ;
+    rdfs:label "latest member"@en ;
+    rdfs:comment "Derived: the entry's most recently received member."@en .
+
+rec:statusFrom a owl:ObjectProperty ;
+    rdfs:label "status from"@en ;
+    rdfs:comment "Derived: the member whose status the entry shows."@en .
+
+rec:dateFrom a owl:ObjectProperty ;
+    rdfs:label "date from"@en ;
+    rdfs:comment "Derived: the member whose date the entry shows."@en .
+
+rec:topCriticality a owl:DatatypeProperty ;
+    rdfs:label "top criticality"@en ;
+    rdfs:comment "Derived: the rank of the most severe criticality a member states."@en ;
+    rdfs:range xsd:integer .

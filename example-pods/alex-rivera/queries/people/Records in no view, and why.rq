@@ -1,0 +1,50 @@
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+
+SELECT ?recordLabel ?why ?record
+WHERE {
+  { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+    ?record a ?type .
+    ?revision rec:revisionOf ?record ; rec:version/clinical:verificationStatus ?status .
+    FILTER NOT EXISTS { ?later prov:wasRevisionOf ?revision }
+    FILTER NOT EXISTS { ?entry cascade:mergedFrom ?record }
+    FILTER (?status IN ("entered-in-error", "refuted"))
+    BIND (CONCAT(?status, " at its source") AS ?why)
+    OPTIONAL { ?record rdfs:label ?recordLabel } }
+  UNION
+  { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+    ?record a ?type .
+    ?judgment jdg:verdict jdg:Erroneous ; prov:hadMember ?record .
+    FILTER NOT EXISTS { ?superseding npx:supersedes ?judgment }
+    FILTER NOT EXISTS { ?retracting npx:retracts ?judgment }
+    FILTER NOT EXISTS { ?entry cascade:mergedFrom ?record }
+    BIND ("judged erroneous" AS ?why)
+    OPTIONAL { ?record rdfs:label ?recordLabel } }
+  UNION
+  { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+    ?record a ?type .
+    ?revision rec:revisionOf ?record ; rec:version ?version .
+    FILTER NOT EXISTS { ?later prov:wasRevisionOf ?revision }
+    FILTER NOT EXISTS { ?version rec:patient [] }
+    FILTER NOT EXISTS { ?entry cascade:mergedFrom ?record }
+    BIND ("names no patient" AS ?why)
+    OPTIONAL { ?record rdfs:label ?recordLabel } }
+  UNION
+  { VALUES ?type { health:AllergyRecord health:ConditionRecord health:ImmunizationRecord clinical:Procedure }
+    ?record a ?type .
+    ?revision rec:revisionOf ?record ; rec:version/rec:patient ?profile .
+    FILTER NOT EXISTS { ?later prov:wasRevisionOf ?revision }
+    FILTER NOT EXISTS { ?entry cascade:mergedFrom ?record }
+    ?about jdg:verdict jdg:About ; prov:hadMember ?profile .
+    ?retraction npx:retracts ?about .
+    BIND ("names a profile whose About was retracted" AS ?why)
+    OPTIONAL { ?record rdfs:label ?recordLabel } }
+}
+ORDER BY ?why ?recordLabel

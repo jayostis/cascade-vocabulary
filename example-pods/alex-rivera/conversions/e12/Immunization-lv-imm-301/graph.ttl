@@ -1,0 +1,48 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;4EI6INLEtLQAWGCr1zZtO67-n99eys6sidqCtlPxQ0w> health:status "completed" ;
+	health:vaccineName "Influenza, injectable, quadrivalent, preservative free" ;
+	health:administrationDate "2025-10-15"^^xsd:date ;
+	health:vaccineCode "150" .
+_:cde88d4f071f3e22060c64a8b7bf534d pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;4EI6INLEtLQAWGCr1zZtO67-n99eys6sidqCtlPxQ0w> .
+<ni:///sha-256;4EI6INLEtLQAWGCr1zZtO67-n99eys6sidqCtlPxQ0w> rec:patient <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> ;
+	prov:specializationOf <urn:uuid:4031383c-06e7-8b0a-bf7b-a16225c717bb> .
+<urn:uuid:4031383c-06e7-8b0a-bf7b-a16225c717bb> health:sourceRecordId "lv-imm-301" ;
+	rec:sourceUrl <https://fhir.larkspur.example/r4/Immunization/lv-imm-301> ;
+	a health:ImmunizationRecord .
+_:cde88d4f071f3e22060c64a8b7bf534d bridge:selector "" ;
+	prov:wasDerivedFrom <ni:///sha-256;ssSLEj6SMsYuwpHfAjdgeqmUMA75jzmwX_4oimVUuyM> ;
+	prov:wasGeneratedBy _:845e8e1570e755533e7be612e1c1ae8c .
+<ni:///sha-256;ssSLEj6SMsYuwpHfAjdgeqmUMA75jzmwX_4oimVUuyM> pav:retrievedFrom <https://fhir.larkspur.example/r4/Immunization/lv-imm-301> ;
+	pav:retrievedOn "2027-03-18T12:00:00Z"^^xsd:dateTime .
+_:8b2b64d5eeb1a99b3837c324f026fe56 prov:agent _:ac9b590be641a0f85504d28b950ca6f7 .
+_:ac9b590be641a0f85504d28b950ca6f7 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:8b2b64d5eeb1a99b3837c324f026fe56 prov:hadRole rec:transmitter .
+<ni:///sha-256;ssSLEj6SMsYuwpHfAjdgeqmUMA75jzmwX_4oimVUuyM> prov:qualifiedAttribution _:8b2b64d5eeb1a99b3837c324f026fe56 .
+_:9abb4cd7ed26c3e1105876cf0646df4c prov:agent _:4125659d16da605135e321927deca11d .
+_:4125659d16da605135e321927deca11d <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
+_:9abb4cd7ed26c3e1105876cf0646df4c prov:hadRole rec:author .
+<ni:///sha-256;ssSLEj6SMsYuwpHfAjdgeqmUMA75jzmwX_4oimVUuyM> prov:qualifiedAttribution _:9abb4cd7ed26c3e1105876cf0646df4c ;
+	bridge:serverBaseUrl "https://fhir.larkspur.example/r4" ;
+	bridge:sourceFormatVersion "4.0.1" .
+_:845e8e1570e755533e7be612e1c1ae8c <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2027-03-18T12:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;ssSLEj6SMsYuwpHfAjdgeqmUMA75jzmwX_4oimVUuyM> a prov:Entity .
+_:845e8e1570e755533e7be612e1c1ae8c a prov:Activity ;
+	prov:used <ni:///sha-256;ssSLEj6SMsYuwpHfAjdgeqmUMA75jzmwX_4oimVUuyM> ;
+	prov:qualifiedAssociation _:7a3887d6b76aec62dfca7b1b6ab77777 .
+_:7a3887d6b76aec62dfca7b1b6ab77777 prov:hadPlan _:53caecc875efbf40ade1ee5fb9f948a2 .
+_:53caecc875efbf40ade1ee5fb9f948a2 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:7a3887d6b76aec62dfca7b1b6ab77777 prov:agent _:b0c9b5e6003c6db21b83b775a1d38f1b .
+_:b0c9b5e6003c6db21b83b775a1d38f1b a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .
