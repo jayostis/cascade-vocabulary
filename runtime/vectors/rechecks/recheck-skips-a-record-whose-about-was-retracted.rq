@@ -1,0 +1,8 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?step ?judgment WHERE {
+  GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
+  GRAPH ?file { ?judgment prov:wasAttributedTo <urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76> ; prov:hadMember ?member }
+  FILTER (?member IN (<urn:uuid:54a0cd11-fa2f-8c1e-9e62-861233ba8973>, <urn:uuid:47bfa084-5ce6-87ff-b49a-4c858c1ac93e>))
+}
+GROUP BY ?step ?judgment

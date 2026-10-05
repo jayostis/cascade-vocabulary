@@ -1,0 +1,53 @@
+{
+  "address": "https://pod.example/",
+  "subject": "urn:uuid:5f8d2b6e-1a47-4c93-8e05-b6c9d3a1f724",
+  "steps": [
+    {
+      "name": "create",
+      "when": "2026-05-01T09:00:00Z",
+      "creation": {}
+    },
+    {
+      "name": "about-d",
+      "when": "2026-05-01T09:05:00Z",
+      "judgment": "scripted-input/about-d.ttl"
+    },
+    {
+      "name": "allergies",
+      "when": "2026-05-02T09:00:00Z",
+      "entry": "scripted-input/allergies.ttl"
+    },
+    {
+      "name": "match-allergies",
+      "when": "2026-05-02T09:05:00Z",
+      "matcher": {
+        "takes": "allergies"
+      }
+    },
+    {
+      "name": "retract-b",
+      "when": "2026-05-03T09:00:00Z",
+      "judgment": "scripted-input/retract-b.ttl"
+    },
+    {
+      "name": "supersede-c",
+      "when": "2026-05-03T09:05:00Z",
+      "judgment": "scripted-input/supersede-c.ttl"
+    },
+    {
+      "name": "retract-about-d",
+      "when": "2026-05-03T09:10:00Z",
+      "judgment": "scripted-input/retract-about-d.ttl"
+    },
+    {
+      "name": "new-map",
+      "when": "2026-05-04T09:00:00Z",
+      "reference": "urn:uuid:8f6c2a49-3d7b-4e1f-a5c8-1b9e4d7a2c86"
+    },
+    {
+      "name": "recheck",
+      "when": "2026-05-05T09:00:00Z",
+      "matcher": {}
+    }
+  ]
+}

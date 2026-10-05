@@ -1,0 +1,12 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?predicate ?value WHERE {
+  { SELECT DISTINCT ?import WHERE {
+    GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?importFile }
+    GRAPH ?importFile { ?import prov:used ?document }
+  } }
+  GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
+  GRAPH ?file { ?revision rec:revisionOf <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> ; ?predicate ?object }
+  BIND(IF(sameTerm(?object, ?import), <urn:cascade:step:first-export>, ?object) AS ?value)
+}

@@ -1,0 +1,7 @@
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?record ?type WHERE {
+  GRAPH <urn:cascade:steps> { <urn:cascade:step:entry> prov:generated ?file }
+  GRAPH ?file { ?record a ?type FILTER (?type IN (health:AllergyRecord, health:ConditionRecord)) }
+}

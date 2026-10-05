@@ -1,0 +1,11 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT (COUNT(?import) AS ?imports)
+       (SUM(IF(REGEX(STR(?import), "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"), 1, 0))
+        AS ?randomUuids)
+WHERE {
+  { SELECT DISTINCT ?import WHERE {
+    GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
+    GRAPH ?file { ?import a prov:Activity ; prov:used ?document }
+  } }
+}

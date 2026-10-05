@@ -1,0 +1,7 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?file ?revision WHERE {
+  { GRAPH <urn:cascade:steps> { <urn:cascade:step:type-filed-nowhere> prov:generated ?file } }
+  UNION { ?revision a rec:Revision }
+}

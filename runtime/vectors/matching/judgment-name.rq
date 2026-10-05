@@ -1,0 +1,7 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?judgment WHERE {
+  GRAPH <urn:cascade:steps> { <urn:cascade:step:match-entry> prov:generated ?file }
+  GRAPH ?file { ?judgment a jdg:Judgment }
+}

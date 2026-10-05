@@ -1,0 +1,5 @@
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+[] a oa:Annotation ; oa:motivatedBy oa:classifying ; sh:resultSeverity sh:Warning ;
+  sh:value "Patient/pat-1" ;
+  oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ; <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "/patient/reference" ] ] .

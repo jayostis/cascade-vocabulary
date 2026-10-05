@@ -1,0 +1,15 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?document (COUNT(DISTINCT ?attachment) AS ?storedFiles) ?usedByTheImport WHERE {
+  GRAPH <urn:cascade:steps> { <urn:cascade:step:current-version-again> prov:generated ?description }
+  GRAPH ?description { ?document a prov:Entity }
+  OPTIONAL {
+    GRAPH <urn:cascade:steps> { <urn:cascade:step:current-version-again> prov:generated ?attachment }
+    FILTER NOT EXISTS { GRAPH ?attachment { ?s ?p ?o } }
+  }
+  BIND(EXISTS {
+    GRAPH <urn:cascade:steps> { <urn:cascade:step:current-version-again> prov:generated ?importFile }
+    GRAPH ?importFile { ?import a prov:Activity ; prov:used ?document }
+  } AS ?usedByTheImport)
+}
+GROUP BY ?document ?usedByTheImport

@@ -1,0 +1,11 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT (COUNT(?session) AS ?sessions)
+       (SUM(IF(REGEX(STR(?session), "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"), 1, 0))
+        AS ?randomUuids)
+WHERE {
+  { SELECT DISTINCT ?session WHERE {
+    GRAPH <urn:cascade:steps> { <urn:cascade:step:entry> prov:generated ?file }
+    GRAPH ?file { ?session a prov:Activity }
+  } }
+}
