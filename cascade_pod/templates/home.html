@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% from "question.html" import question %}
-{% set ELSEWHERE = (asked.folders, asked.views, asked.stated, asked.called, asked.counted) %}
+{% set FOLDERS, VIEWS = "pod/What each folder holds", "pod/Which view lists each kind" %}
+{% set ELSEWHERE = (FOLDERS, VIEWS, "pod/Which file states each thing", "pod/What everything is called", "pod/How many judgments count") %}
 {% block title %}How the pod is laid out{% endblock %}
 {% block main %}
 <p class="kind">{{ example.title }}</p>
@@ -32,13 +33,13 @@ is.</dd>
 listed, and the list of the root's folders.</dd>
 </dl>
 <p>Some folders have two-character folders inside them. Those only spread the files out, so no folder holds too many.</p>
-{{ question(questions[asked.folders]) }}
+{{ question(questions[FOLDERS]) }}
 
 <h2 class="part">The views</h2>
 <p>An app does not read records. It reads a view: one file per type, whose entries each join the records judged to be the
 same thing. <a href="pipeline.html">How a view is built</a> shows each step from records to views, and
 <a href="not-shown.html">Not shown</a> lists the records no view shows, and why.</p>
-{{ question(questions[asked.views]) }}
+{{ question(questions[VIEWS]) }}
 
 <h2 class="part">Questions about the whole pod</h2>
 <p>Each record, entry, judgment and patient profile has a page of its own with the questions about it. These are the

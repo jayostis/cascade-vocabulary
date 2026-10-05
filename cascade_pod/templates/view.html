@@ -17,6 +17,6 @@ Below are the files that state it, the query that wrote it, and every entry it l
 <p class="answer">It wrote <a href="{{ copy }}{{ path }}"><code>{{ path }}</code></a>, {{ wrote }} statements, after the
 derivations of the <a href="pipeline.html#{{ lens }}">{{ lens }} lens</a> had run.</p>
 {% endcall %}
-{{ question(site.questions[asked.views].of("view", view)) }}
-{{ question(site.questions[asked.shown].of("view", view)) }}
+{{ question(site.questions["pod/Which view lists each kind"].of("view", view)) }}
+{{ question(site.questions["entry/What it shows"].of("view", view)) }}
 {% endblock %}
