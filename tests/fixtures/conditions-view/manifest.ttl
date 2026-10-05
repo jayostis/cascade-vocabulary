@@ -1,0 +1,26 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "conditions-view" ;
+  rdfs:comment "An active condition entry of two members, the later naming it and stating no status and no onset; and a resolved condition." ;
+  mf:entries (
+    <#the-conditions-view>
+    <#my-active-conditions>
+  ) .
+
+<#the-conditions-view> a mf:QueryEvaluationTest ;
+  mf:name "the-conditions-view" ;
+  rdfs:comment "Each entry takes the name and code of its latest member, the status and abatement of the member chosen for status, and the onset of the member chosen for the date." ;
+  mf:action [ qt:query <the-conditions-view.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <the-conditions-view.srj> .
+
+<#my-active-conditions> a mf:QueryEvaluationTest ;
+  mf:name "my-active-conditions" ;
+  rdfs:comment "Only the active entry, with its code, its onset and how many records it joins." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20active%20conditions.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <my-active-conditions.srj> .

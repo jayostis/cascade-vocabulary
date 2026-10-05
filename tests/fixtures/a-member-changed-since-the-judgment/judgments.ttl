@@ -1,0 +1,19 @@
+@prefix : <urn:x:> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+
+:sameXY a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :x, :y ; prov:used :xFirst , :yFirst ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:samePQ a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :p, :q ; prov:used :pFirst , :qFirst ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:samePQAgain a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :p, :q ; prov:used :pSecond , :qFirst ; npx:supersedes :samePQ ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-04-01T00:00:00Z"^^xsd:dateTime .

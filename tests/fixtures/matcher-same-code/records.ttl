@@ -1,0 +1,51 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix snomed: <http://snomed.info/sct/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:allergyA a health:AllergyRecord .
+:allergyAVersion prov:specializationOf :allergyA ; health:allergenCode rxnorm:10180 .
+:allergyARevision a rec:Revision ; rec:revisionOf :allergyA ; rec:version :allergyAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:allergyB a health:AllergyRecord .
+:allergyBVersion prov:specializationOf :allergyB ; health:allergenCode rxnorm:10180 .
+:allergyBRevision a rec:Revision ; rec:revisionOf :allergyB ; rec:version :allergyBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:procedureA a clinical:Procedure .
+:procedureAVersion prov:specializationOf :procedureA ; clinical:snomedCode "73761001" ; clinical:procedureDate "2025-03-01"^^xsd:date .
+:procedureARevision a rec:Revision ; rec:revisionOf :procedureA ; rec:version :procedureAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:procedureB a clinical:Procedure .
+:procedureBVersion prov:specializationOf :procedureB ; clinical:snomedCode "73761001" ; clinical:procedureDate "2026-09-01"^^xsd:date .
+:procedureBRevision a rec:Revision ; rec:revisionOf :procedureB ; rec:version :procedureBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:allergyOfOneKind a health:AllergyRecord .
+:allergyOfOneKindVersion prov:specializationOf :allergyOfOneKind ; health:snomedCode snomed:38341003 .
+:allergyOfOneKindRevision a rec:Revision ; rec:revisionOf :allergyOfOneKind ; rec:version :allergyOfOneKindVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:conditionOfAnother a health:ConditionRecord .
+:conditionOfAnotherVersion prov:specializationOf :conditionOfAnother ; health:snomedCode snomed:38341003 .
+:conditionOfAnotherRevision a rec:Revision ; rec:revisionOf :conditionOfAnother ; rec:version :conditionOfAnotherVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:revisedAway a health:AllergyRecord .
+:revisedAwayFirst prov:specializationOf :revisedAway ; health:allergenCode rxnorm:7980 .
+:revisedAwaySecond prov:specializationOf :revisedAway ; health:allergenCode rxnorm:2670 .
+:revisedAwayR1 a rec:Revision ; rec:revisionOf :revisedAway ; rec:version :revisedAwayFirst ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:revisedAwayR2 a rec:Revision ; rec:revisionOf :revisedAway ; rec:version :revisedAwaySecond ;
+    prov:wasRevisionOf :revisedAwayR1 ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:stillThere a health:AllergyRecord .
+:stillThereVersion prov:specializationOf :stillThere ; health:allergenCode rxnorm:7980 .
+:stillThereRevision a rec:Revision ; rec:revisionOf :stillThere ; rec:version :stillThereVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

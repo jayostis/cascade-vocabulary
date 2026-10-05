@@ -1,0 +1,39 @@
+@prefix : <urn:x:> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+
+:matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
+
+:personSame a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :record ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:superseded a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :record ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:superseding a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :record ; npx:supersedes :superseded ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:retracted a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :record ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:retraction a jdg:Judgment ; npx:retracts :retracted ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:machineCode a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameCode ; prov:hadMember :record ;
+    prov:used :rules-2 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:machineMapped a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :record ;
+    prov:used :rules-2 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:machineOld a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameCode ; prov:hadMember :record ;
+    prov:used :rules-1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

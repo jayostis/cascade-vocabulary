@@ -11,31 +11,39 @@ from .turtle import CASCADE, DCT, PROV, REC, SOLID
 
 def add(example, store, through=None):
     """Adds to a store holding the example's pod through the event and its derived state each file built from them,
-    as that file's graph, and returns their triples by path within pod/. The views are built first, so the other files
-    a query writes can read them."""
-    current = vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"])
-    used = [row["version"] for row in store.select(current)]
-    views = {view.file for view in LAYOUT.views.values()}
-    files = {}
-    for paths in (sorted(views), sorted(set(LAYOUT.built) - views)):
-        built = {path: marked(example.address + path, store.construct(vocabulary.query(LAYOUT.built[path])), used)
-                 for path in paths}
-        _add(store, example, built)
-        files |= built
-    rest = {LAYOUT.type_index: type_index(example.address),
-            LAYOUT.manifest: manifest(example.address + LAYOUT.manifest, example.title,
+    as that file's graph, and returns their triples by path within pod/."""
+    files = built(store, example.address)
+    made = {LAYOUT.manifest: manifest(example.address + LAYOUT.manifest, example.title,
                                       example.through(through)[-1]["at"])}
-    _add(store, example, rest)
-    files |= rest
+    _add(store, example.address, made)
+    files |= made
     unlisted, unmade = sorted(set(files) - set(example.derived)), sorted(set(example.derived) - set(files))
     if unlisted or unmade:
         raise Failure(f"events.json's derived does not list {unlisted} and lists {unmade}, which nothing builds")
     return files
 
 
-def _add(store, example, files):
+def built(store, address):
+    """Adds to a store holding the files of a pod at `address` and its derived state each file a query writes and the
+    type index, as that file's graph, and returns their triples by path within the pod. The views are built first, so
+    the other files a query writes can read them."""
+    current = vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"])
+    used = [row["version"] for row in store.select(current)]
+    views = {view.file for view in LAYOUT.views.values()}
+    files = {}
+    for paths in (sorted(views), sorted(set(LAYOUT.built) - views)):
+        made = {path: marked(address + path, store.construct(vocabulary.query(LAYOUT.built[path])), used)
+                for path in paths}
+        _add(store, address, made)
+        files |= made
+    index = {LAYOUT.type_index: type_index(address)}
+    _add(store, address, index)
+    return files | index
+
+
+def _add(store, address, files):
     for path, triples in files.items():
-        store.add(triples, example.address + path)
+        store.add(triples, address + path)
 
 
 def marked(address, triples, reference_versions):

@@ -286,6 +286,27 @@ def test_every_committed_view_is_marked_rebuildable_and_lists_only_the_kind_the_
     assert set(example.derived).isdisjoint(example.files())
 
 
+LABEL_FILE = next(path for path, query in LAYOUT.built.items() if query == "labels.rq")
+RDFS_LABEL = URIRef("http://www.w3.org/2000/01/rdf-schema#label")
+
+
+def label_file(example):
+    return Graph().parse(example.pod / LABEL_FILE, format="turtle", publicID=example.address + LABEL_FILE)
+
+
+@every_example
+def test_the_label_file_states_labels_of_other_things_and_of_itself_only_that_it_is_a_view_and_what_it_used(example):
+    address = URIRef(example.address + LABEL_FILE)
+    predicates = {(s == address, p) for s, p, _ in label_file(example)}
+    assert predicates - {(True, USED)} == {(False, RDFS_LABEL), (True, RDF_TYPE)}
+
+
+@every_example
+def test_no_two_labelled_things_share_a_label(example):
+    things = Counter(str(label) for label in label_file(example).objects(None, RDFS_LABEL))
+    assert {label: n for label, n in things.items() if n > 1} == {}
+
+
 @every_example
 def test_every_is_based_on_and_citation_in_the_crate_is_on_a_file_that_exists(example):
     described = [e["@id"] for e in crate(example)["@graph"] if "isBasedOn" in e or "citation" in e]

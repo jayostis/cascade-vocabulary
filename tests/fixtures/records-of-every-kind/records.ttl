@@ -1,0 +1,29 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:allergy a health:AllergyRecord .
+:allergyVersion prov:specializationOf :allergy ; health:allergen "Peanut"@en , "Peanut" ; clinical:status "active" .
+:allergyRevision a rec:Revision ; rec:revisionOf :allergy ; rec:version :allergyVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:condition a health:ConditionRecord .
+:conditionVersion prov:specializationOf :condition ; health:conditionName "Asthma" ; health:status "active" ;
+    health:onsetDate "2020-05-01"^^xsd:date , "2020-05-01" .
+:conditionRevision a rec:Revision ; rec:revisionOf :condition ; rec:version :conditionVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:immunization a health:ImmunizationRecord .
+:immunizationVersion prov:specializationOf :immunization ; health:vaccineName "Influenza" ;
+    health:status "completed" ; health:administrationDate "2025-10-01"^^xsd:date .
+:immunizationRevision a rec:Revision ; rec:revisionOf :immunization ; rec:version :immunizationVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:procedure a clinical:Procedure .
+:procedureVersion prov:specializationOf :procedure ; clinical:procedureName "Colonoscopy" ;
+    clinical:status "completed" ; clinical:procedureDate "2024-03-01"^^xsd:date .
+:procedureRevision a rec:Revision ; rec:revisionOf :procedure ; rec:version :procedureVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

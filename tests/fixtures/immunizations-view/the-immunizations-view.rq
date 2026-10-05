@@ -1,0 +1,4 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+
+SELECT DISTINCT ?entry ?field ?value
+WHERE { GRAPH <https://pod.example/clinical/immunizations.ttl> { ?entry cascade:mergedFrom [] ; ?field ?value } }

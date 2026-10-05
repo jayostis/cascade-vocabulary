@@ -5,10 +5,12 @@ queries read the default graph.
 
 import warnings
 from contextlib import contextmanager
+from functools import lru_cache
 
 import pyoxigraph
 import rdflib
 from rdflib.namespace import XSD
+from rdflib.plugins.sparql import prepareQuery
 
 
 @contextmanager
@@ -110,6 +112,13 @@ class Oxigraph(Store):
         return self.store.dump(format=pyoxigraph.RdfFormat.N_TRIPLES, from_graph=pyoxigraph.NamedNode(graph))
 
 
+@lru_cache(maxsize=None)
+def prepared(query):
+    """A query parsed once, with no prefix but those it declares."""
+    with literals_as_written():
+        return prepareQuery(query)
+
+
 class Rdflib(Store):
     _term = staticmethod(plain)
 
@@ -133,13 +142,13 @@ class Rdflib(Store):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", r"Dataset\.\w+ is deprecated", DeprecationWarning)
             with literals_as_written():
-                result = self.dataset.query(query)
+                result = self.dataset.query(prepared(query))
                 return [str(v) for v in result.vars or ()], list(result)
 
     def ask(self, query):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", r"Dataset\.\w+ is deprecated", DeprecationWarning)
-            return bool(self.dataset.query(query).askAnswer)
+            return bool(self.dataset.query(prepared(query)).askAnswer)
 
     def construct(self, query):
         _, found = self._solutions(query)

@@ -1,0 +1,27 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix snomed: <http://snomed.info/sct/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:fromSnomed a health:AllergyRecord .
+:fromSnomedVersion prov:specializationOf :fromSnomed ; health:allergenCode snomed:91936005 .
+:fromSnomedRevision a rec:Revision ; rec:revisionOf :fromSnomed ; rec:version :fromSnomedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fromRxnorm a health:AllergyRecord .
+:fromRxnormVersion prov:specializationOf :fromRxnorm ; health:allergenCode rxnorm:733 .
+:fromRxnormRevision a rec:Revision ; rec:revisionOf :fromRxnorm ; rec:version :fromRxnormVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:alsoFromRxnorm a health:AllergyRecord .
+:alsoFromRxnormVersion prov:specializationOf :alsoFromRxnorm ; health:allergenCode rxnorm:734 .
+:alsoFromRxnormRevision a rec:Revision ; rec:revisionOf :alsoFromRxnorm ; rec:version :alsoFromRxnormVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:unmapped a health:AllergyRecord .
+:unmappedVersion prov:specializationOf :unmapped ; health:allergenCode rxnorm:7980 .
+:unmappedRevision a rec:Revision ; rec:revisionOf :unmapped ; rec:version :unmappedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

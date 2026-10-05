@@ -1,0 +1,26 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "current-revision-is-the-latest-arrival" ;
+  rdfs:comment "One record with two revisions, neither revising the other, whose times are written in different offsets: the later arrival has the smaller clock time. The later is derived from two documents of two hospitals." ;
+  mf:entries (
+    <#the-current-revision>
+    <#its-revisions>
+  ) .
+
+<#the-current-revision> a mf:QueryEvaluationTest ;
+  mf:name "the-current-revision" ;
+  rdfs:comment "The current revision is the one that arrived last, compared as times and not as text, and its version is the record's current version." ;
+  mf:action [ qt:query <the-current-revision.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <the-current-revision.srj> .
+
+<#its-revisions> a mf:QueryEvaluationTest ;
+  mf:name "its-revisions" ;
+  rdfs:comment "Each revision is a row, the current one marked, and a revision derived from two documents is a row for each, beside its own hospital." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/record/Its%20revisions,%20in%20the%20order%20they%20arrived.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <its-revisions.srj> .

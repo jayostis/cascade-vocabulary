@@ -1,0 +1,42 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "files-and-folders" ;
+  rdfs:comment "A profile naming the storage root, a record, its version and revision in fanned folders, an About in a plain folder naming a profile no file of its own states, and the files the build writes." ;
+  mf:entries (
+    <#what-each-folder-holds>
+    <#which-file-states-each-thing>
+    <#how-many-of-each-kind>
+    <#which-view-lists-each-kind>
+  ) .
+
+<#what-each-folder-holds> a mf:QueryEvaluationTest ;
+  mf:name "what-each-folder-holds" ;
+  rdfs:comment "Each folder under the storage root with each type its files state and how many things of it; a two-character folder counts toward the one above, a version is the row with no type stated, and the labels file adds only its own type." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/What%20each%20folder%20holds.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <what-each-folder-holds.srj> .
+
+<#which-file-states-each-thing> a mf:QueryEvaluationTest ;
+  mf:name "which-file-states-each-thing" ;
+  rdfs:comment "Each thing with each file that says something about it, or names it; a profile no file of its own states is stated by the files that name it, and the files the build writes are marked rebuilt when they are views." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/Which%20file%20states%20each%20thing.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <which-file-states-each-thing.srj> .
+
+<#how-many-of-each-kind> a mf:QueryEvaluationTest ;
+  mf:name "how-many-of-each-kind" ;
+  rdfs:comment "Each type the pod's files state, with how many things; the record and its entry both count as allergy records, and rec:Record, which only the derivations state, is not counted." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/How%20many%20of%20each%20kind.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <how-many-of-each-kind.srj> .
+
+<#which-view-lists-each-kind> a mf:QueryEvaluationTest ;
+  mf:name "which-view-lists-each-kind" ;
+  rdfs:comment "Each view the type index registers, with how many entries it lists." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/Which%20view%20lists%20each%20kind.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <which-view-lists-each-kind.srj> .

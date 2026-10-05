@@ -1,0 +1,27 @@
+@prefix : <urn:x:> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+
+:sameA a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :a1, :a2 ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:sameB a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :b1, :b2 ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:differentB a jdg:Judgment ; jdg:verdict jdg:Different ; prov:hadMember :b1, :b2 ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+
+:sameC a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :c1, :c2 ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:retraction a jdg:Judgment ; npx:retracts :sameC ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .

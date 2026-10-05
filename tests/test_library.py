@@ -10,7 +10,7 @@ from rdflib import Graph, Literal, URIRef
 from rdflib.compare import to_isomorphic
 from rdflib.namespace import XSD
 
-from cascade_pod import Failure, ask, derive, manifest, names, site, store, turtle, vocabulary
+from cascade_pod import Failure, ask, manifest, names, site, store, turtle, vocabulary
 from cascade_pod.example import Example
 from cascade_pod.turtle import REC
 from examples import EXAMPLES, ROOT, every_example
@@ -104,17 +104,6 @@ def test_recomputed_py_less_its_first_line_is_the_source_file_at_the_commit_it_n
     lines = (ROOT / "tests" / "recomputed.py").read_bytes().split(b"\n", 1)
     assert lines[0].startswith(b"# https://github.com/jayostis/cascade-bridge-spec/blob/2249a3aec0aa9dfe6a8c5b8a5cabf8855c97c190/")
     assert hashlib.sha256(lines[1]).hexdigest() == RECOMPUTED_SHA256
-
-
-@pytest.mark.parametrize("lens", sorted(vocabulary.named("lenses")))
-@pytest.mark.parametrize("engine", sorted(store.ENGINES))
-@every_example
-def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_pods_own(example, engine, lens):
-    held = example.story_store(engine)
-    pod = held.triples()
-    derived = derive.derive(held, lens).triples
-    assert derived and derived.isdisjoint(pod)
-    assert held.triples() == pod | derived
 
 
 @every_example

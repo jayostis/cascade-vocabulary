@@ -1,0 +1,28 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:inError a health:AllergyRecord .
+:inErrorVersion prov:specializationOf :inError ; rec:patient :subject ;
+    clinical:verificationStatus "entered-in-error" .
+:inErrorRevision a rec:Revision ; rec:revisionOf :inError ; rec:version :inErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:refuted a health:AllergyRecord .
+:refutedVersion prov:specializationOf :refuted ; rec:patient :subject ; clinical:verificationStatus "refuted" .
+:refutedRevision a rec:Revision ; rec:revisionOf :refuted ; rec:version :refutedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:corrected a health:AllergyRecord .
+:correctedBefore prov:specializationOf :corrected ; rec:patient :subject ;
+    clinical:verificationStatus "entered-in-error" .
+:correctedAfter prov:specializationOf :corrected ; rec:patient :subject ; clinical:verificationStatus "confirmed" .
+:correctedFirst a rec:Revision ; rec:revisionOf :corrected ; rec:version :correctedBefore ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:correctedSecond a rec:Revision ; rec:revisionOf :corrected ; rec:version :correctedAfter ;
+    prov:wasRevisionOf :correctedFirst ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

@@ -1,5 +1,4 @@
 import re
-from collections import Counter
 from functools import lru_cache
 from pathlib import Path
 
@@ -7,17 +6,15 @@ import pytest
 from pyparsing import ParseResults
 from rdflib import RDF, Graph, URIRef, Variable
 from rdflib.paths import Path as PropertyPath
-from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
 
-from cascade_pod import derive, store, vocabulary
-from cascade_pod.pod import LAYOUT, NOT_RDF
-from cascade_pod.store import Oxigraph
-from examples import EXAMPLES, ROOT, every_example, every_example_and, queries_held
+from cascade_pod import vocabulary
+from cascade_pod.store import prepared
+from examples import ROOT, queries_held
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
-LABEL_FILE = next(path for path, query in LAYOUT.built.items() if query == "labels.rq")
+RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 
 def every_query():
@@ -73,15 +70,8 @@ def nested_forms(text):
 
 
 @pytest.mark.parametrize("relative", every_query())
-def test_every_query_parses_on_rdflib_and_on_pyoxigraph(relative):
-    text = vocabulary.query(relative)
-    prepareQuery(text)
-    Oxigraph().store.query(text)
-
-
-@pytest.mark.parametrize("relative", every_query())
 def test_every_subquery_comes_first_in_its_group(relative):
-    for group in nodes(parseQuery(vocabulary.query(relative))):
+    for group in nodes(parsed(relative)):
         if group.name == "GroupGraphPatternSub":
             parts = list(group.get("part") or [])
             first_other = next((i for i, part in enumerate(parts) if not is_subquery(part)), len(parts))
@@ -90,7 +80,7 @@ def test_every_subquery_comes_first_in_its_group(relative):
 
 @pytest.mark.parametrize("relative", sorted(vocabulary.named("views").values()))
 def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
-    patterns = [t for node in nodes(prepareQuery(vocabulary.query(relative)).algebra["p"]) if node.name == "BGP"
+    patterns = [t for node in nodes(prepared(vocabulary.query(relative)).algebra["p"]) if node.name == "BGP"
                 for t in node["triples"]]
     typed = {s for s, p, o in patterns if p == RDF.type and isinstance(o, URIRef)}
     assert {s for s, p, o in patterns if p == URIRef(REC + "inEntry")} <= typed
@@ -133,12 +123,14 @@ def iris(tree):
             yield from iris(value)
 
 
+@lru_cache(maxsize=None)
 def reads(relative):
-    return set(iris(prepareQuery(vocabulary.query(relative)).algebra["p"]))
+    return set(iris(prepared(vocabulary.query(relative)).algebra["p"]))
 
 
+@lru_cache(maxsize=None)
 def writes(relative):
-    template = prepareQuery(vocabulary.query(relative)).algebra["template"]
+    template = prepared(vocabulary.query(relative)).algebra["template"]
     return {o if p == RDF.type else p for s, p, o in template}
 
 
@@ -211,7 +203,7 @@ RECORDS = "derivations/records.rq"
 
 def kinds_of_record():
     """Each row of the table in the derivation that says what a record is."""
-    return [row for node in nodes(prepareQuery(vocabulary.query(RECORDS)).algebra) if node.name == "values"
+    return [row for node in nodes(prepared(vocabulary.query(RECORDS)).algebra) if node.name == "values"
             for row in node["res"]]
 
 
@@ -233,7 +225,7 @@ def kinds_named_out_of_place(relative, text):
     if relative == RECORDS:
         return set()
     views = record_types()
-    named = set(iris(prepareQuery(text).algebra)) & set(views)
+    named = set(iris(prepared(text).algebra)) & set(views)
     return {kind for kind in named if views[kind] not in words(Path(relative).stem)}
 
 
@@ -267,7 +259,7 @@ def every_question():
 
 
 def restated_absences(text):
-    algebra = prepareQuery(text).algebra
+    algebra = prepared(text).algebra
     bound = {node["arg"] for node in nodes(algebra) if node.name == "Builtin_BOUND"}
     found = []
     for node in nodes(algebra):
@@ -297,7 +289,7 @@ def test_no_question_restates_a_derivation(relative):
 
 @pytest.mark.parametrize("relative", every_question())
 def test_every_question_is_a_select(relative):
-    assert prepareQuery(vocabulary.query(relative)).algebra.name == "SelectQuery"
+    assert prepared(vocabulary.query(relative)).algebra.name == "SelectQuery"
 
 
 def test_every_question_is_filed_under_the_pod_or_a_kind():
@@ -306,13 +298,13 @@ def test_every_question_is_filed_under_the_pod_or_a_kind():
 
 @pytest.mark.parametrize("relative", [q for q in every_question() if Path(q).parent.name in KINDS])
 def test_every_question_outside_pod_returns_the_column_of_its_kind(relative):
-    columns = [str(v) for v in prepareQuery(vocabulary.query(relative)).algebra["PV"]]
+    columns = [str(v) for v in prepared(vocabulary.query(relative)).algebra["PV"]]
     assert Path(relative).parent.name in columns
 
 
 @pytest.mark.parametrize("relative", every_question())
 def test_every_label_column_labels_a_column_of_the_question(relative):
-    columns = {str(v) for v in prepareQuery(vocabulary.query(relative)).algebra["PV"]}
+    columns = {str(v) for v in prepared(vocabulary.query(relative)).algebra["PV"]}
     labelled = {column[:-len("Label")] for column in columns if column.endswith("Label")}
     assert labelled <= columns
 
@@ -358,263 +350,8 @@ def test_every_query_has_prose_that_does_not_open_with_its_name(relative):
     assert missing_prose(relative, vocabulary.query(relative)) is None
 
 
-ENGINES = sorted(store.ENGINES)
-LENSES = sorted(vocabulary.named("lenses"))
-NEEDS_REVIEW = [relative for name, relative in vocabulary.questions().items() if name.endswith("/What needs review")]
-
-
-def derived_state_views_and_reviews(example, engine, lens, through):
-    held = example.story_store(engine, through)
-    derived = derive.derive(held, lens).triples
-    views = {view: held.construct(vocabulary.query(r)) for view, r in vocabulary.named("views").items()}
-    reviews = {relative: held.select(vocabulary.query(relative)) for relative in NEEDS_REVIEW}
-    return derived, views, reviews
-
-
-@pytest.mark.parametrize("lens", LENSES)
-@every_example_and("event", lambda example: [e["event"] for e in example.events])
-def test_the_derived_state_each_view_and_what_needs_review_are_the_same_on_oxigraph_and_rdflib(example, event, lens):
-    assert (derived_state_views_and_reviews(example, "oxigraph", lens, event)
-            == derived_state_views_and_reviews(example, "rdflib", lens, event))
-
-
-@lru_cache(maxsize=None)
-def built(example, engine, lens, through=None):
-    return example.build(engine, lens, through).store
-
-
-@lru_cache(maxsize=None)
-def answers(example, engine, lens, through=None):
-    held = built(example, engine, lens, through)
-    return {name: held.select(vocabulary.query(relative)) for name, relative in vocabulary.questions().items()}
-
-
-@pytest.mark.parametrize("lens", LENSES)
-@every_example
-def test_every_question_gives_the_same_rows_in_the_same_order_on_oxigraph_and_rdflib(example, lens):
-    assert answers(example, "oxigraph", lens) == answers(example, "rdflib", lens)
-
-
-def test_every_question_has_an_answer_at_some_event_or_on_a_pod_built_to_show_it(misplaced):
-    unanswered = set(vocabulary.questions())
-    for example in EXAMPLES:
-        for event in example.events:
-            for lens in LENSES:
-                unanswered -= {name for name, found in answers(example, "oxigraph", lens, event["event"]).items() if found}
-    for built, _ in misplaced:
-        unanswered -= {name for name, found in answers(built, "oxigraph", vocabulary.DEFAULT_LENS).items() if found}
-    assert unanswered == set()
-
-
-def final_graph(example):
-    graph = Graph()
-    for path in example.files() + example.derived:
-        if not path.startswith(NOT_RDF):
-            graph.parse(example.pod / path, format="turtle", publicID=example.address + path)
-    return graph
-
-
-RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
-
-
-@every_example
-def test_everything_labelled_has_exactly_one_label(example):
-    graph = final_graph(example)
-    labels = Counter(str(s) for s in graph.subjects(URIRef(RDFS_LABEL), None))
-    kinds = "VALUES ?type { %s }" % " ".join(f"<{kind}>" for kind in sorted(record_types()))
-    found = graph.query("""
-        PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-        PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
-        PREFIX prov: <http://www.w3.org/ns/prov#>
-        PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-        SELECT DISTINCT ?thing WHERE {
-          { %s ?thing a ?type ; ^rec:revisionOf [] }
-          UNION { %s ?record a ?type ; ^rec:revisionOf [] . ?thing prov:specializationOf ?record }
-          UNION { ?thing a rec:Revision }
-          UNION { [] a rec:Revision ; prov:wasDerivedFrom ?thing }
-          UNION { ?thing a jdg:Judgment }
-          UNION { ?thing prov:specializationOf/a rec:ReferenceSeries }
-          UNION { ?thing cascade:mergedFrom [] }
-          UNION { [] a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember ?thing }
-          UNION { ?thing a rec:Subject }
-        }""" % (kinds, kinds))
-    everything = {str(row[0]) for row in found}
-    assert everything
-    assert {thing: labels[thing] for thing in everything if labels[thing] != 1} == {}
-    address = example.address + LABEL_FILE
-    own = Graph().parse(example.pod / LABEL_FILE, publicID=address)
-    predicates = {(str(s) == address, str(p)) for s, p, _ in own}
-    assert predicates - {(True, "http://www.w3.org/ns/prov#used")} == {(False, RDFS_LABEL), (True, str(RDF.type))}
-
-
-@every_example
-def test_no_two_labelled_things_share_a_label(example):
-    graph = Graph().parse(example.pod / LABEL_FILE, publicID=example.address + LABEL_FILE)
-    things = Counter(str(label) for label in graph.objects(None, URIRef(RDFS_LABEL)))
-    assert {label: n for label, n in things.items() if n > 1} == {}
-
-
-UNIT_PREFIXES = """
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix : <urn:x:> .
-"""
-
-
-def answer(engine, question, turtle, tmp_path):
-    path = tmp_path / f"{engine}.ttl"
-    path.write_text(UNIT_PREFIXES + turtle, encoding="utf-8")
-    held = store.ENGINES[engine]()
-    held.load(path, "urn:x:")
-    return [{name: str(term) for name, term in row.items()}
-            for row in held.select(vocabulary.query(vocabulary.questions()[question]))]
-
-
-@pytest.mark.parametrize("engine", ENGINES)
-def test_a_profile_named_by_two_hospitals_records_gives_each_hospitals_row_the_number_of_its_own_records(engine, tmp_path):
-    found = answer(engine, "profile/Whose it is counted as", """
-        :about a jdg:Judgment ; rec:counts true ; jdg:verdict jdg:About ; prov:hadMember :p ; jdg:subject :s .
-        :v1 rec:patient :p ; prov:specializationOf :r1 . :rev1 rec:version :v1 ; prov:wasDerivedFrom :d1 .
-        :v2 rec:patient :p ; prov:specializationOf :r2 . :rev2 rec:version :v2 ; prov:wasDerivedFrom :d2 .
-        :v3 rec:patient :p ; prov:specializationOf :r3 . :rev3 rec:version :v3 ; prov:wasDerivedFrom :d2 .
-        :d1 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Meridian" ] ] .
-        :d2 prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Larkspur" ] ] .
-    """, tmp_path)
-    assert sorted((row["hospital"], row["records"]) for row in found) == [("Larkspur", "2"), ("Meridian", "1")]
-
-
-@pytest.mark.parametrize("engine", ENGINES)
-def test_an_entry_lists_a_pair_still_joined_by_what_the_derivations_judged_currently_different(engine, tmp_path):
-    found = answer(engine, "entry/What needs review", """
-        :a rec:inEntry :entry ; jdg:currentlyDifferent :b .
-        :b rec:inEntry :entry ; jdg:currentlyDifferent :a .
-    """, tmp_path)
-    assert [(row["entry"], row["record"], row["otherRecord"]) for row in found] == [("urn:x:entry", "urn:x:a", "urn:x:b")]
-
-
-@pytest.mark.parametrize("engine", ENGINES)
-def test_every_row_of_a_judgment_says_whether_it_counts_beside_what_happened_to_it(engine, tmp_path):
-    found = answer(engine, "judgment/Whether it counts", """
-        :old a jdg:Judgment .
-        :new a jdg:Judgment ; rec:counts true ; npx:supersedes :old .
-    """, tmp_path)
-    assert sorted((row["judgment"], row["counts"], row.get("happened", "")) for row in found) == [
-        ("urn:x:new", "true", ""), ("urn:x:old", "false", ""), ("urn:x:old", "false", "superseded")]
-
-
-ENTERED_BY_THE_PERSON = """
-    @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-    @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-    :subject a rec:Subject .
-    :condition a health:ConditionRecord .
-    :conditionVersion prov:specializationOf :condition ; rec:patient :subject ; health:status "active" .
-    :conditionRevision a rec:Revision ; rec:revisionOf :condition ; rec:version :conditionVersion ;
-        prov:generatedAtTime "2027-01-01T00:00:00Z"^^xsd:dateTime .
-    :allergy a health:AllergyRecord .
-    :allergyVersion prov:specializationOf :allergy ; rec:patient :subject ; clinical:status "active" .
-    :allergyRevision a rec:Revision ; rec:revisionOf :allergy ; rec:version :allergyVersion ;
-        prov:generatedAtTime "2027-01-01T00:00:00Z"^^xsd:dateTime .
-"""
-
-
-@pytest.mark.parametrize("lens", LENSES)
-@pytest.mark.parametrize("engine", ENGINES)
-def test_a_status_the_person_entered_sets_a_conditions_entry_and_never_an_allergys(engine, lens, tmp_path):
-    path = tmp_path / "pod.ttl"
-    path.write_text(UNIT_PREFIXES + ENTERED_BY_THE_PERSON, encoding="utf-8")
-    held = store.ENGINES[engine]()
-    held.load(path, "urn:x:")
-    derived = derive.derive(held, lens).triples
-    assert {str(o) for _, p, o in derived if p == URIRef(REC + "statusFrom")} == {"urn:x:condition"}
-
-
-@every_example
-def test_how_many_of_each_kind_counts_what_the_pods_files_state_and_no_type_only_the_derivations_state(example):
-    held = example.build("oxigraph", vocabulary.DEFAULT_LENS).store
-    derived_only = {o for s, p, o in held.triples(derive.DERIVED + vocabulary.DEFAULT_LENS) if p == RDF.type}
-    counted = {row["type"] for row in answers(example, "oxigraph", vocabulary.DEFAULT_LENS)["pod/How many of each kind"]}
-    assert derived_only and not counted & derived_only
-
-
-IN_NO_VIEW = """
-    @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-    @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-    :subject a rec:Subject .
-    :person a prov:Person .
-    :r a health:AllergyRecord .
-    :rRevision a rec:Revision ; rec:revisionOf :r ; rec:version :rVersion ; prov:wasGeneratedBy :import ;
-        prov:generatedAtTime "2027-01-01T00:00:00Z"^^xsd:dateTime .
-"""
-LEFT_OUT = {
-    "entered-in-error": (""":rVersion prov:specializationOf :r ; rec:patient :subject ;
-                               clinical:verificationStatus "entered-in-error" .""",
-                         [("r", "EnteredInErrorAtSource", None)]),
-    "refuted": (""":rVersion prov:specializationOf :r ; rec:patient :subject ; clinical:verificationStatus "refuted" .""",
-                [("r", "RefutedAtSource", None)]),
-    "judged-erroneous": (""":rVersion prov:specializationOf :r ; rec:patient :subject .
-                            :j a jdg:Judgment ; jdg:verdict jdg:Erroneous ; prov:hadMember :r ; prov:wasAttributedTo :person .""",
-                         [("r", "JudgedErroneous", "j")]),
-    "import-judged-erroneous": (""":rVersion prov:specializationOf :r ; rec:patient :subject .
-                                   :j a jdg:Judgment ; jdg:verdict jdg:Erroneous ; prov:hadMember :import ;
-                                       prov:wasAttributedTo :person .""",
-                                [("r", "ImportJudgedErroneous", "j")]),
-    "patient-not-claimed": (""":rVersion prov:specializationOf :r ; rec:patient :p .
-                               :about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :p ; jdg:subject :subject ;
-                                   prov:wasAttributedTo :person .
-                               :retraction npx:retracts :about .""",
-                            [("r", "PatientNotClaimed", "p")]),
-    "no-patient": (":rVersion prov:specializationOf :r .", [("r", "NoPatient", None)]),
-    "no-revision": (":unrevised a health:AllergyRecord . :rVersion prov:specializationOf :r ; rec:patient :subject .",
-                    [("unrevised", "NoPatient", None)]),
-    "judged-and-import-judged-erroneous": (""":rVersion prov:specializationOf :r ; rec:patient :subject .
-                                              :j1 a jdg:Judgment ; jdg:verdict jdg:Erroneous ; prov:hadMember :r ;
-                                                  prov:wasAttributedTo :person .
-                                              :j2 a jdg:Judgment ; jdg:verdict jdg:Erroneous ; prov:hadMember :import ;
-                                                  prov:wasAttributedTo :person .""",
-                                           [("r", "ImportJudgedErroneous", "j2"), ("r", "JudgedErroneous", "j1")]),
-    "about-the-subject": (":rVersion prov:specializationOf :r ; rec:patient :subject .", []),
-}
-
-
 def short(term):
     return None if term is None else str(term).rsplit("#", 1)[-1].removeprefix("urn:x:")
-
-
-@pytest.mark.parametrize("case", sorted(LEFT_OUT))
-@pytest.mark.parametrize("engine", ENGINES)
-def test_why_a_record_is_in_no_view_is_one_row_for_each_reason_the_derivations_recorded(engine, case, tmp_path):
-    turtle, expected = LEFT_OUT[case]
-    path = tmp_path / "pod.ttl"
-    path.write_text(UNIT_PREFIXES + IN_NO_VIEW + turtle, encoding="utf-8")
-    held = store.ENGINES[engine]()
-    held.load(path, "urn:x:")
-    derived = derive.derive(held, vocabulary.DEFAULT_LENS).triples
-    found = held.select(vocabulary.query(vocabulary.questions()["record/Why it is in no view"]))
-    assert sorted((short(row["record"]), short(row["why"]), short(row.get("because"))) for row in found) == expected
-    records = {short(s) for s, p, o in held.triples() if p == RDF.type and o == URIRef(REC + "Record")}
-    shown = {short(s) for s, p, _ in derived if p == URIRef(REC + "inEntry")}
-    assert shown == records - {record for record, _, _ in expected}
-
-
-SHOWN_AND_LEFT_OUT_ALIKE = """
-    PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-    SELECT ?record WHERE {
-      ?record a rec:Record .
-      BIND (EXISTS { ?record rec:inEntry [] } AS ?shown)
-      BIND (EXISTS { ?record rec:leftOutFor [] } AS ?leftOut)
-      FILTER (?shown = ?leftOut)
-    }"""
-
-
-@pytest.mark.parametrize("lens", LENSES)
-@every_example
-def test_a_record_is_in_no_view_exactly_when_the_derivations_recorded_a_reason(example, lens):
-    assert built(example, "oxigraph", lens).select(SHOWN_AND_LEFT_OUT_ALIKE) == []
 
 
 def reasons():
@@ -627,7 +364,7 @@ def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no
     declared = reasons()
     named = {short(reason): [] for reason in declared}
     for relative in every_query():
-        for reason in declared & set(iris(prepareQuery(vocabulary.query(relative)).algebra)):
+        for reason in declared & set(iris(prepared(vocabulary.query(relative)).algebra)):
             named[short(reason)].append(relative)
     assert named == {
         "EnteredInErrorAtSource": ["derivations/excluded-at-source.rq"],

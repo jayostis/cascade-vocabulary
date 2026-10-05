@@ -1,0 +1,4 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+
+SELECT ?entry ?profile
+WHERE { GRAPH <https://pod.example/clinical/patient-profile.ttl> { ?entry a cascade:PatientProfile ; cascade:mergedFrom ?profile } }

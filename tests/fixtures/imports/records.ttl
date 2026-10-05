@@ -1,0 +1,22 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:first a prov:Activity ; rdfs:label "First download" ; prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:second a prov:Activity ; rdfs:label "Second download" ; prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:a a health:AllergyRecord .
+:aV1 prov:specializationOf :a ; health:allergen "Peanut" .
+:aV2 prov:specializationOf :a ; health:allergen "Peanuts" .
+:aR1 a rec:Revision ; rec:revisionOf :a ; rec:version :aV1 ; prov:wasGeneratedBy :first ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+:aR2 a rec:Revision ; rec:revisionOf :a ; rec:version :aV2 ; prov:wasRevisionOf :aR1 ; prov:wasGeneratedBy :second ;
+    prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime .
+
+:b a health:AllergyRecord .
+:bV1 prov:specializationOf :b ; health:allergen "Latex" .
+:bR1 a rec:Revision ; rec:revisionOf :b ; rec:version :bV1 ; prov:wasGeneratedBy :second ;
+    prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime .

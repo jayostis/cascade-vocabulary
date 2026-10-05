@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "status-from-the-latest-that-states-one" ;
+  rdfs:comment "A condition entry whose latest member states no status; an allergy entry whose latest member the person entered; and a condition and an allergy the person entered alone." ;
+  mf:entries (
+    <#where-each-entry-takes-its-status-from>
+  ) .
+
+<#where-each-entry-takes-its-status-from> a mf:QueryEvaluationTest ;
+  mf:name "where-each-entry-takes-its-status-from" ;
+  rdfs:comment "A condition entry takes its status from its latest member that states one, which the person may have entered; an allergy entry only from a member derived from a document." ;
+  mf:action [ qt:query <where-each-entry-takes-its-status-from.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <where-each-entry-takes-its-status-from.srj> .

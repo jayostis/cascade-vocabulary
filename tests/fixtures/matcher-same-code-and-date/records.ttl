@@ -1,0 +1,35 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:sameDayA a health:ImmunizationRecord .
+:sameDayAVersion prov:specializationOf :sameDayA ; health:vaccineCode "150" ; health:administrationDate "2025-10-01"^^xsd:date .
+:sameDayARevision a rec:Revision ; rec:revisionOf :sameDayA ; rec:version :sameDayAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:sameDayB a health:ImmunizationRecord .
+:sameDayBVersion prov:specializationOf :sameDayB ; health:vaccineCode "150" ; health:administrationDate "2025-10-01"^^xsd:date .
+:sameDayBRevision a rec:Revision ; rec:revisionOf :sameDayB ; rec:version :sameDayBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:twoDaysA a health:ImmunizationRecord .
+:twoDaysAVersion prov:specializationOf :twoDaysA ; health:vaccineCode "141" ; health:administrationDate "2025-10-01"^^xsd:date .
+:twoDaysARevision a rec:Revision ; rec:revisionOf :twoDaysA ; rec:version :twoDaysAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:twoDaysB a health:ImmunizationRecord .
+:twoDaysBVersion prov:specializationOf :twoDaysB ; health:vaccineCode "141" ; health:administrationDate "2025-10-02"^^xsd:date .
+:twoDaysBRevision a rec:Revision ; rec:revisionOf :twoDaysB ; rec:version :twoDaysBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:undatedA a health:ImmunizationRecord .
+:undatedAVersion prov:specializationOf :undatedA ; health:vaccineCode "88" ; health:administrationDate "2025-10-01"^^xsd:date .
+:undatedARevision a rec:Revision ; rec:revisionOf :undatedA ; rec:version :undatedAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:undatedB a health:ImmunizationRecord .
+:undatedBVersion prov:specializationOf :undatedB ; health:vaccineCode "88" .
+:undatedBRevision a rec:Revision ; rec:revisionOf :undatedB ; rec:version :undatedBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

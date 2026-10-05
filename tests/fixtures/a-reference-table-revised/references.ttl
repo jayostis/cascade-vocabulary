@@ -1,0 +1,9 @@
+@prefix : <urn:x:> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+:table a rec:ReferenceSeries ; rdfs:label "Crosswalk" .
+:table-1 prov:specializationOf :table ; pav:version "1" .
+:table-2 prov:specializationOf :table ; pav:version "2" ; prov:wasRevisionOf :table-1 .

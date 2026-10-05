@@ -1,0 +1,11 @@
+@prefix : <urn:x:> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+
+:aboutNorth a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :northProfile ; jdg:subject :subject ;
+    prov:wasAttributedTo :person ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:aboutSouth a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :southProfile ; jdg:subject :subject ;
+    prov:wasAttributedTo :person ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

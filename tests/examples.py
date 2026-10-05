@@ -1,18 +1,18 @@
 import ast
-import json
-import shutil
 import subprocess
 import sys
+from functools import cache
 from pathlib import Path
 
 import pytest
 from rdflib.plugins.sparql.parser import parseQuery
 
 from cascade_pod import store
-from cascade_pod.example import Example
+from cascade_pod.example import Example, Fixture
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLES = [Example(folder) for folder in sorted((ROOT / "example-pods").iterdir()) if folder.is_dir()]
+FIXTURES = [Fixture(manifest) for manifest in sorted((ROOT / "tests" / "fixtures").glob("*/manifest.ttl"))]
 
 every_example = pytest.mark.parametrize("example", EXAMPLES, ids=lambda example: example.name)
 
@@ -20,6 +20,19 @@ every_example = pytest.mark.parametrize("example", EXAMPLES, ids=lambda example:
 def every_example_and(name, values):
     pairs = [(example, value) for example in EXAMPLES for value in values(example)]
     return pytest.mark.parametrize(f"example, {name}", pairs, ids=[f"{e.name}-{v}" for e, v in pairs])
+
+
+def on_its_worker(fixture, *values, id, marks=()):
+    """A case about the fixture, run on the worker that builds it, so each fixture is built once a run."""
+    return pytest.param(fixture, *values, id=id, marks=[pytest.mark.xdist_group(fixture.name), *marks])
+
+
+every_fixture = pytest.mark.parametrize("fixture", [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES])
+
+
+@cache
+def built(fixture, engine, lens):
+    return fixture.build(engine, lens)
 
 
 def run_matcher(folder, read_through, at, out, takes=None):
@@ -44,23 +57,3 @@ def queries_held(source):
                 continue
             found.append(node.value)
     return found
-
-
-def moved(example, moves, folder, added=None):
-    """A copy of the example in `folder`, with each file `moves` names moved to the path it gives, and each file `added`
-    names added to the last event with the text it gives."""
-    copy = Path(folder) / example.name
-    shutil.copytree(example.pod, copy / "pod")
-    shutil.copy(example.folder / "ro-crate-metadata.json", copy)
-    story = json.loads((example.folder / "events.json").read_text(encoding="utf-8"))
-    for event in story["events"]:
-        event["adds"] = [moves.get(path, path) for path in event["adds"]]
-    for path, target in moves.items():
-        (copy / "pod" / target).parent.mkdir(parents=True, exist_ok=True)
-        (copy / "pod" / path).rename(copy / "pod" / target)
-    for path, text in (added or {}).items():
-        (copy / "pod" / path).parent.mkdir(parents=True, exist_ok=True)
-        (copy / "pod" / path).write_text(text, encoding="utf-8")
-        story["events"][-1]["adds"].append(path)
-    (copy / "events.json").write_text(json.dumps(story), encoding="utf-8")
-    return Example(copy)

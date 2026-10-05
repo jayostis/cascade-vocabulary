@@ -1,0 +1,50 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "whose-records-are-hers" ;
+  rdfs:comment "Records naming a profile a counting About claims for the subject, a profile no About names, a profile whose About was retracted, and the subject directly; two hospitals name the claimed profile, one of them twice." ;
+  mf:entries (
+    <#whose-records-are-the-subjects>
+    <#which-records-name-it>
+    <#which-judgments-name-it>
+    <#whose-it-is-counted-as>
+    <#the-person-this-pod-is-about>
+  ) .
+
+<#whose-records-are-the-subjects> a mf:QueryEvaluationTest ;
+  mf:name "whose-records-are-the-subjects" ;
+  rdfs:comment "A record is the subject's when its current version names a profile a counting About ties to them, or names the subject directly; not when no About names the profile, or the one that did was retracted." ;
+  mf:action [ qt:query <whose-records-are-the-subjects.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <whose-records-are-the-subjects.srj> .
+
+<#which-records-name-it> a mf:QueryEvaluationTest ;
+  mf:name "which-records-name-it" ;
+  rdfs:comment "Each profile, the subject among them, with each record whose current version names it." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/profile/Which%20records%20name%20it.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <which-records-name-it.srj> .
+
+<#which-judgments-name-it> a mf:QueryEvaluationTest ;
+  mf:name "which-judgments-name-it" ;
+  rdfs:comment "Each profile a judgment names, with whether that judgment counts: a retracted About does not." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/profile/Which%20judgments%20name%20it.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <which-judgments-name-it.srj> .
+
+<#whose-it-is-counted-as> a mf:QueryEvaluationTest ;
+  mf:name "whose-it-is-counted-as" ;
+  rdfs:comment "One row per hospital whose records name a profile an About names, with how many it sent; a profile no About names has no row." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/profile/Whose%20it%20is%20counted%20as.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <whose-it-is-counted-as.srj> .
+
+<#the-person-this-pod-is-about> a mf:QueryEvaluationTest ;
+  mf:name "the-person-this-pod-is-about" ;
+  rdfs:comment "The subject, named as the person the pod is about." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/The%20person%20this%20pod%20is%20about.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <the-person-this-pod-is-about.srj> .

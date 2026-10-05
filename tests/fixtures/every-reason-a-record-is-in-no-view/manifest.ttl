@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "every-reason-a-record-is-in-no-view" ;
+  rdfs:comment "One record for each reason the derivations leave a record out, two for the reason a record with no current version shares, and one record that is shown." ;
+  mf:entries (
+    <#why-it-is-in-no-view>
+  ) .
+
+<#why-it-is-in-no-view> a mf:QueryEvaluationTest ;
+  mf:name "why-it-is-in-no-view" ;
+  rdfs:comment "One row for each record left out, with its reason and what the reason rests on; the record shown has none." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/record/Why%20it%20is%20in%20no%20view.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <why-it-is-in-no-view.srj> .

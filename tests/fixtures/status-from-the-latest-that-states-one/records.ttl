@@ -1,0 +1,43 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+:document prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Northgate" ] ] .
+
+:conditionFromDocument a health:ConditionRecord .
+:conditionFromDocumentVersion prov:specializationOf :conditionFromDocument ; rec:patient :subject ; health:conditionName "Asthma" ; health:status "active" .
+:conditionFromDocumentRevision a rec:Revision ; rec:revisionOf :conditionFromDocument ; rec:version :conditionFromDocumentVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:conditionLater a health:ConditionRecord .
+:conditionLaterVersion prov:specializationOf :conditionLater ; rec:patient :subject ; health:conditionName "Asthma" .
+:conditionLaterRevision a rec:Revision ; rec:revisionOf :conditionLater ; rec:version :conditionLaterVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:allergyFromDocument a health:AllergyRecord .
+:allergyFromDocumentVersion prov:specializationOf :allergyFromDocument ; rec:patient :subject ; health:allergen "Peanut" ; clinical:status "active" .
+:allergyFromDocumentRevision a rec:Revision ; rec:revisionOf :allergyFromDocument ; rec:version :allergyFromDocumentVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:allergyEntered a health:AllergyRecord .
+:allergyEnteredVersion prov:specializationOf :allergyEntered ; rec:patient :subject ; health:allergen "Peanut" ; clinical:status "inactive" .
+:allergyEnteredRevision a rec:Revision ; rec:revisionOf :allergyEntered ; rec:version :allergyEnteredVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:conditionEnteredAlone a health:ConditionRecord .
+:conditionEnteredAloneVersion prov:specializationOf :conditionEnteredAlone ; rec:patient :subject ; health:conditionName "Eczema" ; health:status "resolved" .
+:conditionEnteredAloneRevision a rec:Revision ; rec:revisionOf :conditionEnteredAlone ; rec:version :conditionEnteredAloneVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:allergyEnteredAlone a health:AllergyRecord .
+:allergyEnteredAloneVersion prov:specializationOf :allergyEnteredAlone ; rec:patient :subject ; health:allergen "Latex" ; clinical:status "active" .
+:allergyEnteredAloneRevision a rec:Revision ; rec:revisionOf :allergyEnteredAlone ; rec:version :allergyEnteredAloneVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:conditionFromDocumentRevision prov:wasDerivedFrom :document .
+:allergyFromDocumentRevision prov:wasDerivedFrom :document .

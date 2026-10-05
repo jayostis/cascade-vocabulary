@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "labels" ;
+  rdfs:comment "One thing of each kind labels.rq names: records, versions, revisions, a document, a judgment, a reference version, entries, the patient entry, a patient profile and the subject. The two allergies differ only in where they came from." ;
+  mf:entries (
+    <#what-everything-is-called>
+  ) .
+
+<#what-everything-is-called> a mf:QueryEvaluationTest ;
+  mf:name "what-everything-is-called" ;
+  rdfs:comment "The name labels.rq gives each thing, made from what it says, beside the label a file states." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/What%20everything%20is%20called.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <what-everything-is-called.srj> .

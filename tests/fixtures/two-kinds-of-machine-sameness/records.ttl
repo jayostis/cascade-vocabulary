@@ -1,0 +1,25 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:flu1 a health:ImmunizationRecord .
+:flu1Version prov:specializationOf :flu1 ; rec:patient :subject ; health:vaccineName "Influenza" ;
+    health:administrationDate "2025-10-01"^^xsd:date .
+:flu1Revision a rec:Revision ; rec:revisionOf :flu1 ; rec:version :flu1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:flu2 a health:ImmunizationRecord .
+:flu2Version prov:specializationOf :flu2 ; rec:patient :subject ; health:vaccineName "Influenza" ;
+    health:administrationDate "2025-10-01"^^xsd:date .
+:flu2Revision a rec:Revision ; rec:revisionOf :flu2 ; rec:version :flu2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:flu3 a health:ImmunizationRecord .
+:flu3Version prov:specializationOf :flu3 ; rec:patient :subject ; health:vaccineName "Influenza" ;
+    health:administrationDate "2025-10-01"^^xsd:date .
+:flu3Revision a rec:Revision ; rec:revisionOf :flu3 ; rec:version :flu3Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

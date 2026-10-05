@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-mapped-code-and-date" ;
+  rdfs:comment "A vaccine group table putting two CVX codes in one group; pairs of immunizations with those codes on one date and on two, one code on both, and a code in no group." ;
+  mf:entries (
+    <#same-mapped-code-and-date>
+  ) .
+
+<#same-mapped-code-and-date> a mf:QueryEvaluationTest ;
+  mf:name "same-mapped-code-and-date" ;
+  rdfs:comment "Two different codes of one group on one date match; on two dates, one code on both, or a code in no group, they do not." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-mapped-code-and-date.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-mapped-code-and-date.srj> .

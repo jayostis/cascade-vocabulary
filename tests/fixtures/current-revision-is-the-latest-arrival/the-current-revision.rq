@@ -1,0 +1,5 @@
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?revision ?version
+WHERE { ?record rec:currentRevision ?revision ; pav:hasCurrentVersion ?version }

@@ -1,0 +1,26 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "highest-criticality" ;
+  rdfs:comment "An allergy entry whose three members state high, low and unable to assess." ;
+  mf:entries (
+    <#the-highest-criticality>
+    <#members-disagree-on-criticality>
+  ) .
+
+<#the-highest-criticality> a mf:QueryEvaluationTest ;
+  mf:name "the-highest-criticality" ;
+  rdfs:comment "The entry shows high, which ranks over low and unable to assess." ;
+  mf:action [ qt:query <the-highest-criticality.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <the-highest-criticality.srj> .
+
+<#members-disagree-on-criticality> a mf:QueryEvaluationTest ;
+  mf:name "members-disagree-on-criticality" ;
+  rdfs:comment "The entry is listed for review because its members disagree." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/entry/What%20needs%20review.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <members-disagree-on-criticality.srj> .

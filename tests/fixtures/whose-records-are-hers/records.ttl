@@ -1,0 +1,35 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:north a health:AllergyRecord .
+:northVersion prov:specializationOf :north ; health:allergen "Peanut" ; rec:patient :claimed .
+:northRevision a rec:Revision ; rec:revisionOf :north ; rec:version :northVersion ; prov:wasDerivedFrom :northDocument ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:south1 a health:AllergyRecord .
+:south1Version prov:specializationOf :south1 ; health:allergen "Latex" ; rec:patient :claimed .
+:south1Revision a rec:Revision ; rec:revisionOf :south1 ; rec:version :south1Version ;
+    prov:wasDerivedFrom :south1Document ; prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:south2 a health:AllergyRecord .
+:south2Version prov:specializationOf :south2 ; health:allergen "Penicillin" ; rec:patient :claimed .
+:south2Revision a rec:Revision ; rec:revisionOf :south2 ; rec:version :south2Version ;
+    prov:wasDerivedFrom :south2Document ; prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:unclaimedRecord a health:AllergyRecord .
+:unclaimedVersion prov:specializationOf :unclaimedRecord ; health:allergen "Shellfish" ; rec:patient :unclaimed .
+:unclaimedRevision a rec:Revision ; rec:revisionOf :unclaimedRecord ; rec:version :unclaimedVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:retractedRecord a health:AllergyRecord .
+:retractedVersion prov:specializationOf :retractedRecord ; health:allergen "Egg" ; rec:patient :retracted .
+:retractedRevision a rec:Revision ; rec:revisionOf :retractedRecord ; rec:version :retractedVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:ownRecord a health:AllergyRecord .
+:ownVersion prov:specializationOf :ownRecord ; health:allergen "Sesame" ; rec:patient :subject .
+:ownRevision a rec:Revision ; rec:revisionOf :ownRecord ; rec:version :ownVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .

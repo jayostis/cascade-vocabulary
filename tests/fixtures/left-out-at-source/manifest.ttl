@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "left-out-at-source" ;
+  rdfs:comment "The subject's records whose current versions their source marks entered in error and refuted, and one whose earlier version it marked entered in error." ;
+  mf:entries (
+    <#left-out-for-the-status-of-its-current-version>
+  ) .
+
+<#left-out-for-the-status-of-its-current-version> a mf:QueryEvaluationTest ;
+  mf:name "left-out-for-the-status-of-its-current-version" ;
+  rdfs:comment "A record whose current version is entered in error or refuted is left out for that reason, and one whose earlier version was is not." ;
+  mf:action [ qt:query <left-out-for-the-status-of-its-current-version.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <left-out-for-the-status-of-its-current-version.srj> .

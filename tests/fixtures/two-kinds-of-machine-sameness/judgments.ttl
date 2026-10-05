@@ -1,0 +1,12 @@
+@prefix : <urn:x:> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
+
+:byCode a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameCodeAndDate ; prov:hadMember :flu1 , :flu2 ;
+    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:byMappedCode a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCodeAndDate ;
+    prov:hadMember :flu2 , :flu3 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
