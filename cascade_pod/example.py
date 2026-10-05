@@ -1,5 +1,6 @@
 """An example: its pod's folder and address, its story's events and the files each adds, the view the layout lists each
-kind in and the folder its records are filed in, and its pod in a store."""
+kind in and the folder its records are filed in, and its pod in a store. A fixture: a few files laid out like a pod,
+built the same way."""
 
 import json
 from dataclasses import dataclass
@@ -57,26 +58,65 @@ class Example:
     def story_store(self, engine, through=None):
         """A store holding each file the story adds through the event, and none the build writes, each in a graph of
         its own."""
-        store = ENGINES[engine]()
-        for path in self.files(through):
-            if not path.startswith(NOT_RDF):
-                store.load(self.pod / path, self.address + path)
-        return store
+        return loaded(engine, self.pod, self.address, self.files(through))
 
     def build(self, engine, lens, through=None):
         """The pod as every tool and question sees it, in its store: each file through the event, the lens's derived
         state and the files built from them, each in a graph of its own and all of them in the default graph, and the
         layout read with the pod's address as its base, in a graph of its own and the default graph."""
-        store = self.story_store(engine, through)
-        derived = derive.derive(store, lens)
-        files = derived_files.add(self, store, through)
-        store.add(LAYOUT.triples(self.address), LAYOUT_GRAPH)
-        return Build(store, derived, files)
+        return built(self.story_store(engine, through), lens, self.address,
+                     lambda store: derived_files.add(self, store, through))
 
     def derived_turtle(self, engine):
         """Each derived file of the whole pod under the default lens, as Turtle, by its path within pod/."""
         return {path: turtle.write(triples, self.address + path)
                 for path, triples in self.build(engine, vocabulary.DEFAULT_LENS).files.items()}
+
+
+@dataclass(frozen=True)
+class Fixture:
+    """A folder of Turtle files laid out like a pod at FIXTURE_ADDRESS, beside the test manifest of what queries give
+    over it. It has no story, and is built as a pod is at one step, less the manifest of the build."""
+    manifest: Path
+
+    @property
+    def folder(self):
+        return self.manifest.parent
+
+    @property
+    def name(self):
+        return self.folder.name
+
+    @property
+    def address(self):
+        return FIXTURE_ADDRESS
+
+    def files(self):
+        return sorted(path.relative_to(self.folder).as_posix() for path in self.folder.rglob("*.ttl")
+                      if path != self.manifest)
+
+    def build(self, engine, lens):
+        return built(loaded(engine, self.folder, self.address, self.files()), lens, self.address,
+                     lambda store: derived_files.built(store, self.address))
+
+
+FIXTURE_ADDRESS = "https://pod.example/"
+
+
+def loaded(engine, folder, address, paths):
+    """A store holding each RDF file at a path under `folder`, in a graph named by `address` and the path."""
+    store = ENGINES[engine]()
+    for path in paths:
+        if not path.startswith(NOT_RDF):
+            store.load(folder / path, address + path)
+    return store
+
+
+def built(store, lens, address, add_files):
+    derived = derive.derive(store, lens)
+    files = add_files(store)
+    store.add(LAYOUT.triples(address), LAYOUT_GRAPH)
+    return Build(store, derived, files)
 
 
 @dataclass(frozen=True)

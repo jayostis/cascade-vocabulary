@@ -1,10 +1,11 @@
-"""Runs a W3C test manifest of runtime cases on an engine and reports each case's outcome in EARL."""
+"""Runs a W3C test manifest of runtime cases, or of what queries give over a fixture, on an engine and reports each
+case's outcome in EARL."""
 
 import json
 import tempfile
 import traceback
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from urllib.parse import urlparse
 from urllib.request import url2pathname
@@ -14,6 +15,7 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, XSD
 
 from . import story, turtle, vocabulary
+from .example import Fixture
 from .store import literal
 from .turtle import DCT, REC
 
@@ -33,6 +35,7 @@ class Entry:
     query: object
     result: object
     type: str = str(REC.ReplayTest)
+    fixture: Fixture | None = None
 
 
 def path(iri):
@@ -44,7 +47,8 @@ def path(iri):
 
 
 def entries(manifest):
-    """Each entry the manifest at `manifest` lists, in its order."""
+    """Each entry the manifest at `manifest` lists, in its order. An mf:QueryEvaluationTest is asked of the fixture the
+    manifest sits in, built under its rec:lens."""
     graph = Graph().parse(Path(manifest), format="turtle")
     [head] = graph.subjects(RDF.type, MF.Manifest)
     found = []
@@ -56,14 +60,18 @@ def entries(manifest):
             story=path(graph.value(action, REC.story)), step=None if step is None else str(step),
             lens=path(graph.value(action, REC.lens)), query=path(graph.value(action, QT.query)),
             result=path(graph.value(entry, MF.result)), type=entry_type(graph, entry)))
-    return found
+    fixture = Fixture(Path(manifest).absolute())
+    return [replace(entry, fixture=fixture) if entry.type == str(MF.QueryEvaluationTest) else entry for entry in found]
+
+
+KNOWN = (REC.ReplayTest, MF.QueryEvaluationTest)
 
 
 def entry_type(graph, entry):
-    """rec:ReplayTest if the entry is one, whatever else it is typed; otherwise the least of its types."""
-    if (entry, RDF.type, REC.ReplayTest) in graph:
-        return str(REC.ReplayTest)
-    return min(map(str, graph.objects(entry, RDF.type)), default="no type")
+    """The first type the runner knows that the entry has, whatever else it is typed; otherwise the least of its
+    types."""
+    known = [str(kind) for kind in KNOWN if (entry, RDF.type, kind) in graph]
+    return known[0] if known else min(map(str, graph.objects(entry, RDF.type)), default="no type")
 
 
 def lens_name(file):
@@ -117,8 +125,13 @@ class Run:
         return self.replays[key]
 
     def build(self, entry):
-        replay = self.replay(entry.story)
         lens = lens_name(entry.lens)
+        if entry.fixture is not None:
+            key = (entry.fixture.folder, lens)
+            if key not in self.builds:
+                self.builds[key] = entry.fixture.build(self.engine, lens).store
+            return self.builds[key]
+        replay = self.replay(entry.story)
         if entry.step not in story.steps(entry.story):
             raise ValueError(f"the story has no step {entry.step}")
         key = (replay.story_file, entry.step, lens)
@@ -130,20 +143,23 @@ class Run:
 
     def outcome(self, entry):
         """The entry's outcome, and why, if it did not pass."""
-        if entry.type != str(REC.ReplayTest):
+        if entry.type not in map(str, KNOWN):
             return EARL.inapplicable, f"{entry.type} is no type of entry this runner knows"
         try:
-            store = self.build(entry)
-            query = Path(entry.query).read_text(encoding="utf-8")
-            wanted = expected(entry.result)
-            if isinstance(wanted, bool):
-                found = store.ask(query)
-                return (EARL.passed, None) if found == wanted else (EARL.failed, f"expected {wanted}, found {found}")
-            names, rows = store.answer(query)
-            found = Counter(row(binding) for binding in rows)
-            return compared(wanted, set(names), found)
+            return answered(entry, self.build(entry))
         except Exception:
             return EARL.failed, traceback.format_exc()
+
+
+def answered(entry, store):
+    """The outcome of the entry's query over a store holding the pod it names, and why, if it did not pass."""
+    query = Path(entry.query).read_text(encoding="utf-8")
+    wanted = expected(entry.result)
+    if isinstance(wanted, bool):
+        found = store.ask(query)
+        return (EARL.passed, None) if found == wanted else (EARL.failed, f"expected {wanted}, found {found}")
+    names, rows = store.answer(query)
+    return compared(wanted, set(names), Counter(row(binding) for binding in rows))
 
 
 def compared(wanted, names, found):
@@ -154,7 +170,9 @@ def compared(wanted, names, found):
         return EARL.passed, None
     missing, unexpected = rows - found, found - rows
     return EARL.failed, "\n".join([*(f"missing: {shown(r)}" for r in sorted(missing.elements(), key=shown)),
-                                   *(f"unexpected: {shown(r)}" for r in sorted(unexpected.elements(), key=shown))])
+                                   *(f"unexpected: {shown(r)}" for r in sorted(unexpected.elements(), key=shown)),
+                                   "expected:", *sorted(map(shown, rows.elements())),
+                                   "found:", *sorted(map(shown, found.elements()))])
 
 
 def shown(found_row):
