@@ -23,6 +23,5 @@ WHERE {
   OPTIONAL { ?latest pav:hasCurrentVersion/health:allergenCode ?code }
   OPTIONAL { ?entry rec:statusFrom ?statusFrom .
              ?statusFrom pav:hasCurrentVersion/clinical:status ?status }
-  OPTIONAL { ?entry rec:topCriticality ?top .
-             BIND (IF(?top = 2, "high", IF(?top = 1, "low", "unable-to-assess")) AS ?criticality) }
+  OPTIONAL { ?entry rec:topCriticality ?criticality }
 }
