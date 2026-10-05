@@ -2,12 +2,13 @@
 each kind in and the folder its records are filed in, and its pod in a store."""
 
 import json
+from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path, PurePosixPath
 
 from . import Failure, derive, derived_files, turtle, vocabulary
 from .pod import FOLDERS, NOT_RDF, TYPE_INDEX
-from .store import ENGINES, parsed
+from .store import ENGINES, Store, parsed
 from .turtle import REC, SOLID
 
 
@@ -71,18 +72,24 @@ class Example:
                 store.load(self.pod / path, self.address + path)
         return store
 
+    def build(self, engine, lens, through=None):
+        store = self.pod_only(engine, through)
+        derived = derive.derive(store, lens)
+        return Build(store, derived, derived_files.add(self, store, through))
+
     def pod_with_derived_state(self, engine, lens, through=None):
         """The pod as every tool and question sees it: each file through the event, the lens's derived state and the
         files built from them, each in a graph of its own and all of them in the default graph."""
-        return self._with_derived_files(engine, lens, through)[0]
+        return self.build(engine, lens, through).store
 
     def derived_turtle(self, engine):
         """Each derived file of the whole pod under the default lens, as Turtle, by its path within pod/."""
-        _, files = self._with_derived_files(engine, vocabulary.DEFAULT_LENS)
         return {path: turtle.write(triples, self.address + path)
-                for path, triples in files.items()}
+                for path, triples in self.build(engine, vocabulary.DEFAULT_LENS).files.items()}
 
-    def _with_derived_files(self, engine, lens, through=None):
-        store = self.pod_only(engine, through)
-        derive.derive(store, lens)
-        return store, derived_files.add(self, store, through)
+
+@dataclass(frozen=True)
+class Build:
+    store: Store
+    derived: derive.Derived
+    files: dict

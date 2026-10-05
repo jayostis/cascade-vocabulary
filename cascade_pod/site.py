@@ -86,7 +86,7 @@ class Site:
     def __init__(self, example):
         self.example = example
         self.lenses = sorted(vocabulary.named("lenses"), key=lambda lens: lens != vocabulary.DEFAULT_LENS)
-        self.stores = {lens: example.pod_with_derived_state(ENGINE, lens) for lens in self.lenses}
+        self.builds = {lens: example.build(ENGINE, lens) for lens in self.lenses}
         self.answers = {lens: self.asked_under(lens) for lens in self.lenses}
         self.questions = self.answers[vocabulary.DEFAULT_LENS]
         self.terms = term_labels()
@@ -106,7 +106,7 @@ class Site:
         return URIRef(self.example.address + path)
 
     def asked_under(self, lens):
-        return {name: Query(relative, name, lens, *self.stores[lens].answer(vocabulary.query(relative)))
+        return {name: Query(relative, name, lens, *self.builds[lens].store.answer(vocabulary.query(relative)))
                 for name, relative in vocabulary.questions().items()}
 
     def things_with_pages(self):
@@ -115,12 +115,12 @@ class Site:
                             for row in question.rows if isinstance(row.get(kind), URIRef)}) for kind in kinds}
 
     def steps_under(self, lens):
-        return [(Query(relative), added) for relative, added in derive.steps(self.example.pod_only(ENGINE), lens)]
+        return [(Query(relative), added) for relative, added in self.builds[lens].derived.added_by_step.items()]
 
     def view_files(self):
         views = vocabulary.named("views")
         writers = {path: views[view] for view, path in self.example.view_files.items()} | {LABEL_FILE: "labels.rq"}
-        held = self.stores[vocabulary.DEFAULT_LENS]
+        held = self.builds[vocabulary.DEFAULT_LENS].store
         return {self.iri(path): (Query(relative), len(held.triples(self.example.address + path)))
                 for path, relative in writers.items()}
 

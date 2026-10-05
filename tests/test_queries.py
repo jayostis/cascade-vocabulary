@@ -378,7 +378,7 @@ NEEDS_REVIEW = [relative for name, relative in vocabulary.questions().items() if
 
 def derived_state_views_and_reviews(example, engine, lens, through):
     held = example.pod_only(engine, through)
-    derived = derive.derive(held, lens)
+    derived = derive.derive(held, lens).triples
     views = {view: held.construct(vocabulary.query(r)) for view, r in vocabulary.named("views").items()}
     reviews = {relative: held.select(vocabulary.query(relative)) for relative in NEEDS_REVIEW}
     return derived, views, reviews
@@ -534,7 +534,7 @@ def test_a_status_the_person_entered_sets_a_conditions_entry_and_never_an_allerg
     path.write_text(UNIT_PREFIXES + ENTERED_BY_THE_PERSON, encoding="utf-8")
     held = store.ENGINES[engine]()
     held.load(path, "urn:x:")
-    derived = derive.derive(held, lens)
+    derived = derive.derive(held, lens).triples
     assert {str(o) for _, p, o in derived if p == URIRef(REC + "statusFrom")} == {"urn:x:condition"}
 
 

@@ -1,22 +1,33 @@
-"""Runs a lens: its derivations, in order, over a store holding a pod."""
+"""Runs derivations, in order, over a store holding a pod."""
+
+from dataclasses import dataclass
 
 from . import vocabulary
 
 DERIVED = "urn:cascade:derived:"
 
 
-def steps(store, lens):
-    """Runs each derivation in turn, adding its triples to the store, and yields its path with the triples it added."""
-    held = store.triples()
-    for relative in vocabulary.derivations(lens):
-        added = store.construct(vocabulary.query(relative)) - held
-        store.add(added)
-        held |= added
-        yield relative, added
+def run(store, derivations):
+    """Runs each derivation in turn, adding its triples to the store, and returns the triples each added by its path."""
+    held, added = store.triples(), {}
+    for relative in derivations:
+        added[relative] = store.construct(vocabulary.query(relative)) - held
+        store.add(added[relative])
+        held |= added[relative]
+    return added
+
+
+@dataclass(frozen=True)
+class Derived:
+    added_by_step: dict
+
+    @property
+    def triples(self):
+        return set().union(*self.added_by_step.values())
 
 
 def derive(store, lens):
     """Adds the lens's derived state to the store, as a graph of its own, and returns it."""
-    derived = set().union(*(added for _, added in steps(store, lens)))
-    store.add(derived, DERIVED + lens)
+    derived = Derived(run(store, vocabulary.derivations(lens)))
+    store.add(derived.triples, DERIVED + lens)
     return derived

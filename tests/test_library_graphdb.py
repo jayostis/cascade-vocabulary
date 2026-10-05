@@ -133,7 +133,7 @@ def test_a_load_into_an_empty_graphdb_creates_the_repository_and_saves_the_queri
 @every_example
 def test_a_load_adds_the_derived_state_under_the_everyday_lens_as_a_graph_of_its_own(graphdb, example):
     assert load(example, graphdb.url).returncode == 0
-    derived = derive.derive(example.pod_only("oxigraph"), vocabulary.DEFAULT_LENS)
+    derived = derive.derive(example.pod_only("oxigraph"), vocabulary.DEFAULT_LENS).triples
     posted = Graph().parse(data=graphdb.graphs["urn:cascade:derived:everyday"], format="nt")
     assert set(posted) == derived
 
