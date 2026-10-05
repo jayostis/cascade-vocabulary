@@ -12,8 +12,9 @@ creates. Its `Then` steps read the pod as it stood after the last of them, under
 reads it at another point.
 
 A `Given` or `When` step may end with a label in parentheses, `(E13)`, which names it. Otherwise a step is named by the
-name it quotes: an import by its export's, an entry or a judgment by its file's. A step that quotes no name is named
-`pod`, `matcher` or `recheck`. Two steps of one example never share a name.
+name it quotes: an import by its export's, an entry or a judgment by its file's. The pod's creation, a reference version's
+arrival, a matcher run and a recheck are named `pod`, `reference`, `matcher` and `recheck`. Two steps of one example
+never share a name: where they would, the later is labelled.
 
 **The dataset a `Then` reads** is the one each step has always been read against. Each file of the pod is a named
 graph, named by the pod's address plus its path. The lens's derived state is the graph `urn:cascade:derived:<lens>`,

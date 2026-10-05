@@ -43,7 +43,7 @@ Feature: The matcher's procedure
       And the matcher runs on the records of that entry on 2026-03-04 at 08:01
       And Cleo files the judgment "retract-about-r" on 2026-03-04 at 12:00
       And Cleo enters "third-entry" on 2026-03-05 at 08:00
-      When the matcher runs on the records of that entry on 2026-03-05 at 08:01
+      When the matcher runs on the records of that entry on 2026-03-05 at 08:01 (match-third-entry)
       Then the matcher's judgments holding allergy RxNorm 8591 from draft 0 of "second-entry", allergy RxNorm 8591 from draft 1 of "second-entry" and allergy RxNorm 8591 from draft 0 of "third-entry" are:
         | justification | members                                                                                                | at                  |
         | same code     | allergy RxNorm 8591 from draft 0 of "second-entry", allergy RxNorm 8591 from draft 1 of "second-entry" | 2026-03-04 at 08:01 |
@@ -110,7 +110,7 @@ Feature: The matcher's procedure
 
       Given version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-04-03 at 09:00
       And Dev enters "later" on 2026-04-04 at 09:00
-      When the matcher runs on the records of that entry on 2026-04-04 at 09:05
+      When the matcher runs on the records of that entry on 2026-04-04 at 09:05 (match-later)
       Then the matcher's judgments holding allergy SNOMED 373270004, allergy RxNorm 7980 from draft 13 of "pairs", allergy SNOMED 91936005, allergy RxNorm 733 from draft 15 of "pairs", allergy RxNorm 7980 from draft 0 of "later" and allergy RxNorm 733 from draft 1 of "later" are:
         | justification    | members                                                                                   | at                  |
         | same mapped code | allergy RxNorm 7980 from draft 13 of "pairs", allergy SNOMED 373270004                    | 2026-04-02 at 09:05 |
@@ -241,11 +241,11 @@ Feature: The matcher's procedure
       And the matcher runs on the records of that entry on 2026-03-03 at 08:01
 
     Example: running the matcher again on the same step writes nothing
-      When the matcher runs on the records of "entry" on 2026-03-03 at 09:00
+      When the matcher runs on the records of "entry" on 2026-03-03 at 09:00 (again)
       Then that step wrote no file
 
     Example: running the matcher again leaves each judgment it made at the time it was first made
-      When the matcher runs on the records of "entry" on 2026-03-03 at 09:00
+      When the matcher runs on the records of "entry" on 2026-03-03 at 09:00 (again)
       Then the matcher's judgments holding allergy SNOMED 373270004 are:
         | justification    | members                                                    | at                  |
         | same mapped code | allergy RxNorm 7980 from draft 4, allergy SNOMED 373270004 | 2026-03-03 at 08:01 |
@@ -260,7 +260,7 @@ Feature: The matcher's procedure
       And the matcher runs on the records of that entry on 2026-04-02 at 09:05
       And version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-04-03 at 09:00
       And Dev enters "later" on 2026-04-04 at 09:00
-      When the matcher runs on the records of that entry on 2026-04-04 at 09:05
+      When the matcher runs on the records of that entry on 2026-04-04 at 09:05 (match-later)
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy SNOMED 91936005 are:
         | justification    | members                                                                | used                                                                                                                                                                            | name                                          |
         | same mapped code | allergy RxNorm 7980 from draft 13 of "pairs", allergy SNOMED 373270004 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 from draft 13 of "pairs", version 1 of allergy SNOMED 373270004 | urn:uuid:fb04c4d1-c902-86ae-969f-2454e9345ad2 |
