@@ -166,6 +166,8 @@ def replayed(kit, out, engine="oxigraph"):
     kit, out = Path(kit), Path(out)
     if not (kit / "story.json").is_file():
         raise Failure(f"{kit} has no story.json")
+    if out.exists() and not out.is_dir():
+        raise Failure(f"{out} is a file, not a folder; nothing changed")
     if out.is_dir() and any(out.iterdir()) and not (out / "events.json").is_file():
         raise Failure(f"{out} holds files and no earlier replay; nothing changed")
     example = Replay(kit / "story.json", out, engine).run().example()

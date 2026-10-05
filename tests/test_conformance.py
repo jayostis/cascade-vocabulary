@@ -3,13 +3,17 @@ entry passes, each final view equals expected/, and each name follows its rule f
 
 import json
 import re
+import subprocess
+import sys
 import uuid
 from collections import defaultdict
 
 import pytest
-from rdflib import BNode, Graph, URIRef
+from rdflib import BNode, Graph, URIRef, Variable
 from rdflib.compare import isomorphic
 from rdflib.namespace import RDF
+from rdflib.plugins.sparql.algebra import traverse
+from rdflib.plugins.sparql.parser import parseQuery
 
 import recomputed
 from alex_rivera import (ADDRESS, BRIDGE, INPUT, JDG, KIT, MATCHER, PROV, REC, STORY, EVERY_JUDGMENT, document,
@@ -284,3 +288,29 @@ def test_each_scripted_judgment_names_only_what_the_pod_holds_at_its_step(alex):
 
 NPX_SUPERSEDES = URIRef("http://purl.org/nanopub/x/supersedes")
 NPX_RETRACTS = URIRef("http://purl.org/nanopub/x/retracts")
+
+
+def test_no_case_selects_as_a_variable_its_pattern_already_binds():
+    clashes = {}
+    for path in sorted(CASES.glob("*.rq")):
+        query = parseQuery(path.read_text(encoding="utf-8"))[1]
+        bound = set()
+        traverse(query.where, visitPost=lambda node: bound.add(node) if isinstance(node, Variable) else None)
+        aliases = {item["evar"] for item in query.get("projection") or [] if "evar" in item}
+        if aliases & bound:
+            clashes[path.name] = sorted(aliases & bound)
+    assert clashes == {}
+
+
+def test_the_kit_has_one_title_however_its_path_is_written():
+    assert vocabulary.title(KIT.parent / ".." / KIT.parent.name / KIT.name) == vocabulary.title(KIT) is not None
+
+
+def test_a_replay_out_that_is_a_file_is_refused_in_one_line_without_a_traceback(tmp_path):
+    out = tmp_path / "a-file"
+    out.write_text("kept", encoding="utf-8")
+    result = subprocess.run([sys.executable, "-m", "cascade_pod", "replay", str(KIT), "--out", str(out)],
+                            capture_output=True, text=True, cwd=vocabulary.ROOT)
+    assert result.returncode == 2
+    assert result.stderr.startswith("cascade_pod replay: ") and "Traceback" not in result.stderr, result.stderr
+    assert out.read_text(encoding="utf-8") == "kept"
