@@ -10,8 +10,9 @@ from rdflib import Graph, Literal, URIRef
 from rdflib.compare import to_isomorphic
 from rdflib.namespace import XSD
 
-from cascade_pod import Failure, ask, derive, site, store, turtle, vocabulary
+from cascade_pod import Failure, ask, derive, manifest, names, site, store, turtle, vocabulary
 from cascade_pod.example import Example
+from cascade_pod.turtle import REC
 from examples import EXAMPLES, ROOT, every_example
 
 RECOMPUTED_SHA256 = "409b3dd5420a1a6f9707c802fa1bd7ed26e4d0c98119519968faa698344608f3"
@@ -133,3 +134,34 @@ def graph_of(triples):
     for triple in triples:
         found.add(triple)
     return found
+
+
+def test_an_entry_typed_a_replay_test_and_anything_else_is_read_as_a_replay_test(tmp_path):
+    written = tmp_path / "manifest.ttl"
+    written.write_text("""
+        @prefix mf:  <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+        @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+        <> a mf:Manifest ; mf:entries ( <#x> ) .
+        <#x> a <urn:B>, <urn:A>, rec:ReplayTest, mf:ManifestEntry ; mf:name "x" .
+    """, encoding="utf-8")
+    [entry] = manifest.entries(written)
+    assert entry.type == str(REC.ReplayTest)
+
+
+@pytest.mark.parametrize("given, moved", [
+    ("2026-02-01T08:30:00.123456789Z", "2026-02-01T08:30:00.123456789Z"),
+    ("2026-02-01T09:30:00.1200+01:00", "2026-02-01T08:30:00.12Z"),
+    ("2026-02-01T08:30:00.000Z", "2026-02-01T08:30:00Z"),
+    ("2026-02-01T24:00:00Z", "2026-02-02T00:00:00Z"),
+])
+def test_a_start_time_is_moved_to_utc_keeping_every_digit_of_its_fraction(given, moved):
+    assert names.in_utc(given) == moved
+
+
+@pytest.mark.parametrize("given", [
+    "2026-02-01 08:30:00Z", "20260201T083000Z", "2026-02-01T08:30:00", "2026-02-01T08:30Z",
+    "0001-01-01T00:00:00+14:00", "2026-02-01T24:00:00.5Z", "2026-02-30T08:30:00Z",
+])
+def test_a_start_time_that_is_no_zoned_xsd_date_time_or_cannot_be_moved_to_utc_is_a_failure(given):
+    with pytest.raises(Failure):
+        names.in_utc(given)

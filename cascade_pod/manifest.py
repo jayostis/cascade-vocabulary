@@ -55,8 +55,15 @@ def entries(manifest):
             iri=str(entry), name=str(graph.value(entry, MF.name)),
             story=path(graph.value(action, REC.story)), step=None if step is None else str(step),
             lens=path(graph.value(action, REC.lens)), query=path(graph.value(action, QT.query)),
-            result=path(graph.value(entry, MF.result)), type=str(graph.value(entry, RDF.type))))
+            result=path(graph.value(entry, MF.result)), type=entry_type(graph, entry)))
     return found
+
+
+def entry_type(graph, entry):
+    """rec:ReplayTest if the entry is one, whatever else it is typed; otherwise the least of its types."""
+    if (entry, RDF.type, REC.ReplayTest) in graph:
+        return str(REC.ReplayTest)
+    return min(map(str, graph.objects(entry, RDF.type)), default="no type")
 
 
 def steps(story_file):

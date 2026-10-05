@@ -3,8 +3,9 @@ import's or an entry session's at random."""
 
 import base64
 import hashlib
+import re
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from rdflib import BNode
 
@@ -14,6 +15,8 @@ RECORD_NAMESPACE = "90c60849-c5ef-4ca6-bfb8-8662bd07d2b5"
 THIS_VERSION = "urn:cascade:this-version"
 THIS_REVISION = "urn:cascade:this-revision"
 THIS_ENTRY = "urn:cascade:this-entry"
+DATE_TIME = re.compile(
+    r"(?P<whole>\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)(?:\.(?P<fraction>\d+))?(?P<zone>Z|[+-]\d\d:\d\d)?", re.ASCII)
 
 
 def record(inputs):
@@ -27,15 +30,25 @@ def record(inputs):
 def in_utc(date_time):
     """An xsd:dateTime's lexical form moved to UTC and ending in Z, any fraction of a second kept less its trailing
     zeros."""
+    parts = DATE_TIME.fullmatch(date_time)
+    if parts is None:
+        raise Failure(f"{date_time} is not an xsd:dateTime")
+    whole, fraction, zone = parts.group("whole", "fraction", "zone")
+    if zone is None:
+        raise Failure(f"{date_time} has no time zone")
+    fraction = (fraction or "").rstrip("0")
+    end_of_day = whole.endswith("T24:00:00")
+    if end_of_day and fraction:
+        raise Failure(f"{date_time} is not an xsd:dateTime")
     try:
-        moment = datetime.fromisoformat(date_time)
+        moment = datetime.fromisoformat((whole[:-8] + "00:00:00" if end_of_day else whole) + zone.replace("Z", "+00:00"))
     except ValueError:
         raise Failure(f"{date_time} is not an xsd:dateTime") from None
-    if moment.tzinfo is None:
-        raise Failure(f"{date_time} has no time zone")
-    moment = moment.astimezone(timezone.utc)
-    fraction = f".{moment.microsecond:06d}".rstrip("0") if moment.microsecond else ""
-    return moment.strftime("%Y-%m-%dT%H:%M:%S") + fraction + "Z"
+    try:
+        moment = (moment + timedelta(days=end_of_day)).astimezone(timezone.utc)
+    except OverflowError:
+        raise Failure(f"{date_time} falls outside the years a name can be given in") from None
+    return moment.replace(tzinfo=None).isoformat(timespec="seconds") + (f".{fraction}" if fraction else "") + "Z"
 
 
 def document(octets):
