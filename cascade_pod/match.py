@@ -143,7 +143,8 @@ class Matcher:
         self.rules = self.references.table(self.rules_version)
         if sorted(r["rule"] for r in self.rules) != sorted(MATCHES):
             raise Failure(f"rule set {self.rules_version['version']} names rules this matcher does not apply")
-        self.table_versions = {r["rule"]: self.references.current(r["table"], reading) for r in self.rules if r["table"]}
+        self.table_versions = {r["rule"]: self.references.current(r["table"], reading)
+                               for r in self.rules if r["table"]}
         self.tables = {rule: self.references.table(version) for rule, version in self.table_versions.items()}
         self.files = {}
 
