@@ -43,6 +43,9 @@ REFUSED = {
     "a query that does not hash to its rule's hash":
         rule("SameCode", "matcher/same-code.rq", recomputed.ni_name(b"")),
     "a query outside matcher/": rule("SameCode", "views/allergies.rq"),
+    "a query that climbs out of matcher/ by a backslash":
+        rule("SameCode", "matcher/..\\\\views\\\\allergies.rq",
+             recomputed.ni_name((QUERIES / "views/allergies.rq").read_bytes())),
     "a rule without its hash":
         '[] a rec:MatcherRule ; rec:justifiedAs jdg:SameCode ; rec:query "matcher/same-code.rq" .\n',
     "two rules giving one justification":
@@ -53,7 +56,8 @@ REFUSED = {
 @pytest.mark.parametrize("case", sorted(REFUSED))
 def test_a_rule_list_the_matcher_cannot_trust_refuses_the_run_as_a_failure_not_a_traceback(case, tmp_path):
     with pytest.raises(Failure):
-        match.Matcher(set(), tables(tmp_path, REFUSED[case]), "2026-01-01T00:00:00Z", "https://pod.example/", "rdflib")
+        match.Matcher({(URIRef("urn:x:subject"), RDF.type, REC.Subject)}, tables(tmp_path, REFUSED[case]),
+                      "2026-01-01T00:00:00Z", "https://pod.example/", "rdflib")
 
 
 def rule_lists():

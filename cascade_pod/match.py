@@ -3,7 +3,7 @@ reads the pod's triples, their derived state under the everyday lens and the cur
 the comparison query each rule names; which records it takes, in what order, and what it writes are its own."""
 
 from dataclasses import dataclass
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF, RDFS
@@ -46,10 +46,9 @@ def rules(rows):
             return values[0]
 
         justification, query, expected = one(REC.justifiedAs), str(one(REC.query)), str(one(REC.queryHash))
-        path = PurePosixPath(query)
-        if path.is_absolute() or path.parts[:1] != (COMPARISONS,) or ".." in path.parts:
+        file = (vocabulary.QUERIES / query).resolve()
+        if "\\" in query or not file.is_relative_to((vocabulary.QUERIES / COMPARISONS).resolve()):
             raise Failure(f"the rule for {justification} names {query}, which is not under {COMPARISONS}/")
-        file = vocabulary.QUERIES / query
         if not file.is_file() or names.document(file.read_bytes()) != expected:
             raise Failure(f"{query} does not hash to {expected}, as the rule for {justification} says it does")
         tables = list(rows.objects(row, REC.table))
