@@ -12,7 +12,7 @@ from rdflib import Literal, URIRef
 from rdflib.namespace import RDF, XSD
 
 from . import derive, names, turtle, vocabulary
-from .derived_files import LABEL_FILE, VIEW_FILES
+from .derived_files import LABEL_FILE
 from .pod import save
 from .store import ENGINES
 
@@ -93,7 +93,7 @@ class Site:
         self.terms = term_labels()
         self.names = {row["thing"]: row["label"] for row in self.questions[CALLED].rows}
         self.things = self.things_with_pages()
-        self.views = [self.iri(path) for path in VIEW_FILES.values()]
+        self.views = [self.iri(path) for path in example.view_files.values()]
         self.pipeline = {lens: self.steps_under(lens) for lens in self.lenses}
         self.built = self.view_files()
         self.copied = example.files() + example.derived
@@ -119,7 +119,8 @@ class Site:
         return [(Query(relative), added) for relative, added in derive.steps(self.example.loaded(ENGINE), lens)]
 
     def view_files(self):
-        writers = {path: vocabulary.named("views")[view] for view, path in VIEW_FILES.items()} | {LABEL_FILE: "labels.rq"}
+        views = vocabulary.named("views")
+        writers = {path: views[view] for view, path in self.example.view_files.items()} | {LABEL_FILE: "labels.rq"}
         held = self.stores[vocabulary.DEFAULT_LENS]
         return {self.iri(path): (Query(relative), len(held.triples(self.example.address + path)))
                 for path, relative in writers.items()}

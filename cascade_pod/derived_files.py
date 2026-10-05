@@ -6,13 +6,6 @@ from rdflib import BNode, Literal, URIRef
 CASCADE, DCT, LDP, PROV, RDF, RDFS, REC, XSD = (
     turtle.PREFIXES[p] for p in ("cascade", "dct", "ldp", "prov", "rdf", "rdfs", "rec", "xsd"))
 TYPE = URIRef(RDF + "type")
-VIEW_FILES = {
-    "allergies": "clinical/allergies.ttl",
-    "conditions": "clinical/conditions.ttl",
-    "immunizations": "clinical/immunizations.ttl",
-    "procedures": "clinical/procedures.ttl",
-    "patients": "clinical/patient-profile.ttl",
-}
 LABEL_FILE = "clinical/labels.ttl"
 
 
@@ -21,8 +14,8 @@ def add(example, store, through=None):
     as that file's graph, and returns their triples by path within pod/."""
     current = vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"])
     used = [row["version"] for row in store.select(current)]
-    files = {VIEW_FILES[view]: store.construct(vocabulary.query(relative))
-             for view, relative in vocabulary.named("views").items()}
+    views = vocabulary.named("views")
+    files = {path: store.construct(vocabulary.query(views[view])) for view, path in example.view_files.items()}
     files = {path: marked(example.address + path, triples, used) for path, triples in files.items()}
     _add(store, example, files)
     files[LABEL_FILE] = marked(example.address + LABEL_FILE, store.construct(vocabulary.query("labels.rq")), used)

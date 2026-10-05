@@ -1,20 +1,19 @@
-"""An example's pod: its address, its story's events and the files each adds, where each kind of thing is filed, and
-the pod in a store."""
+"""An example's pod: its address, its story's events and the files each adds, the view its type index lists each kind
+in and the folder its records are filed in, and the pod in a store."""
 
 import base64
 import json
-from pathlib import Path
+from functools import cached_property
+from pathlib import Path, PurePosixPath
+
+from rdflib import Namespace
 
 from . import Failure, derive, derived_files, turtle, vocabulary
-from .store import ENGINES
+from .store import ENGINES, parsed
 from .turtle import PREFIXES
 
-RECORD_FOLDERS = {
-    PREFIXES["health"] + "AllergyRecord": "allergies",
-    PREFIXES["health"] + "ConditionRecord": "conditions",
-    PREFIXES["health"] + "ImmunizationRecord": "immunizations",
-    PREFIXES["clinical"] + "Procedure": "procedures",
-}
+REC, SOLID = Namespace(PREFIXES["rec"]), Namespace(PREFIXES["solid"])
+TYPE_INDEX = "settings/privateTypeIndex.ttl"
 NOT_RDF = ("attachments/", ".well-known/")
 
 
@@ -54,6 +53,25 @@ class Example:
     def title(self):
         crate = json.loads((self.folder / "ro-crate-metadata.json").read_text(encoding="utf-8"))
         return next(entity["name"] for entity in crate["@graph"] if entity["@id"] == "./")
+
+    @cached_property
+    def view_files(self):
+        """Each view file the type index lists a kind's entries in, by its name, which is that of the view that builds
+        it."""
+        return {PurePosixPath(path).stem: path for path in self._views.values()}
+
+    @cached_property
+    def records_folders(self):
+        """Each kind the type index lists in a view, by the folder its records are filed in, named for that view."""
+        return {kind: f"records/{PurePosixPath(path).stem}" for kind, path in self._views.items()}
+
+    @cached_property
+    def _views(self):
+        index = parsed(self.pod / TYPE_INDEX, self.address + TYPE_INDEX)
+        containers = tuple(str(folder) for registration, folder in index.subject_objects(SOLID.instanceContainer)
+                           if index.value(registration, SOLID.forClass) == REC.View)
+        return {index.value(registration, SOLID.forClass): str(file)[len(self.address):]
+                for registration, file in index.subject_objects(SOLID.instance) if str(file).startswith(containers)}
 
     def event(self, name):
         found = next((event for event in self.events if event["event"] == name), None)

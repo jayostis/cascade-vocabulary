@@ -4,7 +4,7 @@ import pytest
 from rdflib import URIRef
 
 from cascade_pod import Failure, names, store, write
-from cascade_pod.pod import Example
+from cascade_pod.pod import TYPE_INDEX, Example
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 PROV = "http://www.w3.org/ns/prov#"
@@ -12,6 +12,12 @@ RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 REVISION, VERSION, WAS_REVISION_OF = URIRef(REC + "Revision"), URIRef(REC + "version"), URIRef(PROV + "wasRevisionOf")
 SUBJECT = "urn:uuid:00000000-0000-4000-8000-000000000001"
 RECORD = "urn:uuid:00000000-0000-4000-8000-000000000002"
+ALLERGIES_TYPE_INDEX = """@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix solid: <http://www.w3.org/ns/solid/terms#> .
+<#views> solid:forClass rec:View ; solid:instanceContainer </clinical/> .
+<#allergies> solid:forClass health:AllergyRecord ; solid:instance </clinical/allergies.ttl> .
+"""
 PREFIXES = """@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
 @prefix pav: <http://purl.org/pav/> .
@@ -45,6 +51,8 @@ class Story:
     def __init__(self, root):
         self.root = root
         self.events = [{"event": "E1", "at": "2026-01-01T00:00:00Z", "subject": SUBJECT, "adds": []}]
+        (root / "pod" / TYPE_INDEX).parent.mkdir(parents=True, exist_ok=True)
+        (root / "pod" / TYPE_INDEX).write_text(ALLERGIES_TYPE_INDEX, encoding="utf-8")
 
     def export(self, event, files):
         """An export at `event` of each named file, given as (its text, the Bridge's graph or None, its findings or None)."""
@@ -113,7 +121,7 @@ def test_a_file_the_bridge_has_not_converted_stops_the_run_and_prints_the_comman
     assert "cascade-bridge convert" in printed.out and "downloads/e2/apple_health_export/clinical-records/a.json" in printed.out
     assert "1 conversions to run" in printed.err
     assert (tmp_path / "conversions" / "e2" / "a" / "facts.ttl").is_file()
-    assert not example.pod.exists()
+    assert [p for p in example.pod.rglob("*") if p.is_file()] == [example.pod / TYPE_INDEX]
 
 
 def test_a_statement_of_no_record_version_arrival_document_or_import_is_refused(tmp_path):

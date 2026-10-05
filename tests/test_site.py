@@ -15,8 +15,8 @@ from rdflib import Literal, URIRef
 from rdflib.namespace import XSD
 
 from cascade_pod import graphdb, site, turtle, vocabulary
-from cascade_pod.derived_files import LABEL_FILE, VIEW_FILES
-from cascade_pod.pod import Example, fanned, save, stem
+from cascade_pod.derived_files import LABEL_FILE
+from cascade_pod.pod import TYPE_INDEX, Example, fanned, save, stem
 from examples import EXAMPLES, ROOT, pod_file
 from test_library_graphdb import GraphDB
 from test_queries import queries_held
@@ -161,9 +161,9 @@ def test_the_names_graphdb_saves_the_questions_under_are_the_names_the_site_prin
     assert printed == set(server.saved)
 
 
-def entries_and_members(example, views=tuple(VIEW_FILES)):
-    return sorted((entry, member) for view in views
-                  for entry, member in pod_file(example, VIEW_FILES[view]).subject_objects(MERGED_FROM))
+def entries_and_members(example, leaving_out=()):
+    return sorted((entry, member) for view in set(example.view_files) - set(leaving_out)
+                  for entry, member in pod_file(example, example.view_files[view]).subject_objects(MERGED_FROM))
 
 
 def asked(command):
@@ -214,7 +214,7 @@ def test_an_entrys_page_reaches_each_members_source_file_and_its_turtle_by_links
 
 
 def test_a_block_about_one_thing_says_its_command_prints_every_things_rows(example, pages):
-    for record in {member for _, member in entries_and_members(example, set(VIEW_FILES) - {"patients"})}:
+    for record in {member for _, member in entries_and_members(example, leaving_out={"patient-profile"})}:
         [block] = [b for b in blocks(pages[page_of(record)]) if b["title"] == "Which judgments name it"]
         assert (f"It prints the rows for every record; this block keeps those whose ?record is {record}."
                 in block["paras"])
@@ -300,13 +300,15 @@ TINY = """
 
 
 def tiny(tmp_path, turtle_text, thing="urn:x:record"):
-    """The blocks on the thing's page, in the site of a pod built from the owner's profile and these statements."""
+    """The blocks on the thing's page, in the site of a pod built from the owner's profile, an empty type index and these
+    statements."""
     folder = tmp_path / "tiny"
-    files = {"profile/card.ttl": "<#me> <http://www.w3.org/ns/pim/space#storage> </> .\n", "data.ttl": TINY + turtle_text}
+    files = {"profile/card.ttl": "<#me> <http://www.w3.org/ns/pim/space#storage> </> .\n", TYPE_INDEX: "",
+             "data.ttl": TINY + turtle_text}
     for path, text in files.items():
         (folder / "pod" / path).parent.mkdir(parents=True, exist_ok=True)
         (folder / "pod" / path).write_text(text, encoding="utf-8")
-    derived = [*VIEW_FILES.values(), LABEL_FILE, "index.ttl", "manifest.ttl"]
+    derived = [LABEL_FILE, "index.ttl", "manifest.ttl"]
     story = {"address": "https://pod.example/", "derived": derived,
              "events": [{"event": "E1", "at": "2027-01-01T00:00:00Z", "adds": sorted(files)}]}
     (folder / "events.json").write_text(json.dumps(story), encoding="utf-8")

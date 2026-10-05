@@ -12,7 +12,7 @@ from rdflib import BNode, Literal, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
 
 from . import Failure, apple_health, names, store, turtle
-from .pod import RECORD_FOLDERS, fanned, save, stem
+from .pod import fanned, save, stem
 
 BRIDGE, PAV, PROV, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rec"))
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
@@ -32,10 +32,10 @@ def in_version(term, version):
     return term == version or str(term).startswith(str(version) + "#")
 
 
-def records_folder(source, record, kind):
-    if str(kind) not in RECORD_FOLDERS:
+def records_folder(folders, source, record, kind):
+    if kind not in folders:
         raise Failure(f"{source}: {record} is of no type the pod files: {kind}")
-    return f"records/{RECORD_FOLDERS[str(kind)]}"
+    return folders[kind]
 
 
 # What a revision sets
@@ -112,11 +112,11 @@ def file_entry(filing, event):
         raise Failure(f"{event['entry']} holds {len(activities)} activities, not one")
     activity = activities[0]
     filing.add_turtle(event["event"], fanned("provenance/activities", str(activity)), closure(graph, activity))
-    for revision in entry_revisions(graph, activity, event["entry"]):
+    for revision in entry_revisions(graph, activity, event["entry"], filing.example.records_folders):
         filing.revise(event["event"], revision)
 
 
-def entry_revisions(graph, activity, source):
+def entry_revisions(graph, activity, source, folders):
     records = {draft: URIRef(names.record([str(activity), position.group(1)]))
                for draft in set(graph.subjects(RDF.type, None))
                for position in [DRAFT_OUTPUT.match(str(draft))] if position}
@@ -127,7 +127,8 @@ def entry_revisions(graph, activity, source):
         content = {(placeholder, p, records.get(o, o)) for p, o in graph.predicate_objects(draft_version)}
         version = URIRef(names.content(content))
         yield Revision(
-            record=record, folder=records_folder(source, record, kind), record_triples=frozenset({(record, RDF.type, kind)}),
+            record=record, folder=records_folder(folders, source, record, kind),
+            record_triples=frozenset({(record, RDF.type, kind)}),
             version=version, version_triples=frozenset((version, p, o) for _, p, o in content),
             statements=frozenset(), at=str(graph.value(activity, PROV.startedAtTime)), by=str(activity))
 
@@ -138,6 +139,7 @@ class Conversion:
     def __init__(self, example, event, path, entry):
         self.path, self.entry, self.import_started_at = path, entry, event["at"]
         self.repository = example.folder.parent.parent
+        self.records_folders = example.records_folders
         self.octets = path.read_bytes()
         self.document = URIRef(names.document(self.octets))
         folder = example.folder / "conversions" / event["event"].lower() / path.stem
@@ -170,7 +172,7 @@ class Conversion:
             if record is None:
                 raise Failure(f"{self.source}: {version} is the version of no record")
             yield Revision(
-                record=record, folder=records_folder(self.source, record, graph.value(record, RDF.type)),
+                record=record, folder=records_folder(self.records_folders, self.source, record, graph.value(record, RDF.type)),
                 record_triples=frozenset(graph.triples((record, None, None))),
                 version=version, version_triples=frozenset(t for t in graph if in_version(t[0], version)),
                 statements=frozenset((p, o) for p, o in graph.predicate_objects(arrival)

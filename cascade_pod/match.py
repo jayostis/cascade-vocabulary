@@ -6,8 +6,8 @@ import json
 from rdflib import Literal, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
 
-from . import Failure, names, turtle
-from .pod import NOT_RDF, RECORD_FOLDERS, fanned, save
+from . import Failure, names, turtle, vocabulary
+from .pod import NOT_RDF, fanned, save
 from .store import Rdflib
 
 CLINICAL, HEALTH, JDG, NPX, PAV, PROV, RDFS, REC = (
@@ -75,6 +75,7 @@ class Reading:
         self.added_by = example.added_by(read_through)
         store = Rdflib()
         example.load(store, read_through)
+        store.add(store.construct(vocabulary.query("derivations/records.rq")))
         self.graph, self.defined_in = store.graph(), {}
         for event in events:
             for path in (p for p in event["adds"] if not p.startswith(NOT_RDF)):
@@ -84,22 +85,21 @@ class Reading:
 
     def _records(self):
         g, records = self.graph, {}
-        for kind, folder in RECORD_FOLDERS.items():
-            for record in g.subjects(RDF.type, URIRef(kind)):
-                revisions = set(g.subjects(REC.revisionOf, record))
-                followed = {o for r in revisions for o in g.objects(r, PROV.wasRevisionOf)}
-                first = [r for r in revisions if g.value(r, PROV.wasRevisionOf) is None]
-                latest = list(revisions - followed)
-                if len(first) != 1 or len(latest) != 1:
-                    raise Failure(f"{record} has no one first and one latest revision")
-                version = g.value(latest[0], REC.version)
-                records[record] = {
-                    "name": str(record), "folder": folder, "path": self.defined_in[record],
-                    "first": self.defined_in[first[0]], "arrived": str(g.value(first[0], PROV.generatedAtTime)),
-                    "version": str(version), "patient": g.value(version, REC.patient),
-                    "codes": {(p, o) for p in CODES for o in g.objects(version, p)},
-                    "vaccine": g.value(version, HEALTH.vaccineCode), "date": g.value(version, HEALTH.administrationDate),
-                }
+        for record in g.subjects(RDF.type, REC.Record):
+            revisions = set(g.subjects(REC.revisionOf, record))
+            followed = {o for r in revisions for o in g.objects(r, PROV.wasRevisionOf)}
+            first = [r for r in revisions if g.value(r, PROV.wasRevisionOf) is None]
+            latest = list(revisions - followed)
+            if len(first) != 1 or len(latest) != 1:
+                raise Failure(f"{record} has no one first and one latest revision")
+            version = g.value(latest[0], REC.version)
+            records[record] = {
+                "name": str(record), "kind": str(g.value(record, REC.kind)), "path": self.defined_in[record],
+                "first": self.defined_in[first[0]], "arrived": str(g.value(first[0], PROV.generatedAtTime)),
+                "version": str(version), "patient": g.value(version, REC.patient),
+                "codes": {(p, o) for p in CODES for o in g.objects(version, p)},
+                "vaccine": g.value(version, HEALTH.vaccineCode), "date": g.value(version, REC.date),
+            }
         return records
 
     def replaced(self, judgment):
@@ -168,7 +168,7 @@ class Matcher:
     def matches(self, rule, a, b):
         version = self.table_version(rule)
         table = self.references.table(version) if version else None
-        return a["folder"] == b["folder"] and a["folder"] in rule["applies_to"].split() and MATCHES[rule["rule"]](a, b, table)
+        return a["kind"] == b["kind"] and a["kind"] in rule["applies_to"].split() and MATCHES[rule["rule"]](a, b, table)
 
     def same(self, rule, members):
         applied = [self.rules_version] + ([self.table_version(rule)] if rule["table"] else [])
