@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "question.html" import block, question, term %}
-{% set COMPARED = ("pod/How many judgments count", "pod/My immunizations") %}
+{% set COMPARED = (asked.counted, asked.immunizations) %}
 {% block title %}How a view is built{% endblock %}
 
 {% macro added_table(added) %}
@@ -75,5 +75,5 @@ everything. These are the pod's only files the build writes, and each says it is
 {% endcall %}
 {% endfor %}
 <p>Every page of this site names a thing by the label the labels file gives it, read with this question.</p>
-{{ question(site.questions["pod/What everything is called"]) }}
+{{ question(site.questions[asked.called]) }}
 {% endblock %}

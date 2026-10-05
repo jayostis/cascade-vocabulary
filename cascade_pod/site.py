@@ -6,6 +6,7 @@ import os
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 import jinja2
 from rdflib import Literal, URIRef
@@ -19,8 +20,16 @@ ENGINE = "oxigraph"
 HERE = Path(__file__).absolute().parent
 STYLESHEET = "site.css"
 COPY = "pod/"
-STATED = "pod/Which file states each thing"
-CALLED = "pod/What everything is called"
+ASKED = SimpleNamespace(
+    folders="pod/What each folder holds",
+    views="pod/Which view lists each kind",
+    stated="pod/Which file states each thing",
+    called="pod/What everything is called",
+    counted="pod/How many judgments count",
+    immunizations="pod/My immunizations",
+    shown="entry/What it shows",
+    hidden="record/Why it is in no view",
+)
 CODE_SYSTEMS = {
     "http://snomed.info/sct/": "SNOMED CT",
     "http://www.nlm.nih.gov/research/umls/rxnorm/": "RxNorm",
@@ -78,7 +87,7 @@ class Query:
 def term_labels():
     terms = ENGINES[ENGINE]()
     vocabulary.load(terms)
-    _, rows = terms.answer(vocabulary.query(vocabulary.questions()[CALLED]))
+    _, rows = terms.answer(vocabulary.query(vocabulary.questions()[ASKED.called]))
     return {row["thing"]: row["label"] for row in rows}
 
 
@@ -90,7 +99,7 @@ class Site:
         self.answers = {lens: self.asked_under(lens) for lens in self.lenses}
         self.questions = self.answers[vocabulary.DEFAULT_LENS]
         self.terms = term_labels()
-        self.names = {row["thing"]: row["label"] for row in self.questions[CALLED].rows}
+        self.names = {row["thing"]: row["label"] for row in self.questions[ASKED.called].rows}
         self.things = self.things_with_pages()
         self.views = [self.iri(path) for path in example.view_files.values()]
         self.pipeline = {lens: self.steps_under(lens) for lens in self.lenses}
@@ -142,14 +151,14 @@ class Site:
     def files_arrived_in(self):
         """The copy of the first file each thing arrived in, for a thing a file states rather than only names."""
         found = {}
-        for row in self.questions[STATED].rows:
+        for row in self.questions[ASKED.stated].rows:
             if not row["named"].toPython() and not row["rebuilt"].toPython():
                 found.setdefault(row["thing"], self.copies[row["file"]])
         return found
 
     def about(self, thing, kind=None):
         """Which files state it, then each question of the kind, with only the rows about this one."""
-        asked = [self.questions[STATED].of("thing", thing)]
+        asked = [self.questions[ASKED.stated].of("thing", thing)]
         return asked + [q.of(kind, thing) for name, q in self.questions.items() if kind and name.startswith(kind + "/")]
 
     def environment(self):
@@ -160,7 +169,7 @@ class Site:
                                    prefixed=lambda iri: turtle.prefixed(str(iri)))
         environment.tests.update(iri=lambda term: isinstance(term, URIRef), literal=lambda term: isinstance(term, Literal))
         environment.globals.update(
-            site=self, example=self.example, terms=self.terms, copy=COPY, lens=vocabulary.DEFAULT_LENS,
+            site=self, example=self.example, terms=self.terms, copy=COPY, asked=ASKED, lens=vocabulary.DEFAULT_LENS,
             derived_graph=derive.DERIVED + vocabulary.DEFAULT_LENS,
             queries=vocabulary.QUERIES.relative_to(vocabulary.ROOT).as_posix(),
             folder=Path(os.path.relpath(self.example.folder, vocabulary.ROOT)).as_posix())
@@ -174,7 +183,7 @@ class Site:
 
         site = {"index.html": render("home.html", questions=self.questions),
                 "pipeline.html": render("pipeline.html"),
-                "not-shown.html": render("not-shown.html", hidden=self.questions["record/Why it is in no view"]),
+                "not-shown.html": render("not-shown.html", hidden=self.questions[ASKED.hidden]),
                 STYLESHEET: (HERE / STYLESHEET).read_bytes()}
         for view in self.views:
             site[page(view)] = render("view.html", view=view, questions=self.about(view))
