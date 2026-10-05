@@ -6,8 +6,7 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, XSD
 
-from cascade_pod.vocabulary import QUERIES
-from examples import ROOT
+from contract import QUERIES, ROOT
 
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
 SHAPES = [path for path in ONTOLOGIES if path.name.endswith(".shapes.ttl")]

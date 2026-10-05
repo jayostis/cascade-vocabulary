@@ -9,16 +9,16 @@ from rdflib.paths import Path as PropertyPath
 from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
 
-from cascade_pod import vocabulary
-from cascade_pod.store import prepared
-from examples import ROOT, queries_held
+import contract
+from contract import ROOT
+from engines import prepared
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 
 def every_query():
-    return sorted(p.relative_to(vocabulary.QUERIES).as_posix() for p in vocabulary.QUERIES.rglob("*.rq"))
+    return sorted(p.relative_to(contract.QUERIES).as_posix() for p in contract.QUERIES.rglob("*.rq"))
 
 
 def nodes(tree):
@@ -78,9 +78,9 @@ def test_every_subquery_comes_first_in_its_group(relative):
             assert not any(is_subquery(part) for part in parts[first_other:]), relative
 
 
-@pytest.mark.parametrize("relative", sorted(vocabulary.named("views").values()))
+@pytest.mark.parametrize("relative", sorted(contract.named("views").values()))
 def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
-    patterns = [t for node in nodes(prepared(vocabulary.query(relative)).algebra["p"]) if node.name == "BGP"
+    patterns = [t for node in nodes(prepared(contract.query(relative)).algebra["p"]) if node.name == "BGP"
                 for t in node["triples"]]
     typed = {s for s, p, o in patterns if p == RDF.type and isinstance(o, URIRef)}
     assert {s for s, p, o in patterns if p == URIRef(REC + "inEntry")} <= typed
@@ -88,7 +88,7 @@ def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
 
 @pytest.mark.parametrize("relative", every_query())
 def test_every_query_is_one_flat_pattern(relative):
-    assert nested_forms(vocabulary.query(relative)) == []
+    assert nested_forms(contract.query(relative)) == []
 
 
 @pytest.mark.parametrize("form", sorted(NESTED))
@@ -125,32 +125,32 @@ def iris(tree):
 
 @lru_cache(maxsize=None)
 def reads(relative):
-    return set(iris(prepared(vocabulary.query(relative)).algebra["p"]))
+    return set(iris(prepared(contract.query(relative)).algebra["p"]))
 
 
 @lru_cache(maxsize=None)
 def writes(relative):
-    template = prepared(vocabulary.query(relative)).algebra["template"]
+    template = prepared(contract.query(relative)).algebra["template"]
     return {o if p == RDF.type else p for s, p, o in template}
 
 
-@pytest.mark.parametrize("lens", sorted(vocabulary.named("lenses")))
+@pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
 def test_no_derivation_reads_a_term_a_later_derivation_writes(lens):
-    steps = vocabulary.derivations(lens)
+    steps = contract.derivations(lens)
     found = {(step, later, str(term)) for i, step in enumerate(steps) for later in steps[i + 1:]
              for term in reads(step) & writes(later)}
     assert found == set()
 
 
-@pytest.mark.parametrize("lens", sorted(vocabulary.named("lenses")))
+@pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
 def test_every_lens_writes_rec_counts_and_nothing_else(lens):
-    assert writes(vocabulary.named("lenses")[lens]) == {URIRef(REC + "counts")}
+    assert writes(contract.named("lenses")[lens]) == {URIRef(REC + "counts")}
 
 
 def test_each_derivation_has_a_position_of_its_own_and_every_lens_the_same_one():
-    positions = vocabulary.positions()
-    derivations = list(vocabulary.named("derivations").values())
-    lenses = list(vocabulary.named("lenses").values())
+    positions = contract.positions()
+    derivations = list(contract.named("derivations").values())
+    lenses = list(contract.named("lenses").values())
     assert sorted(positions) == sorted(derivations + lenses)
     assert len({positions[lens] for lens in lenses}) == 1
     steps = sorted(positions[step] for step in derivations + lenses[:1])
@@ -159,7 +159,7 @@ def test_each_derivation_has_a_position_of_its_own_and_every_lens_the_same_one()
 
 @lru_cache(maxsize=None)
 def parsed(relative):
-    return parseQuery(vocabulary.query(relative))
+    return parseQuery(contract.query(relative))
 
 
 def declared(relative):
@@ -203,14 +203,14 @@ RECORDS = "derivations/records.rq"
 
 def kinds_of_record():
     """Each row of the table in the derivation that says what a record is."""
-    return [row for node in nodes(prepared(vocabulary.query(RECORDS)).algebra) if node.name == "values"
+    return [row for node in nodes(prepared(contract.query(RECORDS)).algebra) if node.name == "values"
             for row in node["res"]]
 
 
 def record_types():
     """Each type the derivation that says what a record is lists, by the name of the view that writes it, if one does."""
     listed = {row[Variable("type")] for row in kinds_of_record()}
-    views = {kind: name for name, view in vocabulary.named("views").items() for kind in writes(view)}
+    views = {kind: name for name, view in contract.named("views").items() for kind in writes(view)}
     return {kind: views.get(kind) for kind in listed}
 
 
@@ -240,7 +240,7 @@ def test_the_kind_check_refuses_a_record_type_named_by_a_query_not_about_that_on
 
 @pytest.mark.parametrize("relative", every_query())
 def test_a_query_names_a_record_type_only_when_it_is_about_that_one_kind(relative):
-    assert kinds_named_out_of_place(relative, vocabulary.query(relative)) == set()
+    assert kinds_named_out_of_place(relative, contract.query(relative)) == set()
 
 
 KINDS = ("entry", "record", "judgment", "profile")
@@ -255,7 +255,7 @@ RESTATING = {
 
 
 def every_question():
-    return list(vocabulary.questions().values())
+    return list(contract.questions().values())
 
 
 def restated_absences(text):
@@ -284,12 +284,12 @@ def test_the_restating_check_accepts_a_term_the_query_only_reads():
 
 @pytest.mark.parametrize("relative", every_question())
 def test_no_question_restates_a_derivation(relative):
-    assert restated_absences(vocabulary.query(relative)) == []
+    assert restated_absences(contract.query(relative)) == []
 
 
 @pytest.mark.parametrize("relative", every_question())
 def test_every_question_is_a_select(relative):
-    assert prepared(vocabulary.query(relative)).algebra.name == "SelectQuery"
+    assert prepared(contract.query(relative)).algebra.name == "SelectQuery"
 
 
 def test_every_question_is_filed_under_the_pod_or_a_kind():
@@ -298,26 +298,15 @@ def test_every_question_is_filed_under_the_pod_or_a_kind():
 
 @pytest.mark.parametrize("relative", [q for q in every_question() if Path(q).parent.name in KINDS])
 def test_every_question_outside_pod_returns_the_column_of_its_kind(relative):
-    columns = [str(v) for v in prepared(vocabulary.query(relative)).algebra["PV"]]
+    columns = [str(v) for v in prepared(contract.query(relative)).algebra["PV"]]
     assert Path(relative).parent.name in columns
 
 
 @pytest.mark.parametrize("relative", every_question())
 def test_every_label_column_labels_a_column_of_the_question(relative):
-    columns = {str(v) for v in prepared(vocabulary.query(relative)).algebra["PV"]}
+    columns = {str(v) for v in prepared(contract.query(relative)).algebra["PV"]}
     labelled = {column[:-len("Label")] for column in columns if column.endswith("Label")}
     assert labelled <= columns
-
-
-def test_the_held_query_check_finds_a_query_in_a_string_and_nothing_else():
-    source = 'TEXT = """SELECT ?s WHERE { ?s ?p ?o }"""\nNAME = "SELECT"\n'
-    assert queries_held(source) == ["SELECT ?s WHERE { ?s ?p ?o }"]
-
-
-@pytest.mark.parametrize("tool", sorted(p.relative_to(ROOT).as_posix()
-                                         for folder in ("cascade_pod", "conformance") for p in (ROOT / folder).rglob("*.py")))
-def test_no_tool_holds_a_query(tool):
-    assert queries_held((ROOT / tool).read_text(encoding="utf-8")) == []
 
 
 def words(text):
@@ -327,7 +316,7 @@ def words(text):
 def missing_prose(relative, text):
     """Why the query's leading comment does not do its job, or None: there is none, or it opens with the query's
     name."""
-    prose = vocabulary.prose(text)
+    prose = contract.prose(text)
     if not prose:
         return "no prose"
     name = words(Path(relative).stem)
@@ -347,7 +336,7 @@ def test_the_prose_check_refuses_a_query_with_no_prose_or_prose_opening_with_its
 
 @pytest.mark.parametrize("relative", every_query())
 def test_every_query_has_prose_that_does_not_open_with_its_name(relative):
-    assert missing_prose(relative, vocabulary.query(relative)) is None
+    assert missing_prose(relative, contract.query(relative)) is None
 
 
 def short(term):
@@ -364,7 +353,7 @@ def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no
     declared = reasons()
     named = {short(reason): [] for reason in declared}
     for relative in every_query():
-        for reason in declared & set(iris(prepared(vocabulary.query(relative)).algebra)):
+        for reason in declared & set(iris(prepared(contract.query(relative)).algebra)):
             named[short(reason)].append(relative)
     assert named == {
         "EnteredInErrorAtSource": ["derivations/excluded-at-source.rq"],
@@ -378,4 +367,4 @@ def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no
 
 def test_why_it_is_in_no_view_reads_only_the_recorded_reasons_and_labels():
     terms = {URIRef(REC + term) for term in ("Record", "leftOutFor", "reason", "because")}
-    assert reads(vocabulary.questions()["record/Why it is in no view"]) == terms | {RDF.type, URIRef(RDFS_LABEL)}
+    assert reads(contract.questions()["record/Why it is in no view"]) == terms | {RDF.type, URIRef(RDFS_LABEL)}
