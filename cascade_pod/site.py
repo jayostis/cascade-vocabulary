@@ -12,7 +12,7 @@ from rdflib import Literal, URIRef
 from rdflib.namespace import RDF, XSD
 
 from . import derive, names, turtle, vocabulary
-from .pod import FOLDERS, LABEL_FILE, save
+from .pod import LAYOUT, save
 from .store import ENGINES
 
 ENGINE = "oxigraph"
@@ -118,11 +118,9 @@ class Site:
         return [(Query(relative), added) for relative, added in self.builds[lens].derived.added_by_step.items()]
 
     def view_files(self):
-        views = vocabulary.named("views")
-        writers = {path: views[view] for view, path in self.example.view_files.items()} | {LABEL_FILE: "labels.rq"}
         held = self.builds[vocabulary.DEFAULT_LENS].store
         return {self.iri(path): (Query(relative), len(held.triples(self.example.address + path)))
-                for path, relative in writers.items()}
+                for path, relative in LAYOUT.built.items()}
 
     def href(self, iri):
         preferred = (self.copies, self.pages, self.step_writing, self.stored_bytes, self.turtles)
@@ -137,7 +135,7 @@ class Site:
 
     def documents_stored(self):
         return {URIRef(names.document((self.example.pod / path).read_bytes())): COPY + path
-                for path in self.copied if path.startswith(FOLDERS["attachments"])}
+                for path in self.copied if path.startswith(LAYOUT.stored_bytes.folder)}
 
     def files_arrived_in(self):
         """The copy of the first file each thing arrived in, for a thing a file states rather than only names."""

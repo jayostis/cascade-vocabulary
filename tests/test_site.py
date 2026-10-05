@@ -16,13 +16,14 @@ from rdflib.namespace import XSD
 
 from cascade_pod import graphdb, site, turtle, vocabulary
 from cascade_pod.example import Example
-from cascade_pod.pod import LABEL_FILE, TYPE_INDEX, fanned, save, stem
+from cascade_pod.pod import LAYOUT, save, stem
 from examples import EXAMPLES, ROOT, pod_file, queries_held
 from fake_graphdb import GraphDB
 
 MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
 REVISION_OF = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#revisionOf")
 DERIVED_FROM = URIRef("http://www.w3.org/ns/prov#wasDerivedFrom")
+DOCUMENT = URIRef("http://www.w3.org/ns/prov#Entity")
 
 
 class Page(HTMLParser):
@@ -196,7 +197,7 @@ def stored_documents(example, record, graph):
     """The copy of each stored document a revision of the record was derived from, and of the Turtle describing it."""
     documents = {d for revision in graph.subjects(REVISION_OF, record) for d in graph.objects(revision, DERIVED_FROM)}
     return {path for d in documents if (example.pod / "attachments" / "sha-256" / stem(str(d))).is_file()
-            for path in (f"pod/attachments/sha-256/{stem(str(d))}", "pod/" + fanned("provenance/documents", str(d)))}
+            for path in (f"pod/attachments/sha-256/{stem(str(d))}", "pod/" + LAYOUT.place(DOCUMENT).path(d))}
 
 
 def test_an_entrys_page_reaches_each_members_source_file_and_its_turtle_by_links_alone(example, pages):
@@ -299,16 +300,13 @@ TINY = """
 
 
 def tiny(tmp_path, turtle_text, thing="urn:x:record"):
-    """The blocks on the thing's page, in the site of a pod built from the owner's profile, an empty type index and these
-    statements."""
+    """The blocks on the thing's page, in the site of a pod built from the owner's profile and these statements."""
     folder = tmp_path / "tiny"
-    files = {"profile/card.ttl": "<#me> <http://www.w3.org/ns/pim/space#storage> </> .\n", TYPE_INDEX: "",
-             "data.ttl": TINY + turtle_text}
+    files = {"profile/card.ttl": "<#me> <http://www.w3.org/ns/pim/space#storage> </> .\n", "data.ttl": TINY + turtle_text}
     for path, text in files.items():
         (folder / "pod" / path).parent.mkdir(parents=True, exist_ok=True)
         (folder / "pod" / path).write_text(text, encoding="utf-8")
-    derived = [LABEL_FILE, "index.ttl", "manifest.ttl"]
-    story = {"address": "https://pod.example/", "derived": derived,
+    story = {"address": "https://pod.example/", "derived": LAYOUT.derived,
              "events": [{"event": "E1", "at": "2027-01-01T00:00:00Z", "adds": sorted(files)}]}
     (folder / "events.json").write_text(json.dumps(story), encoding="utf-8")
     (folder / "ro-crate-metadata.json").write_text(json.dumps({"@graph": [{"@id": "./", "name": "Tiny"}]}), encoding="utf-8")

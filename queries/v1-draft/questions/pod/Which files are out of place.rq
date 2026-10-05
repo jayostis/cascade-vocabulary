@@ -1,0 +1,61 @@
+# A file is out of place when it holds a thing that the pod's layout, read beside it with the pod's root as its base, files
+# somewhere else. A thing that states the property an entry files with goes in the folder of that property's value; else an
+# entry for its class narrowed to the things that state a property places it; else an entry for its class alone. A file that
+# says it is a view is checked only against the entries at or under the views folder, and every other file only against the
+# rest. A folder's fan-out is how many leading characters of a file's name make the subfolder it is in. A file holding nothing
+# the layout places is never out of place, and the stored documents, which are not RDF, are not seen here.
+# Only the layout's own placements are read, never a type registration a pod holds.
+# Each row is a file, a thing in it, and the file or folder the layout gives that thing.
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX solid: <http://www.w3.org/ns/solid/terms#>
+
+SELECT ?file ?thing ?place
+WHERE {
+  { SELECT DISTINCT ?file ?thing ?place ?isFile ?fanOut
+    WHERE {
+      { GRAPH ?file { ?thing ?with ?value }
+        ?entry a rec:Placement ; rec:filedWith ?with .
+        OPTIONAL { ?entry rec:fanOut ?fanOut }
+        ?value a ?valueClass .
+        ?valueEntry a rec:Placement ; solid:forClass ?valueClass ; solid:instanceContainer ?place .
+        ?views a rec:Placement ; solid:forClass rec:View ; solid:instanceContainer ?viewsFolder .
+        FILTER (isIRI(?thing) && !STRSTARTS(STR(?place), STR(?viewsFolder)))
+        FILTER NOT EXISTS { ?valueEntry rec:forSubjectsOf ?narrowing }
+        FILTER NOT EXISTS { ?file a rec:View }
+        BIND (false AS ?isFile) }
+      UNION
+      { GRAPH ?file { ?thing a ?class ; ?narrowing ?anything }
+        ?entry a rec:Placement ; solid:forClass ?class ; rec:forSubjectsOf ?narrowing .
+        OPTIONAL { ?entry solid:instance ?instance }
+        OPTIONAL { ?entry solid:instanceContainer ?folder }
+        OPTIONAL { ?entry rec:fanOut ?fanOut }
+        BIND (COALESCE(?instance, ?folder) AS ?place)
+        BIND (BOUND(?instance) AS ?isFile)
+        FILTER (isIRI(?thing) && BOUND(?place))
+        FILTER NOT EXISTS { ?file a rec:View }
+        FILTER NOT EXISTS { ?filing a rec:Placement ; rec:filedWith ?with . ?thing ?with [] } }
+      UNION
+      { GRAPH ?file { ?thing a ?class }
+        ?entry a rec:Placement ; solid:forClass ?class .
+        ?views a rec:Placement ; solid:forClass rec:View ; solid:instanceContainer ?viewsFolder .
+        OPTIONAL { ?entry solid:instance ?instance }
+        OPTIONAL { ?entry solid:instanceContainer ?folder }
+        OPTIONAL { ?entry rec:fanOut ?fanOut }
+        BIND (COALESCE(?instance, ?folder) AS ?place)
+        BIND (BOUND(?instance) AS ?isFile)
+        FILTER (isIRI(?thing) && BOUND(?place))
+        FILTER (STRSTARTS(STR(?place), STR(?viewsFolder)) = EXISTS { ?file a rec:View })
+        FILTER NOT EXISTS { ?entry rec:forSubjectsOf ?narrowing }
+        FILTER NOT EXISTS { ?filing a rec:Placement ; rec:filedWith ?with . ?thing ?with [] }
+        FILTER NOT EXISTS { ?narrowed a rec:Placement ; solid:forClass ?class ; rec:forSubjectsOf ?stated .
+                            ?thing ?stated [] } }
+    } }
+  BIND (STRAFTER(STR(?file), STR(?place)) AS ?rest)
+  BIND (STRBEFORE(?rest, "/") AS ?fan)
+  FILTER (IF(?isFile, ?file != ?place,
+             !STRSTARTS(STR(?file), STR(?place))
+             || IF(BOUND(?fanOut),
+                   STRLEN(?fan) != ?fanOut || !STRSTARTS(STRAFTER(?rest, "/"), ?fan) || CONTAINS(STRAFTER(?rest, "/"), "/"),
+                   CONTAINS(?rest, "/"))))
+}
+ORDER BY ?file ?thing ?place

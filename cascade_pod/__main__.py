@@ -25,7 +25,7 @@ def parser():
     matching.add_argument("--takes")
     matching.add_argument("--at", required=True)
     matching.add_argument("--out", type=Path, required=True)
-    build = command("build", "writes the views, the labels, index.ttl and manifest.ttl",
+    build = command("build", "writes the views, the labels, the type index and the manifest",
                     lambda example, a: save(example.derived_turtle(a.engine), a.out or example.pod))
     build.add_argument("--engine", choices=sorted(ENGINES), required=True)
     build.add_argument("--out", type=Path)

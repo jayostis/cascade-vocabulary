@@ -7,6 +7,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix solid: <http://www.w3.org/ns/solid/terms#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://ns.cascadeprotocol.org/records/v1-draft#> a owl:Ontology .
@@ -166,6 +167,53 @@ rec:topCriticality a owl:DatatypeProperty ;
     rdfs:label "top criticality"@en ;
     rdfs:comment "Derived: the most severe criticality a member states."@en ;
     rdfs:range xsd:string .
+
+rec:Placement a owl:Class ;
+    rdfs:label "placement"@en ;
+    rdfs:comment "One entry of a pod's layout: where a runtime files things. It names a file (solid:instance), a folder (solid:instanceContainer), or the property whose value's folder the thing goes in (rec:filedWith). A thing is placed by rec:filedWith first, then by an entry whose rec:forSubjectsOf it states, then by its solid:forClass alone; a file that says it is a rec:View is placed only by the entries at or under the views folder."@en .
+
+rec:fanOut a owl:DatatypeProperty ;
+    rdfs:label "fan-out"@en ;
+    rdfs:comment "How many leading characters of a file's name make the subfolder of the placement's folder it is filed in."@en ;
+    rdfs:domain rec:Placement ;
+    rdfs:range xsd:integer .
+
+rec:filedWith a owl:ObjectProperty ;
+    rdfs:label "filed with"@en ;
+    rdfs:comment "The property whose value is filed in the folder the thing goes in, when the thing states it."@en ;
+    rdfs:domain rec:Placement .
+
+rec:forSubjectsOf a owl:ObjectProperty ;
+    rdfs:label "for subjects of"@en ;
+    rdfs:comment "Narrows the placement's class to the things that state this property."@en ;
+    rdfs:domain rec:Placement .
+
+rec:writtenBy a owl:DatatypeProperty ;
+    rdfs:label "written by"@en ;
+    rdfs:comment "The path under queries/v1-draft/ of the query that writes the placement's file."@en ;
+    rdfs:domain rec:Placement ;
+    rdfs:range xsd:string .
+
+rec:storesBytes a owl:DatatypeProperty ;
+    rdfs:label "stores bytes"@en ;
+    rdfs:comment "Whether the placement's folder holds documents' own bytes, each file named by the SHA-256 of its bytes in lowercase hex, rather than RDF."@en ;
+    rdfs:domain rec:Placement ;
+    rdfs:range xsd:boolean .
+
+solid:forClass a rdf:Property ;
+    rdfs:label "registry class"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
+    dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> .
+
+solid:instance a rdf:Property ;
+    rdfs:label "instance"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
+    dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> .
+
+solid:instanceContainer a rdf:Property ;
+    rdfs:label "instance container"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
+    dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> .
 
 # Test terms, used with W3C's mf: test-manifest vocabulary
 

@@ -19,8 +19,9 @@ Relative IRIs resolve against the manifest's own location.
   written, and an ASK only where rows would be forced.
 - **The query runs over the pod as it stood after that step.** Each file is a named graph, named by the pod's address
   plus its path. The lens's derived state is the graph `urn:cascade:derived:<lens>`, and the files built from that
-  state, the views, the labels, `index.ttl` and `manifest.ttl`, are graphs too. The default graph is the union of all
-  of these.
+  state, the views, the labels, the type index and `manifest.ttl`, are graphs too. The pod's layout,
+  [`pod-layout.ttl`](pod-layout.ttl) read with the pod's address as its base, is the graph `urn:cascade:pod-layout`.
+  The default graph is the union of all of these.
 - **One more graph, `urn:cascade:steps`,** lists what each step wrote, up to and including the one replayed to:
   `<urn:cascade:step:<name>> prov:generated <file IRI>`. It lists only files that were new to the pod, `attachments/`
   included. It is not part of the default graph.
@@ -121,7 +122,7 @@ No vector shows this rule, because what the Bridge is given never reaches the po
 ### N9. A file's name comes from the name of what it holds
 
 For a `urn:uuid:` name, the UUID; for an `ni:///sha-256;` name, the hash in lowercase hex. An RDF file adds `.ttl`; a
-stored document adds nothing. The folder and the fan-out are the layout's.
+stored document adds nothing. The folder and the fan-out are the layout's, [`pod-layout.ttl`](pod-layout.ttl).
 
 Every vector shows this rule, because each graph is named by its file's path. Vectors: `files-named-from-what-they-hold`.
 Planted cases: all.
@@ -195,16 +196,21 @@ Vectors: `entry-files-each-draft`. Planted cases: P16.
 
 ### A13. The pod's creation writes the subject as a `rec:Subject`
 
+With it, the owner's profile, saying only who the owner is, where the pod's root is and where the preferences file is,
+and the preferences file, saying only that it is one and where the owner's type index is. The build writes the type
+index, from the views in the layout.
+
 Vectors: `creation-files-the-subject`. Planted cases: none.
 
 ### A14. Some steps are refused, and a refused step writes no revision and no import
 
 Refused are: a graph holding a statement about no record, version, arrival, document or import; a record or draft of a
-type the pod files nowhere; one import's documents disagreeing on the import's description; and an entry holding other
-than one activity.
+type the pod files nowhere; one import's documents disagreeing on the import's description; an entry holding other
+than one activity; and an entry whose activity states a property by which [the layout](pod-layout.ttl) files an
+activity elsewhere than an entry's.
 
 Vectors: `refused-stray-statement`, `refused-type-filed-nowhere`, `refused-import-disagreement`,
-`refused-entry-of-two-activities`. Planted cases: none.
+`refused-entry-of-two-activities`, `refused-entry-session-filed-elsewhere`. Planted cases: none.
 
 ## The matcher's procedure
 
