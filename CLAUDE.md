@@ -14,9 +14,8 @@ The contract a Cascade pod is built and read by; [`README.md`](README.md) names 
   content is required, because a source may omit any of it.
 - **Each question is asked once.** Before adding one, look under its kind for the question that
   already returns those rows.
-- **`conformance/*/expected/` and `cases/` come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,
-  and a vector's expected rows under `runtime/vectors/` from [`runtime/rules.md`](runtime/rules.md), never from a
-  runtime's output.
+- **A kit's `expected/` and its examples come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,
+  and a rule's examples under `runtime/` from the rule they sit under, never from a runtime's output.
 - **A query is tested on fixtures under [`tests/fixtures/`](tests/fixtures), one per behaviour, never on an
   example.** Its expected rows are written from what the query says it does. A check true of any pod runs over every
   fixture, with `every_fixture` from [`tests/pods.py`](tests/pods.py).
