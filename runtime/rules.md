@@ -239,7 +239,7 @@ name and no list of steps. A record of the subject's with no one first revision 
 
 No vector can tell this from taking the records whose first revision's file the step wrote, since in a pod that follows
 these rules the two always agree; `test_the_matcher_needs_no_file_names_or_event_list` in
-[`tests/test_library_matcher.py`](../tests/test_library_matcher.py) shows the matcher reading triples alone.
+[`tests/test_alex_rivera_matcher.py`](../tests/test_alex_rivera_matcher.py) shows the matcher reading triples alone.
 
 Vectors: `takes-only-its-steps-records`. Planted cases: P1, P7.
 
