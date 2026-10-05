@@ -1,9 +1,0 @@
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-
-SELECT ?subject ?field ?value WHERE {
-  <urn:uuid:a17e1a0b-8e2e-89e6-98ec-b244ea59ca27> rec:subject ?subject .
-  GRAPH <https://pod.alex-rivera.example/clinical/allergies.ttl> { ?entry cascade:mergedFrom <urn:uuid:a17e1a0b-8e2e-89e6-98ec-b244ea59ca27> ; ?field ?value }
-  FILTER (?field IN (clinical:criticality, clinical:status, rec:statusFrom))
-}

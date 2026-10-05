@@ -1,9 +1,0 @@
-PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-
-SELECT ?step ?thing WHERE {
-  GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
-  { GRAPH ?file { ?thing a rec:ReferenceSeries } }
-  UNION
-  { GRAPH ?file { ?thing prov:specializationOf ?series } ?series a rec:ReferenceSeries }
-}

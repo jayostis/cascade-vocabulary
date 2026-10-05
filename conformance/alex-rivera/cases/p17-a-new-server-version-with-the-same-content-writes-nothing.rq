@@ -1,8 +1,0 @@
-PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-
-SELECT ?step ?file WHERE {
-  VALUES ?step { <urn:cascade:step:E6> <urn:cascade:step:E15> }
-  GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
-  GRAPH ?file { { ?thing prov:specializationOf <urn:uuid:17010d8c-e1a5-89e5-8db2-df06153509b9> } UNION { ?thing rec:revisionOf <urn:uuid:17010d8c-e1a5-89e5-8db2-df06153509b9> } }
-}

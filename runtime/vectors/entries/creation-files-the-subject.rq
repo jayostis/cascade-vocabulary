@@ -1,7 +1,0 @@
-PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-
-SELECT ?subject WHERE {
-  GRAPH <urn:cascade:steps> { <urn:cascade:step:create> prov:generated ?file }
-  GRAPH ?file { ?subject a rec:Subject }
-}

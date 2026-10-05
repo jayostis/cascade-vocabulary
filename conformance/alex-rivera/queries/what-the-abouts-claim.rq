@@ -1,0 +1,4 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?member WHERE { ?about jdg:verdict jdg:About ; prov:hadMember ?member }

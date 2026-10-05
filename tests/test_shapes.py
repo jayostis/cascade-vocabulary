@@ -168,7 +168,7 @@ def test_every_subject_of_a_kind_the_shapes_cover_in_a_fixture_or_a_valid_case_i
 def written():
     yield from (fixture.folder / relative for fixture in FIXTURES for relative in fixture.files())
     yield from (file for file, expected in cases().values() if not expected)
-    yield from ROOT.glob("runtime/vectors/*/scripted-input/**/*.ttl")
+    yield from (ROOT / "runtime" / "scripted-input").rglob("*.ttl")
     yield from (KIT / "scripted-input").rglob("*.ttl")
     yield from (KIT / "expected").glob("*.ttl")
 

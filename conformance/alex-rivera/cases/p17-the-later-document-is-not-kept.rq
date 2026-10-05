@@ -1,7 +1,0 @@
-PREFIX prov: <http://www.w3.org/ns/prov#>
-
-SELECT ?step ?predicate WHERE {
-  { <ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> ?predicate ?value }
-  UNION
-  { GRAPH <urn:cascade:steps> { ?step prov:generated <https://pod.alex-rivera.example/attachments/sha-256/8bd2d143b861fdd674274d480bd680a6ecc1d852121b85d4732029fabfc02f5f> } }
-}

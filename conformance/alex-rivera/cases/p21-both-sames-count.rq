@@ -1,8 +1,0 @@
-PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-
-SELECT ?judgment ?counts WHERE {
-  VALUES ?judgment { <urn:uuid:645189bb-70bf-456d-ac1a-79ff66c02105> <urn:uuid:8a055107-e7f1-8093-b543-1c626271dc1a> }
-  ?judgment a jdg:Judgment .
-  BIND (EXISTS { ?judgment rec:counts true } AS ?counts)
-}

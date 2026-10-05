@@ -1,0 +1,12 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?justification WHERE {
+  GRAPH <https://pod.alex-rivera.example/clinical/immunizations.ttl> {
+    ?entry cascade:mergedFrom ?member , ?other FILTER (?member != ?other)
+  }
+  ?same rec:counts true ; jdg:verdict jdg:Same ; jdg:justification ?justification ;
+        prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
+}

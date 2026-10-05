@@ -1,6 +1,0 @@
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-
-SELECT ?record ?member WHERE {
-  VALUES ?record { <urn:uuid:21420ba9-f9c4-894f-971e-809d67e56daf> <urn:uuid:675129a5-0988-86e9-b7cc-dd37a75bab3a> }
-  GRAPH <https://pod.alex-rivera.example/clinical/allergies.ttl> { ?entry cascade:mergedFrom ?record , ?member }
-}

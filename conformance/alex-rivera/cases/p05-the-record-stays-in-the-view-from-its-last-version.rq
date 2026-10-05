@@ -1,7 +1,0 @@
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX pav: <http://purl.org/pav/>
-
-SELECT ?version ?member WHERE {
-  <urn:uuid:6477b340-8fb7-8d62-a24a-b8520e30f0d5> pav:hasCurrentVersion ?version .
-  GRAPH <https://pod.alex-rivera.example/clinical/allergies.ttl> { ?entry cascade:mergedFrom <urn:uuid:6477b340-8fb7-8d62-a24a-b8520e30f0d5> , ?member }
-}

@@ -1,8 +1,0 @@
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX pav: <http://purl.org/pav/>
-
-SELECT ?member ?criticality ?shown WHERE {
-  GRAPH <https://pod.alex-rivera.example/clinical/allergies.ttl> { ?entry cascade:mergedFrom <urn:uuid:58507165-cd9a-815a-9b90-bc53e0468cc2> , ?member ; clinical:criticality ?shown }
-  ?member pav:hasCurrentVersion/clinical:criticality ?criticality .
-}

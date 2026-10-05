@@ -1,5 +1,0 @@
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-
-SELECT ?field ?value WHERE {
-  GRAPH <https://pod.alex-rivera.example/clinical/patient-profile.ttl> { ?entry ?field ?value FILTER EXISTS { ?entry cascade:mergedFrom ?member } }
-}

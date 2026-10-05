@@ -1,6 +1,0 @@
-PREFIX prov: <http://www.w3.org/ns/prov#>
-
-SELECT ?record ?version ?influence WHERE {
-  ?version prov:specializationOf ?record .
-  OPTIONAL { ?version prov:wasInfluencedBy ?influence }
-}
