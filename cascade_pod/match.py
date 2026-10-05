@@ -1,4 +1,4 @@
-"""The Cascade matcher: writes a Same wherever one of its four rules joins two records."""
+"""The Cascade matcher: writes a Same wherever one of its rules joins two records."""
 
 import csv
 import json
@@ -36,8 +36,6 @@ def version_triples(series, version):
             (named, PAV.version, Literal(version["version"])), *((named, PROV.wasRevisionOf, URIRef(r)) for r in revises)}
 
 
-# What the matcher knows: the example's references and their tables
-
 class References:
     def __init__(self, folder):
         self.folder = folder
@@ -61,8 +59,6 @@ class References:
             raise Failure(f"the pod holds no one current version the matcher knows of {series['label']}")
         return self.versions[current[0]][1]
 
-
-# The pod through one event
 
 class Reading:
     def __init__(self, example, read_through):
@@ -113,8 +109,6 @@ class Reading:
         return (URIRef(name), None, None) in self.graph
 
 
-# The four rules
-
 def same_code(a, b, _):
     return bool(a["codes"] & b["codes"])
 
@@ -125,7 +119,7 @@ def same_code_and_date(a, b, _):
 
 def mapped_code(a, b, table):
     pairs = {(row["snomed"], row["rxnorm"]) for row in table}
-    codes = [{str(o) for p, o in r["codes"] if p == CODES[0]} for r in (a, b)]
+    codes = [{str(o) for p, o in r["codes"] if p == HEALTH.allergenCode} for r in (a, b)]
     return any((s, x) in pairs or (x, s) in pairs
                for s in codes[0] for x in codes[1]
                if (s.startswith(SNOMED) and x.startswith(RXNORM)) or (s.startswith(RXNORM) and x.startswith(SNOMED)))
@@ -149,28 +143,26 @@ class Matcher:
         self.rules = self.references.table(self.rules_version)
         if sorted(r["rule"] for r in self.rules) != sorted(MATCHES):
             raise Failure(f"rule set {self.rules_version['version']} names rules this matcher does not apply")
+        self.table_versions = {r["rule"]: self.references.current(r["table"], reading) for r in self.rules if r["table"]}
+        self.tables = {rule: self.references.table(version) for rule, version in self.table_versions.items()}
         self.files = {}
 
     def file(self, folder, name, triples):
         path = fanned(folder, name)
         self.files[path] = turtle.write(triples, self.reading.example.address + path)
 
-    def table_version(self, rule):
-        return self.references.current(rule["table"], self.reading) if rule["table"] else None
-
     def matches(self, rule, a, b):
-        version = self.table_version(rule)
-        table = self.references.table(version) if version else None
-        return a["kind"] == b["kind"] and a["kind"] in rule["applies_to"].split() and MATCHES[rule["rule"]](a, b, table)
+        return (a["kind"] == b["kind"] and a["kind"] in rule["applies_to"].split()
+                and MATCHES[rule["rule"]](a, b, self.tables.get(rule["rule"])))
 
     def same(self, rule, members):
-        applied = [self.rules_version] + ([self.table_version(rule)] if rule["table"] else [])
+        applied = [self.rules_version] + ([self.table_versions[rule["rule"]]] if rule["table"] else [])
         used = sorted({v["name"] for v in applied} | {m["version"] for m in members})
         justification = JDG[rule["justification"]]
         member_names = sorted(m["name"] for m in members)
         name = names.record([str(MATCHER), str(justification), *member_names, *used])
-        self.file(FOLDERS["judgments"], name, judgment(name, at=self.at, members=member_names, justification=justification,
-                                              used=used))
+        self.file(FOLDERS["judgments"], name,
+                  judgment(name, at=self.at, members=member_names, justification=justification, used=used))
         for version in applied:
             series, _ = self.references.versions[version["name"]]
             for thing, triples in ((series, series_triples(series)), (version, version_triples(series, version))):
