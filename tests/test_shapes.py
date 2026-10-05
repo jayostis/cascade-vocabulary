@@ -5,7 +5,7 @@ as the node shape that reported it, directly or through one of its properties, a
 from functools import cache
 
 from pyshacl import validate
-from rdflib import Graph, Namespace, URIRef
+from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
@@ -89,6 +89,10 @@ def reported():
 
 def test_each_valid_case_conforms_and_each_break_reports_its_shape_and_path_and_nothing_else():
     assert {file for file in CASES.rglob("*.ttl") if file.name != "manifest.ttl"} == {f for f, _ in cases().values()}
+    manifest = parsed(CASES / "manifest.ttl")
+    conforms = {str(entry).rpartition("#")[2]: manifest.value(manifest.value(entry, MF.result), SH.conforms)
+                for entry in manifest.subjects(RDF.type, SHT.Validate)}
+    assert sorted(name for name, (_, expected) in cases().items() if conforms[name] != Literal(not expected)) == []
     wrong = {name: {"expected": sorted(map(str, expected)), "reported": sorted(map(str, reported()[name]))}
              for name, (_, expected) in cases().items() if reported()[name] != expected}
     assert wrong == {}
