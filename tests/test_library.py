@@ -11,7 +11,7 @@ from rdflib.compare import to_isomorphic
 from rdflib.namespace import XSD
 
 from cascade_pod import Failure, ask, derive, site, store, turtle, vocabulary
-from cascade_pod.pod import Example
+from cascade_pod.example import Example
 from examples import EXAMPLES, ROOT, every_example
 
 RECOMPUTED_SHA256 = "409b3dd5420a1a6f9707c802fa1bd7ed26e4d0c98119519968faa698344608f3"
@@ -32,7 +32,7 @@ def test_a_triple_stated_in_two_files_is_counted_once_by_a_query_over_the_defaul
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))
 @every_example
 def test_ask_prints_the_rows_the_builders_store_returns(example, engine):
-    held = example.store(engine, vocabulary.DEFAULT_LENS)
+    held = example.build(engine, vocabulary.DEFAULT_LENS).store
     question, rows = next((name, rows) for name, relative in sorted(vocabulary.questions().items())
                           for rows in [held.select(vocabulary.query(relative))] if rows)
     result = subprocess.run([sys.executable, "-m", "cascade_pod", "ask", str(example.folder), question, "--engine", engine],
@@ -86,7 +86,7 @@ def test_an_unknown_lens_is_refused_by_name_without_a_traceback():
 @every_example
 def test_a_store_holding_the_pod_holds_nothing_of_the_vocabularys(example, engine):
     terms = {subject for path in vocabulary.ontologies().values() for subject in store.parsed(path).subjects()}
-    held = example.store(engine, vocabulary.DEFAULT_LENS)
+    held = example.build(engine, vocabulary.DEFAULT_LENS).store
     assert {triple[0] for triple in held.triples()} & terms == set()
     assert not set(held.graphs()) & set(vocabulary.ontologies())
 
@@ -109,9 +109,9 @@ def test_recomputed_py_less_its_first_line_is_the_source_file_at_the_commit_it_n
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))
 @every_example
 def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_pods_own(example, engine, lens):
-    held = example.loaded(engine)
+    held = example.story_store(engine)
     pod = held.triples()
-    derived = derive.derive(held, lens)
+    derived = derive.derive(held, lens).triples
     assert derived and derived.isdisjoint(pod)
     assert held.triples() == pod | derived
 
@@ -119,7 +119,7 @@ def test_the_derived_state_is_every_triple_the_derivations_add_and_none_of_the_p
 @every_example
 def test_a_shacl_validation_in_the_same_process_changes_no_term_the_store_gives_and_no_byte_of_the_site(example):
     def made():
-        return ({engine: to_isomorphic(graph_of(example.store(engine, vocabulary.DEFAULT_LENS).triples()))
+        return ({engine: to_isomorphic(graph_of(example.build(engine, vocabulary.DEFAULT_LENS).store.triples()))
                  for engine in sorted(store.ENGINES)},
                 site.Site(example).files())
 

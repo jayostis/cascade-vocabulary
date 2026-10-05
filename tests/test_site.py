@@ -15,11 +15,10 @@ from rdflib import Literal, URIRef
 from rdflib.namespace import XSD
 
 from cascade_pod import graphdb, site, turtle, vocabulary
-from cascade_pod.derived_files import LABEL_FILE
-from cascade_pod.pod import TYPE_INDEX, Example, fanned, save, stem
-from examples import EXAMPLES, ROOT, pod_file
-from test_library_graphdb import GraphDB
-from test_queries import queries_held
+from cascade_pod.example import Example
+from cascade_pod.pod import LABEL_FILE, TYPE_INDEX, fanned, save, stem
+from examples import EXAMPLES, ROOT, pod_file, queries_held
+from fake_graphdb import GraphDB
 
 MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
 REVISION_OF = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#revisionOf")
@@ -201,7 +200,7 @@ def stored_documents(example, record, graph):
 
 
 def test_an_entrys_page_reaches_each_members_source_file_and_its_turtle_by_links_alone(example, pages):
-    graph = example.loaded("rdflib").graph()
+    graph = example.story_store("rdflib").graph()
     walked = entries_and_members(example)
     unreached = []
     for entry, member in walked:

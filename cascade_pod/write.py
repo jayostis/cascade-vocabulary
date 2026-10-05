@@ -8,15 +8,14 @@ from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
 
-from rdflib import BNode, Literal, Namespace, URIRef
-from rdflib.namespace import RDF, XSD
+from rdflib import BNode, URIRef
+from rdflib.namespace import RDF
 
 from . import Failure, apple_health, names, store, turtle
-from .pod import fanned, save, stem
+from .pod import FOLDERS, OWNED_POD_FOLDERS, attachment, fanned, save
+from .turtle import BRIDGE, PAV, PROV, REC
 
-BRIDGE, PAV, PROV, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rec"))
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
-OWNED_POD_FOLDERS = ["subject", "records", "provenance", "attachments"]
 
 
 def closure(graph, subject):
@@ -37,8 +36,6 @@ def records_folder(folders, source, record, kind):
         raise Failure(f"{source}: {record} is of no type the pod files: {kind}")
     return folders[kind]
 
-
-# What a revision sets
 
 @dataclass(frozen=True)
 class Revision:
@@ -61,12 +58,10 @@ class Revision:
             (this, RDF.type, REC.Revision),
             (this, REC.revisionOf, self.record),
             (this, REC.version, self.version),
-            (this, PROV.generatedAtTime, Literal(self.at, datatype=XSD.dateTime, normalize=False)),
+            (this, PROV.generatedAtTime, store.date_time(self.at)),
             (this, PROV.wasGeneratedBy, URIRef(self.by)),
         } | ({(this, PROV.wasRevisionOf, previous)} if previous else set())
 
-
-# The pod as it grows
 
 class Filing:
     def __init__(self, example):
@@ -98,11 +93,9 @@ class Filing:
             self.source_versions[revision.record].add(revision.source_version)
 
 
-# A subject and an entry
-
 def file_subject(filing, event):
     subject = URIRef(event["subject"])
-    filing.add_turtle(event["event"], fanned("subject", str(subject)), {(subject, RDF.type, REC.Subject)})
+    filing.add_turtle(event["event"], fanned(FOLDERS["subject"], str(subject)), {(subject, RDF.type, REC.Subject)})
 
 
 def file_entry(filing, event):
@@ -111,7 +104,7 @@ def file_entry(filing, event):
     if len(activities) != 1:
         raise Failure(f"{event['entry']} holds {len(activities)} activities, not one")
     activity = activities[0]
-    filing.add_turtle(event["event"], fanned("provenance/activities", str(activity)), closure(graph, activity))
+    filing.add_turtle(event["event"], fanned(FOLDERS["activities"], str(activity)), closure(graph, activity))
     for revision in entry_revisions(graph, activity, event["entry"], filing.example.records_folders):
         filing.revise(event["event"], revision)
 
@@ -132,8 +125,6 @@ def entry_revisions(graph, activity, source, folders):
             version=version, version_triples=frozenset((version, p, o) for _, p, o in content),
             statements=frozenset(), at=str(graph.value(activity, PROV.startedAtTime)), by=str(activity))
 
-
-# An export: each of its files, and what the Bridge made of it
 
 class Conversion:
     def __init__(self, example, event, path, entry):
@@ -254,8 +245,8 @@ def keep(filing, event, conversion):
     if event.get("import") is None:
         raise Failure(f"{event['event']} has no import, and {conversion.path.name} would be stored")
     filing.stored.add(conversion.document)
-    filing.add(event["event"], f"attachments/sha-256/{stem(conversion.document)}", conversion.octets)
-    filing.add_turtle(event["event"], fanned("provenance/documents", conversion.document),
+    filing.add(event["event"], attachment(conversion.document), conversion.octets)
+    filing.add_turtle(event["event"], fanned(FOLDERS["documents"], conversion.document),
                       closure(conversion.graph, conversion.document))
 
 
@@ -264,10 +255,8 @@ def file_import(filing, event, kept):
     if len({turtle.write(description) for description in descriptions}) != 1:
         raise Failure(f"{event['event']}'s runs disagree on the import's label, start or association")
     used = {(URIRef(event["import"]), PROV.used, document) for document in kept}
-    filing.add_turtle(event["event"], fanned("provenance/imports", event["import"]), descriptions[0] | used)
+    filing.add_turtle(event["event"], fanned(FOLDERS["imports"], event["import"]), descriptions[0] | used)
 
-
-# The events manifest
 
 EVENT_KEYS = ["event", "at", "subject", "export", "import", "entry", "read_through", "takes", "adds"]
 
@@ -289,8 +278,6 @@ def events_manifest(example, filing):
         events.append({key: event[key] for key in EVENT_KEYS + sorted(set(event) - set(EVENT_KEYS)) if key in event})
     return {"address": example.address, "events": events, "derived": sorted(example.derived)}
 
-
-# One run
 
 def run(example):
     filing, facts_files, to_convert = file_story(example)

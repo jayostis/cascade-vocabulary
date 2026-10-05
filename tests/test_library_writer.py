@@ -4,7 +4,8 @@ import pytest
 from rdflib import URIRef
 
 from cascade_pod import Failure, names, store, write
-from cascade_pod.pod import TYPE_INDEX, Example
+from cascade_pod.example import Example
+from cascade_pod.pod import TYPE_INDEX
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 PROV = "http://www.w3.org/ns/prov#"

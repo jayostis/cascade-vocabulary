@@ -1,4 +1,3 @@
-import ast
 import re
 from collections import Counter
 from functools import lru_cache
@@ -13,10 +12,9 @@ from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
 
 from cascade_pod import derive, store, vocabulary
-from cascade_pod.derived_files import LABEL_FILE
-from cascade_pod.pod import NOT_RDF
+from cascade_pod.pod import LABEL_FILE, NOT_RDF
 from cascade_pod.store import Oxigraph
-from examples import EXAMPLES, ROOT, every_example, every_example_and
+from examples import EXAMPLES, ROOT, every_example, every_example_and, queries_held
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 
@@ -318,18 +316,6 @@ def test_every_label_column_labels_a_column_of_the_question(relative):
     assert labelled <= columns
 
 
-def queries_held(source):
-    found = []
-    for node in ast.walk(ast.parse(source)):
-        if isinstance(node, ast.Constant) and isinstance(node.value, str):
-            try:
-                parseQuery(node.value)
-            except Exception:
-                continue
-            found.append(node.value)
-    return found
-
-
 def test_the_held_query_check_finds_a_query_in_a_string_and_nothing_else():
     source = 'TEXT = """SELECT ?s WHERE { ?s ?p ?o }"""\nNAME = "SELECT"\n'
     assert queries_held(source) == ["SELECT ?s WHERE { ?s ?p ?o }"]
@@ -377,8 +363,8 @@ NEEDS_REVIEW = [relative for name, relative in vocabulary.questions().items() if
 
 
 def derived_state_views_and_reviews(example, engine, lens, through):
-    held = example.loaded(engine, through)
-    derived = derive.derive(held, lens)
+    held = example.story_store(engine, through)
+    derived = derive.derive(held, lens).triples
     views = {view: held.construct(vocabulary.query(r)) for view, r in vocabulary.named("views").items()}
     reviews = {relative: held.select(vocabulary.query(relative)) for relative in NEEDS_REVIEW}
     return derived, views, reviews
@@ -393,7 +379,7 @@ def test_the_derived_state_each_view_and_what_needs_review_are_the_same_on_oxigr
 
 @lru_cache(maxsize=None)
 def answers(example, engine, lens, through=None):
-    held = example.store(engine, lens, through)
+    held = example.build(engine, lens, through).store
     return {name: held.select(vocabulary.query(relative)) for name, relative in vocabulary.questions().items()}
 
 
@@ -534,13 +520,13 @@ def test_a_status_the_person_entered_sets_a_conditions_entry_and_never_an_allerg
     path.write_text(UNIT_PREFIXES + ENTERED_BY_THE_PERSON, encoding="utf-8")
     held = store.ENGINES[engine]()
     held.load(path, "urn:x:")
-    derived = derive.derive(held, lens)
+    derived = derive.derive(held, lens).triples
     assert {str(o) for _, p, o in derived if p == URIRef(REC + "statusFrom")} == {"urn:x:condition"}
 
 
 @every_example
 def test_how_many_of_each_kind_counts_what_the_pods_files_state_and_no_type_only_the_derivations_state(example):
-    held = example.store("oxigraph", vocabulary.DEFAULT_LENS)
+    held = example.build("oxigraph", vocabulary.DEFAULT_LENS).store
     derived_only = {o for s, p, o in held.triples(derive.DERIVED + vocabulary.DEFAULT_LENS) if p == RDF.type}
     counted = {row["type"] for row in answers(example, "oxigraph", vocabulary.DEFAULT_LENS)["pod/How many of each kind"]}
     assert derived_only and not counted & derived_only

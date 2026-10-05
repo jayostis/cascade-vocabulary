@@ -48,7 +48,7 @@ def current_version(graph, record):
 
 def test_every_judgment_and_reference_file_is_named_for_its_one_thing_and_listed_under_the_scenarios_event():
     names = {h: str(term) for h, term in handles().items()}
-    expected = {path_of("judgments", names[j]): row[0] for j, row in EVERY_JUDGMENT.items()}
+    expected = {path_of("judgments", names[j]): judgment.event for j, judgment in EVERY_JUDGMENT.items()}
     expected |= {path_of("references", names[r]): event for r, event in EVERY_REFERENCE.items()}
     assert {p: e for p, e in ALEX.added_by().items() if p.startswith(("judgments/", "references/"))} == expected
     on_disk = sorted(p.relative_to(POD).as_posix() for folder in ("judgments", "references")
@@ -106,7 +106,7 @@ def test_each_matcher_judgment_names_the_rule_set_the_table_its_rule_applied_and
         judgment = URIRef(name)
         if str(graph.value(judgment, URIRef(PROV + "wasAttributedTo"))) != MATCHER:
             continue
-        records = ALEX.loaded("rdflib", ALEX.added_by()[relative]).graph()
+        records = ALEX.story_store("rdflib", ALEX.added_by()[relative]).graph()
         justification = str(graph.value(judgment, URIRef(JDG + "justification")))[len(JDG):]
         members = sorted(str(m) for m in graph.objects(judgment, URIRef(PROV + "hadMember")))
         used = sorted(str(u) for u in graph.objects(judgment, URIRef(PROV + "used")))

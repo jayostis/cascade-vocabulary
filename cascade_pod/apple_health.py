@@ -4,12 +4,12 @@ from them."""
 import xml.etree.ElementTree as ElementTree
 from datetime import datetime, timezone
 
-from rdflib import BNode, Literal, Namespace, URIRef
-from rdflib.namespace import XSD
+from rdflib import BNode, Literal, URIRef
+from rdflib.namespace import RDFS
 
-from . import turtle
+from .store import date_time
+from .turtle import BRIDGE, PAV, PROV, REC
 
-BRIDGE, PAV, PROV, RDFS, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rdfs", "rec"))
 ADAPTER = "<cascade-bridge-adapter-fhir-r4>"
 VOCABULARIES = "<cascade-vocabulary at the adapter's pin>"
 TRANSMITTER = "Apple Health"
@@ -43,14 +43,14 @@ def facts(entry, import_started_at):
     """What the export says of one document and of its import, for the Bridge to state."""
     document, this_import = BRIDGE.thisDocument, BRIDGE.thisImport
     triples = {(this_import, RDFS.label, Literal(IMPORT_LABEL)),
-               (this_import, PROV.startedAtTime, Literal(import_started_at, datatype=XSD.dateTime, normalize=False)),
+               (this_import, PROV.startedAtTime, date_time(import_started_at)),
                *_attribution(document, TRANSMITTER, REC.transmitter)}
     if entry is not None:
         source_url = entry["sourceURL"]
         triples |= {*_attribution(document, entry["sourceName"], REC.author),
                     (document, BRIDGE.serverBaseUrl, Literal(source_url.rsplit("/", 2)[0])),
                     (document, PAV.retrievedFrom, URIRef(source_url)),
-                    (document, PAV.retrievedOn, Literal(utc(entry["receivedDate"]), datatype=XSD.dateTime, normalize=False)),
+                    (document, PAV.retrievedOn, date_time(utc(entry["receivedDate"]))),
                     (document, BRIDGE.sourceFormatVersion, Literal(entry["fhirVersion"]))}
     return triples
 

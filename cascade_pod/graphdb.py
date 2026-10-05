@@ -8,12 +8,11 @@ import urllib.parse
 import urllib.request
 import uuid
 
-from rdflib import BNode, Literal, Namespace
+from rdflib import BNode, Literal
 from rdflib.namespace import RDF, RDFS
 
 from . import Failure, turtle, vocabulary
-
-CONFIG, GRAPHDB = Namespace(turtle.PREFIXES["config"]), Namespace(turtle.PREFIXES["graphdb"])
+from .turtle import CONFIG, GRAPHDB
 
 
 def configuration(example):
@@ -57,7 +56,7 @@ class GraphDB:
         request("DELETE", f"{self.base}/rest/repositories/{self.example.name}")
 
     def fill(self):
-        store = self.example.store("oxigraph", vocabulary.DEFAULT_LENS)
+        store = self.example.build("oxigraph", vocabulary.DEFAULT_LENS).store
         graphs = store.graphs()
         for graph in graphs:
             context = urllib.parse.quote(f"<{graph}>", safe="")

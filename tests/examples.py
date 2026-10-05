@@ -1,11 +1,13 @@
+import ast
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+from rdflib.plugins.sparql.parser import parseQuery
 
 from cascade_pod import store
-from cascade_pod.pod import Example
+from cascade_pod.example import Example
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLES = [Example(folder) for folder in sorted((ROOT / "example-pods").iterdir()) if folder.is_dir()]
@@ -28,3 +30,15 @@ def run_matcher(folder, read_through, at, out, takes=None):
 
 def pod_file(example, relative):
     return store.parsed(example.pod / relative, example.address + relative)
+
+
+def queries_held(source):
+    found = []
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            try:
+                parseQuery(node.value)
+            except Exception:
+                continue
+            found.append(node.value)
+    return found
