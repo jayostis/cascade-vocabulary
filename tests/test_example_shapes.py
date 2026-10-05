@@ -32,13 +32,10 @@ SHAPES_OF_KIND = {
 }
 NO_SHAPE_TARGETS = (
     "clinical/labels.ttl",
-    "index.ttl",
     "manifest.ttl",
     "profile/card.ttl",
-    "profile/extended.ttl",
     "settings/preferences",
     "settings/privateTypeIndex.ttl",
-    "settings/publicTypeIndex.ttl",
     "provenance/activities/",
     "provenance/documents/",
     "provenance/imports/",

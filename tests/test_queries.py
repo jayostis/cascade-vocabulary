@@ -12,11 +12,12 @@ from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
 
 from cascade_pod import derive, store, vocabulary
-from cascade_pod.pod import LABEL_FILE, NOT_RDF
+from cascade_pod.pod import LAYOUT, NOT_RDF
 from cascade_pod.store import Oxigraph
 from examples import EXAMPLES, ROOT, every_example, every_example_and, queries_held
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
+LABEL_FILE = next(path for path, query in LAYOUT.built.items() if query == "labels.rq")
 
 
 def every_query():
@@ -389,12 +390,14 @@ def test_every_question_gives_the_same_rows_in_the_same_order_on_oxigraph_and_rd
     assert answers(example, "oxigraph", lens) == answers(example, "rdflib", lens)
 
 
-def test_every_question_has_an_answer_at_some_event():
+def test_every_question_has_an_answer_at_some_event_or_on_a_pod_built_to_show_it(misplaced):
     unanswered = set(vocabulary.questions())
     for example in EXAMPLES:
         for event in example.events:
             for lens in LENSES:
                 unanswered -= {name for name, found in answers(example, "oxigraph", lens, event["event"]).items() if found}
+    for built, _ in misplaced:
+        unanswered -= {name for name, found in answers(built, "oxigraph", vocabulary.DEFAULT_LENS).items() if found}
     assert unanswered == set()
 
 

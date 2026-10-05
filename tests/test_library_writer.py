@@ -2,17 +2,14 @@ import json
 
 import pytest
 
+from rdflib import URIRef
+from rdflib.namespace import FOAF, RDF
+
 from cascade_pod import Failure, names, write
 from cascade_pod.example import Example
-from cascade_pod.pod import TYPE_INDEX
+from cascade_pod.store import parsed
 
 SUBJECT = "urn:uuid:00000000-0000-4000-8000-000000000001"
-ALLERGIES_TYPE_INDEX = """@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix solid: <http://www.w3.org/ns/solid/terms#> .
-<#views> solid:forClass rec:View ; solid:instanceContainer </clinical/> .
-<#allergies> solid:forClass health:AllergyRecord ; solid:instance </clinical/allergies.ttl> .
-"""
 PREFIXES = """@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
 @prefix pav: <http://purl.org/pav/> .
@@ -27,8 +24,6 @@ class Story:
     def __init__(self, root):
         self.root = root
         self.events = [{"event": "E1", "at": "2026-01-01T00:00:00Z", "subject": SUBJECT, "adds": []}]
-        (root / "pod" / TYPE_INDEX).parent.mkdir(parents=True, exist_ok=True)
-        (root / "pod" / TYPE_INDEX).write_text(ALLERGIES_TYPE_INDEX, encoding="utf-8")
 
     def export(self, event, files):
         """An export at `event` of each named file, given as (its text, the Bridge's graph or None, its findings or None)."""
@@ -67,7 +62,28 @@ def test_a_file_the_bridge_has_not_converted_stops_the_run_and_prints_the_comman
     assert "cascade-bridge convert" in printed.out and "downloads/e2/apple_health_export/clinical-records/a.json" in printed.out
     assert "1 conversions to run" in printed.err
     assert (tmp_path / "conversions" / "e2" / "a" / "facts.ttl").is_file()
-    assert [p for p in example.pod.rglob("*") if p.is_file()] == [example.pod / TYPE_INDEX]
+    assert [p for p in example.pod.rglob("*") if p.is_file()] == []
+
+
+PIM, SOLID = "http://www.w3.org/ns/pim/space#", "http://www.w3.org/ns/solid/terms#"
+
+
+def test_creating_a_pod_files_the_subject_and_a_shell_that_says_only_where_the_root_and_the_type_index_are(tmp_path):
+    code, example = Story(tmp_path).write()
+    assert code == 0
+    files = sorted(p.relative_to(example.pod).as_posix() for p in example.pod.rglob("*") if p.is_file())
+    assert files == sorted(example.events[0]["adds"])
+    graphs = {path: parsed(example.pod / path, example.address + path) for path in files}
+    owner = URIRef(example.address + "profile/card.ttl#me")
+    preferences = URIRef(example.address + "settings/preferences")
+    assert set(graphs["profile/card.ttl"]) == {
+        (owner, RDF.type, FOAF.Person), (owner, RDF.type, URIRef("http://www.w3.org/ns/prov#Person")),
+        (owner, URIRef(PIM + "storage"), URIRef(example.address)), (owner, URIRef(PIM + "preferencesFile"), preferences)}
+    assert set(graphs["settings/preferences"]) == {
+        (preferences, RDF.type, URIRef(PIM + "ConfigurationFile")),
+        (owner, URIRef(SOLID + "privateTypeIndex"), URIRef(example.address + "settings/privateTypeIndex.ttl"))}
+    assert [path for path in files if path not in graphs or path.startswith("subject/")] == [
+        f"subject/{SUBJECT[9:11]}/{SUBJECT[9:]}.ttl"]
 
 
 def test_an_entry_of_a_type_the_pod_files_nowhere_is_refused_in_one_line(tmp_path):

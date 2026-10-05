@@ -14,8 +14,7 @@ from rdflib.compare import isomorphic
 
 import recomputed
 from cascade_pod import match, names, store, turtle, vocabulary
-from cascade_pod.pod import LABEL_FILE
-from cascade_pod.pod import TYPE_INDEX
+from cascade_pod.pod import LAYOUT
 from examples import ROOT, every_example, every_example_and, pod_file, run_matcher
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
@@ -262,25 +261,27 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(ex
 
 
 @every_example
-def test_every_committed_view_is_marked_rebuildable_and_lists_only_the_kind_the_type_index_registers_it_for(example):
+def test_every_committed_view_is_marked_rebuildable_and_lists_only_the_kind_the_layout_registers_it_for(example):
     held = example.build("oxigraph", vocabulary.DEFAULT_LENS).store
     current = {row["version"] for row in held.select(vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"]))}
-    for relative in sorted(set(example.view_files.values()) | {LABEL_FILE}):
+    for relative in sorted(LAYOUT.built):
         address = URIRef(example.address + relative)
         graph = Graph().parse(example.pod / relative, format="turtle", publicID=str(address))
         assert (address, RDF_TYPE, URIRef(REC + "View")) in graph, relative
         assert set(graph.objects(address, URIRef("http://www.w3.org/ns/prov#used"))) == current, relative
     solid = "http://www.w3.org/ns/solid/terms#"
-    index = pod_file(example, TYPE_INDEX)
+    index = pod_file(example, LAYOUT.type_index)
     for registration, listed in index.subject_objects(URIRef(solid + "instance")):
         view = pod_file(example, listed[len(example.address):])
         kinds = {view.value(entry, RDF_TYPE) for entry in view.subjects(URIRef(CASCADE + "mergedFrom"), None)}
         assert kinds <= {index.value(registration, URIRef(solid + "forClass"))}, listed
-    [views] = [folder for registration, folder in index.subject_objects(URIRef(solid + "instanceContainer"))
-               if index.value(registration, URIRef(solid + "forClass")) == URIRef(REC + "View")]
-    assert all((example.address + relative).startswith(views) for relative in example.view_files.values())
-    root = Graph().parse(example.pod / "index.ttl", publicID=example.address + "index.ttl")
-    assert views in set(root.objects(None, URIRef("http://www.w3.org/ns/ldp#contains")))
+    registered = {(index.value(registration, URIRef(solid + "forClass")), str(listed)[len(example.address):],
+                   str(index.value(registration, URIRef("http://purl.org/dc/terms/title"))))
+                  for listing in ("instance", "instanceContainer")
+                  for registration, listed in index.subject_objects(URIRef(solid + listing))}
+    views = LAYOUT.views_placement
+    assert registered == {(view.kind, view.file, view.title) for view in LAYOUT.views.values()} | {
+        (views.kind, views.folder, views.title)}
     assert set(example.derived).isdisjoint(example.files())
 
 
