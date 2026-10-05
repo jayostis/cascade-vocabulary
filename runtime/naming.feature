@@ -125,11 +125,11 @@ Feature: Naming
       Given a new pod for Ada on 2026-01-01 at 09:00
       When the export "first-export" is imported on 2026-01-02 at 10:00
       Then the query "queries/files-named-from-what-they-hold.rq" answers:
-        | thing                                                     | fileName                                                             |
-        | <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82>           | "ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82.ttl"                           |
-        | <urn:uuid:de5509dd-2eb5-86f2-925c-bf35bd4a0fc5>           | "de5509dd-2eb5-86f2-925c-bf35bd4a0fc5.ttl"                           |
-        | <urn:uuid:eae9b463-3109-8ca4-ba91-6d18290855ea>           | "eae9b463-3109-8ca4-ba91-6d18290855ea.ttl"                           |
-        | <urn:uuid:172278aa-1e87-8578-b178-b513816ede91>           | "172278aa-1e87-8578-b178-b513816ede91.ttl"                           |
+        | thing                                                       | fileName                                                               |
+        | <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82>             | "ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82.ttl"                             |
+        | <urn:uuid:de5509dd-2eb5-86f2-925c-bf35bd4a0fc5>             | "de5509dd-2eb5-86f2-925c-bf35bd4a0fc5.ttl"                             |
+        | <urn:uuid:eae9b463-3109-8ca4-ba91-6d18290855ea>             | "eae9b463-3109-8ca4-ba91-6d18290855ea.ttl"                             |
+        | <urn:uuid:172278aa-1e87-8578-b178-b513816ede91>             | "172278aa-1e87-8578-b178-b513816ede91.ttl"                             |
         | <ni:///sha-256;Rx15Nd4sUNwYcdZW94THU_g2iVOlOmZ0kGyYl74dDAk> | "471d7935de2c50dc1871d656f784c753f8368953a53a6674906c9897be1d0c09.ttl" |
         | <ni:///sha-256;PBXZez-Aw-W0iOMLH8K8rkj7eI7ouZ8FgJMGRQpolEM> | "3c15d97b3f80c3e5b488e30b1fc2bcae48fb788ee8b99f05809306450a689443.ttl" |
         | <ni:///sha-256;GvG1PpZ655CyegCrKsAGYRpvN7UOHUFBDy4Au7IaRdc> | "1af1b53e967ae790b27a00ab2ac006611a6f37b50e1d41410f2e00bbb21a45d7.ttl" |
@@ -138,10 +138,10 @@ Feature: Naming
         | <ni:///sha-256;BAt9YpIrH17dd8_pYoWl5kIAmfZI4pkKRTV1u7JSRnk> | "040b7d62922b1f5edd77cfe96285a5e6420099f648e2990a453575bbb2524679.ttl" |
         | <ni:///sha-256;HgLQlJLSGhMq7xC5CYdLQEFVzvepvRrLiCGzeI65KI0> | "1e02d09492d21a132aef10b909874b404155cef7a9bd1acb8821b3788eb9288d.ttl" |
         | <ni:///sha-256;BMVJZrtTlT-XS2y6CvRWFW3r9Pi9GmNMlC-jzs1doZs> | "04c54966bb53953f974b6cba0af456156debf4f8bd1a634c942fa3cecd5da19b.ttl" |
-        |                                                           | "2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17"     |
-        |                                                           | "040b7d62922b1f5edd77cfe96285a5e6420099f648e2990a453575bbb2524679"     |
-        |                                                           | "1e02d09492d21a132aef10b909874b404155cef7a9bd1acb8821b3788eb9288d"     |
-        |                                                           | "04c54966bb53953f974b6cba0af456156debf4f8bd1a634c942fa3cecd5da19b"     |
+        |                                                             | "2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17"     |
+        |                                                             | "040b7d62922b1f5edd77cfe96285a5e6420099f648e2990a453575bbb2524679"     |
+        |                                                             | "1e02d09492d21a132aef10b909874b404155cef7a9bd1acb8821b3788eb9288d"     |
+        |                                                             | "04c54966bb53953f974b6cba0af456156debf4f8bd1a634c942fa3cecd5da19b"     |
 
   Rule: N10. A person's judgment keeps the IRI its input gives it
     A judgment a person makes arrives with its name: whoever made it minted that once, as the subject's ID was minted. A
@@ -153,6 +153,6 @@ Feature: Naming
       And Cleo files the judgment "about-r" on 2026-03-04 at 07:00
       When Cleo files the judgment "retract-about-r" on 2026-03-04 at 12:00
       Then the query "queries/a-retraction-deletes-nothing.rq" answers:
-        | step                                   | judgment                                        | verdict   |
-        | <urn:cascade:step:about-r>             | <urn:uuid:b8d3f1a7-2c69-4e5b-9f14-3a7e6d2c8b91> | jdg:About |
-        | <urn:cascade:step:retract-about-r>     | <urn:uuid:f2b6d9a4-7e3c-4815-b9d7-5a8e2c6f1d43> |           |
+        | step                               | judgment                                        | verdict   |
+        | <urn:cascade:step:about-r>         | <urn:uuid:b8d3f1a7-2c69-4e5b-9f14-3a7e6d2c8b91> | jdg:About |
+        | <urn:cascade:step:retract-about-r> | <urn:uuid:f2b6d9a4-7e3c-4815-b9d7-5a8e2c6f1d43> |           |

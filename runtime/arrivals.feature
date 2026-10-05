@@ -103,16 +103,16 @@ Feature: Arrivals
       Given a new pod for Ada on 2026-01-01 at 09:00
       When the export "first-export" is imported on 2026-01-02 at 10:00
       Then the query "queries/revision-holds-its-arrival.rq" answers:
-        | predicate              | value                                                       |
-        | rdf:type               | rec:Revision                                                |
-        | rec:revisionOf         | allergy "Peanut"                                            |
-        | rec:version            | version 1 of allergy "Peanut"                               |
-        | prov:generatedAtTime   | "2026-01-02T10:00:00Z"^^xsd:dateTime                        |
-        | prov:wasGeneratedBy    | <urn:cascade:step:first-export>                             |
-        | pav:version            | "1"                                                         |
-        | pav:lastUpdateOn       | "2025-12-01T00:00:00Z"^^xsd:dateTime                        |
-        | bridge:selector        | ""                                                          |
-        | prov:wasDerivedFrom    | the document of allergy "Peanut"                            |
+        | predicate            | value                                |
+        | rdf:type             | rec:Revision                         |
+        | rec:revisionOf       | allergy "Peanut"                     |
+        | rec:version          | version 1 of allergy "Peanut"        |
+        | prov:generatedAtTime | "2026-01-02T10:00:00Z"^^xsd:dateTime |
+        | prov:wasGeneratedBy  | <urn:cascade:step:first-export>      |
+        | pav:version          | "1"                                  |
+        | pav:lastUpdateOn     | "2025-12-01T00:00:00Z"^^xsd:dateTime |
+        | bridge:selector      | ""                                   |
+        | prov:wasDerivedFrom  | the document of allergy "Peanut"     |
 
   Rule: A10. A document is kept when it wrote a revision or the Bridge raised findings on it
     Kept is its bytes under attachments/, and its description. Otherwise nothing of it is written.
@@ -122,8 +122,8 @@ Feature: Arrivals
       And the export "first-export" is imported on 2026-01-02 at 10:00
       When the export "current-version-again" is imported on 2026-01-05 at 10:00
       Then the query "queries/kept-for-its-findings.rq" answers:
-        | document                                                    | storedFiles | usedByTheImport |
-        | the document "current-version-again/apple_health_export/clinical-records/AllergyIntolerance-peanut.json" | 1 | true |
+        | document                                                                                                 | storedFiles | usedByTheImport |
+        | the document "current-version-again/apple_health_export/clinical-records/AllergyIntolerance-peanut.json" | 1           | true            |
 
     Example: a document that wrote no revision and raised no findings is not kept
       Given a new pod for Ada on 2026-01-01 at 09:00

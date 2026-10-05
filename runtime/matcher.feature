@@ -45,7 +45,7 @@ Feature: The matcher's procedure
       And Cleo enters "third-entry" on 2026-03-05 at 08:00
       When the matcher runs on the records of that entry on 2026-03-05 at 08:01
       Then the matcher's judgments holding allergy RxNorm 8591 from draft 0 of "second-entry", allergy RxNorm 8591 from draft 1 of "second-entry" and allergy RxNorm 8591 from draft 0 of "third-entry" are:
-        | justification | members                                                                                                  | at                  |
+        | justification | members                                                                                                | at                  |
         | same code     | allergy RxNorm 8591 from draft 0 of "second-entry", allergy RxNorm 8591 from draft 1 of "second-entry" | 2026-03-04 at 08:01 |
 
   Rule: M3. It takes them in order of arrival, then by record name
@@ -92,14 +92,14 @@ Feature: The matcher's procedure
 
     Example: two immunizations of one CVX code on one date are the same by code and date, and one on another date joins neither
       Then the matcher's judgments holding immunization CVX 150 from draft 5, immunization CVX 150 from draft 6 and immunization CVX 150 from draft 7 are:
-        | justification      | members                                                            |
+        | justification      | members                                                              |
         | same code and date | immunization CVX 150 from draft 5, immunization CVX 150 from draft 6 |
 
     Example: two immunizations of different codes in one vaccine group on one date are the same by mapped code and date
       A third on another date joins none, and a fourth of the first's code on its date is the same as it by code and date.
 
       Then the matcher's judgments holding immunization CVX 141 from draft 8, immunization CVX 150 from draft 9, immunization CVX 141 from draft 10 and immunization CVX 141 from draft 11 are:
-        | justification             | members                                                              |
+        | justification             | members                                                               |
         | same mapped code and date | immunization CVX 141 from draft 8, immunization CVX 150 from draft 9  |
         | same mapped code and date | immunization CVX 150 from draft 9, immunization CVX 141 from draft 11 |
         | same code and date        | immunization CVX 141 from draft 8, immunization CVX 141 from draft 11 |
@@ -112,11 +112,11 @@ Feature: The matcher's procedure
       And Dev enters "later" on 2026-04-04 at 09:00
       When the matcher runs on the records of that entry on 2026-04-04 at 09:05
       Then the matcher's judgments holding allergy SNOMED 373270004, allergy RxNorm 7980 from draft 13 of "pairs", allergy SNOMED 91936005, allergy RxNorm 733 from draft 15 of "pairs", allergy RxNorm 7980 from draft 0 of "later" and allergy RxNorm 733 from draft 1 of "later" are:
-        | justification    | members                                                                                    | at                  |
-        | same mapped code | allergy RxNorm 7980 from draft 13 of "pairs", allergy SNOMED 373270004                     | 2026-04-02 at 09:05 |
+        | justification    | members                                                                                   | at                  |
+        | same mapped code | allergy RxNorm 7980 from draft 13 of "pairs", allergy SNOMED 373270004                    | 2026-04-02 at 09:05 |
         | same code        | allergy RxNorm 7980 from draft 0 of "later", allergy RxNorm 7980 from draft 13 of "pairs" | 2026-04-04 at 09:05 |
         | same code        | allergy RxNorm 733 from draft 1 of "later", allergy RxNorm 733 from draft 15 of "pairs"   | 2026-04-04 at 09:05 |
-        | same mapped code | allergy RxNorm 733 from draft 1 of "later", allergy SNOMED 91936005                        | 2026-04-04 at 09:05 |
+        | same mapped code | allergy RxNorm 733 from draft 1 of "later", allergy SNOMED 91936005                       | 2026-04-04 at 09:05 |
 
   Rule: M5. It writes one judgment per record per rule that matched anything
     The judgment's members are the record and everything it matched. It is jdg:Same with the rule's justification. It
@@ -139,7 +139,7 @@ Feature: The matcher's procedure
 
     Example: a judgment is a Same of its rule, using the rule list's version, the table's and its members', at the run's time
       Then the matcher's judgments holding allergy SNOMED 373270004 are:
-        | justification    | members                                                    | at                  | used                                                                                                                                                              |
+        | justification    | members                                                    | at                  | used                                                                                                                                                                |
         | same mapped code | allergy RxNorm 7980 from draft 4, allergy SNOMED 373270004 | 2026-03-03 at 08:01 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 from draft 4, version 1 of allergy SNOMED 373270004 |
         | same mapped code | allergy RxNorm 7980 from draft 5, allergy SNOMED 373270004 | 2026-03-03 at 08:01 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 from draft 5, version 1 of allergy SNOMED 373270004 |
 
@@ -172,9 +172,9 @@ Feature: The matcher's procedure
       Given version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
       When the matcher rechecks on 2026-05-05 at 09:00
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
-        | justification    | members                                       | at                  |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-02 at 09:05 |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-05 at 09:00 |
+        | justification    | members                                       | at                  | name                                          |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-02 at 09:05 | urn:uuid:b300b191-e8c8-849a-864b-ba5074b9b686 |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-05 at 09:00 | urn:uuid:eb8bdcc4-c099-80be-b13a-17c8b6bd0aac |
 
     Example: a Same a person retracted is not rechecked
       Given Eve files the judgment "retract-b" on 2026-05-03 at 09:00
@@ -262,9 +262,9 @@ Feature: The matcher's procedure
       And Dev enters "later" on 2026-04-04 at 09:00
       When the matcher runs on the records of that entry on 2026-04-04 at 09:05
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy SNOMED 91936005 are:
-        | justification    | members                                                                | used                                                                                                                                                                                    |
-        | same mapped code | allergy RxNorm 7980 from draft 13 of "pairs", allergy SNOMED 373270004 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 from draft 13 of "pairs", version 1 of allergy SNOMED 373270004 |
-        | same mapped code | allergy RxNorm 733 from draft 1 of "later", allergy SNOMED 91936005    | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 from draft 1 of "later", version 1 of allergy SNOMED 91936005         |
+        | justification    | members                                                                | used                                                                                                                                                                            | name                                          |
+        | same mapped code | allergy RxNorm 7980 from draft 13 of "pairs", allergy SNOMED 373270004 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 from draft 13 of "pairs", version 1 of allergy SNOMED 373270004 | urn:uuid:fb04c4d1-c902-86ae-969f-2454e9345ad2 |
+        | same mapped code | allergy RxNorm 733 from draft 1 of "later", allergy SNOMED 91936005    | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 from draft 1 of "later", version 1 of allergy SNOMED 91936005    | urn:uuid:74f606fe-da57-8931-9f53-0140e66a9121 |
 
   Rule: M11. A rule list whose row names a query that does not hash to the row's rec:queryHash refuses the run
     It writes nothing. So does a rule list with a row naming a file outside queries/v1-draft/matcher/, a row without
