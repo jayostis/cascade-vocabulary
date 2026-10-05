@@ -66,11 +66,6 @@ def entry_type(graph, entry):
     return min(map(str, graph.objects(entry, RDF.type)), default="no type")
 
 
-def steps(story_file):
-    """The name of each step of the story at `story_file`, in its order."""
-    return story.steps(story_file)
-
-
 def lens_name(file):
     lenses = {(vocabulary.QUERIES / relative).resolve(): name for name, relative in vocabulary.named("lenses").items()}
     if file is None or Path(file).resolve() not in lenses:

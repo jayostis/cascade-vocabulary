@@ -1,3 +1,4 @@
+import json
 import re
 from functools import cache
 
@@ -6,7 +7,7 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF
 
-from cascade_pod import manifest
+from cascade_pod import manifest, story
 from cascade_pod.store import ENGINES
 from examples import ROOT
 
@@ -68,7 +69,7 @@ def test_every_entry_names_a_story_a_step_in_it_a_lens_file_a_query_and_a_result
     assert ENTRIES
     for entry in ENTRIES:
         assert entry.story.exists(), entry.name
-        assert entry.step in manifest.steps(entry.story), entry.name
+        assert entry.step in story.steps(entry.story), entry.name
         assert entry.lens.is_file(), entry.name
         assert entry.query, entry.name
         assert entry.result is not None, entry.name
@@ -97,3 +98,11 @@ def test_the_earl_report_has_one_passed_assertion_per_entry_and_no_other(engine)
                          ids=[f"{engine}-{entry.name}" for engine in sorted(ENGINES) for entry in ENTRIES])
 def test_the_entry_passes(engine, entry):
     assert [outcome for test, outcome in outcomes(report(engine)) if str(test) == entry.iri] == [EARL.passed]
+
+
+def test_a_story_whose_first_step_is_a_matcher_step_is_rejected_naming_the_step(tmp_path):
+    story_file = tmp_path / "story.json"
+    story_file.write_text(json.dumps({"address": "https://pod.example/", "subject": "urn:uuid:0", "steps": [
+        {"name": "match-first", "when": "2026-05-01T09:00:00Z", "matcher": {}}]}), encoding="utf-8")
+    with pytest.raises(ValueError, match="match-first"):
+        story.Replay(story_file, tmp_path / "replayed").run()

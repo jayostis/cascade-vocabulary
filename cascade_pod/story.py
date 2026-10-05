@@ -149,6 +149,8 @@ class Replay:
         return {path: turtle.write(match.version_triples(series, version), self.address + path)}
 
     def _matcher(self, step, event):
+        if len(self.events) < 2:
+            raise ValueError(f"step {step['name']} is a matcher step with no step before it to read through")
         read_through = self.events[-2]["event"]
         matcher = match.Matcher(match.Reading(self.example(), read_through), step["when"])
         takes = step["matcher"].get("takes")
