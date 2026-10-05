@@ -51,12 +51,6 @@ class Store:
     def select(self, query):
         return self.answer(query)[1]
 
-    def graph(self, name=None):
-        found = rdflib.Graph()
-        for triple in self.triples(name):
-            found.add(triple)
-        return found
-
 
 class Oxigraph(Store):
     def __init__(self):
