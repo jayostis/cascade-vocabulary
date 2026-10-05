@@ -47,7 +47,8 @@ ID, and its `steps`, in order. A step has a `name`, a `when`, and one of:
 
 The story holds nothing a tool writes: no file lists and no import IDs. The runner gives each import, and each entry
 session, a new random UUID on every run; it gives the entry's session the step's time. A step that is refused writes
-nothing, and the replay goes on.
+nothing, and the replay goes on. The Bridge output saved in a rule vector's `scripted-input/` is written by hand to set
+up its rule, and is not what a Bridge produces for that document; the kit's saved output is the Bridge's own.
 
 **The matcher's reference tables** are `scripted-input/references/`, in Turtle:
 
