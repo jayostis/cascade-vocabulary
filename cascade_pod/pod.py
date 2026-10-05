@@ -5,18 +5,20 @@ import base64
 
 from . import Failure
 
-FOLDERS = {
+WRITER_FOLDERS = {
     "subject": "subject",
     "records": "records",
     "activities": "provenance/activities",
     "documents": "provenance/documents",
     "imports": "provenance/imports",
-    "attachments": "attachments/sha-256",
+    "attachments": "attachments",
+}
+MATCHER_FOLDERS = {
     "judgments": "judgments",
     "references": "references",
 }
-OWNED_POD_FOLDERS = sorted({FOLDERS[filed].split("/")[0]
-                            for filed in ("subject", "records", "activities", "documents", "imports", "attachments")})
+FOLDERS = WRITER_FOLDERS | MATCHER_FOLDERS
+OWNED_POD_FOLDERS = sorted({folder.split("/")[0] for folder in WRITER_FOLDERS.values()})
 NOT_RDF = (FOLDERS["attachments"] + "/", ".well-known/")
 TYPE_INDEX = "settings/privateTypeIndex.ttl"
 LABEL_FILE = "clinical/labels.ttl"
@@ -39,7 +41,7 @@ def fanned(folder, name):
 
 
 def attachment(document):
-    return f"{FOLDERS['attachments']}/{stem(document)}"
+    return f"{FOLDERS['attachments']}/sha-256/{stem(document)}"
 
 
 def save(files, folder):
