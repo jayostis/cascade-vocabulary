@@ -6,11 +6,11 @@ import pytest
 from pyparsing import ParseResults
 from rdflib import RDF, Graph, URIRef, Variable
 from rdflib.paths import Path as PropertyPath
-from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
 
 from cascade_pod import vocabulary
+from cascade_pod.store import prepared
 from examples import ROOT, queries_held
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
@@ -71,7 +71,7 @@ def nested_forms(text):
 
 @pytest.mark.parametrize("relative", every_query())
 def test_every_subquery_comes_first_in_its_group(relative):
-    for group in nodes(parseQuery(vocabulary.query(relative))):
+    for group in nodes(parsed(relative)):
         if group.name == "GroupGraphPatternSub":
             parts = list(group.get("part") or [])
             first_other = next((i for i, part in enumerate(parts) if not is_subquery(part)), len(parts))
@@ -80,7 +80,7 @@ def test_every_subquery_comes_first_in_its_group(relative):
 
 @pytest.mark.parametrize("relative", sorted(vocabulary.named("views").values()))
 def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
-    patterns = [t for node in nodes(prepareQuery(vocabulary.query(relative)).algebra["p"]) if node.name == "BGP"
+    patterns = [t for node in nodes(prepared(vocabulary.query(relative)).algebra["p"]) if node.name == "BGP"
                 for t in node["triples"]]
     typed = {s for s, p, o in patterns if p == RDF.type and isinstance(o, URIRef)}
     assert {s for s, p, o in patterns if p == URIRef(REC + "inEntry")} <= typed
@@ -125,12 +125,12 @@ def iris(tree):
 
 @lru_cache(maxsize=None)
 def reads(relative):
-    return set(iris(prepareQuery(vocabulary.query(relative)).algebra["p"]))
+    return set(iris(prepared(vocabulary.query(relative)).algebra["p"]))
 
 
 @lru_cache(maxsize=None)
 def writes(relative):
-    template = prepareQuery(vocabulary.query(relative)).algebra["template"]
+    template = prepared(vocabulary.query(relative)).algebra["template"]
     return {o if p == RDF.type else p for s, p, o in template}
 
 
@@ -203,7 +203,7 @@ RECORDS = "derivations/records.rq"
 
 def kinds_of_record():
     """Each row of the table in the derivation that says what a record is."""
-    return [row for node in nodes(prepareQuery(vocabulary.query(RECORDS)).algebra) if node.name == "values"
+    return [row for node in nodes(prepared(vocabulary.query(RECORDS)).algebra) if node.name == "values"
             for row in node["res"]]
 
 
@@ -225,7 +225,7 @@ def kinds_named_out_of_place(relative, text):
     if relative == RECORDS:
         return set()
     views = record_types()
-    named = set(iris(prepareQuery(text).algebra)) & set(views)
+    named = set(iris(prepared(text).algebra)) & set(views)
     return {kind for kind in named if views[kind] not in words(Path(relative).stem)}
 
 
@@ -259,7 +259,7 @@ def every_question():
 
 
 def restated_absences(text):
-    algebra = prepareQuery(text).algebra
+    algebra = prepared(text).algebra
     bound = {node["arg"] for node in nodes(algebra) if node.name == "Builtin_BOUND"}
     found = []
     for node in nodes(algebra):
@@ -289,7 +289,7 @@ def test_no_question_restates_a_derivation(relative):
 
 @pytest.mark.parametrize("relative", every_question())
 def test_every_question_is_a_select(relative):
-    assert prepareQuery(vocabulary.query(relative)).algebra.name == "SelectQuery"
+    assert prepared(vocabulary.query(relative)).algebra.name == "SelectQuery"
 
 
 def test_every_question_is_filed_under_the_pod_or_a_kind():
@@ -298,13 +298,13 @@ def test_every_question_is_filed_under_the_pod_or_a_kind():
 
 @pytest.mark.parametrize("relative", [q for q in every_question() if Path(q).parent.name in KINDS])
 def test_every_question_outside_pod_returns_the_column_of_its_kind(relative):
-    columns = [str(v) for v in prepareQuery(vocabulary.query(relative)).algebra["PV"]]
+    columns = [str(v) for v in prepared(vocabulary.query(relative)).algebra["PV"]]
     assert Path(relative).parent.name in columns
 
 
 @pytest.mark.parametrize("relative", every_question())
 def test_every_label_column_labels_a_column_of_the_question(relative):
-    columns = {str(v) for v in prepareQuery(vocabulary.query(relative)).algebra["PV"]}
+    columns = {str(v) for v in prepared(vocabulary.query(relative)).algebra["PV"]}
     labelled = {column[:-len("Label")] for column in columns if column.endswith("Label")}
     assert labelled <= columns
 
@@ -364,7 +364,7 @@ def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no
     declared = reasons()
     named = {short(reason): [] for reason in declared}
     for relative in every_query():
-        for reason in declared & set(iris(prepareQuery(vocabulary.query(relative)).algebra)):
+        for reason in declared & set(iris(prepared(vocabulary.query(relative)).algebra)):
             named[short(reason)].append(relative)
     assert named == {
         "EnteredInErrorAtSource": ["derivations/excluded-at-source.rq"],
