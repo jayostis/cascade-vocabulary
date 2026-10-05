@@ -1,4 +1,4 @@
-# One entry for the person, joining every patient profile a counting About judgment ties to them and nothing left out.
+# One entry for the person, joining every patient profile a counting About judgment ties to them.
 PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
 PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -10,6 +10,5 @@ CONSTRUCT {
 }
 WHERE {
   ?j rec:counts true ; jdg:verdict jdg:About ; prov:hadMember ?profile ; jdg:subject ?s .
-  FILTER NOT EXISTS { ?profile rec:excluded true }
   BIND (IRI(CONCAT("urn:cascade:entry:", SHA256(STR(?s)))) AS ?entry)
 }

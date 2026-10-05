@@ -1,11 +1,15 @@
-# A record whose current version its source marks entered in error or refuted is left out of every view.
+# A record whose current version its source marks entered in error or refuted is left out of every view. The table is
+# the one place that lists those statuses, each with the reason it gives.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-CONSTRUCT { ?record rec:excluded true }
+CONSTRUCT { ?record rec:leftOutFor ?leftOut . ?leftOut rec:reason ?reason }
 WHERE {
-  ?record pav:hasCurrentVersion ?v .
-  ?v clinical:verificationStatus ?vs .
-  FILTER (?vs IN ("entered-in-error", "refuted"))
+  VALUES (?status ?reason) {
+    ("entered-in-error" rec:EnteredInErrorAtSource)
+    ("refuted"          rec:RefutedAtSource)
+  }
+  ?record pav:hasCurrentVersion/clinical:verificationStatus ?status .
+  BIND (IRI(CONCAT("urn:cascade:left-out:", SHA256(CONCAT(STR(?record), " ", STR(?reason))))) AS ?leftOut)
 }
