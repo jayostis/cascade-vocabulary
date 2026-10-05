@@ -4,6 +4,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix solid: <http://www.w3.org/ns/solid/terms#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 rec:SourceUrlShape a sh:NodeShape ;
@@ -94,3 +95,47 @@ rec:ReferenceSeriesShape a sh:NodeShape ;
 rec:ReferenceVersionShape a sh:NodeShape ;
     sh:property [ sh:path pav:version ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ,
                 [ sh:path prov:wasRevisionOf ; sh:nodeKind sh:IRI ; sh:maxCount 1 ] .
+
+rec:PlacementShape a sh:NodeShape ;
+    sh:targetClass rec:Placement ;
+    sh:xone (
+        [ sh:path solid:instance ; sh:minCount 1 ]
+        [ sh:path solid:instanceContainer ; sh:minCount 1 ]
+        [ sh:path rec:filedWith ; sh:minCount 1 ]
+    ) ;
+    sh:message "A placement names exactly one of a file, a folder, or the property whose value's folder it files with."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path solid:instance ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path solid:instanceContainer ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path rec:filedWith ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path solid:forClass ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path rec:forSubjectsOf ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path rec:fanOut ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:maxCount 1
+    ] , [
+        sh:path rec:writtenBy ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] , [
+        sh:path rec:storesBytes ;
+        sh:datatype xsd:boolean ;
+        sh:maxCount 1
+    ] .

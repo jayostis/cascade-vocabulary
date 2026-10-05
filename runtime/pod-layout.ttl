@@ -1,0 +1,47 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix pim: <http://www.w3.org/ns/pim/space#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix solid: <http://www.w3.org/ns/solid/terms#> .
+
+[] a rec:Placement ; solid:forClass rec:Subject ; solid:instanceContainer <subject/> ; rec:fanOut 2 .
+
+[] a rec:Placement ; solid:forClass health:AllergyRecord ; solid:instanceContainer <records/allergies/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass health:ConditionRecord ; solid:instanceContainer <records/conditions/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass health:ImmunizationRecord ; solid:instanceContainer <records/immunizations/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass clinical:Procedure ; solid:instanceContainer <records/procedures/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass cascade:PatientProfile ; solid:instanceContainer <records/patient-profile/> ; rec:fanOut 2 .
+
+[] a rec:Placement ; rec:filedWith prov:specializationOf ; rec:fanOut 2 .
+[] a rec:Placement ; rec:filedWith rec:revisionOf ; rec:fanOut 2 .
+
+[] a rec:Placement ; solid:forClass prov:Activity ; solid:instanceContainer <provenance/activities/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass prov:Activity ; rec:forSubjectsOf prov:used ; solid:instanceContainer <provenance/imports/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass prov:Entity ; solid:instanceContainer <provenance/documents/> ; rec:fanOut 2 .
+[] a rec:Placement ; rec:storesBytes true ; solid:instanceContainer <attachments/sha-256/> .
+
+[] a rec:Placement ; solid:forClass jdg:Judgment ; solid:instanceContainer <judgments/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass rec:ReferenceSeries ; solid:instanceContainer <references/> ; rec:fanOut 2 .
+
+[] a rec:Placement ; solid:forClass rec:View ; solid:instanceContainer <clinical/> ; dct:title "Rebuildable views" .
+[] a rec:Placement ; solid:forClass health:AllergyRecord ; solid:instance <clinical/allergies.ttl> ;
+   rec:writtenBy "views/allergies.rq" ; dct:title "Allergies" .
+[] a rec:Placement ; solid:forClass health:ConditionRecord ; solid:instance <clinical/conditions.ttl> ;
+   rec:writtenBy "views/conditions.rq" ; dct:title "Conditions" .
+[] a rec:Placement ; solid:forClass health:ImmunizationRecord ; solid:instance <clinical/immunizations.ttl> ;
+   rec:writtenBy "views/immunizations.rq" ; dct:title "Immunizations" .
+[] a rec:Placement ; solid:forClass clinical:Procedure ; solid:instance <clinical/procedures.ttl> ;
+   rec:writtenBy "views/procedures.rq" ; dct:title "Procedures" .
+[] a rec:Placement ; solid:forClass cascade:PatientProfile ; solid:instance <clinical/patient-profile.ttl> ;
+   rec:writtenBy "views/patient-profile.rq" ; dct:title "Patient profile" .
+[] a rec:Placement ; solid:instance <clinical/labels.ttl> ; rec:writtenBy "labels.rq" .
+
+[] a rec:Placement ; solid:forClass foaf:PersonalProfileDocument ; solid:instance <profile/card.ttl> .
+[] a rec:Placement ; solid:forClass pim:ConfigurationFile ; solid:instance <settings/preferences> .
+[] a rec:Placement ; solid:forClass solid:TypeIndex ; solid:instance <settings/privateTypeIndex.ttl> .
+[] a rec:Placement ; solid:forClass cascade:ExportManifest ; solid:instance <manifest.ttl> .
