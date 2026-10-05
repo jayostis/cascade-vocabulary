@@ -8,12 +8,14 @@ from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
 
-from rdflib import BNode, Graph, URIRef
-from rdflib.namespace import RDF
+from rdflib import BNode, Graph, Namespace, URIRef
+from rdflib.namespace import FOAF, RDF
 
 from . import Failure, apple_health, names, store, turtle
-from .pod import FOLDERS, OWNED_POD_FOLDERS, attachment, fanned, save
-from .turtle import BRIDGE, PAV, PROV, REC
+from .pod import LAYOUT, save
+from .turtle import BRIDGE, PAV, PROV, REC, SOLID
+
+PIM = Namespace("http://www.w3.org/ns/pim/space#")
 
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
 
@@ -31,16 +33,16 @@ def in_version(term, version):
     return term == version or str(term).startswith(str(version) + "#")
 
 
-def records_folder(folders, source, record, kind):
-    if kind not in folders:
+def records_place(places, source, record, kind):
+    if kind not in places:
         raise Failure(f"{source}: {record} is of no type the pod files: {kind}")
-    return folders[kind]
+    return places[kind]
 
 
 @dataclass(frozen=True)
 class Revision:
     record: URIRef
-    folder: str
+    place: object
     record_triples: frozenset
     version: URIRef
     version_triples: frozenset
@@ -83,11 +85,11 @@ class Filing:
         self.add(event, path, turtle.write(triples, self.example.address + path))
 
     def revise(self, event, revision):
-        self.add_turtle(event, fanned(revision.folder, str(revision.record)), revision.record_triples)
-        self.add_turtle(event, fanned(revision.folder, str(revision.version)), revision.version_triples)
+        self.add_turtle(event, revision.place.path(revision.record), revision.record_triples)
+        self.add_turtle(event, LAYOUT.version(revision.place, revision.version), revision.version_triples)
         triples = revision.triples(self.last_revision.get(revision.record))
         name = URIRef(names.content(triples))
-        self.add_turtle(event, fanned(revision.folder, str(name)), {(name, p, o) for _, p, o in triples})
+        self.add_turtle(event, LAYOUT.revision(revision.place, name), {(name, p, o) for _, p, o in triples})
         self.last_revision[revision.record] = name
         self.last_version[revision.record] = revision.version
         if revision.source_version is not None:
@@ -95,9 +97,20 @@ class Filing:
 
 
 def file_subject(filing, event):
+    """Files the subject, and the owner's profile and preferences, which say where the pod's root and its type index
+    are."""
     subject = URIRef(event["subject"])
     filing.subject = subject
-    filing.add_turtle(event["event"], fanned(FOLDERS["subject"], str(subject)), {(subject, RDF.type, REC.Subject)})
+    filing.add_turtle(event["event"], LAYOUT.place(REC.Subject).path(subject), {(subject, RDF.type, REC.Subject)})
+    address = filing.example.address
+    card, preferences = (LAYOUT.place(FOAF.PersonalProfileDocument).file, LAYOUT.place(PIM.ConfigurationFile).file)
+    owner = URIRef(address + card + "#me")
+    filing.add_turtle(event["event"], card, {
+        (owner, RDF.type, FOAF.Person), (owner, RDF.type, PROV.Person), (owner, PIM.storage, URIRef(address)),
+        (owner, PIM.preferencesFile, URIRef(address + preferences))})
+    filing.add_turtle(event["event"], preferences, {
+        (URIRef(address + preferences), RDF.type, PIM.ConfigurationFile),
+        (owner, SOLID.privateTypeIndex, URIRef(address + LAYOUT.type_index))})
 
 
 def file_entry(filing, event):
@@ -110,7 +123,7 @@ def file_entry(filing, event):
     activity = activities[0]
     if activity == URIRef(names.THIS_ENTRY):
         graph, activity = this_entry(graph, event["at"])
-    filing.add_turtle(event["event"], fanned(FOLDERS["activities"], str(activity)), closure(graph, activity))
+    filing.add_turtle(event["event"], LAYOUT.place(PROV.Activity).path(activity), closure(graph, activity))
     for revision in entry_revisions(graph, activity, event["entry"], filing.example.records_folders, filing.subject):
         filing.revise(event["event"], revision)
 
@@ -137,7 +150,7 @@ def entry_revisions(graph, activity, source, folders, subject):
         content = {(placeholder, p, records.get(o, o)) for p, o in graph.predicate_objects(draft_version)}
         version = URIRef(names.content(content))
         yield Revision(
-            record=record, folder=records_folder(folders, source, record, kind),
+            record=record, place=records_place(folders, source, record, kind),
             record_triples=frozenset({(record, RDF.type, kind)}),
             version=version, version_triples=frozenset((version, p, o) for _, p, o in content),
             statements=frozenset(), at=str(graph.value(activity, PROV.startedAtTime)), by=str(activity))
@@ -180,7 +193,7 @@ class Conversion:
             if record is None:
                 raise Failure(f"{self.source}: {version} is the version of no record")
             yield Revision(
-                record=record, folder=records_folder(self.records_folders, self.source, record, graph.value(record, RDF.type)),
+                record=record, place=records_place(self.records_folders, self.source, record, graph.value(record, RDF.type)),
                 record_triples=frozenset(graph.triples((record, None, None))),
                 version=version, version_triples=frozenset(t for t in graph if in_version(t[0], version)),
                 statements=frozenset((p, o) for p, o in graph.predicate_objects(arrival)
@@ -262,8 +275,8 @@ def keep(filing, event, conversion):
     if event.get("import") is None:
         raise Failure(f"{event['event']} has no import, and {conversion.path.name} would be stored")
     filing.stored.add(conversion.document)
-    filing.add(event["event"], attachment(conversion.document), conversion.octets)
-    filing.add_turtle(event["event"], fanned(FOLDERS["documents"], conversion.document),
+    filing.add(event["event"], LAYOUT.stored_bytes.path(conversion.document), conversion.octets)
+    filing.add_turtle(event["event"], LAYOUT.place(PROV.Entity).path(conversion.document),
                       closure(conversion.graph, conversion.document))
 
 
@@ -272,14 +285,23 @@ def file_import(filing, event, kept):
     if len({turtle.write(description) for description in descriptions}) != 1:
         raise Failure(f"{event['event']}'s runs disagree on the import's label, start or association")
     used = {(URIRef(event["import"]), PROV.used, document) for document in kept}
-    filing.add_turtle(event["event"], fanned(FOLDERS["imports"], event["import"]), descriptions[0] | used)
+    filing.add_turtle(event["event"], LAYOUT.place(PROV.Activity, {PROV.used}).path(event["import"]),
+                      descriptions[0] | used)
 
 
 EVENT_KEYS = ["event", "at", "subject", "export", "import", "entry", "read_through", "takes", "adds"]
 
 
+def owned_places():
+    """Where the writer files what it writes."""
+    records = [LAYOUT.place(kind) for kind in LAYOUT.views]
+    return [LAYOUT.place(REC.Subject), LAYOUT.place(FOAF.PersonalProfileDocument), LAYOUT.place(PIM.ConfigurationFile),
+            LAYOUT.place(PROV.Activity), LAYOUT.place(PROV.Activity, {PROV.used}), LAYOUT.place(PROV.Entity),
+            LAYOUT.stored_bytes, *records]
+
+
 def owned(path):
-    return path.split("/", 1)[0] in OWNED_POD_FOLDERS
+    return any(path == place.file or (place.folder and path.startswith(place.folder)) for place in owned_places())
 
 
 def write_json(path, value):
@@ -293,7 +315,7 @@ def events_manifest(example, filing):
         adds += [path for path, (added_by, _) in filing.files.items() if added_by == event["event"]]
         event = {**event, "adds": sorted(adds)}
         events.append({key: event[key] for key in EVENT_KEYS + sorted(set(event) - set(EVENT_KEYS)) if key in event})
-    return {"address": example.address, "events": events, "derived": sorted(example.derived)}
+    return {"address": example.address, "events": events, "derived": LAYOUT.derived}
 
 
 def run(example):
@@ -330,7 +352,10 @@ def write_facts(example, facts_files):
 
 
 def write_pod(example, filing):
-    for folder in OWNED_POD_FOLDERS:
-        shutil.rmtree(example.pod / folder, ignore_errors=True)
+    for place in owned_places():
+        if place.file:
+            (example.pod / place.file).unlink(missing_ok=True)
+        else:
+            shutil.rmtree(example.pod / place.folder, ignore_errors=True)
     save({path: content for path, (_, content) in filing.files.items()}, example.pod)
     write_json(example.folder / "events.json", events_manifest(example, filing))

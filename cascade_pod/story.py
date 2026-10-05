@@ -12,29 +12,12 @@ from rdflib.namespace import RDF
 
 from . import Failure, match, names, store, turtle, write
 from .example import Example
-from .pod import FOLDERS, INDEX_FILE, LABEL_FILE, MANIFEST_FILE, TYPE_INDEX, fanned, save
-from .turtle import CASCADE, CLINICAL, HEALTH, JDG, PROV, REC, SOLID
+from .pod import LAYOUT, save
+from .turtle import JDG, PROV, REC
 
 STEPS_GRAPH = "urn:cascade:steps"
 STEP = "urn:cascade:step:"
 KINDS = ("creation", "import", "entry", "judgment", "reference", "matcher")
-VIEWS = {"allergies": HEALTH.AllergyRecord, "conditions": HEALTH.ConditionRecord,
-         "immunizations": HEALTH.ImmunizationRecord, "procedures": CLINICAL.Procedure,
-         "patient-profile": CASCADE.PatientProfile}
-
-
-def shell(address):
-    """The type index a pod is created with, listing the view each kind of record is in."""
-    index = URIRef(address + TYPE_INDEX)
-    views = URIRef(f"{index}#views")
-    triples = {(index, RDF.type, SOLID.TypeIndex), (index, RDF.type, SOLID.UnlistedDocument),
-               (views, RDF.type, SOLID.TypeRegistration), (views, SOLID.forClass, REC.View),
-               (views, SOLID.instanceContainer, URIRef(address + "clinical/"))}
-    for view, kind in VIEWS.items():
-        registration = URIRef(f"{index}#{view}")
-        triples |= {(registration, RDF.type, SOLID.TypeRegistration), (registration, SOLID.forClass, kind),
-                    (registration, SOLID.instance, URIRef(f"{address}clinical/{view}.ttl"))}
-    return {TYPE_INDEX: turtle.write(triples, address + TYPE_INDEX)}
 
 
 def read(path):
@@ -98,7 +81,7 @@ class Replay:
         save(fresh, self.folder / "pod")
         event["adds"] = sorted(fresh)
         if happened == "creation":
-            self.derived = sorted([*self.example().view_files.values(), LABEL_FILE, INDEX_FILE, MANIFEST_FILE])
+            self.derived = LAYOUT.derived
         self._tell()
 
     def _filed(self, event, file):
@@ -110,7 +93,7 @@ class Replay:
 
     def _creation(self, step, event):
         event["subject"] = self.story["subject"]
-        return shell(self.address) | self._filed(event, write.file_subject)
+        return self._filed(event, write.file_subject)
 
     def _import(self, step, event):
         export = self.folder / "exports" / step["name"] / "apple_health_export"
@@ -141,11 +124,11 @@ class Replay:
         judgments = list(store.parsed_text(octets).subjects(RDF.type, JDG.Judgment))
         if len(judgments) != 1:
             raise ValueError(f"{step['judgment']} holds {len(judgments)} judgments, not one")
-        return {fanned(FOLDERS["judgments"], str(judgments[0])): octets}
+        return {LAYOUT.place(JDG.Judgment).path(judgments[0]): octets}
 
     def _reference(self, step, event):
         series, version = match.References(self.folder / "references").versions[step["reference"]]
-        path = fanned(FOLDERS["references"], version["name"])
+        path = LAYOUT.version(LAYOUT.place(REC.ReferenceSeries), version["name"])
         return {path: turtle.write(match.version_triples(series, version), self.address + path)}
 
     def _matcher(self, step, event):

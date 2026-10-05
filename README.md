@@ -9,7 +9,8 @@ How a Cascade pod is described and queried.
   [the-cascade-protocol/spec](https://github.com/the-cascade-protocol/spec) (CC BY 4.0);
   `records` and `judgments` are first declared here (Apache-2.0).
 - [`queries/v1-draft/`](queries/v1-draft): the standard queries over a pod.
-- [`runtime/`](runtime): the rules a runtime follows when it fills a pod, and the vectors that show them.
+- [`runtime/`](runtime): the rules a runtime follows when it fills a pod, the vectors that show them, and where a
+  pod files each kind of thing, [`pod-layout.ttl`](runtime/pod-layout.ttl).
 
 Beside it are one library and the reference tools on it, [`cascade_pod/`](cascade_pod), and one
 example pod, as data, [`example-pods/alex-rivera/`](example-pods/alex-rivera).

@@ -1,5 +1,5 @@
-"""An example: its pod's folder and address, its story's events and the files each adds, the view its type index lists
-each kind in and the folder its records are filed in, and its pod in a store."""
+"""An example: its pod's folder and address, its story's events and the files each adds, the view the layout lists each
+kind in and the folder its records are filed in, and its pod in a store."""
 
 import json
 from dataclasses import dataclass
@@ -7,9 +7,8 @@ from functools import cached_property
 from pathlib import Path, PurePosixPath
 
 from . import Failure, derive, derived_files, turtle, vocabulary
-from .pod import FOLDERS, NOT_RDF, TYPE_INDEX
-from .store import ENGINES, Store, parsed
-from .turtle import REC, SOLID
+from .pod import LAYOUT, LAYOUT_GRAPH, NOT_RDF
+from .store import ENGINES, Store
 
 
 class Example:
@@ -29,22 +28,13 @@ class Example:
 
     @cached_property
     def view_files(self):
-        """Each view file the type index lists a kind's entries in, by its name, which is that of the view that builds
-        it."""
-        return {PurePosixPath(path).stem: path for path in self._views.values()}
+        """Each view file the layout lists a kind's entries in, by its name, which is that of the view that builds it."""
+        return {PurePosixPath(view.written_by).stem: view.file for view in LAYOUT.views.values()}
 
     @cached_property
     def records_folders(self):
-        """Each kind the type index lists in a view, by the folder its records are filed in, named for that view."""
-        return {kind: f"{FOLDERS['records']}/{PurePosixPath(path).stem}" for kind, path in self._views.items()}
-
-    @cached_property
-    def _views(self):
-        index = parsed(self.pod / TYPE_INDEX, self.address + TYPE_INDEX)
-        containers = tuple(str(folder) for registration, folder in index.subject_objects(SOLID.instanceContainer)
-                           if index.value(registration, SOLID.forClass) == REC.View)
-        return {index.value(registration, SOLID.forClass): str(file)[len(self.address):]
-                for registration, file in index.subject_objects(SOLID.instance) if str(file).startswith(containers)}
+        """Each kind the layout lists in a view, by where its records are filed."""
+        return {kind: LAYOUT.place(kind) for kind in LAYOUT.views}
 
     def event(self, name):
         found = next((event for event in self.events if event["event"] == name), None)
@@ -75,10 +65,13 @@ class Example:
 
     def build(self, engine, lens, through=None):
         """The pod as every tool and question sees it, in its store: each file through the event, the lens's derived
-        state and the files built from them, each in a graph of its own and all of them in the default graph."""
+        state and the files built from them, each in a graph of its own and all of them in the default graph, and the
+        layout read with the pod's address as its base, in a graph of its own and the default graph."""
         store = self.story_store(engine, through)
         derived = derive.derive(store, lens)
-        return Build(store, derived, derived_files.add(self, store, through))
+        files = derived_files.add(self, store, through)
+        store.add(LAYOUT.triples(self.address), LAYOUT_GRAPH)
+        return Build(store, derived, files)
 
     def derived_turtle(self, engine):
         """Each derived file of the whole pod under the default lens, as Turtle, by its path within pod/."""

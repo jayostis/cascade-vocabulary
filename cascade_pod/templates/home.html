@@ -28,9 +28,10 @@ is.</dd>
 <dd>The person the pod is about.</dd>
 <dt><code>clinical/</code></dt>
 <dd>The views: one file per type, listing entries an app can show. The build writes them and can always write them again.</dd>
-<dt><code>profile/</code>, <code>settings/</code>, <code>.well-known/</code>, <code>index.ttl</code></dt>
-<dd>Solid's own files: the owner's profile, which names the pod's root, the type index, which says where each type is
-listed, and the list of the root's folders.</dd>
+<dt><code>profile/</code>, <code>settings/</code>, <code>manifest.ttl</code></dt>
+<dd>Solid's own files: the owner's profile, which names the pod's root and the preferences file; the preferences file,
+which names the type index; and the type index, which says which view lists each type. The build writes the type index
+from the pod's layout, beside the manifest, which says what built the pod.</dd>
 </dl>
 <p>Some folders have two-character folders inside them. Those only spread the files out, so no folder holds too many.</p>
 {{ question(questions[FOLDERS]) }}

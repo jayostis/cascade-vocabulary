@@ -1,18 +1,10 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix solid: <http://www.w3.org/ns/solid/terms#> .
 @prefix pim: <http://www.w3.org/ns/pim/space#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
-
-</profile/card.ttl> a foaf:PersonalProfileDocument ;
-    foaf:primaryTopic <#me> .
 
 <#me>
-    a foaf:Person, prov:Person ;
-    foaf:name "Cascade Protocol User" ;
-    pim:storage </> ;
-    pim:preferencesFile </settings/preferences> ;
-    solid:publicTypeIndex </settings/publicTypeIndex.ttl> ;
-    rdfs:seeAlso </profile/extended.ttl> ;
-    cascade:schemaVersion "1.8" .
+  a
+    foaf:Person ,
+    prov:Person ;
+  pim:preferencesFile <https://pod.alex-rivera.example/settings/preferences> ;
+  pim:storage <https://pod.alex-rivera.example/> .

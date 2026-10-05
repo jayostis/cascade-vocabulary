@@ -7,7 +7,7 @@ from rdflib import Literal, URIRef
 from rdflib.namespace import RDF, RDFS
 
 from . import Failure, derive, names, turtle, vocabulary
-from .pod import FOLDERS, NOT_RDF, fanned, save
+from .pod import LAYOUT, NOT_RDF, save
 from .store import date_time
 from .turtle import CLINICAL, HEALTH, JDG, NPX, PAV, PROV, REC
 
@@ -148,8 +148,7 @@ class Matcher:
         self.tables = {rule: self.references.table(version) for rule, version in self.table_versions.items()}
         self.files = {}
 
-    def file(self, folder, name, triples):
-        path = fanned(folder, name)
+    def file(self, path, triples):
         self.files[path] = turtle.write(triples, self.reading.example.address + path)
 
     def matches(self, rule, a, b):
@@ -162,13 +161,16 @@ class Matcher:
         justification = JDG[rule["justification"]]
         member_names = sorted(m["name"] for m in members)
         name = names.record([str(MATCHER), str(justification), *member_names, *used])
-        self.file(FOLDERS["judgments"], name,
+        self.file(LAYOUT.place(JDG.Judgment).path(name),
                   judgment(name, at=self.at, members=member_names, justification=justification, used=used))
         for version in applied:
             series, _ = self.references.versions[version["name"]]
-            for thing, triples in ((series, series_triples(series)), (version, version_triples(series, version))):
+            place = LAYOUT.place(REC.ReferenceSeries)
+            for thing, path, triples in ((series, place.path(series["name"]), series_triples(series)),
+                                         (version, LAYOUT.version(place, version["name"]),
+                                          version_triples(series, version))):
                 if not self.reading.holds(thing["name"]):
-                    self.file(FOLDERS["references"], thing["name"], triples)
+                    self.file(path, triples)
 
     def take(self, event):
         theirs = self.reading.subjects_records()
