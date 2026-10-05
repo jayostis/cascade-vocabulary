@@ -6,7 +6,7 @@ import json
 from rdflib import Literal, URIRef
 from rdflib.namespace import RDF, RDFS
 
-from . import Failure, names, turtle, vocabulary
+from . import Failure, derive, names, turtle, vocabulary
 from .pod import FOLDERS, NOT_RDF, fanned, save
 from .store import date_time
 from .turtle import CLINICAL, HEALTH, JDG, NPX, PAV, PROV, REC
@@ -51,17 +51,15 @@ class References:
 
     def current(self, key, reading):
         series = self.by_key[key]
-        held = [v for v in reading.graph.subjects(PROV.specializationOf, URIRef(series["name"]))]
-        if not held:
+        current = [str(v) for v in reading.graph.objects(URIRef(series["name"]), PAV.hasCurrentVersion)]
+        if not current:
             shipped = next((v for v in series["versions"] if v["version"] == series["ships_with"]), None)
             if shipped is None:
                 raise Failure(f"{series['label']} ships with {series['ships_with']}, a version it does not list")
             return shipped
-        revised = {o for v in held for o in reading.graph.objects(v, PROV.wasRevisionOf)}
-        current = [v for v in held if v not in revised]
-        if len(current) != 1 or str(current[0]) not in self.versions:
+        if len(current) != 1 or current[0] not in self.versions:
             raise Failure(f"the pod holds no one current version the matcher knows of {series['label']}")
-        return self.versions[str(current[0])][1]
+        return self.versions[current[0]][1]
 
 
 # The pod through one event
@@ -73,7 +71,7 @@ class Reading:
         self.subject = URIRef(next(e["subject"] for e in events if "subject" in e))
         self.added_by = example.added_by(read_through)
         store = example.pod_only("rdflib", read_through)
-        store.add(store.construct(vocabulary.query("derivations/records.rq")))
+        derive.run(store, vocabulary.derivations_before_the_lens())
         self.graph, self.defined_in = store.graph(), {}
         for event in events:
             for path in (p for p in event["adds"] if not p.startswith(NOT_RDF)):
@@ -84,13 +82,10 @@ class Reading:
     def _records(self):
         g, records = self.graph, {}
         for record in g.subjects(RDF.type, REC.Record):
-            revisions = set(g.subjects(REC.revisionOf, record))
-            followed = {o for r in revisions for o in g.objects(r, PROV.wasRevisionOf)}
-            first = [r for r in revisions if g.value(r, PROV.wasRevisionOf) is None]
-            latest = list(revisions - followed)
-            if len(first) != 1 or len(latest) != 1:
-                raise Failure(f"{record} has no one first and one latest revision")
-            version = g.value(latest[0], REC.version)
+            first = [r for r in g.subjects(REC.revisionOf, record) if g.value(r, PROV.wasRevisionOf) is None]
+            version = g.value(record, PAV.hasCurrentVersion)
+            if len(first) != 1 or version is None:
+                raise Failure(f"{record} has no one first revision and current version")
             records[record] = {
                 "name": str(record), "kind": str(g.value(record, REC.kind)), "path": self.defined_in[record],
                 "first": self.defined_in[first[0]], "arrived": str(g.value(first[0], PROV.generatedAtTime)),

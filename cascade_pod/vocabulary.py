@@ -54,3 +54,10 @@ def positions():
 def derivations(lens):
     steps = [*named("derivations").values(), named("lenses")[lens]]
     return sorted(steps, key=positions().__getitem__)
+
+
+def derivations_before_the_lens():
+    position = positions()
+    lens_position = min(position[lens] for lens in named("lenses").values())
+    return sorted((step for step in named("derivations").values() if position[step] < lens_position),
+                  key=position.__getitem__)
