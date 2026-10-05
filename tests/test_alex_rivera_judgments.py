@@ -106,7 +106,7 @@ def test_each_matcher_judgment_names_the_rule_set_the_table_its_rule_applied_and
         judgment = URIRef(name)
         if str(graph.value(judgment, URIRef(PROV + "wasAttributedTo"))) != MATCHER:
             continue
-        records = ALEX.loaded("rdflib", ALEX.added_by()[relative]).graph()
+        records = ALEX.pod_only("rdflib", ALEX.added_by()[relative]).graph()
         justification = str(graph.value(judgment, URIRef(JDG + "justification")))[len(JDG):]
         members = sorted(str(m) for m in graph.objects(judgment, URIRef(PROV + "hadMember")))
         used = sorted(str(u) for u in graph.objects(judgment, URIRef(PROV + "used")))

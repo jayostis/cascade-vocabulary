@@ -83,7 +83,7 @@ class Build:
 
 @lru_cache(maxsize=None)
 def build(engine, lens, event):
-    held = ALEX.loaded(engine, event)
+    held = ALEX.pod_only(engine, event)
     derive.derive(held, lens)
     state = graph(held.triples())
     files = derived_files.add(ALEX, held, event)

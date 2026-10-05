@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from cascade_pod import store
-from cascade_pod.pod import Example
+from cascade_pod.example import Example
 
 ROOT = Path(__file__).absolute().parent.parent
 EXAMPLES = [Example(folder) for folder in sorted((ROOT / "example-pods").iterdir()) if folder.is_dir()]

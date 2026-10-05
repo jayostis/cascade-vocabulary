@@ -7,8 +7,8 @@ from rdflib import Literal, URIRef
 from rdflib.namespace import RDF, RDFS
 
 from . import Failure, names, turtle, vocabulary
-from .pod import NOT_RDF, fanned, save
-from .store import Rdflib, date_time
+from .pod import FOLDERS, NOT_RDF, fanned, save
+from .store import date_time
 from .turtle import CLINICAL, HEALTH, JDG, NPX, PAV, PROV, REC
 
 MATCHER = URIRef("urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76")
@@ -49,15 +49,15 @@ class References:
         with open(self.folder / version["table"], newline="", encoding="utf-8") as table:
             return list(csv.DictReader(table))
 
-    def current(self, key, pod):
+    def current(self, key, reading):
         series = self.by_key[key]
-        held = [v for v in pod.graph.subjects(PROV.specializationOf, URIRef(series["name"]))]
+        held = [v for v in reading.graph.subjects(PROV.specializationOf, URIRef(series["name"]))]
         if not held:
             shipped = next((v for v in series["versions"] if v["version"] == series["ships_with"]), None)
             if shipped is None:
                 raise Failure(f"{series['label']} ships with {series['ships_with']}, a version it does not list")
             return shipped
-        revised = {o for v in held for o in pod.graph.objects(v, PROV.wasRevisionOf)}
+        revised = {o for v in held for o in reading.graph.objects(v, PROV.wasRevisionOf)}
         current = [v for v in held if v not in revised]
         if len(current) != 1 or str(current[0]) not in self.versions:
             raise Failure(f"the pod holds no one current version the matcher knows of {series['label']}")
@@ -72,8 +72,7 @@ class Reading:
         events = example.through(read_through)
         self.subject = URIRef(next(e["subject"] for e in events if "subject" in e))
         self.added_by = example.added_by(read_through)
-        store = Rdflib()
-        example.load(store, read_through)
+        store = example.pod_only("rdflib", read_through)
         store.add(store.construct(vocabulary.query("derivations/records.rq")))
         self.graph, self.defined_in = store.graph(), {}
         for event in events:
@@ -149,9 +148,9 @@ MATCHES = {"R1": same_code, "R2": same_code_and_date, "R3": mapped_code, "R4": v
 
 
 class Matcher:
-    def __init__(self, pod, at):
-        self.pod, self.at, self.references = pod, at, References(pod.example.folder / "references")
-        self.rules_version = self.references.current("rules", pod)
+    def __init__(self, reading, at):
+        self.reading, self.at, self.references = reading, at, References(reading.example.folder / "references")
+        self.rules_version = self.references.current("rules", reading)
         self.rules = self.references.table(self.rules_version)
         if sorted(r["rule"] for r in self.rules) != sorted(MATCHES):
             raise Failure(f"rule set {self.rules_version['version']} names rules this matcher does not apply")
@@ -159,10 +158,10 @@ class Matcher:
 
     def file(self, folder, name, triples):
         path = fanned(folder, name)
-        self.files[path] = turtle.write(triples, self.pod.example.address + path)
+        self.files[path] = turtle.write(triples, self.reading.example.address + path)
 
     def table_version(self, rule):
-        return self.references.current(rule["table"], self.pod) if rule["table"] else None
+        return self.references.current(rule["table"], self.reading) if rule["table"] else None
 
     def matches(self, rule, a, b):
         version = self.table_version(rule)
@@ -175,17 +174,17 @@ class Matcher:
         justification = JDG[rule["justification"]]
         member_names = sorted(m["name"] for m in members)
         name = names.record([str(MATCHER), str(justification), *member_names, *used])
-        self.file("judgments", name, judgment(name, at=self.at, members=member_names, justification=justification,
+        self.file(FOLDERS["judgments"], name, judgment(name, at=self.at, members=member_names, justification=justification,
                                               used=used))
         for version in applied:
             series, _ = self.references.versions[version["name"]]
             for thing, triples in ((series, series_triples(series)), (version, version_triples(series, version))):
-                if not self.pod.holds(thing["name"]):
-                    self.file("references", thing["name"], triples)
+                if not self.reading.holds(thing["name"]):
+                    self.file(FOLDERS["references"], thing["name"], triples)
 
     def take(self, event):
-        theirs = self.pod.subjects_records()
-        taken = sorted((r for r in theirs.values() if self.pod.added_by[r["first"]] == event),
+        theirs = self.reading.subjects_records()
+        taken = sorted((r for r in theirs.values() if self.reading.added_by[r["first"]] == event),
                        key=lambda r: (r["arrived"], r["path"]))
         compared = sorted((r for r in theirs.values() if r not in taken), key=lambda r: r["path"])
         for record in taken:
@@ -196,12 +195,12 @@ class Matcher:
             compared.append(record)
 
     def recheck(self):
-        g = self.pod.graph
+        g = self.reading.graph
         revised = {o for o in g.objects(None, PROV.wasRevisionOf) if str(o) in self.references.versions}
         by_justification = {JDG[r["justification"]]: r for r in self.rules}
-        theirs = self.pod.subjects_records()
+        theirs = self.reading.subjects_records()
         for judged in sorted(g.subjects(PROV.wasAttributedTo, MATCHER), key=str):
-            if g.value(judged, JDG.verdict) != JDG.Same or self.pod.replaced(judged):
+            if g.value(judged, JDG.verdict) != JDG.Same or self.reading.replaced(judged):
                 continue
             if not revised & set(g.objects(judged, PROV.used)):
                 continue

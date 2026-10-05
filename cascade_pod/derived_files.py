@@ -4,10 +4,9 @@ from rdflib import BNode, Literal, URIRef
 from rdflib.namespace import RDF, RDFS
 
 from . import Failure, vocabulary
+from .pod import INDEX_FILE, LABEL_FILE, MANIFEST_FILE
 from .store import date_time
 from .turtle import CASCADE, DCT, LDP, PROV, REC
-
-LABEL_FILE = "clinical/labels.ttl"
 
 
 def add(example, store, through=None):
@@ -20,9 +19,9 @@ def add(example, store, through=None):
     files = {path: marked(example.address + path, triples, used) for path, triples in files.items()}
     _add(store, example, files)
     files[LABEL_FILE] = marked(example.address + LABEL_FILE, store.construct(vocabulary.query("labels.rq")), used)
-    files["index.ttl"] = index(example.address, example.files(through) + example.derived)
-    files["manifest.ttl"] = manifest(example.address + "manifest.ttl", example.title, example.through(through)[-1]["at"])
-    _add(store, example, {path: files[path] for path in (LABEL_FILE, "index.ttl", "manifest.ttl")})
+    files[INDEX_FILE] = index(example.address, example.files(through) + example.derived)
+    files[MANIFEST_FILE] = manifest(example.address + MANIFEST_FILE, example.title, example.through(through)[-1]["at"])
+    _add(store, example, {path: files[path] for path in (LABEL_FILE, INDEX_FILE, MANIFEST_FILE)})
     unlisted, unmade = sorted(set(files) - set(example.derived)), sorted(set(example.derived) - set(files))
     if unlisted or unmade:
         raise Failure(f"events.json's derived does not list {unlisted} and lists {unmade}, which nothing builds")

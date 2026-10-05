@@ -12,11 +12,10 @@ from rdflib import BNode, URIRef
 from rdflib.namespace import RDF
 
 from . import Failure, apple_health, names, store, turtle
-from .pod import fanned, save, stem
+from .pod import FOLDERS, OWNED_POD_FOLDERS, attachment, fanned, save
 from .turtle import BRIDGE, PAV, PROV, REC
 
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
-OWNED_POD_FOLDERS = ["subject", "records", "provenance", "attachments"]
 
 
 def closure(graph, subject):
@@ -102,7 +101,7 @@ class Filing:
 
 def file_subject(filing, event):
     subject = URIRef(event["subject"])
-    filing.add_turtle(event["event"], fanned("subject", str(subject)), {(subject, RDF.type, REC.Subject)})
+    filing.add_turtle(event["event"], fanned(FOLDERS["subject"], str(subject)), {(subject, RDF.type, REC.Subject)})
 
 
 def file_entry(filing, event):
@@ -111,7 +110,7 @@ def file_entry(filing, event):
     if len(activities) != 1:
         raise Failure(f"{event['entry']} holds {len(activities)} activities, not one")
     activity = activities[0]
-    filing.add_turtle(event["event"], fanned("provenance/activities", str(activity)), closure(graph, activity))
+    filing.add_turtle(event["event"], fanned(FOLDERS["activities"], str(activity)), closure(graph, activity))
     for revision in entry_revisions(graph, activity, event["entry"], filing.example.records_folders):
         filing.revise(event["event"], revision)
 
@@ -254,8 +253,8 @@ def keep(filing, event, conversion):
     if event.get("import") is None:
         raise Failure(f"{event['event']} has no import, and {conversion.path.name} would be stored")
     filing.stored.add(conversion.document)
-    filing.add(event["event"], f"attachments/sha-256/{stem(conversion.document)}", conversion.octets)
-    filing.add_turtle(event["event"], fanned("provenance/documents", conversion.document),
+    filing.add(event["event"], attachment(conversion.document), conversion.octets)
+    filing.add_turtle(event["event"], fanned(FOLDERS["documents"], conversion.document),
                       closure(conversion.graph, conversion.document))
 
 
@@ -264,7 +263,7 @@ def file_import(filing, event, kept):
     if len({turtle.write(description) for description in descriptions}) != 1:
         raise Failure(f"{event['event']}'s runs disagree on the import's label, start or association")
     used = {(URIRef(event["import"]), PROV.used, document) for document in kept}
-    filing.add_turtle(event["event"], fanned("provenance/imports", event["import"]), descriptions[0] | used)
+    filing.add_turtle(event["event"], fanned(FOLDERS["imports"], event["import"]), descriptions[0] | used)
 
 
 # The events manifest

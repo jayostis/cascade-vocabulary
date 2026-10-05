@@ -6,7 +6,8 @@ from rdflib import Graph, URIRef
 
 import recomputed
 from cascade_pod import Failure, match, turtle
-from cascade_pod.pod import Example, fanned
+from cascade_pod.example import Example
+from cascade_pod.pod import fanned
 from examples import run_matcher
 
 JDG = "https://ns.cascadeprotocol.org/judgments/v1-draft#"

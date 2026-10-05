@@ -14,7 +14,7 @@ from rdflib.compare import isomorphic
 
 import recomputed
 from cascade_pod import match, names, store, turtle, vocabulary
-from cascade_pod.derived_files import LABEL_FILE
+from cascade_pod.pod import LABEL_FILE
 from cascade_pod.pod import TYPE_INDEX
 from examples import ROOT, every_example, every_example_and, pod_file, run_matcher
 
@@ -263,7 +263,7 @@ def test_the_build_rewrites_every_committed_view_and_the_labels_byte_for_byte(ex
 
 @every_example
 def test_every_committed_view_is_marked_rebuildable_and_lists_only_the_kind_the_type_index_registers_it_for(example):
-    held = example.store("oxigraph", vocabulary.DEFAULT_LENS)
+    held = example.pod_with_derived_state("oxigraph", vocabulary.DEFAULT_LENS)
     current = {row["version"] for row in held.select(vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"]))}
     for relative in sorted(set(example.view_files.values()) | {LABEL_FILE}):
         address = URIRef(example.address + relative)

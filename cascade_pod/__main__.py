@@ -3,7 +3,8 @@ import sys
 from pathlib import Path
 
 from . import Failure, ask, graphdb, match, site, vocabulary, write
-from .pod import Example, save
+from .example import Example
+from .pod import save
 from .store import ENGINES
 
 

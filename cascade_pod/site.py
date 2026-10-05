@@ -12,8 +12,7 @@ from rdflib import Literal, URIRef
 from rdflib.namespace import RDF, XSD
 
 from . import derive, names, turtle, vocabulary
-from .derived_files import LABEL_FILE
-from .pod import save
+from .pod import FOLDERS, LABEL_FILE, save
 from .store import ENGINES
 
 ENGINE = "oxigraph"
@@ -87,7 +86,7 @@ class Site:
     def __init__(self, example):
         self.example = example
         self.lenses = sorted(vocabulary.named("lenses"), key=lambda lens: lens != vocabulary.DEFAULT_LENS)
-        self.stores = {lens: example.store(ENGINE, lens) for lens in self.lenses}
+        self.stores = {lens: example.pod_with_derived_state(ENGINE, lens) for lens in self.lenses}
         self.answers = {lens: self.asked_under(lens) for lens in self.lenses}
         self.questions = self.answers[vocabulary.DEFAULT_LENS]
         self.terms = term_labels()
@@ -116,7 +115,7 @@ class Site:
                             for row in question.rows if isinstance(row.get(kind), URIRef)}) for kind in kinds}
 
     def steps_under(self, lens):
-        return [(Query(relative), added) for relative, added in derive.steps(self.example.loaded(ENGINE), lens)]
+        return [(Query(relative), added) for relative, added in derive.steps(self.example.pod_only(ENGINE), lens)]
 
     def view_files(self):
         views = vocabulary.named("views")
@@ -138,7 +137,7 @@ class Site:
 
     def documents_stored(self):
         return {URIRef(names.document((self.example.pod / path).read_bytes())): COPY + path
-                for path in self.copied if path.startswith("attachments/")}
+                for path in self.copied if path.startswith(FOLDERS["attachments"])}
 
     def files_arrived_in(self):
         """The copy of the first file each thing arrived in, for a thing a file states rather than only names."""

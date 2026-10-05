@@ -7,7 +7,7 @@ from rdflib.namespace import RDF
 
 import recomputed
 from cascade_pod import store
-from cascade_pod.pod import Example
+from cascade_pod.example import Example
 from examples import ROOT
 
 EXAMPLE = ROOT / "example-pods" / "alex-rivera"
@@ -66,9 +66,7 @@ EVERY_JUDGMENT = {
 
 @lru_cache(maxsize=None)
 def pod(event):
-    engine = store.Rdflib()
-    ALEX.load(engine, event)
-    return engine.graph()
+    return ALEX.pod_only("rdflib", event).graph()
 
 
 def final_pod():
