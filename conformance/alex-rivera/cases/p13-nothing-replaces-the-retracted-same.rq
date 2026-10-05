@@ -1,0 +1,10 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?retracted ?counts WHERE {
+  <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> a jdg:Judgment ; npx:retracts ?retracted .
+  FILTER NOT EXISTS { <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> prov:hadMember [] }
+  BIND (EXISTS { ?retracted rec:counts true } AS ?counts)
+}

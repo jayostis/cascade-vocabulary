@@ -15,14 +15,12 @@ How a Cascade pod is described and queried; [`README.md`](README.md) names the p
 - **Each question is asked once.** Before adding one, look under its kind for the question that
   already returns those rows.
 - **What two tools share is written once, in its own `cascade_pod` module.**
-- **`expected/` and the planted cases come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,
+- **`conformance/*/expected/` and `cases/` come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,
   and a vector's expected rows under `runtime/vectors/` from [`runtime/rules.md`](runtime/rules.md), never from the
-  tools. Every file under `example-pods/*/pod/` is a tool's output: rerun the tool, never edit it.
+  tools.
 - **A query is tested on fixtures under [`tests/fixtures/`](tests/fixtures), one per behaviour, never on an
   example.** Its expected rows are written from what the query says it does. A check true of any pod runs over every
   fixture, with `every_fixture` from [`tests/examples.py`](tests/examples.py).
-- **A test of a tool or of the pod true of any example runs over every one**, with `every_example` or
-  `every_example_and`.
 - **The suite runs in parallel** (`python3 -m pytest -n auto --dist loadgroup`): what a test builds is built once per
   worker, and the cases that share it are put on one worker with `xdist_group`.
 

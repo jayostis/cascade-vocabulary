@@ -2,7 +2,8 @@
 
 What a runtime does when it fills a pod: how it names what it writes, which arrivals it writes, how the matcher judges,
 and the order it writes in. Each rule names the vectors in [`vectors/manifest.ttl`](vectors/manifest.ttl) that show it,
-and the planted cases of [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4) that exercise it.
+and the planted cases of [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4) that exercise it, which
+[the conformance kit](#the-conformance-kit) holds.
 
 ## The test format
 
@@ -66,6 +67,44 @@ nothing, and the replay goes on.
 The rows of a table's current version are loaded into the default graph the matcher's queries read, and those of no
 other version; they are never written to the pod.
 
+## The conformance kit
+
+[`conformance/alex-rivera/`](../conformance/alex-rivera) is the scenario every runtime must pass: Alex Rivera's pod, from
+[the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4), as input and right answers only.
+
+- **`story.json`** is a story in the form above, of 30 steps. Each of Alex's judgments is a step of its own, and each
+  matcher run is a step with its time.
+- **`scripted-input/`** holds what the steps name: `downloads/` (the Apple Health exports), `bridge/<step>/` (the
+  Bridge's saved output for each document the import step converts, `<file stem>/graph.ttl` and `findings.ttl`, in a
+  folder per step because a conversion carries its import's start), `entries/`, `judgments/` (Alex's twelve, one file
+  each) and `references/`. The facts the importer gives the Bridge are not input: the importer writes them from
+  `export.xml`.
+- **`expected/`** holds the five views a correct runtime builds at the last step under the `everyday` lens, each entry a
+  blank node, and `handles.json`, the scenario's name inputs for each record and profile it gives a handle.
+- **`cases/manifest.ttl`** holds the planted cases P1 to P25 and the scenario's other outcomes, in the test format above.
+  An entry is named `pNN-<what it shows>` for a planted case, and runs at the smallest set of steps and lenses at which
+  it can fail for its own reason. A runtime runs them on its one SPARQL engine; whether two engines agree is the
+  vocabulary's own check, made over the fixtures of its queries.
+
+A runtime passes the kit when all of these hold for one replay of its story:
+
+1. **Every entry of `cases/manifest.ttl` passes**, and every entry of [`vectors/manifest.ttl`](vectors/manifest.ttl).
+2. **Each final view equals `expected/`.** Take the view graph the replay builds at the last step under `everyday` (the
+   graph `<address>clinical/<view>.ttl`), keep each subject that has `cascade:mergedFrom` with its triples, and replace
+   each `urn:cascade:entry:` IRI with a blank node. The result is the expected file's graph, up to its blank nodes.
+3. **Every RDF file of the pod conforms to the vocabulary's shapes**, read with the files that describe what it names.
+4. **Every name follows its rule**, N1 to N7, N9 and N10, computed from that run's own inputs, its random import and
+   session IDs among them. Each saved Bridge output is in the pod less its arrivals, with its import replaced by the
+   import its step wrote (A9, A11), and each revision follows an earlier revision of the same record.
+5. **Every file the runtime wrote is where [`pod-layout.ttl`](pod-layout.ttl) says.** The check is open-world: the pod
+   may also hold files another app wrote.
+
+Checks 2 to 5 are not entries of a manifest: SPARQL cannot compare two graphs up to their blank nodes, hash a canonical
+graph, run SHACL or read a stored document's bytes. One way to make each is the Python's:
+[`tests/test_conformance.py`](../tests/test_conformance.py) makes checks 1, 2 and 4,
+[`tests/test_example_shapes.py`](../tests/test_example_shapes.py) check 3, and
+[`tests/test_pod_layout.py`](../tests/test_pod_layout.py) check 5.
+
 ## Naming
 
 ### N1. A record from a document keeps the name the Bridge gave it
@@ -119,8 +158,8 @@ Vectors: `judgment-name`, `a-judgment-cites-what-it-used`. Planted cases: P1, P1
 
 A `urn:uuid:`, version 4, new on every run. Nothing else does.
 
-Vectors: `import-is-a-new-uuid`, `entry-session-is-a-new-uuid`. Planted cases: none; the example pod keeps fixed import
-IDs until it is replayed from a story.
+Vectors: `import-is-a-new-uuid`, `entry-session-is-a-new-uuid`. Planted cases: none; the kit's check 4 holds each of a
+replay's imports and sessions to it.
 
 ### N8. What a runtime gives the Bridge
 
@@ -143,6 +182,14 @@ stored document adds nothing. The folder and the fan-out are the layout's, [`pod
 
 Every vector shows this rule, because each graph is named by its file's path. Vectors: `files-named-from-what-they-hold`.
 Planted cases: all.
+
+### N10. A person's judgment keeps the IRI its input gives it
+
+A judgment a person makes arrives with its name: whoever made it minted that once, as the subject's ID was minted. A
+runtime files it under that IRI and gives it no other; it is neither a new random UUID nor named by a rule. So a
+judgment can name another person's judgment, and an answer can name it, on every run.
+
+Vectors: `a-retraction-deletes-nothing`. Planted cases: P1, P13, P21, P24, P25.
 
 ## Arrivals
 
@@ -221,10 +268,10 @@ Vectors: `creation-files-the-subject`. Planted cases: none.
 
 ### A14. Some steps are refused, and a refused step writes no revision and no import
 
-Refused are: a graph holding a statement about no record, version, arrival, document or import; a record or draft of a
-type the pod files nowhere; one import's documents disagreeing on the import's description; an entry holding other
-than one activity; and an entry whose activity states a property by which [the layout](pod-layout.ttl) files an
-activity elsewhere than an entry's.
+Refused are: an export whose `export.xml` the importer cannot read; a graph holding a statement about no record,
+version, arrival, document or import; a record or draft of a type the pod files nowhere; one import's documents
+disagreeing on the import's description; an entry holding other than one activity; and an entry whose activity states
+a property by which [the layout](pod-layout.ttl) files an activity elsewhere than an entry's.
 
 Vectors: `refused-stray-statement`, `refused-type-filed-nowhere`, `refused-import-disagreement`,
 `refused-entry-of-two-activities`, `refused-entry-session-filed-elsewhere`. Planted cases: none.
@@ -238,7 +285,7 @@ A step's records are those whose first revision, the one with no `prov:wasRevisi
 name and no list of steps. A record of the subject's with no one first revision fails the run.
 
 No vector can tell this from taking the records whose first revision's file the step wrote, since in a pod that follows
-these rules the two always agree; `test_the_matcher_needs_no_file_names_or_event_list` in
+these rules the two always agree; `test_the_matcher_needs_no_file_names_or_step_list` in
 [`tests/test_alex_rivera_matcher.py`](../tests/test_alex_rivera_matcher.py) shows the matcher reading triples alone.
 
 Vectors: `takes-only-its-steps-records`. Planted cases: P1, P7.

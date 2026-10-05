@@ -106,18 +106,19 @@ def row(binding):
 
 
 class Run:
-    """One run of a manifest's entries on one engine, each story replayed once and each pod built once per step and
-    lens."""
+    """One run of a manifest's entries on one engine, each story replayed once, unless it is given replayed, and each
+    pod built once per step and lens."""
 
-    def __init__(self, engine, scratch):
+    def __init__(self, engine, scratch, replayed=None):
         self.engine, self.scratch = engine, Path(scratch)
-        self.replays, self.builds = {}, {}
+        self.replays = {Path(story_file).resolve(): example for story_file, example in (replayed or {}).items()}
+        self.builds = {}
 
     def replay(self, story_file):
         key = Path(story_file).resolve()
         if key not in self.replays:
             try:
-                self.replays[key] = story.Replay(key, self.scratch / str(len(self.replays)), self.engine).run()
+                self.replays[key] = story.Replay(key, self.scratch / str(len(self.replays)), self.engine).run().example()
             except Exception:
                 self.replays[key] = traceback.format_exc()
         if isinstance(self.replays[key], str):
@@ -131,13 +132,13 @@ class Run:
             if key not in self.builds:
                 self.builds[key] = entry.fixture.build(self.engine, lens).store
             return self.builds[key]
-        replay = self.replay(entry.story)
+        example = self.replay(entry.story)
         if entry.step not in story.steps(entry.story):
             raise ValueError(f"the story has no step {entry.step}")
-        key = (replay.story_file, entry.step, lens)
+        key = (Path(entry.story).resolve(), entry.step, lens)
         if key not in self.builds:
-            store = replay.example().build(self.engine, lens, entry.step).store
-            store.add(replay.steps_graph(entry.step), story.STEPS_GRAPH, alone=True)
+            store = example.build(self.engine, lens, entry.step).store
+            store.add(story.steps_graph(example, entry.step), story.STEPS_GRAPH, alone=True)
             self.builds[key] = store
         return self.builds[key]
 

@@ -1,0 +1,8 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?at ?version ?after WHERE {
+  VALUES ?record { <urn:uuid:6477b340-8fb7-8d62-a24a-b8520e30f0d5> <urn:uuid:58507165-cd9a-815a-9b90-bc53e0468cc2> }
+  ?revision rec:revisionOf ?record ; rec:version ?version ; prov:generatedAtTime ?at .
+  OPTIONAL { ?revision prov:wasRevisionOf ?previous . ?previous prov:generatedAtTime ?after }
+}

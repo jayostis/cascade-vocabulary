@@ -2,16 +2,15 @@ import xml.etree.ElementTree as ElementTree
 
 import pytest
 
+from alex_rivera import ADDRESS, INPUT, KIT, STORY
+from cascade_pod import vocabulary
 from examples import ROOT
-from alex_rivera import ALEX, EXAMPLE
 
 
 def alex():
-    """What only Alex's example says: its address, its name and title, its subject and imports, and its hospitals."""
-    example = ALEX
-    facts = {example.address, example.title, *example.name.split("-")}
-    facts |= {event[key] for event in example.events for key in ("subject", "import") if key in event}
-    for export in EXAMPLE.glob("downloads/*/apple_health_export/export.xml"):
+    """What only Alex's kit says: her pod's address, the kit's title, her subject and her hospitals."""
+    facts = {ADDRESS, vocabulary.title(KIT), STORY["subject"]}
+    for export in INPUT.glob("downloads/*/apple_health_export/export.xml"):
         facts |= {entry.get("sourceName") for entry in ElementTree.parse(export).getroot().iter("ClinicalRecord")}
     return facts
 

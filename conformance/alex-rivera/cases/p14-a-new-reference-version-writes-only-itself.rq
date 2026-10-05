@@ -1,0 +1,7 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?step ?file ?version WHERE {
+  VALUES ?step { <urn:cascade:step:E9> <urn:cascade:step:M2> }
+  GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
+  OPTIONAL { GRAPH ?file { ?version prov:specializationOf ?series } }
+}

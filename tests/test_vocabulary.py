@@ -142,9 +142,43 @@ def test_every_datatype_a_shape_accepts_is_in_its_predicates_range():
     assert outside == set()
 
 
-def test_the_crate_lists_every_ontology_file_and_every_query_and_nothing_else():
-    entities = {entity["@id"]: entity for entity in json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]}
-    listed = {part["@id"]: entities[part["@id"]]["encodingFormat"] for part in entities["./"]["hasPart"]}
+def crate():
+    return {entity["@id"]: entity for entity in json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]}
+
+
+def parts(entities, dataset):
+    """Each file a dataset has as a part, or as a part of a dataset that is one of its parts."""
+    found = {}
+    for part in entities[dataset]["hasPart"]:
+        entity = entities[part["@id"]]
+        found |= parts(entities, part["@id"]) if entity["@type"] == "Dataset" else {part["@id"]: entity["encodingFormat"]}
+    return found
+
+
+def test_the_crate_lists_every_ontology_query_runtime_and_conformance_file_and_nothing_else():
     files = (sorted(ROOT.glob("ontologies/**/*.ttl")) + sorted(QUERIES.rglob("*.rq"))
-             + sorted(path for path in (ROOT / "runtime").rglob("*") if path.is_file()))
-    assert listed == {path.relative_to(ROOT).as_posix(): FORMATS[path.suffix] for path in files}
+             + sorted(path for folder in ("runtime", "conformance") for path in (ROOT / folder).rglob("*") if path.is_file()))
+    assert parts(crate(), "./") == {path.relative_to(ROOT).as_posix(): FORMATS[path.suffix] for path in files}
+
+
+def references(value):
+    if isinstance(value, dict):
+        return {value["@id"]} if set(value) == {"@id"} else set().union(*map(references, value.values()))
+    if isinstance(value, list):
+        return set().union(*map(references, value))
+    return set()
+
+
+def test_every_is_based_on_and_citation_in_the_crate_is_on_a_file_that_exists():
+    described = [path for path, entity in crate().items() if "isBasedOn" in entity or "citation" in entity]
+    assert described and [path for path in described if path != "./" and not (ROOT / path).is_file()] == []
+
+
+def test_every_entity_in_the_crate_is_reached_from_its_metadata_descriptor():
+    entities, reached, todo = crate(), set(), ["ro-crate-metadata.json"]
+    while todo:
+        found = todo.pop()
+        if found in entities and found not in reached:
+            reached.add(found)
+            todo.extend(references(entities[found]))
+    assert sorted(set(entities) - reached) == []

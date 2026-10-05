@@ -1,16 +1,15 @@
 import pytest
 
-from cascade_pod import site
-from alex_rivera import ALEX
 from alex_rivera import name as name_of
+from cascade_pod import site
 from test_site import blocks, page_of, site_pages
 
 PENICILLIN = "urn:cascade:entry:a6ab153490000f8a538712abb75758f2280c92237cd33dc6eee4b8f00e8c2210"
 
 
 @pytest.fixture(scope="module")
-def pages():
-    return site_pages(ALEX)
+def pages(alex):
+    return site_pages(alex)
 
 
 def test_an_entrys_page_puts_each_chosen_value_beside_the_member_it_came_from(pages):

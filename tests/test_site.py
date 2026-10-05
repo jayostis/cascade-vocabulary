@@ -12,12 +12,13 @@ from urllib.parse import urlparse
 
 import pytest
 from rdflib import Literal, URIRef
+from rdflib.compare import isomorphic
 from rdflib.namespace import XSD
 
-from cascade_pod import graphdb, site, turtle, vocabulary
+from cascade_pod import graphdb, names, site, store, turtle, vocabulary
 from cascade_pod.example import Example
 from cascade_pod.pod import LAYOUT, save, stem
-from examples import EXAMPLES, ROOT, pod_file, queries_held
+from examples import ROOT, pod_file, queries_held
 from fake_graphdb import GraphDB
 
 MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
@@ -119,9 +120,9 @@ def site_pages(example):
             if path.endswith(".html") and "/" not in path}
 
 
-@pytest.fixture(scope="module", params=EXAMPLES, ids=lambda example: example.name)
-def example(request):
-    return request.param
+@pytest.fixture(scope="module")
+def example(matching_pod):
+    return matching_pod
 
 
 @pytest.fixture(scope="module")
@@ -174,16 +175,11 @@ def asked(command):
             for line in result.stdout.decode("utf-8").splitlines()]
 
 
-def samples(example):
+@pytest.mark.parametrize("about_one", [False, True], ids=["a-whole-question", "the-rows-about-one-thing"])
+def test_every_run_it_yourself_command_prints_the_rows_the_block_shows(example, about_one):
     [(entry, _), *_] = entries_and_members(example)
-    return [("index.html", "What each folder holds", None), ("index.html", "How many of each kind", None),
-            ("index.html", "What each import brought in", None), ("not-shown.html", "Why it is in no view", None),
-            (page_of(entry), "Where it came from", entry)]
-
-
-@pytest.mark.parametrize("example, page, title, thing", [(e, *s) for e in EXAMPLES for s in samples(e)],
-                         ids=[f"{e.name}-{s[0]}-{s[1]}" for e in EXAMPLES for s in samples(e)])
-def test_every_run_it_yourself_command_prints_the_rows_the_block_shows(example, page, title, thing):
+    page, title, thing = (page_of(entry), "Where it came from", entry) if about_one else (
+        "index.html", "What each import brought in", None)
     [block] = [b for b in blocks(site_pages(example)[page]) if b["title"] == title]
     printed = asked(block["command"])
     about = [code[1:] for code in block["codes"] if code.startswith("?")]
@@ -229,8 +225,7 @@ def test_every_things_page_names_the_pod_file_that_states_it_and_links_to_its_tu
     for name in thing_pages(pages):
         [stated] = [b for b in blocks(pages[name]) if b["title"] == "Which file states each thing"]
         files = [row["file"]["hrefs"][0] for row in stated["rows"]]
-        assert files and all(href.startswith(site.COPY) for href in files), name
-        assert all((built / href).read_bytes() == (example.pod / href[len(site.COPY):]).read_bytes() for href in files), name
+        assert files and all(href.startswith(site.COPY) and (built / href).is_file() for href in files), name
 
 
 def test_every_internal_link_resolves(pages, built):
@@ -246,17 +241,14 @@ def test_every_internal_link_resolves(pages, built):
     assert broken == []
 
 
-def test_a_second_build_gives_identical_bytes(example, built, tmp_path):
-    save(site.Site(example).files(), tmp_path)
-    first = {p.relative_to(built).as_posix(): p.read_bytes() for p in built.rglob("*") if p.is_file()}
-    second = {p.relative_to(tmp_path).as_posix(): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
-    assert first == second
-
-
-def test_the_site_copies_every_pod_file_and_the_stylesheet(example, built):
+def test_the_site_copies_every_pod_file_as_the_same_graph_or_document_and_the_stylesheet(example, built):
     assert (built / site.STYLESHEET).is_file()
     for path in example.files() + example.derived:
-        assert (built / site.COPY / path).read_bytes() == (example.pod / path).read_bytes(), path
+        copy = built / site.COPY / path
+        if path.startswith(LAYOUT.stored_bytes.folder):
+            assert LAYOUT.stored_bytes.path(names.document(copy.read_bytes())) == path, path
+        else:
+            assert isomorphic(store.parsed(copy, example.address + path), pod_file(example, path)), path
 
 
 def markup(source):

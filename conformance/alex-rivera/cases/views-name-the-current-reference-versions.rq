@@ -1,0 +1,6 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?view ?used WHERE {
+  GRAPH ?view { ?view a rec:View ; prov:used ?used }
+}

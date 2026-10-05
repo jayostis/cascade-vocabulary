@@ -1,0 +1,7 @@
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?version WHERE {
+  <urn:uuid:8d028c6a-147f-8e99-8eb0-605a67c8edb5> a health:AllergyRecord .
+  ?version prov:specializationOf <urn:uuid:8d028c6a-147f-8e99-8eb0-605a67c8edb5> .
+}

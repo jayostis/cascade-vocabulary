@@ -11,7 +11,7 @@ from pathlib import Path
 from rdflib import URIRef
 from rdflib.namespace import RDF
 
-from . import Failure, match, names, store, turtle, write
+from . import Failure, match, names, store, turtle, vocabulary, write
 from .example import Example
 from .pod import LAYOUT, save
 from .turtle import JDG, PROV, REC
@@ -55,8 +55,9 @@ class Replay:
         if self.folder.exists():
             shutil.rmtree(self.folder)
         (self.folder / "pod").mkdir(parents=True)
+        name = vocabulary.title(self.source) or self.source.name
         (self.folder / "ro-crate-metadata.json").write_text(
-            json.dumps({"@graph": [{"@id": "./", "name": self.source.name}]}), encoding="utf-8")
+            json.dumps({"@graph": [{"@id": "./", "name": name}]}), encoding="utf-8")
         if (self.source / "scripted-input" / "references").is_dir():
             shutil.copytree(self.source / "scripted-input" / "references", self.folder / "references")
         self._tell()
@@ -152,8 +153,21 @@ class Replay:
         event |= {"read_through": read_through, **({"takes": takes} if takes else {})}
         return matcher.take(self.activities.get(takes)) if takes else matcher.recheck()
 
-    def steps_graph(self, through):
-        """What each step through `through` wrote: each file that was new to the pod."""
-        events = self.example().through(through)
-        return {(URIRef(STEP + event["event"]), PROV.generated, URIRef(self.address + path))
-                for event in events for path in event["adds"]}
+
+def steps_graph(example, through):
+    """What each step of a replayed example through `through` wrote: each file that was new to the pod."""
+    return {(URIRef(STEP + event["event"]), PROV.generated, URIRef(example.address + path))
+            for event in example.through(through) for path in event["adds"]}
+
+
+def replayed(kit, out, engine="oxigraph"):
+    """The example a kit's story replays into `out`, with the files the build writes for its last step under the
+    default lens. A folder at `out` that is not an earlier replay is left as it is."""
+    kit, out = Path(kit), Path(out)
+    if not (kit / "story.json").is_file():
+        raise Failure(f"{kit} has no story.json")
+    if out.is_dir() and any(out.iterdir()) and not (out / "events.json").is_file():
+        raise Failure(f"{out} holds files and no earlier replay; nothing changed")
+    example = Replay(kit / "story.json", out, engine).run().example()
+    save(example.derived_turtle(engine), example.pod)
+    return example

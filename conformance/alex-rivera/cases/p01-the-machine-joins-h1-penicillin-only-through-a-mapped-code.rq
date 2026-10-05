@@ -1,0 +1,8 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?judgment ?justification WHERE {
+  ?judgment a jdg:Judgment ; prov:hadMember <urn:uuid:0e3269cc-f6d1-8e05-b3eb-c727ead690a7> ; jdg:justification ?justification ;
+            prov:wasAttributedTo ?agent .
+  ?agent a prov:SoftwareAgent .
+}

@@ -1,0 +1,10 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?justification WHERE {
+  <urn:uuid:26b7ca18-b483-8b4b-9c3e-9086b13999cc> rec:inEntry ?entry .
+  ?member rec:inEntry ?entry .
+  ?same rec:counts true ; jdg:verdict jdg:Same ; jdg:justification ?justification ;
+        prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
+}

@@ -3,10 +3,14 @@ import xml.etree.ElementTree as ElementTree
 from datetime import datetime, timedelta
 
 import pytest
+from rdflib.namespace import SH
 
-from alex_rivera import EXAMPLE
+import recomputed
+from alex_rivera import INPUT, KIT, STORY
+from cascade_pod import store
+from examples import ROOT
 
-DOWNLOADS = EXAMPLE / "downloads"
+DOWNLOADS = INPUT / "downloads"
 EXPORTS = ["x-e2", "x-e4", "x-e6", "x-e10", "x-e12", "x-e15"]
 FIXTURES = "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/blob/cabd6f52a98d1f0c97284f47347d61f3bb752504/fixtures/in/"
 
@@ -105,10 +109,7 @@ CHANGES = {
     "x-e12": ([f for f in SCENARIO if "-lv-" in f], LARKSPUR_NEW, "2027-03-18 12:00:00 +0000", []),
     "x-e15": (["Condition-cond-back-1.json"], MERIDIAN, "2027-08-20 08:00:00 +0000", ["AllergyIntolerance-alg-latex-1.json"]),
 }
-IMPORTED = {
-    "x-e2": "2026-09-01T10:00:04Z", "x-e4": "2026-10-14T15:42:00Z", "x-e6": "2026-11-20T09:00:04Z",
-    "x-e10": "2027-02-10T17:21:00Z", "x-e12": "2027-03-18T12:00:04Z", "x-e15": "2027-08-20T08:00:04Z",
-}
+CONVERTED = {"E2": 9, "E4": 6, "E6": 8, "E7": 1, "E10": 4, "E12": 7, "E15": 2}
 BASED_ON = {
     "AllergyIntolerance-alg-pcn-1.json": "allergy-with-id.json",
     "Condition-cond-htn-1.json": "condition-with-id-meta-fetch-a.json",
@@ -143,7 +144,7 @@ def entry_by_file(export):
 
 
 def crate():
-    return json.loads((EXAMPLE / "ro-crate-metadata.json").read_text(encoding="utf-8"))
+    return json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
 
 
 def crate_files():
@@ -221,10 +222,15 @@ def test_export_xml_is_health_data_with_one_export_date_then_clinical_records_in
     assert all(list(c.attrib) == ATTRIBUTES for c in children[1:])
 
 
+def first_import(export):
+    return next(step for step in STORY["steps"] if step.get("import", {}).get("export", "").startswith(
+        f"scripted-input/downloads/{export}/"))
+
+
 @pytest.mark.parametrize("export", EXPORTS)
-def test_export_date_is_two_seconds_before_the_import_starts(export):
+def test_export_date_is_two_seconds_before_the_first_import_of_it_starts(export):
     value = datetime.strptime(entries(export)[0].get("value"), "%Y-%m-%d %H:%M:%S %z")
-    started = datetime.strptime(IMPORTED[export], "%Y-%m-%dT%H:%M:%S%z")
+    started = datetime.strptime(first_import(export)["when"], "%Y-%m-%dT%H:%M:%S%z")
     assert started - value == timedelta(seconds=2)
 
 
@@ -249,8 +255,12 @@ def test_every_entry_agrees_with_its_file(export):
         assert entry.get("fhirVersion") == "4.0.1"
 
 
+def named(path):
+    return recomputed.ni_name(path.read_bytes())
+
+
 @pytest.mark.parametrize("before, after", list(zip(EXPORTS, EXPORTS[1:])))
-def test_every_file_of_an_export_is_in_the_next_byte_for_byte_with_the_same_entry_unless_the_scenario_changes_it(before, after):
+def test_every_file_of_an_export_is_in_the_next_as_the_same_document_with_the_same_entry_unless_the_scenario_changes_it(before, after):
     changed, _, _, dropped = CHANGES[after]
     earlier, later = records(before), records(after)
     earlier_entries, later_entries = entry_by_file(before), entry_by_file(after)
@@ -258,7 +268,7 @@ def test_every_file_of_an_export_is_in_the_next_byte_for_byte_with_the_same_entr
         if name in dropped:
             assert name not in later
         elif name not in changed:
-            assert later[name].read_bytes() == path.read_bytes(), name
+            assert named(later[name]) == named(path), name
             if name in earlier_entries:
                 assert later_entries[name].attrib == earlier_entries[name].attrib, name
     assert set(earlier) - set(later) == set(dropped)
@@ -270,7 +280,7 @@ def test_each_exports_new_or_changed_files_and_their_received_date_are_the_scena
     index = EXPORTS.index(export)
     previous = records(EXPORTS[index - 1]) if index else {}
     current = records(export)
-    differs = {n for n, p in current.items() if n not in previous or previous[n].read_bytes() != p.read_bytes()}
+    differs = {n for n, p in current.items() if n not in previous or named(previous[n]) != named(p)}
     assert differs == set(changed)
     by_file = entry_by_file(export)
     for name in changed:
@@ -329,10 +339,10 @@ def test_every_file_is_utf8_with_lf_endings_and_one_final_newline():
 def test_every_resource_that_starts_from_a_fixture_names_it_by_is_based_on():
     entities = {entity["@id"]: entity for entity in crate_files()}
     for path in every_download():
-        relative = path.relative_to(EXAMPLE).as_posix()
+        relative = path.relative_to(ROOT).as_posix()
         based_on = entities.get(relative, {}).get("isBasedOn")
         assert based_on == ({"@id": FIXTURES + BASED_ON[path.name]} if path.name in BASED_ON else None), relative
-    assert [e for e in entities if "isBasedOn" in entities[e] and not e.startswith("downloads/")] == []
+    assert [e for e in entities if "isBasedOn" in entities[e] and not e.startswith(DOWNLOADS.relative_to(ROOT).as_posix())] == []
 
 
 def codes(path):
@@ -346,5 +356,19 @@ def test_every_code_to_confirm_has_its_source_recorded_on_the_first_file_that_us
     uses = [(export, name, path) for export in EXPORTS for name, path in records(export).items()]
     for code in CODES_TO_CONFIRM:
         export, name, _ = next(use for use in uses if code in codes(use[2]))
-        citations = cited[f"downloads/{export}/apple_health_export/clinical-records/{name}"]
+        citations = cited[(DOWNLOADS / export / "apple_health_export" / "clinical-records" / name).relative_to(ROOT).as_posix()]
         assert len(citations) == 1 and citations <= sources, (code, name)
+
+
+def test_each_import_steps_saved_output_is_a_graph_and_findings_for_each_document_it_converts():
+    for step in (s for s in STORY["steps"] if "import" in s):
+        folders = sorted((KIT / step["import"]["converted"]).iterdir())
+        assert len(folders) == CONVERTED[step["name"]], step["name"]
+        exported = {p.stem for p in (KIT / step["import"]["export"] / "clinical-records").iterdir()}
+        for folder in folders:
+            assert folder.name in exported and sorted(p.name for p in folder.iterdir()) == ["findings.ttl", "graph.ttl"], folder
+
+
+def test_the_bridge_finds_the_unknown_server_files_patient_reference_has_no_server():
+    findings = store.parsed(INPUT / "bridge" / "e6" / NO_ENTRY_IN_X_E6.removesuffix(".json") / "findings.ttl")
+    assert {str(value) for value in findings.objects(None, SH.value)} == {ALEX}

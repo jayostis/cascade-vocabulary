@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import Failure, ask, graphdb, match, site, vocabulary, write
+from . import Failure, ask, graphdb, match, site, story, vocabulary, write
 from .example import Example
 from .pod import save
 from .store import ENGINES
@@ -15,9 +15,14 @@ def parser():
     def command(name, help, run):
         sub = commands.add_parser(name, help=help)
         sub.add_argument("example", type=Path)
-        sub.set_defaults(run=run)
+        sub.set_defaults(run=lambda a: run(Example(a.example), a))
         return sub
 
+    replay = commands.add_parser("replay", help="replays a kit's story into a pod and writes what the build writes")
+    replay.add_argument("kit", type=Path, help="a folder holding story.json and its scripted-input/")
+    replay.add_argument("--out", type=Path, required=True)
+    replay.add_argument("--engine", choices=sorted(ENGINES), default="oxigraph")
+    replay.set_defaults(run=lambda a: replayed(a.kit, a.out, a.engine))
     command("write", "files the story into pod/", lambda example, _: write.run(example))
     matching = command("match", "writes the matcher's judgments",
                        lambda example, a: match.run(example, a.read_through, a.takes, a.at, a.out, a.engine))
@@ -42,10 +47,16 @@ def parser():
     return top
 
 
+def replayed(kit, out, engine):
+    example = story.replayed(kit, out, engine)
+    print(f"{example.pod}: {sum(1 for path in example.pod.rglob('*') if path.is_file())} files")
+    return 0
+
+
 def main(argv=None):
     arguments = parser().parse_args(argv)
     try:
-        return arguments.run(Example(arguments.example), arguments)
+        return arguments.run(arguments)
     except Failure as failure:
         print(f"cascade_pod {arguments.command}: {failure}", file=sys.stderr)
         return 2

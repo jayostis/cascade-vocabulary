@@ -1,0 +1,8 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?member ?status ?from WHERE {
+  VALUES ?record { <urn:uuid:5a83c536-5519-8617-a0df-83c82ffb51e5> <urn:uuid:693e3b10-09df-8117-b7b4-c2d39f725f07> }
+  GRAPH <https://pod.alex-rivera.example/clinical/conditions.ttl> { ?entry cascade:mergedFrom ?record , ?member ; health:status ?status ; rec:statusFrom ?from }
+}
