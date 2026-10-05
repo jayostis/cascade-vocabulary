@@ -29,12 +29,6 @@ def test_the_entry_gives_its_expected_rows_on_each_engine(fixture, entry):
     assert not failed, "\n\n".join(f"on {engine}:\n{why}" for engine, why in failed.items())
 
 
-ENGINES_DISAGREE = {
-    ("records-of-every-kind", "record/What each version says"):
-        "SPARQL leaves open the order of two literals differing only in a language tag, and the engines choose apart",
-}
-
-
 def lenses_that_differ(fixture):
     """Each lens whose derived state over the fixture no lens before it gives: under the others every query reads the
     same pod."""
@@ -53,14 +47,13 @@ def comparable(name, rows):
 
 @every_fixture
 def test_oxigraph_and_rdflib_agree_on_the_derived_state_the_files_built_from_it_and_every_questions_rows(fixture):
-    known = {question for name, question in ENGINES_DISAGREE if name == fixture.name}
     for lens in LENSES:
         one, other = (built_once(fixture, engine, lens) for engine in sorted(ENGINES))
         assert one.added_by_step == other.added_by_step, lens
         assert one.files == other.files, lens
     for lens in lenses_that_differ(fixture):
         one, other = (answers(fixture, engine, lens) for engine in sorted(ENGINES))
-        assert {name for name in one if comparable(name, one[name]) != comparable(name, other[name])} == known, lens
+        assert {name for name in one if comparable(name, one[name]) != comparable(name, other[name])} == set(), lens
 
 
 @every_fixture
