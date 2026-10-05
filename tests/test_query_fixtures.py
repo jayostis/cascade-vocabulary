@@ -11,14 +11,7 @@ from examples import FIXTURES, built, every_fixture, on_its_worker
 
 LENSES = sorted(vocabulary.named("lenses"))
 ASKED = {**vocabulary.questions(), **{f"matcher/{name}": relative for name, relative in vocabulary.named("matcher").items()}}
-WRONG = {
-    ("patient-profile-view", "whose-it-is-counted-as-with-no-record"):
-        "rdflib gives the grouped subquery of 'Whose it is counted as' one group over no solutions, so with no version "
-        "naming a patient it returns a row for every About; Oxigraph returns none",
-}
-ENTRIES = [on_its_worker(fixture, entry, id=f"{fixture.name}-{entry.name}",
-                         marks=[pytest.mark.xfail(strict=True, reason=WRONG[fixture.name, entry.name])]
-                         if (fixture.name, entry.name) in WRONG else [])
+ENTRIES = [on_its_worker(fixture, entry, id=f"{fixture.name}-{entry.name}")
            for fixture in FIXTURES for entry in manifest.entries(fixture.manifest)]
 
 
@@ -38,8 +31,6 @@ def test_the_entry_gives_its_expected_rows_on_each_engine(fixture, entry):
 
 
 ENGINES_DISAGREE = {
-    ("patient-profile-view", "profile/Whose it is counted as"): WRONG["patient-profile-view",
-                                                                      "whose-it-is-counted-as-with-no-record"],
     ("records-of-every-kind", "record/What each version says"):
         "SPARQL leaves open the order of two literals differing only in a language tag, and the engines choose apart",
 }
