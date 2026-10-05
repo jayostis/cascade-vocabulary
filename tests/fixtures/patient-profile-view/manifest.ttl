@@ -8,6 +8,7 @@
   rdfs:comment "Two patient profiles counting About judgments tie to the subject." ;
   mf:entries (
     <#one-entry-for-the-person>
+    <#whose-it-is-counted-as-with-no-record>
   ) .
 
 <#one-entry-for-the-person> a mf:QueryEvaluationTest ;
@@ -16,3 +17,10 @@
   mf:action [ qt:query <one-entry-for-the-person.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <one-entry-for-the-person.srj> .
+
+<#whose-it-is-counted-as-with-no-record> a mf:QueryEvaluationTest ;
+  mf:name "whose-it-is-counted-as-with-no-record" ;
+  rdfs:comment "Each row is a hospital whose records name a profile; with no version naming either profile, there is none." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/profile/Whose%20it%20is%20counted%20as.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <whose-it-is-counted-as-with-no-record.srj> .

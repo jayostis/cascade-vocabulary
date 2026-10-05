@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-code-and-date" ;
+  rdfs:comment "Pairs of immunizations: one code on one date; one code on two dates; one code where one states no date." ;
+  mf:entries (
+    <#same-code-and-date>
+  ) .
+
+<#same-code-and-date> a mf:QueryEvaluationTest ;
+  mf:name "same-code-and-date" ;
+  rdfs:comment "Only the pair giving one code and one date matches." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-code-and-date.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-code-and-date.srj> .

@@ -22,9 +22,9 @@ def every_example_and(name, values):
     return pytest.mark.parametrize(f"example, {name}", pairs, ids=[f"{e.name}-{v}" for e, v in pairs])
 
 
-def on_its_worker(fixture, *values, id):
+def on_its_worker(fixture, *values, id, marks=()):
     """A case about the fixture, run on the worker that builds it, so each fixture is built once a run."""
-    return pytest.param(fixture, *values, id=id, marks=pytest.mark.xdist_group(fixture.name))
+    return pytest.param(fixture, *values, id=id, marks=[pytest.mark.xdist_group(fixture.name), *marks])
 
 
 every_fixture = pytest.mark.parametrize("fixture", [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES])
