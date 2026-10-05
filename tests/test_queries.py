@@ -1,4 +1,3 @@
-import ast
 import re
 from collections import Counter
 from functools import lru_cache
@@ -13,10 +12,9 @@ from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
 
 from cascade_pod import derive, store, vocabulary
-from cascade_pod.pod import LABEL_FILE
-from cascade_pod.pod import NOT_RDF
+from cascade_pod.pod import LABEL_FILE, NOT_RDF
 from cascade_pod.store import Oxigraph
-from examples import EXAMPLES, ROOT, every_example, every_example_and
+from examples import EXAMPLES, ROOT, every_example, every_example_and, queries_held
 
 REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
 
@@ -316,18 +314,6 @@ def test_every_label_column_labels_a_column_of_the_question(relative):
     columns = {str(v) for v in prepareQuery(vocabulary.query(relative)).algebra["PV"]}
     labelled = {column[:-len("Label")] for column in columns if column.endswith("Label")}
     assert labelled <= columns
-
-
-def queries_held(source):
-    found = []
-    for node in ast.walk(ast.parse(source)):
-        if isinstance(node, ast.Constant) and isinstance(node.value, str):
-            try:
-                parseQuery(node.value)
-            except Exception:
-                continue
-            found.append(node.value)
-    return found
 
 
 def test_the_held_query_check_finds_a_query_in_a_string_and_nothing_else():

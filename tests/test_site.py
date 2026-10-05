@@ -17,9 +17,7 @@ from rdflib.namespace import XSD
 from cascade_pod import graphdb, site, turtle, vocabulary
 from cascade_pod.example import Example
 from cascade_pod.pod import LABEL_FILE, TYPE_INDEX, fanned, save, stem
-from examples import EXAMPLES, ROOT, pod_file
-from test_library_graphdb import GraphDB
-from test_queries import queries_held
+from examples import EXAMPLES, ROOT, GraphDB, pod_file, queries_held
 
 MERGED_FROM = URIRef("https://ns.cascadeprotocol.org/core/v1#mergedFrom")
 REVISION_OF = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#revisionOf")
