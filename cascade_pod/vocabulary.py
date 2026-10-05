@@ -2,6 +2,7 @@
 
 import itertools
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).absolute().parent.parent
@@ -55,3 +56,11 @@ def derivations(lens):
     steps = [*named("derivations").values(), named("lenses")[lens]]
     return sorted(steps, key=positions().__getitem__)
 
+
+def title(folder):
+    """The name the root crate gives a folder of this repository, or None."""
+    try:
+        relative = Path(os.path.abspath(folder)).relative_to(ROOT).as_posix() + "/"
+    except ValueError:
+        return None
+    return next((entity["name"] for entity in _crate() if entity["@id"] == relative and "name" in entity), None)

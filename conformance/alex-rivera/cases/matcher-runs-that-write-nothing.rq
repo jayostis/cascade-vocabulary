@@ -1,0 +1,6 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?step ?file WHERE {
+  VALUES ?step { <urn:cascade:step:M5> <urn:cascade:step:M6> <urn:cascade:step:M7> <urn:cascade:step:M2> <urn:cascade:step:M3> <urn:cascade:step:M8> }
+  GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
+}

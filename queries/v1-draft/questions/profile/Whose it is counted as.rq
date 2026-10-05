@@ -12,7 +12,8 @@ WHERE {
     WHERE { ?version rec:patient ?profile ; prov:specializationOf ?record .
             OPTIONAL { ?revision rec:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
                        ?attribution prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital } }
-    GROUP BY ?profile ?hospital }
+    GROUP BY ?profile ?hospital
+    HAVING (BOUND(?profile)) }
   ?about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember ?profile ; jdg:subject ?subject .
   OPTIONAL { ?about rec:counts ?counted }
   BIND (COALESCE(?counted, false) AS ?counts)

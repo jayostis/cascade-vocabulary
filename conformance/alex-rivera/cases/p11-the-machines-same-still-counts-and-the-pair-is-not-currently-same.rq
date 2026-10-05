@@ -1,0 +1,8 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?counts ?currentlySame WHERE {
+  BIND (EXISTS { <urn:uuid:79c361c4-8002-8270-8b0e-a8ed97c477d6> rec:counts true } AS ?counts)
+  BIND (EXISTS { <urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> jdg:currentlySame <urn:uuid:36e76923-0050-8139-8d81-ab105e86dd0b> } || EXISTS { <urn:uuid:36e76923-0050-8139-8d81-ab105e86dd0b> jdg:currentlySame <urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> }
+        AS ?currentlySame)
+}

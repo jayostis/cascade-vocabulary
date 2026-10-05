@@ -1,0 +1,8 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+
+SELECT ?field ?value WHERE {
+  GRAPH <https://pod.alex-rivera.example/clinical/conditions.ttl> { ?entry cascade:mergedFrom <urn:uuid:32577616-8317-8671-9b05-b50ac9714136> ; ?field ?value }
+  FILTER (?field IN (health:status, clinical:abatementDate))
+}

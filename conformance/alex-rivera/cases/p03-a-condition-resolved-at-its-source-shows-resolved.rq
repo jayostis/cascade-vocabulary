@@ -1,0 +1,10 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT ?version ?field ?value WHERE {
+  <urn:uuid:5a83c536-5519-8617-a0df-83c82ffb51e5> pav:hasCurrentVersion ?version .
+  GRAPH <https://pod.alex-rivera.example/clinical/conditions.ttl> { ?entry cascade:mergedFrom <urn:uuid:5a83c536-5519-8617-a0df-83c82ffb51e5> ; ?field ?value }
+  FILTER (?field IN (health:status, clinical:abatementDate))
+}

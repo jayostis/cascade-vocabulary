@@ -1,0 +1,6 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+
+SELECT ?view ?record ?member WHERE {
+  VALUES ?record { <urn:uuid:d062f803-3744-884a-b30d-2b4fb273cf5d> <urn:uuid:835a3c13-6a35-857a-995d-19b9ec534027> <urn:uuid:34a774e3-f83d-8275-89e2-3785085558e6> <urn:uuid:730dea68-b88f-895d-9be7-dd2f19d4de6f> }
+  GRAPH ?view { ?entry cascade:mergedFrom ?record , ?member }
+}

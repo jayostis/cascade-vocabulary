@@ -1,0 +1,8 @@
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?otherRecord WHERE {
+  ?record jdg:currentlyDifferent ?otherRecord ; rec:inEntry ?entry .
+  ?otherRecord rec:inEntry ?entry .
+  FILTER (STR(?record) < STR(?otherRecord))
+}

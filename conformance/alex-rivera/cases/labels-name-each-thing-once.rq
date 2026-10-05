@@ -1,0 +1,12 @@
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?thing ?predicate WHERE {
+  GRAPH <https://pod.alex-rivera.example/clinical/labels.ttl> {
+    { ?thing rdfs:label ?one , ?other . FILTER (?one != ?other) BIND (rdfs:label AS ?predicate) }
+    UNION
+    { ?thing ?predicate ?value .
+      FILTER (IF(?thing = <https://pod.alex-rivera.example/clinical/labels.ttl>, ?predicate NOT IN (rdf:type, prov:used), ?predicate != rdfs:label)) }
+  }
+}

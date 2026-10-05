@@ -11,13 +11,16 @@ How a Cascade pod is described and queried.
 - [`queries/v1-draft/`](queries/v1-draft): the standard queries over a pod.
 - [`runtime/`](runtime): the rules a runtime follows when it fills a pod, the vectors that show them, and where a
   pod files each kind of thing, [`pod-layout.ttl`](runtime/pod-layout.ttl).
+- [`conformance/`](conformance): the scenario every runtime must pass, Alex Rivera's: her story, its scripted input and
+  its right answers. [`runtime/rules.md`](runtime/rules.md#the-conformance-kit) says what passing it means.
 
-Beside it are one library and the reference tools on it, [`cascade_pod/`](cascade_pod), one
-example pod, as data, [`example-pods/alex-rivera/`](example-pods/alex-rivera), and the small pods each query is
-tested on, [`tests/fixtures/`](tests/fixtures).
+Beside it are one library and the reference tools on it, [`cascade_pod/`](cascade_pod), and the small pods each query
+is tested on, [`tests/fixtures/`](tests/fixtures). No pod is committed: the tools replay Alex's story into `build/`.
 
 ```sh
 python3 -m pip install -r requirements.txt
-python3 -m cascade_pod site example-pods/alex-rivera --out site   # then open site/index.html
-python3 -m cascade_pod ask example-pods/alex-rivera "record/Why it is in no view"
+python3 -m cascade_pod replay conformance/alex-rivera --out build/alex-rivera
+python3 -m cascade_pod site build/alex-rivera --out build/alex-rivera/site   # then open build/alex-rivera/site/index.html
+python3 -m cascade_pod ask build/alex-rivera "record/Why it is in no view"
+python3 -m cascade_pod graphdb build/alex-rivera http://localhost:7200
 ```

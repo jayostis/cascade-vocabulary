@@ -1,0 +1,9 @@
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?at ?version ?after WHERE {
+  <urn:uuid:fe154b72-acd5-8b7f-a1dd-4b5d7e364c2b> a clinical:Procedure .
+  ?revision rec:revisionOf <urn:uuid:fe154b72-acd5-8b7f-a1dd-4b5d7e364c2b> ; rec:version ?version ; prov:generatedAtTime ?at .
+  OPTIONAL { ?revision prov:wasRevisionOf ?previous . ?previous prov:generatedAtTime ?after }
+}

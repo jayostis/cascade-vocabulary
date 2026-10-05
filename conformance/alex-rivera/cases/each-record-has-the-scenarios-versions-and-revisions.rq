@@ -1,0 +1,6 @@
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record (COUNT(DISTINCT ?version) AS ?versions) (COUNT(DISTINCT ?revision) AS ?revisions) WHERE {
+  ?revision rec:revisionOf ?record ; rec:version ?version .
+}
+GROUP BY ?record

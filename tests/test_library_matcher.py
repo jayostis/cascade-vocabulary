@@ -62,7 +62,8 @@ def test_a_rule_list_the_matcher_cannot_trust_refuses_the_run_as_a_failure_not_a
 
 def rule_lists():
     """Every version of a rule list in the repository, by its file, with its rows."""
-    folders = [*ROOT.glob("example-pods/*/references"), *ROOT.glob("runtime/vectors/*/scripted-input/references")]
+    folders = [*ROOT.glob("conformance/*/scripted-input/references"),
+               *ROOT.glob("runtime/vectors/*/scripted-input/references")]
     found = {}
     for path in (path for folder in folders for path in sorted(folder.glob("*.ttl"))):
         rows = store.parsed(path)

@@ -10,7 +10,7 @@ from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
 from cascade_pod.pod import NOT_RDF
-from examples import EXAMPLES, ROOT, every_example, every_example_and, pod_file
+from examples import ROOT, pod_file
 
 ONTOLOGIES = ROOT / "ontologies"
 
@@ -125,30 +125,6 @@ def kind_of(relative, graph):
     return None
 
 
-def series_of(example, relative):
-    graph = loaded(example, relative)
-    return graph.value(named_for(relative), SPECIALIZATION_OF) or named_for(relative)
-
-
-@lru_cache(maxsize=None)
-def defining_file(example):
-    found = {}
-    for relative in every_rdf_file(example):
-        for thing in things(relative, loaded(example, relative)):
-            found.setdefault(thing, relative)
-    return found
-
-
-def unit(example, relative):
-    """A file with the files that define what it describes but is not named for, and a reference series with its
-    versions, which its shape reaches through an inverse path."""
-    if relative.startswith("references/"):
-        series = series_of(example, relative)
-        return [r for r in every_rdf_file(example) if r.startswith("references/") and series_of(example, r) == series]
-    others = {defining_file(example).get(s) for s in loaded(example, relative).subjects()} - {None, relative}
-    return [relative, *sorted(others)]
-
-
 def with_types(example, graph):
     data = Graph()
     data += graph
@@ -164,13 +140,6 @@ def violations(example, graph):
     own = set(graph.subjects())
     return sorted((str(report.value(r, SH.focusNode)), str(report.value(r, SH.resultPath)), str(report.value(r, SH.resultMessage)))
                   for r in report.subjects(RDF.type, SH.ValidationResult) if report.value(r, SH.focusNode) in own)
-
-
-def unit_graph(example, relative):
-    graph = Graph()
-    for part in unit(example, relative):
-        graph += loaded(example, part)
-    return graph
 
 
 # Focus nodes, computed from the shapes' targets and the sh:node a targeted shape's property reaches
@@ -210,45 +179,56 @@ def defined_in(vocabularies):
     return set(graph.subjects(RDF.type, SH.NodeShape)) | set(graph.objects(None, SH.node))
 
 
-@every_example
-def test_every_term_the_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it(example):
+def test_every_term_alexs_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it(alex):
     namespaces = tuple(str(n) for n in ontology().subjects(RDF.type, OWL.Ontology))
     declared = set(ontology().subjects(RDF.type, None))
-    written = {(str(term), relative) for relative in every_rdf_file(example) for triple in loaded(example, relative)
+    written = {(str(term), relative) for relative in every_rdf_file(alex) for triple in loaded(alex, relative)
                for term in triple if isinstance(term, URIRef) and str(term).startswith(namespaces)}
     assert sorted((term, relative) for term, relative in written if URIRef(term) not in declared) == []
 
 
-@every_example_and("relative", lambda example: [r for r in every_rdf_file(example) if r not in NOT_CHECKED_FOR_CONFORMANCE])
-def test_every_pod_file_conforms_to_the_vocabularys_shapes(example, relative):
-    assert violations(example, unit_graph(example, relative)) == []
+def checked(example):
+    """Every file of the pod the shapes check, read together."""
+    graph = Graph()
+    for relative in every_rdf_file(example):
+        if relative not in NOT_CHECKED_FOR_CONFORMANCE:
+            graph += loaded(example, relative)
+    return graph
 
 
-@every_example_and("relative", every_rdf_file)
-def test_every_pod_file_is_a_focus_node_of_the_shapes_for_its_kind(example, relative):
-    graph = unit_graph(example, relative)
+def test_every_file_of_alexs_pod_conforms_to_the_vocabularys_shapes(alex):
+    assert violations(alex, checked(alex)) == []
+
+
+def unshaped_by_its_kind(example, relative, focus):
+    """Why the file is not checked by the shapes for its kind, or None."""
     kind = kind_of(relative, loaded(example, relative))
     if unshaped(relative):
-        assert kind is None
-        return
-    assert kind is not None, f"{relative} is neither of a kind a shape checks nor named as one no shape targets"
-    focus = focus_nodes(with_types(example, graph))
+        return None if kind is None else f"it is of a kind, {kind}, yet named as one no shape targets"
+    if kind is None:
+        return "it is neither of a kind a shape checks nor named as one no shape targets"
     mine = things(relative, loaded(example, relative))
-    assert mine, f"{relative} describes nothing named for it"
-    for thing in sorted(mine, key=str):
-        shaping = sorted(str(s) for s in defined_in(SHAPES_OF_KIND[kind]) if thing in focus.get(s, ()))
-        assert shaping, f"{thing} in {relative} is a focus node of no {'/'.join(SHAPES_OF_KIND[kind])} shape"
+    if not mine:
+        return "it describes nothing named for it"
+    unshaped_things = [str(thing) for thing in sorted(mine, key=str)
+                       if not any(thing in focus.get(s, ()) for s in defined_in(SHAPES_OF_KIND[kind]))]
+    return f"{unshaped_things} are focus nodes of no {'/'.join(SHAPES_OF_KIND[kind])} shape" if unshaped_things else None
 
 
-def first_of(kind, test=lambda graph, thing: True):
-    for example in EXAMPLES:
-        for relative in every_rdf_file(example):
-            graph = loaded(example, relative)
-            if kind_of(relative, graph) == kind:
-                for thing in sorted(things(relative, graph), key=str):
-                    if test(graph, thing):
-                        return example, relative, thing
-    raise AssertionError(f"no example has a {kind} to break")
+def test_every_file_of_alexs_pod_is_a_focus_node_of_the_shapes_for_its_kind(alex):
+    focus = focus_nodes(with_types(alex, checked(alex)))
+    found = {relative: unshaped_by_its_kind(alex, relative, focus) for relative in every_rdf_file(alex)}
+    assert {relative: why for relative, why in found.items() if why} == {}
+
+
+def first_of(example, kind, test=lambda graph, thing: True):
+    for relative in every_rdf_file(example):
+        graph = loaded(example, relative)
+        if kind_of(relative, graph) == kind:
+            for thing in sorted(things(relative, graph), key=str):
+                if test(graph, thing):
+                    return relative, thing
+    raise AssertionError(f"the pod has no {kind} to break")
 
 
 def without(predicate):
@@ -290,10 +270,9 @@ def test_every_kind_a_shape_checks_has_a_way_to_break_it():
 
 
 @pytest.mark.parametrize("kind", sorted(BREAKS))
-def test_each_kind_of_pod_file_fails_its_shapes_when_broken(kind):
+def test_each_kind_of_pod_file_fails_its_shapes_when_broken(kind, alex):
     applies, breaking = BREAKS[kind]
-    example, relative, thing = first_of(kind, applies)
-    graph = unit_graph(example, relative)
-    assert violations(example, graph) == []
+    relative, thing = first_of(alex, kind, applies)
+    graph = checked(alex)
     breaking(graph, thing)
-    assert violations(example, graph) != [], relative
+    assert violations(alex, graph) != [], relative

@@ -7,7 +7,7 @@ from rdflib import Graph, URIRef
 
 from cascade_pod import vocabulary
 from cascade_pod.pod import LAYOUT, LAYOUT_FILE
-from examples import ROOT, every_example
+from examples import ROOT
 
 SOLID = "http://www.w3.org/ns/solid/terms#"
 OUT_OF_PLACE = "pod/Which files are out of place"
@@ -59,7 +59,6 @@ def test_no_module_keeps_a_layout_of_its_own():
     assert {m.name: found for m in modules if (found := path_constants(m.read_text(encoding="utf-8")))} == {}
 
 
-@every_example
-def test_no_file_of_an_example_is_out_of_place(example):
-    held = example.build("oxigraph", vocabulary.DEFAULT_LENS).store
+def test_no_file_of_alexs_pod_is_out_of_place(alex):
+    held = alex.build("oxigraph", vocabulary.DEFAULT_LENS).store
     assert held.select(vocabulary.query(vocabulary.questions()[OUT_OF_PLACE])) == []
