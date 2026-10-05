@@ -6,6 +6,7 @@ from cascade_pod.pod import LAYOUT
 from examples import EXAMPLES, moved, pod_file
 
 REVISION = URIRef("https://ns.cascadeprotocol.org/records/v1-draft#Revision")
+SOLID = "http://www.w3.org/ns/solid/terms#"
 JUDGMENT = URIRef("https://ns.cascadeprotocol.org/judgments/v1-draft#Judgment")
 
 
@@ -22,6 +23,14 @@ def misplacing(example):
     return {revision: other + revision[len(own):], judgment: references + judgment[len(judgments):]}
 
 
+def another_apps_file(example):
+    """A file another app wrote: a thing of a class the layout does not place, and a type registration filing a kind
+    of record the layout places somewhere else."""
+    kind = next(iter(LAYOUT.views))
+    return (f"<urn:x:note> a <urn:x:Note> .\n<#records> a <{SOLID}TypeRegistration> ; <{SOLID}forClass> <{kind}> ;\n"
+            f"  <{SOLID}instanceContainer> <{example.address}elsewhere/> .\n")
+
+
 @pytest.fixture(scope="session")
 def misplaced(tmp_path_factory):
     """For each example, a copy of it with one revision in another kind's records folder, one judgment in the
@@ -31,6 +40,6 @@ def misplaced(tmp_path_factory):
     for example in EXAMPLES:
         moves = misplacing(example)
         copy = moved(example, moves, tmp_path_factory.mktemp("misplaced"),
-                     added={"elsewhere/notes.ttl": "<urn:x:note> a <urn:x:Note> .\n"})
+                     added={"elsewhere/notes.ttl": another_apps_file(example)})
         found.append((copy, moves))
     return found
