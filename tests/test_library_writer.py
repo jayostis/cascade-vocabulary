@@ -25,11 +25,11 @@ class Story:
         self.root = root
         self.events = [{"event": "E1", "at": "2026-01-01T00:00:00Z", "subject": SUBJECT, "adds": []}]
 
-    def export(self, event, files):
+    def export(self, event, files, export_xml="<HealthData/>\n"):
         """An export at `event` of each named file, given as (its text, the Bridge's graph or None, its findings or None)."""
         export = self.root / "downloads" / event.lower() / "apple_health_export"
         (export / "clinical-records").mkdir(parents=True)
-        (export / "export.xml").write_text("<HealthData/>\n", encoding="utf-8")
+        (export / "export.xml").write_text(export_xml, encoding="utf-8")
         for name, (text, graph, findings) in files.items():
             (export / "clinical-records" / f"{name}.json").write_text(text, encoding="utf-8")
             made = self.root / "conversions" / event.lower() / name
@@ -94,3 +94,8 @@ def test_an_entry_of_a_type_the_pod_files_nowhere_is_refused_in_one_line(tmp_pat
 """
     with pytest.raises(Failure, match="entries/e2.ttl: urn:uuid:.* is of no type the pod files: urn:example:NoSuchRecord"):
         Story(tmp_path).entry("E2", entry).write()
+
+
+def test_an_export_whose_export_xml_cannot_be_read_is_refused_in_one_line(tmp_path):
+    with pytest.raises(Failure, match="apple_health_export/export.xml cannot be read"):
+        Story(tmp_path).export("E2", {"a": (PEANUTS, None, None)}, export_xml="<HealthData>").write()

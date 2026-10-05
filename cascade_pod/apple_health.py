@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from rdflib import BNode, Literal, URIRef
 from rdflib.namespace import RDFS
 
+from . import Failure
 from .store import date_time
 from .turtle import BRIDGE, PAV, PROV, REC
 
@@ -24,7 +25,10 @@ def documents(export):
 
 
 def clinical_records(export_xml):
-    root = ElementTree.parse(export_xml).getroot()
+    try:
+        root = ElementTree.parse(export_xml).getroot()
+    except (OSError, ElementTree.ParseError) as error:
+        raise Failure(f"{export_xml.parent.name}/{export_xml.name} cannot be read: {error}") from None
     return {entry.get("resourceFilePath"): dict(entry.attrib) for entry in root.iter("ClinicalRecord")}
 
 
