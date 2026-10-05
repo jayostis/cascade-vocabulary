@@ -1,6 +1,6 @@
 # cascade-vocabulary — Agent Context
 
-How a Cascade pod is described and queried; [`README.md`](README.md) names the parts.
+The contract a Cascade pod is built and read by; [`README.md`](README.md) names the parts.
 
 ## The rules
 
@@ -14,13 +14,14 @@ How a Cascade pod is described and queried; [`README.md`](README.md) names the p
   content is required, because a source may omit any of it.
 - **Each question is asked once.** Before adding one, look under its kind for the question that
   already returns those rows.
-- **What two tools share is written once, in its own `cascade_pod` module.**
 - **`conformance/*/expected/` and `cases/` come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,
-  and a vector's expected rows under `runtime/vectors/` from [`runtime/rules.md`](runtime/rules.md), never from the
-  tools.
+  and a vector's expected rows under `runtime/vectors/` from [`runtime/rules.md`](runtime/rules.md), never from a
+  runtime's output.
 - **A query is tested on fixtures under [`tests/fixtures/`](tests/fixtures), one per behaviour, never on an
   example.** Its expected rows are written from what the query says it does. A check true of any pod runs over every
-  fixture, with `every_fixture` from [`tests/examples.py`](tests/examples.py).
+  fixture, with `every_fixture` from [`tests/pods.py`](tests/pods.py).
+- **A change here is tried against the reference runtime** by the `compatibility` check. One the runtime must follow
+  is a pair of pull requests, here and in cascade-runtime-js, each naming the other on a `Depends-On:` line.
 - **The suite runs in parallel** (`python3 -m pytest -n auto --dist loadgroup`): what a test builds is built once per
   worker, and the cases that share it are put on one worker with `xdist_group`.
 
