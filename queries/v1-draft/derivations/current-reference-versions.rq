@@ -1,0 +1,11 @@
+# A reference table's current version is the one no newer version revises.
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?series pav:hasCurrentVersion ?v }
+WHERE {
+  ?series a rec:ReferenceSeries .
+  ?v prov:specializationOf ?series .
+  FILTER NOT EXISTS { ?newer prov:wasRevisionOf ?v }
+}

@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% from "question.html" import question %}
+{% block title %}Not shown{% endblock %}
+{% block main %}
+<h1>Not shown</h1>
+<p>Not every record a source sends ends up in a view. Nothing is deleted to hide it: the record stays in the pod, exactly as
+it arrived, and the derivations leave it out of every entry. When the reason no longer holds, the next build shows it again.</p>
+{{ question(hidden) }}
+{% endblock %}

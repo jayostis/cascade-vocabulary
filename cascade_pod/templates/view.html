@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% from "question.html" import block, question %}
+{% set path = view[example.address|length:] %}
+{% block title %}{{ path }}{% endblock %}
+{% block main %}
+<p class="kind">View</p>
+<h1>{{ path }}</h1>
+<p class="iri"><code>{{ view }}</code></p>
+<p>A view is a file the build writes. An app reads it to show a list, and never needs to know about records, revisions or
+judgments. Nobody edits a view: delete it and the build writes the same file again from the pod's records and judgments.
+Below are the files that state it, the query that wrote it, and every entry it lists.</p>
+{% for q in questions %}
+{{ question(q) }}
+{% endfor %}
+{% set query, wrote = site.built[view] %}
+{% call block(query) %}
+<p class="answer">It wrote <a href="{{ copy }}{{ path }}"><code>{{ path }}</code></a>, {{ wrote }} statements, after the
+derivations of the <a href="pipeline.html#{{ lens }}">{{ lens }} lens</a> had run.</p>
+{% endcall %}
+{{ question(site.questions["pod/Which view lists each kind"].of("view", view)) }}
+{{ question(site.questions["entry/What it shows"].of("view", view)) }}
+{% endblock %}

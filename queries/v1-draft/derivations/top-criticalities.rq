@@ -1,0 +1,16 @@
+# An entry shows the highest criticality any member states: high over low over unable to assess. Only allergies state one.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?entry rec:topCriticality ?top }
+WHERE {
+  { SELECT ?entry (MAX(?rank) AS ?topRank)
+    WHERE {
+      ?r rec:inEntry ?entry ;
+         pav:hasCurrentVersion/clinical:criticality ?c .
+      BIND (IF(?c = "high", 2, IF(?c = "low", 1, 0)) AS ?rank)
+    }
+    GROUP BY ?entry }
+  BIND (IF(?topRank = 2, "high", IF(?topRank = 1, "low", "unable-to-assess")) AS ?top)
+}

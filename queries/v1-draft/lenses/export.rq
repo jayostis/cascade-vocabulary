@@ -1,0 +1,25 @@
+# A stricter lens, for records sent elsewhere: a person's judgment counts unless superseded or retracted, and a machine's
+# only when it rests on the same code, or code and date, made with the current reference table.
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?j rec:counts true }
+WHERE {
+  { ?j a jdg:Judgment ; prov:wasAttributedTo/a prov:Person .
+    FILTER NOT EXISTS { ?superseding npx:supersedes ?j }
+    FILTER NOT EXISTS { ?retracting npx:retracts ?j } }
+  UNION
+  { ?j a jdg:Judgment ; jdg:justification ?why .
+    FILTER (?why IN (jdg:SameCode, jdg:SameCodeAndDate))
+    FILTER NOT EXISTS { ?superseding npx:supersedes ?j }
+    FILTER NOT EXISTS { ?retracting npx:retracts ?j }
+    FILTER NOT EXISTS {
+      ?j prov:used ?input .
+      ?input prov:specializationOf ?series .
+      ?series a rec:ReferenceSeries ; pav:hasCurrentVersion ?now .
+      FILTER (?now != ?input)
+    } }
+}

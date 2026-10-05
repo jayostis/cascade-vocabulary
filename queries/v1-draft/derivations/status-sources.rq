@@ -1,0 +1,24 @@
+# An entry takes its status from the member whose current revision arrived last, among those that state one. A kind
+# whose status comes only from documents, as an allergy's does, never takes it from a member the person entered.
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?entry rec:statusFrom ?from }
+WHERE {
+  { SELECT ?entry (IRI(MIN(STR(?r))) AS ?from)
+    WHERE {
+      { SELECT ?entry (MAX(?t2) AS ?t)
+        WHERE {
+          ?r2 rec:inEntry ?entry ; rec:statusOnlyFromDocuments ?documentsOnly2 ;
+              rec:currentRevision ?rev2 ; pav:hasCurrentVersion/rec:status [] .
+          ?rev2 prov:generatedAtTime ?t2 .
+          FILTER (!?documentsOnly2 || EXISTS { ?rev2 prov:wasDerivedFrom [] }) }
+        GROUP BY ?entry }
+      ?r rec:inEntry ?entry ; rec:statusOnlyFromDocuments ?documentsOnly ;
+         rec:currentRevision ?rev ; pav:hasCurrentVersion/rec:status [] .
+      ?rev prov:generatedAtTime ?t .
+      FILTER (!?documentsOnly || EXISTS { ?rev prov:wasDerivedFrom [] })
+    }
+    GROUP BY ?entry }
+}

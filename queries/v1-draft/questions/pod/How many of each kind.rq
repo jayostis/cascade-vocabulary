@@ -1,0 +1,14 @@
+# How many things of each type the pod's files state. Records and entries share a type, so Allergy Record counts both
+# the allergies each source sent and the entries the allergies view joins them into. GRAPH ?file reads one file at a time,
+# and only files under the storage root count: a type only the derivations state, such as rec:Record, is in the derived
+# state's own graph and is left out.
+PREFIX pim: <http://www.w3.org/ns/pim/space#>
+
+SELECT ?type (COUNT(DISTINCT ?thing) AS ?things)
+WHERE {
+  GRAPH ?file { ?thing a ?type }
+  ?owner pim:storage ?root .
+  FILTER (STRSTARTS(STR(?file), STR(?root)))
+}
+GROUP BY ?type
+ORDER BY ?type

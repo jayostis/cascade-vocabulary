@@ -31,6 +31,34 @@ rec:version a owl:ObjectProperty ;
     rdfs:label "version"@en ;
     rdfs:domain rec:Revision .
 
+rec:Record a owl:Class ;
+    rdfs:label "record"@en ;
+    rdfs:comment "Derived: a thing the pod holds revisions and versions of, whatever its kind."@en .
+
+rec:kind a owl:DatatypeProperty ;
+    rdfs:label "kind"@en ;
+    rdfs:comment "Derived: the word for the record's kind, one for each type of record."@en ;
+    rdfs:domain rec:Record ;
+    rdfs:range xsd:string .
+
+rec:statusOnlyFromDocuments a owl:DatatypeProperty ;
+    rdfs:label "status only from documents"@en ;
+    rdfs:comment "Derived: whether the record's kind takes a status only from a member translated from a document, never from one the person entered."@en ;
+    rdfs:domain rec:Record ;
+    rdfs:range xsd:boolean .
+
+rec:name a owl:DatatypeProperty ;
+    rdfs:label "name"@en ;
+    rdfs:comment "Derived: the version's name, copied from the property its kind names things with."@en .
+
+rec:status a owl:DatatypeProperty ;
+    rdfs:label "status"@en ;
+    rdfs:comment "Derived: the version's status, copied from the property its kind states one with."@en .
+
+rec:date a owl:DatatypeProperty ;
+    rdfs:label "date"@en ;
+    rdfs:comment "Derived: the version's date, copied from the property its kind dates things with, if it has one."@en .
+
 rec:currentRevision a owl:ObjectProperty ;
     rdfs:label "current revision"@en ;
     rdfs:comment "Derived: the revision of a record no other revision follows. Never written to a pod file."@en ;
@@ -109,5 +137,5 @@ rec:dateFrom a owl:ObjectProperty ;
 
 rec:topCriticality a owl:DatatypeProperty ;
     rdfs:label "top criticality"@en ;
-    rdfs:comment "Derived: the rank of the most severe criticality a member states."@en ;
-    rdfs:range xsd:integer .
+    rdfs:comment "Derived: the most severe criticality a member states."@en ;
+    rdfs:range xsd:string .

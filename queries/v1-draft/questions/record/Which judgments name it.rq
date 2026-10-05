@@ -1,0 +1,19 @@
+# A judgment names records as its members: that two are the same, that they differ, or that one is wrong. Rows come in the
+# order the judgments were made. Counts says whether one counts under the lens the pod was built with; one that does not
+# was superseded, retracted, or made with a reference table since replaced.
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?recordLabel ?made ?judgment ?judgmentLabel ?verdict ?counts
+WHERE {
+  ?record a rec:Record .
+  ?judgment a jdg:Judgment ; prov:hadMember ?record ; prov:generatedAtTime ?made .
+  OPTIONAL { ?judgment jdg:verdict ?verdict }
+  OPTIONAL { ?judgment rec:counts ?counted }
+  BIND (COALESCE(?counted, false) AS ?counts)
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+}
+ORDER BY ?recordLabel ?record ?made ?judgment

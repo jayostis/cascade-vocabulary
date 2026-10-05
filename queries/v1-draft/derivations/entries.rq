@@ -1,0 +1,16 @@
+# Records of one kind, about the subject and not left out, that are currently the same, directly or through each other,
+# make one entry. It is named from its smallest member, so the same records always make the same entry.
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?record rec:inEntry ?entry }
+WHERE {
+  { SELECT ?record (IRI(CONCAT("urn:cascade:entry:", SHA256(MIN(STR(?m))))) AS ?entry)
+    WHERE {
+      ?record rec:kind ?kind ; rec:subject [] ; jdg:currentlySame* ?m .
+      ?m rec:kind ?kind ; rec:subject [] .
+      FILTER NOT EXISTS { ?record rec:excluded true }
+      FILTER NOT EXISTS { ?m rec:excluded true }
+    }
+    GROUP BY ?record }
+}

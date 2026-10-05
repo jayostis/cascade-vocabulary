@@ -1,13 +1,20 @@
 # cascade-vocabulary
 
-The ontology and shapes files a
-[Cascade Bridge Adapter](https://github.com/jayostis/cascade-bridge-spec)'s output
-is read against, as one package: [`ro-crate-metadata.json`](ro-crate-metadata.json)
-lists its files. An adapter names this repository as its `bridge:cascadeVocabularyPin`
-and each file it is read against, by the path in that list, as a `bridge:vocabularyFile`.
+How a Cascade pod is described and queried.
+[`ro-crate-metadata.json`](ro-crate-metadata.json) lists the package a program loads:
 
-- `ontologies/core`, `health`, `clinical`: terms copied from
-  [the-cascade-protocol/spec](https://github.com/the-cascade-protocol/spec) under their
-  own IRIs, each naming the file and commit it came from with `dct:source`. CC BY 4.0.
-- `ontologies/records`, `judgments`: the records and judgments of the records, judgments
-  and views design, first declared here. Apache-2.0.
+- [`ontologies/`](ontologies): the terms and shapes a
+  [Cascade Bridge Adapter](https://github.com/jayostis/cascade-bridge-spec)'s output is read against.
+  `core`, `health` and `clinical` are copied from
+  [the-cascade-protocol/spec](https://github.com/the-cascade-protocol/spec) (CC BY 4.0);
+  `records` and `judgments` are first declared here (Apache-2.0).
+- [`queries/v1-draft/`](queries/v1-draft): the standard queries over a pod.
+
+Beside it are one library and the reference tools on it, [`cascade_pod/`](cascade_pod), and one
+example pod, as data, [`example-pods/alex-rivera/`](example-pods/alex-rivera).
+
+```sh
+python3 -m pip install -r requirements.txt
+python3 -m cascade_pod site example-pods/alex-rivera --out site   # then open site/index.html
+python3 -m cascade_pod ask example-pods/alex-rivera "record/Why it is in no view"
+```

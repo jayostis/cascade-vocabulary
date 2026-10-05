@@ -1,0 +1,22 @@
+# What a view states about each of its entries, read from the view's own file. An entry is what an app shows: one allergy,
+# one condition, one vaccination. Its values are taken from the members the derivations chose: rec:latestMember,
+# rec:statusFrom and rec:dateFrom name them, and each of those terms links to the derivation that chose it. From is the
+# chosen member whose current version states the value; a value no single member states, such as the highest criticality
+# among them, has none.
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?entry ?entryLabel ?view ?field ?value ?valueLabel ?from ?fromLabel
+WHERE {
+  GRAPH ?view { ?entry cascade:mergedFrom [] ; ?field ?value }
+  OPTIONAL { VALUES ?role { rec:latestMember rec:statusFrom rec:dateFrom }
+             ?entry ?role ?from .
+             ?from pav:hasCurrentVersion ?version .
+             ?version ?field ?value .
+             OPTIONAL { ?from rdfs:label ?fromLabel } }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+  OPTIONAL { ?value rdfs:label ?valueLabel }
+}
+ORDER BY ?entryLabel ?entry ?field ?value ?from

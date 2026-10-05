@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% from "question.html" import block, question, term %}
+{% set COMPARED = ("pod/How many judgments count", "pod/My immunizations") %}
+{% block title %}How a view is built{% endblock %}
+
+{% macro added_table(added) %}
+{% if added %}
+<div class="answer">
+<table>
+<thead><tr><th>Term</th><th>Statements added</th></tr></thead>
+<tbody>
+{% for written, count in added|written %}
+<tr><td data-label="Term">{{ term(written) }}</td><td data-label="Statements added">{{ count }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<p class="count">It added nothing to this pod.</p>
+{% endif %}
+{% endmacro %}
+
+{% block main %}
+<h1>How a view is built</h1>
+<p>The pod's own files hold only what arrived and what was decided: records, their revisions and versions, the documents
+they came from, and judgments. Everything an app shows is worked out from those by queries that run in a fixed order. Each
+is a CONSTRUCT: it reads the store and adds statements to it, and the next one can read them.</p>
+<p>Together the statements they add are the derived state. It is never written into the pod. A store that loads the pod
+runs the queries again and keeps their statements as a graph of its own, <code>{{ derived_graph }}</code>; the GraphDB
+loader loads it the same way, so every question can read it.</p>
+<p>One step, the lens, decides which judgments count. It is the only step that can be swapped; this site is built with the
+{{ lens }} lens, and the other lens is shown beside it. Under each step is what it added to this pod: each term, and how
+many statements.</p>
+
+{% for query, added in site.pipeline[lens] %}
+{% call block(query, query.title) %}
+{% if query.relative.startswith("lenses/") %}
+<p class="lens">This step is the lens.</p>
+{% endif %}
+{{ added_table(added) }}
+{% endcall %}
+{% if query.relative.startswith("lenses/") %}
+{% for other, steps in site.pipeline.items() if other != lens %}
+{% for query, added in steps if query.relative.startswith("lenses/") %}
+{% call block(query, query.title) %}
+<p class="lens">The other lens. Had the pod been built with it, it would have added this instead.</p>
+{{ added_table(added) }}
+{% endcall %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+<h2 class="part" id="what-the-lens-changes">What the lens changes</h2>
+<p>The same questions, asked of the pod built under each lens, side by side. A judgment that counts under one lens and not
+the other can join records into one entry or leave them apart, so a view can change with the lens. Compare the two
+counts of judgments row by row: a row one lens has and the other lacks is a kind of judgment only one counts, and the view
+below them shows what that does to the entries.</p>
+{% for name in COMPARED %}
+<div class="lenses">
+{% for answers in site.answers.values() %}
+<div>{{ question(answers[name], true) }}</div>
+{% endfor %}
+</div>
+{% endfor %}
+
+<h2 class="part">The files it writes</h2>
+<p>Last, a query for each view reads the pod and the derived state and writes one file, and one more writes a name for
+everything. These are the pod's only files the build writes, and each says it is a view.</p>
+{% for file, (query, wrote) in site.built.items() %}
+{% set path = file[example.address|length:] %}
+{% call block(query, query.title) %}
+<p class="answer">It wrote <a href="{{ copy }}{{ path }}"><code>{{ path }}</code></a>, {{ wrote }} statements.
+{% if file in site.views %}<a href="{{ file|page }}">The view's page</a> shows its entries.{% endif %}</p>
+{% endcall %}
+{% endfor %}
+<p>Every page of this site names a thing by the label the labels file gives it, read with this question.</p>
+{{ question(site.questions["pod/What everything is called"]) }}
+{% endblock %}

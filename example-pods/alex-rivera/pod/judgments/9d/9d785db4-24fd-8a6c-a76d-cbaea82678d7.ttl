@@ -3,19 +3,23 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<urn:uuid:9d785db4-24fd-8a6c-a76d-cbaea82678d7> a jdg:Judgment ;
-    jdg:verdict jdg:Same ;
-    prov:hadMember <urn:uuid:26b7ca18-b483-8b4b-9c3e-9086b13999cc> ,
-                   <urn:uuid:4031383c-06e7-8b0a-bf7b-a16225c717bb> ,
-                   <urn:uuid:588ad01f-9631-8f1b-bdc2-6a10acad4d9d> ;
-    jdg:justification jdg:SameMappedCodeAndDate ;
-    prov:used <ni:///sha-256;4EI6INLEtLQAWGCr1zZtO67-n99eys6sidqCtlPxQ0w> ,
-              <ni:///sha-256;kPA_y0_3wdsC5wJAPW3vOz8R9V4Bq5aIRMB_tDl5dQY> ,
-              <ni:///sha-256;ndeQIKIfIcI-3UCoTcREWtB2pxBHr8g0GWecmqDT4Bg> ,
-              <urn:uuid:15f01cb2-57b2-47c6-abb3-4d3b9b5a1693> ,
-              <urn:uuid:78bb02bc-0461-46b5-8a0b-14b1940d0194> ;
-    prov:wasAttributedTo <urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76> ;
-    prov:generatedAtTime "2027-03-18T12:01:00Z"^^xsd:dateTime .
+<urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76>
+  a prov:SoftwareAgent ;
+  rdfs:label "Cascade matcher" .
 
-<urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76> a prov:SoftwareAgent ;
-    rdfs:label "Cascade matcher" .
+<urn:uuid:9d785db4-24fd-8a6c-a76d-cbaea82678d7>
+  a jdg:Judgment ;
+  prov:generatedAtTime "2027-03-18T12:01:00Z"^^xsd:dateTime ;
+  prov:hadMember
+    <urn:uuid:26b7ca18-b483-8b4b-9c3e-9086b13999cc> ,
+    <urn:uuid:4031383c-06e7-8b0a-bf7b-a16225c717bb> ,
+    <urn:uuid:588ad01f-9631-8f1b-bdc2-6a10acad4d9d> ;
+  prov:used
+    <ni:///sha-256;4EI6INLEtLQAWGCr1zZtO67-n99eys6sidqCtlPxQ0w> ,
+    <ni:///sha-256;kPA_y0_3wdsC5wJAPW3vOz8R9V4Bq5aIRMB_tDl5dQY> ,
+    <ni:///sha-256;ndeQIKIfIcI-3UCoTcREWtB2pxBHr8g0GWecmqDT4Bg> ,
+    <urn:uuid:15f01cb2-57b2-47c6-abb3-4d3b9b5a1693> ,
+    <urn:uuid:78bb02bc-0461-46b5-8a0b-14b1940d0194> ;
+  prov:wasAttributedTo <urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76> ;
+  jdg:justification jdg:SameMappedCodeAndDate ;
+  jdg:verdict jdg:Same .

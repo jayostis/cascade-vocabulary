@@ -1,0 +1,27 @@
+# Each entry takes the allergen and code of its latest member, the status of the member chosen for status, and the
+# highest criticality any member states.
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT {
+  ?entry a health:AllergyRecord ;
+    health:allergen ?allergen ;
+    health:allergenCode ?code ;
+    clinical:status ?status ;
+    clinical:criticality ?criticality ;
+    rec:latestMember ?latest ;
+    rec:statusFrom ?statusFrom ;
+    cascade:mergedFrom ?record .
+}
+WHERE {
+  ?record a health:AllergyRecord ; rec:inEntry ?entry .
+  ?entry rec:latestMember ?latest .
+  OPTIONAL { ?latest pav:hasCurrentVersion/health:allergen ?allergen }
+  OPTIONAL { ?latest pav:hasCurrentVersion/health:allergenCode ?code }
+  OPTIONAL { ?entry rec:statusFrom ?statusFrom .
+             ?statusFrom pav:hasCurrentVersion/clinical:status ?status }
+  OPTIONAL { ?entry rec:topCriticality ?criticality }
+}

@@ -1,0 +1,26 @@
+# Each entry takes the vaccine and code of its latest member, the status of the member chosen for status, and the date
+# of the member chosen for the date.
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT {
+  ?entry a health:ImmunizationRecord ;
+    health:vaccineName ?name ;
+    health:vaccineCode ?code ;
+    health:status ?status ;
+    health:administrationDate ?date ;
+    rec:latestMember ?latest ;
+    rec:statusFrom ?statusFrom ;
+    cascade:mergedFrom ?record .
+}
+WHERE {
+  ?record a health:ImmunizationRecord ; rec:inEntry ?entry .
+  ?entry rec:latestMember ?latest .
+  OPTIONAL { ?latest pav:hasCurrentVersion/health:vaccineName ?name }
+  OPTIONAL { ?latest pav:hasCurrentVersion/health:vaccineCode ?code }
+  OPTIONAL { ?entry rec:statusFrom ?statusFrom .
+             ?statusFrom pav:hasCurrentVersion/health:status ?status }
+  OPTIONAL { ?entry rec:dateFrom/pav:hasCurrentVersion/health:administrationDate ?date }
+}

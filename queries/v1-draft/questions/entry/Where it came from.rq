@@ -1,0 +1,22 @@
+# For each member of an entry: when its current revision arrived, the import that brought it, and the document it was derived from,
+# with the hospital that wrote that document and when it was retrieved. A record the person entered has no document.
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?entry ?entryLabel ?record ?recordLabel ?arrived ?import ?importLabel ?document ?documentLabel ?hospital ?retrieved
+WHERE {
+  ?record rec:inEntry ?entry ; rec:currentRevision ?revision .
+  ?revision prov:generatedAtTime ?arrived .
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { ?revision prov:wasGeneratedBy ?import .
+             OPTIONAL { ?import rdfs:label ?importLabel } }
+  OPTIONAL { ?revision prov:wasDerivedFrom ?document .
+             OPTIONAL { ?document rdfs:label ?documentLabel }
+             OPTIONAL { ?document pav:retrievedOn ?retrieved }
+             OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                        ?attribution prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital } }
+}
+ORDER BY ?entryLabel ?entry ?arrived ?recordLabel ?record ?document ?hospital ?retrieved

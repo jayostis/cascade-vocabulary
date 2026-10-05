@@ -1,0 +1,10 @@
+# Two records named together by a counting Different judgment are currently different.
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?a jdg:currentlyDifferent ?b }
+WHERE {
+  ?d rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?a , ?b .
+  FILTER (?a != ?b)
+}

@@ -1,0 +1,14 @@
+# A record is shown in at most one entry, in the view of its kind. The entry joins it with every record judged to be the same thing.
+# A record in no entry is hidden, and Not shown says why.
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?record ?recordLabel ?entry ?entryLabel ?view
+WHERE {
+  GRAPH ?view { ?entry cascade:mergedFrom ?record }
+  ?record a rec:Record .
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+}
+ORDER BY ?recordLabel ?record ?entry

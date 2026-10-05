@@ -2,15 +2,17 @@
 @prefix ldp: <http://www.w3.org/ns/ldp#> .
 
 <./>
-    a ldp:Container, ldp:BasicContainer ;
-    dct:title "Pod Root Container" ;
-    ldp:contains
-        </attachments/>,
-        </clinical/>,
-        </judgments/>,
-        </profile/>,
-        </provenance/>,
-        </records/>,
-        </references/>,
-        </settings/>,
-        </subject/> .
+  dct:title "Pod Root Container" ;
+  a
+    ldp:BasicContainer ,
+    ldp:Container ;
+  ldp:contains
+    <attachments/> ,
+    <clinical/> ,
+    <judgments/> ,
+    <profile/> ,
+    <provenance/> ,
+    <records/> ,
+    <references/> ,
+    <settings/> ,
+    <subject/> .
