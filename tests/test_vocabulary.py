@@ -19,7 +19,6 @@ FOAF_RELEASE = "http://xmlns.com/foaf/spec/20140114.rdf"
 CASCADE = "https://ns.cascadeprotocol.org/"
 PROV = Namespace("http://www.w3.org/ns/prov#")
 FORMATS = {
-    ".csv": "text/csv",
     ".json": "application/json",
     ".md": "text/markdown",
     ".rq": "application/sparql-query",
