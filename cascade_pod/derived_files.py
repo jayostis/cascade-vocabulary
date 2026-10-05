@@ -1,10 +1,12 @@
 """The files a pod's derived state gives it: a view of each type, the labels, the index and the manifest."""
 
-from . import Failure, turtle, vocabulary
 from rdflib import BNode, Literal, URIRef
 
-CASCADE, DCT, LDP, PROV, RDF, RDFS, REC, XSD = (
-    turtle.PREFIXES[p] for p in ("cascade", "dct", "ldp", "prov", "rdf", "rdfs", "rec", "xsd"))
+from . import Failure, turtle, vocabulary
+from .store import date_time
+
+CASCADE, DCT, LDP, PROV, RDF, RDFS, REC = (
+    turtle.PREFIXES[p] for p in ("cascade", "dct", "ldp", "prov", "rdf", "rdfs", "rec"))
 TYPE = URIRef(RDF + "type")
 LABEL_FILE = "clinical/labels.ttl"
 
@@ -49,7 +51,7 @@ def index(address, files):
 
 def manifest(address, title, created):
     manifest, activity, agent = URIRef(address + "#manifest"), BNode("activity"), BNode("agent")
-    at = Literal(created, datatype=URIRef(XSD + "dateTime"), normalize=False)
+    at = date_time(created)
     return {(manifest, TYPE, URIRef(CASCADE + "ExportManifest")), (manifest, URIRef(DCT + "title"), Literal(title)),
             (manifest, URIRef(DCT + "created"), at), (manifest, URIRef(CASCADE + "schemaVersion"), Literal("1.8")),
             (manifest, URIRef(PROV + "wasGeneratedBy"), activity), (activity, TYPE, URIRef(PROV + "Activity")),

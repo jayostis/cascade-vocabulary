@@ -23,6 +23,10 @@ def literal(value, datatype=None, lang=None):
     return rdflib.Literal(value, datatype=datatype, lang=lang, normalize=False)
 
 
+def date_time(value):
+    return literal(value, XSD.dateTime)
+
+
 def parsed(path, base=None):
     return parsed_text(path.read_bytes(), base)
 
@@ -38,7 +42,23 @@ def plain(node):
     return node
 
 
-class Oxigraph:
+class Store:
+    def answer(self, query):
+        """The query's columns, and its rows with each bound column's term."""
+        names, solutions = self._solutions(query)
+        return names, [{name: self._term(row[name]) for name in names if row[name] is not None} for row in solutions]
+
+    def select(self, query):
+        return self.answer(query)[1]
+
+    def graph(self, name=None):
+        found = rdflib.Graph()
+        for triple in self.triples(name):
+            found.add(triple)
+        return found
+
+
+class Oxigraph(Store):
     def __init__(self):
         self.store = pyoxigraph.Store()
 
@@ -76,14 +96,9 @@ class Oxigraph:
     def construct(self, query):
         return {tuple(self._term(t) for t in (x.subject, x.predicate, x.object)) for x in self.store.query(query)}
 
-    def answer(self, query):
-        """The query's columns, and its rows with each bound column's term."""
+    def _solutions(self, query):
         solutions = self.store.query(query)
-        names = [v.value for v in solutions.variables]
-        return names, [{name: self._term(row[name]) for name in names if row[name] is not None} for row in solutions]
-
-    def select(self, query):
-        return self.answer(query)[1]
+        return [v.value for v in solutions.variables], solutions
 
     def triples(self, graph=None):
         named = pyoxigraph.NamedNode(graph) if graph else pyoxigraph.DefaultGraph()
@@ -97,7 +112,9 @@ class Oxigraph:
         return self.store.dump(format=pyoxigraph.RdfFormat.N_TRIPLES, from_graph=pyoxigraph.NamedNode(graph))
 
 
-class Rdflib:
+class Rdflib(Store):
+    _term = staticmethod(plain)
+
     def __init__(self):
         self.dataset = rdflib.Dataset()
 
@@ -114,7 +131,7 @@ class Rdflib:
         graphs = [self.graph()] + ([self.graph(graph)] if graph else [])
         self.dataset.addN((*triple, g) for triple in triples for g in graphs)
 
-    def _query(self, query):
+    def _solutions(self, query):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", r"Dataset\.\w+ is deprecated", DeprecationWarning)
             with literals_as_written():
@@ -122,15 +139,8 @@ class Rdflib:
                 return [str(v) for v in result.vars or ()], list(result)
 
     def construct(self, query):
-        _, found = self._query(query)
+        _, found = self._solutions(query)
         return {tuple(map(plain, triple)) for triple in found}
-
-    def answer(self, query):
-        names, rows = self._query(query)
-        return names, [{name: plain(row[name]) for name in names if row[name] is not None} for row in rows]
-
-    def select(self, query):
-        return self.answer(query)[1]
 
     def triples(self, graph=None):
         return {tuple(map(plain, triple)) for triple in self.graph(graph)}

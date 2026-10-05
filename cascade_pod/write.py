@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from functools import cached_property
 
 from rdflib import BNode, Literal, Namespace, URIRef
-from rdflib.namespace import RDF, XSD
+from rdflib.namespace import RDF
 
 from . import Failure, apple_health, names, store, turtle
 from .pod import fanned, save, stem
@@ -61,7 +61,7 @@ class Revision:
             (this, RDF.type, REC.Revision),
             (this, REC.revisionOf, self.record),
             (this, REC.version, self.version),
-            (this, PROV.generatedAtTime, Literal(self.at, datatype=XSD.dateTime, normalize=False)),
+            (this, PROV.generatedAtTime, store.date_time(self.at)),
             (this, PROV.wasGeneratedBy, URIRef(self.by)),
         } | ({(this, PROV.wasRevisionOf, previous)} if previous else set())
 
