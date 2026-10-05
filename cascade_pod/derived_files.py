@@ -12,7 +12,7 @@ from .turtle import CASCADE, DCT, LDP, PROV, REC
 def add(example, store, through=None):
     """Adds to a store holding the example's pod through the event and its derived state each file built from them,
     as that file's graph, and returns their triples by path within pod/."""
-    current = vocabulary.query(vocabulary.questions()["pod/Which reference versions are current"])
+    current = vocabulary.query(vocabulary.questions()[vocabulary.ASKED.reference_versions])
     used = [row["version"] for row in store.select(current)]
     views = vocabulary.named("views")
     files = {path: store.construct(vocabulary.query(views[view])) for view, path in example.view_files.items()}

@@ -3,10 +3,22 @@
 import itertools
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 ROOT = Path(__file__).absolute().parent.parent
 QUERIES = ROOT / "queries" / "v1-draft"
 DEFAULT_LENS = "everyday"
+ASKED = SimpleNamespace(
+    folders="pod/What each folder holds",
+    views="pod/Which view lists each kind",
+    stated="pod/Which file states each thing",
+    called="pod/What everything is called",
+    counted="pod/How many judgments count",
+    immunizations="pod/My immunizations",
+    reference_versions="pod/Which reference versions are current",
+    shown="entry/What it shows",
+    hidden="record/Why it is in no view",
+)
 
 
 def _crate():
