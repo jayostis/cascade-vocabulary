@@ -3,15 +3,14 @@
 import csv
 import json
 
-from rdflib import Literal, Namespace, URIRef
-from rdflib.namespace import RDF
+from rdflib import Literal, URIRef
+from rdflib.namespace import RDF, RDFS
 
 from . import Failure, names, turtle, vocabulary
 from .pod import NOT_RDF, fanned, save
 from .store import Rdflib, date_time
+from .turtle import CLINICAL, HEALTH, JDG, NPX, PAV, PROV, REC
 
-CLINICAL, HEALTH, JDG, NPX, PAV, PROV, RDFS, REC = (
-    Namespace(turtle.PREFIXES[p]) for p in ("clinical", "health", "jdg", "npx", "pav", "prov", "rdfs", "rec"))
 MATCHER = URIRef("urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76")
 CODES = [HEALTH.allergenCode, HEALTH.snomedCode, CLINICAL.snomedCode]
 SNOMED, RXNORM = "http://snomed.info/sct/", "http://www.nlm.nih.gov/research/umls/rxnorm/"

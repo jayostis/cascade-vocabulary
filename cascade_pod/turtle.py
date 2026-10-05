@@ -6,7 +6,7 @@ import re
 from collections import defaultdict
 from urllib.parse import urljoin
 
-from rdflib import BNode, URIRef
+from rdflib import BNode, Namespace, URIRef
 from rdflib.namespace import RDF, XSD
 
 from . import Failure
@@ -32,6 +32,9 @@ PREFIXES = {
     "solid": "http://www.w3.org/ns/solid/terms#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
 }
+BRIDGE, CASCADE, CLINICAL, CONFIG, DCT, GRAPHDB, HEALTH, JDG, LDP, NPX, PAV, PROV, REC, SOLID = (
+    Namespace(PREFIXES[prefix]) for prefix in (
+        "bridge", "cascade", "clinical", "config", "dct", "graphdb", "health", "jdg", "ldp", "npx", "pav", "prov", "rec", "solid"))
 LOCAL_NAME = re.compile(r"[A-Za-z](?:[A-Za-z0-9_.-]*[A-Za-z0-9_-])?")
 
 

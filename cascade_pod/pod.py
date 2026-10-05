@@ -6,13 +6,10 @@ import json
 from functools import cached_property
 from pathlib import Path, PurePosixPath
 
-from rdflib import Namespace
-
 from . import Failure, derive, derived_files, turtle, vocabulary
 from .store import ENGINES, parsed
-from .turtle import PREFIXES
+from .turtle import REC, SOLID
 
-REC, SOLID = Namespace(PREFIXES["rec"]), Namespace(PREFIXES["solid"])
 TYPE_INDEX = "settings/privateTypeIndex.ttl"
 NOT_RDF = ("attachments/", ".well-known/")
 

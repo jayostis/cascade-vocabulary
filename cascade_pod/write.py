@@ -8,13 +8,13 @@ from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
 
-from rdflib import BNode, Literal, Namespace, URIRef
+from rdflib import BNode, URIRef
 from rdflib.namespace import RDF
 
 from . import Failure, apple_health, names, store, turtle
 from .pod import fanned, save, stem
+from .turtle import BRIDGE, PAV, PROV, REC
 
-BRIDGE, PAV, PROV, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rec"))
 DRAFT_OUTPUT = re.compile(r"^urn:cascade:output-(\d+)$")
 OWNED_POD_FOLDERS = ["subject", "records", "provenance", "attachments"]
 

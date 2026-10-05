@@ -4,12 +4,12 @@ from them."""
 import xml.etree.ElementTree as ElementTree
 from datetime import datetime, timezone
 
-from rdflib import BNode, Literal, Namespace, URIRef
+from rdflib import BNode, Literal, URIRef
+from rdflib.namespace import RDFS
 
-from . import turtle
 from .store import date_time
+from .turtle import BRIDGE, PAV, PROV, REC
 
-BRIDGE, PAV, PROV, RDFS, REC = (Namespace(turtle.PREFIXES[p]) for p in ("bridge", "pav", "prov", "rdfs", "rec"))
 ADAPTER = "<cascade-bridge-adapter-fhir-r4>"
 VOCABULARIES = "<cascade-vocabulary at the adapter's pin>"
 TRANSMITTER = "Apple Health"

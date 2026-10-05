@@ -1,13 +1,12 @@
 """The files a pod's derived state gives it: a view of each type, the labels, the index and the manifest."""
 
 from rdflib import BNode, Literal, URIRef
+from rdflib.namespace import RDF, RDFS
 
-from . import Failure, turtle, vocabulary
+from . import Failure, vocabulary
 from .store import date_time
+from .turtle import CASCADE, DCT, LDP, PROV, REC
 
-CASCADE, DCT, LDP, PROV, RDF, RDFS, REC = (
-    turtle.PREFIXES[p] for p in ("cascade", "dct", "ldp", "prov", "rdf", "rdfs", "rec"))
-TYPE = URIRef(RDF + "type")
 LABEL_FILE = "clinical/labels.ttl"
 
 
@@ -38,22 +37,22 @@ def _add(store, example, files):
 def marked(address, triples, reference_versions):
     """A view's triples, with the file marked as a view built with these reference versions."""
     view = URIRef(address)
-    return triples | {(view, TYPE, URIRef(REC + "View"))} | {(view, URIRef(PROV + "used"), v) for v in reference_versions}
+    return triples | {(view, RDF.type, REC.View)} | {(view, PROV.used, v) for v in reference_versions}
 
 
 def index(address, files):
     root = URIRef(address)
     folders = sorted({path.split("/", 1)[0] for path in files if "/" in path and not path.startswith(".")})
-    return {(root, TYPE, URIRef(LDP + "Container")), (root, TYPE, URIRef(LDP + "BasicContainer")),
-            (root, URIRef(DCT + "title"), Literal("Pod Root Container")),
-            *((root, URIRef(LDP + "contains"), URIRef(f"{address}{folder}/")) for folder in folders)}
+    return {(root, RDF.type, LDP.Container), (root, RDF.type, LDP.BasicContainer),
+            (root, DCT["title"], Literal("Pod Root Container")),
+            *((root, LDP.contains, URIRef(f"{address}{folder}/")) for folder in folders)}
 
 
 def manifest(address, title, created):
     manifest, activity, agent = URIRef(address + "#manifest"), BNode("activity"), BNode("agent")
     at = date_time(created)
-    return {(manifest, TYPE, URIRef(CASCADE + "ExportManifest")), (manifest, URIRef(DCT + "title"), Literal(title)),
-            (manifest, URIRef(DCT + "created"), at), (manifest, URIRef(CASCADE + "schemaVersion"), Literal("1.8")),
-            (manifest, URIRef(PROV + "wasGeneratedBy"), activity), (activity, TYPE, URIRef(PROV + "Activity")),
-            (activity, URIRef(PROV + "startedAtTime"), at), (activity, URIRef(PROV + "wasAssociatedWith"), agent),
-            (agent, TYPE, URIRef(PROV + "SoftwareAgent")), (agent, URIRef(RDFS + "label"), Literal("cascade_pod"))}
+    return {(manifest, RDF.type, CASCADE.ExportManifest), (manifest, DCT["title"], Literal(title)),
+            (manifest, DCT.created, at), (manifest, CASCADE.schemaVersion, Literal("1.8")),
+            (manifest, PROV.wasGeneratedBy, activity), (activity, RDF.type, PROV.Activity),
+            (activity, PROV.startedAtTime, at), (activity, PROV.wasAssociatedWith, agent),
+            (agent, RDF.type, PROV.SoftwareAgent), (agent, RDFS.label, Literal("cascade_pod"))}

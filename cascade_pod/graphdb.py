@@ -8,12 +8,11 @@ import urllib.parse
 import urllib.request
 import uuid
 
-from rdflib import BNode, Literal, Namespace
+from rdflib import BNode, Literal
 from rdflib.namespace import RDF, RDFS
 
 from . import Failure, turtle, vocabulary
-
-CONFIG, GRAPHDB = Namespace(turtle.PREFIXES["config"]), Namespace(turtle.PREFIXES["graphdb"])
+from .turtle import CONFIG, GRAPHDB
 
 
 def configuration(example):
