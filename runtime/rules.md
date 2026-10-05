@@ -92,7 +92,9 @@ A runtime passes the kit when all of these hold for one replay of its story:
 2. **Each final view equals `expected/`.** Take the view graph the replay builds at the last step under `everyday` (the
    graph `<address>clinical/<view>.ttl`), keep each subject that has `cascade:mergedFrom` with its triples, and replace
    each `urn:cascade:entry:` IRI with a blank node. The result is the expected file's graph, up to its blank nodes.
-3. **Every RDF file of the pod conforms to the vocabulary's shapes**, read with the files that describe what it names.
+3. **Every RDF file of the pod conforms to the vocabulary's shapes**, read with the files that describe what it names,
+   less `clinical/labels.ttl`. That file gives a label, for people to read, to things other files describe, the subject
+   among them, and `rec:SubjectShape` is closed: read with the rest, it would refuse the subject's `rdfs:label`.
 4. **Every name follows its rule**, N1 to N7, N9 and N10, computed from that run's own inputs, its random import and
    session IDs among them. Each saved Bridge output is in the pod less its arrivals, with its import replaced by the
    import its step wrote (A9, A11), and each revision follows an earlier revision of the same record.
@@ -100,10 +102,17 @@ A runtime passes the kit when all of these hold for one replay of its story:
    may also hold files another app wrote.
 
 Checks 2 to 5 are not entries of a manifest: SPARQL cannot compare two graphs up to their blank nodes, hash a canonical
-graph, run SHACL or read a stored document's bytes. One way to make each is the Python's:
-[`tests/test_conformance.py`](../tests/test_conformance.py) makes checks 1, 2 and 4,
-[`tests/test_example_shapes.py`](../tests/test_example_shapes.py) check 3, and
-[`tests/test_pod_layout.py`](../tests/test_pod_layout.py) check 5.
+graph, run SHACL or read a stored document's bytes. An EARL report names each as a test by an IRI relative to the kit's
+folder, as the cases' entries are relative to `cases/manifest.ttl`:
+
+| Check | Its test, relative to `conformance/alex-rivera/` |
+|---|---|
+| 2 | `#check-2-each-final-view-equals-expected` |
+| 3 | `#check-3-every-file-conforms-to-the-shapes` |
+| 4 | `#check-4-every-name-follows-its-rule` |
+| 5 | `#check-5-every-file-is-where-the-layout-says` |
+
+Check 1 is no test of its own: its tests are the entries.
 
 ## Naming
 
@@ -285,8 +294,7 @@ A step's records are those whose first revision, the one with no `prov:wasRevisi
 name and no list of steps. A record of the subject's with no one first revision fails the run.
 
 No vector can tell this from taking the records whose first revision's file the step wrote, since in a pod that follows
-these rules the two always agree; `test_the_matcher_needs_no_file_names_or_step_list` in
-[`tests/test_alex_rivera_matcher.py`](../tests/test_alex_rivera_matcher.py) shows the matcher reading triples alone.
+these rules the two always agree. Each runtime tests it itself.
 
 Vectors: `takes-only-its-steps-records`. Planted cases: P1, P7.
 
