@@ -17,6 +17,7 @@ ALEX = Example(EXAMPLE)
 REC = Namespace("https://ns.cascadeprotocol.org/records/v1-draft#")
 JDG = Namespace("https://ns.cascadeprotocol.org/judgments/v1-draft#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
+PAV = Namespace("http://purl.org/pav/")
 MATCHER = "urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76"
 
 
@@ -115,6 +116,16 @@ def _matcher_judgment(handle, named):
                                           *sorted(str(named[u]) for u in judgment.used)]))
 
 
+ROWS_OF = {"rules": (None, RDF.type, REC.MatcherRule), "ingredient-map": (None, REC.sameIngredientAs, None),
+           "cvx-vaccine-groups": (None, REC.cvxCode, None)}
+
+
+def holds_rows(references, series, key):
+    """Whether a version of the series holds rows of the kind of table handles.json names by `key`."""
+    return any(ROWS_OF[key] in store.parsed(EXAMPLE / "references" / f"{str(v)[len('urn:uuid:'):]}.ttl")
+               for v in references.subjects(PROV.specializationOf, series))
+
+
 @lru_cache(maxsize=None)
 def handles():
     graph = final_pod()
@@ -128,11 +139,11 @@ def handles():
             if graph.value(revision, REC.version) not in versions:
                 versions.append(graph.value(revision, REC.version))
                 named[f"{h} v{len(versions)}"] = versions[-1]
-    references = json.loads((EXAMPLE / "references" / "references.json").read_text(encoding="utf-8"))["series"]
+    references = store.parsed(EXAMPLE / "references" / "references.ttl")
     for h, key in sources()["series"].items():
-        [series] = [s for s in references if s["key"] == key]
-        named[h] = URIRef(series["name"])
-        named |= {f"{h}-{v['version']}": URIRef(v["name"]) for v in series["versions"]}
+        [series] = [s for s in references.subjects(RDF.type, REC.ReferenceSeries) if holds_rows(references, s, key)]
+        named[h] = series
+        named |= {f"{h}-{references.value(v, PAV.version)}": v for v in references.subjects(PROV.specializationOf, series)}
     named |= {f"I-{e['event']}": URIRef(e["import"]) for e in ALEX.events if "import" in e}
     named |= {"S": URIRef(e["subject"]) for e in ALEX.events if "subject" in e}
     named |= {h: URIRef(n) for h, n in sources()["judgments"].items()}

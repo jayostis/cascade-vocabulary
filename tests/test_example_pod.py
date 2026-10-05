@@ -241,12 +241,13 @@ def matcher_runs(example):
 
 
 @every_example_and("run", matcher_runs)
-def test_each_matcher_run_in_the_story_writes_exactly_the_files_its_event_adds_byte_for_byte(example, run, tmp_path):
+def test_each_matcher_run_in_the_story_writes_exactly_the_files_its_event_adds_with_the_same_graphs(example, run, tmp_path):
     event = example.event(run)
     written = sorted(run_matcher(example.folder, event["read_through"], event["at"], tmp_path, event.get("takes")))
     assert written == sorted(event["adds"])
     for relative in written:
-        assert (tmp_path / relative).read_bytes() == (example.pod / relative).read_bytes(), relative
+        assert isomorphic(store.parsed(tmp_path / relative, example.address + relative),
+                          pod_file(example, relative)), relative
 
 
 @pytest.mark.parametrize("engine", sorted(store.ENGINES))
