@@ -114,6 +114,7 @@ def file_subject(filing, event):
 
 
 def file_entry(filing, event):
+    """Files the entry, and returns its session."""
     graph = store.parsed(filing.example.folder / event["entry"])
     activities = list(graph.subjects(RDF.type, PROV.Activity))
     if len(activities) != 1:
@@ -129,6 +130,7 @@ def file_entry(filing, event):
     filing.add_turtle(event["event"], place.path(activity), closure(graph, activity))
     for revision in entry_revisions(graph, activity, event["entry"], filing.example.records_folders, filing.subject):
         filing.revise(event["event"], revision)
+    return activity
 
 
 def this_entry(graph, at):

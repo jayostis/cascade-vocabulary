@@ -35,6 +35,7 @@
     <#refused-import-disagreement>
     <#refused-entry-of-two-activities>
     <#refused-entry-session-filed-elsewhere>
+    <#a-rule-list-naming-a-changed-query-is-refused>
     <#judgment-name>
     <#takes-only-its-steps-records>
     <#a-record-nobody-is-named-for-is-never-taken>
@@ -44,6 +45,7 @@
     <#a-judgment-cites-what-it-used>
     <#reads-no-persons-judgment>
     <#a-rerun-writes-nothing>
+    <#a-rerun-keeps-the-judgments-first-time>
     <#a-retraction-deletes-nothing>
     <#same-code>
     <#same-code-ignores-a-procedures-date>
@@ -262,6 +264,13 @@
               rec:lens <../../queries/v1-draft/lenses/everyday.rq> ; qt:query <refusals/refused-entry-session-filed-elsewhere.rq> ] ;
   mf:result <refusals/refused-entry-session-filed-elsewhere.srj> .
 
+<#a-rule-list-naming-a-changed-query-is-refused> a rec:ReplayTest ;
+  mf:name "a-rule-list-naming-a-changed-query-is-refused" ;
+  rdfs:comment "A matcher run whose rule list gives matcher/same-code.rq a hash its bytes do not have is refused and writes nothing, though its two allergies share a code, as the drafts same-code shows matching do." ;
+  mf:action [ rec:story <refusals/story.json> ; rec:step "match-same-code-entry" ;
+              rec:lens <../../queries/v1-draft/lenses/everyday.rq> ; qt:query <refusals/a-rule-list-naming-a-changed-query-is-refused.rq> ] ;
+  mf:result <refusals/a-rule-list-naming-a-changed-query-is-refused.srj> .
+
 <#judgment-name> a rec:ReplayTest ;
   mf:name "judgment-name" ;
   rdfs:comment "A matcher judgment is named by the record rule from the matcher, its justification, its members' names sorted and the sorted names of what it used." ;
@@ -324,6 +333,13 @@
   mf:action [ rec:story <matching/story.json> ; rec:step "match-entry-again" ;
               rec:lens <../../queries/v1-draft/lenses/everyday.rq> ; qt:query <matching/a-rerun-writes-nothing.rq> ] ;
   mf:result <matching/a-rerun-writes-nothing.srj> .
+
+<#a-rerun-keeps-the-judgments-first-time> a rec:ReplayTest ;
+  mf:name "a-rerun-keeps-the-judgments-first-time" ;
+  rdfs:comment "Running the matcher again on the same step leaves each judgment it made at the time it was first made: the rerun writes nothing over it." ;
+  mf:action [ rec:story <matching/story.json> ; rec:step "match-entry-again" ;
+              rec:lens <../../queries/v1-draft/lenses/everyday.rq> ; qt:query <matching/a-rerun-keeps-the-judgments-first-time.rq> ] ;
+  mf:result <matching/a-rerun-keeps-the-judgments-first-time.srj> .
 
 <#a-retraction-deletes-nothing> a rec:ReplayTest ;
   mf:name "a-retraction-deletes-nothing" ;

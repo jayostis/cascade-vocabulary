@@ -1,6 +1,7 @@
 """Replays a story into a pod of its own, one step at a time: the writer files its creation, imports and entries, the
 matcher its runs, and a person's judgment or a reference version is filed at the path its name gives. A step that ends
-in a Failure writes nothing, and the replay goes on."""
+in a Failure writes nothing, and the replay goes on. The matcher's files are all saved, as a runtime would save them,
+though only those new to the pod are listed as its step's."""
 
 import copy
 import json
@@ -38,7 +39,8 @@ def kind(step):
 class Replay:
     """A story replayed into `folder`, as an example in the form the tools read."""
 
-    def __init__(self, story, folder):
+    def __init__(self, story, folder, engine="rdflib"):
+        self.engine = engine
         self.story_file = Path(story)
         self.source = self.story_file.parent
         self.story = read(story)
@@ -47,6 +49,7 @@ class Replay:
         self.events = []
         self.derived = []
         self.filing = None
+        self.activities = {}
 
     def run(self):
         if self.folder.exists():
@@ -78,7 +81,7 @@ class Replay:
         except Failure:
             written = {}
         fresh = {path: octets for path, octets in written.items() if not (self.folder / "pod" / path).exists()}
-        save(fresh, self.folder / "pod")
+        save(written if happened == "matcher" else fresh, self.folder / "pod")
         event["adds"] = sorted(fresh)
         if happened == "creation":
             self.derived = LAYOUT.derived
@@ -110,14 +113,19 @@ class Replay:
             if to_convert:
                 raise ValueError(f"step {event['event']} has no saved Bridge output for:\n" + "\n".join(to_convert))
 
-        return self._filed(event, file)
+        filed = self._filed(event, file)
+        self.activities[step["name"]] = event["import"]
+        return filed
 
     def _entry(self, step, event):
         entry = self.folder / "entries" / f"{step['name']}.ttl"
         entry.parent.mkdir(exist_ok=True)
         shutil.copyfile(self.source / step["entry"], entry)
         event["entry"] = entry.relative_to(self.folder).as_posix()
-        return self._filed(event, write.file_entry)
+        sessions = []
+        filed = self._filed(event, lambda filing, event: sessions.append(write.file_entry(filing, event)))
+        self.activities[step["name"]] = str(sessions[-1])
+        return filed
 
     def _judgment(self, step, event):
         octets = (self.source / step["judgment"]).read_bytes()
@@ -127,22 +135,22 @@ class Replay:
         return {LAYOUT.place(JDG.Judgment).path(judgments[0]): octets}
 
     def _reference(self, step, event):
-        series, version = match.References(self.folder / "references").versions[step["reference"]]
-        path = LAYOUT.version(LAYOUT.place(REC.ReferenceSeries), version["name"])
-        return {path: turtle.write(match.version_triples(series, version), self.address + path)}
+        references = match.References(self.folder / "references")
+        if not references.is_version(step["reference"]):
+            raise ValueError(f"step {step['name']} names {step['reference']}, a version references.ttl does not list")
+        path = LAYOUT.version(LAYOUT.place(REC.ReferenceSeries), step["reference"])
+        return {path: turtle.write(references.description(step["reference"]), self.address + path)}
 
     def _matcher(self, step, event):
         if len(self.events) < 2:
             raise ValueError(f"step {step['name']} is a matcher step with no step before it to read through")
         read_through = self.events[-2]["event"]
-        matcher = match.Matcher(match.Reading(self.example(), read_through), step["when"])
+        pod = self.example().story_store(self.engine, read_through).triples()
+        matcher = match.Matcher(pod, match.References(self.folder / "references"), step["when"], self.address,
+                                self.engine)
         takes = step["matcher"].get("takes")
-        if takes:
-            matcher.take(takes)
-        else:
-            matcher.recheck()
         event |= {"read_through": read_through, **({"takes": takes} if takes else {})}
-        return matcher.files
+        return matcher.take(self.activities.get(takes)) if takes else matcher.recheck()
 
     def steps_graph(self, through):
         """What each step through `through` wrote: each file that was new to the pod."""

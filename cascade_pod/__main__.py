@@ -20,11 +20,12 @@ def parser():
 
     command("write", "files the story into pod/", lambda example, _: write.run(example))
     matching = command("match", "writes the matcher's judgments",
-                       lambda example, a: match.run(example, a.read_through, a.takes, a.at, a.out))
+                       lambda example, a: match.run(example, a.read_through, a.takes, a.at, a.out, a.engine))
     matching.add_argument("--read-through", required=True)
     matching.add_argument("--takes")
     matching.add_argument("--at", required=True)
     matching.add_argument("--out", type=Path, required=True)
+    matching.add_argument("--engine", choices=sorted(ENGINES), default="oxigraph")
     build = command("build", "writes the views, the labels, the type index and the manifest",
                     lambda example, a: save(example.derived_turtle(a.engine), a.out or example.pod))
     build.add_argument("--engine", choices=sorted(ENGINES), required=True)

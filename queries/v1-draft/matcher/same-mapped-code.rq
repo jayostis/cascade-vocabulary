@@ -1,0 +1,16 @@
+# Two records of one kind match when the ingredient map pairs an allergen code of one's current version with an
+# allergen code of the other's, either way round. The map pairs a SNOMED CT code with an RxNorm code, so two codes of
+# one system never match here. Each ordered pair is a row.
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
+  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version health:allergenCode ?code .
+  ?otherVersion health:allergenCode ?otherCode .
+  ?code rec:sameIngredientAs|^rec:sameIngredientAs ?otherCode .
+  FILTER (?record != ?other)
+}

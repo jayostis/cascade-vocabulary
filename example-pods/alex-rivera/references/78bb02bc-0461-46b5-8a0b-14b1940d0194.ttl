@@ -1,0 +1,28 @@
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameCode ;
+    rec:appliesTo "Allergy", "Condition", "Procedure" ;
+    rec:query "matcher/same-code.rq" ;
+    rec:queryHash <ni:///sha-256;l-aRkMIvfHe5mQVT7cIfzUIVAeQtlzU8045zZJ1e6CQ> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameCodeAndDate ;
+    rec:appliesTo "Immunization" ;
+    rec:query "matcher/same-code-and-date.rq" ;
+    rec:queryHash <ni:///sha-256;Y3tTorFmXGAj9Wbhip4Xz6jWJ0soFhSy2g68JvQCyIw> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameMappedCode ;
+    rec:appliesTo "Allergy" ;
+    rec:query "matcher/same-mapped-code.rq" ;
+    rec:queryHash <ni:///sha-256;q-ucDSvJWGvOO0dhsMkFtKSESm9Dfy2Hl9jSyyMBquo> ;
+    rec:table <urn:uuid:5f0d4278-b4b2-4e8d-acff-687e2fb012cb> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameMappedCodeAndDate ;
+    rec:appliesTo "Immunization" ;
+    rec:query "matcher/same-mapped-code-and-date.rq" ;
+    rec:queryHash <ni:///sha-256;sDKmw0JSL5TBNRcJYiMl2So6D-QZTvueeLn96CoIlTQ> ;
+    rec:table <urn:uuid:0bfff0cf-08f4-4ff5-93f6-bd254596b301> .

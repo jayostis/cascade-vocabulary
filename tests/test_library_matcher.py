@@ -1,58 +1,84 @@
-import json
-
 import pytest
+from rdflib import Graph, Namespace, URIRef
+from rdflib.namespace import RDF
 
-from cascade_pod import Failure, match
-from cascade_pod.example import Example
+import recomputed
+from cascade_pod import Failure, match, store
+from examples import ROOT
 
-SUBJECT = "urn:example:subject"
-RXNORM, SNOMED = "http://www.nlm.nih.gov/research/umls/rxnorm/", "http://snomed.info/sct/"
-
-
-def uuid(n):
-    return f"urn:uuid:00000000-0000-4000-8000-{n:012d}"
-
-
-SERIES = [
-    {"key": "rules", "name": uuid(1), "label": "Matcher rules", "ships_with": "1",
-     "versions": [{"name": uuid(2), "version": "1", "table": "rules-1.csv"}]},
-    {"key": "ingredient-map", "name": uuid(3), "label": "Ingredient map", "ships_with": "1",
-     "versions": [{"name": uuid(4), "version": "1", "table": "ingredient-map-1.csv"},
-                  {"name": uuid(5), "version": "2", "revises": "1", "table": "ingredient-map-2.csv"}]},
-    {"key": "cvx-vaccine-groups", "name": uuid(6), "label": "Vaccine groups", "ships_with": "1",
-     "versions": [{"name": uuid(7), "version": "1", "table": "cvx-vaccine-groups-1.csv"}]},
-]
-TABLES = {
-    "rules-1.csv": "rule,applies_to,justification,table\nR1,Allergy Condition Procedure,SameCode,\n"
-                   "R2,Immunization,SameCodeAndDate,\nR3,Allergy,SameMappedCode,ingredient-map\n"
-                   "R4,Immunization,SameMappedCodeAndDate,cvx-vaccine-groups\n",
-    "ingredient-map-1.csv": f"snomed,rxnorm\n{SNOMED}373270004,{RXNORM}7980\n",
-    "ingredient-map-2.csv": "snomed,rxnorm\n",
-    "cvx-vaccine-groups-1.csv": "cvx,group\n141,INFLUENZA\n150,INFLUENZA\n",
-}
+REC = Namespace("https://ns.cascadeprotocol.org/records/v1-draft#")
+JDG = Namespace("https://ns.cascadeprotocol.org/judgments/v1-draft#")
+PROV = Namespace("http://www.w3.org/ns/prov#")
+QUERIES = ROOT / "queries" / "v1-draft"
+PREFIXES = """@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+"""
+RULES, RULES_1 = "urn:uuid:00000000-0000-4000-8000-000000000001", "urn:uuid:00000000-0000-4000-8000-000000000002"
 
 
-def reference_tables(folder):
-    folder.mkdir(parents=True)
-    (folder / "references.json").write_text(json.dumps({"series": SERIES}), encoding="utf-8")
-    for name, text in TABLES.items():
-        (folder / name).write_text(text, encoding="utf-8")
+def rule(justification, query, digest=None):
+    digest = digest or recomputed.ni_name((QUERIES / query).read_bytes())
+    return f'[] a rec:MatcherRule ; rec:justifiedAs jdg:{justification} ; rec:appliesTo "Allergy" ; ' \
+           f'rec:query "{query}" ; rec:queryHash <{digest}> .\n'
 
 
-class SmallPod:
-    def __init__(self, root):
-        self.root, self.events = root, [{"event": "E1", "subject": SUBJECT, "adds": []}]
-        reference_tables(root / "references")
-
-    def tell(self):
-        story = {"address": "https://pod.example/", "events": self.events, "derived": []}
-        (self.root / "events.json").write_text(json.dumps(story), encoding="utf-8")
+def tables(folder, rows, ships_with=RULES_1):
+    folder.mkdir(exist_ok=True)
+    (folder / "references.ttl").write_text(
+        PREFIXES + f'<{RULES}> a rec:ReferenceSeries ; rdfs:label "Rules" ; rec:shipsWith <{ships_with}> .\n'
+                   f'<{RULES_1}> a prov:Entity ; prov:specializationOf <{RULES}> .\n', encoding="utf-8")
+    (folder / f"{RULES_1[len('urn:uuid:'):]}.ttl").write_text(PREFIXES + rows, encoding="utf-8")
+    return match.References(folder)
 
 
 def test_a_series_that_ships_with_a_version_it_does_not_list_is_a_failure_not_a_traceback(tmp_path):
-    pod = SmallPod(tmp_path)
-    references = match.References(pod.root / "references")
-    references.by_key["rules"]["ships_with"] = "no such version"
-    pod.tell()
+    references = tables(tmp_path, rule("SameCode", "matcher/same-code.rq"), ships_with="urn:uuid:0")
+    with pytest.raises(Failure, match="ships with"):
+        references.current(URIRef(RULES), Graph())
+
+
+REFUSED = {
+    "a query that does not hash to its rule's hash":
+        rule("SameCode", "matcher/same-code.rq", recomputed.ni_name(b"")),
+    "a query outside matcher/": rule("SameCode", "views/allergies.rq"),
+    "a query that climbs out of matcher/ by a backslash":
+        rule("SameCode", "matcher/..\\\\views\\\\allergies.rq",
+             recomputed.ni_name((QUERIES / "views/allergies.rq").read_bytes())),
+    "a rule without its hash":
+        '[] a rec:MatcherRule ; rec:justifiedAs jdg:SameCode ; rec:query "matcher/same-code.rq" .\n',
+    "two rules giving one justification":
+        rule("SameCode", "matcher/same-code.rq") + rule("SameCode", "matcher/same-code-and-date.rq"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(REFUSED))
+def test_a_rule_list_the_matcher_cannot_trust_refuses_the_run_as_a_failure_not_a_traceback(case, tmp_path):
     with pytest.raises(Failure):
-        references.current("rules", match.Reading(Example(tmp_path), "E1"))
+        match.Matcher({(URIRef("urn:x:subject"), RDF.type, REC.Subject)}, tables(tmp_path, REFUSED[case]),
+                      "2026-01-01T00:00:00Z", "https://pod.example/", "rdflib")
+
+
+def rule_lists():
+    """Every version of a rule list in the repository, by its file, with its rows."""
+    folders = [*ROOT.glob("example-pods/*/references"), *ROOT.glob("runtime/vectors/*/scripted-input/references")]
+    found = {}
+    for path in (path for folder in folders for path in sorted(folder.glob("*.ttl"))):
+        rows = store.parsed(path)
+        if (None, RDF.type, REC.MatcherRule) in rows:
+            found[path.relative_to(ROOT).as_posix()] = rows
+    return found
+
+
+def test_every_rule_names_a_comparison_whose_bytes_hash_to_its_hash_but_the_one_a_vector_breaks():
+    lists = rule_lists()
+    assert len(lists) == 5
+    mismatched = set()
+    for path, rows in lists.items():
+        for row in rows.subjects(RDF.type, REC.MatcherRule):
+            query = str(rows.value(row, REC.query))
+            assert query.startswith("matcher/"), path
+            if recomputed.ni_name((QUERIES / query).read_bytes()) != str(rows.value(row, REC.queryHash)):
+                mismatched.add((path.split("/")[2], query))
+    assert mismatched == {("refusals", "matcher/same-code.rq")}
