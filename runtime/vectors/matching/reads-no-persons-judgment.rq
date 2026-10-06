@@ -1,8 +1,0 @@
-PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
-PREFIX prov: <http://www.w3.org/ns/prov#>
-
-SELECT ?judgment ?justification ?member WHERE {
-  GRAPH <urn:cascade:steps> { <urn:cascade:step:match-entry> prov:generated ?file }
-  GRAPH ?file { ?judgment jdg:verdict jdg:Same ; jdg:justification ?justification ; prov:hadMember ?member }
-  FILTER EXISTS { ?judgment prov:hadMember ?any FILTER (?any IN (<urn:uuid:5a7d7c32-97a1-81d1-b676-24ab757808d2>, <urn:uuid:a3fcfbf8-afd3-8996-b773-65182b9e95fb>, <urn:uuid:3f892b5d-de37-8d3c-8483-ac3917682c4b>, <urn:uuid:b736ba62-812b-872d-91c3-d919dda230ef>)) }
-}

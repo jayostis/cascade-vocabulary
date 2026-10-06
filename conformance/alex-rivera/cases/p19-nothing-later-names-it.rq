@@ -1,9 +1,0 @@
-PREFIX prov: <http://www.w3.org/ns/prov#>
-
-SELECT ?step ?file WHERE {
-  VALUES ?step { <urn:cascade:step:E10> <urn:cascade:step:E12> <urn:cascade:step:E15> }
-  VALUES ?thing { <urn:uuid:99696d97-cd0d-8e9c-af86-e54f66df19d5> }
-  GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
-  GRAPH ?file { ?s ?p ?o }
-  FILTER (?thing IN (?s, ?o))
-}

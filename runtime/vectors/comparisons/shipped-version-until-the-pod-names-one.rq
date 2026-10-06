@@ -1,7 +1,0 @@
-PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
-PREFIX prov: <http://www.w3.org/ns/prov#>
-
-SELECT ?judgment ?tableVersion WHERE {
-  ?judgment jdg:justification jdg:SameMappedCode ; prov:used ?tableVersion .
-  ?tableVersion prov:specializationOf <urn:uuid:2e8a6d14-7b9c-4f3e-9a52-6c1d8f4b7e30> .
-}

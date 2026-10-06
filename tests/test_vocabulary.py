@@ -18,10 +18,10 @@ FOAF_RELEASE = "http://xmlns.com/foaf/spec/20140114.rdf"
 CASCADE = "https://ns.cascadeprotocol.org/"
 PROV = Namespace("http://www.w3.org/ns/prov#")
 FORMATS = {
+    ".feature": "text/x-gherkin",
     ".json": "application/json",
     ".md": "text/markdown",
     ".rq": "application/sparql-query",
-    ".srj": "application/sparql-results+json",
     ".ttl": "text/turtle",
     ".xml": "application/xml",
 }

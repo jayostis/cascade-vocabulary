@@ -1,6 +1,0 @@
-PREFIX prov: <http://www.w3.org/ns/prov#>
-
-SELECT DISTINCT ?thing ?predicate ?value WHERE {
-  GRAPH <urn:cascade:steps> { <urn:cascade:step:E5> prov:generated ?file }
-  GRAPH ?file { ?thing ?predicate ?value }
-}

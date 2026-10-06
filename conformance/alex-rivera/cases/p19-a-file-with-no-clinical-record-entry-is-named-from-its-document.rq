@@ -1,8 +1,0 @@
-PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-
-SELECT ?record ?document WHERE {
-  VALUES ?record { <urn:uuid:99696d97-cd0d-8e9c-af86-e54f66df19d5> }
-  ?revision rec:revisionOf ?record ; rec:version ?version ; prov:wasDerivedFrom ?document .
-  FILTER NOT EXISTS { ?version rec:patient [] }
-}

@@ -1,7 +1,0 @@
-PREFIX prov: <http://www.w3.org/ns/prov#>
-
-SELECT ?file ?statement WHERE {
-  { GRAPH <urn:cascade:steps> { <urn:cascade:step:known-source-version> prov:generated ?file } }
-  UNION { <ni:///sha-256;B-aQhEM0pmy0f4zXR1ylcizDn-1oa8vJgasE0cAlpTg> ?statement ?object }
-  UNION { ?subject ?statement <ni:///sha-256;B-aQhEM0pmy0f4zXR1ylcizDn-1oa8vJgasE0cAlpTg> }
-}

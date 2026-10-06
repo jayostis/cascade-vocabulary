@@ -1,7 +1,0 @@
-PREFIX pav: <http://purl.org/pav/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
-
-SELECT ?document ?retrievedFrom WHERE {
-  GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
-  GRAPH ?file { ?document a prov:Entity ; pav:retrievedFrom ?retrievedFrom }
-}

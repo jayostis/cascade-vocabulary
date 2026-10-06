@@ -1,8 +1,0 @@
-PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
-PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-
-SELECT ?version ?patient WHERE {
-  ?version prov:specializationOf <urn:uuid:a17e1a0b-8e2e-89e6-98ec-b244ea59ca27> ; rec:patient ?patient .
-  FILTER NOT EXISTS { ?about jdg:verdict jdg:About ; prov:hadMember <urn:uuid:a17e1a0b-8e2e-89e6-98ec-b244ea59ca27> }
-}

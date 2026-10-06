@@ -1,5 +1,5 @@
-"""The W3C test manifests of the contract, in runtime/rules.md's test format: each entry's action and result, and what
-its query gives over a store."""
+"""The W3C test manifests of the query fixtures and the shape cases: each entry's action and result, and what its query
+gives over a store."""
 
 import json
 from collections import Counter
@@ -24,8 +24,6 @@ class Entry:
     iri: str
     name: str
     types: frozenset
-    story: Path | None
-    step: str | None
     lens: Path | None
     query: Path | None
     result: Path | None
@@ -46,10 +44,8 @@ def entries(manifest):
     found = []
     for entry in Collection(graph, graph.value(head, MF.entries)):
         action = graph.value(entry, MF.action)
-        step = graph.value(action, REC.step)
         found.append(Entry(
             iri=str(entry), name=str(graph.value(entry, MF.name)), types=frozenset(graph.objects(entry, RDF.type)),
-            story=path(graph.value(action, REC.story)), step=None if step is None else str(step),
             lens=path(graph.value(action, REC.lens)), query=path(graph.value(action, QT.query)),
             result=path(graph.value(entry, MF.result))))
     return found
