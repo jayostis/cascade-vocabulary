@@ -29,5 +29,6 @@ It reports in EARL as
 [`engine/executing.md`](https://github.com/jayostis/cascade-bridge-spec/blob/main/engine/executing.md) describes, with
 the runtime as `earl:subject`: one assertion per example, and one per check 2 to 5 of each kit as
 [`the-kit.feature`](the-kit.feature) names them. An example's test is the feature file's IRI followed by `#` and the
-example's name in lower case, each run of other characters than letters and digits made one hyphen. A failed example's
+example's name in lower case, each run of other characters than letters and digits made one hyphen; two examples
+that would share a test, as the rows of an outline whose name has no `<placeholder>`, each fail. A failed example's
 assertion says the rule it is under and the step that failed.

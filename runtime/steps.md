@@ -14,7 +14,8 @@ reads it at another point.
 A `Given` or `When` step may end with a label in parentheses, `(E13)`, which names it. Otherwise a step is named by the
 name it quotes: an import by its export's, an entry or a judgment by its file's. The pod's creation, a reference version's
 arrival, a matcher run and a recheck are named `pod`, `reference`, `matcher` and `recheck`. Two steps of one example
-never share a name: where they would, the later is labelled.
+never share a name: where they would, the later is labelled. A name is letters, digits, `-`, `_` and `.`, so that
+`urn:cascade:step:NAME` below is an IRI.
 
 **The dataset a `Then` reads** is the one each step has always been read against. Each file of the pod is a named
 graph, named by the pod's address plus its path. The lens's derived state is the graph `urn:cascade:derived:<lens>`,
@@ -144,7 +145,7 @@ It changes nothing.
 
 ### `the query is:`
 
-The SPARQL query in the DocString beneath it is the one the next `it answers` step asks. It changes nothing: the step is written `When`, as the read point is.
+The SPARQL `SELECT` query in the DocString beneath it is the one the next `it answers` step asks. It changes nothing: the step is written `When`, as the read point is.
 
 ## Then
 
