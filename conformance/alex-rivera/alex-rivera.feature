@@ -2,7 +2,8 @@ Feature: Alex Rivera's pod
   The scenario every runtime must pass, https://github.com/jayostis/cascade-vocabulary/issues/4: Alex's story, the
   planted cases P1 to P25 under the case each shows, and the scenario's other outcomes. Each example reads the pod at
   the smallest set of steps and lenses at which it can fail for its own reason. A record, a profile and a person's
-  judgment are named by the handle expected/handles.json gives it.
+  judgment are named by the handle expected/handles.json gives it. The scenario's events E8 and E14 are Alex's
+  judgments J8 to J10 and J19 to J24, and the story names those steps by the judgments.
 
   Background: Alex's story
     Given a new pod for Alex on 2026-09-01 at 09:55 (E1)

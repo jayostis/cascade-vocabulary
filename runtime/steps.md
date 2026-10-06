@@ -65,7 +65,7 @@ other version; they are never written to the pod.
 | `{person}` | `[A-Z][a-z]+` | `Ada` | a person `people.ttl` names: the pod's subject |
 | `{time}` | `\d{4}-\d{2}-\d{2} at \d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?` | `2026-01-02 at 10:00`, `2026-09-01 at 10:00:04` | a time in UTC |
 | `{name}` | `"[^"]*"` | `"first-export"` | a name in quotes: of a step, a file or a series |
-| `{step}` | `that step\|that import\|that entry\|"[^"]*"` | `that step`, `that import`, `that entry`, `"E13"` | the step the example took last; the last import or entry before this step; the step of that name |
+| `{step}` | `that step\|that import\|that entry\|"[^"]*"` | `that step`, `that import`, `that entry`, `"E13"` | the last step before this one, or, in a `Then`, the last step the pod is read after; the last import or entry of those; the step of that name |
 | `{steps}` | `that step\|"[^"]*"(?:(?:, \|, and \| and \|, or \| or )"[^"]*")*` | `"E15" and "M8"` | steps by name, joined by `,`, `and` or `or` |
 | `{record}`, `{records}` | `[^:]+` | `allergy RxNorm 1191 "Ecotrin"`, `H1-ALG-PCN` | records in words, below; several joined by `,` and `and` |
 | `{judgment}` | `[^:]+` | `J21`, `the matcher's same code of H2O-ALG-SULFA and H1-ALG-SULFA` | a judgment in words, below |
@@ -141,6 +141,10 @@ The matcher runs with no step's records: a recheck.
 
 The `Then` steps that follow read the pod as it stood after that step, under that lens, `everyday` if none is named.
 It changes nothing.
+
+### `the query is:`
+
+The SPARQL query in the DocString beneath it is the one the next `it answers` step asks. It changes nothing: the step is written `When`, as the read point is.
 
 ## Then
 
@@ -261,7 +265,7 @@ thing.
 | thing | inputs | name |
 |---|---|---|
 
-Each thing, in words, has exactly that IRI. Only a naming rule's example uses this step. `inputs` (optional), for a
+Each thing, in words, has exactly that IRI. An example showing how things are named uses this step, as the naming rules and P19 do. `inputs` (optional), for a
 record an entry made, are the inputs N2 names it from, joined by `, `: the pod's subject and its entry's start as the
 rule writes it, which the record's first revision must hold, and the draft's position, which reaches the pod only through
 the name.
@@ -269,10 +273,6 @@ the name.
 ### `that step's import is named by a new random UUID`, `that step's entry session is named by a new random UUID`
 
 The step wrote one import, or one entry session, and its IRI is a version 4 `urn:uuid:`.
-
-### `the query is:`
-
-The SPARQL query in the DocString beneath it is the one the next `it answers` step asks. It changes nothing.
 
 ### `it answers:`, `it answers nothing`
 

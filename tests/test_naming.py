@@ -4,9 +4,7 @@ by "|"), as a version 8 UUID."""
 
 import hashlib
 
-from gherkin.parser import Parser
-
-from contract import ROOT
+from test_features import documents
 
 
 def record_name(inputs):
@@ -16,18 +14,16 @@ def record_name(inputs):
 
 
 def named():
-    for path in sorted([*ROOT.glob("runtime/*.feature"), *ROOT.glob("conformance/*/*.feature")]):
-        document = Parser().parse(path.read_text(encoding="utf-8"))
-        for child in document["feature"]["children"]:
-            for inner in child.get("rule", {}).get("children", [child]):
-                for step in inner.get("scenario", {}).get("steps", []):
-                    header, *rows = [[cell["value"] for cell in row["cells"]]
-                                     for row in step.get("dataTable", {}).get("rows", [])] or [[]]
-                    if {"inputs", "name"} <= set(header):
-                        yield from ((row[header.index("inputs")], row[header.index("name")]) for row in rows)
+    for _, _, pickles in documents():
+        for pickle in pickles:
+            for step in pickle["steps"]:
+                header, *rows = [[cell["value"] for cell in row["cells"]]
+                                 for row in step.get("argument", {}).get("dataTable", {}).get("rows", [])] or [[]]
+                if {"inputs", "name"} <= set(header):
+                    yield from ((row[header.index("inputs")], row[header.index("name")]) for row in rows)
 
 
 def test_every_name_written_beside_its_inputs_is_the_record_rule_over_them():
-    pairs = list(named())
+    pairs = sorted(set(named()))
     assert len(pairs) >= 13
     assert [(inputs, name) for inputs, name in pairs if record_name(inputs.split(", ")) != name] == []

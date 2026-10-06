@@ -19,7 +19,7 @@ CASES = ROOT / "tests" / "shape-cases"
 KIT = ROOT / "conformance" / "alex-rivera"
 TARGETS = (SH.targetClass, SH.targetSubjectsOf, SH.targetObjectsOf, SH.targetNode)
 BROKEN_ELSEWHERE = {REC.PlacementShape: "test_pod_layout.py breaks the layout's entries"}
-UNDECLARED_ON_PURPOSE = {HEALTH.NoSuchRecord: "the refusals vector files a record of a type no folder holds"}
+UNDECLARED_ON_PURPOSE = {HEALTH.NoSuchRecord: "Finn's type-filed-nowhere export files a record of a type no folder holds"}
 
 
 @cache
