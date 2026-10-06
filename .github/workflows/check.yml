@@ -28,9 +28,11 @@ jobs:
       - run: python3 -m pip install -r requirements.txt
       - run: python3 -m pytest -n auto --dist loadgroup --durations=10
 
-  # The reference runtime, at its default branch or the pull request a Depends-On: line names, run over this checkout.
+  # The reference runtime, at its default branch or the pull request a Depends-On: line names, run over this checkout,
+  # before a merge and nightly: a pair of pull requests is proven together before either merges.
   compatibility:
     name: compatibility
+    if: ${{ github.event_name != 'push' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

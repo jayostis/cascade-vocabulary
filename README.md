@@ -36,14 +36,15 @@ npm run build:example alex-rivera
 
 ## Trying a change against the runtime
 
-Every pull request here runs the reference runtime, at its default branch, over the pull request's checkout: the
+Every pull request here, and a nightly run, runs the reference runtime, at its default branch, over this checkout: the
 `compatibility` check, through [cascade-bridge-spec's compatibility tooling](https://github.com/jayostis/cascade-bridge-spec/blob/main/compatibility.md),
 which [`compatibility.json`](compatibility.json) names it to. A change to a rule, an example or a query that
 breaks the runtime fails that check.
 
 A change the runtime must follow lands as a pair: this repository's pull request and the runtime's, each naming the
 other on a `Depends-On:` line. The check then runs the runtime's pull request, and `ready-to-merge` holds each until the
-other can merge.
+other can merge. Nothing pins this repository, as cascade-bridge-spec's `compatibility.md` says, so the check does not
+run on a push to `main`: the pair was tried together before it merged.
 
 Locally, with cascade-runtime-js cloned beside this checkout, the runtime reads this checkout as it is on disk:
 
