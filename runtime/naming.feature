@@ -120,8 +120,8 @@ Feature: Naming
 
   Rule: N8. What a runtime gives the Bridge
     - The adapter: <repository>/tree/<commit>/, the repository cascade-runtime.json names at the commit the run reads.
-    - The vocabulary: the same form, for the vocabulary repository at the commit the adapter pins
-      (bridge:cascadeVocabularyPin).
+    - The vocabulary: the same form, for the repository the adapter's bridge:cascadeVocabularyRepository
+      names, at the commit the run reads.
     - A document: its N5 name, which is the name the Bridge itself gives it.
     - Its facts: the document's IRI followed by #facts.
 

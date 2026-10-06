@@ -43,8 +43,8 @@ breaks the runtime fails that check.
 
 A change the runtime must follow lands as a pair: this repository's pull request and the runtime's, each naming the
 other on a `Depends-On:` line. The check then runs the runtime's pull request, and `ready-to-merge` holds each until the
-other can merge. The runtime follows this repository's `main` with no pin, so nothing is bumped after a pair merges, and
-the check does not run on a push to `main`: the pair was tried together before it merged.
+other can merge. Nothing pins this repository, as cascade-bridge-spec's `compatibility.md` says, so the check does not
+run on a push to `main`: the pair was tried together before it merged.
 
 Locally, with cascade-runtime-js cloned beside this checkout, the runtime reads this checkout as it is on disk:
 
