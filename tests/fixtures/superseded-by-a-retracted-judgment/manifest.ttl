@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "superseded-by-a-retracted-judgment" ;
-  rdfs:comment "A machine's SameCode made with the current reference version, a person's Same superseding it, and a retraction of the person's Same." ;
+  rdfs:comment "A machine's SameCode made with the current reference version and a person's Same, both superseded by a later Same of the person's, and a retraction of that later Same." ;
   mf:entries (
     <#whether-it-counts-everyday>
     <#whether-it-counts-for-export>
@@ -13,14 +13,14 @@
 
 <#whether-it-counts-everyday> a mf:QueryEvaluationTest ;
   mf:name "whether-it-counts-everyday" ;
-  rdfs:comment "Under everyday, a retracted judgment supersedes nothing: the machine's Same it superseded counts again, though the supersession is still shown." ;
+  rdfs:comment "Under everyday, a retracted judgment supersedes nothing: each judgment it superseded counts again, though the supersession is still shown." ;
   mf:action [ qt:query <../../../queries/v1-draft/questions/judgment/Whether%20it%20counts.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <whether-it-counts.srj> .
 
 <#whether-it-counts-for-export> a mf:QueryEvaluationTest ;
   mf:name "whether-it-counts-for-export" ;
-  rdfs:comment "Under export too, a retracted judgment supersedes nothing." ;
+  rdfs:comment "Under export too, a retracted judgment supersedes nothing, whether what it superseded is a person's or a machine's." ;
   mf:action [ qt:query <../../../queries/v1-draft/questions/judgment/Whether%20it%20counts.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/export.rq> ] ;
   mf:result <whether-it-counts.srj> .

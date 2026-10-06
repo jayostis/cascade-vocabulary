@@ -12,7 +12,12 @@
 :machineSame a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameCode ; prov:hadMember :record , :other ;
     prov:used :rules-1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:superseding a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :record , :other ; npx:supersedes :machineSame ;
+:personSame a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :record , :other ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:superseding a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :record , :other ;
+    npx:supersedes :machineSame , :personSame ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
