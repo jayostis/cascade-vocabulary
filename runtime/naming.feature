@@ -119,7 +119,7 @@ Feature: Naming
       Then that step's entry session is named by a new random UUID
 
   Rule: N8. What a runtime gives the Bridge
-    - The adapter: <repository>/tree/<commit>/, from the adapter's entry in cascade-runtime.json.
+    - The adapter: <repository>/tree/<commit>/, the repository cascade-runtime.json names at the commit the run reads.
     - The vocabulary: the same form, for the vocabulary repository at the commit the adapter pins
       (bridge:cascadeVocabularyPin).
     - A document: its N5 name, which is the name the Bridge itself gives it.

@@ -19,8 +19,9 @@ The contract a Cascade pod is built and read by; [`README.md`](README.md) names 
 - **A query is tested on fixtures under [`tests/fixtures/`](tests/fixtures), one per behaviour, never on an
   example.** Its expected rows are written from what the query says it does. A check true of any pod runs over every
   fixture, with `every_fixture` from [`tests/pods.py`](tests/pods.py).
-- **A change here is tried against the reference runtime** by the `compatibility` check. One the runtime must follow
-  is a pair of pull requests, here and in cascade-runtime-js, each naming the other on a `Depends-On:` line.
+- **A change here is tried against the reference runtime** by the `compatibility` check, on each pull request and
+  nightly; the runtime follows `main`, with no pin. One the runtime must follow is a pair of pull requests, here and in
+  cascade-runtime-js, each naming the other on a `Depends-On:` line.
 - **The suite runs in parallel** (`python3 -m pytest -n auto --dist loadgroup`): what a test builds is built once per
   worker, and the cases that share it are put on one worker with `xdist_group`.
 
