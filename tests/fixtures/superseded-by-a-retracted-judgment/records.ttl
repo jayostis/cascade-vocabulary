@@ -1,0 +1,22 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:record a health:AllergyRecord .
+:recordVersion prov:specializationOf :record ; rec:patient :subject ; health:allergen "Peanut" .
+:recordRevision a rec:Revision ; rec:revisionOf :record ; rec:version :recordVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:other a health:AllergyRecord .
+:otherVersion prov:specializationOf :other ; rec:patient :subject ; health:allergen "Peanut oil" .
+:otherRevision a rec:Revision ; rec:revisionOf :other ; rec:version :otherVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:rules a rec:ReferenceSeries ; rdfs:label "Rules" .
+:rules-1 prov:specializationOf :rules ; pav:version "1" .

@@ -17,14 +17,14 @@
 
 <#everyday-counts> a mf:QueryEvaluationTest ;
   mf:name "everyday-counts" ;
-  rdfs:comment "Everyday counts every judgment not superseded or retracted, unless a machine made it with a reference version since replaced." ;
+  rdfs:comment "Everyday counts every judgment not retracted, nor superseded by a judgment not itself retracted, unless a machine made it with a reference version since replaced." ;
   mf:action [ qt:query <everyday-counts.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <everyday-counts.srj> .
 
 <#export-counts> a mf:QueryEvaluationTest ;
   mf:name "export-counts" ;
-  rdfs:comment "Export counts a person's judgment not superseded or retracted, and a machine's only when it rests on the same code, made with the current reference version." ;
+  rdfs:comment "Export counts a person's judgment not retracted, nor superseded by a judgment not itself retracted, and a machine's only when it rests on the same code, made with the current reference version." ;
   mf:action [ qt:query <export-counts.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/export.rq> ] ;
   mf:result <export-counts.srj> .

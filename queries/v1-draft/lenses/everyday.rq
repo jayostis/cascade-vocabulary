@@ -1,5 +1,6 @@
 # The lens decides which judgments count, and is the one step of the build that can be swapped. This one counts every judgment
-# not superseded or retracted, unless a machine made it with a reference table that has a newer version since.
+# not retracted, nor superseded by a judgment not itself retracted, unless a machine made it with a reference table that has a
+# newer version since. A retracted judgment supersedes nothing.
 PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX pav: <http://purl.org/pav/>
@@ -9,7 +10,11 @@ PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 CONSTRUCT { ?j rec:counts true }
 WHERE {
   ?j a jdg:Judgment .
-  FILTER NOT EXISTS { ?superseding npx:supersedes ?j }
+  FILTER NOT EXISTS {
+    ?superseding npx:supersedes ?j
+    OPTIONAL { ?undoing npx:retracts ?superseding }
+    FILTER (!BOUND(?undoing))
+  }
   FILTER NOT EXISTS { ?retracting npx:retracts ?j }
   FILTER NOT EXISTS {
     ?j prov:wasAttributedTo/a prov:SoftwareAgent ; prov:used ?input .
