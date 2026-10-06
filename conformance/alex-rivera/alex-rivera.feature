@@ -89,11 +89,11 @@ Feature: Alex Rivera's pod
     Example: H1-ALG-LATEX and H1-ALG-SULFA, revised between E2 and E6, each get a revision after their first
       When the pod is read as it stood after "M7"
       Then the records have these revisions:
-        | record       | arrived                | version | after                  |
-        | H1-ALG-LATEX | 2026-09-01 at 10:00:04 | 1       |                        |
-        | H1-ALG-LATEX | 2026-11-20 at 09:00:04 | 2       | 2026-09-01 at 10:00:04 |
-        | H1-ALG-SULFA | 2026-09-01 at 10:00:04 | 1       |                        |
-        | H1-ALG-SULFA | 2026-11-20 at 09:00:04 | 2       | 2026-09-01 at 10:00:04 |
+        | record       | arrived                | version | reaction           | after                  |
+        | H1-ALG-LATEX | 2026-09-01 at 10:00:04 | 1       |                    |                        |
+        | H1-ALG-LATEX | 2026-11-20 at 09:00:04 | 2       | Contact dermatitis | 2026-09-01 at 10:00:04 |
+        | H1-ALG-SULFA | 2026-09-01 at 10:00:04 | 1       | Rash               |                        |
+        | H1-ALG-SULFA | 2026-11-20 at 09:00:04 | 2       | Itching, Rash      | 2026-09-01 at 10:00:04 |
 
     Example: the second version of each is its current version
       When the pod is read as it stood after "M7"
@@ -170,9 +170,9 @@ Feature: Alex Rivera's pod
 
     Example: H1-ALG-CODEINE is still an allergy record, with both its versions
       Then H1-ALG-CODEINE has these revisions:
-        | arrived                | version | after                  |
-        | 2026-09-01 at 10:00:04 | 1       |                        |
-        | 2026-11-20 at 09:00:04 | 2       | 2026-09-01 at 10:00:04 |
+        | arrived                | version | verification status | after                  |
+        | 2026-09-01 at 10:00:04 | 1       | unconfirmed         |                        |
+        | 2026-11-20 at 09:00:04 | 2       | entered-in-error    | 2026-09-01 at 10:00:04 |
       And these records have:
         | record         | field | value   |
         | H1-ALG-CODEINE | kind  | allergy |
@@ -192,7 +192,16 @@ Feature: Alex Rivera's pod
 
     Example: every record whose current version names a claimed profile is Alex's
       When the pod is read as it stood after "J12"
-      Then the query "queries/every-record-naming-a-claimed-profile-is-the-subjects.rq" answers:
+      When the query is:
+        """
+        SELECT (COUNT(DISTINCT ?herRecord) AS ?hers) (COUNT(DISTINCT ?otherRecord) AS ?notHers) WHERE {
+          VALUES ?profile { <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> <urn:uuid:d85089a6-8c4b-8108-b3cc-2cde9217f136> <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> }
+          ?record pav:hasCurrentVersion/rec:patient ?profile .
+          BIND (IF(EXISTS { ?record rec:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?record, ?none) AS ?herRecord)
+          BIND (IF(EXISTS { ?record rec:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?none, ?record) AS ?otherRecord)
+        }
+        """
+      Then it answers:
         | hers | notHers |
         | 22   | 0       |
 
@@ -240,7 +249,14 @@ Feature: Alex Rivera's pod
     Example: J7, the matcher's Same of the pair, still counts, and no two procedures are currently the same
       When the pod is read as it stood after "J10"
       Then the matcher's same code of H1-PROC-COLO and H2O-PROC-COLO counts
-      And the query "queries/procedures-currently-the-same.rq" answers nothing
+      When the query is:
+        """
+        SELECT ?record ?other WHERE {
+          ?record a clinical:Procedure ; jdg:currentlySame ?other .
+          FILTER (?record != ?other)
+        }
+        """
+      Then it answers nothing
 
   Rule: P12. A Same chain through two kinds of machine sameness
     The flu shots: J6 (same code and date, E5) and J17 (same mapped code and date, E13). One entry under everyday,
@@ -261,14 +277,34 @@ Feature: Alex Rivera's pod
 
     Example: under everyday the flu entry is joined by Sames of two justifications, which lists it for review
       When the pod is read as it stood after "E13"
-      Then the query "queries/flu-entry-justifications.rq" answers:
+      When the query is:
+        """
+        SELECT DISTINCT ?justification WHERE {
+          GRAPH <https://pod.alex-rivera.example/clinical/immunizations.ttl> {
+            ?entry cascade:mergedFrom ?member , ?other FILTER (?member != ?other)
+          }
+          ?same rec:counts true ; jdg:verdict jdg:Same ; jdg:justification ?justification ;
+                prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
+        }
+        """
+      Then it answers:
         | justification             |
         | jdg:SameCodeAndDate       |
         | jdg:SameMappedCodeAndDate |
 
     Example: under export only J6's justification counts, so the flu entry is not listed
       When the pod is read as it stood after "E13", under the export lens
-      Then the query "queries/flu-entry-justifications.rq" answers:
+      When the query is:
+        """
+        SELECT DISTINCT ?justification WHERE {
+          GRAPH <https://pod.alex-rivera.example/clinical/immunizations.ttl> {
+            ?entry cascade:mergedFrom ?member , ?other FILTER (?member != ?other)
+          }
+          ?same rec:counts true ; jdg:verdict jdg:Same ; jdg:justification ?justification ;
+                prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
+        }
+        """
+      Then it answers:
         | justification       |
         | jdg:SameCodeAndDate |
 
@@ -284,7 +320,15 @@ Feature: Alex Rivera's pod
 
     Example: J20 is a judgment with no member, retracting J10, which no longer counts
       When the pod is read as it stood after "J24"
-      Then the query "queries/nothing-replaces-the-retracted-same.rq" answers:
+      When the query is:
+        """
+        SELECT ?retracted ?counts WHERE {
+          <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> a jdg:Judgment ; npx:retracts ?retracted .
+          FILTER NOT EXISTS { <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> prov:hadMember [] }
+          BIND (EXISTS { ?retracted rec:counts true } AS ?counts)
+        }
+        """
+      Then it answers:
         | retracted | counts |
         | J10       | false  |
 
@@ -315,13 +359,29 @@ Feature: Alex Rivera's pod
 
     Example: J3 still counts once its member changed, and is listed for review
       When the pod is read as it stood after "M7"
-      Then the query "queries/judgments-whose-member-changed.rq" answers:
+      When the query is:
+        """
+        SELECT DISTINCT ?judgment WHERE {
+          ?judgment rec:counts true ; jdg:verdict jdg:Same ; prov:hadMember ?record .
+          ?record pav:hasCurrentVersion ?now .
+          FILTER NOT EXISTS { ?judgment prov:used ?now }
+        }
+        """
+      Then it answers:
         | judgment                                                  |
         | the matcher's same code of H1-ALG-SULFA and H2O-ALG-SULFA |
 
     Example: once J9 supersedes J3, no Same that counts used other than its members' current versions
       When the pod is read as it stood after "J10"
-      Then the query "queries/judgments-whose-member-changed.rq" answers nothing
+      When the query is:
+        """
+        SELECT DISTINCT ?judgment WHERE {
+          ?judgment rec:counts true ; jdg:verdict jdg:Same ; prov:hadMember ?record .
+          ?record pav:hasCurrentVersion ?now .
+          FILTER NOT EXISTS { ?judgment prov:used ?now }
+        }
+        """
+      Then it answers nothing
 
   Rule: P16. An entry the patient adds, the owner's own act
     APP-ALG-PEANUT, E3: the subject's without any About; its criticality counts, and it supplies no status.
@@ -330,7 +390,11 @@ Feature: Alex Rivera's pod
       Then these records have:
         | record         | field   | value |
         | APP-ALG-PEANUT | patient | Alex  |
-      And the query "queries/what-the-abouts-claim.rq" answers:
+      When the query is:
+        """
+        SELECT ?member WHERE { ?about jdg:verdict jdg:About ; prov:hadMember ?member }
+        """
+      Then it answers:
         | member  |
         | H1-PAT  |
         | H2O-PAT |
@@ -368,10 +432,10 @@ Feature: Alex Rivera's pod
 
     Example: H1-CON-BACK has two versions, and its third revision sets the first again
       Then H1-CON-BACK has these revisions:
-        | arrived                | version | after                  |
-        | 2026-09-01 at 10:00:04 | 1       |                        |
-        | 2026-11-20 at 09:00:04 | 2       | 2026-09-01 at 10:00:04 |
-        | 2027-08-20 at 08:00:04 | 1       | 2026-11-20 at 09:00:04 |
+        | arrived                | version | status   | after                  |
+        | 2026-09-01 at 10:00:04 | 1       | active   |                        |
+        | 2026-11-20 at 09:00:04 | 2       | resolved | 2026-09-01 at 10:00:04 |
+        | 2027-08-20 at 08:00:04 | 1       | active   | 2026-11-20 at 09:00:04 |
 
     Example: H1-CON-BACK's entry shows it active, with no abatement date
       Then the entry of H1-CON-BACK shows:
@@ -412,7 +476,15 @@ Feature: Alex Rivera's pod
 
     Example: the pair judged different shares an entry, which lists it for review
       When the pod is read as it stood after "E13"
-      Then the query "queries/different-pairs-in-one-entry.rq" answers:
+      When the query is:
+        """
+        SELECT ?record ?otherRecord WHERE {
+          ?record jdg:currentlyDifferent ?otherRecord ; rec:inEntry ?entry .
+          ?otherRecord rec:inEntry ?entry .
+          FILTER (STR(?record) < STR(?otherRecord))
+        }
+        """
+      Then it answers:
         | record        | otherRecord  |
         | H2O-PROC-COLO | H1-PROC-COLO |
 
@@ -425,7 +497,15 @@ Feature: Alex Rivera's pod
 
     Example: no pair judged different shares an entry
       When the pod is read as it stood after "J24"
-      Then the query "queries/different-pairs-in-one-entry.rq" answers nothing
+      When the query is:
+        """
+        SELECT ?record ?otherRecord WHERE {
+          ?record jdg:currentlyDifferent ?otherRecord ; rec:inEntry ?entry .
+          ?otherRecord rec:inEntry ?entry .
+          FILTER (STR(?record) < STR(?otherRecord))
+        }
+        """
+      Then it answers nothing
 
   Rule: P21. A person's and a machine's Same overlapping
     J9 (Alex's) and J13 (the matcher's) share two sulfa records: one group of three.
@@ -538,7 +618,18 @@ Feature: Alex Rivera's pod
       Then J22 does not count
 
     Example: every RDF file E10 wrote is still in the pod, and no judgment names the import E10 wrote
-      Then the query "queries/nothing-is-deleted-and-no-judgment-names-the-import.rq" answers nothing
+      When the query is:
+        """
+        SELECT ?file ?judgment WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:E10> prov:generated ?file }
+          { FILTER (!STRSTARTS(STR(?file), "https://pod.alex-rivera.example/attachments/"))
+            FILTER NOT EXISTS { GRAPH ?file { ?s ?p ?o } } }
+          UNION
+          { GRAPH ?file { ?import a prov:Activity ; prov:used ?document }
+            ?judgment a jdg:Judgment ; ?predicate ?import . }
+        }
+        """
+      Then it answers nothing
 
   Rule: P25. A record the patient says is wrong, which the source never corrects
     H1-PROC-ECHO (E6) is judged Erroneous by J24 (E14), and x-e15 carries it unchanged (E15): out of every view from
@@ -602,7 +693,23 @@ Feature: Alex Rivera's pod
       Then "M5", "M6", "M7", "M2", "M3" and "M8" wrote no file
 
     Example: each import and entry writes the scenario's numbers of records, versions, revisions, documents and activities
-      Then the query "queries/each-step-writes-the-scenarios-counts.rq" answers:
+      When the query is:
+        """
+        SELECT ?step (COUNT(DISTINCT ?record) AS ?records) (COUNT(DISTINCT ?version) AS ?versions)
+               (COUNT(DISTINCT ?revision) AS ?revisions) (COUNT(DISTINCT ?document) AS ?documents)
+               (COUNT(DISTINCT ?import) AS ?imports) (COUNT(DISTINCT ?session) AS ?sessions)
+        WHERE {
+          GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
+          { GRAPH ?file { ?record a ?kind } ?record a rec:Record }
+          UNION { GRAPH ?file { ?version prov:specializationOf ?versioned } ?versioned a rec:Record }
+          UNION { GRAPH ?file { ?revision a rec:Revision } }
+          UNION { GRAPH ?file { ?document a prov:Entity } FILTER NOT EXISTS { ?document prov:specializationOf ?series } }
+          UNION { GRAPH ?file { ?import a prov:Activity ; prov:used ?used } }
+          UNION { GRAPH ?file { ?session a prov:Activity } FILTER NOT EXISTS { ?session prov:used ?used } }
+        }
+        GROUP BY ?step
+        """
+      Then it answers:
         | step                   | records | versions | revisions | documents | imports | sessions |
         | <urn:cascade:step:E2>  | 9       | 9        | 9         | 9         | 1       | 0        |
         | <urn:cascade:step:E3>  | 1       | 1        | 1         | 0         | 0       | 1        |
@@ -613,7 +720,14 @@ Feature: Alex Rivera's pod
         | <urn:cascade:step:E15> | 0       | 0        | 1         | 1         | 1       | 0        |
 
     Example: each of the 27 records has the scenario's numbers of versions and revisions
-      Then the query "queries/each-record-has-the-scenarios-versions-and-revisions.rq" answers:
+      When the query is:
+        """
+        SELECT ?record (COUNT(DISTINCT ?version) AS ?versions) (COUNT(DISTINCT ?revision) AS ?revisions) WHERE {
+          ?revision rec:revisionOf ?record ; rec:version ?version .
+        }
+        GROUP BY ?record
+        """
+      Then it answers:
         | record         | versions | revisions |
         | APP-ALG-PEANUT | 1        | 1         |
         | H1-ALG-CODEINE | 2        | 2         |
@@ -644,7 +758,13 @@ Feature: Alex Rivera's pod
         | U-IMM-TDAP     | 1        | 1         |
 
     Example: each view and the labels file used the reference versions current at the end, and nothing else
-      Then the query "queries/views-name-the-current-reference-versions.rq" answers:
+      When the query is:
+        """
+        SELECT ?view ?used WHERE {
+          GRAPH ?view { ?view a rec:View ; prov:used ?used }
+        }
+        """
+      Then it answers:
         | view                                                           | used                                               |
         | <https://pod.alex-rivera.example/clinical/allergies.ttl>       | Cascade matcher rules version 2026.1               |
         | <https://pod.alex-rivera.example/clinical/allergies.ttl>       | SNOMED CT to RxNorm ingredient map version 2027-01 |
@@ -666,7 +786,24 @@ Feature: Alex Rivera's pod
         | <https://pod.alex-rivera.example/clinical/labels.ttl>          | CVX vaccine group table version 2026-08            |
 
     Example: the labels file gives each other thing one label, and states of itself only that it is a view and what it used
-      Then the query "queries/labels-name-each-thing-once.rq" answers nothing
+      When the query is:
+        """
+        SELECT ?thing ?predicate WHERE {
+          GRAPH <https://pod.alex-rivera.example/clinical/labels.ttl> {
+            { ?thing rdfs:label ?one , ?other . FILTER (?one != ?other) BIND (rdfs:label AS ?predicate) }
+            UNION
+            { ?thing ?predicate ?value .
+              FILTER (IF(?thing = <https://pod.alex-rivera.example/clinical/labels.ttl>, ?predicate NOT IN (rdf:type, prov:used), ?predicate != rdfs:label)) }
+          }
+        }
+        """
+      Then it answers nothing
 
     Example: no two things share a label
-      Then the query "queries/no-two-things-share-a-label.rq" answers nothing
+      When the query is:
+        """
+        SELECT ?label WHERE {
+          GRAPH <https://pod.alex-rivera.example/clinical/labels.ttl> { ?one rdfs:label ?label . ?other rdfs:label ?label . FILTER (?one != ?other) }
+        }
+        """
+      Then it answers nothing

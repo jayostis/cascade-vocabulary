@@ -2,6 +2,11 @@ Feature: Naming
   How a runtime names what it writes. Most names are hashes of what the thing holds, so an example of a naming rule
   writes the expected names out: a name checked by the code that made it would prove little.
 
+  Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Ada
+  imports Apple Health exports of four allergies (peanut, latex, shellfish, mango) from one hospital, and later
+  exports that change them. Ben enters a peanut allergy and an asthma by hand. Cleo claims her hospital profile with
+  an About, imports five allergies, enters ten more by hand, and judges some herself.
+
   Rule: N1. A record from a document keeps the name the Bridge gave it
     The rule is the Bridge's: https://github.com/jayostis/cascade-bridge-spec/tree/main/fixtures/naming
 
@@ -25,9 +30,9 @@ Feature: Naming
       Given a new pod for Ben on 2026-02-01 at 08:00
       When Ben enters "entry" on 2026-02-01 at 08:30
       Then these are named:
-        | thing              | name                                          |
-        | allergy "Peanut"   | urn:uuid:f30549b0-911c-8277-b028-7b56d28e0316 |
-        | condition "Asthma" | urn:uuid:ed7e8009-d8fb-8306-a0ba-e289a353a096 |
+        | thing              | inputs                                                                 | name                                          |
+        | allergy "Peanut"   | urn:uuid:7c2d9e41-5a8b-4f36-b0e2-9d1a4c6f8e53, 2026-02-01T08:30:00Z, 0 | urn:uuid:f30549b0-911c-8277-b028-7b56d28e0316 |
+        | condition "Asthma" | urn:uuid:7c2d9e41-5a8b-4f36-b0e2-9d1a4c6f8e53, 2026-02-01T08:30:00Z, 1 | urn:uuid:ed7e8009-d8fb-8306-a0ba-e289a353a096 |
 
   Rule: N3. A version is named from its content
     The rule is the Bridge's: VersioningTest in https://github.com/jayostis/cascade-bridge-spec/blob/main/vocab/bridge.ttl
@@ -79,14 +84,25 @@ Feature: Naming
       And Cleo enters "entry" on 2026-03-03 at 08:00
       When the matcher runs on the records of that entry on 2026-03-03 at 08:01
       Then that step wrote these matcher judgments:
-        | justification    | members                                                                                                  | name                                          |
-        | same code        | allergy RxNorm 10180 from sulfa, allergy RxNorm 10180 from draft 0                                       | urn:uuid:37e0a66c-c8dc-8a12-a6e3-8b15a912b0c9 |
-        | same code        | allergy RxNorm 1191 from draft 1, allergy RxNorm 1191 from draft 3                                       | urn:uuid:e5652955-f87b-8271-93a2-a5cb3caffc5a |
-        | same code        | allergy RxNorm 1191 from draft 1, allergy RxNorm 1191 from draft 2, allergy RxNorm 1191 from draft 3     | urn:uuid:62c11127-f5ef-85eb-8063-8a859cd57845 |
-        | same mapped code | allergy RxNorm 7980 from draft 4, allergy SNOMED 373270004                                               | urn:uuid:5299e444-b87a-8bcd-8375-476624f6b583 |
-        | same code        | allergy RxNorm 7980 from draft 4, allergy RxNorm 7980 from draft 5                                       | urn:uuid:629b672d-233f-8f3c-8515-a707e3301e54 |
-        | same mapped code | allergy RxNorm 7980 from draft 5, allergy SNOMED 373270004                                               | urn:uuid:f2f75a46-7805-831d-b5d3-0a897e9ef2a6 |
-        | same code        | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 from draft 8 | urn:uuid:8c6b6827-041d-8a8a-b9d8-11c075bf4e16 |
+        | justification    | members                                                                                                         | inputs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | name                                          |
+        | same code        | allergy RxNorm 10180 from sulfa, allergy RxNorm 10180 "Gantanol"                                                | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameCode, urn:uuid:5a7d7c32-97a1-81d1-b676-24ab757808d2, urn:uuid:a3fcfbf8-afd3-8996-b773-65182b9e95fb, ni:///sha-256;7UF52nyQz5_3t_7QQn6dXsLuxB5n3HfJcDLlONA8eN4, ni:///sha-256;AowVyYvDuw_s7SL5fEFIF0Sy5DmeBCX3aiqrEebgB6w, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24                                                                                                           | urn:uuid:5e4af5e8-b816-849e-9185-aed2981a566f |
+        | same code        | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Ecotrin"                                                    | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameCode, urn:uuid:3d5ee7f7-51e0-89df-b499-b21571e8e7a7, urn:uuid:93701f7e-dffc-8590-b930-c39ee1a12911, ni:///sha-256;7h1HQJDrSCzHOVl0I2cwJYEHHKmRU-9pwBYtUyJBv30, ni:///sha-256;Bpn_tCk_6i4pGYJsvM1a60psCy---DFf09Ro2M1LcnM, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24                                                                                                           | urn:uuid:d3423059-9f6b-8f2c-a7a1-edc0e3b5a3bc |
+        | same code        | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin", allergy RxNorm 1191 "Ecotrin"               | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameCode, urn:uuid:3d5ee7f7-51e0-89df-b499-b21571e8e7a7, urn:uuid:93701f7e-dffc-8590-b930-c39ee1a12911, urn:uuid:a588aaf1-1c60-82d0-b58f-f1997bff2d1b, ni:///sha-256;7h1HQJDrSCzHOVl0I2cwJYEHHKmRU-9pwBYtUyJBv30, ni:///sha-256;Bpn_tCk_6i4pGYJsvM1a60psCy---DFf09Ro2M1LcnM, ni:///sha-256;OjoEqcNWuIOXUXF8KcwRTmaUzDW3f2-VMlg7pVZP7wY, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24 | urn:uuid:2ec1a834-40c7-8a62-9cbb-688c8ba724b2 |
+        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004                                                    | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameMappedCode, urn:uuid:59ce65dc-647d-817c-9316-f2914cd6cebd, urn:uuid:9bdbd37a-ca86-8f27-8c42-24aea4f563f0, ni:///sha-256;0WVFItoLTE1SiTeUTnte7dNfAs0Yh2KegBfdUtyj2-0, ni:///sha-256;WnniIa4sGuD3ItHQKF45QnpH_xei6_SQKARQFhZKS8Y, urn:uuid:5d3b9f27-1c6e-4a8d-b4f9-8e2a7c5d1f63, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24                                                      | urn:uuid:5299e444-b87a-8bcd-8375-476624f6b583 |
+        | same code        | allergy RxNorm 7980 "Penicillin G", allergy RxNorm 7980 "Bicillin"                                              | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameCode, urn:uuid:59ce65dc-647d-817c-9316-f2914cd6cebd, urn:uuid:7c40a648-7b12-8a7b-8e67-b491676be2d7, ni:///sha-256;T5wCKdgDP3qNcFj5FADrLRyDkZvTt7HUEC13eiOY0Dw, ni:///sha-256;WnniIa4sGuD3ItHQKF45QnpH_xei6_SQKARQFhZKS8Y, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24                                                                                                           | urn:uuid:81467401-5557-8f1c-aa73-11fbefcfaa6c |
+        | same mapped code | allergy RxNorm 7980 "Bicillin", allergy SNOMED 373270004                                                        | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameMappedCode, urn:uuid:7c40a648-7b12-8a7b-8e67-b491676be2d7, urn:uuid:9bdbd37a-ca86-8f27-8c42-24aea4f563f0, ni:///sha-256;0WVFItoLTE1SiTeUTnte7dNfAs0Yh2KegBfdUtyj2-0, ni:///sha-256;T5wCKdgDP3qNcFj5FADrLRyDkZvTt7HUEC13eiOY0Dw, urn:uuid:5d3b9f27-1c6e-4a8d-b4f9-8e2a7c5d1f63, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24                                                      | urn:uuid:6ef2751f-a48e-8c89-835b-8f86d8f752a2 |
+        | same code        | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameCode, urn:uuid:3f892b5d-de37-8d3c-8483-ac3917682c4b, urn:uuid:a43d5357-3187-87c5-b7fa-542dc99e8b70, urn:uuid:acca5c1c-25f3-8e2b-b96e-b90bafe6918a, ni:///sha-256;Qub5WCecp7BAzh3iSnwWX3RzwNQwT7QTDG6OCYiiUHU, ni:///sha-256;VA_Tu1tr6t4Afcry_0cvWuCsT8fKjo6Ajs_BP1Y7OdU, ni:///sha-256;ajzIy37ECBr4e1jTnr2Gx5s0jIIj6mSZc8ayGxgRhMg, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24 | urn:uuid:54d088f8-00d3-8155-bac1-3f5c0ab0494f |
+
+    Example: the judgments of the rules that also compare dates are named the same way
+      Given a new pod for Dev on 2026-04-01 at 09:00
+      And Dev enters "pairs" on 2026-04-02 at 09:00
+      When the matcher runs on the records of that entry on 2026-04-02 at 09:05
+      Then the matcher's judgments holding immunization CVX 150 "Fluzone", immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" and immunization CVX 141 "Fluad" are:
+        | justification             | members                                                         | inputs                                                                                                                                                                                                                                                                                                                                                                                                                                   | name                                          |
+        | same code and date        | immunization CVX 150 "Fluzone", immunization CVX 150 "Afluria"  | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameCodeAndDate, urn:uuid:30b8d089-bbca-853c-a368-d73ec51e13c6, urn:uuid:e11bbeac-bdee-87cf-ab2a-41c7c4ea1287, ni:///sha-256;S5BtuRtTaLARKXfoEoKMGN9zv8WgeBbVMhUULNrC_zc, ni:///sha-256;fbIEiGXEMf_PrgoQUmokaIfTvx__ibJejAw3lbza1IU, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24                                                      | urn:uuid:17ba0aba-edb3-8808-9cae-5991f5269447 |
+        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameMappedCodeAndDate, urn:uuid:64b3203c-d1d6-8504-99a1-95c01cff770e, urn:uuid:c528a457-735b-8040-80cb-f4629c21dbf6, ni:///sha-256;5d-H6FY6R-8noINxAFAAYqUZpG3Fsdb-WVw_Qjuh47Q, ni:///sha-256;chuxJMZhbJ8JW9GfhrNBKQKSx5rDX4d8NwWX1nBz270, urn:uuid:3c9e7b52-6a1f-4d8e-b2a4-9f5c3d8e1b70, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24 | urn:uuid:02812844-3a34-8eb5-90a5-082aa46669d2 |
+        | same mapped code and date | immunization CVX 150 "FluLaval", immunization CVX 141 "Fluad"   | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameMappedCodeAndDate, urn:uuid:64b3203c-d1d6-8504-99a1-95c01cff770e, urn:uuid:a20510bc-34b1-83bb-8a2b-996b46dc626f, ni:///sha-256;J8Zi5wiOLAf4xEDG51vCeXNmv-4kXOI8OoqELNv6oyk, ni:///sha-256;chuxJMZhbJ8JW9GfhrNBKQKSx5rDX4d8NwWX1nBz270, urn:uuid:3c9e7b52-6a1f-4d8e-b2a4-9f5c3d8e1b70, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24 | urn:uuid:5b19cf7c-9436-8413-b351-9dbb210a516b |
+        | same code and date        | immunization CVX 141 "Fluarix", immunization CVX 141 "Fluad"    | urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76, https://ns.cascadeprotocol.org/judgments/v1-draft#SameCodeAndDate, urn:uuid:a20510bc-34b1-83bb-8a2b-996b46dc626f, urn:uuid:c528a457-735b-8040-80cb-f4629c21dbf6, ni:///sha-256;5d-H6FY6R-8noINxAFAAYqUZpG3Fsdb-WVw_Qjuh47Q, ni:///sha-256;J8Zi5wiOLAf4xEDG51vCeXNmv-4kXOI8OoqELNv6oyk, urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24                                                      | urn:uuid:d1d910ed-8ef4-85b9-8046-f7f2c6a3df75 |
 
   Rule: N7. An import and an entry session each get a new random UUID
     A urn:uuid:, version 4, new on every run. Nothing else does. The kit's check 4 holds each of a replay's imports and
@@ -124,7 +140,18 @@ Feature: Naming
     Example: each file an import writes is named from the name of what it holds
       Given a new pod for Ada on 2026-01-01 at 09:00
       When the export "first-export" is imported on 2026-01-02 at 10:00
-      Then the query "queries/files-named-from-what-they-hold.rq" answers:
+      When the query is:
+        """
+        SELECT ?thing ?fileName WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
+          FILTER NOT EXISTS { GRAPH ?file { ?revision a rec:Revision } }
+          FILTER NOT EXISTS { GRAPH ?file { ?import prov:used ?document } }
+          OPTIONAL { GRAPH ?file { ?thing a ?type FILTER (?type IN (health:AllergyRecord, prov:Entity)) } }
+          OPTIONAL { GRAPH ?file { ?thing prov:specializationOf ?record } }
+          BIND(REPLACE(STR(?file), "^.*/", "") AS ?fileName)
+        }
+        """
+      Then it answers:
         | thing                                                       | fileName                                                               |
         | <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82>             | "ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82.ttl"                             |
         | <urn:uuid:de5509dd-2eb5-86f2-925c-bf35bd4a0fc5>             | "de5509dd-2eb5-86f2-925c-bf35bd4a0fc5.ttl"                             |
@@ -152,7 +179,15 @@ Feature: Naming
       Given a new pod for Cleo on 2026-03-01 at 09:00
       And Cleo files the judgment "about-r" on 2026-03-04 at 07:00
       When Cleo files the judgment "retract-about-r" on 2026-03-04 at 12:00
-      Then the query "queries/a-retraction-deletes-nothing.rq" answers:
+      When the query is:
+        """
+        SELECT ?step ?judgment ?verdict WHERE {
+          GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
+          GRAPH ?file { ?judgment a jdg:Judgment OPTIONAL { ?judgment jdg:verdict ?verdict } }
+          FILTER (?judgment IN (<urn:uuid:b8d3f1a7-2c69-4e5b-9f14-3a7e6d2c8b91>, <urn:uuid:f2b6d9a4-7e3c-4815-b9d7-5a8e2c6f1d43>))
+        }
+        """
+      Then it answers:
         | step                               | judgment                                        | verdict   |
         | <urn:cascade:step:about-r>         | <urn:uuid:b8d3f1a7-2c69-4e5b-9f14-3a7e6d2c8b91> | jdg:About |
         | <urn:cascade:step:retract-about-r> | <urn:uuid:f2b6d9a4-7e3c-4815-b9d7-5a8e2c6f1d43> |           |

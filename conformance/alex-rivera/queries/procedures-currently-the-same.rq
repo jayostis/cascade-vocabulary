@@ -1,7 +1,0 @@
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
-
-SELECT ?record ?other WHERE {
-  ?record a clinical:Procedure ; jdg:currentlySame ?other .
-  FILTER (?record != ?other)
-}

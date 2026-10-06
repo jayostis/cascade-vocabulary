@@ -2,6 +2,11 @@ Feature: Arrivals
   Which arrivals a runtime writes, and what each writes: when an import brings a document, an entry brings drafts, or
   the pod is created.
 
+  Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Ada
+  imports Apple Health exports of four allergies (peanut, latex, shellfish, mango) from one hospital, and later
+  exports that change them. Ben enters a peanut allergy and an asthma by hand. Finn brings exports and entries a
+  runtime must refuse, and two allergies of one code.
+
   Rule: A1. A document whose bytes the pod already keeps brings nothing new
     It is not converted, and nothing is written. The example saves no Bridge output for it, so a runtime that converted
     it would have none.
@@ -53,9 +58,9 @@ Feature: Arrivals
       And the export "first-export" is imported on 2026-01-02 at 10:00
       When the export "new-content" is imported on 2026-01-06 at 10:00
       Then allergy "Peanut" has these revisions:
-        | arrived             | version | after               |
-        | 2026-01-02 at 10:00 | 1       |                     |
-        | 2026-01-06 at 10:00 | 2       | 2026-01-02 at 10:00 |
+        | arrived             | version | status   | after               |
+        | 2026-01-02 at 10:00 | 1       | active   |                     |
+        | 2026-01-06 at 10:00 | 2       | inactive | 2026-01-02 at 10:00 |
 
   Rule: A6. Arrivals with no source version are told apart by their content alone
     So, by A4, one with the content the record is at writes no revision.
@@ -66,9 +71,9 @@ Feature: Arrivals
       And the export "no-source-version" is imported on 2026-01-07 at 10:00
       When the export "no-source-version-again" is imported on 2026-01-07 at 12:00
       Then allergy "Shellfish" has these revisions:
-        | arrived             | version | after               |
-        | 2026-01-02 at 10:00 | 1       |                     |
-        | 2026-01-07 at 10:00 | 2       | 2026-01-02 at 10:00 |
+        | arrived             | version | status   | after               |
+        | 2026-01-02 at 10:00 | 1       | active   |                     |
+        | 2026-01-07 at 10:00 | 2       | inactive | 2026-01-02 at 10:00 |
 
   Rule: A7. A change that is undone at its source reuses the earlier version
     The new revision points at it.
@@ -79,10 +84,10 @@ Feature: Arrivals
       And the export "new-content" is imported on 2026-01-06 at 10:00
       When the export "change-undone" is imported on 2026-01-08 at 10:00
       Then allergy "Peanut" has these revisions:
-        | arrived             | version | after               |
-        | 2026-01-02 at 10:00 | 1       |                     |
-        | 2026-01-06 at 10:00 | 2       | 2026-01-02 at 10:00 |
-        | 2026-01-08 at 10:00 | 1       | 2026-01-06 at 10:00 |
+        | arrived             | version | status   | after               |
+        | 2026-01-02 at 10:00 | 1       | active   |                     |
+        | 2026-01-06 at 10:00 | 2       | inactive | 2026-01-02 at 10:00 |
+        | 2026-01-08 at 10:00 | 1       | active   | 2026-01-06 at 10:00 |
 
   Rule: A8. A record that is missing from a later export gets nothing written, and nothing of it goes
 
@@ -102,7 +107,19 @@ Feature: Arrivals
     Example: a revision holds its own five statements and its arrival's, the import that made it shown as its step
       Given a new pod for Ada on 2026-01-01 at 09:00
       When the export "first-export" is imported on 2026-01-02 at 10:00
-      Then the query "queries/revision-holds-its-arrival.rq" answers:
+      When the query is:
+        """
+        SELECT ?predicate ?value WHERE {
+          { SELECT DISTINCT ?import WHERE {
+            GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?importFile }
+            GRAPH ?importFile { ?import prov:used ?document }
+          } }
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
+          GRAPH ?file { ?revision rec:revisionOf <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> ; ?predicate ?object }
+          BIND(IF(sameTerm(?object, ?import), <urn:cascade:step:first-export>, ?object) AS ?value)
+        }
+        """
+      Then it answers:
         | predicate            | value                                |
         | rdf:type             | rec:Revision                         |
         | rec:revisionOf       | allergy "Peanut"                     |
@@ -121,7 +138,23 @@ Feature: Arrivals
       Given a new pod for Ada on 2026-01-01 at 09:00
       And the export "first-export" is imported on 2026-01-02 at 10:00
       When the export "current-version-again" is imported on 2026-01-05 at 10:00
-      Then the query "queries/kept-for-its-findings.rq" answers:
+      When the query is:
+        """
+        SELECT ?document (COUNT(DISTINCT ?attachment) AS ?storedFiles) ?usedByTheImport WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:current-version-again> prov:generated ?description }
+          GRAPH ?description { ?document a prov:Entity }
+          OPTIONAL {
+            GRAPH <urn:cascade:steps> { <urn:cascade:step:current-version-again> prov:generated ?attachment }
+            FILTER NOT EXISTS { GRAPH ?attachment { ?s ?p ?o } }
+          }
+          BIND(EXISTS {
+            GRAPH <urn:cascade:steps> { <urn:cascade:step:current-version-again> prov:generated ?importFile }
+            GRAPH ?importFile { ?import a prov:Activity ; prov:used ?document }
+          } AS ?usedByTheImport)
+        }
+        GROUP BY ?document ?usedByTheImport
+        """
+      Then it answers:
         | document                                                                                                 | storedFiles | usedByTheImport |
         | the document "current-version-again/apple_health_export/clinical-records/AllergyIntolerance-peanut.json" | 1           | true            |
 
@@ -139,7 +172,21 @@ Feature: Arrivals
     Example: an import writes its label, its start, its association and each document it kept
       Given a new pod for Ada on 2026-01-01 at 09:00
       When the export "first-export" is imported on 2026-01-02 at 10:00
-      Then the query "queries/import-uses-each-kept-document.rq" answers:
+      When the query is:
+        """
+        SELECT ?predicate ?value WHERE {
+          { SELECT DISTINCT ?import ?file WHERE {
+            GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
+            GRAPH ?file { ?import prov:used ?document }
+          } }
+          GRAPH ?file {
+            { ?import ?predicate ?value FILTER (!isBlank(?value)) }
+            UNION
+            { ?import prov:qualifiedAssociation/prov:hadPlan/rdfs:label ?value BIND(prov:qualifiedAssociation AS ?predicate) }
+          }
+        }
+        """
+      Then it answers:
         | predicate                 | value                                |
         | rdf:type                  | prov:Activity                        |
         | rdfs:label                | "Apple Health export"                |
@@ -163,7 +210,20 @@ Feature: Arrivals
     Example: an entry writes its session and, for each draft, a record with its version and a first revision
       Given a new pod for Ben on 2026-02-01 at 08:00
       When Ben enters "entry" on 2026-02-01 at 08:30
-      Then the query "queries/entry-files-each-draft.rq" answers:
+      When the query is:
+        """
+        SELECT ?record ?version ?at ?sessionStarted ?sessionLabel ?previous WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:entry> prov:generated ?sessionFile }
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:entry> prov:generated ?revisionFile }
+          GRAPH ?sessionFile { ?session a prov:Activity ; prov:startedAtTime ?sessionStarted ; rdfs:label ?sessionLabel }
+          GRAPH ?revisionFile {
+            ?revision a rec:Revision ; rec:revisionOf ?record ; rec:version ?version ; prov:generatedAtTime ?at ;
+              prov:wasGeneratedBy ?session .
+          }
+          OPTIONAL { ?revision prov:wasRevisionOf ?previous }
+        }
+        """
+      Then it answers:
         | record             | version                         | at                                   | sessionStarted                       | sessionLabel                 | previous |
         | allergy "Peanut"   | version 1 of allergy "Peanut"   | "2026-02-01T08:30:00Z"^^xsd:dateTime | "2026-02-01T08:30:00Z"^^xsd:dateTime | "entered in the Cascade app" |          |
         | condition "Asthma" | version 1 of condition "Asthma" | "2026-02-01T08:30:00Z"^^xsd:dateTime | "2026-02-01T08:30:00Z"^^xsd:dateTime | "entered in the Cascade app" |          |
@@ -175,7 +235,14 @@ Feature: Arrivals
 
     Example: the pod's creation files its subject
       Given a new pod for Ben on 2026-02-01 at 08:00
-      Then the query "queries/creation-files-the-subject.rq" answers:
+      When the query is:
+        """
+        SELECT ?subject WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:pod> prov:generated ?file }
+          GRAPH ?file { ?subject a rec:Subject }
+        }
+        """
+      Then it answers:
         | subject |
         | Ben     |
 

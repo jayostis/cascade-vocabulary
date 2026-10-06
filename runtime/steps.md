@@ -67,7 +67,7 @@ other version; they are never written to the pod.
 | `{name}` | `"[^"]*"` | `"first-export"` | a name in quotes: of a step, a file or a series |
 | `{step}` | `that step\|that import\|that entry\|"[^"]*"` | `that step`, `that import`, `that entry`, `"E13"` | the step the example took last; the last import or entry before this step; the step of that name |
 | `{steps}` | `that step\|"[^"]*"(?:(?:, \|, and \| and \|, or \| or )"[^"]*")*` | `"E15" and "M8"` | steps by name, joined by `,`, `and` or `or` |
-| `{record}`, `{records}` | `[^:]+` | `allergy RxNorm 1191 from draft 2`, `H1-ALG-PCN` | records in words, below; several joined by `,` and `and` |
+| `{record}`, `{records}` | `[^:]+` | `allergy RxNorm 1191 "Ecotrin"`, `H1-ALG-PCN` | records in words, below; several joined by `,` and `and` |
 | `{judgment}` | `[^:]+` | `J21`, `the matcher's same code of H2O-ALG-SULFA and H1-ALG-SULFA` | a judgment in words, below |
 | `{view}` | `allergies\|conditions\|immunizations\|procedures\|patient-profile` | `allergies` | a view |
 | `{lens}` | `[a-z]+` | `export` | a lens under `queries/v1-draft/lenses/` |
@@ -80,15 +80,14 @@ a table is written the same way, with or without its `at`.
 
 A record is named by what a person reads in it, never by its IRI, except where a naming rule's example shows the IRI:
 
-- **`<kind> <system> <code>`**, as `allergy RxNorm 1191`: the record of that kind whose version gives that code. The
-  kinds are `allergy`, `condition`, `immunization` and `procedure`; the systems `SNOMED` (an `http://snomed.info/sct/`
-  IRI, or a `clinical:snomedCode`), `RxNorm` (an `http://www.nlm.nih.gov/research/umls/rxnorm/` IRI) and `CVX` (a
-  `health:vaccineCode`).
-- **`<kind> "<name>"`**, as `allergy "Peanut"`: the record of that kind whose version gives that name, its allergen,
-  condition, vaccine or procedure name.
-- **`… from <source>`**, where those name more than one record: `from draft 2` is the record an entry of the example
-  made from `urn:cascade:output-2`, `from draft 2 of "later"` that of the entry named `later`, and `from codeine-1` the
-  record whose `health:sourceRecordId` the export gave as `codeine-1`.
+- **`<kind> <system> <code> "<name>"`**, as `allergy RxNorm 1191 "Ecotrin"`, with the code, the name or both: the
+  record of that kind whose version gives them. The kinds are `allergy`, `condition`, `immunization` and `procedure`;
+  the systems `SNOMED` (an `http://snomed.info/sct/` IRI, or a `clinical:snomedCode`), `RxNorm` (an
+  `http://www.nlm.nih.gov/research/umls/rxnorm/` IRI) and `CVX` (a `health:vaccineCode`); the name is the version's
+  allergen, condition, vaccine or procedure name. Each draft of an entry has a name of its own, so no record is named by
+  its position.
+- **`… from <source>`**, where two imported records share code and name: `from codeine-1` is the record whose
+  `health:sourceRecordId` the export gave as `codeine-1`.
 - **A handle** a kit's `expected/handles.json` gives, as `H1-ALG-PCN`: the record or profile it names by its server,
   type and ID (`rec:sourceUrl`), by its entry's file and the draft's position, or by its download's file.
 - **A person's name**, as `Alex`: the pod's subject.
@@ -171,11 +170,14 @@ bytes.
 
 ### `{record} has these revisions:`, `the records have these revisions:`
 
-| record | arrived | version | after |
-|---|---|---|---|
+| record | arrived | version | <field> | after |
+|---|---|---|---|---|
 
 The record's revisions, or those of every record the table names, are exactly these: when each arrived (its
-`prov:generatedAtTime`), the number of the version it sets, and when the revision it follows arrived.
+`prov:generatedAtTime`), the number of the version it sets, and when the revision it follows arrived. Any other column
+names a field of the version, in words (`verification status` for any property whose local name is
+`verificationStatus`), and each cell is that field's values, joined by `,`, in the version that row's revision sets:
+so a revision that sets the wrong content fails, not only one that reuses the wrong version.
 
 ### `these records have:`
 
@@ -188,12 +190,15 @@ number of its current version; `subject`, the person whose record the lens says 
 
 ### `the matcher's judgments holding {records} are:`
 
-| justification | members | at | used | name |
-|---|---|---|---|---|
+| justification | members | at | used | inputs | name |
+|---|---|---|---|---|---|
 
 The matcher's judgments with any of those records as a member are exactly these. Each is a `jdg:Same` with that
 justification and exactly those members, attributed to the matcher. `at` (optional) is its `prov:generatedAtTime`;
-`used` (optional) everything it `prov:used`, in words; `name` (optional) its IRI.
+`used` (optional) everything it `prov:used`, in words; `inputs` (optional) the inputs N6 names it from, as the rule
+hashes them and joined by `, `: the matcher, the justification, its members sorted and what it used sorted, each the
+IRI the pod holds; `name` (optional) its IRI. Every column but `name` is checked first, so an input the pod does not
+hold and a name the inputs do not give fail apart.
 
 ### `the matcher has no judgment holding {records}`
 
@@ -201,8 +206,8 @@ No matcher judgment has any of those records as a member.
 
 ### `{step} wrote these matcher judgments:`
 
-| justification | members | used | name |
-|---|---|---|---|
+| justification | members | used | inputs | name |
+|---|---|---|---|---|
 
 The judgments the step wrote are exactly these, each as the step before says, at the step's time. Every other subject in
 the files the step wrote is the matcher, described as above, or a reference series or version.
@@ -253,18 +258,26 @@ thing.
 
 ### `these are named:`
 
-| thing | name |
-|---|---|
+| thing | inputs | name |
+|---|---|---|
 
-Each thing, in words, has exactly that IRI. Only a naming rule's example uses this step.
+Each thing, in words, has exactly that IRI. Only a naming rule's example uses this step. `inputs` (optional), for a
+record an entry made, are the inputs N2 names it from, joined by `, `: the pod's subject and its entry's start as the
+rule writes it, which the record's first revision must hold, and the draft's position, which reaches the pod only through
+the name.
 
 ### `that step's import is named by a new random UUID`, `that step's entry session is named by a new random UUID`
 
 The step wrote one import, or one entry session, and its IRI is a version 4 `urn:uuid:`.
 
-### `the query {name} answers:`, `the query {name} answers nothing`
+### `the query is:`
 
-The SPARQL query in that file, beside the feature file, gives exactly these rows as a multiset, or none. A cell is a
+The SPARQL query in the DocString beneath it is the one the next `it answers` step asks. It changes nothing.
+
+### `it answers:`, `it answers nothing`
+
+The query gives exactly these rows as a multiset, or none. A cell is a
 Turtle term (`<iri>`, a prefixed name, `"text"`, `"2026-01-02"^^xsd:date`, `true`, `22`) or a thing in words. A
-prefixed name uses the prefixes the query declares, and `rdf:`, `rdfs:`, `xsd:`, `prov:`, `pav:`, `bridge:`, `rec:`,
-`jdg:`, `health:`, `clinical:` and `cascade:` as the vocabulary declares them. This is the step for what the others do not say; an example uses it only where a plain one would be forced.
+prefixed name, in a cell or in the query, may use the prefixes the query declares and, without declaring them, `rdf:`,
+`rdfs:`, `xsd:`, `prov:`, `pav:`, `npx:`, `bridge:`, `rec:`, `jdg:`, `health:`, `clinical:` and `cascade:` as the vocabulary
+declares them. This is the step for what the others do not say; an example uses it only where a plain one would be forced.

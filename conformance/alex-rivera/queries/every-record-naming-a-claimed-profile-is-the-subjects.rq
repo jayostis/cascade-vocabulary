@@ -1,9 +1,0 @@
-PREFIX pav: <http://purl.org/pav/>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-
-SELECT (COUNT(DISTINCT ?herRecord) AS ?hers) (COUNT(DISTINCT ?otherRecord) AS ?notHers) WHERE {
-  VALUES ?profile { <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> <urn:uuid:d85089a6-8c4b-8108-b3cc-2cde9217f136> <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> }
-  ?record pav:hasCurrentVersion/rec:patient ?profile .
-  BIND (IF(EXISTS { ?record rec:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?record, ?none) AS ?herRecord)
-  BIND (IF(EXISTS { ?record rec:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?none, ?record) AS ?otherRecord)
-}
