@@ -272,9 +272,9 @@ Feature: Arrivals
         | Ben     |
 
   Rule: A14. Some steps are refused, and a refused step writes no revision and no import
-    Refused are: a download no importer reads, or one its importer cannot read, as an Apple Health export whose
-    export.xml it cannot read or a downloaded file that is not well-formed; a document no adapter of its media type
-    accepts, as a CDA that is not a C-CDA, or one the Bridge fails on; a graph holding a statement about no record,
+    Refused are: an export or a download no importer recognises, or one its importer cannot read, as an Apple Health
+    export whose export.xml it cannot read or a downloaded file that is not well-formed; a document no adapter of its
+    media type accepts, as a CDA that is not a C-CDA, or one the Bridge fails on (a bridge:documentFailure); a graph holding a statement about no record,
     version, arrival, document or import; a record or draft of a type the pod files nowhere; one import's documents
     disagreeing on the import's description; an entry holding other than one activity; and an entry whose activity
     states a property by which the layout files an activity elsewhere than an entry's.

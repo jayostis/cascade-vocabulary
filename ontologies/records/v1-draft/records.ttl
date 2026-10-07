@@ -13,7 +13,7 @@
 
 rec:sourceUrl a owl:ObjectProperty ;
     rdfs:label "source URL"@en ;
-    rdfs:comment "A record's full address at its source, from which its name is computed: a FHIR resource's URL on its server, or its urn:uuid; for a contained resource, its container's address, #, and its local id; for a C-CDA record, its HL7 identifier, urn:hl7ii:<root>:<extension>, or its root alone as urn:oid:<root> or urn:uuid:<root>, which several records may share. A record named from its document and its place in it, or with no usable identifier, has none."@en .
+    rdfs:comment "A record's full address at its source. For a FHIR resource, the input its name is computed from: its URL on its server, or its urn:uuid; for a contained resource, its container's address, #, and its local id. For a C-CDA record, its HL7 identifier, urn:hl7ii:<root>:<extension>, or its root alone as urn:oid:<root> or urn:uuid:<root>, each character an IRI does not allow percent-encoded as UTF-8; several records may share it, and its name is computed from its class too. A record named from its document and its place in it, or with no usable identifier, has none."@en .
 
 rec:patient a owl:ObjectProperty ;
     rdfs:label "patient"@en ;
