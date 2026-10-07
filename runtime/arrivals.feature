@@ -328,12 +328,12 @@ Feature: Arrivals
       And that step wrote no file
       And the pod holds no revision
 
-  Rule: A15. The build writes a view once the pod holds a record of its kind, or the view holds an entry
-    And at every build after, so nothing a build wrote goes stale: records are never removed, and a patient-profile
-    view whose Abouts are all retracted is written with no entry. The type index registers only the views written,
-    and the labels file is written always. So a kind the layout adds changes no pod that holds none of it.
+  Rule: A15. The build writes a view once the pod holds a record of its kind, and at every build after
+    Records are never removed, so nothing a build wrote goes stale. The labels file, and each view pod-layout.ttl marks
+    rec:writtenAlways, as the patient-profile view, are written at every build: a pod always has a subject. The type
+    index registers only the views written. So a kind the layout adds changes no pod that holds none of it.
 
-    Example: a pod of an allergy and a condition holds those two views and the labels, and no other
+    Example: a pod of an allergy and a condition holds those two views, the patient-profile view and the labels, and no other
       Given a new pod for Ben on 2026-02-01 at 08:00
       When Ben enters "entry" on 2026-02-01 at 08:30
       And the query is:
@@ -343,7 +343,8 @@ Feature: Arrivals
         }
         """
       Then it answers:
-        | view                                          |
-        | <https://pod.example/clinical/allergies.ttl>  |
-        | <https://pod.example/clinical/conditions.ttl> |
-        | <https://pod.example/clinical/labels.ttl>     |
+        | view                                               |
+        | <https://pod.example/clinical/allergies.ttl>       |
+        | <https://pod.example/clinical/conditions.ttl>      |
+        | <https://pod.example/clinical/labels.ttl>          |
+        | <https://pod.example/clinical/patient-profile.ttl> |

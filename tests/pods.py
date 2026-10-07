@@ -10,7 +10,7 @@ import pytest
 from rdflib import URIRef
 from rdflib.namespace import RDF
 
-from contract import CASCADE, LAYOUT, PROV, REC, ROOT, derivations, query, questions, written
+from contract import LAYOUT, PROV, REC, ROOT, derivations, query, questions, written
 from engines import ENGINES, Store, parsed
 
 ADDRESS = "https://pod.example/"
@@ -70,16 +70,14 @@ def derive(store, lens):
 def write(store):
     """Adds each file a query writes as its own graph, the views first so the others can read them, and returns their
     triples by path. Each is marked a rec:View, built with the current reference versions. A view is written only when
-    the pod holds a record of its class or the view holds an entry; a fixture is one build, so none was written before."""
+    the layout marks it written always or the pod holds a record of its class."""
     current = [row["version"] for row in store.select(query(questions()["pod/Which reference versions are current"]))]
     files = {}
-    for path, (by, kind) in sorted(written().items(), key=lambda item: (item[1][1] is None, item[0])):
-        file = URIRef(ADDRESS + path)
-        triples = store.construct(query(by))
-        held = kind is None or store.ask(f"ASK {{ ?record a <{kind}> }}")
-        if not held and not any(p == CASCADE.mergedFrom for _, p, _ in triples):
+    for path, (by, kind, always) in sorted(written().items(), key=lambda item: (item[1][1] is None, item[0])):
+        if kind is not None and not always and not store.ask(f"ASK {{ ?record a <{kind}> }}"):
             continue
-        triples = triples | {(file, RDF.type, REC.View)} | {(file, PROV.used, v) for v in current}
+        file = URIRef(ADDRESS + path)
+        triples = store.construct(query(by)) | {(file, RDF.type, REC.View)} | {(file, PROV.used, v) for v in current}
         store.add(triples, ADDRESS + path)
         files[path] = triples
     return files

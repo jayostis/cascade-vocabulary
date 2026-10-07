@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "lab-results-view" ;
-  rdfs:comment "A potassium entry of two members, the later one stating another name and unit and no status or time; and a glucose." ;
+  rdfs:comment "A potassium entry of two members, the later one stating another name and unit and no status or time; a glucose at a time; and a hemoglobin A1c on that day, as a day." ;
   mf:entries (
     <#the-lab-results-view>
     <#my-lab-results>
@@ -13,14 +13,14 @@
 
 <#the-lab-results-view> a mf:QueryEvaluationTest ;
   mf:name "the-lab-results-view" ;
-  rdfs:comment "Each entry takes the test, code, value and unit of its latest member, the status of the member chosen for status, and the time of the member chosen for the date." ;
+  rdfs:comment "Each entry takes the test, code, value, unit and time of its latest member, so the potassium shows no time, and the status of the member chosen for status." ;
   mf:action [ qt:query <the-lab-results-view.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <the-lab-results-view.srj> .
 
 <#my-lab-results> a mf:QueryEvaluationTest ;
   mf:name "my-lab-results" ;
-  rdfs:comment "Every entry, newest first, with how many records it joins." ;
+  rdfs:comment "Every entry, newest first by day and then by time as written, so the glucose comes before the A1c of its day, with how many records it joins." ;
   mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20lab%20results.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <my-lab-results.srj> .

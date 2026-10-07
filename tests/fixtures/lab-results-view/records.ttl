@@ -26,3 +26,10 @@
     clinical:status "final" ; health:performedDate "2025-04-10T08:00:00Z"^^xsd:dateTime .
 :glucoseRevision a rec:Revision ; rec:revisionOf :glucose ; rec:version :glucoseVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:a1c a health:LabResultRecord .
+:a1cVersion prov:specializationOf :a1c ; rec:patient :subject ; health:testName "Hemoglobin A1c" ;
+    health:testCode <http://loinc.org/rdf/4548-4> ; health:resultValue "5.6" ; health:resultUnit "%" ;
+    clinical:status "final" ; health:performedDate "2025-04-10"^^xsd:date .
+:a1cRevision a rec:Revision ; rec:revisionOf :a1c ; rec:version :a1cVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

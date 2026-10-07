@@ -6,12 +6,11 @@ import json
 from functools import cache
 from pathlib import Path
 
-from rdflib import Graph, Namespace
+from rdflib import Graph, Literal, Namespace
 
 ROOT = Path(__file__).absolute().parent.parent
 QUERIES = ROOT / "queries" / "v1-draft"
 LAYOUT = ROOT / "runtime" / "pod-layout.ttl"
-CASCADE = Namespace("https://ns.cascadeprotocol.org/core/v1#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
 REC = Namespace("https://ns.cascadeprotocol.org/records/v1-draft#")
 SOLID = Namespace("http://www.w3.org/ns/solid/terms#")
@@ -53,13 +52,14 @@ def derivations(lens):
 
 @cache
 def written():
-    """Each file a query writes, by its path in a pod, with that query's path under QUERIES, and the class it lists if it
-    is a view, or None."""
+    """Each file a query writes, by its path in a pod, with that query's path under QUERIES, the class it lists if it is
+    a view or None, and whether the layout marks it written always."""
     graph = Graph().parse(LAYOUT, publicID=BASE)
-    return {str(graph.value(placement, SOLID.instance))[len(BASE):]: (str(by), graph.value(placement, SOLID.forClass))
+    return {str(graph.value(placement, SOLID.instance))[len(BASE):]:
+            (str(by), graph.value(placement, SOLID.forClass), (placement, REC.writtenAlways, Literal(True)) in graph)
             for placement, by in graph.subject_objects(REC.writtenBy)}
 
 
 def built():
     """Each file a query writes, by its path in a pod, with that query's path under QUERIES."""
-    return {path: by for path, (by, _) in written().items()}
+    return {path: by for path, (by, *_) in written().items()}
