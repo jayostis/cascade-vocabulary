@@ -80,8 +80,15 @@ clinical:MedicationShape a sh:NodeShape ;
 
     sh:property [
         sh:path clinical:rxNormCode ;
+        sh:maxCount 1 ;
+        sh:message "A medication states at most one RxNorm code"@en
+    ] ;
+
+    sh:property [
+        sh:path clinical:rxNormCode ;
         sh:nodeKind sh:IRI ;
-        sh:message "An RxNorm code is an IRI in RxNorm's own IRI space, for example http://www.nlm.nih.gov/research/umls/rxnorm/314076"@en
+        sh:message "An RxNorm code should be an IRI in RxNorm's own IRI space, for example http://www.nlm.nih.gov/research/umls/rxnorm/314076"@en ;
+        sh:severity sh:Warning
     ] ;
 
     sh:property [

@@ -224,6 +224,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape clinical:MedicationShape ; sh:resultPath clinical:clinicalIntent ] ] .
 
+<#record-medication/two-rxnorm-codes> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/two-rxnorm-codes.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape clinical:MedicationShape ; sh:resultPath clinical:rxNormCode ] ] .
+
 <#record-lab-result/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-lab-result/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

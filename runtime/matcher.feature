@@ -318,5 +318,5 @@ Feature: The matcher's procedure
 
     Example: two lab results of one code, one instant in two time zones and one value are the same result, and one at another time or of another value joins neither
       Then the matcher's judgments holding lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium in April" and lab result LOINC 2823-3 "Potassium repeat" are:
-        | justification | members                                                                        |
-        | same result   | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium" |
+        | justification | members                                                                        | used                                                                                                                                     |
+        | same result   | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium" | Cascade matcher rules version 2, version 1 of lab result LOINC 2823-3 "Potassium", version 1 of lab result LOINC 2823-3 "Serum potassium" |
