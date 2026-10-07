@@ -1,0 +1,51 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;YCXWh93HvvJncGtlKCyC6ORMKKHVDfpLMxVNPAz3zNo> health:onsetDate "2023-06-15"^^xsd:date ;
+	health:status "active" ;
+	clinical:verificationStatus "confirmed" ;
+	health:snomedCode <http://snomed.info/sct/59621000> ;
+	clinical:category "problem-list-item" ;
+	health:conditionName "Essential hypertension" .
+_:19b201100cefb6a8dbf5ebcd79b5de46 pav:lastUpdateOn "2025-03-27T12:40:00Z"^^xsd:dateTime ;
+	pav:version "2" ;
+	bridge:arrivedAs <ni:///sha-256;YCXWh93HvvJncGtlKCyC6ORMKKHVDfpLMxVNPAz3zNo> .
+<ni:///sha-256;YCXWh93HvvJncGtlKCyC6ORMKKHVDfpLMxVNPAz3zNo> rec:patient <urn:uuid:8df1ef48-f8fd-8c9e-a9d3-c3de9798361f> ;
+	prov:specializationOf <urn:uuid:66b51b18-6fe4-8850-b916-bd7160154088> .
+<urn:uuid:66b51b18-6fe4-8850-b916-bd7160154088> health:sourceRecordId "cond-htn-1" ;
+	rec:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/Condition/cond-htn-1> ;
+	a health:ConditionRecord .
+_:19b201100cefb6a8dbf5ebcd79b5de46 bridge:selector "" ;
+	prov:wasDerivedFrom <ni:///sha-256;PjSmpjsg6m6RHn2fkn6Y2jtlRcq8TQbB4GAGhVWWV1Q> ;
+	prov:wasGeneratedBy _:3c7415cf9301a6b610ddbf8061587d50 .
+_:3c7415cf9301a6b610ddbf8061587d50 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2025-03-29T18:45:04Z"^^xsd:dateTime .
+<ni:///sha-256;PjSmpjsg6m6RHn2fkn6Y2jtlRcq8TQbB4GAGhVWWV1Q> prov:qualifiedAttribution _:208d67d4e0414936efff329cdcfd1e78 .
+_:208d67d4e0414936efff329cdcfd1e78 prov:agent _:29c88f3bf79b84a3feb4f9e8bc12ea27 .
+_:29c88f3bf79b84a3feb4f9e8bc12ea27 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:208d67d4e0414936efff329cdcfd1e78 prov:hadRole rec:transmitter .
+<ni:///sha-256;PjSmpjsg6m6RHn2fkn6Y2jtlRcq8TQbB4GAGhVWWV1Q> prov:qualifiedAttribution _:98440b36c8e332002c5498fd742fddab .
+_:98440b36c8e332002c5498fd742fddab prov:agent _:299805c460932468c7dfe5b0c9b820ef .
+_:299805c460932468c7dfe5b0c9b820ef <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
+_:98440b36c8e332002c5498fd742fddab prov:hadRole rec:author .
+<ni:///sha-256;PjSmpjsg6m6RHn2fkn6Y2jtlRcq8TQbB4GAGhVWWV1Q> bridge:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://fhir.kestrelharbor.example/api/FHIR/R4/Condition/cond-htn-1> ;
+	pav:retrievedOn "2025-03-29T18:39:51Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
+_:3c7415cf9301a6b610ddbf8061587d50 a prov:Activity ;
+	prov:used <ni:///sha-256;PjSmpjsg6m6RHn2fkn6Y2jtlRcq8TQbB4GAGhVWWV1Q> ;
+	prov:qualifiedAssociation _:d332b94a4aa8edb39dadb33dffdd0484 .
+_:d332b94a4aa8edb39dadb33dffdd0484 prov:hadPlan _:3db2cbdb3d0d97fc9d2074e27b13af51 .
+_:3db2cbdb3d0d97fc9d2074e27b13af51 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:d332b94a4aa8edb39dadb33dffdd0484 prov:agent _:5c305b02aa1058ee47a5a32148c5eb66 .
+_:5c305b02aa1058ee47a5a32148c5eb66 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

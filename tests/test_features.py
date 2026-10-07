@@ -107,12 +107,20 @@ def test_every_inline_query_parses():
     assert broken == []
 
 
-def test_each_planted_case_is_a_rule_of_the_kit_with_an_example():
-    document = Parser().parse((ROOT / "conformance" / "alex-rivera" / "alex-rivera.feature").read_text(encoding="utf-8"))
-    shown = {int(found.group(1)) for child in document["feature"]["children"] if "rule" in child
-             for found in [re.match(r"P(\d+)\.", child["rule"]["name"])]
-             if found and any("scenario" in inner for inner in child["rule"]["children"])}
-    assert shown == set(range(1, 26))
+def test_each_planted_case_a_kit_names_is_a_rule_of_it_with_an_example():
+    planted, shown = {}, {}
+    for kit in sorted((ROOT / "conformance").iterdir()):
+        story = kit / f"{kit.name}.feature"
+        if not story.is_file():
+            continue
+        feature = Parser().parse(story.read_text(encoding="utf-8"))["feature"]
+        named = re.search(r"P1 to P(\d+)", " ".join(feature["description"].split()))
+        planted[kit.name] = set(range(1, int(named.group(1)) + 1)) if named else set()
+        shown[kit.name] = {int(found.group(1)) for child in feature["children"] if "rule" in child
+                           for found in [re.match(r"P(\d+)\.", child["rule"]["name"])]
+                           if found and any("scenario" in inner for inner in child["rule"]["children"])}
+    assert {kit: len(cases) for kit, cases in planted.items()} == {"alex-rivera": 25, "priya-natarajan": 17}
+    assert shown == planted
 
 
 def ni_name(octets):
@@ -124,7 +132,7 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_but_the
              for path in sorted([*ROOT.glob("runtime/scripted-input/*/references/*.ttl"),
                                  *ROOT.glob("conformance/*/scripted-input/*/references/*.ttl")])
              for rows in [parsed(path)] if (None, RDF.type, REC.MatcherRule) in rows}
-    assert len(lists) == 7
+    assert len(lists) == 9
     mismatched = set()
     for path, rows in lists.items():
         for row in rows.subjects(RDF.type, REC.MatcherRule):

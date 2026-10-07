@@ -1,0 +1,50 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;OoF1Q8r99Bbf0yTaU5kvtLmQWFacMyb9694be8yvf4Q> clinical:dosage "Take 1 tablet by mouth once daily." ;
+	clinical:startDate "2023-06-15"^^xsd:date ;
+	clinical:status "active" ;
+	clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ;
+	clinical:drugName "lisinopril 10 MG Oral Tablet" ;
+	clinical:clinicalIntent "prescribed" .
+_:5e0085fea9f3523145d8a41b467b5af6 pav:lastUpdateOn "2023-06-15T17:05:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;OoF1Q8r99Bbf0yTaU5kvtLmQWFacMyb9694be8yvf4Q> .
+<ni:///sha-256;OoF1Q8r99Bbf0yTaU5kvtLmQWFacMyb9694be8yvf4Q> rec:patient <urn:uuid:8df1ef48-f8fd-8c9e-a9d3-c3de9798361f> ;
+	prov:specializationOf <urn:uuid:97eaa82a-a849-80ff-9904-3a41699016d9> .
+<urn:uuid:97eaa82a-a849-80ff-9904-3a41699016d9> clinical:sourceRecordId "medrx-lisinopril-1" ;
+	rec:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-lisinopril-1> ;
+	a clinical:Medication .
+_:5e0085fea9f3523145d8a41b467b5af6 bridge:selector "" ;
+	prov:wasDerivedFrom <ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> ;
+	prov:wasGeneratedBy _:b10aaa5662122a23188393c8fb5d422d .
+_:b10aaa5662122a23188393c8fb5d422d <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2025-03-29T18:45:04Z"^^xsd:dateTime .
+<ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> prov:qualifiedAttribution _:78f5382b711da9b3fea15b52a7f1a043 .
+_:78f5382b711da9b3fea15b52a7f1a043 prov:agent _:3a9658ff4d7aa694bdb3f7d7c6ba6d6c .
+_:3a9658ff4d7aa694bdb3f7d7c6ba6d6c <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:78f5382b711da9b3fea15b52a7f1a043 prov:hadRole rec:transmitter .
+<ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> prov:qualifiedAttribution _:390ccd8cc704627cfb0fa4be948e500b .
+_:390ccd8cc704627cfb0fa4be948e500b prov:agent _:3e897127752c1d32f0914a59437078d5 .
+_:3e897127752c1d32f0914a59437078d5 <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
+_:390ccd8cc704627cfb0fa4be948e500b prov:hadRole rec:author .
+<ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> bridge:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-lisinopril-1> ;
+	pav:retrievedOn "2025-03-29T18:39:51Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
+_:b10aaa5662122a23188393c8fb5d422d a prov:Activity ;
+	prov:used <ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> ;
+	prov:qualifiedAssociation _:16c63838ff469d5b55f4e8ab6d06fa04 .
+_:16c63838ff469d5b55f4e8ab6d06fa04 prov:hadPlan _:66a568f2279c33acec170c6cab5b53fb .
+_:66a568f2279c33acec170c6cab5b53fb a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:16c63838ff469d5b55f4e8ab6d06fa04 prov:agent _:4a3fa352a822e77ab032393f6cd4657a .
+_:4a3fa352a822e77ab032393f6cd4657a a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

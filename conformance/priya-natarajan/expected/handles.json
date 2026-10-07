@@ -1,0 +1,38 @@
+{
+  "records": {
+    "APP-MED-LORATADINE": {"entry": "scripted-input/priya/entries/a1.ttl", "position": 0},
+    "FFC-ALG-ASPIRIN": {"class": "AllergyIntolerance", "identifier": "2.16.840.1.113883.19.5.2.4:AL-77"},
+    "FFC-CON-HAYFEVER": {"class": "Condition", "identifier": "2.16.840.1.113883.19.5.2.6:P-410"},
+    "FFC-IMM-FLU": {"class": "Immunization", "identifier": "", "key": ["code=141", "codeSystem=2.16.840.1.113883.12.292", "effectiveTime=20241015", "negationInd=false", "statusCode=completed"]},
+    "FFC-MED-CLARITIN": {"class": "MedicationRequest", "identifier": "2.16.840.1.113883.19.5.2.5:RX", "key": ["drugCode=206805", "drugCodeSystem=2.16.840.1.113883.6.88", "mood=EVN", "statusCode=active"]},
+    "FFC-MED-FLUTICASONE-1": {"class": "MedicationRequest", "identifier": "2.16.840.1.113883.19.5.2.5:RX", "key": ["drugCode=1797907", "drugCodeSystem=2.16.840.1.113883.6.88", "effectiveTimelow=20241015", "mood=EVN", "statusCode=active"]},
+    "FFC-MED-FLUTICASONE-2": {"class": "MedicationRequest", "identifier": "2.16.840.1.113883.19.5.2.5:RX", "key": ["drugCode=1797907", "drugCodeSystem=2.16.840.1.113883.6.88", "effectiveTimelow=20241015", "mood=EVN", "statusCode=completed"]},
+    "KHC-ALG-ASPIRIN": {"class": "AllergyIntolerance", "identifier": "2.16.840.1.113883.19.5.1.3:ALG-1001"},
+    "KHC-CON-HTN": {"class": "Condition", "identifier": "2.16.840.1.113883.19.5.1.6:PRB-3310"},
+    "KHC-LAB-K-0327": {"class": "Observation", "identifier": "2.16.840.1.113883.19.5.1.5:LAB-55121"},
+    "KHC-MED-AMLODIPINE": {"class": "MedicationRequest", "identifier": "2.16.840.1.113883.19.5.1.4:MED-2391"},
+    "KHC-MED-LISINOPRIL": {"class": "MedicationRequest", "identifier": "2.16.840.1.113883.19.5.1.4:MED-2207"},
+    "KHF-ALG-ASPIRIN": {"server": "https://fhir.kestrelharbor.example/api/FHIR/R4", "type": "AllergyIntolerance", "id": "alg-aspirin-1"},
+    "KHF-CON-HTN": {"server": "https://fhir.kestrelharbor.example/api/FHIR/R4", "type": "Condition", "id": "cond-htn-1"},
+    "KHF-LAB-K-0327": {"server": "https://fhir.kestrelharbor.example/api/FHIR/R4", "type": "Observation", "id": "obs-potassium-20250327"},
+    "KHF-LAB-K-0610": {"server": "https://fhir.kestrelharbor.example/api/FHIR/R4", "type": "Observation", "id": "obs-potassium-20250610"},
+    "KHF-MED-AMLODIPINE": {"server": "https://fhir.kestrelharbor.example/api/FHIR/R4", "type": "MedicationRequest", "id": "medrx-amlodipine-1"},
+    "KHF-MED-LISINOPRIL": {"server": "https://fhir.kestrelharbor.example/api/FHIR/R4", "type": "MedicationRequest", "id": "medrx-lisinopril-1"}
+  },
+  "profiles": {
+    "FFC-PAT": {"class": "Patient", "identifier": "2.16.840.1.113883.19.5.2.2:20931"},
+    "KHC-PAT": {"class": "Patient", "identifier": "2.16.840.1.113883.19.5.1.2:KH48213"},
+    "KHF-PAT": {"server": "https://fhir.kestrelharbor.example/api/FHIR/R4", "type": "Patient", "id": "kh-pt-48213"}
+  },
+  "series": {
+    "RS-RULES": "rules",
+    "RS-XWALK": "ingredient-map",
+    "RS-CVXG": "cvx-vaccine-groups"
+  },
+  "judgments": {
+    "J1": "urn:uuid:fbdd142d-e1b8-46ae-9dd7-75a7d85910b5",
+    "J2": "urn:uuid:34e5290a-cc49-4199-9ae5-06bfa34f0a55",
+    "J3": "urn:uuid:5bdddca2-e090-4b38-9ec7-661195258c98",
+    "J4": "urn:uuid:6f0c8d52-3b1e-4a97-9d24-e5a7c1b08f36"
+  }
+}

@@ -1,0 +1,27 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a health:LabResultRecord ;
+  clinical:status "final" ;
+  cascade:mergedFrom <urn:uuid:8b0a0373-e81e-8572-b114-a7b363d070b6> , <urn:uuid:bf14920e-d934-8370-a17f-00fbbdde37df> ;
+  health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+  health:resultUnit "mmol/l" ;
+  health:resultValue "4.1" ;
+  health:testCode <http://loinc.org/rdf/2823-3> ;
+  health:testName "Potassium [Moles/volume] in Serum or Plasma" ;
+  rec:latestMember <urn:uuid:bf14920e-d934-8370-a17f-00fbbdde37df> ;
+  rec:statusFrom <urn:uuid:bf14920e-d934-8370-a17f-00fbbdde37df> .
+
+[] a health:LabResultRecord ;
+  clinical:status "final" ;
+  cascade:mergedFrom <urn:uuid:9fef6d07-2c91-8e52-bfaa-35521508962d> ;
+  health:performedDate "2025-06-10T13:45:00Z"^^xsd:dateTime ;
+  health:resultUnit "mmol/L" ;
+  health:resultValue "4.4" ;
+  health:testCode <http://loinc.org/rdf/2823-3> ;
+  health:testName "Potassium" ;
+  rec:latestMember <urn:uuid:9fef6d07-2c91-8e52-bfaa-35521508962d> ;
+  rec:statusFrom <urn:uuid:9fef6d07-2c91-8e52-bfaa-35521508962d> .

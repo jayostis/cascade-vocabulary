@@ -1,0 +1,53 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;9dRRLIX92aI7ZqP5E5FRQ87wHIKcJZgeH9RZ2oGcbkE> clinical:status "final" ;
+	health:performedDate "2025-06-10T13:45:00Z"^^xsd:dateTime ;
+	health:interpretation "N" ;
+	health:referenceRange "3.5-5.1 mmol/L" ;
+	health:resultUnit "mmol/L" ;
+	health:resultValue "4.4" ;
+	health:testCode <http://loinc.org/rdf/2823-3> ;
+	health:testName "Potassium" .
+_:23cedb314e9b99b6898fb23db32d8b89 pav:lastUpdateOn "2025-06-10T15:31:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;9dRRLIX92aI7ZqP5E5FRQ87wHIKcJZgeH9RZ2oGcbkE> .
+<ni:///sha-256;9dRRLIX92aI7ZqP5E5FRQ87wHIKcJZgeH9RZ2oGcbkE> rec:patient <urn:uuid:8df1ef48-f8fd-8c9e-a9d3-c3de9798361f> ;
+	prov:specializationOf <urn:uuid:9fef6d07-2c91-8e52-bfaa-35521508962d> .
+<urn:uuid:9fef6d07-2c91-8e52-bfaa-35521508962d> health:sourceRecordId "obs-potassium-20250610" ;
+	rec:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/Observation/obs-potassium-20250610> ;
+	a health:LabResultRecord .
+_:23cedb314e9b99b6898fb23db32d8b89 bridge:selector "" ;
+	prov:wasDerivedFrom <ni:///sha-256;uaajzsPxTtKovhO7m0Az4GIX2nEb19Ocab3Mv5Sx-mA> ;
+	prov:wasGeneratedBy _:baf696ae9afd8e980fd3a77b945d4bb0 .
+_:baf696ae9afd8e980fd3a77b945d4bb0 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2025-06-15T08:05:04Z"^^xsd:dateTime .
+<ni:///sha-256;uaajzsPxTtKovhO7m0Az4GIX2nEb19Ocab3Mv5Sx-mA> prov:qualifiedAttribution _:d025054c2daf448ea950775b6cf725a2 .
+_:d025054c2daf448ea950775b6cf725a2 prov:agent _:91c4833b64d36e531e33ba6a6cbcf72e .
+_:91c4833b64d36e531e33ba6a6cbcf72e <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:d025054c2daf448ea950775b6cf725a2 prov:hadRole rec:transmitter .
+<ni:///sha-256;uaajzsPxTtKovhO7m0Az4GIX2nEb19Ocab3Mv5Sx-mA> prov:qualifiedAttribution _:5af3ab4f839925922cfd168bab41a85f .
+_:5af3ab4f839925922cfd168bab41a85f prov:agent _:6c7611a24b509cc4399932b3b26ae332 .
+_:6c7611a24b509cc4399932b3b26ae332 <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
+_:5af3ab4f839925922cfd168bab41a85f prov:hadRole rec:author .
+<ni:///sha-256;uaajzsPxTtKovhO7m0Az4GIX2nEb19Ocab3Mv5Sx-mA> bridge:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://fhir.kestrelharbor.example/api/FHIR/R4/Observation/obs-potassium-20250610> ;
+	pav:retrievedOn "2025-06-14T07:12:40Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
+_:baf696ae9afd8e980fd3a77b945d4bb0 a prov:Activity ;
+	prov:used <ni:///sha-256;uaajzsPxTtKovhO7m0Az4GIX2nEb19Ocab3Mv5Sx-mA> ;
+	prov:qualifiedAssociation _:630ca78b8c2c80975d3e06914d459567 .
+_:630ca78b8c2c80975d3e06914d459567 prov:hadPlan _:7914ca301256a82b3845b305c6ab6834 .
+_:7914ca301256a82b3845b305c6ab6834 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:630ca78b8c2c80975d3e06914d459567 prov:agent _:cc5455c2364ddbc28c63a21435cbb573 .
+_:cc5455c2364ddbc28c63a21435cbb573 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

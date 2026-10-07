@@ -16,7 +16,7 @@ from pods import FIXTURES
 SHT = Namespace("http://www.w3.org/ns/shacl-test#")
 HEALTH = Namespace("https://ns.cascadeprotocol.org/health/v1#")
 CASES = ROOT / "tests" / "shape-cases"
-KIT = ROOT / "conformance" / "alex-rivera"
+KITS = sorted(kit for kit in (ROOT / "conformance").iterdir() if (kit / f"{kit.name}.feature").is_file())
 TARGETS = (SH.targetClass, SH.targetSubjectsOf, SH.targetObjectsOf, SH.targetNode)
 BROKEN_ELSEWHERE = {REC.PlacementShape: "test_pod_layout.py breaks the layout's entries"}
 UNDECLARED_ON_PURPOSE = {HEALTH.NoSuchRecord: "Finn's type-filed-nowhere export files a record of a type no folder holds"}
@@ -169,8 +169,9 @@ def written():
     yield from (fixture.folder / relative for fixture in FIXTURES for relative in fixture.files())
     yield from (file for file, expected in cases().values() if not expected)
     yield from (ROOT / "runtime" / "scripted-input").rglob("*.ttl")
-    yield from (KIT / "scripted-input").rglob("*.ttl")
-    yield from (KIT / "expected").glob("*.ttl")
+    for kit in KITS:
+        yield from (kit / "scripted-input").rglob("*.ttl")
+        yield from (kit / "expected").glob("*.ttl")
 
 
 def test_every_term_a_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it():
