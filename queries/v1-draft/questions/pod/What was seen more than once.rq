@@ -1,0 +1,28 @@
+# Each entry that holds more than one record, once for each place its records came from: how many of its records came
+# from that place, and from how many places they came. A record's place is the hospital that wrote its document, or,
+# when it has none, the label of the import or session that brought it. Entries seen at more than one place come first.
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?entry ?entryLabel ?place (COUNT(DISTINCT ?record) AS ?records) ?places
+WHERE {
+  { SELECT ?entry (COUNT(DISTINCT ?somewhere) AS ?places)
+    WHERE {
+      ?member rec:inEntry ?entry ; rec:currentRevision ?memberRevision .
+      OPTIONAL { ?memberRevision prov:wasGeneratedBy/rdfs:label ?memberImportLabel }
+      OPTIONAL { ?memberRevision prov:wasDerivedFrom/prov:qualifiedAttribution ?memberAttribution .
+                 ?memberAttribution prov:hadRole rec:author ; prov:agent/rdfs:label ?memberHospital }
+      BIND (COALESCE(?memberHospital, ?memberImportLabel) AS ?somewhere)
+    }
+    GROUP BY ?entry
+    HAVING (COUNT(DISTINCT ?member) > 1) }
+  ?record rec:inEntry ?entry ; rec:currentRevision ?revision .
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+  OPTIONAL { ?revision prov:wasGeneratedBy/rdfs:label ?importLabel }
+  OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+             ?attribution prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
+  BIND (COALESCE(?hospital, ?importLabel) AS ?place)
+}
+GROUP BY ?entry ?entryLabel ?place ?places
+ORDER BY DESC(?places) ?entryLabel ?entry ?place
