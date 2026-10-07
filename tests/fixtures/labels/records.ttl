@@ -1,5 +1,4 @@
 @prefix : <urn:x:> .
-@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
 @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
 @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
 @prefix pav: <http://purl.org/pav/> .
@@ -9,8 +8,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :subject a rec:Subject .
-
-:profile a cascade:PatientProfile .
 
 :fromDocument a health:AllergyRecord .
 :fromDocumentVersion prov:specializationOf :fromDocument ; rec:patient :profile ; health:allergen "Peanut" ;
