@@ -300,11 +300,11 @@ Feature: Arrivals
   Rule: A14. Some steps are refused, and a refused step writes no revision and no import
     Refused are: an export, a download or a pull no importer recognises, or one its importer cannot read, as an Apple
     Health export whose export.xml it cannot read, a downloaded file that is not well-formed or a pull whose pull.json
-    names no FHIR base; a document no adapter of its
-    media type accepts, as a CDA that is not a C-CDA, or one the Bridge fails on (a bridge:documentFailure); a graph holding a statement about no record,
-    version, arrival, document or import; a record or draft of a type the pod files nowhere; one import's documents
-    disagreeing on the import's description; an entry holding other than one activity; and an entry whose activity
-    states a property by which the layout files an activity elsewhere than an entry's.
+    names no FHIR base; a document no adapter of its media type accepts, as a CDA that is not a C-CDA, or one the
+    Bridge fails on (a bridge:documentFailure); a graph holding a statement about no record, version, arrival,
+    document or import; a record or draft of a type the pod files nowhere; one import's documents disagreeing on the
+    import's description; an entry holding other than one activity; and an entry whose activity states a property by
+    which the layout files an activity elsewhere than an entry's.
 
     Example: a Bridge graph holding a statement about nothing the pod files
       Given a new pod for Finn on 2026-06-01 at 09:00

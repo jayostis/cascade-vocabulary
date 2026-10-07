@@ -12,10 +12,10 @@ creates. Its `Then` steps read the pod as it stood after the last of them, under
 reads it at another point.
 
 A `Given` or `When` step may end with a label in parentheses, `(E13)`, which names it. Otherwise a step is named by the
-name it quotes: an import by its export's, its download's or its pull's, the file's extension kept, an entry or a judgment by its file's. The pod's creation, a reference version's
-arrival, a matcher run and a recheck are named `pod`, `reference`, `matcher` and `recheck`. Two steps of one example
-never share a name: where they would, the later is labelled. A name is letters, digits, `-`, `_` and `.`, so that
-`urn:cascade:step:NAME` below is an IRI.
+name it quotes: an import by its export's, its download's or its pull's, a download's extension kept, an entry or a
+judgment by its file's. The pod's creation, a reference version's arrival, a matcher run and a recheck are named `pod`,
+`reference`, `matcher` and `recheck`. Two steps of one example never share a name: where they would, the later is
+labelled. A name is letters, digits, `-`, `_` and `.`, so that `urn:cascade:step:NAME` below is an IRI.
 
 **The dataset a `Then` reads** is the one each step has always been read against. Each file of the pod is a named
 graph, named by the pod's address plus its path. The lens's derived state is the graph `urn:cascade:derived:<lens>`,
@@ -32,7 +32,7 @@ and `scripted-input/people.ttl` gives each person's subject (`foaf:name`) and po
 |---|---|
 | `downloads/<export>/apple_health_export/` | an Apple Health export, as the phone writes it |
 | `downloads/<file>` | a file the person downloaded, as a patient portal hands it out |
-| `downloads/<pull>/` | a pull from a hospital's FHIR API, as the runtime saves one: `bundle.json`, a FHIR R4 Bundle, and `pull.json`, a JSON object whose `fhirBase` is the hospital's FHIR base. The rest of `pull.json`, and what the import states with the Bundle, are the runtime's |
+| `downloads/<pull>/` | a pull from a hospital's FHIR API, saved as two files: `bundle.json`, a FHIR R4 Bundle, and `pull.json`, a JSON object whose `fhirBase` is the hospital's FHIR base. The rest of `pull.json`, and what the import states with the Bundle, are the runtime's |
 | `bridge/<step>/<file stem>/graph.ttl`, `findings.ttl` | the Bridge's saved output for each document an import step converts, in a folder named as the step, because a conversion carries its import's start; `unaccepted.txt` instead for a document no adapter accepted |
 | `entries/<entry>.ttl` | an entry: its session `urn:cascade:this-entry` and its drafts `urn:cascade:output-N`, with their versions |
 | `judgments/<judgment>.ttl` | one judgment a person makes, under the IRI it keeps |
@@ -133,8 +133,9 @@ that recognises the file as its kind takes it. The Bridge's saved output for eac
 ### `the pull {name} is imported on {time}`
 
 The person imports the pull saved in the folder `downloads/<name>/`, their record as an app pulled it from a hospital's
-FHIR API. The first importer `cascade-runtime.json` names that recognises the folder as its kind takes it. The Bridge's
-saved output for each document it converts is in `bridge/<step>/`.
+FHIR API. The first importer `cascade-runtime.json` names that recognises the folder as its kind takes it. The import's
+one document is `bundle.json`, and `pull.json` is none. The Bridge's saved output for each document it converts is in
+`bridge/<step>/`.
 
 ### `{person} enters {name} on {time}`
 
