@@ -12,7 +12,7 @@ creates. Its `Then` steps read the pod as it stood after the last of them, under
 reads it at another point.
 
 A `Given` or `When` step may end with a label in parentheses, `(E13)`, which names it. Otherwise a step is named by the
-name it quotes: an import by its export's, an entry or a judgment by its file's. The pod's creation, a reference version's
+name it quotes: an import by its export's or its download's, the file's extension kept, an entry or a judgment by its file's. The pod's creation, a reference version's
 arrival, a matcher run and a recheck are named `pod`, `reference`, `matcher` and `recheck`. Two steps of one example
 never share a name: where they would, the later is labelled. A name is letters, digits, `-`, `_` and `.`, so that
 `urn:cascade:step:NAME` below is an IRI.
@@ -31,7 +31,8 @@ and `scripted-input/people.ttl` gives each person's subject (`foaf:name`) and po
 | Folder | What it holds |
 |---|---|
 | `downloads/<export>/apple_health_export/` | an Apple Health export, as the phone writes it |
-| `bridge/<step>/<file stem>/graph.ttl`, `findings.ttl` | the Bridge's saved output for each document an import step converts, in a folder named as the step, because a conversion carries its import's start |
+| `downloads/<file>` | a file the person downloaded, as a patient portal hands it out |
+| `bridge/<step>/<file stem>/graph.ttl`, `findings.ttl` | the Bridge's saved output for each document an import step converts, in a folder named as the step, because a conversion carries its import's start; `unaccepted.txt` instead for a document no adapter accepted |
 | `entries/<entry>.ttl` | an entry: its session `urn:cascade:this-entry` and its drafts `urn:cascade:output-N`, with their versions |
 | `judgments/<judgment>.ttl` | one judgment a person makes, under the IRI it keeps |
 | `references/` | the matcher's reference tables, below |
@@ -39,7 +40,8 @@ and `scripted-input/people.ttl` gives each person's subject (`foaf:name`) and po
 The runtime gives each import and each entry session a new random UUID on every run, and the entry's session the
 step's time. A step that is refused writes nothing, and the example goes on. The Bridge output saved for a rule's
 example is written by hand to set up that rule, and is not what a Bridge produces for the document; a kit's saved
-output is the Bridge's own.
+output is the Bridge's own. A document no adapter accepted is saved as `bridge/<step>/<file stem>/unaccepted.txt`,
+saying why; a document an import must convert and has no saved output for is the example's error, not a refusal.
 
 **The matcher's reference tables** are `references/`, in Turtle:
 
@@ -90,7 +92,11 @@ A record is named by what a person reads in it, never by its IRI, except where a
 - **`… from <source>`**, where two imported records share code and name: `from codeine-1` is the record whose
   `health:sourceRecordId` the export gave as `codeine-1`.
 - **A handle** a kit's `expected/handles.json` gives, as `H1-ALG-PCN`: the record or profile it names by its server,
-  type and ID (`rec:sourceUrl`), by its entry's file and the draft's position, or by its download's file.
+  type and ID (`rec:sourceUrl`), by its entry's file and the draft's position, or by its download's file. A C-CDA
+  record is named by the inputs cascade-bridge-spec's `engine/sparql.md` names it from: its `class`, its
+  `identifier`, `root:extension` or the root alone, `""` where it has none, and its `key`, a list of
+  `field=value` strings, where its name takes the key's fingerprint, or, with no identifier and no key, its
+  `members`, a list of member strings.
 - **A person's name**, as `Alex`: the pod's subject.
 
 Each names exactly one thing in the pod, or the step fails.
@@ -117,6 +123,11 @@ with this step, or a background that does.
 
 The person imports the Apple Health export `downloads/<name>/apple_health_export/`. The Bridge's saved output for each
 document it converts is in `bridge/<step>/`.
+
+### `the download {name} is imported on {time}`
+
+The person imports the file `downloads/<name>`, as they downloaded it. The first importer `cascade-runtime.json` names
+that recognises the file as its kind takes it. The Bridge's saved output for each document it converts is in `bridge/<step>/`.
 
 ### `{person} enters {name} on {time}`
 

@@ -23,6 +23,7 @@ FORMATS = {
     ".md": "text/markdown",
     ".rq": "application/sparql-query",
     ".ttl": "text/turtle",
+    ".txt": "text/plain",
     ".xml": "application/xml",
 }
 DECLARES_A_PREDICATE = (

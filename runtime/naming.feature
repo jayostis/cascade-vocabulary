@@ -119,7 +119,11 @@ Feature: Naming
       Then that step's entry session is named by a new random UUID
 
   Rule: N8. What a runtime gives the Bridge
-    - The adapter: <repository>/tree/<commit>/, the repository cascade-runtime.json names at the commit the run reads.
+    - The adapter: <repository>/tree/<commit>/, at the commit the run reads, of the adapter the document is offered to.
+      A document is offered, one adapter at a time, to the adapters cascade-runtime.json names whose
+      bridge:sourceMediaType is the media type its importer gives it, in that order: each is asked whether it accepts
+      the document, and the first whose answer is yes converts it. A no passes it to the next; a document failure
+      refuses the step (A14).
     - The vocabulary: the same form, for the repository the adapter's bridge:cascadeVocabularyRepository
       names, at the commit the run reads.
     - A document: its N5 name, which is the name the Bridge itself gives it.
