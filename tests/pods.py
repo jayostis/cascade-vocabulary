@@ -69,10 +69,13 @@ def derive(store, lens):
 
 def write(store):
     """Adds each file a query writes as its own graph, the views first so the others can read them, and returns their
-    triples by path. Each is marked a rec:View, built with the current reference versions."""
+    triples by path. Each is marked a rec:View, built with the current reference versions. A view is written only when
+    the pod holds a record of its class."""
     current = [row["version"] for row in store.select(query(questions()["pod/Which reference versions are current"]))]
     files = {}
-    for path, (by, _) in sorted(written().items(), key=lambda item: (not item[1][1], item[0])):
+    for path, (by, kind) in sorted(written().items(), key=lambda item: (item[1][1] is None, item[0])):
+        if kind is not None and not store.ask(f"ASK {{ ?record a <{kind}> }}"):
+            continue
         file = URIRef(ADDRESS + path)
         triples = store.construct(query(by)) | {(file, RDF.type, REC.View)} | {(file, PROV.used, v) for v in current}
         store.add(triples, ADDRESS + path)

@@ -52,10 +52,10 @@ def derivations(lens):
 
 @cache
 def written():
-    """Each file a query writes, by its path in a pod, with that query's path under QUERIES, and whether it is a view:
-    a file listing one class's things."""
+    """Each file a query writes, by its path in a pod, with that query's path under QUERIES, and the class it lists if it
+    is a view, or None."""
     graph = Graph().parse(LAYOUT, publicID=BASE)
-    return {str(graph.value(placement, SOLID.instance))[len(BASE):]: (str(by), (placement, SOLID.forClass, None) in graph)
+    return {str(graph.value(placement, SOLID.instance))[len(BASE):]: (str(by), graph.value(placement, SOLID.forClass))
             for placement, by in graph.subject_objects(REC.writtenBy)}
 
 
