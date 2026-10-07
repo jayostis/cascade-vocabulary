@@ -1,0 +1,18 @@
+@prefix : <#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:record a health:LabResultRecord ;
+    rec:sourceUrl <https://fhir.example/Observation/1> .
+
+:version prov:specializationOf :record ;
+    rec:patient :patient ;
+    health:testName "Potassium" ;
+    health:testCode <http://loinc.org/rdf/2823-3> ;
+    health:resultValue "4.1" , "4.4" ;
+    health:resultUnit "mmol/L" ;
+    clinical:status "final" ;
+    health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .

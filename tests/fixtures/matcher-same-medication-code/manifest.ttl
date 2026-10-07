@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-medication-code" ;
+  rdfs:comment "A prescription and a list entry of one RxNorm code on different dates; a medication of another code; an allergy whose allergen is that first code." ;
+  mf:entries (
+    <#same-medication-code>
+  ) .
+
+<#same-medication-code> a mf:QueryEvaluationTest ;
+  mf:name "same-medication-code" ;
+  rdfs:comment "Only the prescription and the list entry match, both ways round." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-medication-code.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-medication-code.srj> .

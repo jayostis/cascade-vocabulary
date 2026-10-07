@@ -1,0 +1,15 @@
+# Two records of one kind match when their current versions give one test code, one time and one value. Times are
+# compared as times, so one instant written in two time zones is one time, and a date is never a time. The value is
+# the same term; units are not compared, as sources spell them differently. Each ordered pair is a row.
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
+  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version health:testCode ?code ; health:performedDate ?time ; health:resultValue ?value .
+  ?otherVersion health:testCode ?code ; health:performedDate ?otherTime ; health:resultValue ?value .
+  FILTER (?record != ?other && DATATYPE(?time) = DATATYPE(?otherTime) && ?time = ?otherTime)
+}

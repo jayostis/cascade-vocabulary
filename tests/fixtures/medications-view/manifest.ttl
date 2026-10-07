@@ -1,0 +1,26 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "medications-view" ;
+  rdfs:comment "A medication entry joining a prescription and, later, a list entry stating no status and no date; and a stopped medication." ;
+  mf:entries (
+    <#the-medications-view>
+    <#my-active-medications>
+  ) .
+
+<#the-medications-view> a mf:QueryEvaluationTest ;
+  mf:name "the-medications-view" ;
+  rdfs:comment "Each entry takes the name and code of its latest member, the status of the member chosen for status, the start of the member chosen for the date, and every intent a member states." ;
+  mf:action [ qt:query <the-medications-view.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <the-medications-view.srj> .
+
+<#my-active-medications> a mf:QueryEvaluationTest ;
+  mf:name "my-active-medications" ;
+  rdfs:comment "Only the active entry, with its code, its start and how many records it joins." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20active%20medications.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <my-active-medications.srj> .

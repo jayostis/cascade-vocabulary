@@ -209,3 +209,26 @@
   mf:action [ sht:dataGraph <view-patient-profile/date-of-birth-a-string.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:PatientProfileShape ; sh:resultPath cascade:dateOfBirth ] ] .
+
+<#record-medication/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-medication/without-intent> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/without-intent.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape clinical:MedicationShape ; sh:resultPath [ sh:inversePath prov:specializationOf ] ] ] .
+
+<#record-medication/intent-unknown> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/intent-unknown.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape clinical:MedicationShape ; sh:resultPath clinical:clinicalIntent ] ] .
+
+<#record-lab-result/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-lab-result/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-lab-result/two-values> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-lab-result/two-values.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape health:LabResultRecordShape ; sh:resultPath health:resultValue ] ] .

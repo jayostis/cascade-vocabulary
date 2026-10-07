@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-result" ;
+  rdfs:comment "Potassium results: one instant in two time zones with one value and two spellings of the unit; another value; another time; another code. Glucose results: two on one date, and one at midnight that day as a time." ;
+  mf:entries (
+    <#same-result>
+  ) .
+
+<#same-result> a mf:QueryEvaluationTest ;
+  mf:name "same-result" ;
+  rdfs:comment "The two potassiums of one instant and one value match, and the two glucoses of one date; a date never matches a time." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-result.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-result.srj> .

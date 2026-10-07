@@ -1,0 +1,76 @@
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+
+<urn:cascade:this-entry> a prov:Activity ;
+  rdfs:label "entered in the Cascade app" ;
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole jdg:patient ] .
+
+<urn:cascade:output-0> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "lisinopril 10 MG Oral Tablet" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "prescribed" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#startDate> "2023-06-15"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-1> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "Lisinopril 10 mg tablet" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#startDate> "2023-06-15"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-2> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-2-version> prov:specializationOf <urn:cascade:output-2> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "amlodipine 5 MG Oral Tablet" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#startDate> "2025-04-01"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-3> a <https://ns.cascadeprotocol.org/health/v1#LabResultRecord> .
+<urn:cascade:output-3-version> prov:specializationOf <urn:cascade:output-3> ;
+  <https://ns.cascadeprotocol.org/health/v1#testName> "Potassium" ;
+  <https://ns.cascadeprotocol.org/health/v1#testCode> <http://loinc.org/rdf/2823-3> ;
+  <https://ns.cascadeprotocol.org/health/v1#resultValue> "4.1" ;
+  <https://ns.cascadeprotocol.org/health/v1#resultUnit> "mmol/L" ;
+  <https://ns.cascadeprotocol.org/health/v1#performedDate> "2025-03-27T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "final" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-4> a <https://ns.cascadeprotocol.org/health/v1#LabResultRecord> .
+<urn:cascade:output-4-version> prov:specializationOf <urn:cascade:output-4> ;
+  <https://ns.cascadeprotocol.org/health/v1#testName> "Serum potassium" ;
+  <https://ns.cascadeprotocol.org/health/v1#testCode> <http://loinc.org/rdf/2823-3> ;
+  <https://ns.cascadeprotocol.org/health/v1#resultValue> "4.1" ;
+  <https://ns.cascadeprotocol.org/health/v1#resultUnit> "mmol/l" ;
+  <https://ns.cascadeprotocol.org/health/v1#performedDate> "2025-03-27T07:00:00-05:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "final" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-5> a <https://ns.cascadeprotocol.org/health/v1#LabResultRecord> .
+<urn:cascade:output-5-version> prov:specializationOf <urn:cascade:output-5> ;
+  <https://ns.cascadeprotocol.org/health/v1#testName> "Potassium in April" ;
+  <https://ns.cascadeprotocol.org/health/v1#testCode> <http://loinc.org/rdf/2823-3> ;
+  <https://ns.cascadeprotocol.org/health/v1#resultValue> "4.1" ;
+  <https://ns.cascadeprotocol.org/health/v1#resultUnit> "mmol/L" ;
+  <https://ns.cascadeprotocol.org/health/v1#performedDate> "2025-04-27T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "final" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-6> a <https://ns.cascadeprotocol.org/health/v1#LabResultRecord> .
+<urn:cascade:output-6-version> prov:specializationOf <urn:cascade:output-6> ;
+  <https://ns.cascadeprotocol.org/health/v1#testName> "Potassium repeat" ;
+  <https://ns.cascadeprotocol.org/health/v1#testCode> <http://loinc.org/rdf/2823-3> ;
+  <https://ns.cascadeprotocol.org/health/v1#resultValue> "4.4" ;
+  <https://ns.cascadeprotocol.org/health/v1#resultUnit> "mmol/L" ;
+  <https://ns.cascadeprotocol.org/health/v1#performedDate> "2025-03-27T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "final" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .

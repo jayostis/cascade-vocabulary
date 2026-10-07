@@ -15,6 +15,8 @@
 [] a rec:Placement ; solid:forClass health:ConditionRecord ; solid:instanceContainer <records/conditions/> ; rec:fanOut 2 .
 [] a rec:Placement ; solid:forClass health:ImmunizationRecord ; solid:instanceContainer <records/immunizations/> ; rec:fanOut 2 .
 [] a rec:Placement ; solid:forClass clinical:Procedure ; solid:instanceContainer <records/procedures/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass clinical:Medication ; solid:instanceContainer <records/medications/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass health:LabResultRecord ; solid:instanceContainer <records/lab-results/> ; rec:fanOut 2 .
 [] a rec:Placement ; solid:forClass cascade:PatientProfile ; solid:instanceContainer <records/patient-profile/> ; rec:fanOut 2 .
 
 [] a rec:Placement ; rec:filedWith prov:specializationOf ; rec:fanOut 2 .
@@ -37,6 +39,10 @@
    rec:writtenBy "views/immunizations.rq" ; dct:title "Immunizations" .
 [] a rec:Placement ; solid:forClass clinical:Procedure ; solid:instance <clinical/procedures.ttl> ;
    rec:writtenBy "views/procedures.rq" ; dct:title "Procedures" .
+[] a rec:Placement ; solid:forClass clinical:Medication ; solid:instance <clinical/medications.ttl> ;
+   rec:writtenBy "views/medications.rq" ; dct:title "Medications" .
+[] a rec:Placement ; solid:forClass health:LabResultRecord ; solid:instance <clinical/lab-results.ttl> ;
+   rec:writtenBy "views/lab-results.rq" ; dct:title "Lab results" .
 [] a rec:Placement ; solid:forClass cascade:PatientProfile ; solid:instance <clinical/patient-profile.ttl> ;
    rec:writtenBy "views/patient-profile.rq" ; dct:title "Patient profile" .
 [] a rec:Placement ; solid:instance <clinical/labels.ttl> ; rec:writtenBy "labels.rq" .

@@ -1,0 +1,29 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:prescribed a clinical:Medication .
+:prescribedVersion prov:specializationOf :prescribed ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ; clinical:startDate "2023-06-15"^^xsd:date .
+:prescribedRevision a rec:Revision ; rec:revisionOf :prescribed ; rec:version :prescribedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:listed a clinical:Medication .
+:listedVersion prov:specializationOf :listed ; clinical:clinicalIntent "reportedUse" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ; clinical:startDate "2024-01-01"^^xsd:date .
+:listedRevision a rec:Revision ; rec:revisionOf :listed ; rec:version :listedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:otherMedicine a clinical:Medication .
+:otherMedicineVersion prov:specializationOf :otherMedicine ; clinical:clinicalIntent "reportedUse" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> .
+:otherMedicineRevision a rec:Revision ; rec:revisionOf :otherMedicine ; rec:version :otherMedicineVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:allergy a health:AllergyRecord .
+:allergyVersion prov:specializationOf :allergy ; health:allergenCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> .
+:allergyRevision a rec:Revision ; rec:revisionOf :allergy ; rec:version :allergyVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

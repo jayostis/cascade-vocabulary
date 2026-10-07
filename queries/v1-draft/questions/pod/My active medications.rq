@@ -1,0 +1,16 @@
+# Read from the view alone, as an app would: each entry whose status is active, with its RxNorm code, when it started,
+# and how many records it joins.
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?medication ?code ?started (COUNT(?record) AS ?records) ?entry ?entryLabel
+WHERE {
+  ?entry a clinical:Medication ; clinical:status "active" ;
+         clinical:drugName ?medication ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry clinical:rxNormCode ?code }
+  OPTIONAL { ?entry clinical:startDate ?started }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+}
+GROUP BY ?entry ?medication ?code ?started ?entryLabel
+ORDER BY ?medication ?entry

@@ -226,7 +226,7 @@ def kinds_named_out_of_place(relative, text):
         return set()
     views = record_types()
     named = set(iris(prepared(text).algebra)) & set(views)
-    return {kind for kind in named if views[kind] not in words(Path(relative).stem)}
+    return {kind for kind in named if f"-{views[kind]}-" not in f"-{'-'.join(words(Path(relative).stem))}-"}
 
 
 def test_the_kind_check_refuses_a_record_type_named_by_a_query_not_about_that_one_kind():
@@ -236,6 +236,8 @@ def test_the_kind_check_refuses_a_record_type_named_by_a_query_not_about_that_on
     assert kinds_named_out_of_place("questions/pod/My active conditions.rq", query) == {allergy}
     assert kinds_named_out_of_place("questions/pod/My active allergies.rq", query) == set()
     assert kinds_named_out_of_place("views/allergies.rq", query) == set()
+    lab = URIRef("https://ns.cascadeprotocol.org/health/v1#LabResultRecord")
+    assert kinds_named_out_of_place("questions/pod/My lab results.rq", f"SELECT ?r WHERE {{ ?r a <{lab}> }}") == set()
 
 
 @pytest.mark.parametrize("relative", every_query())

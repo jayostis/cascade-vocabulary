@@ -11,7 +11,8 @@ The contract a Cascade pod is built and read by; [`README.md`](README.md) names 
   or PAV has a term, that term is used instead.
 - **Content is on a version, not on its record.** A class's shape targets the class and the
   subjects of the properties only that class's content carries; nothing about a version's
-  content is required, because a source may omit any of it.
+  content is required, because a source may omit any of it. The one exception: every version of a
+  medication says whether it came from a prescription or from a list of what the person takes.
 - **Each question is asked once.** Before adding one, look under its kind for the question that
   already returns those rows.
 - **A kit's `expected/` and its examples come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,

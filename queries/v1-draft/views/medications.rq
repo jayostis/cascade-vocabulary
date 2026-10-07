@@ -1,0 +1,29 @@
+# Each entry takes the name and RxNorm code of its latest member, the status of the member chosen for status, the start
+# of the member chosen for the date, and every intent a member states, so an entry joining a prescription and a list
+# entry says both.
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT {
+  ?entry a clinical:Medication ;
+    clinical:drugName ?name ;
+    clinical:rxNormCode ?code ;
+    clinical:status ?status ;
+    clinical:startDate ?date ;
+    clinical:clinicalIntent ?intent ;
+    rec:latestMember ?latest ;
+    rec:statusFrom ?statusFrom ;
+    cascade:mergedFrom ?record .
+}
+WHERE {
+  ?record a clinical:Medication ; rec:inEntry ?entry .
+  ?entry rec:latestMember ?latest .
+  OPTIONAL { ?latest pav:hasCurrentVersion/clinical:drugName ?name }
+  OPTIONAL { ?latest pav:hasCurrentVersion/clinical:rxNormCode ?code }
+  OPTIONAL { ?record pav:hasCurrentVersion/clinical:clinicalIntent ?intent }
+  OPTIONAL { ?entry rec:statusFrom ?statusFrom .
+             ?statusFrom pav:hasCurrentVersion/clinical:status ?status }
+  OPTIONAL { ?entry rec:dateFrom/pav:hasCurrentVersion/clinical:startDate ?date }
+}
