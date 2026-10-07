@@ -1,0 +1,16 @@
+@prefix : <#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:record a clinical:Medication ;
+    rec:sourceUrl <https://fhir.example/MedicationRequest/1> .
+
+:version prov:specializationOf :record ;
+    rec:patient :patient ;
+    clinical:drugName "lisinopril 10 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ;
+    clinical:status "active" ;
+    clinical:startDate "2023-06-15"^^xsd:date .

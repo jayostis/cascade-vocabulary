@@ -1,0 +1,31 @@
+# Each entry takes the test, code, value, unit and time of its latest member, so a value is never shown at another
+# member's time, and the status of the member chosen for status.
+PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT {
+  ?entry a health:LabResultRecord ;
+    health:testName ?name ;
+    health:testCode ?code ;
+    health:resultValue ?value ;
+    health:resultUnit ?unit ;
+    clinical:status ?status ;
+    health:performedDate ?date ;
+    rec:latestMember ?latest ;
+    rec:statusFrom ?statusFrom ;
+    cascade:mergedFrom ?record .
+}
+WHERE {
+  ?record a health:LabResultRecord ; rec:inEntry ?entry .
+  ?entry rec:latestMember ?latest .
+  OPTIONAL { ?latest pav:hasCurrentVersion/health:testName ?name }
+  OPTIONAL { ?latest pav:hasCurrentVersion/health:testCode ?code }
+  OPTIONAL { ?latest pav:hasCurrentVersion/health:resultValue ?value }
+  OPTIONAL { ?latest pav:hasCurrentVersion/health:resultUnit ?unit }
+  OPTIONAL { ?entry rec:statusFrom ?statusFrom .
+             ?statusFrom pav:hasCurrentVersion/clinical:status ?status }
+  OPTIONAL { ?latest pav:hasCurrentVersion/health:performedDate ?date }
+}

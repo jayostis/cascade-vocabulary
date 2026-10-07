@@ -1,0 +1,35 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:drawn a health:LabResultRecord .
+:drawnVersion prov:specializationOf :drawn ; rec:patient :subject ; health:testName "Potassium" ;
+    health:testCode <http://loinc.org/rdf/2823-3> ; health:resultValue "4.1" ; health:resultUnit "mmol/L" ;
+    clinical:status "final" ; health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:drawnRevision a rec:Revision ; rec:revisionOf :drawn ; rec:version :drawnVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:resent a health:LabResultRecord .
+:resentVersion prov:specializationOf :resent ; rec:patient :subject ; health:testName "Serum potassium" ;
+    health:testCode <http://loinc.org/rdf/2823-3> ; health:resultValue "4.1" ; health:resultUnit "mmol/l" .
+:resentRevision a rec:Revision ; rec:revisionOf :resent ; rec:version :resentVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:glucose a health:LabResultRecord .
+:glucoseVersion prov:specializationOf :glucose ; rec:patient :subject ; health:testName "Glucose" ;
+    health:testCode <http://loinc.org/rdf/2345-7> ; health:resultValue "95" ; health:resultUnit "mg/dL" ;
+    clinical:status "final" ; health:performedDate "2025-04-10T08:00:00Z"^^xsd:dateTime .
+:glucoseRevision a rec:Revision ; rec:revisionOf :glucose ; rec:version :glucoseVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:a1c a health:LabResultRecord .
+:a1cVersion prov:specializationOf :a1c ; rec:patient :subject ; health:testName "Hemoglobin A1c" ;
+    health:testCode <http://loinc.org/rdf/4548-4> ; health:resultValue "5.6" ; health:resultUnit "%" ;
+    clinical:status "final" ; health:performedDate "2025-04-10"^^xsd:date .
+:a1cRevision a rec:Revision ; rec:revisionOf :a1c ; rec:version :a1cVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

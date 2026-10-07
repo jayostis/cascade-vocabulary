@@ -1,6 +1,6 @@
 Feature: Arrivals
   Which arrivals a runtime writes, and what each writes: when an import brings a document, an entry brings drafts, or
-  the pod is created.
+  the pod is created; and which views the build writes.
 
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Ada
   imports Apple Health exports of four allergies (peanut, latex, shellfish, mango) from one hospital, and later
@@ -256,7 +256,7 @@ Feature: Arrivals
   Rule: A13. The pod's creation writes the subject as a rec:Subject
     With it, the owner's profile, saying only who the owner is, where the pod's root is and where the preferences file
     is, and the preferences file, saying only that it is one and where the owner's type index is. The build writes the
-    type index, from the views in the layout.
+    type index, from the views it writes (A15).
 
     Example: the pod's creation files its subject
       Given a new pod for Ben on 2026-02-01 at 08:00
@@ -327,3 +327,24 @@ Feature: Arrivals
       Then that step is refused
       And that step wrote no file
       And the pod holds no revision
+
+  Rule: A15. The build writes a view once the pod holds a record of its kind, and at every build after
+    Records are never removed, so nothing a build wrote goes stale. The labels file, and each view pod-layout.ttl marks
+    rec:writtenAlways, as the patient-profile view, are written at every build: a pod always has a subject. The type
+    index registers only the views written. So a kind the layout adds changes no pod that holds none of it.
+
+    Example: a pod of an allergy and a condition holds those two views, the patient-profile view and the labels, and no other
+      Given a new pod for Ben on 2026-02-01 at 08:00
+      When Ben enters "entry" on 2026-02-01 at 08:30
+      And the query is:
+        """
+        SELECT ?view WHERE {
+          GRAPH ?view { ?view a rec:View }
+        }
+        """
+      Then it answers:
+        | view                                               |
+        | <https://pod.example/clinical/allergies.ttl>       |
+        | <https://pod.example/clinical/conditions.ttl>      |
+        | <https://pod.example/clinical/labels.ttl>          |
+        | <https://pod.example/clinical/patient-profile.ttl> |

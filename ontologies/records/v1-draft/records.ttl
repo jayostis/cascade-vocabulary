@@ -193,6 +193,12 @@ rec:writtenBy a owl:DatatypeProperty ;
     rdfs:domain rec:Placement ;
     rdfs:range xsd:string .
 
+rec:writtenAlways a owl:DatatypeProperty ;
+    rdfs:label "written always"@en ;
+    rdfs:comment "Whether the build writes the placement's view at every build, rather than once the pod holds a record of its class."@en ;
+    rdfs:domain rec:Placement ;
+    rdfs:range xsd:boolean .
+
 rec:storesBytes a owl:DatatypeProperty ;
     rdfs:label "stores bytes"@en ;
     rdfs:comment "Whether the placement's folder holds documents' own bytes, each file named by the SHA-256 of its bytes in lowercase hex, rather than RDF."@en ;

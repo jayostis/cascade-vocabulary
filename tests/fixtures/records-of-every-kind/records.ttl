@@ -27,3 +27,15 @@
     clinical:status "completed" ; clinical:procedureDate "2024-03-01"^^xsd:date .
 :procedureRevision a rec:Revision ; rec:revisionOf :procedure ; rec:version :procedureVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:medication a clinical:Medication .
+:medicationVersion prov:specializationOf :medication ; clinical:drugName "lisinopril 10 MG Oral Tablet" ;
+    clinical:clinicalIntent "prescribed" ; clinical:status "active" ; clinical:startDate "2023-06-15"^^xsd:date .
+:medicationRevision a rec:Revision ; rec:revisionOf :medication ; rec:version :medicationVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:labResult a health:LabResultRecord .
+:labResultVersion prov:specializationOf :labResult ; health:testName "Potassium" ; clinical:status "final" ;
+    health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:labResultRevision a rec:Revision ; rec:revisionOf :labResult ; rec:version :labResultVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

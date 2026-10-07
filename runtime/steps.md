@@ -72,7 +72,7 @@ other version; they are never written to the pod.
 | `{steps}` | `that step\|"[^"]*"(?:(?:, \|, and \| and \|, or \| or )"[^"]*")*` | `"E15" and "M8"` | steps by name, joined by `,`, `and` or `or` |
 | `{record}`, `{records}` | `[^:]+` | `allergy RxNorm 1191 "Ecotrin"`, `H1-ALG-PCN` | records in words, below; several joined by `,` and `and` |
 | `{judgment}` | `[^:]+` | `J21`, `the matcher's same code of H2O-ALG-SULFA and H1-ALG-SULFA` | a judgment in words, below |
-| `{view}` | `allergies\|conditions\|immunizations\|procedures\|patient-profile` | `allergies` | a view |
+| `{view}` | `allergies\|conditions\|immunizations\|procedures\|medications\|lab-results\|patient-profile` | `allergies` | a view |
 | `{lens}` | `[a-z]+` | `export` | a lens under `queries/v1-draft/lenses/` |
 | `{count}` | `no file\|1 file\|\d+ files` | `no file`, `1 file`, `3 files` | how many files |
 
@@ -84,11 +84,11 @@ a table is written the same way, with or without its `at`.
 A record is named by what a person reads in it, never by its IRI, except where a naming rule's example shows the IRI:
 
 - **`<kind> <system> <code> "<name>"`**, as `allergy RxNorm 1191 "Ecotrin"`, with the code, the name or both: the
-  record of that kind whose version gives them. The kinds are `allergy`, `condition`, `immunization` and `procedure`;
-  the systems `SNOMED` (an `http://snomed.info/sct/` IRI, or a `clinical:snomedCode`), `RxNorm` (an
-  `http://www.nlm.nih.gov/research/umls/rxnorm/` IRI) and `CVX` (a `health:vaccineCode`); the name is the version's
-  allergen, condition, vaccine or procedure name. Each draft of an entry has a name of its own, so no record is named by
-  its position.
+  record of that kind whose version gives them. The kinds are `allergy`, `condition`, `immunization`, `procedure`,
+  `medication` and `lab result`; the systems `SNOMED` (an `http://snomed.info/sct/` IRI, or a `clinical:snomedCode`),
+  `RxNorm` (an `http://www.nlm.nih.gov/research/umls/rxnorm/` IRI), `LOINC` (an `http://loinc.org/rdf/` IRI) and `CVX`
+  (a `health:vaccineCode`); the name is the version's allergen, condition, vaccine, procedure, drug or test name. Each
+  draft of an entry has a name of its own, so no record is named by its position.
 - **`… from <source>`**, where two imported records share code and name: `from codeine-1` is the record whose
   `health:sourceRecordId` the export gave as `codeine-1`.
 - **A handle** a kit's `expected/handles.json` gives, as `H1-ALG-PCN`: the record or profile it names by its server,
@@ -103,8 +103,8 @@ Each names exactly one thing in the pod, or the step fails.
 
 A judgment a person makes is named by its handle in a kit (`J21`) or by its file's name (`"retract-b"`). A matcher
 judgment is named `the matcher's <justification> of <records>`, the justification in words: `same code`,
-`same code and date`, `same mapped code` or `same mapped code and date`. A reference series is named by its
-`rdfs:label`, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
+`same code and date`, `same mapped code`, `same mapped code and date`, `same medication code` or `same result`. A
+reference series is named by its `rdfs:label`, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
 name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5.
 

@@ -124,7 +124,7 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_but_the
              for path in sorted([*ROOT.glob("runtime/scripted-input/*/references/*.ttl"),
                                  *ROOT.glob("conformance/*/scripted-input/*/references/*.ttl")])
              for rows in [parsed(path)] if (None, RDF.type, REC.MatcherRule) in rows}
-    assert len(lists) == 5
+    assert len(lists) == 7
     mismatched = set()
     for path, rows in lists.items():
         for row in rows.subjects(RDF.type, REC.MatcherRule):

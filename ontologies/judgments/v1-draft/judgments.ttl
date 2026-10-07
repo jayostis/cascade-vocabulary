@@ -72,6 +72,16 @@ jdg:SameMappedCodeAndDate a owl:NamedIndividual ;
     rdfs:comment "The records carry two codes that a reference table puts in one group, and one date."@en ;
     skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
 
+jdg:SameMedicationCode a owl:NamedIndividual ;
+    rdfs:label "same medication code"@en ;
+    rdfs:comment "Both medication records carry one RxNorm code, whether each came from a prescription or from a list of what the person takes."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+jdg:SameResult a owl:NamedIndividual ;
+    rdfs:label "same result"@en ;
+    rdfs:comment "Both lab results carry one test code, one time and one value, however each writes its unit."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
 jdg:PortalAuthenticated a owl:NamedIndividual ;
     rdfs:label "portal authenticated"@en ;
     rdfs:comment "The patient record came back from a login the person made themselves."@en .

@@ -1,0 +1,27 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:prescribed a clinical:Medication .
+:prescribedVersion prov:specializationOf :prescribed ; rec:patient :subject ; clinical:drugName "lisinopril 10 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ; clinical:clinicalIntent "prescribed" ;
+    clinical:status "active" ; clinical:startDate "2023-06-15"^^xsd:date .
+:prescribedRevision a rec:Revision ; rec:revisionOf :prescribed ; rec:version :prescribedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:listed a clinical:Medication .
+:listedVersion prov:specializationOf :listed ; rec:patient :subject ; clinical:drugName "Lisinopril 10 mg tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ; clinical:clinicalIntent "reportedUse" .
+:listedRevision a rec:Revision ; rec:revisionOf :listed ; rec:version :listedVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:stopped a clinical:Medication .
+:stoppedVersion prov:specializationOf :stopped ; rec:patient :subject ; clinical:drugName "metformin 500 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/861007> ; clinical:clinicalIntent "prescribed" ;
+    clinical:status "stopped" ; clinical:startDate "2021-01-10"^^xsd:date .
+:stoppedRevision a rec:Revision ; rec:revisionOf :stopped ; rec:version :stoppedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

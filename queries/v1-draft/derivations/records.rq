@@ -16,6 +16,8 @@ WHERE {
     (health:ConditionRecord    "Condition"    health:conditionName   health:status   false health:onsetDate)
     (health:ImmunizationRecord "Immunization" health:vaccineName     health:status   false health:administrationDate)
     (clinical:Procedure        "Procedure"    clinical:procedureName clinical:status false clinical:procedureDate)
+    (clinical:Medication       "Medication"   clinical:drugName      clinical:status false clinical:startDate)
+    (health:LabResultRecord    "Lab result"   health:testName        clinical:status false health:performedDate)
   }
   ?record a ?type .
   OPTIONAL { ?version prov:specializationOf ?record }
