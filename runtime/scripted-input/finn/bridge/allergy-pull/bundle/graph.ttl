@@ -1,0 +1,26 @@
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> a prov:Entity ;
+  bridge:serverBaseUrl "https://fhir.example-hospital.example/r4" ;
+  pav:retrievedOn "2026-06-08T08:59:30Z"^^xsd:dateTime ;
+  bridge:authenticatedPatient "Patient/p-finn-1" ;
+  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole rec:author ] .
+_:import a prov:Activity ; rdfs:label "FHIR pull" ;
+  prov:startedAtTime "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+  prov:used <ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> ;
+  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "fhir-r4" ; pav:version "0.1.0" ] ;
+    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
+<urn:uuid:d4490646-a4c2-89de-87c5-a51c858fe3c3> a health:AllergyRecord ;
+  health:sourceRecordId "alg-peanut-1" ;
+  rec:sourceUrl <https://fhir.example-hospital.example/r4/AllergyIntolerance/alg-peanut-1> .
+<ni:///sha-256;EX6ixLN1TL10alYx5WGNtwoHVFm1Lm-_UJ4miUbku7U> prov:specializationOf <urn:uuid:d4490646-a4c2-89de-87c5-a51c858fe3c3> ;
+  health:allergen "Peanut" .
+_:arrival bridge:arrivedAs <ni:///sha-256;EX6ixLN1TL10alYx5WGNtwoHVFm1Lm-_UJ4miUbku7U> ; prov:wasGeneratedBy _:import ;
+  bridge:selector "/entry/0" ;
+  prov:wasDerivedFrom <ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> .
