@@ -9,6 +9,8 @@
 
 :northImport a prov:Activity ; rdfs:label "Northgate download" ;
     prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:northLaterImport a prov:Activity ; rdfs:label "Northgate later download" ;
+    prov:startedAtTime "2026-01-03T00:00:00Z"^^xsd:dateTime .
 :southImport a prov:Activity ; rdfs:label "Southview download" ;
     prov:startedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime .
 :session a prov:Activity ; rdfs:label "Entry session" ; prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
@@ -40,8 +42,8 @@
 :asthmaSecond a health:ConditionRecord .
 :asthmaSecondVersion prov:specializationOf :asthmaSecond ; rec:patient :subject ; health:conditionName "Asthma" .
 :asthmaSecondRevision a rec:Revision ; rec:revisionOf :asthmaSecond ; rec:version :asthmaSecondVersion ;
-    prov:wasDerivedFrom :asthmaSecondDocument ; prov:wasGeneratedBy :northImport ;
-    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    prov:wasDerivedFrom :asthmaSecondDocument ; prov:wasGeneratedBy :northLaterImport ;
+    prov:generatedAtTime "2026-01-03T00:00:05Z"^^xsd:dateTime .
 
 :latex a health:AllergyRecord .
 :latexVersion prov:specializationOf :latex ; rec:patient :subject ; health:allergen "Latex" .

@@ -1,6 +1,10 @@
 # Each entry that holds more than one record, once for each place its records came from: how many of its records came
-# from that place, and from how many places they came. A record's place is the hospital that wrote its document, or,
-# when it has none, the label of the import or session that brought it. Entries seen at more than one place come first.
+# from that place, and from how many places they came. A record's place is read from its current revision: the hospital
+# that wrote the document it was derived from, or, when it has none, the label of the import or session that generated
+# it. A place is told apart by its label alone, since a hospital is named by nothing else: a hospital with two labels is
+# two places, and a hospital and an import that share a label are one. A record with two hospitals counts at each, so an
+# entry's records can add up to more than it holds; a record with no hospital and no labelled import or session is given
+# no place, and is not counted in places. Entries seen at more than one place come first.
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
