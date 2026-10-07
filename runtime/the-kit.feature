@@ -14,7 +14,7 @@ Feature: The conformance kit
   - scripted-input/alex/ holds what the steps name. Each import step's Bridge output is in a folder named as the step,
     because a conversion carries its import's start. The facts the importer gives the Bridge are not input: the
     importer writes them from export.xml.
-  - expected/ holds the five views a correct runtime builds at the last step under the everyday lens, each entry a blank
+  - expected/ holds each view a correct runtime builds at the last step under the everyday lens, each entry a blank
     node, and handles.json, the scenario's name inputs for each record and profile it gives a handle.
 
   A runtime passes a kit when every rule below holds for one replay of its story. An EARL report names checks 2 to 5

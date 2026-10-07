@@ -12,7 +12,7 @@ from gherkin.pickles.compiler import Compiler
 from rdflib.namespace import RDF
 from rdflib.plugins.sparql.parser import parseQuery
 
-from contract import QUERIES, REC, ROOT
+from contract import KITS, QUERIES, REC, ROOT
 from engines import parsed
 
 FEATURES = sorted([*ROOT.glob("runtime/*.feature"), *ROOT.glob("conformance/*/*.feature")])
@@ -109,17 +109,14 @@ def test_every_inline_query_parses():
 
 def test_each_planted_case_a_kit_names_is_a_rule_of_it_with_an_example():
     planted, shown = {}, {}
-    for kit in sorted((ROOT / "conformance").iterdir()):
-        story = kit / f"{kit.name}.feature"
-        if not story.is_file():
-            continue
-        feature = Parser().parse(story.read_text(encoding="utf-8"))["feature"]
+    for kit in KITS:
+        feature = Parser().parse((kit / f"{kit.name}.feature").read_text(encoding="utf-8"))["feature"]
         named = re.search(r"P1 to P(\d+)", " ".join(feature["description"].split()))
         planted[kit.name] = set(range(1, int(named.group(1)) + 1)) if named else set()
         shown[kit.name] = {int(found.group(1)) for child in feature["children"] if "rule" in child
                            for found in [re.match(r"P(\d+)\.", child["rule"]["name"])]
                            if found and any("scenario" in inner for inner in child["rule"]["children"])}
-    assert {kit: len(cases) for kit, cases in planted.items()} == {"alex-rivera": 25, "priya-natarajan": 17}
+    assert all(planted.values()), planted
     assert shown == planted
 
 
@@ -139,5 +136,5 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_but_the
             query = str(rows.value(row, REC.query))
             assert query.startswith("matcher/"), path
             if ni_name((QUERIES / query).read_bytes()) != str(rows.value(row, REC.queryHash)):
-                mismatched.add((path.split("/")[2], query))
+                mismatched.add((path.split("/")[-3], query))
     assert mismatched == {("finn", "matcher/same-code.rq")}

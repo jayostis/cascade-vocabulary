@@ -11,6 +11,7 @@ from rdflib import Graph, Literal, Namespace
 ROOT = Path(__file__).absolute().parent.parent
 QUERIES = ROOT / "queries" / "v1-draft"
 LAYOUT = ROOT / "runtime" / "pod-layout.ttl"
+KITS = sorted(kit for kit in (ROOT / "conformance").iterdir() if (kit / f"{kit.name}.feature").is_file())
 PROV = Namespace("http://www.w3.org/ns/prov#")
 REC = Namespace("https://ns.cascadeprotocol.org/records/v1-draft#")
 SOLID = Namespace("http://www.w3.org/ns/solid/terms#")

@@ -243,6 +243,17 @@ Feature: Priya Natarajan's pod
     Each C-CDA's vital signs and social history sections are findings the Bridge raises (ccda:sectionNotMapped in each
     saved findings.ttl), never records. A document that revised nothing is still kept for its findings (A10).
 
+    Example: no blood pressure and no smoking status is in the pod
+      When the pod is read as it stood after "M5"
+      When the query is:
+        """
+        SELECT ?thing WHERE {
+          VALUES ?code { <http://loinc.org/rdf/8480-6> <http://loinc.org/rdf/8462-4> <http://loinc.org/rdf/72166-2> }
+          ?thing ?property ?code .
+        }
+        """
+      Then it answers nothing
+
     Example: E4's download revised nothing and is kept for its findings
       When the pod is read as it stood after "E4"
       When the query is:

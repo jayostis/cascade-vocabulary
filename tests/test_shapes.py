@@ -9,14 +9,13 @@ from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
-from contract import REC, ROOT
+from contract import KITS, REC, ROOT
 from manifests import MF, path
 from pods import FIXTURES
 
 SHT = Namespace("http://www.w3.org/ns/shacl-test#")
 HEALTH = Namespace("https://ns.cascadeprotocol.org/health/v1#")
 CASES = ROOT / "tests" / "shape-cases"
-KITS = sorted(kit for kit in (ROOT / "conformance").iterdir() if (kit / f"{kit.name}.feature").is_file())
 TARGETS = (SH.targetClass, SH.targetSubjectsOf, SH.targetObjectsOf, SH.targetNode)
 BROKEN_ELSEWHERE = {REC.PlacementShape: "test_pod_layout.py breaks the layout's entries"}
 UNDECLARED_ON_PURPOSE = {HEALTH.NoSuchRecord: "Finn's type-filed-nowhere export files a record of a type no folder holds"}

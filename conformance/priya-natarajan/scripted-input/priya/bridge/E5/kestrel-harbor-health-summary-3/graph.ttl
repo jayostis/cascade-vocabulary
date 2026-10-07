@@ -8,23 +8,23 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-<ni:///sha-256;6_vUluGr_KtrByBSBskBBio8KzzyNrd4Ki46N2-hCYY> health:reaction "Urticaria" ;
-	health:manifestationCode <http://snomed.info/sct/126485001> ;
-	health:allergySeverity "moderate" ;
-	health:allergen "Aspirin" ;
+<ni:///sha-256;6_vUluGr_KtrByBSBskBBio8KzzyNrd4Ki46N2-hCYY> health:allergySeverity "moderate" ;
 	health:allergyCategory "medication" ;
 	clinical:allergyType "allergy" ;
+	health:allergen "Aspirin" ;
 	clinical:criticality "low" ;
+	health:reaction "Urticaria" ;
+	health:manifestationCode <http://snomed.info/sct/126485001> ;
 	health:allergenCode <http://www.nlm.nih.gov/research/umls/rxnorm/1191> .
-<ni:///sha-256;3wqdAAbQ3ZPzYMov2Rih2uH7vOtKDZ_e99tAgXC1DjM> health:conditionName "Essential hypertension" ;
+<ni:///sha-256;3wqdAAbQ3ZPzYMov2Rih2uH7vOtKDZ_e99tAgXC1DjM> health:snomedCode <http://snomed.info/sct/59621000> ;
+	clinical:category "problem-list-item" ;
+	health:conditionName "Essential hypertension" ;
 	health:onsetDate "2023-06-15"^^xsd:date ;
-	health:status "active" ;
-	health:snomedCode <http://snomed.info/sct/59621000> ;
-	clinical:category "problem-list-item" .
-<ni:///sha-256;Bwm0crFETA-xzDHxXmRCabkhh_ERelDEVRRKvQdzgWg> prov:qualifiedAttribution _:d523ac58d63b05c81c2708027f8ada8 .
-_:d523ac58d63b05c81c2708027f8ada8 prov:hadRole rec:author ;
-	prov:agent _:ebf7d55a14a5c90f86f6a28ca9f739a1 .
-_:ebf7d55a14a5c90f86f6a28ca9f739a1 rdfs:label "Kestrel Harbor Hospital" .
+	health:status "active" .
+<ni:///sha-256;Bwm0crFETA-xzDHxXmRCabkhh_ERelDEVRRKvQdzgWg> prov:qualifiedAttribution _:a3c42270b18fc4230070f3da3b2e3070 .
+_:a3c42270b18fc4230070f3da3b2e3070 prov:hadRole rec:author ;
+	prov:agent _:e347603a75540b68e01a74c561d9c830 .
+_:e347603a75540b68e01a74c561d9c830 rdfs:label "Kestrel Harbor Hospital" .
 <ni:///sha-256;nhkL10tkM-mHMlcPpAmfOx-x-dNglpZX0GverSo_eYk> clinical:clinicalIntent "reportedUse" ;
 	clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ;
 	clinical:status "active" ;
@@ -101,7 +101,8 @@ _:4681afe21add2d8b47ef0546848d8c90 prov:wasDerivedFrom <ni:///sha-256;Bwm0crFETA
 	prov:wasGeneratedBy _:5805aab225bbe5dff8b009e71fa30348 .
 _:5805aab225bbe5dff8b009e71fa30348 rdfs:label "C-CDA download" ;
 	prov:startedAtTime "2025-05-05T17:45:04Z"^^xsd:dateTime .
-<ni:///sha-256;Bwm0crFETA-xzDHxXmRCabkhh_ERelDEVRRKvQdzgWg> a prov:Entity .
+<ni:///sha-256;Bwm0crFETA-xzDHxXmRCabkhh_ERelDEVRRKvQdzgWg> bridge:sourceFormatVersion "2015-08-01" ;
+	a prov:Entity .
 _:5805aab225bbe5dff8b009e71fa30348 a prov:Activity ;
 	prov:used <ni:///sha-256;Bwm0crFETA-xzDHxXmRCabkhh_ERelDEVRRKvQdzgWg> ;
 	prov:qualifiedAssociation _:77fbf8a6fc1116301d3ea2c668da5833 .

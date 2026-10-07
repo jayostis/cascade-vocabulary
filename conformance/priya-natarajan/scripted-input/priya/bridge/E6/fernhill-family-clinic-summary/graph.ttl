@@ -8,21 +8,21 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-<ni:///sha-256;AM8LaiPWDFmbfc7DrrKeNN-0PYzpnkAyx_dlcytKPU0> health:reaction "Urticaria" ;
-	health:manifestationCode <http://snomed.info/sct/126485001> ;
-	health:allergyCategory "medication" ;
-	health:allergen "Aspirin" ;
+<ni:///sha-256;AM8LaiPWDFmbfc7DrrKeNN-0PYzpnkAyx_dlcytKPU0> health:allergyCategory "medication" ;
 	clinical:allergyType "allergy" ;
+	health:allergen "Aspirin" ;
+	health:reaction "Urticaria" ;
+	health:manifestationCode <http://snomed.info/sct/126485001> ;
 	health:allergenCode <http://www.nlm.nih.gov/research/umls/rxnorm/1191> .
-<ni:///sha-256;fmcz5lhxq8_udG4qrYXwFYXVSOszbt-TWfxEiBaDtTk> health:onsetDate "2024-10-15"^^xsd:date ;
+<ni:///sha-256;fmcz5lhxq8_udG4qrYXwFYXVSOszbt-TWfxEiBaDtTk> health:snomedCode <http://snomed.info/sct/367498001> ;
+	clinical:category "problem-list-item" ;
+	health:onsetDate "2024-10-15"^^xsd:date ;
 	health:status "active" ;
-	health:conditionName "Hay fever" ;
-	health:snomedCode <http://snomed.info/sct/367498001> ;
-	clinical:category "problem-list-item" .
-<ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> prov:qualifiedAttribution _:badb0f07e2b7afbb47262628d3dedabe .
-_:badb0f07e2b7afbb47262628d3dedabe prov:hadRole rec:author ;
-	prov:agent _:dbf268fd1aa340173e5aa110261b68c0 .
-_:dbf268fd1aa340173e5aa110261b68c0 rdfs:label "Fernhill Family Clinic" .
+	health:conditionName "Hay fever" .
+<ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> prov:qualifiedAttribution _:a164244eea9b51540d6b1df24d4dd3d .
+_:a164244eea9b51540d6b1df24d4dd3d prov:hadRole rec:author ;
+	prov:agent _:ea9358a476cd7bab26e26fb4a2821bae .
+_:ea9358a476cd7bab26e26fb4a2821bae rdfs:label "Fernhill Family Clinic" .
 <ni:///sha-256;icL3MpW_fvslUC0UlVhbAMhI-5VRMfneGMYRqTwRegQ> health:vaccineCode "141" ;
 	health:vaccineName "Influenza vaccine" ;
 	health:administrationDate "2024-10-15"^^xsd:date ;
@@ -92,7 +92,8 @@ _:a3e285c8673931aa946fc50fe9492ec4 prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRR
 	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
 _:bd37693405d01670c8ca46ecfef7a043 rdfs:label "C-CDA download" ;
 	prov:startedAtTime "2025-05-20T18:50:04Z"^^xsd:dateTime .
-<ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> a prov:Entity .
+<ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> bridge:sourceFormatVersion "2015-08-01" ;
+	a prov:Entity .
 _:bd37693405d01670c8ca46ecfef7a043 a prov:Activity ;
 	prov:used <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
 	prov:qualifiedAssociation _:a6386bdc33d9a6aa9358f35f5fbbcf0e .
