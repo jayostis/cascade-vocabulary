@@ -1,0 +1,14 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a health:AllergyRecord ;
+  clinical:criticality "low" ;
+  clinical:status "active" ;
+  cascade:mergedFrom <urn:uuid:4aa504a2-d600-8291-9855-7dd82e3c1d9a> , <urn:uuid:59813511-dfee-8ac7-81d8-514c528e24d7> , <urn:uuid:7c575131-ae4c-8c55-b672-b851ff9e706f> ;
+  health:allergen "Aspirin" ;
+  health:allergenCode <http://www.nlm.nih.gov/research/umls/rxnorm/1191> ;
+  rec:latestMember <urn:uuid:59813511-dfee-8ac7-81d8-514c528e24d7> ;
+  rec:statusFrom <urn:uuid:7c575131-ae4c-8c55-b672-b851ff9e706f> .

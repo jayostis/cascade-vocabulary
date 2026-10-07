@@ -1,0 +1,50 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;TCMAoDm3BFWj6tFJkJUv3aVctBxZT2OJdvaI_w42R80> clinical:dosage "Take 1 tablet by mouth once daily." ;
+	clinical:startDate "2025-04-01"^^xsd:date ;
+	clinical:status "active" ;
+	clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ;
+	clinical:drugName "amlodipine 5 MG Oral Tablet" ;
+	clinical:clinicalIntent "prescribed" .
+_:c8bd673e04673ca32434dfe852152428 pav:lastUpdateOn "2025-04-01T16:20:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;TCMAoDm3BFWj6tFJkJUv3aVctBxZT2OJdvaI_w42R80> .
+<ni:///sha-256;TCMAoDm3BFWj6tFJkJUv3aVctBxZT2OJdvaI_w42R80> rec:patient <urn:uuid:8df1ef48-f8fd-8c9e-a9d3-c3de9798361f> ;
+	prov:specializationOf <urn:uuid:c42e254b-737d-8b03-baf5-c11f8c925a8b> .
+<urn:uuid:c42e254b-737d-8b03-baf5-c11f8c925a8b> clinical:sourceRecordId "medrx-amlodipine-1" ;
+	rec:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-amlodipine-1> ;
+	a clinical:Medication .
+_:c8bd673e04673ca32434dfe852152428 bridge:selector "" ;
+	prov:wasDerivedFrom <ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> ;
+	prov:wasGeneratedBy _:1f8425fa914aa54b49c0b7b8501fe6c9 .
+_:1f8425fa914aa54b49c0b7b8501fe6c9 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2025-06-15T08:05:04Z"^^xsd:dateTime .
+<ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> prov:qualifiedAttribution _:bb1bdcda258d1d208596e88b4f7fdaf5 .
+_:bb1bdcda258d1d208596e88b4f7fdaf5 prov:agent _:a9710e44287af42bf987c98817fbfd73 .
+_:a9710e44287af42bf987c98817fbfd73 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:bb1bdcda258d1d208596e88b4f7fdaf5 prov:hadRole rec:transmitter .
+<ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> prov:qualifiedAttribution _:f8cab4a200e18135e13df7ffd2a78e40 .
+_:f8cab4a200e18135e13df7ffd2a78e40 prov:agent _:875dbbe4a26582dbf2277c45071b36ab .
+_:875dbbe4a26582dbf2277c45071b36ab <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
+_:f8cab4a200e18135e13df7ffd2a78e40 prov:hadRole rec:author .
+<ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> bridge:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-amlodipine-1> ;
+	pav:retrievedOn "2025-06-14T07:12:40Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
+_:1f8425fa914aa54b49c0b7b8501fe6c9 a prov:Activity ;
+	prov:used <ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> ;
+	prov:qualifiedAssociation _:76ab6044d030e37474dea1a4f70df017 .
+_:76ab6044d030e37474dea1a4f70df017 prov:hadPlan _:9b8357afeddb2949232c247bc31c1f3a .
+_:9b8357afeddb2949232c247bc31c1f3a a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:76ab6044d030e37474dea1a4f70df017 prov:agent _:fe1195bac609544e392b61772033873d .
+_:fe1195bac609544e392b61772033873d a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

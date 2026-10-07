@@ -1,0 +1,107 @@
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+<ni:///sha-256;AM8LaiPWDFmbfc7DrrKeNN-0PYzpnkAyx_dlcytKPU0> health:allergyCategory "medication" ;
+	clinical:allergyType "allergy" ;
+	health:allergen "Aspirin" ;
+	health:reaction "Urticaria" ;
+	health:manifestationCode <http://snomed.info/sct/126485001> ;
+	health:allergenCode <http://www.nlm.nih.gov/research/umls/rxnorm/1191> .
+<ni:///sha-256;fmcz5lhxq8_udG4qrYXwFYXVSOszbt-TWfxEiBaDtTk> health:snomedCode <http://snomed.info/sct/367498001> ;
+	clinical:category "problem-list-item" ;
+	health:onsetDate "2024-10-15"^^xsd:date ;
+	health:status "active" ;
+	health:conditionName "Hay fever" .
+<ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> prov:qualifiedAttribution _:a164244eea9b51540d6b1df24d4dd3d .
+_:a164244eea9b51540d6b1df24d4dd3d prov:hadRole rec:author ;
+	prov:agent _:ea9358a476cd7bab26e26fb4a2821bae .
+_:ea9358a476cd7bab26e26fb4a2821bae rdfs:label "Fernhill Family Clinic" .
+<ni:///sha-256;icL3MpW_fvslUC0UlVhbAMhI-5VRMfneGMYRqTwRegQ> health:vaccineCode "141" ;
+	health:vaccineName "Influenza vaccine" ;
+	health:administrationDate "2024-10-15"^^xsd:date ;
+	health:status "completed" .
+<ni:///sha-256;HVv3JDmFUAbSqeysgj4XBAONHQ83UvTAZ3q3zWM1LAE> clinical:clinicalIntent "reportedUse" ;
+	clinical:status "active" ;
+	clinical:drugName "fluticasone propionate 50 MCG/ACTUAT Nasal Spray" ;
+	clinical:startDate "2024-10-15"^^xsd:date ;
+	clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1797907> .
+<ni:///sha-256;Snhj8n_Xvg9w5U0PtHqSq2BuWbWPa0ho1rcqo9WyIfA> clinical:clinicalIntent "reportedUse" ;
+	clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/206805> ;
+	clinical:status "active" ;
+	clinical:drugName "Claritin 10 MG Oral Tablet" .
+<ni:///sha-256;JcBG9r6Av437VsV1C_dTmRY_n7M9qgS_lJvzkl8PpAA> cascade:dateOfBirth "1968-11-04"^^xsd:date ;
+	foaf:familyName "Natarajan" ;
+	foaf:givenName "Priya" .
+_:caabe87f4a134e0109b27eb77332ac70 bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='recordTarget' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='patientRole' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;JcBG9r6Av437VsV1C_dTmRY_n7M9qgS_lJvzkl8PpAA> .
+<ni:///sha-256;JcBG9r6Av437VsV1C_dTmRY_n7M9qgS_lJvzkl8PpAA> prov:specializationOf <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> .
+<urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> cascade:sourceRecordId "2.16.840.1.113883.19.5.2.2:20931" ;
+	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.2.2:20931> ;
+	a cascade:PatientProfile .
+_:f5953501914d47f5ad3a7c718ba8059b bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;AM8LaiPWDFmbfc7DrrKeNN-0PYzpnkAyx_dlcytKPU0> .
+<ni:///sha-256;AM8LaiPWDFmbfc7DrrKeNN-0PYzpnkAyx_dlcytKPU0> rec:patient <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> ;
+	prov:specializationOf <urn:uuid:59813511-dfee-8ac7-81d8-514c528e24d7> .
+<urn:uuid:59813511-dfee-8ac7-81d8-514c528e24d7> health:sourceRecordId "2.16.840.1.113883.19.5.2.4:AL-77" ;
+	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.2.4:AL-77> ;
+	a health:AllergyRecord .
+_:150795b3f2892f7cd091b00df6eda342 bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][3]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;fmcz5lhxq8_udG4qrYXwFYXVSOszbt-TWfxEiBaDtTk> .
+<ni:///sha-256;fmcz5lhxq8_udG4qrYXwFYXVSOszbt-TWfxEiBaDtTk> rec:patient <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> ;
+	prov:specializationOf <urn:uuid:815f9e73-4d33-8432-8253-7a0fae70742a> .
+<urn:uuid:815f9e73-4d33-8432-8253-7a0fae70742a> health:sourceRecordId "2.16.840.1.113883.19.5.2.6:P-410" ;
+	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.2.6:P-410> ;
+	a health:ConditionRecord .
+_:67a1d6e1e7321a16b3a8c3b34147e659 bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][4]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='substanceAdministration' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;icL3MpW_fvslUC0UlVhbAMhI-5VRMfneGMYRqTwRegQ> .
+<ni:///sha-256;icL3MpW_fvslUC0UlVhbAMhI-5VRMfneGMYRqTwRegQ> rec:patient <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> ;
+	prov:specializationOf <urn:uuid:1bf45307-beb7-8ad2-938e-1c64d65eaf08> .
+<urn:uuid:1bf45307-beb7-8ad2-938e-1c64d65eaf08> a health:ImmunizationRecord .
+_:98478c784147a20288bba11a249dd2da bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][2]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='substanceAdministration' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;Snhj8n_Xvg9w5U0PtHqSq2BuWbWPa0ho1rcqo9WyIfA> .
+<ni:///sha-256;Snhj8n_Xvg9w5U0PtHqSq2BuWbWPa0ho1rcqo9WyIfA> rec:patient <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> ;
+	prov:specializationOf <urn:uuid:13b55a1c-5c3c-87c0-bf0b-396c55cb6963> .
+<urn:uuid:13b55a1c-5c3c-87c0-bf0b-396c55cb6963> clinical:sourceRecordId "2.16.840.1.113883.19.5.2.5:RX" ;
+	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.2.5:RX> ;
+	a clinical:Medication .
+_:a3e285c8673931aa946fc50fe9492ec4 bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][2]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][2]/*[local-name()='substanceAdministration' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;HVv3JDmFUAbSqeysgj4XBAONHQ83UvTAZ3q3zWM1LAE> .
+<ni:///sha-256;HVv3JDmFUAbSqeysgj4XBAONHQ83UvTAZ3q3zWM1LAE> rec:patient <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> ;
+	prov:specializationOf <urn:uuid:da0a98c6-7b8d-830d-8220-a8aa795daaa7> .
+<urn:uuid:da0a98c6-7b8d-830d-8220-a8aa795daaa7> clinical:sourceRecordId "2.16.840.1.113883.19.5.2.5:RX" ;
+	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.2.5:RX> ;
+	a clinical:Medication .
+_:98478c784147a20288bba11a249dd2da prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
+	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
+_:67a1d6e1e7321a16b3a8c3b34147e659 prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
+	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
+_:f5953501914d47f5ad3a7c718ba8059b prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
+	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
+_:150795b3f2892f7cd091b00df6eda342 prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
+	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
+_:caabe87f4a134e0109b27eb77332ac70 prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
+	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
+_:a3e285c8673931aa946fc50fe9492ec4 prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
+	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
+_:bd37693405d01670c8ca46ecfef7a043 rdfs:label "C-CDA download" ;
+	prov:startedAtTime "2025-05-20T18:50:04Z"^^xsd:dateTime .
+<ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> bridge:sourceFormatVersion "2015-08-01" ;
+	a prov:Entity .
+_:bd37693405d01670c8ca46ecfef7a043 a prov:Activity ;
+	prov:used <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
+	prov:qualifiedAssociation _:a6386bdc33d9a6aa9358f35f5fbbcf0e .
+_:a6386bdc33d9a6aa9358f35f5fbbcf0e prov:hadPlan _:270d271d0433f4087aba841116745c56 .
+_:270d271d0433f4087aba841116745c56 a prov:Plan ;
+	rdfs:label "ccda" ;
+	<http://purl.org/pav/version> "0.1.0" .
+_:a6386bdc33d9a6aa9358f35f5fbbcf0e prov:agent _:4d3b35f4b6c1c9e20abc29b2afa41f63 .
+_:4d3b35f4b6c1c9e20abc29b2afa41f63 a prov:SoftwareAgent ;
+	rdfs:label "Cascade Bridge for Rust" ;
+	<http://purl.org/pav/version> "0.1.0" .

@@ -1,7 +1,10 @@
 Feature: The conformance kit
   A kit is a scenario every runtime must pass: a folder under conformance/ holding a feature file, its scripted input
   and its right answers only. conformance/alex-rivera/ is Alex Rivera's pod, from
-  https://github.com/jayostis/cascade-vocabulary/issues/4.
+  https://github.com/jayostis/cascade-vocabulary/issues/4, and FHIR only. conformance/priya-natarajan/ is Priya
+  Natarajan's, from https://github.com/jayostis/cascade-runtime-js/issues/70: one pod from FHIR and C-CDA together, with
+  medications and lab results, laid out as Alex's and with its own planted cases P1 to P17. What follows says it of
+  Alex's kit; Priya's is alike.
 
   - alex-rivera.feature is her story, the Background every example replays: each of Alex's judgments is a step of its
     own, and each matcher run a step with its time. Under it, each planted case P1 to P25 is a rule, and each example
@@ -11,7 +14,7 @@ Feature: The conformance kit
   - scripted-input/alex/ holds what the steps name. Each import step's Bridge output is in a folder named as the step,
     because a conversion carries its import's start. The facts the importer gives the Bridge are not input: the
     importer writes them from export.xml.
-  - expected/ holds the five views a correct runtime builds at the last step under the everyday lens, each entry a blank
+  - expected/ holds each view a correct runtime builds at the last step under the everyday lens, each entry a blank
     node, and handles.json, the scenario's name inputs for each record and profile it gives a handle.
 
   A runtime passes a kit when every rule below holds for one replay of its story. An EARL report names checks 2 to 5
