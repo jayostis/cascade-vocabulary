@@ -1,0 +1,22 @@
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> a prov:Entity ;
+  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole rec:author ] .
+_:import a prov:Activity ; rdfs:label "C-CDA download" ;
+  prov:startedAtTime "2026-06-07T09:00:00Z"^^xsd:dateTime ;
+  prov:used <ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> ;
+  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "ccda" ; pav:version "0.1.0" ] ;
+    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
+<urn:uuid:4da62af4-0169-8e75-af3f-98d57b0cc291> a health:AllergyRecord ;
+  rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5:alg-peanut-1> .
+<ni:///sha-256;EX6ixLN1TL10alYx5WGNtwoHVFm1Lm-_UJ4miUbku7U> prov:specializationOf <urn:uuid:4da62af4-0169-8e75-af3f-98d57b0cc291> ;
+  health:allergen "Peanut" .
+_:arrival bridge:arrivedAs <ni:///sha-256;EX6ixLN1TL10alYx5WGNtwoHVFm1Lm-_UJ4miUbku7U> ; prov:wasGeneratedBy _:import ;
+  bridge:selector "/ClinicalDocument/component[1]/structuredBody[1]/component[1]/section[1]/entry[1]/act[1]/entryRelationship[1]/observation[1]" ;
+  prov:wasDerivedFrom <ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> .
