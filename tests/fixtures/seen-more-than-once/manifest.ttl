@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "seen-more-than-once" ;
+  rdfs:comment "A penicillin allergy from Northgate, from Southview and entered by the person, joined in one entry; asthma from two Northgate documents, brought by two downloads, joined in one entry; and latex from Northgate alone." ;
+  mf:entries (
+    <#what-was-seen-more-than-once>
+  ) .
+
+<#what-was-seen-more-than-once> a mf:QueryEvaluationTest ;
+  mf:name "what-was-seen-more-than-once" ;
+  rdfs:comment "Penicillin once for each of its three places, the person's own entry placed by its session's label; asthma once, with both its records, placed by their hospital rather than by their two downloads; latex, a single record, not at all." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/What%20was%20seen%20more%20than%20once.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <what-was-seen-more-than-once.srj> .
