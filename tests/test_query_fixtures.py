@@ -93,13 +93,13 @@ def test_every_derivation_lens_view_and_the_labels_add_a_triple_and_every_questi
     assert quiet == set()
 
 
-def test_each_engine_loads_the_default_graph_of_a_trig_file_into_its_default_graph(tmp_path):
+def test_each_engine_loads_the_default_graph_of_a_trig_file_into_its_default_graph_against_one_base(tmp_path):
     path = tmp_path / "rows.trig"
-    path.write_text("<urn:x:a> <urn:x:b> <urn:x:c> . <urn:x:g> { <urn:x:d> <urn:x:e> <urn:x:f> . }", encoding="utf-8")
+    path.write_text("<a> <urn:x:b> <urn:x:c> . <g> { <urn:x:d> <urn:x:e> <f> . }", encoding="utf-8")
     loaded = {}
     for name, engine in ENGINES.items():
         store = engine()
-        store.load_graphs(path)
-        loaded[name] = (store.triples(), store.triples("urn:x:g"))
+        store.load_graphs(path, ADDRESS + "rows.trig")
+        loaded[name] = (store.triples(), store.triples(ADDRESS + "g"))
     assert {name: [len(graph) for graph in graphs] for name, graphs in loaded.items()} == {name: [1, 1] for name in ENGINES}
     assert loaded["oxigraph"] == loaded["rdflib"]

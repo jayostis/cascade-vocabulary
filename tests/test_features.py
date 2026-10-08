@@ -4,15 +4,19 @@ scripted input it names is whole."""
 import base64
 import hashlib
 import re
+from functools import cache
 
 import pytest
 from gherkin.parser import Parser
 from gherkin.pickles.compiler import Compiler
 
+from rdflib import Variable
 from rdflib.namespace import RDF
+from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
+from rdflib.plugins.sparql.parserutils import CompValue
 
-from contract import KITS, QUERIES, REC, ROOT
+from contract import KITS, PROV, QUERIES, REC, ROOT
 from engines import parsed
 
 FEATURES = sorted([*ROOT.glob("runtime/*.feature"), *ROOT.glob("conformance/*/*.feature")])
@@ -139,10 +143,54 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_gua
             text = octets.decode("utf-8")
             if ni_name(octets) != str(rows.value(row, REC.queryHash)):
                 mismatched.add(("/".join(path.split("/")[-3:-1]), query))
-            for kind in rows.objects(row, REC.tableKind):
-                guard = f"?origin prov:specializationOf/rec:tableKind rec:{str(kind).removeprefix(str(REC))} ."
-                if guard not in text or "GRAPH ?origin" not in text:
-                    unguarded.add((path, query))
+            if not guarded(frozenset(rows.objects(row, REC.tableKind)), text):
+                unguarded.add((path, query))
     assert mismatched == {("finn/references", "matcher/same-code.rq"),
                           ("tables/app-new-rules", "matcher/same-code-and-date.rq")}
     assert unguarded == set()
+
+
+@cache
+def guarded(kinds, query):
+    """Whether a query reads GRAPH ?origin exactly when its row names one table kind, and joins, outside any graph, the
+    one triple ?origin prov:specializationOf/rec:tableKind on that kind."""
+    origin, guard = Variable("origin"), PROV.specializationOf / REC.tableKind
+    found, reads = set(), False
+
+    def walk(node, joined):
+        nonlocal reads
+        if isinstance(node, list):
+            for item in node:
+                walk(item, joined)
+        elif isinstance(node, CompValue):
+            if node.name == "Graph" and node.term == origin:
+                reads = True
+            if node.name == "BGP" and joined:
+                found.update(o for s, p, o in node.triples if s == origin and p == guard)
+            for key, value in node.items():
+                walk(value, joined and node.name not in ("Graph", "Union", "Minus")
+                     and (node.name, key) != ("LeftJoin", "p2"))
+
+    walk(prepareQuery(query).algebra, True)
+    return found == kinds and len(kinds) <= 1 and reads == bool(kinds)
+
+
+@pytest.mark.parametrize("kinds, query, expected", [
+    ({REC.VaccineGroups}, "SELECT * { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . "
+                          "GRAPH ?origin { ?s ?p ?o } }", True),
+    ({REC.VaccineGroups}, "# ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups .\n"
+                          "SELECT * { GRAPH ?origin { ?s ?p ?o } }", False),
+    ({REC.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . "
+                                 "GRAPH ?origin { ?s ?p ?o } }", False),
+    (set(), "SELECT * { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }",
+     False),
+    ({REC.VaccineGroups, REC.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/rec:tableKind "
+                                                    "rec:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }", False),
+    ({REC.VaccineGroups}, "SELECT * { OPTIONAL { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . } "
+                          "GRAPH ?origin { ?s ?p ?o } }", False),
+    ({REC.VaccineGroups}, "SELECT * { ?origin prov:specializationOf ?v . ?v rec:tableKind rec:VaccineGroups . "
+                          "GRAPH ?origin { ?s ?p ?o } }", False),
+])
+def test_a_rule_reads_a_table_graph_exactly_when_its_row_names_the_kind_one_joined_triple_guards_it_on(kinds, query,
+                                                                                                        expected):
+    assert guarded(frozenset(kinds), PREFIXES + query) == expected

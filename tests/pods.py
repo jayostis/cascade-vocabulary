@@ -51,7 +51,7 @@ class Fixture:
         for path in self.files():
             store.load(self.folder / path, ADDRESS + path)
         for path in sorted(self.folder.glob("*.trig")):
-            store.load_graphs(path)
+            store.load_graphs(path, ADDRESS + path.name)
         added = derive(store, lens)
         files = write(store)
         store.add(parsed(LAYOUT, ADDRESS), LAYOUT_GRAPH)

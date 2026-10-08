@@ -9,7 +9,7 @@ from functools import cache
 
 import pytest
 from pyshacl import validate
-from rdflib import Graph, Namespace, URIRef
+from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH, XSD
 
@@ -132,16 +132,27 @@ def test_the_row_shapes_accept_a_row_of_each_kind_and_refuse_each_break_with_its
     assert (said == set()) if message is None else any(message in m for m in said), said
 
 
+ESCAPES = {"\\": "\\\\", '"': '\\"', "\b": "\\b", "\t": "\\t", "\n": "\\n", "\f": "\\f", "\r": "\\r"}
+
+
 def canonical(term):
     """A term in canonical N-Triples, as RDFC-1.0 writes it for a graph with no blank node."""
+    if isinstance(term, BNode):
+        raise ValueError("N12 names no version whose rows hold a blank node")
     if isinstance(term, URIRef):
         return f"<{term}>"
-    escaped = str(term).replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")
+    escaped = "".join(ESCAPES.get(c) or (f"\\u{ord(c):04X}" if c < " " or c == "\x7f" else c) for c in str(term))
     if term.language:
         return f'"{escaped}"@{term.language}'
     if term.datatype is not None and term.datatype != XSD.string:
         return f'"{escaped}"^^<{term.datatype}>'
     return f'"{escaped}"'
+
+
+def test_canonical_escapes_a_literal_as_rdfc_writes_it_and_refuses_a_blank_node():
+    assert canonical(Literal('a"\\\b\t\n\f\r\x01\x7fé')) == r'"a\"\\\b\t\n\f\r\u0001\u007Fé"'
+    with pytest.raises(ValueError, match="blank node"):
+        canonical(BNode())
 
 
 def version_name(triples):

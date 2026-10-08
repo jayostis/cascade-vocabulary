@@ -322,7 +322,7 @@ rec:RxNorm a rec:CodeSystem ;
 
 rec:NDC a rec:CodeSystem ;
     rdfs:label "NDC"@en ;
-    rdfs:comment "The 5-4-2 form RxNorm's RXNSAT gives."@en ;
+    rdfs:comment "The code as RxNorm's RXNSAT gives it."@en ;
     void:uriSpace "http://hl7.org/fhir/sid/ndc/" .
 
 rec:ICD10CM a rec:CodeSystem ;
@@ -338,27 +338,46 @@ rec:SNOMEDCT a rec:CodeSystem ;
 void:uriSpace a owl:DatatypeProperty ;
     rdfs:label "URI space"@en ;
     rdfs:isDefinedBy <http://rdfs.org/ns/void#> ;
+    rdfs:domain void:Dataset ;
+    rdfs:range rdfs:Literal ;
+    dct:source <https://www.w3.org/TR/2011/NOTE-void-20110303/> .
+
+void:Dataset a owl:Class ;
+    rdfs:label "dataset"@en ;
+    rdfs:isDefinedBy <http://rdfs.org/ns/void#> ;
     dct:source <https://www.w3.org/TR/2011/NOTE-void-20110303/> .
 
 owl:annotatedSource a rdf:Property ;
     rdfs:label "annotated source"@en ;
     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
-    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> .
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Resource ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> ,
+        <https://www.w3.org/TR/2012/REC-owl2-rdf-based-semantics-20121211/> .
 
 owl:annotatedProperty a rdf:Property ;
     rdfs:label "annotated property"@en ;
     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
-    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> .
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Resource ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> ,
+        <https://www.w3.org/TR/2012/REC-owl2-rdf-based-semantics-20121211/> .
 
 owl:annotatedTarget a rdf:Property ;
     rdfs:label "annotated target"@en ;
     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
-    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> .
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Resource ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> ,
+        <https://www.w3.org/TR/2012/REC-owl2-rdf-based-semantics-20121211/> .
 
 owl:deprecated a owl:AnnotationProperty ;
     rdfs:label "deprecated"@en ;
     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
-    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> .
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Resource ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> ,
+        <https://www.w3.org/TR/2012/REC-owl2-rdf-based-semantics-20121211/> .
 
 sssom:mapping_justification a owl:ObjectProperty ;
     rdfs:label "mapping justification"@en ;
@@ -385,6 +404,7 @@ skos:notation a owl:DatatypeProperty ;
 dct:isReplacedBy a rdf:Property ;
     rdfs:label "Is Replaced By"@en ;
     rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:subPropertyOf dct:relation ;
     dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> .
 
 # Test terms, used with W3C's mf: test-manifest vocabulary
