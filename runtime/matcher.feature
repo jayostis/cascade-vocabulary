@@ -86,8 +86,10 @@ Feature: The matcher's procedure
 
     - R1, jdg:SameCode: queries/v1-draft/matcher/same-code.rq.
     - R2, jdg:SameCodeAndDate: queries/v1-draft/matcher/same-code-and-date.rq.
-    - R3, jdg:SameMappedCode: queries/v1-draft/matcher/same-mapped-code.rq, with rec:SubstanceIngredients, a kind
-      only the stories fill.
+    - R3, jdg:SameMappedCode: in the stories' lists, queries/v1-draft/matcher/same-mapped-code.rq, with
+      rec:SubstanceIngredients, a kind only the stories fill; in the vocabulary's list from its version 2,
+      queries/v1-draft/matcher/same-ingredient.rq, with rec:ProductIngredients, for allergies only. A justification is
+      one row of a list's version, so a judgment still says which query ran.
     - R4, jdg:SameMappedCodeAndDate: queries/v1-draft/matcher/same-mapped-code-and-date.rq, with rec:VaccineGroups.
 
     Version 2 of the rule list adds two rows, whose examples are under M12:
@@ -95,7 +97,8 @@ Feature: The matcher's procedure
     - R5, jdg:SameMedicationCode: queries/v1-draft/matcher/same-medication-code.rq.
     - R6, jdg:SameResult: queries/v1-draft/matcher/same-result.rq.
 
-    The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6.
+    The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
+    and R3 as well in its version 2, whose examples are under O1.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00

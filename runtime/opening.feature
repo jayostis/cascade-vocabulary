@@ -3,10 +3,12 @@ Feature: Opening a pod
   holds newer versions.
 
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Hana
-  enters six flu shots in three pairs by date, and later one more. Her pod is made with the vector tables, which are
-  Priya's kit's series. Two app's tables open it: "app", holding the vocabulary's rule list and version 1 of "CDC CVX
-  vaccine groups", "app-later", holding versions 2 and 3 as well, and "app-new-rules", holding a version 2 of the rule
-  list and version 1 of the rule list as an app holds it after a query changed, its hash no longer the query's.
+  enters six flu shots in three pairs by date, and later one more, and four drug allergies. Her pod is made with the
+  vector tables, which are Priya's kit's series. App's tables open it: "app", holding version 1 of the vocabulary's rule
+  list and version 1 of "CDC CVX vaccine groups", "app-later", holding versions 2 and 3 as well, "app-new-rules",
+  holding a version 2 of the rule list and version 1 of the rule list as an app holds it after a query changed, its
+  hash no longer the query's, and "app-rxnorm", holding "app"'s and the vocabulary's rule list's version 2, whose R3
+  reads version 1 of "NLM RxNorm Prescribable product ingredients", which it also holds.
 
   Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
     The default is M10's; a version descends from another along the tables' line of prov:wasRevisionOf. A series the
@@ -66,6 +68,24 @@ Feature: Opening a pod
       When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
       And the pod is opened with the tables "app-later" on 2026-07-04 at 09:00 (again)
       Then that step wrote no file
+
+    Example: after the rule list's version 2 is adopted, R3 joins a brand allergy and its ingredient's, and not a two-ingredient product and one of its ingredients
+      Augmentin is amoxicillin and clavulanate, so its ingredient is the concept of both, not amoxicillin.
+
+      When the pod is opened with the tables "app-rxnorm" on 2026-07-03 at 09:00
+      And Hana enters "allergies" on 2026-07-04 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-04 at 09:05
+      Then the matcher's judgments holding allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen", allergy RxNorm 151392 "Augmentin" and allergy RxNorm 723 "Amoxicillin" are:
+        | justification    | members                                                       | used                                                                                                                                                         |
+        | same mapped code | allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen" | Matcher rules version 2, NLM RxNorm Prescribable product ingredients version 1, version 1 of allergy RxNorm 153010 "Advil", version 1 of allergy RxNorm 5640 "Ibuprofen" |
+
+    Example: adopting the rule list's version 2 judges the pairs its new R3 joins among records already matched
+      Given Hana enters "allergies" on 2026-07-02 at 10:00
+      And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-allergies)
+      When the pod is opened with the tables "app-rxnorm" on 2026-07-03 at 09:00
+      Then the matcher's judgments holding allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen", allergy RxNorm 151392 "Augmentin" and allergy RxNorm 723 "Amoxicillin" are:
+        | justification    | members                                                       | at                  | used                                                                                                                                                         |
+        | same mapped code | allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen" | 2026-07-03 at 09:00 | Matcher rules version 2, NLM RxNorm Prescribable product ingredients version 1, version 1 of allergy RxNorm 153010 "Advil", version 1 of allergy RxNorm 5640 "Ibuprofen" |
 
   Rule: O2. A series the tables do not hold the pod's version of is left out, and nothing is written of it
     The tables may not hold the series at all, as for a pod made on other tables, or not the pod's version, as for a

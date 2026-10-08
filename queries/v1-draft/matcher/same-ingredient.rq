@@ -1,0 +1,24 @@
+# Two records of one kind match when their current versions give two different allergen codes that one version of a
+# product ingredient table maps to one ingredient. A product of several ingredients maps to the concept of exactly
+# those, never to one of them, so it matches no record of only one. Each ordered pair is a row, with the version whose
+# rows joined it; a graph that is not a version of a product ingredient table is never read for rows.
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT DISTINCT ?record ?other ?origin
+WHERE {
+  ?origin prov:specializationOf/rec:tableKind rec:ProductIngredients .
+  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
+  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version health:allergenCode ?code .
+  ?otherVersion health:allergenCode ?otherCode .
+  GRAPH ?origin {
+    ?row owl:annotatedSource ?code ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?ingredient .
+    ?otherRow owl:annotatedSource ?otherCode ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?ingredient .
+  }
+  FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
+}

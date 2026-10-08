@@ -1,0 +1,26 @@
+@prefix : <urn:x:> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sssom: <https://w3id.org/sssom/> .
+
+:ingredients-1 {
+  :advil a owl:Axiom ; owl:annotatedSource rxnorm:153010 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:5640 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :ibuprofen a owl:Axiom ; owl:annotatedSource rxnorm:5640 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:5640 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :augmentin a owl:Axiom ; owl:annotatedSource rxnorm:151392 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:19711 ; sssom:mapping_justification semapv:MappingChaining .
+  :amoxicillin a owl:Axiom ; owl:annotatedSource rxnorm:723 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:723 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :penicillin a owl:Axiom ; owl:annotatedSource rxnorm:7980 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:7980 ; sssom:mapping_justification semapv:ManualMappingCuration .
+}
+
+:generics-1 {
+  :codeine a owl:Axiom ; owl:annotatedSource rxnorm:2670 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:1191 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :aspirin a owl:Axiom ; owl:annotatedSource rxnorm:1191 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:1191 ; sssom:mapping_justification semapv:ManualMappingCuration .
+}
