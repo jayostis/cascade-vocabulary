@@ -9,10 +9,13 @@ import pytest
 from gherkin.parser import Parser
 from gherkin.pickles.compiler import Compiler
 
+from rdflib import Variable
 from rdflib.namespace import RDF
+from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
+from rdflib.plugins.sparql.parserutils import CompValue
 
-from contract import KITS, QUERIES, REC, ROOT
+from contract import KITS, PROV, QUERIES, REC, ROOT
 from engines import parsed
 
 FEATURES = sorted([*ROOT.glob("runtime/*.feature"), *ROOT.glob("conformance/*/*.feature")])
@@ -139,10 +142,47 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_gua
             text = octets.decode("utf-8")
             if ni_name(octets) != str(rows.value(row, REC.queryHash)):
                 mismatched.add(("/".join(path.split("/")[-3:-1]), query))
-            for kind in rows.objects(row, REC.tableKind):
-                guard = f"?origin prov:specializationOf/rec:tableKind rec:{str(kind).removeprefix(str(REC))} ."
-                if guard not in text or "GRAPH ?origin" not in text:
-                    unguarded.add((path, query))
+            if not guarded(set(rows.objects(row, REC.tableKind)), text):
+                unguarded.add((path, query))
     assert mismatched == {("finn/references", "matcher/same-code.rq"),
                           ("tables/app-new-rules", "matcher/same-code-and-date.rq")}
     assert unguarded == set()
+
+
+def guarded(kinds, query):
+    """Whether a query reads GRAPH ?origin exactly when its row names one table kind, and outside that graph matches
+    ?origin as a version of that kind."""
+    origin, guard = Variable("origin"), PROV.specializationOf / REC.tableKind
+    found, reads = set(), False
+
+    def walk(node, inside):
+        nonlocal reads
+        if isinstance(node, list):
+            for item in node:
+                walk(item, inside)
+        elif isinstance(node, CompValue):
+            if node.name == "Graph" and node.term == origin:
+                reads = inside = True
+            if node.name == "BGP" and not inside:
+                found.update(o for s, p, o in node.triples if s == origin and p == guard)
+            for value in node.values():
+                walk(value, inside)
+
+    walk(prepareQuery(query).algebra, False)
+    return found == kinds and len(kinds) <= 1 and reads == bool(kinds)
+
+
+@pytest.mark.parametrize("kinds, query, expected", [
+    ({REC.VaccineGroups}, "SELECT * { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . "
+                          "GRAPH ?origin { ?s ?p ?o } }", True),
+    ({REC.VaccineGroups}, "# ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups .\n"
+                          "SELECT * { GRAPH ?origin { ?s ?p ?o } }", False),
+    ({REC.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . "
+                                 "GRAPH ?origin { ?s ?p ?o } }", False),
+    (set(), "SELECT * { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }",
+     False),
+    ({REC.VaccineGroups, REC.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/rec:tableKind "
+                                                    "rec:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }", False),
+])
+def test_a_rule_reads_a_table_graph_exactly_when_its_row_names_the_kind_its_query_guards_on(kinds, query, expected):
+    assert guarded(kinds, PREFIXES + query) == expected
