@@ -1,5 +1,8 @@
+@prefix : <urn:x:> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
-@prefix snomed: <http://snomed.info/sct/> .
 
-snomed:91936005 rec:sameIngredientAs rxnorm:733 , rxnorm:734 .
+:map a rec:ReferenceSeries ; rdfs:label "Ingredient map" ; rec:tableKind rec:SubstanceIngredients .
+:map-1 prov:specializationOf :map ; pav:version "1" .

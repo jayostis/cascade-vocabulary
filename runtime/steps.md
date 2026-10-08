@@ -46,21 +46,25 @@ saying why; a document an import must convert and has no saved output for is the
 
 **The matcher's reference tables** are `references/`, in Turtle:
 
-- **`references.ttl`**, the index: each `rec:ReferenceSeries` with its `rdfs:label` and the version it `rec:shipsWith`,
-  and each version, a `prov:Entity`, with its `prov:specializationOf` series, its `pav:version` and the version it
-  `prov:wasRevisionOf`, if any. A version's description in the pod, and the file a reference step files, are what the
-  index states about the series and the version, less `rec:shipsWith`.
-- **One file per version, holding its rows,** named from the version's name by N9. An ingredient map's rows are
-  `<SNOMED CT code> rec:sameIngredientAs <RxNorm code>`; a vaccine group table's are
-  `[] rec:cvxCode "141" ; rec:vaccineGroup "INFLUENZA"`. A version with no rows is a file with no triples.
-- **The rule list is a table like the others.** Each row is a `rec:MatcherRule` giving its justification
-  (`rec:justifiedAs`), each kind of record it applies to as `rec:kind` words it (`rec:appliesTo`), its comparison query
-  as a path under `queries/v1-draft/` (`rec:query`), N5's name for that file's bytes (`rec:queryHash`), and the series
-  of the table the query reads, if any (`rec:table`). A matcher judgment uses the rule list's version, so the one row of
-  that version whose `rec:justifiedAs` is the judgment's `jdg:justification` says which query ran, by its bytes.
+- **`references.ttl`**, the index: each `rec:ReferenceSeries` with its `rdfs:label`, the one `rec:TableKind` its
+  versions are (`rec:tableKind`), if it is a table, and the version it `rec:shipsWith`, and each version, a
+  `prov:Entity`, with its `prov:specializationOf` series, its `pav:version` and the version it `prov:wasRevisionOf`, if
+  any. A version's description in the pod, and the file a reference step files, are what the index states about the
+  series and the version, less `rec:shipsWith`.
+- **One file per version, holding its rows,** named from the version's name by N9. Each row conforms to its kind's
+  `rec:rowShape` in `records.shapes.ttl` and holds no blank node: a mapping row is an `owl:Axiom` named by N11 with
+  its `owl:annotatedSource`, `owl:annotatedProperty`, `owl:annotatedTarget` and `sssom:mapping_justification`. A
+  version with no rows is a file with no triples.
+- **The rule list is not a table.** Each row is a `rec:MatcherRule` giving its justification (`rec:justifiedAs`), each
+  kind of record it applies to as `rec:kind` words it (`rec:appliesTo`), its comparison query as a path under
+  `queries/v1-draft/` (`rec:query`), N5's name for that file's bytes (`rec:queryHash`), and the kind of table the query
+  reads, if any (`rec:tableKind`). A matcher judgment uses the rule list's version, so the one row of that version whose
+  `rec:justifiedAs` is the judgment's `jdg:justification` says which query ran, by its bytes.
 
-The rows of a table's current version are loaded into the default graph the matcher's queries read, and those of no
-other version; they are never written to the pod.
+The rows of each current version of a kind a rule reads are loaded into the graph named by the version's IRI, and the
+descriptions of those versions and their series into the default graph the matcher's queries read (M13). A query reads
+rows only inside `GRAPH ?origin`. No other version's rows are loaded, and rows are never written to the pod. The rule
+list's rows are `[] a rec:MatcherRule`: no row shape and no N12 cover them.
 
 ## Parameters
 

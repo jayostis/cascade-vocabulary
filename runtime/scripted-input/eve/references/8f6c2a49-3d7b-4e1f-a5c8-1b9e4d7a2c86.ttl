@@ -1,6 +1,28 @@
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sssom: <https://w3id.org/sssom/> .
 
-<http://snomed.info/sct/373270004> rec:sameIngredientAs <http://www.nlm.nih.gov/research/umls/rxnorm/7980> .
-<http://snomed.info/sct/91936005> rec:sameIngredientAs <http://www.nlm.nih.gov/research/umls/rxnorm/733> .
-<http://snomed.info/sct/294505008> rec:sameIngredientAs <http://www.nlm.nih.gov/research/umls/rxnorm/2670> .
-<http://snomed.info/sct/387207008> rec:sameIngredientAs <http://www.nlm.nih.gov/research/umls/rxnorm/1191> .
+<urn:uuid:5beecdd3-d3b7-8ed2-a2b4-ceb2b0a48800> a owl:Axiom ;
+    owl:annotatedSource <http://snomed.info/sct/373270004> ;
+    owl:annotatedProperty skos:exactMatch ;
+    owl:annotatedTarget <http://www.nlm.nih.gov/research/umls/rxnorm/7980> ;
+    sssom:mapping_justification semapv:ManualMappingCuration .
+
+<urn:uuid:696d7daa-4226-801c-bd88-0c359f4d3606> a owl:Axiom ;
+    owl:annotatedSource <http://snomed.info/sct/91936005> ;
+    owl:annotatedProperty skos:exactMatch ;
+    owl:annotatedTarget <http://www.nlm.nih.gov/research/umls/rxnorm/733> ;
+    sssom:mapping_justification semapv:ManualMappingCuration .
+
+<urn:uuid:744fb568-979d-8e9a-8f8a-e332f3f6442d> a owl:Axiom ;
+    owl:annotatedSource <http://snomed.info/sct/294505008> ;
+    owl:annotatedProperty skos:exactMatch ;
+    owl:annotatedTarget <http://www.nlm.nih.gov/research/umls/rxnorm/2670> ;
+    sssom:mapping_justification semapv:ManualMappingCuration .
+
+<urn:uuid:f962b6a6-f12d-8194-aa54-ba07cf173170> a owl:Axiom ;
+    owl:annotatedSource <http://snomed.info/sct/387207008> ;
+    owl:annotatedProperty skos:exactMatch ;
+    owl:annotatedTarget <http://www.nlm.nih.gov/research/umls/rxnorm/1191> ;
+    sssom:mapping_justification semapv:ManualMappingCuration .

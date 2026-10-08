@@ -124,17 +124,24 @@ def ni_name(octets):
     return "ni:///sha-256;" + base64.urlsafe_b64encode(hashlib.sha256(octets).digest()).decode().rstrip("=")
 
 
-def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_but_the_one_an_example_breaks():
+def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_guards_on_its_kind_but_the_one_an_example_breaks():
     lists = {path.relative_to(ROOT).as_posix(): rows
-             for path in sorted([*ROOT.glob("runtime/scripted-input/*/references/*.ttl"),
+             for path in sorted([*ROOT.glob("runtime/rule-list/*.ttl"),
+                                 *ROOT.glob("runtime/scripted-input/*/references/*.ttl"),
                                  *ROOT.glob("conformance/*/scripted-input/*/references/*.ttl")])
              for rows in [parsed(path)] if (None, RDF.type, REC.MatcherRule) in rows}
-    assert len(lists) == 9
-    mismatched = set()
+    assert len(lists) == 10
+    mismatched, unguarded = set(), set()
     for path, rows in lists.items():
         for row in rows.subjects(RDF.type, REC.MatcherRule):
             query = str(rows.value(row, REC.query))
             assert query.startswith("matcher/"), path
+            text = (QUERIES / query).read_text(encoding="utf-8")
             if ni_name((QUERIES / query).read_bytes()) != str(rows.value(row, REC.queryHash)):
                 mismatched.add((path.split("/")[-3], query))
+            for kind in rows.objects(row, REC.tableKind):
+                guard = f"?origin prov:specializationOf/rec:tableKind rec:{str(kind).removeprefix(str(REC))} ."
+                if guard not in text or "GRAPH ?origin" not in text:
+                    unguarded.add((path, query))
     assert mismatched == {("finn", "matcher/same-code.rq")}
+    assert unguarded == set()

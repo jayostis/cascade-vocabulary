@@ -14,6 +14,9 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
   with the examples that show it; [`runtime/steps.md`](runtime/steps.md) lists the steps they are written in, and
   [`runtime/rules.md`](runtime/rules.md) says how a runtime runs them.
 - [`runtime/pod-layout.ttl`](runtime/pod-layout.ttl): where a pod files each kind of thing, as RDF.
+- [`runtime/rule-list/`](runtime/rule-list): the matcher's rule list an app uses, apart from every table. The table
+  kinds its rules read, each kind's row shape and the code systems' IRI forms are in `records.ttl` and
+  `records.shapes.ttl`.
 - [`conformance/`](conformance): the conformance kits, the scenarios every runtime must pass, each a story, its
   scripted input and its right answers: [Alex Rivera's](conformance/alex-rivera), from FHIR, and
   [Priya Natarajan's](conformance/priya-natarajan), from FHIR and C-CDA together, with medications and lab results.

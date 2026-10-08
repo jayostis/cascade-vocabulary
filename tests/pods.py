@@ -1,6 +1,7 @@
 """A fixture: a few Turtle files laid out like a pod, beside the test manifest of what queries give over it. It is built
 as runtime/rules.md says a pod is queried at a step: each file a graph named by the pod's address and its path, the
-lens's derived state, the files a query writes, and the layout."""
+lens's derived state, the files a query writes, and the layout. A .trig file holds table versions' rows, each in the
+graph its version names, as the matcher reads them (M13)."""
 
 from dataclasses import dataclass
 from functools import cache, cached_property
@@ -49,6 +50,8 @@ class Fixture:
         store = ENGINES[engine]()
         for path in self.files():
             store.load(self.folder / path, ADDRESS + path)
+        for path in sorted(self.folder.glob("*.trig")):
+            store.load_graphs(path)
         added = derive(store, lens)
         files = write(store)
         store.add(parsed(LAYOUT, ADDRESS), LAYOUT_GRAPH)

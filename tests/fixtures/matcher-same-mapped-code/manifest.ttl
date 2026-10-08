@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-mapped-code" ;
-  rdfs:comment "An ingredient map pairing one SNOMED CT code with two RxNorm codes; allergies whose codes it pairs, whose codes it does not, and two RxNorm codes it maps from one SNOMED CT code." ;
+  rdfs:comment "A version of a substance ingredient map, its rows in its own graph, pairing one SNOMED CT code with two RxNorm codes; allergies whose codes it pairs, whose codes it does not, and two RxNorm codes it maps from one SNOMED CT code; and a pod file holding a row like the map's." ;
   mf:entries (
     <#same-mapped-code>
   ) .
 
 <#same-mapped-code> a mf:QueryEvaluationTest ;
   mf:name "same-mapped-code" ;
-  rdfs:comment "A SNOMED CT code matches each RxNorm code the map pairs it with, either way round; two RxNorm codes mapped from one SNOMED CT code, and a code the map holds nothing for, do not." ;
+  rdfs:comment "A SNOMED CT code matches each RxNorm code the map pairs it with, either way round, with the map's version; two RxNorm codes mapped from one SNOMED CT code, and a code only a pod file's row pairs, do not." ;
   mf:action [ qt:query <../../../queries/v1-draft/matcher/same-mapped-code.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <same-mapped-code.srj> .

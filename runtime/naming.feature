@@ -195,3 +195,20 @@ Feature: Naming
         | step                               | judgment                                        | verdict   |
         | <urn:cascade:step:about-r>         | <urn:uuid:b8d3f1a7-2c69-4e5b-9f14-3a7e6d2c8b91> | jdg:About |
         | <urn:cascade:step:retract-about-r> | <urn:uuid:f2b6d9a4-7e3c-4815-b9d7-5a8e2c6f1d43> |           |
+
+  Rule: N11. A mapping row is named by the record rule from its subject, its predicate and its object
+    Its IRI is its SSSOM record_id, and the record rule's three inputs, in this order, are the IRIs of its
+    owl:annotatedSource, owl:annotatedProperty and owl:annotatedTarget. A row in two versions has one name in both.
+
+    No example shows this rule, because no step writes a row. The vocabulary's tests check every row of every kit and
+    vector against it.
+
+  Rule: N12. A table version is named from its series, the version it revises and its rows
+    By N3's rule over exactly these triples: <urn:cascade:this-version> prov:specializationOf its series,
+    <urn:cascade:this-version> prov:wasRevisionOf the version it revises when there is one, and its rows. A row holds
+    no blank node, so the canonical form is its triples' N-Triples lines in order. Two series with no rows have two
+    names, and rows a version shares with an earlier one of its series still give it a name of its own. A story's
+    versions are named by urn:uuid:s minted once instead.
+
+    No example shows this rule, because no step names a version. The vocabulary's tests check it on
+    tests/table-versions/.

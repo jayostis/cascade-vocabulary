@@ -1,6 +1,6 @@
 """Two SPARQL engines behind one interface, each taking and giving rdflib terms; a string literal has no datatype.
-Every triple added under a graph's name is in the default graph as well, unless it is added to that graph alone, and
-queries read the default graph.
+Every triple added under a graph's name is in the default graph as well, unless it is added to that graph alone or
+loaded from TriG, and queries read the default graph.
 """
 
 import warnings
@@ -62,6 +62,9 @@ class Oxigraph(Store):
         parsed = pyoxigraph.parse(path.read_bytes(), format=pyoxigraph.RdfFormat.TURTLE, base_iri=graph)
         self._extend([(q.subject, q.predicate, q.object) for q in parsed], graph)
 
+    def load_graphs(self, path):
+        self.store.extend(pyoxigraph.parse(path.read_bytes(), format=pyoxigraph.RdfFormat.TRIG))
+
     def add(self, triples, graph=None, alone=False):
         self._extend([tuple(self._node(t) for t in triple) for triple in triples], graph, alone)
 
@@ -116,6 +119,11 @@ class Rdflib(Store):
 
     def load(self, path, graph):
         self._extend([tuple(map(plain, triple)) for triple in parsed(path, graph)], graph)
+
+    def load_graphs(self, path):
+        with literals_as_written():
+            quads = list(rdflib.Dataset().parse(data=path.read_bytes(), format="trig").quads())
+        self.dataset.addN((*map(plain, (s, p, o)), self.graph(str(g))) for s, p, o, g in quads)
 
     def add(self, triples, graph=None, alone=False):
         self._extend(list(triples), graph, alone)

@@ -5,7 +5,7 @@
     rec:justifiedAs jdg:SameCode ;
     rec:appliesTo "Allergy", "Condition", "Procedure" ;
     rec:query "matcher/same-code.rq" ;
-    rec:queryHash <ni:///sha-256;47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU> .
+    rec:queryHash <ni:///sha-256;l-aRkMIvfHe5mQVT7cIfzUIVAeQtlzU8045zZJ1e6CQ> .
 
 [] a rec:MatcherRule ;
     rec:justifiedAs jdg:SameCodeAndDate ;
@@ -14,15 +14,20 @@
     rec:queryHash <ni:///sha-256;Y3tTorFmXGAj9Wbhip4Xz6jWJ0soFhSy2g68JvQCyIw> .
 
 [] a rec:MatcherRule ;
-    rec:justifiedAs jdg:SameMappedCode ;
-    rec:appliesTo "Allergy" ;
-    rec:query "matcher/same-mapped-code.rq" ;
-    rec:queryHash <ni:///sha-256;erUVJRkpcqo1WuhUkhD70uQRiyX-0MZU0EIj2U9Nc8A> ;
-    rec:tableKind rec:SubstanceIngredients .
-
-[] a rec:MatcherRule ;
     rec:justifiedAs jdg:SameMappedCodeAndDate ;
     rec:appliesTo "Immunization" ;
     rec:query "matcher/same-mapped-code-and-date.rq" ;
     rec:queryHash <ni:///sha-256;PyuAdib3eKV3FuXO3dnd5VNofMkfaXxbI7xcbHjCly8> ;
     rec:tableKind rec:VaccineGroups .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameMedicationCode ;
+    rec:appliesTo "Medication" ;
+    rec:query "matcher/same-medication-code.rq" ;
+    rec:queryHash <ni:///sha-256;ZvUrYq6gfti9LmzL92HY8z7_PTFajf5ISPsiLtJBkaE> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameResult ;
+    rec:appliesTo "Lab result" ;
+    rec:query "matcher/same-result.rq" ;
+    rec:queryHash <ni:///sha-256;YPr1uwnpi-rWC-hN6tlpH3ZJSyPL4KV5IPASjsiL818> .
