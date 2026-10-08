@@ -5,7 +5,8 @@ Feature: Opening a pod
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Hana
   enters six flu shots in three pairs by date, and later one more. Her pod is made with the vector tables, which are
   Priya's kit's series. Two app's tables open it: "app", holding the vocabulary's rule list and version 1 of "CDC CVX
-  vaccine groups", and "app-later", holding versions 2 and 3 as well.
+  vaccine groups", "app-later", holding versions 2 and 3 as well, and "app-new-rules", holding a version 2 of the rule
+  list and version 1 of the rule list as an app holds it after a query changed, its hash no longer the query's.
 
   Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
     The default is M10's; a version descends from another along the tables' line of prov:wasRevisionOf. A series the
@@ -16,8 +17,8 @@ Feature: Opening a pod
        those pairs. A pair a rule joins with a version's rows is new unless a rule of that justification in the rule
        list the pod names joins it with the version the pod names of that series, or, for a rule reading no table,
        joins it at all. A rule list the pod names that M11 would refuse joins nothing. So a series the pod names no
-       version of, or a rule the pod's rule list lacks, judges every pair it joins, even one whose Same by another
-       series or rule a person retracted: the retraction answered other evidence;
+       version of, or a rule the pod's rule list lacks, judges every pair it joins, but a pair of which a person
+       retracted a matcher Same: the everyday lens lets a Same count however a retracted one was made;
     3. writes the reference descriptions last: those M8 writes, and each version on the line after the pod's up to the
        adopted one, oldest first.
 
@@ -54,6 +55,13 @@ Feature: Opening a pod
         | justification             | members                                                                    | at                  |
         | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | 2026-07-02 at 09:05 |
 
+    Example: a rule list the pod names that M11 now refuses joins nothing, so the adopted rule list judges every pair
+      When the pod is opened with the tables "app-new-rules" on 2026-07-03 at 09:00
+      Then that step wrote these matcher judgments:
+        | justification             | members                                                                    | used                                                                                                                                                             |
+        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | Matcher rules version 2, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"           |
+        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 2, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
+
     Example: opening again with the same tables writes nothing
       When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
       And the pod is opened with the tables "app-later" on 2026-07-04 at 09:00 (again)
@@ -83,6 +91,13 @@ Feature: Opening a pod
         | Matcher rules version 1         |
         | CDC CVX vaccine groups          |
         | CDC CVX vaccine groups version 1 |
+
+    Example: the app's tables do not judge a pair of which a person retracted the vector tables' Same
+      Given Hana files the judgment "retract-fluarix" on 2026-07-02 at 12:00
+      When the pod is opened with the tables "app" on 2026-07-03 at 09:00
+      Then that step wrote these matcher judgments:
+        | justification             | members                                                                    | used                                                                                                                                                             |
+        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 1, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
 
     Example: the vector tables' Same still counts beside the app's
       When the pod is opened with the tables "app" on 2026-07-03 at 09:00
