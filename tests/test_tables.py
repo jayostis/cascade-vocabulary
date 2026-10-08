@@ -137,7 +137,8 @@ ESCAPES = {"\\": "\\\\", '"': '\\"', "\b": "\\b", "\t": "\\t", "\n": "\\n", "\f"
 
 def canonical(term):
     """A term in canonical N-Triples, as RDFC-1.0 writes it for a graph with no blank node."""
-    assert not isinstance(term, BNode), "N12 names no version whose rows hold a blank node"
+    if isinstance(term, BNode):
+        raise ValueError("N12 names no version whose rows hold a blank node")
     if isinstance(term, URIRef):
         return f"<{term}>"
     escaped = "".join(ESCAPES.get(c) or (f"\\u{ord(c):04X}" if c < " " or c == "\x7f" else c) for c in str(term))
@@ -150,7 +151,7 @@ def canonical(term):
 
 def test_canonical_escapes_a_literal_as_rdfc_writes_it_and_refuses_a_blank_node():
     assert canonical(Literal('a"\\\b\t\n\f\r\x01\x7fé')) == r'"a\"\\\b\t\n\f\r\u0001\u007Fé"'
-    with pytest.raises(AssertionError, match="blank node"):
+    with pytest.raises(ValueError, match="blank node"):
         canonical(BNode())
 
 

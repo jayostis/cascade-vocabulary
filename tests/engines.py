@@ -124,8 +124,7 @@ class Rdflib(Store):
         with literals_as_written():
             quads = list(rdflib.Dataset().parse(data=path.read_bytes(), format="trig", publicID=base).quads())
         default = rdflib.graph.DATASET_DEFAULT_GRAPH_ID
-        self.dataset.addN((*map(plain, (s, p, o)), self.graph(None if g in (None, default) else str(g)))
-                          for s, p, o, g in quads)
+        self.dataset.addN((*map(plain, (s, p, o)), self.graph(None if g == default else str(g))) for s, p, o, g in quads)
 
     def add(self, triples, graph=None, alone=False):
         self._extend(list(triples), graph, alone)
