@@ -1,16 +1,25 @@
-# Read from the view alone, as an app would: each entry whose status is active, with its code, its onset,
-# and how many records it joins.
+# Read from the view alone, as an app would: each entry whose status is active, with its codes, its onset, and how
+# many records it joins. Each code is its system's IRI, SNOMED CT's or ICD-10-CM's: the one the entry states, or
+# http://snomed.info/sct/ or http://hl7.org/fhir/sid/icd-10-cm/ followed by the code as written, so that a reference
+# table's rows about it are found by it.
 PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?condition ?snomed ?onset (COUNT(?record) AS ?records) ?entry ?entryLabel
+SELECT ?condition ?snomed ?icd10 ?onset (COUNT(?record) AS ?records) ?entry ?entryLabel
 WHERE {
   ?entry a health:ConditionRecord ; health:status "active" ;
          health:conditionName ?condition ; cascade:mergedFrom ?record .
-  OPTIONAL { ?entry health:snomedCode ?snomed }
+  OPTIONAL {
+    ?entry health:snomedCode ?writtenSnomed .
+    BIND (IF(isIRI(?writtenSnomed), ?writtenSnomed, IRI(CONCAT("http://snomed.info/sct/", STR(?writtenSnomed)))) AS ?snomed)
+  }
+  OPTIONAL {
+    ?entry health:icd10Code ?writtenIcd10 .
+    BIND (IF(isIRI(?writtenIcd10), ?writtenIcd10, IRI(CONCAT("http://hl7.org/fhir/sid/icd-10-cm/", STR(?writtenIcd10)))) AS ?icd10)
+  }
   OPTIONAL { ?entry health:onsetDate ?onset }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
 }
-GROUP BY ?entry ?condition ?snomed ?onset ?entryLabel
+GROUP BY ?entry ?condition ?snomed ?icd10 ?onset ?entryLabel
 ORDER BY ?condition ?entry
