@@ -126,9 +126,8 @@ def ni_name(octets):
 
 def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_guards_on_its_kind_but_the_one_an_example_breaks():
     lists = {path.relative_to(ROOT).as_posix(): rows
-             for path in sorted([*ROOT.glob("runtime/rule-list/*.ttl"),
-                                 *ROOT.glob("runtime/scripted-input/*/references/*.ttl"),
-                                 *ROOT.glob("conformance/*/scripted-input/*/references/*.ttl")])
+             for path in sorted(path for top in ("runtime", "conformance")
+                                for index in (ROOT / top).rglob("references.ttl") for path in index.parent.glob("*.ttl"))
              for rows in [parsed(path)] if (None, RDF.type, REC.MatcherRule) in rows}
     assert len(lists) == 10
     mismatched, unguarded = set(), set()

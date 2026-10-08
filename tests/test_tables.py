@@ -17,8 +17,7 @@ from test_naming import record_name
 
 PROV = Namespace("http://www.w3.org/ns/prov#")
 VERSIONS = ROOT / "tests" / "table-versions"
-FOLDERS = sorted([*ROOT.glob("runtime/scripted-input/*/references"),
-                  *ROOT.glob("conformance/*/scripted-input/*/references")])
+FOLDERS = sorted(index.parent for top in ("runtime", "conformance") for index in (ROOT / top).rglob("references.ttl"))
 PREFIXES = """
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .

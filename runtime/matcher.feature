@@ -285,7 +285,7 @@ Feature: The matcher's procedure
         | same mapped code | allergy RxNorm 7980 "Bicillin", allergy SNOMED 373270004     | 2026-03-03 at 08:01 |
 
   Rule: M10. A table's current version is the one the pod names, and otherwise its series' default
-    In a story, the default is the version its series ships with, rec:shipsWith in references.ttl. In an app, it is
+    In a story, the default is the version the story's tables ship with (rec:shipsWith). In an app, it is
     the newest version of the series the app holds: the end of its line of prov:wasRevisionOf. An app never adopts a
     version that does not descend from the one it holds. The examples run on stories, so none shows an app's default.
 
