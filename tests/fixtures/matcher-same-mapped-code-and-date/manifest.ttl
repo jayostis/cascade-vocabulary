@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-mapped-code-and-date" ;
-  rdfs:comment "A version of a vaccine group table, its rows in its own graph, putting two CVX codes in one group; pairs of immunizations with those codes on one date and on two, one code on both, a group's own code with a code in its group, and a code that only a pod file and a version of another kind put in the group." ;
+  rdfs:comment "A version of a vaccine group table, its rows in its own graph, putting two CVX codes in one group; pairs of immunizations with those codes on one date and on two, one code on both, a group's own code with a code in its group, a code with a space in it with a code in a group, and a code that only a pod file and a version of another kind put in the group." ;
   mf:entries (
     <#same-mapped-code-and-date>
   ) .
 
 <#same-mapped-code-and-date> a mf:QueryEvaluationTest ;
   mf:name "same-mapped-code-and-date" ;
-  rdfs:comment "Two different codes of one group on one date match, a group's own code among them, with the table's version; on two dates, one code on both, or a code in no group of a vaccine group table, they do not." ;
+  rdfs:comment "Two different codes of one group on one date match, a group's own code among them, with the table's version; on two dates, one code on both, a code with a space in it, or a code in no group of a vaccine group table, they do not." ;
   mf:action [ qt:query <../../../queries/v1-draft/matcher/same-mapped-code-and-date.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <same-mapped-code-and-date.srj> .

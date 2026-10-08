@@ -4,18 +4,21 @@ named by N12 (runtime/naming.feature)."""
 import base64
 import hashlib
 import json
+import re
 from functools import cache
 
 import pytest
 from pyshacl import validate
 from rdflib import Graph, Namespace, URIRef
+from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH, XSD
 
-from contract import REC, ROOT
+from contract import QUERIES, REC, ROOT
 from engines import parsed
 from test_naming import record_name
 
 PROV = Namespace("http://www.w3.org/ns/prov#")
+VOID = Namespace("http://rdfs.org/ns/void#")
 VERSIONS = ROOT / "tests" / "table-versions"
 FOLDERS = sorted(index.parent for top in ("runtime", "conformance") for index in (ROOT / top).rglob("references.ttl"))
 PREFIXES = """
@@ -64,9 +67,18 @@ def versions():
 
 def test_every_kind_names_one_row_shape_and_what_its_rows_are_found_by():
     declared = set(kinds().subjects(RDF.type, REC.TableKind))
-    assert declared == {REC.VaccineGroups, REC.CodeNames, REC.CodeStatus, REC.SubstanceIngredients}
+    series_kind = next(p for p in shapes().objects(REC.ReferenceSeriesShape, SH.property)
+                       if shapes().value(p, SH.path) == REC.tableKind)
+    assert declared and set(Collection(shapes(), shapes().value(series_kind, SH["in"]))) == declared
     assert {kind for kind in declared if len(set(kinds().objects(kind, REC.rowShape))) != 1
             or not set(kinds().objects(kind, REC.foundBy))} == set()
+
+
+def test_every_code_iri_a_matcher_query_builds_starts_with_its_code_systems_uri_space():
+    systems = {str(space): system for system, space in kinds().subject_objects(VOID.uriSpace)}
+    built = {(path.name, systems.get(prefix)) for path in sorted((QUERIES / "matcher").glob("*.rq"))
+             for prefix in re.findall(r'CONCAT\s*\(\s*"([^"]*)"', path.read_text(encoding="utf-8"))}
+    assert built == {("same-mapped-code-and-date.rq", REC.CVX)}
 
 
 def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mapping_row_is_named_by_n11():
@@ -101,6 +113,17 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
      "none its preferred name"),
     (REC.CodeNames, 'cvx:141 skos:prefLabel "Influenza"@en ; skos:notation "141" .', "one preferred name"),
     (REC.CodeNames, '<urn:x:141> skos:prefLabel "Influenza" ; skos:notation "141" .', "one of the code systems' forms"),
+    (REC.CodeNames, '<http://hl7.org/fhir/sid/cvx/8> skos:prefLabel "x" ; skos:notation "8" .', "one of the code systems' forms"),
+    (REC.CodeNames, '<http://hl7.org/fhir/sid/ndc/00002143380> skos:prefLabel "x" ; skos:notation "0002-1433-80" .', None),
+    (REC.CodeNames, '<http://hl7.org/fhir/sid/ndc/0002-1433-80> skos:prefLabel "x" ; skos:notation "0002-1433-80" .',
+     "one of the code systems' forms"),
+    (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/E11.9> skos:prefLabel "x" ; skos:notation "E11.9" .', None),
+    (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/S72.001A> skos:prefLabel "x" ; skos:notation "S72.001A" .', None),
+    (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/E119> skos:prefLabel "x" ; skos:notation "E11.9" .',
+     "one of the code systems' forms"),
+    (REC.CodeNames, 'rxnorm:RX7980 skos:prefLabel "x" ; skos:notation "7980" .', "one of the code systems' forms"),
+    (REC.CodeNames, '<http://snomed.info/sct/x91936005> skos:prefLabel "x" ; skos:notation "91936005" .',
+     "one of the code systems' forms"),
     (REC.CodeStatus, "cvx:141 owl:deprecated true ; dct:isReplacedBy cvx:150 .", None),
     (REC.CodeStatus, "cvx:141 owl:deprecated false .", "owl:deprecated true"),
 ])

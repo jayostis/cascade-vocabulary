@@ -1,7 +1,8 @@
 # Two records of one kind match when their current versions give two different vaccine codes that one version of a
-# vaccine group table puts in one group, and one date, the same term. A record's CVX code is joined to the table by
-# its IRI, http://hl7.org/fhir/sid/cvx/ followed by the code as written. Each ordered pair is a row, with the version
-# whose rows joined it; a graph that is not a version of a vaccine group table is never read for rows.
+# vaccine group table puts in one group, and one date, the same term. A record's CVX code joins the table when a row's
+# code is http://hl7.org/fhir/sid/cvx/ followed by the code as written, compared as strings so that a code no IRI can
+# end with joins nothing. Each ordered pair is a row, with the version whose rows joined it; a graph that is not a
+# version of a vaccine group table is never read for rows.
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX pav: <http://purl.org/pav/>
@@ -16,11 +17,11 @@ WHERE {
   ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
   ?version health:vaccineCode ?code ; rec:date ?date .
   ?otherVersion health:vaccineCode ?otherCode ; rec:date ?date .
-  FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
-  BIND (IRI(CONCAT("http://hl7.org/fhir/sid/cvx/", STR(?code))) AS ?cvx)
-  BIND (IRI(CONCAT("http://hl7.org/fhir/sid/cvx/", STR(?otherCode))) AS ?otherCvx)
   GRAPH ?origin {
     ?row owl:annotatedSource ?cvx ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?group .
     ?otherRow owl:annotatedSource ?otherCvx ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?group .
   }
+  FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
+  FILTER (STR(?cvx) = CONCAT("http://hl7.org/fhir/sid/cvx/", STR(?code)))
+  FILTER (STR(?otherCvx) = CONCAT("http://hl7.org/fhir/sid/cvx/", STR(?otherCode)))
 }

@@ -148,7 +148,7 @@ rec:VaccineGroupRowShape a sh:NodeShape ;
     sh:node rec:MappingRowShape ;
     sh:property [
         sh:path owl:annotatedSource ;
-        sh:pattern "^http://hl7\\.org/fhir/sid/cvx/(0[1-9]|[1-9][0-9]{1,2})$" ;
+        sh:node rec:CvxCodeShape ;
         sh:message "A vaccine group row maps a CVX code."@en ;
         sh:severity sh:Violation
     ] , [
@@ -158,7 +158,7 @@ rec:VaccineGroupRowShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path owl:annotatedTarget ;
-        sh:pattern "^http://hl7\\.org/fhir/sid/cvx/(0[1-9]|[1-9][0-9]{1,2})$" ;
+        sh:node rec:CvxCodeShape ;
         sh:message "A vaccine group is named by its own CVX code."@en ;
         sh:severity sh:Violation
     ] .
@@ -167,7 +167,7 @@ rec:SubstanceIngredientRowShape a sh:NodeShape ;
     sh:node rec:MappingRowShape ;
     sh:property [
         sh:path owl:annotatedSource ;
-        sh:pattern "^http://snomed\\.info/sct/[0-9]+$" ;
+        sh:node rec:SnomedCtCodeShape ;
         sh:message "A substance ingredient row maps a SNOMED CT code."@en ;
         sh:severity sh:Violation
     ] , [
@@ -177,16 +177,36 @@ rec:SubstanceIngredientRowShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path owl:annotatedTarget ;
-        sh:pattern "^http://www\\.nlm\\.nih\\.gov/research/umls/rxnorm/[0-9]+$" ;
+        sh:node rec:RxNormCodeShape ;
         sh:message "A substance ingredient row maps to an RxNorm code."@en ;
         sh:severity sh:Violation
     ] .
 
 rec:CodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
-    sh:pattern "^(http://hl7\\.org/fhir/sid/(cvx|ndc|icd-10-cm)/|http://www\\.nlm\\.nih\\.gov/research/umls/rxnorm/|http://snomed\\.info/sct/)[^/]+$" ;
+    sh:or ( rec:CvxCodeShape rec:NdcCodeShape rec:IcdTenCmCodeShape rec:RxNormCodeShape rec:SnomedCtCodeShape ) ;
     sh:message "A code is an IRI of one of the code systems' forms."@en ;
     sh:severity sh:Violation .
+
+rec:CvxCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://hl7\\.org/fhir/sid/cvx/(0[1-9]|[1-9][0-9]{1,2})$" .
+
+rec:NdcCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://hl7\\.org/fhir/sid/ndc/[0-9]{11}$" .
+
+rec:IcdTenCmCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://hl7\\.org/fhir/sid/icd-10-cm/[A-Z][0-9][0-9A-Z](\\.[0-9A-Z]{1,4})?$" .
+
+rec:RxNormCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://www\\.nlm\\.nih\\.gov/research/umls/rxnorm/[0-9]+$" .
+
+rec:SnomedCtCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://snomed\\.info/sct/[0-9]+$" .
 
 rec:CodeNameRowShape a sh:NodeShape ;
     sh:node rec:CodeShape ;

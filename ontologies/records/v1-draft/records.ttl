@@ -280,25 +280,25 @@ rec:foundBy a owl:ObjectProperty ;
 
 rec:VaccineGroups a rec:TableKind ;
     rdfs:label "vaccine groups"@en ;
-    rdfs:comment "An SSSOM mapping kind: a CVX code skos:broadMatch the CVX code of a group it is in. A code in several groups has a row for each, and a group's own code maps to itself."@en ;
+    rdfs:comment "An SSSOM mapping kind: a vaccine code and a group it is in. A code in several groups has a row for each, and a group's own code maps to itself."@en ;
     rec:rowShape rec:VaccineGroupRowShape ;
     rec:foundBy owl:annotatedSource .
 
 rec:CodeNames a rec:TableKind ;
     rdfs:label "code names"@en ;
-    rdfs:comment "A code's names in SKOS: one skos:prefLabel, any skos:altLabel other than it, and its skos:notation, each an xsd:string with no language tag."@en ;
+    rdfs:comment "A code's names in SKOS, as its publisher gives them."@en ;
     rec:rowShape rec:CodeNameRowShape ;
     rec:foundBy rec:RowSubject .
 
 rec:CodeStatus a rec:TableKind ;
     rdfs:label "code status"@en ;
-    rdfs:comment "A retired code, owl:deprecated \"true\"^^xsd:boolean, with dct:isReplacedBy each replacement its publisher gives. A code that is not retired has no row; a mapping kind keeps a retired code's rows."@en ;
+    rdfs:comment "A retired code, with each replacement its publisher gives. A code that is not retired has no row; a mapping kind keeps a retired code's rows."@en ;
     rec:rowShape rec:CodeStatusRowShape ;
     rec:foundBy rec:RowSubject .
 
 rec:SubstanceIngredients a rec:TableKind ;
     rdfs:label "substance ingredients"@en ;
-    rdfs:comment "An SSSOM mapping kind the stories use and no open source fills: a SNOMED CT substance skos:exactMatch an RxNorm ingredient. Read either way round."@en ;
+    rdfs:comment "An SSSOM mapping kind the stories use and no open source fills: a SNOMED CT substance and its RxNorm ingredient. Read either way round."@en ;
     rec:rowShape rec:SubstanceIngredientRowShape ;
     rec:foundBy owl:annotatedSource , owl:annotatedTarget .
 
@@ -322,12 +322,12 @@ rec:RxNorm a rec:CodeSystem ;
 
 rec:NDC a rec:CodeSystem ;
     rdfs:label "NDC"@en ;
-    rdfs:comment "Eleven digits, 5-4-2, with no hyphens, as RxNorm's RXNSAT gives it."@en ;
+    rdfs:comment "The 5-4-2 form RxNorm's RXNSAT gives."@en ;
     void:uriSpace "http://hl7.org/fhir/sid/ndc/" .
 
 rec:ICD10CM a rec:CodeSystem ;
     rdfs:label "ICD-10-CM"@en ;
-    rdfs:comment "The code with its dot, as FHIR writes it: E11.9."@en ;
+    rdfs:comment "The code as FHIR writes it."@en ;
     void:uriSpace "http://hl7.org/fhir/sid/icd-10-cm/" .
 
 rec:SNOMEDCT a rec:CodeSystem ;

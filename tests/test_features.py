@@ -135,8 +135,9 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_gua
         for row in rows.subjects(RDF.type, REC.MatcherRule):
             query = str(rows.value(row, REC.query))
             assert query.startswith("matcher/"), path
-            text = (QUERIES / query).read_text(encoding="utf-8")
-            if ni_name((QUERIES / query).read_bytes()) != str(rows.value(row, REC.queryHash)):
+            octets = (QUERIES / query).read_bytes()
+            text = octets.decode("utf-8")
+            if ni_name(octets) != str(rows.value(row, REC.queryHash)):
                 mismatched.add((path.split("/")[-3], query))
             for kind in rows.objects(row, REC.tableKind):
                 guard = f"?origin prov:specializationOf/rec:tableKind rec:{str(kind).removeprefix(str(REC))} ."
