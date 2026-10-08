@@ -17,9 +17,9 @@ WHERE {
   }
   FILTER NOT EXISTS { ?retracting npx:retracts ?j }
   FILTER NOT EXISTS {
-    ?j prov:wasAttributedTo/a prov:SoftwareAgent ; prov:used ?input .
-    ?input prov:specializationOf ?series .
     ?series a rec:ReferenceSeries ; pav:hasCurrentVersion ?now .
+    ?input prov:specializationOf ?series .
+    ?j prov:used ?input ; prov:wasAttributedTo/a prov:SoftwareAgent .
     FILTER (?now != ?input)
   }
 }
