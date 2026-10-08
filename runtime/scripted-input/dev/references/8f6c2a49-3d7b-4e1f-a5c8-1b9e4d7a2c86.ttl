@@ -1,3 +1,10 @@
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sssom: <https://w3id.org/sssom/> .
 
-<http://snomed.info/sct/91936005> rec:sameIngredientAs <http://www.nlm.nih.gov/research/umls/rxnorm/733> .
+<urn:uuid:696d7daa-4226-801c-bd88-0c359f4d3606> a owl:Axiom ;
+    owl:annotatedSource <http://snomed.info/sct/91936005> ;
+    owl:annotatedProperty skos:exactMatch ;
+    owl:annotatedTarget <http://www.nlm.nih.gov/research/umls/rxnorm/733> ;
+    sssom:mapping_justification semapv:ManualMappingCuration .

@@ -91,3 +91,15 @@ def test_every_derivation_lens_view_and_the_labels_add_a_triple_and_every_questi
             if lens in lenses_that_differ(fixture):
                 quiet -= {ASKED[name] for name, rows in answers(fixture, "oxigraph", lens).items() if rows}
     assert quiet == set()
+
+
+def test_each_engine_loads_the_default_graph_of_a_trig_file_into_its_default_graph(tmp_path):
+    path = tmp_path / "rows.trig"
+    path.write_text("<urn:x:a> <urn:x:b> <urn:x:c> . <urn:x:g> { <urn:x:d> <urn:x:e> <urn:x:f> . }", encoding="utf-8")
+    loaded = {}
+    for name, engine in ENGINES.items():
+        store = engine()
+        store.load_graphs(path)
+        loaded[name] = (store.triples(), store.triples("urn:x:g"))
+    assert {name: [len(graph) for graph in graphs] for name, graphs in loaded.items()} == {name: [1, 1] for name in ENGINES}
+    assert loaded["oxigraph"] == loaded["rdflib"]

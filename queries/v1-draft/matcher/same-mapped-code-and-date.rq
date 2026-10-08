@@ -1,16 +1,27 @@
-# Two records of one kind match when their current versions give two different vaccine codes that the vaccine group
-# table puts in one group, and one date, the same term. A code is read as its string. Each ordered pair is a row.
+# Two records of one kind match when their current versions give two different vaccine codes that one version of a
+# vaccine group table puts in one group, and one date, the same term. A record's CVX code joins the table when a row's
+# code is http://hl7.org/fhir/sid/cvx/ followed by the code as written, compared as strings so that a code no IRI can
+# end with joins nothing. Each ordered pair is a row, with the version whose rows joined it; a graph that is not a
+# version of a vaccine group table is never read for rows.
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-SELECT DISTINCT ?record ?other
+SELECT DISTINCT ?record ?other ?origin
 WHERE {
+  ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups .
   ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
   ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
   ?version health:vaccineCode ?code ; rec:date ?date .
   ?otherVersion health:vaccineCode ?otherCode ; rec:date ?date .
-  ?row rec:cvxCode ?cvx ; rec:vaccineGroup ?group .
-  ?otherRow rec:cvxCode ?otherCvx ; rec:vaccineGroup ?group .
-  FILTER (?record != ?other && !sameTerm(?code, ?otherCode) && STR(?code) = ?cvx && STR(?otherCode) = ?otherCvx)
+  GRAPH ?origin {
+    ?row owl:annotatedSource ?cvx ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?group .
+    ?otherRow owl:annotatedSource ?otherCvx ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?group .
+  }
+  FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
+  FILTER (STR(?cvx) = CONCAT("http://hl7.org/fhir/sid/cvx/", STR(?code)))
+  FILTER (STR(?otherCvx) = CONCAT("http://hl7.org/fhir/sid/cvx/", STR(?otherCode)))
 }

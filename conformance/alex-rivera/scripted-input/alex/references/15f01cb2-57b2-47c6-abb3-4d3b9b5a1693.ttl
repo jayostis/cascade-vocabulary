@@ -1,4 +1,16 @@
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sssom: <https://w3id.org/sssom/> .
 
-[] rec:cvxCode "141" ; rec:vaccineGroup "INFLUENZA" .
-[] rec:cvxCode "150" ; rec:vaccineGroup "INFLUENZA" .
+<urn:uuid:682b4f66-ad68-80e4-a154-8952fb415368> a owl:Axiom ;
+    owl:annotatedSource <http://hl7.org/fhir/sid/cvx/141> ;
+    owl:annotatedProperty skos:broadMatch ;
+    owl:annotatedTarget <http://hl7.org/fhir/sid/cvx/88> ;
+    sssom:mapping_justification semapv:ManualMappingCuration .
+
+<urn:uuid:6f01bf63-3d03-8b5b-abda-630660d5045d> a owl:Axiom ;
+    owl:annotatedSource <http://hl7.org/fhir/sid/cvx/150> ;
+    owl:annotatedProperty skos:broadMatch ;
+    owl:annotatedTarget <http://hl7.org/fhir/sid/cvx/88> ;
+    sssom:mapping_justification semapv:ManualMappingCuration .

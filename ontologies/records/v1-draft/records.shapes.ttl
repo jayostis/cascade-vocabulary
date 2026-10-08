@@ -1,10 +1,15 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix solid: <http://www.w3.org/ns/solid/terms#> .
+@prefix sssom: <https://w3id.org/sssom/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 rec:SourceUrlShape a sh:NodeShape ;
@@ -90,11 +95,163 @@ rec:ReferenceSeriesShape a sh:NodeShape ;
         sh:node rec:ReferenceVersionShape ;
         sh:message "A reference series has at least one version, and each version names its own label and at most one version it replaces."@en ;
         sh:severity sh:Violation
+    ], [
+        sh:path rec:tableKind ;
+        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients ) ;
+        sh:maxCount 1 ;
+        sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
+        sh:severity sh:Violation
     ] .
 
 rec:ReferenceVersionShape a sh:NodeShape ;
     sh:property [ sh:path pav:version ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ,
                 [ sh:path prov:wasRevisionOf ; sh:nodeKind sh:IRI ; sh:maxCount 1 ] .
+
+rec:MappingRowShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:class owl:Axiom ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:message "A mapping row is an owl:Axiom named by an IRI, its record_id, holding only its source, property, target and justification."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row maps one subject code, an IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row has one predicate."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row maps to one object code, an IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path sssom:mapping_justification ;
+        sh:in ( semapv:ManualMappingCuration semapv:MappingChaining ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row is justified as a publisher's curated row or a chain of the publisher's relationships."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:VaccineGroupRowShape a sh:NodeShape ;
+    sh:node rec:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node rec:CvxCodeShape ;
+        sh:message "A vaccine group row maps a CVX code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue skos:broadMatch ;
+        sh:message "A vaccine group row puts its code in a group with skos:broadMatch."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node rec:CvxCodeShape ;
+        sh:message "A vaccine group is named by its own CVX code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:SubstanceIngredientRowShape a sh:NodeShape ;
+    sh:node rec:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node rec:SnomedCtCodeShape ;
+        sh:message "A substance ingredient row maps a SNOMED CT code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue skos:exactMatch ;
+        sh:message "A substance ingredient row pairs its codes with skos:exactMatch."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node rec:RxNormCodeShape ;
+        sh:message "A substance ingredient row maps to an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:CodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:or ( rec:CvxCodeShape rec:NdcCodeShape rec:IcdTenCmCodeShape rec:RxNormCodeShape rec:SnomedCtCodeShape ) ;
+    sh:message "A code is an IRI of one of the code systems' forms."@en ;
+    sh:severity sh:Violation .
+
+rec:CvxCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://hl7\\.org/fhir/sid/cvx/(0[1-9]|[1-9][0-9]{1,2})$" .
+
+rec:NdcCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://hl7\\.org/fhir/sid/ndc/[0-9]{11}$" .
+
+rec:IcdTenCmCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://hl7\\.org/fhir/sid/icd-10-cm/[A-Z][0-9][0-9A-Z](\\.[0-9A-Z]{1,4})?$" .
+
+rec:RxNormCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://www\\.nlm\\.nih\\.gov/research/umls/rxnorm/[0-9]+$" .
+
+rec:SnomedCtCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://snomed\\.info/sct/[0-9]+$" .
+
+rec:CodeNameRowShape a sh:NodeShape ;
+    sh:node rec:CodeShape ;
+    sh:closed true ;
+    sh:message "A code names row holds only the code's labels and notation."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path skos:prefLabel ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A code has one preferred name."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path skos:altLabel ;
+        sh:datatype xsd:string ;
+        sh:disjoint skos:prefLabel ;
+        sh:message "A code's other names are plain strings, none its preferred name."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path skos:notation ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A code has one notation, the code as its publisher writes it."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:CodeStatusRowShape a sh:NodeShape ;
+    sh:node rec:CodeShape ;
+    sh:closed true ;
+    sh:message "A code status row holds only that the code is retired and what replaces it."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path owl:deprecated ;
+        sh:hasValue true ;
+        sh:maxCount 1 ;
+        sh:message "A code status row says its code is retired: owl:deprecated true."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path dct:isReplacedBy ;
+        sh:node rec:CodeShape ;
+        sh:message "A retired code is replaced by codes, each an IRI of a code system's form."@en ;
+        sh:severity sh:Violation
+    ] .
 
 rec:PlacementShape a sh:NodeShape ;
     sh:targetClass rec:Placement ;

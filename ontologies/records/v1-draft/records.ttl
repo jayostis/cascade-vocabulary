@@ -6,7 +6,10 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix solid: <http://www.w3.org/ns/solid/terms#> .
+@prefix sssom: <https://w3id.org/sssom/> .
+@prefix void: <http://rdfs.org/ns/void#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://ns.cascadeprotocol.org/records/v1-draft#> a owl:Ontology .
@@ -230,7 +233,7 @@ rec:shipsWith a owl:ObjectProperty ;
 
 rec:MatcherRule a owl:Class ;
     rdfs:label "matcher rule"@en ;
-    rdfs:comment "One row of a version of the matcher's rule list: the justification it gives, the kinds of record it applies to, the comparison query it runs and the hash of that query's bytes, and the series of the table the query reads, if any."@en .
+    rdfs:comment "One row of a version of the matcher's rule list: the justification it gives, the kinds of record it applies to, the comparison query it runs and the hash of that query's bytes, and the kind of table the query reads, if any."@en .
 
 rec:justifiedAs a owl:ObjectProperty ;
     rdfs:label "justified as"@en ;
@@ -254,25 +257,135 @@ rec:queryHash a owl:ObjectProperty ;
     rdfs:comment "The ni:///sha-256; name of the bytes of the rule's query file; a run whose file does not hash to it is refused."@en ;
     rdfs:domain rec:MatcherRule .
 
-rec:table a owl:ObjectProperty ;
-    rdfs:label "table"@en ;
-    rdfs:comment "The series whose current version's rows the rule's query reads."@en ;
-    rdfs:domain rec:MatcherRule ;
-    rdfs:range rec:ReferenceSeries .
+# Table kinds, their rows and the codes rows name
 
-rec:sameIngredientAs a owl:ObjectProperty ;
-    rdfs:label "same ingredient as"@en ;
-    rdfs:comment "A row of an ingredient map: the table pairs this SNOMED CT code with that RxNorm code."@en .
+rec:tableKind a owl:ObjectProperty ;
+    rdfs:label "table kind"@en ;
+    rdfs:comment "Of a series, the one kind of table its versions are; of a rule of the rule list, the kind whose rows its query reads. A runtime gives the query the current version of every series of that kind, each in the graph named by the version's IRI."@en ;
+    rdfs:range rec:TableKind .
 
-rec:cvxCode a owl:DatatypeProperty ;
-    rdfs:label "CVX code"@en ;
-    rdfs:comment "The CVX code a row of a vaccine group table places in its group."@en ;
-    rdfs:range xsd:string .
+rec:TableKind a owl:Class ;
+    rdfs:label "table kind"@en ;
+    rdfs:comment "What a table's rows say, whatever source fills it: the shape every row conforms to and the property a row is found by. A row is a subject of a version's rows with every triple it is the subject of, and holds no blank node."@en .
 
-rec:vaccineGroup a owl:DatatypeProperty ;
-    rdfs:label "vaccine group"@en ;
-    rdfs:comment "The group a row of a vaccine group table places its CVX code in."@en ;
-    rdfs:range xsd:string .
+rec:rowShape a owl:ObjectProperty ;
+    rdfs:label "row shape"@en ;
+    rdfs:comment "The SHACL shape every subject of a version's rows conforms to."@en ;
+    rdfs:domain rec:TableKind .
+
+rec:foundBy a owl:ObjectProperty ;
+    rdfs:label "found by"@en ;
+    rdfs:comment "A property whose value is a code a row is found by, or rec:RowSubject when the row is about the code itself, as its subject."@en ;
+    rdfs:domain rec:TableKind .
+
+rec:VaccineGroups a rec:TableKind ;
+    rdfs:label "vaccine groups"@en ;
+    rdfs:comment "An SSSOM mapping kind: a vaccine code and a group it is in. A code in several groups has a row for each, and a group's own code maps to itself."@en ;
+    rec:rowShape rec:VaccineGroupRowShape ;
+    rec:foundBy owl:annotatedSource .
+
+rec:CodeNames a rec:TableKind ;
+    rdfs:label "code names"@en ;
+    rdfs:comment "A code's names in SKOS, as its publisher gives them."@en ;
+    rec:rowShape rec:CodeNameRowShape ;
+    rec:foundBy rec:RowSubject .
+
+rec:CodeStatus a rec:TableKind ;
+    rdfs:label "code status"@en ;
+    rdfs:comment "A retired code, with each replacement its publisher gives. A code that is not retired has no row; a mapping kind keeps a retired code's rows."@en ;
+    rec:rowShape rec:CodeStatusRowShape ;
+    rec:foundBy rec:RowSubject .
+
+rec:SubstanceIngredients a rec:TableKind ;
+    rdfs:label "substance ingredients"@en ;
+    rdfs:comment "An SSSOM mapping kind the stories use and no open source fills: a SNOMED CT substance and its RxNorm ingredient. Read either way round."@en ;
+    rec:rowShape rec:SubstanceIngredientRowShape ;
+    rec:foundBy owl:annotatedSource , owl:annotatedTarget .
+
+rec:RowSubject a rdf:Property ;
+    rdfs:label "the row's subject"@en ;
+    rdfs:comment "Not stated by any row: as a kind's rec:foundBy, that each row is found by its own subject, the code it is about."@en .
+
+rec:CodeSystem a owl:Class ;
+    rdfs:label "code system"@en ;
+    rdfs:comment "A code system whose codes are IRIs of one form: its void:uriSpace followed by the code. A record's code written as a literal joins a table as that IRI, the literal as written."@en .
+
+rec:CVX a rec:CodeSystem ;
+    rdfs:label "CVX"@en ;
+    rdfs:comment "The code as CDC writes it, leading zero kept and trailing spaces trimmed: 08, 141. A record coded 8 joins nothing."@en ;
+    void:uriSpace "http://hl7.org/fhir/sid/cvx/" .
+
+rec:RxNorm a rec:CodeSystem ;
+    rdfs:label "RxNorm"@en ;
+    rdfs:comment "The RXCUI."@en ;
+    void:uriSpace "http://www.nlm.nih.gov/research/umls/rxnorm/" .
+
+rec:NDC a rec:CodeSystem ;
+    rdfs:label "NDC"@en ;
+    rdfs:comment "The 5-4-2 form RxNorm's RXNSAT gives."@en ;
+    void:uriSpace "http://hl7.org/fhir/sid/ndc/" .
+
+rec:ICD10CM a rec:CodeSystem ;
+    rdfs:label "ICD-10-CM"@en ;
+    rdfs:comment "The code as FHIR writes it."@en ;
+    void:uriSpace "http://hl7.org/fhir/sid/icd-10-cm/" .
+
+rec:SNOMEDCT a rec:CodeSystem ;
+    rdfs:label "SNOMED CT"@en ;
+    rdfs:comment "The concept ID."@en ;
+    void:uriSpace "http://snomed.info/sct/" .
+
+void:uriSpace a owl:DatatypeProperty ;
+    rdfs:label "URI space"@en ;
+    rdfs:isDefinedBy <http://rdfs.org/ns/void#> ;
+    dct:source <https://www.w3.org/TR/2011/NOTE-void-20110303/> .
+
+owl:annotatedSource a rdf:Property ;
+    rdfs:label "annotated source"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> .
+
+owl:annotatedProperty a rdf:Property ;
+    rdfs:label "annotated property"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> .
+
+owl:annotatedTarget a rdf:Property ;
+    rdfs:label "annotated target"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> .
+
+owl:deprecated a owl:AnnotationProperty ;
+    rdfs:label "deprecated"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> .
+
+sssom:mapping_justification a owl:ObjectProperty ;
+    rdfs:label "mapping justification"@en ;
+    rdfs:isDefinedBy <https://w3id.org/sssom/schema/> ;
+    dct:source <https://github.com/mapping-commons/sssom/blob/667d3c579d92ad2e1a480503625eeef1e6af8e6d/src/sssom_schema/schema/sssom_schema.yaml> .
+
+skos:prefLabel a owl:AnnotationProperty ;
+    rdfs:label "preferred label"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    rdfs:subPropertyOf rdfs:label ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:altLabel a owl:AnnotationProperty ;
+    rdfs:label "alternative label"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    rdfs:subPropertyOf rdfs:label ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:notation a owl:DatatypeProperty ;
+    rdfs:label "notation"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+dct:isReplacedBy a rdf:Property ;
+    rdfs:label "Is Replaced By"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> .
 
 # Test terms, used with W3C's mf: test-manifest vocabulary
 
