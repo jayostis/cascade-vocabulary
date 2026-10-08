@@ -74,7 +74,7 @@ Feature: Opening a pod
 
       When the pod is opened with the tables "app-rxnorm" on 2026-07-03 at 09:00
       And Hana enters "allergies" on 2026-07-04 at 09:00
-      And the matcher runs on the records of that entry on 2026-07-04 at 09:05
+      And the matcher runs on the records of that entry on 2026-07-04 at 09:05 (match-allergies)
       Then the matcher's judgments holding allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen", allergy RxNorm 151392 "Augmentin" and allergy RxNorm 723 "Amoxicillin" are:
         | justification    | members                                                       | used                                                                                                                                                         |
         | same mapped code | allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen" | Matcher rules version 2, NLM RxNorm Prescribable product ingredients version 1, version 1 of allergy RxNorm 153010 "Advil", version 1 of allergy RxNorm 5640 "Ibuprofen" |
@@ -86,6 +86,11 @@ Feature: Opening a pod
       Then the matcher's judgments holding allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen", allergy RxNorm 151392 "Augmentin" and allergy RxNorm 723 "Amoxicillin" are:
         | justification    | members                                                       | at                  | used                                                                                                                                                         |
         | same mapped code | allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen" | 2026-07-03 at 09:00 | Matcher rules version 2, NLM RxNorm Prescribable product ingredients version 1, version 1 of allergy RxNorm 153010 "Advil", version 1 of allergy RxNorm 5640 "Ibuprofen" |
+      And that step wrote these reference descriptions:
+        | reference                                             |
+        | Matcher rules version 2                               |
+        | NLM RxNorm Prescribable product ingredients           |
+        | NLM RxNorm Prescribable product ingredients version 1 |
 
   Rule: O2. A series the tables do not hold the pod's version of is left out, and nothing is written of it
     The tables may not hold the series at all, as for a pod made on other tables, or not the pod's version, as for a
