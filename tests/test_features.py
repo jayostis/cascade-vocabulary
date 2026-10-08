@@ -129,7 +129,7 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_gua
              for path in sorted(path for top in ("runtime", "conformance")
                                 for index in (ROOT / top).rglob("references.ttl") for path in index.parent.glob("*.ttl"))
              for rows in [parsed(path)] if (None, RDF.type, REC.MatcherRule) in rows}
-    assert len(lists) == 10
+    assert len(lists) == 13
     mismatched, unguarded = set(), set()
     for path, rows in lists.items():
         for row in rows.subjects(RDF.type, REC.MatcherRule):

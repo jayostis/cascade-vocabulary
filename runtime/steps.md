@@ -13,7 +13,7 @@ reads it at another point.
 
 A `Given` or `When` step may end with a label in parentheses, `(E13)`, which names it. Otherwise a step is named by the
 name it quotes: an import by its export's, its download's or its pull's, a download's extension kept, an entry or a
-judgment by its file's. The pod's creation, a reference version's arrival, a matcher run and a recheck are named `pod`,
+judgment by its file's, an open by its tables folder's. The pod's creation, a reference version's arrival, a matcher run and a recheck are named `pod`,
 `reference`, `matcher` and `recheck`. Two steps of one example never share a name: where they would, the later is
 labelled. A name is letters, digits, `-`, `_` and `.`, so that `urn:cascade:step:NAME` below is an IRI.
 
@@ -37,6 +37,7 @@ and `scripted-input/people.ttl` gives each person's subject (`foaf:name`) and po
 | `entries/<entry>.ttl` | an entry: its session `urn:cascade:this-entry` and its drafts `urn:cascade:output-N`, with their versions |
 | `judgments/<judgment>.ttl` | one judgment a person makes, under the IRI it keeps |
 | `references/` | the matcher's reference tables, below |
+| `tables/<name>/` | the tables an open step gives the pod, laid out as `references/` |
 
 The runtime gives each import and each entry session a new random UUID on every run, and the entry's session the
 step's time. A step that is refused writes nothing, and the example goes on. The Bridge output saved for a rule's
@@ -44,7 +45,7 @@ example is written by hand to set up that rule, and is not what a Bridge produce
 output is the Bridge's own. A document no adapter accepted is saved as `bridge/<step>/<file stem>/unaccepted.txt`,
 saying why; a document an import must convert and has no saved output for is the example's error, not a refusal.
 
-**The matcher's reference tables** are `references/`, in Turtle:
+**The matcher's reference tables** are `references/` until an open step names other tables, in Turtle:
 
 - **`references.ttl`**, the index: each `rec:ReferenceSeries` with its `rdfs:label`, the one `rec:TableKind` its
   versions are (`rec:tableKind`), if it is a table, and the version it `rec:shipsWith`, and each version, a
@@ -109,7 +110,7 @@ Each names exactly one thing in the pod, or the step fails.
 A judgment a person makes is named by its handle in a kit (`J21`) or by its file's name (`"retract-b"`). A matcher
 judgment is named `the matcher's <justification> of <records>`, the justification in words: `same code`,
 `same code and date`, `same mapped code`, `same mapped code and date`, `same medication code` or `same result`. A
-reference series is named by its `rdfs:label`, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
+reference series is named by its `rdfs:label` in any of the person's tables folders, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
 name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5.
 
@@ -160,6 +161,10 @@ The matcher runs, taking the records whose first revision came from that step's 
 ### `the matcher rechecks on {time}`
 
 The matcher runs with no step's records: a recheck.
+
+### `the pod is opened with the tables {name} on {time}`
+
+An app opens the pod with the tables in `tables/<name>/` (O1, O2). They are the story's tables from this step on.
 
 ### `the pod is read as it stood after {step}`, `the pod is read as it stood after {step}, under the {lens} lens`
 

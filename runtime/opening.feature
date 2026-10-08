@@ -1,0 +1,111 @@
+Feature: Opening a pod
+  What a runtime does when it opens a pod with the tables it holds: an app opens a pod with its own, and a newer app
+  holds newer versions.
+
+  Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Hana
+  enters six flu shots in three pairs by date, and later one more. Her pod is made with the vector tables, which are
+  Priya's kit's series. Two app's tables open it: "app", holding the vocabulary's rule list and version 1 of "CDC CVX
+  vaccine groups", and "app-later", holding versions 2 and 3 as well.
+
+  Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
+    The default is M10's; a version descends from another along the tables' line of prov:wasRevisionOf. A series the
+    pod names no version of is not adopted, since M10 already gives it the default. Opening, at the open's time:
+
+    1. rechecks (M7), with each adopted version current;
+    2. files a Same for each pair the current rule list and tables join and the pod's own do not, by M3 and M5 over
+       those pairs. A pair a rule joins with a version's rows is new unless a rule of that justification in the rule
+       list the pod names joins it with the version the pod names of that series, or, for a rule reading no table,
+       joins it at all. So a series the pod names no version of, or a rule the pod's rule list lacks, judges every pair
+       it joins;
+    3. writes the reference descriptions last: those M8 writes, and each version on the line after the pod's up to the
+       adopted one, oldest first.
+
+    An open that finds nothing new writes nothing, so opening again is always safe.
+
+    Background:
+      Given a new pod for Hana on 2026-07-01 at 09:00
+      And the pod is opened with the tables "app" on 2026-07-01 at 09:01
+      And Hana enters "flu-shots" on 2026-07-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-02 at 09:05
+
+    Example: adopting describes each version after the pod's up to the adopted one
+      When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
+      Then that step wrote these reference descriptions:
+        | reference                        |
+        | CDC CVX vaccine groups version 2 |
+        | CDC CVX vaccine groups version 3 |
+
+    Example: adopting files again each Same the adopted rows still join, and a Same of each pair only they join
+      Version 3 withdraws 150's row, so Fluarix and FluLaval are not joined again.
+
+      When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
+      Then that step wrote these matcher judgments:
+        | justification             | members                                                                    | used                                                                                                                                                             |
+        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 1, CDC CVX vaccine groups version 3, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
+        | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 141 "Flublok"            | Matcher rules version 1, CDC CVX vaccine groups version 3, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 141 "Flublok"            |
+
+    Example: a pair the replaced version joined is not judged again, so a Same a person retracted stays retracted
+      Version 3 changes 161's row, which does not make its pairs new.
+
+      Given Hana files the judgment "retract-fluad" on 2026-07-02 at 12:00
+      When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
+      Then the matcher's judgments holding immunization CVX 141 "Fluad" are:
+        | justification             | members                                                                    | at                  |
+        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | 2026-07-02 at 09:05 |
+
+    Example: opening again with the same tables writes nothing
+      When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
+      And the pod is opened with the tables "app-later" on 2026-07-04 at 09:00 (again)
+      Then that step wrote no file
+
+  Rule: O2. A series the tables do not hold the pod's version of is left out, and nothing is written of it
+    The tables may not hold the series at all, as for a pod made on other tables, or not the pod's version, as for a
+    pod a newer app has opened. Rules reading that series' kind read no version of it, and the rest of the matcher
+    runs. Its Sames are not filed again, since no version the tables hold revises theirs, and they still count. The
+    runtime tells the app which versions it does not hold; no example can show that.
+
+    Background:
+      Given a new pod for Hana on 2026-07-01 at 09:00
+      And Hana enters "flu-shots" on 2026-07-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-02 at 09:05 (match-kit)
+
+    Example: a pod made on the vector tables, opened with an app's, is judged by the app's tables and writes nothing of the vector tables
+      When the pod is opened with the tables "app" on 2026-07-03 at 09:00
+      Then that step wrote these matcher judgments:
+        | justification             | members                                                                    | used                                                                                                                                                             |
+        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | Matcher rules version 1, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"           |
+        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 1, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
+      And that step wrote these reference descriptions:
+        | reference                       |
+        | Matcher rules                   |
+        | Matcher rules version 1         |
+        | CDC CVX vaccine groups          |
+        | CDC CVX vaccine groups version 1 |
+
+    Example: the vector tables' Same still counts beside the app's
+      When the pod is opened with the tables "app" on 2026-07-03 at 09:00
+      And the query is:
+        """
+        PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+        SELECT ?rules WHERE {
+          ?judgment rec:counts true ; jdg:justification jdg:SameMappedCodeAndDate ; prov:used ?rules .
+          ?rules prov:specializationOf/rdfs:label ?label .
+          FILTER (?label IN ("Cascade matcher rules", "Matcher rules"))
+        }
+        """
+      Then it answers:
+        | rules                           |
+        | Cascade matcher rules version 1 |
+        | Matcher rules version 1         |
+        | Matcher rules version 1         |
+
+    Example: a pod at a version the app does not hold is matched without that series
+      When the pod is opened with the tables "app" on 2026-07-03 at 09:00
+      And the pod is opened with the tables "app-later" on 2026-07-04 at 09:00
+      And the pod is opened with the tables "app" on 2026-07-05 at 09:00 (older)
+      And Hana enters "fluarix-again" on 2026-07-06 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-06 at 09:05
+      Then "older" wrote no file
+      And that step wrote these matcher judgments:
+        | justification      | members                                                              | used                                                                                                                    |
+        | same code and date | immunization CVX 141 "Fluarix Tetra", immunization CVX 141 "Fluarix" | Matcher rules version 1, version 1 of immunization CVX 141 "Fluarix Tetra", version 1 of immunization CVX 141 "Fluarix" |
