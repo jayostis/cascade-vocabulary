@@ -186,7 +186,8 @@ Feature: The matcher's procedure
     nothing. It runs on the members that are still the subject's, under the current version of the series whose
     version the Same used, and writes a new judgment, using that version, if at least two still match. A version is
     revised when a version of the tables revises it, whether or not the pod describes that one, so an open that writes
-    the descriptions last (W1) still rechecks. A Same whose rule the current rule list lacks refuses the recheck.
+    the descriptions last (W1) still rechecks. A Same whose rule now reads a table, and which used no version of
+    that table's kind, is not filed again. A Same whose rule the current rule list lacks refuses the recheck.
 
     Background:
       Given a new pod for Eve on 2026-05-01 at 09:00
@@ -266,8 +267,9 @@ Feature: The matcher's procedure
       And that step wrote these reference descriptions:
         | reference |
 
-  Rule: M9. If the pod already holds a judgment of that name, nothing is written
-    Not even the reference descriptions it would have written. So running again is always safe.
+  Rule: M9. If the pod already holds a judgment of that name, it is not written again
+    Only the reference descriptions it uses that the pod lacks are written (M8), so a run that stopped between its
+    judgments and its descriptions (W1) finishes when run again. So running again is always safe.
 
     Background:
       Given a new pod for Cleo on 2026-03-01 at 09:00

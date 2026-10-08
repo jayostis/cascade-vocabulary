@@ -15,8 +15,9 @@ Feature: Opening a pod
     2. files a Same for each pair the current rule list and tables join and the pod's own do not, by M3 and M5 over
        those pairs. A pair a rule joins with a version's rows is new unless a rule of that justification in the rule
        list the pod names joins it with the version the pod names of that series, or, for a rule reading no table,
-       joins it at all. So a series the pod names no version of, or a rule the pod's rule list lacks, judges every pair
-       it joins;
+       joins it at all. A rule list the pod names that M11 would refuse joins nothing. So a series the pod names no
+       version of, or a rule the pod's rule list lacks, judges every pair it joins, even one whose Same by another
+       series or rule a person retracted: the retraction answered other evidence;
     3. writes the reference descriptions last: those M8 writes, and each version on the line after the pod's up to the
        adopted one, oldest first.
 
@@ -61,7 +62,8 @@ Feature: Opening a pod
   Rule: O2. A series the tables do not hold the pod's version of is left out, and nothing is written of it
     The tables may not hold the series at all, as for a pod made on other tables, or not the pod's version, as for a
     pod a newer app has opened. Rules reading that series' kind read no version of it, and the rest of the matcher
-    runs. Its Sames are not filed again, since no version the tables hold revises theirs, and they still count. The
+    runs. Its Sames are not rechecked, since no version the tables hold revises theirs, and they still count; the
+    tables' own rules may judge the same pairs anew (O1). The
     runtime tells the app which versions it does not hold; no example can show that.
 
     Background:
