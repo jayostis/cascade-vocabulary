@@ -1,0 +1,26 @@
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a rec:ReferenceSeries ;
+    rdfs:label "Matcher rules" ;
+    rec:shipsWith <urn:uuid:8ef190d1-8ec8-46c6-87b3-6abf3c78cde1> .
+
+<urn:uuid:f32ebeea-4ed7-4da7-b08c-031dc619538e> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "1" .
+
+<urn:uuid:8ef190d1-8ec8-46c6-87b3-6abf3c78cde1> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "2" ;
+    prov:wasRevisionOf <urn:uuid:f32ebeea-4ed7-4da7-b08c-031dc619538e> .
+
+<urn:uuid:910b4e9b-77e0-423c-8b8d-4f4e29fa464d> a rec:ReferenceSeries ;
+    rdfs:label "CDC CVX vaccine groups" ;
+    rec:tableKind rec:VaccineGroups ;
+    rec:shipsWith <urn:uuid:40aa2d4f-fb10-45f8-a32c-e403f7efdd54> .
+
+<urn:uuid:40aa2d4f-fb10-45f8-a32c-e403f7efdd54> a prov:Entity ;
+    prov:specializationOf <urn:uuid:910b4e9b-77e0-423c-8b8d-4f4e29fa464d> ;
+    pav:version "1" .
