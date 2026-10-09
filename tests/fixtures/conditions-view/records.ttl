@@ -13,7 +13,8 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :asthmaNew a health:ConditionRecord .
-:asthmaNewVersion prov:specializationOf :asthmaNew ; rec:patient :subject ; health:conditionName "Asthma, allergic" ; health:snomedCode <http://snomed.info/id/389145006> .
+:asthmaNewVersion prov:specializationOf :asthmaNew ; rec:patient :subject ; health:conditionName "Asthma, allergic" ; health:snomedCode <http://snomed.info/id/389145006>, <http://snomed.info/id/195967001> ;
+    health:icd10Code "J45.909", <http://hl7.org/fhir/sid/icd-10-cm/J45.50> .
 :asthmaNewRevision a rec:Revision ; rec:revisionOf :asthmaNew ; rec:version :asthmaNewVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 

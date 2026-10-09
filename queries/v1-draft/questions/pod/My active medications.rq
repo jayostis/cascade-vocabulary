@@ -1,5 +1,7 @@
 # Read from the view alone, as an app would: each entry whose status is active, with its RxNorm code, when it started,
-# and how many records it joins.
+# and how many records it joins. The code is RxNorm's IRI: the one the entry states, or
+# http://www.nlm.nih.gov/research/umls/rxnorm/ followed by the code as written; none when what is written cannot end
+# an IRI.
 PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -8,7 +10,11 @@ SELECT ?medication ?code ?started (COUNT(?record) AS ?records) ?entry ?entryLabe
 WHERE {
   ?entry a clinical:Medication ; clinical:status "active" ;
          clinical:drugName ?medication ; cascade:mergedFrom ?record .
-  OPTIONAL { ?entry clinical:rxNormCode ?code }
+  OPTIONAL {
+    ?entry clinical:rxNormCode ?written .
+    FILTER (isIRI(?written) || REGEX(STR(?written), '^[^\\s<>"{}|^`\\\\]+$'))
+    BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://www.nlm.nih.gov/research/umls/rxnorm/", STR(?written)))) AS ?code)
+  }
   OPTIONAL { ?entry clinical:startDate ?started }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
 }

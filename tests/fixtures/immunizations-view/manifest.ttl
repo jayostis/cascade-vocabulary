@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "immunizations-view" ;
-  rdfs:comment "An immunization entry of two members, the later naming it and stating no status and no date; and one not done." ;
+  rdfs:comment "An immunization entry of two members, the later naming it and stating no status and no date; and one not done, its code written as no IRI can end." ;
   mf:entries (
     <#the-immunizations-view>
     <#my-immunizations>
@@ -20,7 +20,7 @@
 
 <#my-immunizations> a mf:QueryEvaluationTest ;
   mf:name "my-immunizations" ;
-  rdfs:comment "Every entry, newest first, with how many records it joins." ;
+  rdfs:comment "Every entry, newest first, with its code as CVX's IRI and how many records it joins." ;
   mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20immunizations.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <my-immunizations.srj> .
