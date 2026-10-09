@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-ingredient" ;
-  rdfs:comment "A version of a product ingredient table, its rows in its own graph, mapping a brand and its ingredient to the ingredient, a two-ingredient brand to the concept of both, and one of those ingredients to itself; pairs of allergies with those codes, two of one code, and two codes that only a pod file and a version of another kind map to one ingredient." ;
+  rdfs:comment "A version of a product ingredient table, its rows in its own graph, mapping a brand and its ingredient to the ingredient, a two-ingredient brand to the concept of both, and one of those ingredients to itself; pairs of allergies with those codes, two of one code, two codes that only a pod file and a version of another kind map to one ingredient, and a code that only a version of another kind maps to the ingredient a product ingredient row maps to." ;
   mf:entries (
     <#same-ingredient>
   ) .
 
 <#same-ingredient> a mf:QueryEvaluationTest ;
   mf:name "same-ingredient" ;
-  rdfs:comment "A brand and its ingredient match, with the table's version; a two-ingredient product and one of its ingredients, two records of one code, or two codes no product ingredient table maps to one ingredient, do not." ;
+  rdfs:comment "A brand and its ingredient match, with the table's version; a two-ingredient product and one of its ingredients, two records of one code, or two codes no one version of a product ingredient table maps to one ingredient, do not." ;
   mf:action [ qt:query <../../../queries/v1-draft/matcher/same-ingredient.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <same-ingredient.srj> .
