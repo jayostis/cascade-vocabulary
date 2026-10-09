@@ -97,7 +97,7 @@ rec:ReferenceSeriesShape a sh:NodeShape ;
         sh:severity sh:Violation
     ], [
         sh:path rec:tableKind ;
-        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients ) ;
+        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients rec:ProductIngredients rec:BrandGenerics rec:NdcDrugs ) ;
         sh:maxCount 1 ;
         sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
         sh:severity sh:Violation
@@ -179,6 +179,63 @@ rec:SubstanceIngredientRowShape a sh:NodeShape ;
         sh:path owl:annotatedTarget ;
         sh:node rec:RxNormCodeShape ;
         sh:message "A substance ingredient row maps to an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:ProductIngredientRowShape a sh:NodeShape ;
+    sh:node rec:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node rec:RxNormCodeShape ;
+        sh:message "A product ingredient row maps an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue skos:broadMatch ;
+        sh:message "A product ingredient row puts its code under its ingredient with skos:broadMatch."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node rec:RxNormCodeShape ;
+        sh:message "A product ingredient row maps to an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:BrandGenericRowShape a sh:NodeShape ;
+    sh:node rec:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node rec:RxNormCodeShape ;
+        sh:message "A brand generic row maps an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue skos:broadMatch ;
+        sh:message "A brand generic row puts its brand under its generic with skos:broadMatch."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node rec:RxNormCodeShape ;
+        sh:message "A brand generic row maps to an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:NdcDrugRowShape a sh:NodeShape ;
+    sh:node rec:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node rec:NdcCodeShape ;
+        sh:message "An NDC drug row maps an NDC of 11 digits."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue skos:broadMatch ;
+        sh:message "An NDC drug row puts its NDC under its drug with skos:broadMatch."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node rec:RxNormCodeShape ;
+        sh:message "An NDC drug row maps to an RxNorm code."@en ;
         sh:severity sh:Violation
     ] .
 

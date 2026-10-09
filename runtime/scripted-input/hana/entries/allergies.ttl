@@ -1,0 +1,28 @@
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<urn:cascade:this-entry> a prov:Activity ;
+  rdfs:label "entered in the Cascade app" ;
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole jdg:patient ] .
+
+<urn:cascade:output-0> a <https://ns.cascadeprotocol.org/health/v1#AllergyRecord> .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
+  <https://ns.cascadeprotocol.org/health/v1#allergen> "Advil" ;
+  <https://ns.cascadeprotocol.org/health/v1#allergenCode> <http://www.nlm.nih.gov/research/umls/rxnorm/153010> ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-1> a <https://ns.cascadeprotocol.org/health/v1#AllergyRecord> .
+<urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
+  <https://ns.cascadeprotocol.org/health/v1#allergen> "Ibuprofen" ;
+  <https://ns.cascadeprotocol.org/health/v1#allergenCode> <http://www.nlm.nih.gov/research/umls/rxnorm/5640> ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-2> a <https://ns.cascadeprotocol.org/health/v1#AllergyRecord> .
+<urn:cascade:output-2-version> prov:specializationOf <urn:cascade:output-2> ;
+  <https://ns.cascadeprotocol.org/health/v1#allergen> "Augmentin" ;
+  <https://ns.cascadeprotocol.org/health/v1#allergenCode> <http://www.nlm.nih.gov/research/umls/rxnorm/151392> ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-3> a <https://ns.cascadeprotocol.org/health/v1#AllergyRecord> .
+<urn:cascade:output-3-version> prov:specializationOf <urn:cascade:output-3> ;
+  <https://ns.cascadeprotocol.org/health/v1#allergen> "Amoxicillin" ;
+  <https://ns.cascadeprotocol.org/health/v1#allergenCode> <http://www.nlm.nih.gov/research/umls/rxnorm/723> ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .

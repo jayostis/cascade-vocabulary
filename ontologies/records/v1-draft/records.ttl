@@ -302,6 +302,24 @@ rec:SubstanceIngredients a rec:TableKind ;
     rec:rowShape rec:SubstanceIngredientRowShape ;
     rec:foundBy owl:annotatedSource , owl:annotatedTarget .
 
+rec:ProductIngredients a rec:TableKind ;
+    rdfs:label "product ingredients"@en ;
+    rdfs:comment "An SSSOM mapping kind: an RxNorm concept and its ingredient, its one ingredient or, with several, the multiple ingredient concept of exactly those. An ingredient maps to itself."@en ;
+    rec:rowShape rec:ProductIngredientRowShape ;
+    rec:foundBy owl:annotatedSource .
+
+rec:BrandGenerics a rec:TableKind ;
+    rdfs:label "brand generics"@en ;
+    rdfs:comment "An SSSOM mapping kind: a branded RxNorm concept and its generic."@en ;
+    rec:rowShape rec:BrandGenericRowShape ;
+    rec:foundBy owl:annotatedSource .
+
+rec:NdcDrugs a rec:TableKind ;
+    rdfs:label "NDC drugs"@en ;
+    rdfs:comment "An SSSOM mapping kind: an NDC and the RxNorm drug it is."@en ;
+    rec:rowShape rec:NdcDrugRowShape ;
+    rec:foundBy owl:annotatedSource .
+
 rec:RowSubject a rdf:Property ;
     rdfs:label "the row's subject"@en ;
     rdfs:comment "Not stated by any row: as a kind's rec:foundBy, that each row is found by its own subject, the code it is about."@en .

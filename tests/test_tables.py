@@ -32,6 +32,9 @@ PREFIXES = """
 """
 ROW = "a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget cvx:88"
 CURATED = "sssom:mapping_justification semapv:ManualMappingCuration"
+CHAINED = "sssom:mapping_justification semapv:MappingChaining"
+NDC = "<http://hl7.org/fhir/sid/ndc/00069153066>"
+DRUG = "a owl:Axiom ; owl:annotatedSource rxnorm:153010 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget rxnorm:5640"
 
 
 @cache
@@ -91,7 +94,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
             inputs = [str(rows.value(row, p)) for p in (OWL.annotatedSource, OWL.annotatedProperty, OWL.annotatedTarget)]
             if str(row) != record_name(inputs):
                 misnamed.add(str(row))
-    assert found == 26
+    assert found == 28
     assert broken == {}
     assert misnamed == set()
 
@@ -124,6 +127,19 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (REC.CodeNames, 'rxnorm:RX7980 skos:prefLabel "x" ; skos:notation "7980" .', "one of the code systems' forms"),
     (REC.CodeNames, '<http://snomed.info/sct/x91936005> skos:prefLabel "x" ; skos:notation "91936005" .',
      "one of the code systems' forms"),
+    (REC.ProductIngredients, f"<urn:x:r> {DRUG} ; {CHAINED} .", None),
+    (REC.ProductIngredients, f"<urn:x:r> {DRUG.replace('rxnorm:153010', 'cvx:141')} ; {CHAINED} .",
+     "A product ingredient row maps an RxNorm code"),
+    (REC.ProductIngredients, f"<urn:x:r> {DRUG.replace('broadMatch', 'exactMatch')} ; {CHAINED} .",
+     "with skos:broadMatch"),
+    (REC.BrandGenerics, f"<urn:x:r> {DRUG} ; {CURATED} .", None),
+    (REC.BrandGenerics, f"<urn:x:r> {DRUG.replace('rxnorm:5640', '<http://snomed.info/sct/387207008>')} ; {CURATED} .",
+     "A brand generic row maps to an RxNorm code"),
+    (REC.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC)} ; {CURATED} .", None),
+    (REC.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC.replace('/000', '/00'))} ; {CURATED} .",
+     "An NDC drug row maps an NDC of 11 digits"),
+    (REC.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC).replace('broadMatch', 'closeMatch')} ; {CURATED} .",
+     "with skos:broadMatch"),
     (REC.CodeStatus, "cvx:141 owl:deprecated true ; dct:isReplacedBy cvx:150 .", None),
     (REC.CodeStatus, "cvx:141 owl:deprecated false .", "owl:deprecated true"),
 ])
