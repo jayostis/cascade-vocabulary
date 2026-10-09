@@ -95,22 +95,22 @@ Feature: Opening a pod
         | NLM RxNorm Prescribable product ingredients version 1 |
 
     Example: after the rule list's version 3 is adopted, R7 joins a condition on a retired code and one on its conversion, and not a split code and one of its parts
-      C88.0 converts to C88.00 alone; D69.1 split into D69.11 and D69.19, so it has no row.
+      T84.040A converts to M97.01XA alone; C88.0 split into C88.00 and C88.01, so it has no row.
 
       When the pod is opened with the tables "app-icd" on 2026-07-03 at 09:00
       And Hana enters "conditions" on 2026-07-04 at 09:00
       And the matcher runs on the records of that entry on 2026-07-04 at 09:05 (match-conditions)
-      Then the matcher's judgments holding condition ICD-10-CM C88.0, condition ICD-10-CM C88.00, condition ICD-10-CM D69.1 and condition ICD-10-CM D69.11 are:
-        | justification       | members                                                                                                                  | used                                                                                                                                                                                                       |
-        | same converted code | condition ICD-10-CM C88.0 "Waldenstrom macroglobulinemia", condition ICD-10-CM C88.00 "Waldenstrom macroglobulinemia not having achieved remission" | Matcher rules version 3, CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM C88.0 "Waldenstrom macroglobulinemia", version 1 of condition ICD-10-CM C88.00 "Waldenstrom macroglobulinemia not having achieved remission" |
+      Then the matcher's judgments holding condition ICD-10-CM T84.040A, condition ICD-10-CM M97.01XA, condition ICD-10-CM C88.0 and condition ICD-10-CM C88.00 are:
+        | justification       | members                                                                                                                                                                                 | used                                                                                                                                                                                                                                                                                 |
+        | same converted code | condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" | Matcher rules version 3, CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", version 1 of condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" |
 
     Example: adopting the rule list's version 3 judges the pairs its new R7 joins among records already matched
       Given Hana enters "conditions" on 2026-07-02 at 10:00
       And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-conditions)
       When the pod is opened with the tables "app-icd" on 2026-07-03 at 09:00
-      Then the matcher's judgments holding condition ICD-10-CM C88.0, condition ICD-10-CM C88.00, condition ICD-10-CM D69.1 and condition ICD-10-CM D69.11 are:
-        | justification       | members                                                                                                                  | at                  | used                                                                                                                                                                                                       |
-        | same converted code | condition ICD-10-CM C88.0 "Waldenstrom macroglobulinemia", condition ICD-10-CM C88.00 "Waldenstrom macroglobulinemia not having achieved remission" | 2026-07-03 at 09:00 | Matcher rules version 3, CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM C88.0 "Waldenstrom macroglobulinemia", version 1 of condition ICD-10-CM C88.00 "Waldenstrom macroglobulinemia not having achieved remission" |
+      Then the matcher's judgments holding condition ICD-10-CM T84.040A, condition ICD-10-CM M97.01XA, condition ICD-10-CM C88.0 and condition ICD-10-CM C88.00 are:
+        | justification       | members                                                                                                                                                                                 | at                  | used                                                                                                                                                                                                                                                                                 |
+        | same converted code | condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" | 2026-07-03 at 09:00 | Matcher rules version 3, CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", version 1 of condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" |
       And that step wrote these reference descriptions:
         | reference                                |
         | Matcher rules version 2                  |

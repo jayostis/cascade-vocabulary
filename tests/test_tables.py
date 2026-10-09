@@ -83,7 +83,7 @@ def test_every_code_iri_a_matcher_query_builds_starts_with_its_code_systems_uri_
     systems = {str(space): system for system, space in kinds().subject_objects(VOID.uriSpace)}
     built = {(path.name, systems.get(prefix)) for path in sorted((QUERIES / "matcher").glob("*.rq"))
              for prefix in re.findall(r'CONCAT\s*\(\s*"([^"]*)"', path.read_text(encoding="utf-8"))}
-    assert built == {("same-mapped-code-and-date.rq", REC.CVX)}
+    assert built == {("same-converted-code.rq", REC.ICD10CM), ("same-mapped-code-and-date.rq", REC.CVX)}
 
 
 def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mapping_row_is_named_by_n11():
