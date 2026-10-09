@@ -1,5 +1,6 @@
 # Read from the view alone, as an app would, newest first, with how many records each entry joins. The code is CVX's
-# IRI: the one the entry states, or http://hl7.org/fhir/sid/cvx/ followed by the code as written.
+# IRI: the one the entry states, or http://hl7.org/fhir/sid/cvx/ followed by the code as written; none when what is
+# written cannot end an IRI.
 PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -11,6 +12,7 @@ WHERE {
   OPTIONAL { ?entry health:vaccineName ?vaccine }
   OPTIONAL {
     ?entry health:vaccineCode ?written .
+    FILTER (isIRI(?written) || REGEX(STR(?written), '^[^\\s<>"{}|^`\\\\]+$'))
     BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://hl7.org/fhir/sid/cvx/", STR(?written)))) AS ?code)
   }
   OPTIONAL { ?entry health:status ?status }
