@@ -1,0 +1,22 @@
+# Two records of one kind match when one version of a code conversion table converts an ICD-10-CM code of one's current
+# version to an ICD-10-CM code of the other's, either way round. A code split into several has no row, so it matches
+# none of its parts. Each ordered pair is a row, with the version whose rows joined it; a graph that is not a version
+# of a code conversion table is never read for rows.
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?record ?other ?origin
+WHERE {
+  ?origin prov:specializationOf/rec:tableKind rec:CodeConversions .
+  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
+  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version health:icd10Code ?code .
+  ?otherVersion health:icd10Code ?otherCode .
+  FILTER (?record != ?other)
+  GRAPH ?origin {
+    ?code ^owl:annotatedSource/owl:annotatedTarget|^owl:annotatedTarget/owl:annotatedSource ?otherCode .
+  }
+}

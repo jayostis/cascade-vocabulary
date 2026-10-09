@@ -29,11 +29,13 @@ PREFIXES = """
 @prefix sssom: <https://w3id.org/sssom/> .
 @prefix cvx: <http://hl7.org/fhir/sid/cvx/> .
 @prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix icd: <http://hl7.org/fhir/sid/icd-10-cm/> .
 """
 ROW = "a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget cvx:88"
 CURATED = "sssom:mapping_justification semapv:ManualMappingCuration"
 CHAINED = "sssom:mapping_justification semapv:MappingChaining"
 NDC = "<http://hl7.org/fhir/sid/ndc/00069153066>"
+CONVERSION = "a owl:Axiom ; owl:annotatedSource icd:C88.0 ; owl:annotatedProperty skos:exactMatch ; owl:annotatedTarget icd:C88.00"
 DRUG = "a owl:Axiom ; owl:annotatedSource rxnorm:153010 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget rxnorm:5640"
 
 
@@ -94,7 +96,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
             inputs = [str(rows.value(row, p)) for p in (OWL.annotatedSource, OWL.annotatedProperty, OWL.annotatedTarget)]
             if str(row) != record_name(inputs):
                 misnamed.add(str(row))
-    assert found == 28
+    assert found == 30
     assert broken == {}
     assert misnamed == set()
 
@@ -140,6 +142,11 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
      "An NDC drug row maps an NDC of 11 digits"),
     (REC.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC).replace('broadMatch', 'closeMatch')} ; {CURATED} .",
      "with skos:broadMatch"),
+    (REC.CodeConversions, f"<urn:x:r> {CONVERSION} ; {CURATED} .", None),
+    (REC.CodeConversions, f"<urn:x:r> {CONVERSION.replace('exactMatch', 'narrowMatch')} ; {CURATED} .",
+     "by skos:exactMatch"),
+    (REC.CodeConversions, f"<urn:x:r> {CONVERSION.replace('icd:C88.0 ', '<http://hl7.org/fhir/sid/icd-10-cm/C880> ')} ; {CURATED} .",
+     "A code conversion row maps a code"),
     (REC.CodeStatus, "cvx:141 owl:deprecated true ; dct:isReplacedBy cvx:150 .", None),
     (REC.CodeStatus, "cvx:141 owl:deprecated false .", "owl:deprecated true"),
 ])

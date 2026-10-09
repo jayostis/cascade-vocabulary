@@ -97,7 +97,7 @@ rec:ReferenceSeriesShape a sh:NodeShape ;
         sh:severity sh:Violation
     ], [
         sh:path rec:tableKind ;
-        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients rec:ProductIngredients rec:BrandGenerics rec:NdcDrugs ) ;
+        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients rec:ProductIngredients rec:BrandGenerics rec:NdcDrugs rec:CodeConversions ) ;
         sh:maxCount 1 ;
         sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
         sh:severity sh:Violation
@@ -236,6 +236,25 @@ rec:NdcDrugRowShape a sh:NodeShape ;
         sh:path owl:annotatedTarget ;
         sh:node rec:RxNormCodeShape ;
         sh:message "An NDC drug row maps to an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:CodeConversionRowShape a sh:NodeShape ;
+    sh:node rec:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node rec:CodeShape ;
+        sh:message "A code conversion row maps a code, an IRI of a code system's form."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue skos:exactMatch ;
+        sh:message "A code conversion row pairs a retired code with its one conversion by skos:exactMatch."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node rec:CodeShape ;
+        sh:message "A code conversion row maps to a code, an IRI of a code system's form."@en ;
         sh:severity sh:Violation
     ] .
 

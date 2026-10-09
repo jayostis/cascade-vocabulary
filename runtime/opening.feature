@@ -3,12 +3,14 @@ Feature: Opening a pod
   holds newer versions.
 
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Hana
-  enters six flu shots in three pairs by date, and later one more, and four drug allergies. Her pod is made with the
+  enters six flu shots in three pairs by date, and later one more, four drug allergies and four conditions. Her pod is made with the
   vector tables, which are Priya's kit's series. App's tables open it: "app", holding version 1 of the vocabulary's rule
   list and version 1 of "CDC CVX vaccine groups", "app-later", holding versions 2 and 3 as well, "app-new-rules",
   holding a version 2 of the rule list and version 1 of the rule list as an app holds it after a query changed, its
   hash no longer the query's, and "app-rxnorm", holding "app"'s and the vocabulary's rule list's version 2, whose R3
-  reads version 1 of "NLM RxNorm Prescribable product ingredients", which it also holds.
+  reads version 1 of "NLM RxNorm Prescribable product ingredients", which it also holds, and "app-icd", holding
+  "app"'s, the rule list's versions 2 and 3, whose R7 reads version 1 of "CDC ICD-10-CM code conversions", which it
+  also holds.
 
   Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
     The default is M10's; a version descends from another along the tables' line of prov:wasRevisionOf. A series the
@@ -91,6 +93,30 @@ Feature: Opening a pod
         | Matcher rules version 2                               |
         | NLM RxNorm Prescribable product ingredients           |
         | NLM RxNorm Prescribable product ingredients version 1 |
+
+    Example: after the rule list's version 3 is adopted, R7 joins a condition on a retired code and one on its conversion, and not a split code and one of its parts
+      C88.0 converts to C88.00 alone; D69.1 split into D69.11 and D69.19, so it has no row.
+
+      When the pod is opened with the tables "app-icd" on 2026-07-03 at 09:00
+      And Hana enters "conditions" on 2026-07-04 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-04 at 09:05 (match-conditions)
+      Then the matcher's judgments holding condition ICD-10-CM C88.0, condition ICD-10-CM C88.00, condition ICD-10-CM D69.1 and condition ICD-10-CM D69.11 are:
+        | justification       | members                                                                                                                  | used                                                                                                                                                                                                       |
+        | same converted code | condition ICD-10-CM C88.0 "Waldenstrom macroglobulinemia", condition ICD-10-CM C88.00 "Waldenstrom macroglobulinemia not having achieved remission" | Matcher rules version 3, CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM C88.0 "Waldenstrom macroglobulinemia", version 1 of condition ICD-10-CM C88.00 "Waldenstrom macroglobulinemia not having achieved remission" |
+
+    Example: adopting the rule list's version 3 judges the pairs its new R7 joins among records already matched
+      Given Hana enters "conditions" on 2026-07-02 at 10:00
+      And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-conditions)
+      When the pod is opened with the tables "app-icd" on 2026-07-03 at 09:00
+      Then the matcher's judgments holding condition ICD-10-CM C88.0, condition ICD-10-CM C88.00, condition ICD-10-CM D69.1 and condition ICD-10-CM D69.11 are:
+        | justification       | members                                                                                                                  | at                  | used                                                                                                                                                                                                       |
+        | same converted code | condition ICD-10-CM C88.0 "Waldenstrom macroglobulinemia", condition ICD-10-CM C88.00 "Waldenstrom macroglobulinemia not having achieved remission" | 2026-07-03 at 09:00 | Matcher rules version 3, CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM C88.0 "Waldenstrom macroglobulinemia", version 1 of condition ICD-10-CM C88.00 "Waldenstrom macroglobulinemia not having achieved remission" |
+      And that step wrote these reference descriptions:
+        | reference                                |
+        | Matcher rules version 2                  |
+        | Matcher rules version 3                  |
+        | CDC ICD-10-CM code conversions           |
+        | CDC ICD-10-CM code conversions version 1 |
 
   Rule: O2. A series the tables do not hold the pod's version of is left out, and nothing is written of it
     The tables may not hold the series at all, as for a pod made on other tables, or not the pod's version, as for a
