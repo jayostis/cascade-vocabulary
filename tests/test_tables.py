@@ -83,7 +83,7 @@ def test_every_code_iri_a_matcher_query_builds_starts_with_its_code_systems_uri_
     systems = {str(space): system for system, space in kinds().subject_objects(VOID.uriSpace)}
     built = {(path.name, systems.get(prefix)) for path in sorted((QUERIES / "matcher").glob("*.rq"))
              for prefix in re.findall(r'CONCAT\s*\(\s*"([^"]*)"', path.read_text(encoding="utf-8"))}
-    assert built == {("same-converted-code.rq", REC.ICD10CM), ("same-mapped-code-and-date.rq", REC.CVX)}
+    assert built == {("same-mapped-code-and-date.rq", REC.CVX)}
 
 
 def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mapping_row_is_named_by_n11():
@@ -124,6 +124,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
      "one of the code systems' forms"),
     (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/E11.9> skos:prefLabel "x" ; skos:notation "E11.9" .', None),
     (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/S72.001A> skos:prefLabel "x" ; skos:notation "S72.001A" .', None),
+    (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/QA0.0> skos:prefLabel "x" ; skos:notation "QA0.0" .', None),
     (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/E119> skos:prefLabel "x" ; skos:notation "E11.9" .',
      "one of the code systems' forms"),
     (REC.CodeNames, 'rxnorm:RX7980 skos:prefLabel "x" ; skos:notation "7980" .', "one of the code systems' forms"),

@@ -101,8 +101,7 @@ Feature: The matcher's procedure
 
     - R7, jdg:SameConvertedCode: queries/v1-draft/matcher/same-converted-code.rq, with rec:CodeConversions, for
       conditions only. A record coded with a retired code is the same as one coded with the one code it converts to;
-      a code split into several has no row, and one a version gives several rows joins none of them, since one
-      judgment holds a record and all it matched.
+      a code split into several has no row, since one judgment holds a record and all it matched.
 
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, and R7 as well in its version 3.
