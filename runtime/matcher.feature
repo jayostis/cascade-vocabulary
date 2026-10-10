@@ -210,7 +210,7 @@ Feature: The matcher's procedure
     version the Same used, and writes a new judgment, using that version, if at least two still match. A version is
     revised when a version of the tables revises it, whether or not the pod describes that one, so an open that writes
     the descriptions last (W1) still rechecks. A Same whose rule now reads a table, and which used no version of
-    that table's kind, is not filed again. A Same whose rule the current rule list lacks refuses the recheck.
+    that table's kind, is not filed again. A Same whose rule the current rule list lacks is not filed again.
 
     Background:
       Given a new pod for Eve on 2026-05-01 at 09:00

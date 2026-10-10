@@ -10,9 +10,10 @@ Feature: Opening a pod
   hash no longer the query's, and "app-rxnorm", holding "app"'s and the vocabulary's rule list's version 2, whose R3
   reads version 1 of "NLM RxNorm Prescribable product ingredients", which it also holds, and "app-icd", holding
   "app"'s, the rule list's versions 2 and 3, whose R7 reads version 1 of "CDC ICD-10-CM code conversions", which it
-  also holds, and "app-periods", holding "app"'s and the rule list's versions 2 to 4, and no conversions, and
+  also holds, and "app-periods", holding "app"'s and the rule list's versions 2 to 4, and no conversions,
   "app-conversions", holding "app-icd"'s and the rule list's versions 4 and 5, whose R7 reads version 2 of "CDC
-  ICD-10-CM code conversions", which revises version 1 and which it also holds.
+  ICD-10-CM code conversions", which revises version 1 and which it also holds, and "app-fewer-rules", holding
+  "app"'s version 1 of "CDC CVX vaccine groups" and a rule list version "1a" that revises version 1 and lacks R4.
 
   Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
     The default is M10's; a version descends from another along the tables' line of prov:wasRevisionOf. A series the
@@ -174,6 +175,19 @@ Feature: Opening a pod
         | Matcher rules version 4                  |
         | Matcher rules version 5                  |
         | CDC ICD-10-CM code conversions version 2 |
+
+    Example: adopting a rule list that drops a rule files nothing again for that rule's Sames, and they lapse
+      Version "1a" revises version 1 and lacks R4, which filed the two Sames, so the recheck has no rule to run for
+      them: it goes on, and nothing is filed again. Each Same used version 1, which now has a newer current one.
+
+      When the pod is opened with the tables "app-fewer-rules" on 2026-07-03 at 09:00
+      Then that step wrote these matcher judgments:
+        | justification | members | used |
+      And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" has lapsed
+      And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" has lapsed
+      And that step wrote these reference descriptions:
+        | reference                |
+        | Matcher rules version 1a |
 
   Rule: O2. A series the tables do not hold the pod's version of is left out, and nothing is written of it
     The tables may not hold the series at all, as for a pod made on other tables, or not the pod's version, as for a
