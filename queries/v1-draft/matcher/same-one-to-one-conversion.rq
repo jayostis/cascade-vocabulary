@@ -1,0 +1,28 @@
+# Two records of one kind match when one version of a code conversion table converts an ICD-10-CM code of one's current
+# version to a different ICD-10-CM code of the other's, either way round, by a dct:isReplacedBy row whose cardinality is
+# 1:1. A split (1:n), a merge (n:1) and an n:n row match none of the codes they name, and neither does a row of the
+# earlier form, skos:exactMatch with no cardinality. Each ordered pair is a row, with the version whose rows joined it;
+# a graph that is not a version of a code conversion table is never read for rows.
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX sssom: <https://w3id.org/sssom/>
+
+SELECT DISTINCT ?record ?other ?origin
+WHERE {
+  ?origin prov:specializationOf/rec:tableKind rec:CodeConversions .
+  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
+  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version health:icd10Code ?code .
+  ?otherVersion health:icd10Code ?otherCode .
+  GRAPH ?origin {
+    ?row owl:annotatedProperty dct:isReplacedBy ;
+      sssom:mapping_cardinality "1:1" ;
+      owl:annotatedSource|owl:annotatedTarget ?code ;
+      owl:annotatedSource|owl:annotatedTarget ?otherCode .
+  }
+  FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
+}
