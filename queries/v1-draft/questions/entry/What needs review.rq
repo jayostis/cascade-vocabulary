@@ -1,6 +1,8 @@
 # Entries a person should look at, and why: its members disagree on how severe an allergy is,
-# the matcher joined it for two different reasons, two records judged different are still joined in it, or two of its
-# conditions, in two entries, carry one code and their dates cannot tell whether they are one condition: either has no
+# the matcher joined it for two different reasons, two records judged different are still joined in it, a matcher's
+# Same of two records now in two entries has lapsed (an open adopted newer tables or rules and did not file it again,
+# so the pair it joined is apart until a person judges it), or two of its conditions, in two entries, carry one code
+# and their dates cannot tell whether they are one condition: either has no
 # onset, or one has an unknown end (no abatement that is a date on or after its onset, and no status that keeps it
 # going: active, recurrence or relapse) and its onset is on or before the other's end, the other's period counted as
 # the matcher's rule R8 counts it. A condition with an unknown end that began after the other's end is apart from it:
@@ -43,6 +45,23 @@ WHERE {
     FILTER (STR(?record) < STR(?otherRecord))
     BIND ("judged different, still joined" AS ?needs)
     OPTIONAL { ?judgment rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?record , ?otherRecord }
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+  UNION
+  { { SELECT ?record ?otherRecord (MIN(STR(?lapsed)) AS ?first)
+      WHERE {
+        ?lapsed rec:lapsed true ; prov:hadMember ?record , ?otherRecord .
+        FILTER (STR(?record) < STR(?otherRecord))
+      }
+      GROUP BY ?record ?otherRecord }
+    ?judgment rec:lapsed true ; prov:hadMember ?record , ?otherRecord .
+    ?record rec:inEntry ?entry .
+    ?otherRecord rec:inEntry ?otherEntry .
+    FILTER (STR(?judgment) = ?first && ?entry != ?otherEntry
+            && !EXISTS { ?record jdg:currentlyDifferent ?otherRecord })
+    BIND ("joined before, apart under newer tables or rules" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }

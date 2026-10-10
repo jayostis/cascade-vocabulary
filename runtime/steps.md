@@ -258,6 +258,10 @@ The reference series and versions the files the step wrote describe are exactly 
 
 Whether the judgment has `rec:counts true` under the lens.
 
+### `{judgment} has lapsed`, `{judgment} has not lapsed`
+
+Whether the judgment has `rec:lapsed true` under the lens.
+
 ### `the {view} view holds these entries:`
 
 | members |

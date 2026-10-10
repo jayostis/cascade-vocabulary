@@ -113,6 +113,12 @@ rec:counts a owl:DatatypeProperty ;
     rdfs:domain jdg:Judgment ;
     rdfs:range xsd:boolean .
 
+rec:lapsed a owl:DatatypeProperty ;
+    rdfs:label "lapsed"@en ;
+    rdfs:comment "Derived: the judgment is a matcher's Same that does not count because a reference version it used has a newer current one, nothing retracts it, and no judgment not itself retracted supersedes it."@en ;
+    rdfs:domain jdg:Judgment ;
+    rdfs:range xsd:boolean .
+
 rec:leftOutFor a owl:ObjectProperty ;
     rdfs:label "left out for"@en ;
     rdfs:comment "Derived: one reason no view shows the record, in this build."@en ;
