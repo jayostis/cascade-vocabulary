@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-product-code" ;
+  rdfs:comment "A version of a product ingredient table mapping a product to its ingredient and the ingredient to itself, and a version of a brand generics table mapping a code of another medication; medications of the product alone, of the product and its ingredient with none selected and with the product selected, of the product and another code, of the ingredient and another code, and two of a code only a version of another kind and a pod file map." ;
+  mf:entries (
+    <#same-product-code>
+  ) .
+
+<#same-product-code> a mf:QueryEvaluationTest ;
+  mf:name "same-product-code" ;
+  rdfs:comment "Records that share the product match, with the table's version, unless both chose it, which the rule that reads no table joins; records sharing only the ingredient, or a code only another kind's version or a pod file maps, do not." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-product-code.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-product-code.srj> .

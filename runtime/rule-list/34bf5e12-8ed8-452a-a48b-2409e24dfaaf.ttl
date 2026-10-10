@@ -31,8 +31,7 @@
     rec:justifiedAs jdg:SameMedicationCode ;
     rec:appliesTo "Medication" ;
     rec:query "matcher/same-drug-code.rq" ;
-    rec:queryHash <ni:///sha-256;mdCsQFhKyysNIaNlB75vb66dbiecNM0AQ4S-6dvPbiA> ;
-    rec:tableKind rec:ProductIngredients .
+    rec:queryHash <ni:///sha-256;8lAEuYwSo7YBRjvkgxwtRjvPRP9VNGX3hlX7QL-e0aQ> .
 
 [] a rec:MatcherRule ;
     rec:justifiedAs jdg:SameResult ;
@@ -59,3 +58,10 @@
     rec:query "matcher/same-brand-generic.rq" ;
     rec:queryHash <ni:///sha-256;wRClVWKYS13Xb0Qd5fb9qOhxhRkUUopML9b3oqzthYo> ;
     rec:tableKind rec:BrandGenerics .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameProductCode ;
+    rec:appliesTo "Medication" ;
+    rec:query "matcher/same-product-code.rq" ;
+    rec:queryHash <ni:///sha-256;h6eVzclHNiH8Yh-dc3VEQcGN4AvLKgershEjdnmDLzM> ;
+    rec:tableKind rec:ProductIngredients .

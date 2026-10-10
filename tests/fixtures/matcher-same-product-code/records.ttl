@@ -23,44 +23,38 @@
 :severalRevision a rec:Revision ; rec:revisionOf :several ; rec:version :severalVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+:severalOther a clinical:Medication .
+:severalOtherVersion prov:specializationOf :severalOther ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:314076, rxnorm:12345 .
+:severalOtherRevision a rec:Revision ; rec:revisionOf :severalOther ; rec:version :severalOtherVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
 :ingredientA a clinical:Medication .
 :ingredientAVersion prov:specializationOf :ingredientA ; clinical:clinicalIntent "prescribed" ;
-    clinical:rxNormCode rxnorm:29046 .
+    clinical:rxNormCode rxnorm:29046, rxnorm:900001 .
 :ingredientARevision a rec:Revision ; rec:revisionOf :ingredientA ; rec:version :ingredientAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :ingredientB a clinical:Medication .
 :ingredientBVersion prov:specializationOf :ingredientB ; clinical:clinicalIntent "prescribed" ;
-    clinical:rxNormCode rxnorm:29046 .
+    clinical:rxNormCode rxnorm:29046, rxnorm:900002 .
 :ingredientBRevision a rec:Revision ; rec:revisionOf :ingredientB ; rec:version :ingredientBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:fillMarch a clinical:Medication .
-:fillMarchVersion prov:specializationOf :fillMarch ; clinical:clinicalIntent "prescribed" ;
-    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
-:fillMarchRevision a rec:Revision ; rec:revisionOf :fillMarch ; rec:version :fillMarchVersion ;
+:strayA a clinical:Medication .
+:strayAVersion prov:specializationOf :strayA ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:2670, rxnorm:900003 .
+:strayARevision a rec:Revision ; rec:revisionOf :strayA ; rec:version :strayAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:fillApril a clinical:Medication .
-:fillAprilVersion prov:specializationOf :fillApril ; clinical:clinicalIntent "prescribed" ;
-    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
-:fillAprilRevision a rec:Revision ; rec:revisionOf :fillApril ; rec:version :fillAprilVersion ;
+:strayB a clinical:Medication .
+:strayBVersion prov:specializationOf :strayB ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:2670, rxnorm:900004 .
+:strayBRevision a rec:Revision ; rec:revisionOf :strayB ; rec:version :strayBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:fillOther a clinical:Medication .
-:fillOtherVersion prov:specializationOf :fillOther ; clinical:clinicalIntent "prescribed" ;
-    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> .
-:fillOtherRevision a rec:Revision ; rec:revisionOf :fillOther ; rec:version :fillOtherVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
-
-:chosenProduct a clinical:Medication .
-:chosenProductVersion prov:specializationOf :chosenProduct ; clinical:clinicalIntent "prescribed" ;
+:chosen a clinical:Medication .
+:chosenVersion prov:specializationOf :chosen ; clinical:clinicalIntent "prescribed" ;
     clinical:rxNormCode rxnorm:314076, rxnorm:29046 ; rec:selectedCode rxnorm:314076 .
-:chosenProductRevision a rec:Revision ; rec:revisionOf :chosenProduct ; rec:version :chosenProductVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
-
-:chosenIngredient a clinical:Medication .
-:chosenIngredientVersion prov:specializationOf :chosenIngredient ; clinical:clinicalIntent "prescribed" ;
-    clinical:rxNormCode rxnorm:314076, rxnorm:29046 ; rec:selectedCode rxnorm:29046 .
-:chosenIngredientRevision a rec:Revision ; rec:revisionOf :chosenIngredient ; rec:version :chosenIngredientVersion ;
+:chosenRevision a rec:Revision ; rec:revisionOf :chosen ; rec:version :chosenVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

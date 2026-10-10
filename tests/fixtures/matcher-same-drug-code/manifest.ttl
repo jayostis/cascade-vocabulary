@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-drug-code" ;
-  rdfs:comment "A version of a product ingredient table mapping a product to its ingredient and the ingredient to itself, and a version of a brand generics table mapping a code of another medication; medications of the product, of the product and its ingredient, of the ingredient alone, of one NDC and of another; two records of a code only a version of another kind and a pod file map." ;
+  rdfs:comment "Medications of one RxNorm code and no other; of that code and an ingredient's, with that code selected, with the ingredient's selected, and with none selected; of the ingredient's code alone; of one NDC and of another. No table is held." ;
   mf:entries (
     <#same-drug-code>
   ) .
 
 <#same-drug-code> a mf:QueryEvaluationTest ;
   mf:name "same-drug-code" ;
-  rdfs:comment "Records of the product join, and any record that also carries it, and the two fills of one NDC join, each with the product ingredient table's version only; records sharing only the ingredient, one product and one NDC, two NDCs, or a code only another kind's version or a pod file maps, do not." ;
+  rdfs:comment "Records whose chosen code is one RxNorm code match, the code a record's source selected or the only one it has, ingredient or not; so do the two fills of one NDC. A record with two codes and none selected, a record of another NDC, and one RxNorm code against an NDC, match nothing." ;
   mf:action [ qt:query <../../../queries/v1-draft/matcher/same-drug-code.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <same-drug-code.srj> .

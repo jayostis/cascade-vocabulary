@@ -1,38 +1,23 @@
-# Two records of one kind match when their current versions share a code that names a drug: an NDC, or an RxNorm code
-# that is a product, one a held version of a product ingredient table maps to an ingredient other than itself. An
-# ingredient maps to itself, so a shared ingredient-level coding alone (IN, MIN) joins nothing; any dates are ignored.
-# A medication's codings are equals, so one shared code is enough. Each ordered pair is a row, with the version whose
-# rows joined it: the rule reads that table, so an NDC joins by a version that holds a row, though the NDC itself maps to
-# nothing there, and a graph that is not a version of a product ingredient table is never read for rows.
+# Two records of one kind match when their current versions share an NDC, or the same chosen RxNorm code. A version's
+# chosen code is the one its source selected, else its only RxNorm code; one with several RxNorm codes and none
+# selected chooses none, and is left to the rule that reads a table. An NDC names a package, so a shared NDC is enough.
+# No table is read, so the code may be an ingredient's: two records coded only with one ingredient's code match, as
+# they did when this rule compared RxNorm codes alone. Any dates are ignored. Each ordered pair is a row.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX pav: <http://purl.org/pav/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT DISTINCT ?record ?other ?origin
+SELECT DISTINCT ?record ?other
 WHERE {
-  {
-    SELECT DISTINCT ?record ?other ?origin
-    WHERE {
-      {
-        ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
-        ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
-        ?version rec:ndcCode ?code .
-        ?otherVersion rec:ndcCode ?code .
-        GRAPH ?origin { ?held owl:annotatedSource ?mapped }
-      }
-      UNION
-      {
-        ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
-        ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
-        ?version clinical:rxNormCode ?code .
-        ?otherVersion clinical:rxNormCode ?code .
-        GRAPH ?origin { ?row owl:annotatedSource ?code ; owl:annotatedTarget ?ingredient }
-        FILTER (!sameTerm(?code, ?ingredient))
-      }
-    }
-  }
-  ?origin prov:specializationOf/rec:tableKind rec:ProductIngredients .
+  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
+  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version rec:ndcCode|rec:selectedCode|clinical:rxNormCode ?code .
+  ?otherVersion rec:ndcCode|rec:selectedCode|clinical:rxNormCode ?code .
   FILTER (?record != ?other)
+  FILTER (EXISTS { ?version rec:ndcCode|rec:selectedCode ?code }
+          || (NOT EXISTS { ?version rec:selectedCode ?chosen }
+              && NOT EXISTS { ?version clinical:rxNormCode ?another FILTER (?another != ?code) }))
+  FILTER (EXISTS { ?otherVersion rec:ndcCode|rec:selectedCode ?code }
+          || (NOT EXISTS { ?otherVersion rec:selectedCode ?chosen }
+              && NOT EXISTS { ?otherVersion clinical:rxNormCode ?another FILTER (?another != ?code) }))
 }
