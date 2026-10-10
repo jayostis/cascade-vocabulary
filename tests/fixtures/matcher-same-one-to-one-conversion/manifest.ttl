@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-one-to-one-conversion" ;
+  rdfs:comment "A version of a code conversion table, its rows in its own graph: a retired code replaced by one code that replaces nothing else (1:1), two retired codes replaced by one (n:1), a split code and its parts (1:n), and a row of the earlier form, skos:exactMatch with no cardinality; conditions with those codes, and two that a 1:1 row of a version of another kind pairs." ;
+  mf:entries (
+    <#same-one-to-one-conversion>
+  ) .
+
+<#same-one-to-one-conversion> a mf:QueryEvaluationTest ;
+  mf:name "same-one-to-one-conversion" ;
+  rdfs:comment "A retired code and its conversion match either way round on a 1:1 row, with the table's version; a merge, a split, a row of the earlier form and a row of a version of another kind do not." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-one-to-one-conversion.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-one-to-one-conversion.srj> .

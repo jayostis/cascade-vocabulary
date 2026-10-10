@@ -322,7 +322,7 @@ rec:NdcDrugs a rec:TableKind ;
 
 rec:CodeConversions a rec:TableKind ;
     rdfs:label "code conversions"@en ;
-    rdfs:comment "An SSSOM mapping kind: a retired code and the one code its publisher converts its data to. A code split into several has no row; code status gives each of its replacements."@en ;
+    rdfs:comment "An SSSOM mapping kind: a retired code and each code in effect its publisher converts its data to, one dct:isReplacedBy row each, with its cardinality. The cardinality is counted along each conversion on the way, not over the table as SSSOM counts it: n:… when the publisher gives the code anything but this retired code as a previous code, …:n when the retired code converts into more than one. A row of the earlier form, skos:exactMatch with no cardinality, is still read."@en ;
     rec:rowShape rec:CodeConversionRowShape ;
     rec:foundBy owl:annotatedSource , owl:annotatedTarget .
 
@@ -405,6 +405,11 @@ owl:deprecated a owl:AnnotationProperty ;
 
 sssom:mapping_justification a owl:ObjectProperty ;
     rdfs:label "mapping justification"@en ;
+    rdfs:isDefinedBy <https://w3id.org/sssom/schema/> ;
+    dct:source <https://github.com/mapping-commons/sssom/blob/667d3c579d92ad2e1a480503625eeef1e6af8e6d/src/sssom_schema/schema/sssom_schema.yaml> .
+
+sssom:mapping_cardinality a owl:DatatypeProperty ;
+    rdfs:label "mapping cardinality"@en ;
     rdfs:isDefinedBy <https://w3id.org/sssom/schema/> ;
     dct:source <https://github.com/mapping-commons/sssom/blob/667d3c579d92ad2e1a480503625eeef1e6af8e6d/src/sssom_schema/schema/sssom_schema.yaml> .
 

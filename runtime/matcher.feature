@@ -109,9 +109,16 @@ Feature: The matcher's procedure
     - R8, jdg:SameCodeAndPeriod: queries/v1-draft/matcher/same-code-and-period.rq, for conditions only. Two conditions
       of one ICD-10-CM or SNOMED CT code are the same when their periods overlap.
 
+    Version 5 of the vocabulary's list changes R7's query, whose example is under O1:
+
+    - R7, jdg:SameConvertedCode: queries/v1-draft/matcher/same-one-to-one-conversion.rq, with rec:CodeConversions. A
+      retired code and its replacement are joined only by a dct:isReplacedBy row whose cardinality is 1:1. A split
+      (1:n), a merge (n:1) and an n:n row join nothing, and neither does a row of the earlier form, skos:exactMatch
+      with no cardinality, which same-converted-code.rq in versions 3 and 4 reads.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
-    R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, and R8 as well in its
-    version 4, where R1 applies to allergies and procedures only.
+    R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
+    version 4, where R1 applies to allergies and procedures only, and R7's new query in its version 5.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00

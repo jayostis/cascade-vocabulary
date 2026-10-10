@@ -35,7 +35,9 @@ ROW = "a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty skos:br
 CURATED = "sssom:mapping_justification semapv:ManualMappingCuration"
 CHAINED = "sssom:mapping_justification semapv:MappingChaining"
 NDC = "<http://hl7.org/fhir/sid/ndc/00069153066>"
-CONVERSION = "a owl:Axiom ; owl:annotatedSource icd:C88.0 ; owl:annotatedProperty skos:exactMatch ; owl:annotatedTarget icd:C88.00"
+EARLIER = "a owl:Axiom ; owl:annotatedSource icd:C88.0 ; owl:annotatedProperty skos:exactMatch ; owl:annotatedTarget icd:C88.00"
+CARDINALITY = 'sssom:mapping_cardinality "1:1"'
+CONVERSION = EARLIER.replace("skos:exactMatch", "dct:isReplacedBy") + f" ; {CARDINALITY}"
 DRUG = "a owl:Axiom ; owl:annotatedSource rxnorm:153010 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget rxnorm:5640"
 
 
@@ -96,7 +98,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
             inputs = [str(rows.value(row, p)) for p in (OWL.annotatedSource, OWL.annotatedProperty, OWL.annotatedTarget)]
             if str(row) != record_name(inputs):
                 misnamed.add(str(row))
-    assert found == 31
+    assert found == 34
     assert broken == {}
     assert misnamed == set()
 
@@ -144,8 +146,15 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (REC.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC).replace('broadMatch', 'closeMatch')} ; {CURATED} .",
      "with skos:broadMatch"),
     (REC.CodeConversions, f"<urn:x:r> {CONVERSION} ; {CURATED} .", None),
-    (REC.CodeConversions, f"<urn:x:r> {CONVERSION.replace('exactMatch', 'narrowMatch')} ; {CURATED} .",
-     "by skos:exactMatch"),
+    (REC.CodeConversions, f"<urn:x:r> {EARLIER} ; {CURATED} .", None),
+    (REC.CodeConversions, f"<urn:x:r> {EARLIER} ; {CARDINALITY} ; {CURATED} .", "with dct:isReplacedBy"),
+    (REC.CodeConversions, f"<urn:x:r> {EARLIER.replace('exactMatch', 'narrowMatch')} ; {CURATED} .",
+     "with dct:isReplacedBy"),
+    (REC.CodeConversions, f"<urn:x:r> {EARLIER.replace('skos:exactMatch', 'dct:isReplacedBy')} ; {CURATED} .",
+     "gives its cardinality"),
+    (REC.CodeConversions, f"<urn:x:r> {CONVERSION.replace('1:1', '1:2')} ; {CURATED} .",
+     "one of 1:1, 1:n, n:1 or n:n"),
+    (REC.VaccineGroups, f'<urn:x:r> {ROW} ; sssom:mapping_cardinality "n:1" ; {CURATED} .', None),
     (REC.CodeConversions, f"<urn:x:r> {CONVERSION.replace('icd:C88.0 ', '<http://hl7.org/fhir/sid/icd-10-cm/C880> ')} ; {CURATED} .",
      "A code conversion row maps a code"),
     (REC.CodeStatus, "cvx:141 owl:deprecated true ; dct:isReplacedBy cvx:150 .", None),

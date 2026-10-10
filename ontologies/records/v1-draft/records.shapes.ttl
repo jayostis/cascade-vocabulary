@@ -112,7 +112,7 @@ rec:MappingRowShape a sh:NodeShape ;
     sh:class owl:Axiom ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
-    sh:message "A mapping row is an owl:Axiom named by an IRI, its record_id, holding only its source, property, target and justification."@en ;
+    sh:message "A mapping row is an owl:Axiom named by an IRI, its record_id, holding only its source, property, target, justification and cardinality."@en ;
     sh:severity sh:Violation ;
     sh:property [
         sh:path owl:annotatedSource ;
@@ -141,6 +141,12 @@ rec:MappingRowShape a sh:NodeShape ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:message "A mapping row is justified as a publisher's curated row or a chain of the publisher's relationships."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path sssom:mapping_cardinality ;
+        sh:in ( "1:1" "1:n" "n:1" "n:n" ) ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row's cardinality is one of 1:1, 1:n, n:1 or n:n, as SSSOM writes them."@en ;
         sh:severity sh:Violation
     ] .
 
@@ -247,16 +253,19 @@ rec:CodeConversionRowShape a sh:NodeShape ;
         sh:message "A code conversion row maps a code, an IRI of a code system's form."@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path owl:annotatedProperty ;
-        sh:hasValue skos:exactMatch ;
-        sh:message "A code conversion row pairs a retired code with its one conversion by skos:exactMatch."@en ;
-        sh:severity sh:Violation
-    ] , [
         sh:path owl:annotatedTarget ;
         sh:node rec:CodeShape ;
         sh:message "A code conversion row maps to a code, an IRI of a code system's form."@en ;
         sh:severity sh:Violation
-    ] .
+    ] ;
+    sh:or (
+        [ sh:property [ sh:path owl:annotatedProperty ; sh:hasValue dct:isReplacedBy ] ,
+                      [ sh:path sssom:mapping_cardinality ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path owl:annotatedProperty ; sh:hasValue skos:exactMatch ] ,
+                      [ sh:path sssom:mapping_cardinality ; sh:maxCount 0 ] ]
+    ) ;
+    sh:message "A code conversion row says its code is replaced by the code it converts to, with dct:isReplacedBy, and gives its cardinality; a row of the earlier form pairs them with skos:exactMatch and gives none."@en ;
+    sh:severity sh:Violation .
 
 rec:CodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;

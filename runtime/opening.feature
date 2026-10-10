@@ -10,7 +10,9 @@ Feature: Opening a pod
   hash no longer the query's, and "app-rxnorm", holding "app"'s and the vocabulary's rule list's version 2, whose R3
   reads version 1 of "NLM RxNorm Prescribable product ingredients", which it also holds, and "app-icd", holding
   "app"'s, the rule list's versions 2 and 3, whose R7 reads version 1 of "CDC ICD-10-CM code conversions", which it
-  also holds, and "app-periods", holding "app"'s and the rule list's versions 2 to 4, and no conversions.
+  also holds, and "app-periods", holding "app"'s and the rule list's versions 2 to 4, and no conversions, and
+  "app-conversions", holding "app-icd"'s and the rule list's versions 4 and 5, whose R7 reads version 2 of "CDC
+  ICD-10-CM code conversions", which revises version 1 and which it also holds.
 
   Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
     The default is M10's; a version descends from another along the tables' line of prov:wasRevisionOf. A series the
@@ -137,6 +139,35 @@ Feature: Opening a pod
         | Matcher rules version 2 |
         | Matcher rules version 3 |
         | Matcher rules version 4 |
+
+    Example: adopting the rule list's version 5 and conversions version 2 joins a retired code and its conversion on a 1:1 row, and the version 3 Same of the earlier form no longer counts
+      Conversions version 2 gives T84.040A one replacement, M97.01XA, with cardinality 1:1, and D69.1 two, D69.11 and
+      D69.19, with 1:n. Version 1's row is of the earlier form, which R7's new query does not read.
+
+      Given the pod is opened with the tables "app-icd" on 2026-07-03 at 09:00
+      And Hana enters "conditions" on 2026-07-04 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-04 at 09:05 (match-conditions)
+      When the pod is opened with the tables "app-conversions" on 2026-07-05 at 09:00
+      Then the matcher's judgments holding condition ICD-10-CM T84.040A, condition ICD-10-CM M97.01XA, condition ICD-10-CM D69.1 and condition ICD-10-CM D69.11 are:
+        | justification       | members                                                                                                                                                                                 | at                  | used                                                                                                                                                                                                                                                                                 |
+        | same converted code | condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" | 2026-07-04 at 09:05 | Matcher rules version 3, CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", version 1 of condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" |
+        | same converted code | condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" | 2026-07-05 at 09:00 | Matcher rules version 5, CDC ICD-10-CM code conversions version 2, version 1 of condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", version 1 of condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" |
+      And the query is:
+        """
+        PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+        SELECT ?rules WHERE {
+          ?judgment rec:counts true ; jdg:justification jdg:SameConvertedCode ; prov:used ?rules .
+          ?rules prov:specializationOf/rdfs:label "Matcher rules" .
+        }
+        """
+      And it answers:
+        | rules                   |
+        | Matcher rules version 5 |
+      And that step wrote these reference descriptions:
+        | reference                                |
+        | Matcher rules version 4                  |
+        | Matcher rules version 5                  |
+        | CDC ICD-10-CM code conversions version 2 |
 
   Rule: O2. A series the tables do not hold the pod's version of is left out, and nothing is written of it
     The tables may not hold the series at all, as for a pod made on other tables, or not the pod's version, as for a
