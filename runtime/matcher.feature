@@ -326,8 +326,8 @@ Feature: The matcher's procedure
       When the matcher runs on the records of that entry on 2026-04-04 at 09:05 (match-later)
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy SNOMED 91936005 are:
         | justification    | members                                                      | used                                                                                                                                                                  | name                                          |
-        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:fb04c4d1-c902-86ae-969f-2454e9345ad2 |
-        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:f53228db-f86e-885e-977c-53f3ba48aabd |
+        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:304a776c-8a50-8a56-bdcf-a7b3d0ea70ac |
+        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:1f95363a-b4f6-8f10-99e7-847fb5031b44 |
 
   Rule: M11. A rule list whose row names a query that does not hash to the row's rec:queryHash refuses the run
     It writes nothing. So does a rule list with a row naming a file outside queries/v1-draft/matcher/, a row without
