@@ -118,9 +118,10 @@ Feature: Opening a pod
         | CDC ICD-10-CM code conversions           |
         | CDC ICD-10-CM code conversions version 1 |
 
-    Example: adopting the rule list's version 4 judges the pairs its new R8 joins among records already matched, and the earlier same code of two episodes apart still counts
+    Example: adopting the rule list's version 4 judges the pairs its new R8 joins among records already matched, and the earlier same code of two episodes apart no longer counts
       R1 joined the two pharyngitis episodes under version 1. Version 4 takes conditions out of R1, so nothing is
-      filed again for them, and the earlier Same is not retracted.
+      filed again for them and the earlier Same is not retracted, but it was made with a version that now has a newer
+      current one, so it no longer counts and the episodes split.
 
       Given Hana enters "episodes" on 2026-07-02 at 10:00
       And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-episodes)
@@ -130,6 +131,7 @@ Feature: Opening a pod
         | same code            | condition SNOMED 195662009 "Acute viral pharyngitis, 2017", condition SNOMED 195662009 "Acute viral pharyngitis, 2020" | 2026-07-02 at 10:05 | Matcher rules version 1, version 1 of condition SNOMED 195662009 "Acute viral pharyngitis, 2017", version 1 of condition SNOMED 195662009 "Acute viral pharyngitis, 2020"    |
         | same code and period | condition ICD-10-CM J18.9 "Pneumonia, first report", condition ICD-10-CM J18.9 "Pneumonia, second report"               | 2026-07-03 at 09:00 | Matcher rules version 4, version 1 of condition ICD-10-CM J18.9 "Pneumonia, first report", version 1 of condition ICD-10-CM J18.9 "Pneumonia, second report"               |
         | same code and period | condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"              | 2026-07-03 at 09:00 | Matcher rules version 4, version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"              |
+      And the matcher's same code of condition SNOMED 195662009 "Acute viral pharyngitis, 2017" and condition SNOMED 195662009 "Acute viral pharyngitis, 2020" does not count
       And that step wrote these reference descriptions:
         | reference               |
         | Matcher rules version 2 |

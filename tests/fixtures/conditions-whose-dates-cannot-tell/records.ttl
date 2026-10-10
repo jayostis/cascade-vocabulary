@@ -60,11 +60,31 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :joinedA a health:ConditionRecord .
-:joinedAVersion prov:specializationOf :joinedA ; rec:patient :subject ; health:conditionName "Gastritis, first report" ; health:icd10Code icd:K29.70 .
+:joinedAVersion prov:specializationOf :joinedA ; rec:patient :subject ; health:conditionName "Gastritis, first report" ; health:icd10Code icd:K29.70 ; health:onsetDate "2022-01-01"^^xsd:date ; clinical:abatementDate "2022-03-01"^^xsd:date ; health:status "resolved" .
 :joinedARevision a rec:Revision ; rec:revisionOf :joinedA ; rec:version :joinedAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :joinedB a health:ConditionRecord .
-:joinedBVersion prov:specializationOf :joinedB ; rec:patient :subject ; health:conditionName "Gastritis, second report" ; health:icd10Code icd:K29.70 .
+:joinedBVersion prov:specializationOf :joinedB ; rec:patient :subject ; health:conditionName "Gastritis, second report" ; health:icd10Code icd:K29.70 ; health:onsetDate "2022-02-01"^^xsd:date ; health:status "resolved" .
 :joinedBRevision a rec:Revision ; rec:revisionOf :joinedB ; rec:version :joinedBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:lateA a health:ConditionRecord .
+:lateAVersion prov:specializationOf :lateA ; rec:patient :subject ; health:conditionName "Otitis, 2024" ; health:icd10Code icd:H66.90 ; health:onsetDate "2024-03-01"^^xsd:date ; health:status "resolved" .
+:lateARevision a rec:Revision ; rec:revisionOf :lateA ; rec:version :lateAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:lateB a health:ConditionRecord .
+:lateBVersion prov:specializationOf :lateB ; rec:patient :subject ; health:conditionName "Otitis, 2019" ; health:icd10Code icd:H66.90 ; health:onsetDate "2019-01-05"^^xsd:date ; clinical:abatementDate "2019-02-01"^^xsd:date ; health:status "resolved" .
+:lateBRevision a rec:Revision ; rec:revisionOf :lateB ; rec:version :lateBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:dualA a health:ConditionRecord .
+:dualAVersion prov:specializationOf :dualA ; rec:patient :subject ; health:conditionName "Migraine, no onset" ; health:icd10Code icd:G43.909 ; health:snomedCode sct:37796009 ; health:status "active" .
+:dualARevision a rec:Revision ; rec:revisionOf :dualA ; rec:version :dualAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:dualB a health:ConditionRecord .
+:dualBVersion prov:specializationOf :dualB ; rec:patient :subject ; health:conditionName "Migraine, 2021" ; health:icd10Code icd:G43.909 ; health:snomedCode sct:37796009 ; health:onsetDate "2021-01-01"^^xsd:date ; health:status "active" .
+:dualBRevision a rec:Revision ; rec:revisionOf :dualB ; rec:version :dualBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

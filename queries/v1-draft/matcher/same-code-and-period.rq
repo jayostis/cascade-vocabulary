@@ -22,10 +22,10 @@ WHERE {
   OPTIONAL { ?otherVersion rec:status ?otherStatus }
   BIND (SUBSTR(STR(?onset), 1, 10) AS ?from)
   BIND (SUBSTR(STR(?otherOnset), 1, 10) AS ?otherFrom)
-  BIND (IF(BOUND(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime) && SUBSTR(STR(?end), 1, 10) >= ?from,
+  BIND (IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime) && SUBSTR(STR(?end), 1, 10) >= ?from,
            SUBSTR(STR(?end), 1, 10),
            IF(COALESCE(?status, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?from)) AS ?to)
-  BIND (IF(BOUND(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime) && SUBSTR(STR(?otherEnd), 1, 10) >= ?otherFrom,
+  BIND (IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime) && SUBSTR(STR(?otherEnd), 1, 10) >= ?otherFrom,
            SUBSTR(STR(?otherEnd), 1, 10),
            IF(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?otherFrom)) AS ?otherTo)
   FILTER (?record != ?other && ?from <= ?otherTo && ?otherFrom <= ?to)

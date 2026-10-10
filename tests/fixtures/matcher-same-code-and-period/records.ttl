@@ -103,8 +103,18 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :backwardsB a health:ConditionRecord .
-:backwardsBVersion prov:specializationOf :backwardsB ; health:icd10Code icd:M54.50 ; health:onsetDate "2023-05-05"^^xsd:date ; health:status "resolved" .
+:backwardsBVersion prov:specializationOf :backwardsB ; health:icd10Code icd:M54.50 ; health:onsetDate "2023-05-10"^^xsd:date ; health:status "resolved" .
 :backwardsBRevision a rec:Revision ; rec:revisionOf :backwardsB ; rec:version :backwardsBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:dualA a health:ConditionRecord .
+:dualAVersion prov:specializationOf :dualA ; health:icd10Code icd:G43.909 ; health:snomedCode sct:37796009 ; health:onsetDate "2021-04-01"^^xsd:date ; clinical:abatementDate "2021-04-09"^^xsd:date ; health:status "resolved" .
+:dualARevision a rec:Revision ; rec:revisionOf :dualA ; rec:version :dualAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:dualB a health:ConditionRecord .
+:dualBVersion prov:specializationOf :dualB ; health:icd10Code icd:G43.909 ; health:snomedCode sct:37796009 ; health:onsetDate "2021-04-05"^^xsd:date ; clinical:abatementDate "2021-04-20"^^xsd:date ; health:status "resolved" .
+:dualBRevision a rec:Revision ; rec:revisionOf :dualB ; rec:version :dualBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :otherCodeA a health:ConditionRecord .
