@@ -134,7 +134,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
             inputs = [str(rows.value(row, p)) for p in (OWL.annotatedSource, OWL.annotatedProperty, OWL.annotatedTarget)]
             if str(row) != record_name(inputs):
                 misnamed.add(str(row))
-    assert found == 34
+    assert found == 35
     assert broken == {}
     assert misnamed == set()
 
