@@ -78,11 +78,12 @@ def test_a_story_folder_leaves_the_vocabularys_rule_list_to_it_and_every_version
     for folder in sorted(set(FOLDERS) - {shared}):
         index = parsed(folder / "references.ttl")
         for version, series in index.subject_objects(PROV.specializationOf):
-            name =f"{str(version).removeprefix('urn:uuid:')}.ttl"
+            name = f"{str(version).removeprefix('urn:uuid:')}.ttl"
             own = folder / name
             if own.is_file() and (shared / name).is_file() and own.read_bytes() == (shared / name).read_bytes():
                 repeated.append(own.relative_to(ROOT).as_posix())
-            if not own.is_file() and not (index.value(series, REC.tableKind) is None and (shared / name).is_file()):
+            open_names_it = folder.parent.name == "tables"
+            if not own.is_file() and not (open_names_it and index.value(series, REC.tableKind) is None and (shared / name).is_file()):
                 missing.append(own.relative_to(ROOT).as_posix())
     assert repeated == [] and missing == []
 
