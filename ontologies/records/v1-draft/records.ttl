@@ -320,6 +320,12 @@ rec:NdcDrugs a rec:TableKind ;
     rec:rowShape rec:NdcDrugRowShape ;
     rec:foundBy owl:annotatedSource .
 
+rec:CodeConversions a rec:TableKind ;
+    rdfs:label "code conversions"@en ;
+    rdfs:comment "An SSSOM mapping kind: a retired code and the one code its publisher converts its data to. A code split into several has no row; code status gives each of its replacements."@en ;
+    rec:rowShape rec:CodeConversionRowShape ;
+    rec:foundBy owl:annotatedSource , owl:annotatedTarget .
+
 rec:RowSubject a rdf:Property ;
     rdfs:label "the row's subject"@en ;
     rdfs:comment "Not stated by any row: as a kind's rec:foundBy, that each row is found by its own subject, the code it is about."@en .

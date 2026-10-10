@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-converted-code" ;
+  rdfs:comment "A version of a code conversion table, its rows in its own graph, converting a retired code to its one code, a code to itself, and a split code to a part by a narrower row; conditions with those codes, two of one code, and two codes that only a pod file and a version of another kind pair." ;
+  mf:entries (
+    <#same-converted-code>
+  ) .
+
+<#same-converted-code> a mf:QueryEvaluationTest ;
+  mf:name "same-converted-code" ;
+  rdfs:comment "A retired code and its conversion match either way round, with the table's version; a split code and one of its parts, two records of one code, or two codes no exact row of a version of a code conversion table pairs, do not." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-converted-code.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-converted-code.srj> .

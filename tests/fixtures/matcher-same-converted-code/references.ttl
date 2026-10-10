@@ -1,0 +1,11 @@
+@prefix : <urn:x:> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+:conversions a rec:ReferenceSeries ; rdfs:label "Code conversions" ; rec:tableKind rec:CodeConversions .
+:conversions-1 prov:specializationOf :conversions ; pav:version "1" .
+
+:ingredients a rec:ReferenceSeries ; rdfs:label "Product ingredients" ; rec:tableKind rec:ProductIngredients .
+:ingredients-1 prov:specializationOf :ingredients ; pav:version "1" .
