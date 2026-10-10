@@ -1,0 +1,43 @@
+# Two records of one kind match when their current versions share an RxNorm code that a version of a drug products table
+# lists, so the code names one drug product (SCD, SBD, GPCK or BPCK). Codings are equals: any shared product code
+# joins, and rec:selectedCode plays no part. A retired product code still joins, since RxNorm never reuses a code.
+# Left alone: a shared ingredient, strength, dose form, brand name or salt (IN, MIN, PIN, BN, SCDC, SCDF, SCDG and
+# their branded forms); a code the held version does not know, which is every RxNorm code when no drug products table
+# is held; and a pair that shares an NDC, which the rule that joins by NDC has, so no pair is judged by both. A
+# version that carries more than one product code is left out, whatever their term types, because it would join two
+# products and entries would then join through it: A with X, B with X and Y, C with Y would make A, B and C one entry
+# though A and C share nothing. That includes a pack and a component, a pen and a vial, and a brand and its generic,
+# which are left for a person to confirm. Each ordered pair is a row, with the version whose rows joined it; a graph
+# that is not a version of a drug products table is never read for rows.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?record ?other ?origin
+WHERE {
+  { SELECT ?origin ?version (SAMPLE(?held) AS ?code)
+    WHERE {
+      ?origin prov:specializationOf/rec:tableKind rec:DrugProducts .
+      ?version clinical:rxNormCode ?held .
+      GRAPH ?origin { ?held rec:termType ?type }
+    }
+    GROUP BY ?origin ?version
+    HAVING (COUNT(DISTINCT ?held) = 1) }
+  { SELECT ?origin ?otherVersion (SAMPLE(?otherHeld) AS ?code)
+    WHERE {
+      ?origin prov:specializationOf/rec:tableKind rec:DrugProducts .
+      ?otherVersion clinical:rxNormCode ?otherHeld .
+      GRAPH ?origin { ?otherHeld rec:termType ?otherType }
+    }
+    GROUP BY ?origin ?otherVersion
+    HAVING (COUNT(DISTINCT ?otherHeld) = 1) }
+  ?origin prov:specializationOf/rec:tableKind rec:DrugProducts .
+  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
+  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  FILTER (?record != ?other)
+  FILTER NOT EXISTS {
+    ?version rec:ndcCode ?shared .
+    ?otherVersion rec:ndcCode ?shared
+  }
+}

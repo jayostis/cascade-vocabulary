@@ -1,0 +1,144 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:ingredientA a clinical:Medication .
+:ingredientAVersion prov:specializationOf :ingredientA ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Lisinopril" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/29046> .
+:ingredientARevision a rec:Revision ; rec:revisionOf :ingredientA ; rec:version :ingredientAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:ingredientB a clinical:Medication .
+:ingredientBVersion prov:specializationOf :ingredientB ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Lisinopril tablets" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/29046> .
+:ingredientBRevision a rec:Revision ; rec:revisionOf :ingredientB ; rec:version :ingredientBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:strengthA a clinical:Medication .
+:strengthAVersion prov:specializationOf :strengthA ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "amlodipine 5 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/370573> .
+:strengthARevision a rec:Revision ; rec:revisionOf :strengthA ; rec:version :strengthAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:strengthB a clinical:Medication .
+:strengthBVersion prov:specializationOf :strengthB ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "amlodipine 10 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/308135> ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/370573> .
+:strengthBRevision a rec:Revision ; rec:revisionOf :strengthB ; rec:version :strengthBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:joinedA a clinical:Medication .
+:joinedAVersion prov:specializationOf :joinedA ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "lisinopril 10 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> .
+:joinedARevision a rec:Revision ; rec:revisionOf :joinedA ; rec:version :joinedAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:joinedB a clinical:Medication .
+:joinedBVersion prov:specializationOf :joinedB ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Lisinopril 10 mg tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> .
+:joinedBRevision a rec:Revision ; rec:revisionOf :joinedB ; rec:version :joinedBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:differentA a clinical:Medication .
+:differentAVersion prov:specializationOf :differentA ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Metformin" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/6809> .
+:differentARevision a rec:Revision ; rec:revisionOf :differentA ; rec:version :differentAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:differentB a clinical:Medication .
+:differentBVersion prov:specializationOf :differentB ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Metformin tablets" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/6809> .
+:differentBRevision a rec:Revision ; rec:revisionOf :differentB ; rec:version :differentBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:lapsedA a clinical:Medication .
+:lapsedAVersion prov:specializationOf :lapsedA ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Acetaminophen" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/161> .
+:lapsedARevision a rec:Revision ; rec:revisionOf :lapsedA ; rec:version :lapsedAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:lapsedB a clinical:Medication .
+:lapsedBVersion prov:specializationOf :lapsedB ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Acetaminophen tablets" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/161> .
+:lapsedBRevision a rec:Revision ; rec:revisionOf :lapsedB ; rec:version :lapsedBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:bridgeA a clinical:Medication .
+:bridgeAVersion prov:specializationOf :bridgeA ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Product X" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000001> .
+:bridgeARevision a rec:Revision ; rec:revisionOf :bridgeA ; rec:version :bridgeAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:bridgeB a clinical:Medication .
+:bridgeBVersion prov:specializationOf :bridgeB ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Products X and Y" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000001> ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000002> .
+:bridgeBRevision a rec:Revision ; rec:revisionOf :bridgeB ; rec:version :bridgeBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:bridgeC a clinical:Medication .
+:bridgeCVersion prov:specializationOf :bridgeC ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Product Y" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000002> .
+:bridgeCRevision a rec:Revision ; rec:revisionOf :bridgeC ; rec:version :bridgeCVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:refill a clinical:Medication .
+:refillVersion prov:specializationOf :refill ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Metformin 500 mg, refill" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/861007> ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> .
+:refillRevision a rec:Revision ; rec:revisionOf :refill ; rec:version :refillVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fill a clinical:Medication .
+:fillVersion prov:specializationOf :fill ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Metformin 500 mg, fill" ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> .
+:fillRevision a rec:Revision ; rec:revisionOf :fill ; rec:version :fillVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:listed a clinical:Medication .
+:listedVersion prov:specializationOf :listed ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "metformin 500 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/861007> .
+:listedRevision a rec:Revision ; rec:revisionOf :listed ; rec:version :listedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:brand a clinical:Medication .
+:brandVersion prov:specializationOf :brand ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Brand Z" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000010> .
+:brandRevision a rec:Revision ; rec:revisionOf :brand ; rec:version :brandVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:genericOne a clinical:Medication .
+:genericOneVersion prov:specializationOf :genericOne ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Generic Z" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000011> .
+:genericOneRevision a rec:Revision ; rec:revisionOf :genericOne ; rec:version :genericOneVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:genericTwo a clinical:Medication .
+:genericTwoVersion prov:specializationOf :genericTwo ; rec:patient :subject ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Generic Z, list" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000011> .
+:genericTwoRevision a rec:Revision ; rec:revisionOf :genericTwo ; rec:version :genericTwoVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

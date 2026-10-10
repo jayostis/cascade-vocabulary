@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-product-code" ;
+  rdfs:comment "A version of a drug products table listing SCDs and SBDs, and a version of a product ingredient table and a pod file that hold term type rows too; medications of one product and of a product with an ingredient, the four pairs of one strength, one salt, one brand or one ingredient that were no Same, two of a product and an NDC, three of two products one of which carries both, and two each of a code only the pod file lists and only the other kind's version lists." ;
+  mf:entries (
+    <#same-product-code>
+  ) .
+
+<#same-product-code> a mf:QueryEvaluationTest ;
+  mf:name "same-product-code" ;
+  rdfs:comment "Two records sharing a code the drug products version lists match with that version, either way round, whatever else either carries. None of the four counterexamples matches, nor a pair that shares an NDC, nor a record that carries two products with either of the records that share one with it, nor records of a code only a pod file or another kind's version lists." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-product-code.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-product-code.srj> .

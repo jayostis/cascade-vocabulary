@@ -1,0 +1,51 @@
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<urn:cascade:this-entry> a prov:Activity ;
+  rdfs:label "entered in the Cascade app" ;
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole jdg:patient ] .
+<urn:cascade:output-0> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "Lisinopril 10 mg, March" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#ndcCode> <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "prescribed" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#startDate> "2024-03-15"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-1> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "Lisinopril 10 mg, April" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#ndcCode> <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "prescribed" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#startDate> "2024-04-15"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-2> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-2-version> prov:specializationOf <urn:cascade:output-2> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "metformin 500 MG Oral Tablet" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/861007> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-3> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-3-version> prov:specializationOf <urn:cascade:output-3> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "Metformin 500 mg, list" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/861007> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-4> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-4-version> prov:specializationOf <urn:cascade:output-4> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "Lisinopril" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/29046> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-5> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-5-version> prov:specializationOf <urn:cascade:output-5> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "Lisinopril tablets" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/29046> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .

@@ -1,0 +1,39 @@
+@prefix : <urn:x:> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+:matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
+
+:joinedBySharedProduct a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameProductCode ; prov:hadMember :joinedA , :joinedB ;
+    prov:used :joinedAVersion , :joinedBVersion , :rules7 ;
+    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:notTheSame a jdg:Judgment ; jdg:verdict jdg:Different ; prov:hadMember :differentA , :differentB ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+# a Same that used version 6 of the rules, which version 7 revises
+:lapsedBySharedCode a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMedicationCode ; prov:hadMember :lapsedA , :lapsedB ;
+    prov:used :lapsedAVersion , :lapsedBVersion , :rules6 ;
+    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+# an entry joined by an NDC and by a product code, both exact identity
+:exemptNdc a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMedicationCode ; prov:hadMember :refill , :fill ;
+    prov:used :refillVersion , :fillVersion , :rules7 ;
+    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:exemptProduct a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameProductCode ; prov:hadMember :refill , :listed ;
+    prov:used :refillVersion , :listedVersion , :rules7 ;
+    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+# an entry joined by a product code and by a brand generic
+:otherProduct a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameProductCode ; prov:hadMember :genericOne , :genericTwo ;
+    prov:used :genericOneVersion , :genericTwoVersion , :rules7 ;
+    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:otherBrandGeneric a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameBrandGeneric ; prov:hadMember :brand , :genericOne ;
+    prov:used :brandVersion , :genericOneVersion , :rules7 ;
+    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

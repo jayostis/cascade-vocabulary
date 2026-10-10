@@ -6,7 +6,14 @@
 # onset, or one has an unknown end (no abatement that is a date on or after its onset, and no status that keeps it
 # going: active, recurrence or relapse) and its onset is on or before the other's end, the other's period counted as
 # the matcher's rule R8 counts it. A condition with an unknown end that began after the other's end is apart from it:
-# the two are two episodes, not joined and not listed, as are two whose periods are both known and apart.
+# the two are two episodes, not joined and not listed, as are two whose periods are both known and apart. Two
+# medications in two entries that share an RxNorm code are possibly the same medication: a pod cannot tell which shared
+# code names a product, and the matcher's rule R11 has already joined every pair that shares one the held drug products
+# table knows, so what is left is a pair sharing an ingredient, a strength, a dose form, a brand name or a salt, or a
+# code no held table knows, which is every shared RxNorm code when no drug products table is held. A pair is listed once,
+# from the entry of its smaller record, unless a person judged it different or a lapsed Same of it is listed already.
+# An entry joined by an NDC (R5) and a product code (R11) alone is joined through one kind of sameness, since both are
+# exact identity; any other two justifications are two kinds, with either of these included.
 # The build never settles these itself; a person does, with a judgment.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
@@ -36,7 +43,8 @@ WHERE {
         ?member rec:inEntry ?entry .
       }
       GROUP BY ?entry
-      HAVING (COUNT(DISTINCT ?why) > 1) }
+      HAVING (COUNT(DISTINCT ?why) > 1
+              && SUM(IF(?why IN (jdg:SameMedicationCode, jdg:SameProductCode), 0, 1)) > 0) }
     BIND ("joined through two kinds of machine sameness" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel } }
   UNION
@@ -95,6 +103,18 @@ WHERE {
                 || (!?otherEndKnown && !(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"))
                     && ?otherFrom <= ?to)))
     BIND ("same code, dates cannot tell" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+  UNION
+  { ?record rec:kind "Medication" ; pav:hasCurrentVersion ?version ; rec:inEntry ?entry .
+    ?otherRecord rec:kind "Medication" ; pav:hasCurrentVersion ?otherVersion ; rec:inEntry ?otherEntry .
+    ?version clinical:rxNormCode ?code .
+    ?otherVersion clinical:rxNormCode ?code .
+    FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
+            && !EXISTS { ?record jdg:currentlyDifferent ?otherRecord }
+            && !EXISTS { ?lapsed rec:lapsed true ; prov:hadMember ?record , ?otherRecord })
+    BIND ("possibly the same medication" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
