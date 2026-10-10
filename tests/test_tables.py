@@ -72,6 +72,22 @@ def versions():
                 yield folder, stem, kind, parsed(folder / f"{stem}.ttl")
 
 
+def test_a_story_folder_leaves_the_vocabularys_rule_list_to_it_and_every_version_it_lists_has_a_file_in_one_place():
+    shared = ROOT / "runtime" / "rule-list"
+    repeated, missing = [], []
+    for folder in sorted(set(FOLDERS) - {shared}):
+        index = parsed(folder / "references.ttl")
+        for version, series in index.subject_objects(PROV.specializationOf):
+            name = f"{str(version).removeprefix('urn:uuid:')}.ttl"
+            own = folder / name
+            if own.is_file() and (shared / name).is_file() and own.read_bytes() == (shared / name).read_bytes():
+                repeated.append(own.relative_to(ROOT).as_posix())
+            open_names_it = folder.parent.name == "tables"
+            if not own.is_file() and not (open_names_it and index.value(series, REC.tableKind) is None and (shared / name).is_file()):
+                missing.append(own.relative_to(ROOT).as_posix())
+    assert repeated == [] and missing == []
+
+
 def test_every_kind_names_one_row_shape_and_what_its_rows_are_found_by():
     declared = set(kinds().subjects(RDF.type, REC.TableKind))
     series_kind = next(p for p in shapes().objects(REC.ReferenceSeriesShape, SH.property)
