@@ -72,3 +72,10 @@
 :retractPersonSameJ a jdg:Judgment ; npx:retracts :personSameJ ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
+
+# k: a lapsed Same a person's Different supersedes, the Different not retracted
+:sameK a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :k1 , :k2 ;
+    prov:used :table1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:personDifferentK a jdg:Judgment ; jdg:verdict jdg:Different ; prov:hadMember :k1 , :k2 ; npx:supersedes :sameK ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

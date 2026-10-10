@@ -31,8 +31,8 @@ Feature: Opening a pod
     An open that finds nothing new writes nothing, so opening again is always safe.
 
     A Same the open does not file again stays in the pod. Once a version it used has a newer current one it has
-    lapsed (rec:lapsed, derived, nothing written for it), unless a person retracted or superseded it, and "What needs
-    review" lists its pair, if now in two entries, until a person judges it.
+    lapsed (rec:lapsed, derived, nothing written for it), unless something retracts it or a judgment not itself
+    retracted supersedes it, and "What needs review" lists its pair, if now in two entries, until a person judges it.
 
     Background:
       Given a new pod for Hana on 2026-07-01 at 09:00
