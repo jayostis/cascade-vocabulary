@@ -1,0 +1,23 @@
+# A matcher's Same has lapsed when it does not count, a reference version it used has a newer current one, nothing
+# retracts it, and no judgment not itself retracted supersedes it: an open adopted newer tables or rules and did not
+# file it again, so the pair it joined may now be two entries.
+PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+CONSTRUCT { ?j rec:lapsed true }
+WHERE {
+  ?j jdg:verdict jdg:Same ; prov:wasAttributedTo/a prov:SoftwareAgent ; prov:used ?input .
+  ?input prov:specializationOf ?series .
+  ?series a rec:ReferenceSeries ; pav:hasCurrentVersion ?now .
+  FILTER (?now != ?input)
+  FILTER NOT EXISTS { ?j rec:counts true }
+  FILTER NOT EXISTS { ?retracting npx:retracts ?j }
+  FILTER NOT EXISTS {
+    ?superseding npx:supersedes ?j
+    OPTIONAL { ?undoing npx:retracts ?superseding }
+    FILTER (!BOUND(?undoing))
+  }
+}
