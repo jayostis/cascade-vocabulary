@@ -165,6 +165,17 @@ def test_the_row_shapes_accept_a_row_of_each_kind_and_refuse_each_break_with_its
     assert (said == set()) if message is None else any(message in m for m in said), said
 
 
+@pytest.mark.parametrize("rows, message", [
+    (f"<urn:x:r> {CONVERSION} ; sssom:mapping_justification semapv:LexicalMatching .", "justified as"),
+    (f"<urn:x:r> {CONVERSION.replace('1:1', '1:2')} ; {CURATED} .", "one of 1:1, 1:n, n:1 or n:n"),
+    (f"<urn:x:r> {CONVERSION} ; {CURATED} ; skos:note \"x\" .", "A mapping row is an owl:Axiom named by an IRI"),
+])
+def test_a_conversion_row_broken_otherwise_does_not_also_say_its_form_is_wrong(rows, message):
+    said = messages(REC.CodeConversions, Graph().parse(data=PREFIXES + rows, format="turtle"))
+    assert any(message in m for m in said), said
+    assert not any("with dct:isReplacedBy" in m for m in said), said
+
+
 ESCAPES = {"\\": "\\\\", '"': '\\"', "\b": "\\b", "\t": "\\t", "\n": "\\n", "\f": "\\f", "\r": "\\r"}
 
 

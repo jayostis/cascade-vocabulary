@@ -246,7 +246,7 @@ rec:NdcDrugRowShape a sh:NodeShape ;
     ] .
 
 rec:CodeConversionRowShape a sh:NodeShape ;
-    sh:node rec:MappingRowShape ;
+    sh:node rec:MappingRowShape , rec:CodeConversionFormShape ;
     sh:property [
         sh:path owl:annotatedSource ;
         sh:node rec:CodeShape ;
@@ -257,7 +257,9 @@ rec:CodeConversionRowShape a sh:NodeShape ;
         sh:node rec:CodeShape ;
         sh:message "A code conversion row maps to a code, an IRI of a code system's form."@en ;
         sh:severity sh:Violation
-    ] ;
+    ] .
+
+rec:CodeConversionFormShape a sh:NodeShape ;
     sh:or (
         [ sh:property [ sh:path owl:annotatedProperty ; sh:hasValue dct:isReplacedBy ] ,
                       [ sh:path sssom:mapping_cardinality ; sh:minCount 1 ] ]
