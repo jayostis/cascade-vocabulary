@@ -1,0 +1,129 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix icd: <http://hl7.org/fhir/sid/icd-10-cm/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix sct: <http://snomed.info/sct/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:overlapA a health:ConditionRecord .
+:overlapAVersion prov:specializationOf :overlapA ; health:icd10Code icd:J18.9 ; health:onsetDate "2025-01-01"^^xsd:date ; clinical:abatementDate "2025-01-10"^^xsd:date ; health:status "resolved" .
+:overlapARevision a rec:Revision ; rec:revisionOf :overlapA ; rec:version :overlapAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:overlapB a health:ConditionRecord .
+:overlapBVersion prov:specializationOf :overlapB ; health:icd10Code icd:J18.9 ; health:onsetDate "2025-01-05"^^xsd:date ; clinical:abatementDate "2025-01-20"^^xsd:date ; health:status "resolved" .
+:overlapBRevision a rec:Revision ; rec:revisionOf :overlapB ; rec:version :overlapBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:touchingA a health:ConditionRecord .
+:touchingAVersion prov:specializationOf :touchingA ; health:icd10Code icd:J20.9 ; health:onsetDate "2024-01-01"^^xsd:date ; clinical:abatementDate "2024-01-10"^^xsd:date ; health:status "resolved" .
+:touchingARevision a rec:Revision ; rec:revisionOf :touchingA ; rec:version :touchingAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:touchingB a health:ConditionRecord .
+:touchingBVersion prov:specializationOf :touchingB ; health:icd10Code icd:J20.9 ; health:onsetDate "2024-01-10"^^xsd:date ; clinical:abatementDate "2024-01-15"^^xsd:date ; health:status "resolved" .
+:touchingBRevision a rec:Revision ; rec:revisionOf :touchingB ; rec:version :touchingBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:apartA a health:ConditionRecord .
+:apartAVersion prov:specializationOf :apartA ; health:icd10Code icd:J06.9 ; health:onsetDate "2020-01-01"^^xsd:date ; clinical:abatementDate "2020-01-10"^^xsd:date ; health:status "resolved" .
+:apartARevision a rec:Revision ; rec:revisionOf :apartA ; rec:version :apartAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:apartB a health:ConditionRecord .
+:apartBVersion prov:specializationOf :apartB ; health:icd10Code icd:J06.9 ; health:onsetDate "2020-02-01"^^xsd:date ; clinical:abatementDate "2020-02-10"^^xsd:date ; health:status "resolved" .
+:apartBRevision a rec:Revision ; rec:revisionOf :apartB ; rec:version :apartBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:openA a health:ConditionRecord .
+:openAVersion prov:specializationOf :openA ; health:icd10Code icd:E11.9 ; health:onsetDate "2010-01-01"^^xsd:date ; health:status "active" .
+:openARevision a rec:Revision ; rec:revisionOf :openA ; rec:version :openAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:openB a health:ConditionRecord .
+:openBVersion prov:specializationOf :openB ; health:icd10Code icd:E11.9 ; health:onsetDate "2020-05-05"^^xsd:date ; clinical:abatementDate "2020-05-10"^^xsd:date ; health:status "resolved" .
+:openBRevision a rec:Revision ; rec:revisionOf :openB ; rec:version :openBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:onsetDayA a health:ConditionRecord .
+:onsetDayAVersion prov:specializationOf :onsetDayA ; health:icd10Code icd:K29.70 ; health:onsetDate "2021-03-01"^^xsd:date ; health:status "resolved" .
+:onsetDayARevision a rec:Revision ; rec:revisionOf :onsetDayA ; rec:version :onsetDayAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:onsetDayB a health:ConditionRecord .
+:onsetDayBVersion prov:specializationOf :onsetDayB ; health:icd10Code icd:K29.70 ; health:onsetDate "2021-03-02"^^xsd:date ; clinical:abatementDate "2021-03-10"^^xsd:date ; health:status "resolved" .
+:onsetDayBRevision a rec:Revision ; rec:revisionOf :onsetDayB ; rec:version :onsetDayBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:onsetDayC a health:ConditionRecord .
+:onsetDayCVersion prov:specializationOf :onsetDayC ; health:icd10Code icd:K29.70 ; health:onsetDate "2021-03-01"^^xsd:date .
+:onsetDayCRevision a rec:Revision ; rec:revisionOf :onsetDayC ; rec:version :onsetDayCVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:zoneA a health:ConditionRecord .
+:zoneAVersion prov:specializationOf :zoneA ; health:icd10Code icd:N39.0 ; health:onsetDate "2022-06-01T23:30:00-05:00"^^xsd:dateTime ; health:status "resolved" .
+:zoneARevision a rec:Revision ; rec:revisionOf :zoneA ; rec:version :zoneAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:zoneB a health:ConditionRecord .
+:zoneBVersion prov:specializationOf :zoneB ; health:icd10Code icd:N39.0 ; health:onsetDate "2022-06-01"^^xsd:date ; health:status "resolved" .
+:zoneBRevision a rec:Revision ; rec:revisionOf :zoneB ; rec:version :zoneBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:noOnsetA a health:ConditionRecord .
+:noOnsetAVersion prov:specializationOf :noOnsetA ; health:icd10Code icd:R10.9 ; health:status "active" .
+:noOnsetARevision a rec:Revision ; rec:revisionOf :noOnsetA ; rec:version :noOnsetAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:noOnsetB a health:ConditionRecord .
+:noOnsetBVersion prov:specializationOf :noOnsetB ; health:icd10Code icd:R10.9 ; health:onsetDate "2022-01-01"^^xsd:date ; health:status "active" .
+:noOnsetBRevision a rec:Revision ; rec:revisionOf :noOnsetB ; rec:version :noOnsetBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:snomedA a health:ConditionRecord .
+:snomedAVersion prov:specializationOf :snomedA ; health:snomedCode sct:195662009 ; health:onsetDate "2017-01-28"^^xsd:date ; clinical:abatementDate "2017-02-05"^^xsd:date ; health:status "resolved" .
+:snomedARevision a rec:Revision ; rec:revisionOf :snomedA ; rec:version :snomedAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:snomedB a health:ConditionRecord .
+:snomedBVersion prov:specializationOf :snomedB ; health:snomedCode sct:195662009 ; health:onsetDate "2017-02-01"^^xsd:date ; clinical:abatementDate "2017-02-12"^^xsd:date ; health:status "resolved" .
+:snomedBRevision a rec:Revision ; rec:revisionOf :snomedB ; rec:version :snomedBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:snomedC a health:ConditionRecord .
+:snomedCVersion prov:specializationOf :snomedC ; health:snomedCode sct:195662009 ; health:onsetDate "2020-05-21"^^xsd:date ; clinical:abatementDate "2020-06-04"^^xsd:date ; health:status "resolved" .
+:snomedCRevision a rec:Revision ; rec:revisionOf :snomedC ; rec:version :snomedCVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:backwardsA a health:ConditionRecord .
+:backwardsAVersion prov:specializationOf :backwardsA ; health:icd10Code icd:M54.50 ; health:onsetDate "2023-05-10"^^xsd:date ; clinical:abatementDate "2023-05-01"^^xsd:date ; health:status "resolved" .
+:backwardsARevision a rec:Revision ; rec:revisionOf :backwardsA ; rec:version :backwardsAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:backwardsB a health:ConditionRecord .
+:backwardsBVersion prov:specializationOf :backwardsB ; health:icd10Code icd:M54.50 ; health:onsetDate "2023-05-05"^^xsd:date ; health:status "resolved" .
+:backwardsBRevision a rec:Revision ; rec:revisionOf :backwardsB ; rec:version :backwardsBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:otherCodeA a health:ConditionRecord .
+:otherCodeAVersion prov:specializationOf :otherCodeA ; health:icd10Code icd:J90 ; health:onsetDate "2025-06-01"^^xsd:date ; health:status "active" .
+:otherCodeARevision a rec:Revision ; rec:revisionOf :otherCodeA ; rec:version :otherCodeAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:otherCodeB a health:ConditionRecord .
+:otherCodeBVersion prov:specializationOf :otherCodeB ; health:icd10Code icd:J91.8 ; health:onsetDate "2025-06-01"^^xsd:date ; health:status "active" .
+:otherCodeBRevision a rec:Revision ; rec:revisionOf :otherCodeB ; rec:version :otherCodeBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:procedureA a clinical:Procedure .
+:procedureAVersion prov:specializationOf :procedureA ; clinical:snomedCode sct:73761001 ; clinical:procedureDate "2024-04-01"^^xsd:date .
+:procedureARevision a rec:Revision ; rec:revisionOf :procedureA ; rec:version :procedureAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:procedureB a clinical:Procedure .
+:procedureBVersion prov:specializationOf :procedureB ; clinical:snomedCode sct:73761001 ; clinical:procedureDate "2024-04-01"^^xsd:date .
+:procedureBRevision a rec:Revision ; rec:revisionOf :procedureB ; rec:version :procedureBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+

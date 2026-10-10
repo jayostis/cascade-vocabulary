@@ -1,14 +1,19 @@
 # Entries a person should look at, and why: its members disagree on how severe an allergy is,
-# the matcher joined it for two different reasons, or two records judged different are still joined in it.
+# the matcher joined it for two different reasons, two records judged different are still joined in it, or two of its
+# conditions, in two entries, carry one code and their dates cannot tell whether they are one condition: one has no
+# onset, or no abatement and no status that keeps it going (active, recurrence or relapse). Two conditions whose
+# periods are both known and apart are two episodes, and are not listed.
 # The build never settles these itself; a person does, with a judgment.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
+SELECT DISTINCT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
 WHERE {
   { { SELECT ?entry
       WHERE {
@@ -38,6 +43,31 @@ WHERE {
     OPTIONAL { ?judgment rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?record , ?otherRecord }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+  UNION
+  { VALUES ?property { health:icd10Code health:snomedCode }
+    ?record rec:kind "Condition" ; pav:hasCurrentVersion ?version ; rec:inEntry ?entry .
+    ?otherRecord rec:kind "Condition" ; pav:hasCurrentVersion ?otherVersion ; rec:inEntry ?otherEntry .
+    ?version ?property ?code .
+    ?otherVersion ?property ?code .
+    OPTIONAL { ?version rec:date ?onset }
+    OPTIONAL { ?version clinical:abatementDate ?end }
+    OPTIONAL { ?version rec:status ?status }
+    OPTIONAL { ?otherVersion rec:date ?otherOnset }
+    OPTIONAL { ?otherVersion clinical:abatementDate ?otherEnd }
+    OPTIONAL { ?otherVersion rec:status ?otherStatus }
+    FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
+            && !EXISTS { ?record jdg:currentlyDifferent ?otherRecord }
+            && (!BOUND(?onset) || !BOUND(?otherOnset)
+                || (!(BOUND(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime)
+                      && SUBSTR(STR(?end), 1, 10) >= SUBSTR(STR(?onset), 1, 10))
+                    && !(COALESCE(?status, "") IN ("active", "recurrence", "relapse")))
+                || (!(BOUND(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime)
+                      && SUBSTR(STR(?otherEnd), 1, 10) >= SUBSTR(STR(?otherOnset), 1, 10))
+                    && !(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse")))))
+    BIND ("same code, dates cannot tell" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
 }
