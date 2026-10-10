@@ -331,6 +331,17 @@ rec:BrandGenerics a rec:TableKind ;
     rec:rowShape rec:BrandGenericRowShape ;
     rec:foundBy owl:annotatedSource .
 
+rec:DrugProducts a rec:TableKind ;
+    rdfs:label "drug products"@en ;
+    rdfs:comment "A code that names one drug product, generic or branded, a clinical drug or a pack (RxNorm's SCD, SBD, GPCK and BPCK), with its term type as its publisher gives it. A code with no row is not known to name one product: an ingredient, a strength, a dose form, a brand name or a salt has none."@en ;
+    rec:rowShape rec:DrugProductRowShape ;
+    rec:foundBy rec:RowSubject .
+
+rec:termType a owl:DatatypeProperty ;
+    rdfs:label "term type"@en ;
+    rdfs:comment "Of a code, its term type as its publisher writes it; for RxNorm, the TTY of RXNCONSO."@en ;
+    rdfs:range xsd:string .
+
 rec:NdcDrugs a rec:TableKind ;
     rdfs:label "NDC drugs"@en ;
     rdfs:comment "An SSSOM mapping kind: an NDC and the RxNorm drug it is."@en ;

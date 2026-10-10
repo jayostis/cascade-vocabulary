@@ -97,7 +97,7 @@ rec:ReferenceSeriesShape a sh:NodeShape ;
         sh:severity sh:Violation
     ], [
         sh:path rec:tableKind ;
-        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients rec:ProductIngredients rec:BrandGenerics rec:NdcDrugs rec:CodeConversions ) ;
+        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients rec:ProductIngredients rec:BrandGenerics rec:DrugProducts rec:NdcDrugs rec:CodeConversions ) ;
         sh:maxCount 1 ;
         sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
         sh:severity sh:Violation
@@ -341,6 +341,21 @@ rec:CodeStatusRowShape a sh:NodeShape ;
         sh:path dct:isReplacedBy ;
         sh:node rec:CodeShape ;
         sh:message "A retired code is replaced by codes, each an IRI of a code system's form."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:DrugProductRowShape a sh:NodeShape ;
+    sh:node rec:RxNormCodeShape ;
+    sh:closed true ;
+    sh:message "A drug products row holds only the code's term type."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path rec:termType ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "SCD" "SBD" "GPCK" "BPCK" ) ;
+        sh:message "A drug product's term type is one of SCD, SBD, GPCK or BPCK."@en ;
         sh:severity sh:Violation
     ] .
 

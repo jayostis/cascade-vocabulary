@@ -30,6 +30,7 @@ PREFIXES = """
 @prefix cvx: <http://hl7.org/fhir/sid/cvx/> .
 @prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
 @prefix icd: <http://hl7.org/fhir/sid/icd-10-cm/> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 """
 ROW = "a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget cvx:88"
 CURATED = "sssom:mapping_justification semapv:ManualMappingCuration"
@@ -203,6 +204,11 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
      "A code conversion row maps a code"),
     (REC.CodeStatus, "cvx:141 owl:deprecated true ; dct:isReplacedBy cvx:150 .", None),
     (REC.CodeStatus, "cvx:141 owl:deprecated false .", "owl:deprecated true"),
+    (REC.DrugProducts, 'rxnorm:197361 rec:termType "SCD" .', None),
+    (REC.DrugProducts, 'rxnorm:370573 rec:termType "SCDF" .', "one of SCD, SBD, GPCK or BPCK"),
+    (REC.DrugProducts, 'cvx:141 rec:termType "SCD" .', "holds only the code's term type"),
+    (REC.DrugProducts, 'rxnorm:197361 rec:termType "SCD" ; skos:prefLabel "x" .', "holds only the code's term type"),
+    (REC.DrugProducts, 'rxnorm:197361 rec:termType "SCD", "SBD" .', "one of SCD, SBD, GPCK or BPCK"),
 ])
 def test_the_row_shapes_accept_a_row_of_each_kind_and_refuse_each_break_with_its_message(kind, rows, message):
     said = messages(kind, Graph().parse(data=PREFIXES + rows, format="turtle"))
