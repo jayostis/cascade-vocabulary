@@ -1,3 +1,4 @@
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -21,6 +22,16 @@ rec:sourceUrl a owl:ObjectProperty ;
 rec:patient a owl:ObjectProperty ;
     rdfs:label "patient"@en ;
     rdfs:comment "Who a version is about: the source's patient record, or the subject itself when the pod's person entered it."@en .
+
+rec:ndcCode a owl:ObjectProperty ;
+    rdfs:label "NDC code"@en ;
+    rdfs:comment "An NDC the source gave, as the rec:NDC IRI: Cascade's 11-digit form, so an adapter normalises FHIR's 10-digit hyphenated form into it."@en ;
+    rdfs:domain clinical:Medication .
+
+rec:selectedCode a owl:ObjectProperty ;
+    rdfs:label "selected code"@en ;
+    rdfs:comment "The one code among the version's codes that the source marked as the one it chose, as FHIR's Coding.userSelected does; absent when the source marked none."@en ;
+    rdfs:domain clinical:Medication .
 
 rec:Revision a owl:Class ;
     rdfs:label "revision"@en ;
@@ -354,7 +365,7 @@ rec:RxNorm a rec:CodeSystem ;
 
 rec:NDC a rec:CodeSystem ;
     rdfs:label "NDC"@en ;
-    rdfs:comment "The 11-digit HIPAA form, 5-4-2 with no hyphens, as RxNorm's RXNSAT gives it: Cascade's own space. FHIR's NDC code is the 10-digit hyphenated label code, so an NDC is normalised into this space. Until jayostis/cascade-vocabulary#104 moves NDC, the C-CDA adapter still writes it under FHIR's NDC system URI stem."@en ;
+    rdfs:comment "The 11-digit HIPAA form, 5-4-2 with no hyphens, as RxNorm's RXNSAT gives it: Cascade's own space. FHIR's NDC code is the 10-digit hyphenated label code, so an NDC is normalised into this space."@en ;
     void:uriSpace "https://ns.cascadeprotocol.org/codes/ndc11/" ;
     skos:exactMatch <http://hl7.org/fhir/sid/ndc> ;
     dct:source <https://hl7.org/fhir/R4/ndc.html> .

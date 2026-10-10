@@ -1,0 +1,20 @@
+@prefix : <urn:x:> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sssom: <https://w3id.org/sssom/> .
+
+:generics-1 {
+  :norvasc a owl:Axiom ; owl:annotatedSource rxnorm:212549 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:197361 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :brandOne a owl:Axiom ; owl:annotatedSource rxnorm:1000001 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:1000003 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :brandTwo a owl:Axiom ; owl:annotatedSource rxnorm:1000002 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:1000003 ; sssom:mapping_justification semapv:ManualMappingCuration .
+}
+
+:ingredients-1 {
+  :codeine a owl:Axiom ; owl:annotatedSource rxnorm:2670 ; owl:annotatedProperty skos:broadMatch ;
+      owl:annotatedTarget rxnorm:1191 ; sssom:mapping_justification semapv:ManualMappingCuration .
+}

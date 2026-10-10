@@ -224,10 +224,19 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape clinical:MedicationShape ; sh:resultPath clinical:clinicalIntent ] ] .
 
-<#record-medication/two-rxnorm-codes> a sht:Validate ;
-  mf:action [ sht:dataGraph <record-medication/two-rxnorm-codes.ttl> ] ;
+<#record-medication/every-code> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/every-code.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-medication/ndc-not-eleven-digits> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/ndc-not-eleven-digits.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape clinical:MedicationShape ; sh:resultPath clinical:rxNormCode ] ] .
+              sh:result [ sh:sourceShape clinical:MedicationShape ; sh:resultPath rec:ndcCode ] ] .
+
+<#record-medication/two-selected-codes> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/two-selected-codes.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape clinical:MedicationShape ; sh:resultPath rec:selectedCode ] ] .
 
 <#record-lab-result/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-lab-result/valid.ttl> ] ;

@@ -1,0 +1,66 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:brand a clinical:Medication .
+:brandVersion prov:specializationOf :brand ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:212549 .
+:brandRevision a rec:Revision ; rec:revisionOf :brand ; rec:version :brandVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:generic a clinical:Medication .
+:genericVersion prov:specializationOf :generic ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:197361 .
+:genericRevision a rec:Revision ; rec:revisionOf :generic ; rec:version :genericVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:both a clinical:Medication .
+:bothVersion prov:specializationOf :both ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:212549, rxnorm:197361 .
+:bothRevision a rec:Revision ; rec:revisionOf :both ; rec:version :bothVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:lisinopril a clinical:Medication .
+:lisinoprilVersion prov:specializationOf :lisinopril ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:314076 .
+:lisinoprilRevision a rec:Revision ; rec:revisionOf :lisinopril ; rec:version :lisinoprilVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:brandOne a clinical:Medication .
+:brandOneVersion prov:specializationOf :brandOne ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:1000001 .
+:brandOneRevision a rec:Revision ; rec:revisionOf :brandOne ; rec:version :brandOneVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:brandTwo a clinical:Medication .
+:brandTwoVersion prov:specializationOf :brandTwo ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:1000002 .
+:brandTwoRevision a rec:Revision ; rec:revisionOf :brandTwo ; rec:version :brandTwoVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:theirGeneric a clinical:Medication .
+:theirGenericVersion prov:specializationOf :theirGeneric ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:1000003 .
+:theirGenericRevision a rec:Revision ; rec:revisionOf :theirGeneric ; rec:version :theirGenericVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:strayA a clinical:Medication .
+:strayAVersion prov:specializationOf :strayA ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:2670 .
+:strayARevision a rec:Revision ; rec:revisionOf :strayA ; rec:version :strayAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:strayB a clinical:Medication .
+:strayBVersion prov:specializationOf :strayB ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:1191 .
+:strayBRevision a rec:Revision ; rec:revisionOf :strayB ; rec:version :strayBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fill a clinical:Medication .
+:fillVersion prov:specializationOf :fill ; clinical:clinicalIntent "prescribed" ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> .
+:fillRevision a rec:Revision ; rec:revisionOf :fill ; rec:version :fillVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
