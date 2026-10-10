@@ -6,37 +6,37 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;JGjWsOsWhjQzXjc1mGyVRgnpwgq0MfRMYEMuViojGNM> health:status "active" ;
-	health:snomedCode <http://snomed.info/sct/195967001> ;
-	health:onsetDate "2008-09-01"^^xsd:date ;
+<ni:///sha-256;6bFzCPhwlCTJbVGxjShPMDzRedps_69pIaIMtVApAGs> health:onsetDate "2008-09-01"^^xsd:date ;
+	health:status "active" ;
+	clinical:verificationStatus "confirmed" ;
 	health:conditionName "Asthma" ;
-	clinical:verificationStatus "confirmed" .
-_:84fe10dc914b40ec93044dacd947b39c pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
+	health:snomedCode <http://snomed.info/id/195967001> .
+_:6b80f6535fb1de6ef39307bd6400973 pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;JGjWsOsWhjQzXjc1mGyVRgnpwgq0MfRMYEMuViojGNM> .
-<ni:///sha-256;JGjWsOsWhjQzXjc1mGyVRgnpwgq0MfRMYEMuViojGNM> rec:patient <urn:uuid:d85089a6-8c4b-8108-b3cc-2cde9217f136> ;
+	bridge:arrivedAs <ni:///sha-256;6bFzCPhwlCTJbVGxjShPMDzRedps_69pIaIMtVApAGs> .
+<ni:///sha-256;6bFzCPhwlCTJbVGxjShPMDzRedps_69pIaIMtVApAGs> rec:patient <urn:uuid:d85089a6-8c4b-8108-b3cc-2cde9217f136> ;
 	prov:specializationOf <urn:uuid:693e3b10-09df-8117-b7b4-c2d39f725f07> .
 <urn:uuid:693e3b10-09df-8117-b7b4-c2d39f725f07> health:sourceRecordId "pr-30018" ;
 	rec:sourceUrl <https://ehr.larkspur.example/fhir/R4/Condition/pr-30018> ;
 	a health:ConditionRecord .
-_:84fe10dc914b40ec93044dacd947b39c bridge:selector "" ;
+_:6b80f6535fb1de6ef39307bd6400973 bridge:selector "" ;
 	prov:wasDerivedFrom <ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> ;
 	prov:wasGeneratedBy _:8e5c95de2846455b8d2906fe05f07ea3 .
-<ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> pav:retrievedFrom <https://EHR.Larkspur.example/fhir/R4/Condition/pr-30018> ;
-	pav:retrievedOn "2026-10-14T15:40:00Z"^^xsd:dateTime .
+_:8e5c95de2846455b8d2906fe05f07ea3 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-10-14T15:42:00Z"^^xsd:dateTime .
+<ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> prov:qualifiedAttribution _:8b53b7b873c1f4e92e04bc23f2ad730c .
 _:8b53b7b873c1f4e92e04bc23f2ad730c prov:agent _:bc5bc960e304dcc6dc9916057d33319 .
 _:bc5bc960e304dcc6dc9916057d33319 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:8b53b7b873c1f4e92e04bc23f2ad730c prov:hadRole rec:transmitter .
-<ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> prov:qualifiedAttribution _:8b53b7b873c1f4e92e04bc23f2ad730c .
+<ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> prov:qualifiedAttribution _:ddfa7d9dec90eecb3562ce90b7a5d4bd .
 _:ddfa7d9dec90eecb3562ce90b7a5d4bd prov:agent _:8146d9a9ce45282dd87064ba60b0ca6f .
 _:8146d9a9ce45282dd87064ba60b0ca6f <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
 _:ddfa7d9dec90eecb3562ce90b7a5d4bd prov:hadRole rec:author .
-<ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> prov:qualifiedAttribution _:ddfa7d9dec90eecb3562ce90b7a5d4bd ;
-	bridge:serverBaseUrl "https://ehr.larkspur.example/fhir/R4" ;
-	bridge:sourceFormatVersion "4.0.1" .
-_:8e5c95de2846455b8d2906fe05f07ea3 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2026-10-14T15:42:00Z"^^xsd:dateTime .
-<ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> a prov:Entity .
+<ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> bridge:serverBaseUrl "https://ehr.larkspur.example/fhir/R4" ;
+	pav:retrievedFrom <https://EHR.Larkspur.example/fhir/R4/Condition/pr-30018> ;
+	pav:retrievedOn "2026-10-14T15:40:00Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:8e5c95de2846455b8d2906fe05f07ea3 a prov:Activity ;
 	prov:used <ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> ;
 	prov:qualifiedAssociation _:c8eb02769555cfcb2243c43813275576 .

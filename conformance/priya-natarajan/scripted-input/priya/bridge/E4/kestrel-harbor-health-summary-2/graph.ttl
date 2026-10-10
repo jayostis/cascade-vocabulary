@@ -8,23 +8,23 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-<ni:///sha-256;ijR1HcavOkOLx17zcEcGIn0yO2jQ48gQhMWFLGMWHm0> health:allergySeverity "mild" ;
+<ni:///sha-256;-n-UTJnNScQu2U5r8Soa5ZGY6S22u4QvgfpZj5bWXSk> health:allergySeverity "mild" ;
 	health:allergyCategory "medication" ;
 	clinical:allergyType "allergy" ;
 	health:allergen "Aspirin" ;
 	clinical:criticality "low" ;
+	health:manifestationCode <http://snomed.info/id/126485001> ;
 	health:reaction "Urticaria" ;
-	health:manifestationCode <http://snomed.info/sct/126485001> ;
 	health:allergenCode <http://www.nlm.nih.gov/research/umls/rxnorm/1191> .
-<ni:///sha-256;3wqdAAbQ3ZPzYMov2Rih2uH7vOtKDZ_e99tAgXC1DjM> health:snomedCode <http://snomed.info/sct/59621000> ;
-	clinical:category "problem-list-item" ;
-	health:conditionName "Essential hypertension" ;
+<ni:///sha-256;1g-vbPOgT1RfECgmLTP9rJpYyulR913kODqozBIOIXE> health:conditionName "Essential hypertension" ;
 	health:onsetDate "2023-06-15"^^xsd:date ;
-	health:status "active" .
-<ni:///sha-256;_OkcCT8Nx0cirDgVQgDosQeLHmUbBntaKaWEZyLh4d0> prov:qualifiedAttribution _:be492a21051b8d6514d0cd880abac3cb .
-_:be492a21051b8d6514d0cd880abac3cb prov:hadRole rec:author ;
-	prov:agent _:b2ed0ef587e788d2723bcb7e516ed1fd .
-_:b2ed0ef587e788d2723bcb7e516ed1fd rdfs:label "Kestrel Harbor Hospital" .
+	health:status "active" ;
+	clinical:category "problem-list-item" ;
+	health:snomedCode <http://snomed.info/id/59621000> .
+<ni:///sha-256;_OkcCT8Nx0cirDgVQgDosQeLHmUbBntaKaWEZyLh4d0> prov:qualifiedAttribution _:d8abc629491353756249bf8c20f0070e .
+_:d8abc629491353756249bf8c20f0070e prov:hadRole rec:author ;
+	prov:agent _:f4dec16d0a3dcf1917860554197cebd1 .
+_:f4dec16d0a3dcf1917860554197cebd1 rdfs:label "Kestrel Harbor Hospital" .
 <ni:///sha-256;nhkL10tkM-mHMlcPpAmfOx-x-dNglpZX0GverSo_eYk> clinical:clinicalIntent "reportedUse" ;
 	clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ;
 	clinical:status "active" ;
@@ -44,16 +44,16 @@ _:b0bbab078d851f55289bdd81cf67694 bridge:selector "/*[local-name()='ClinicalDocu
 <urn:uuid:5b809a4e-0f61-8c93-b9a9-b9ae492075d8> cascade:sourceRecordId "2.16.840.1.113883.19.5.1.2:KH48213" ;
 	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.1.2:KH48213> ;
 	a cascade:PatientProfile .
-_:5821c3b068f867336b5cc92faadda829 bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
-	bridge:arrivedAs <ni:///sha-256;ijR1HcavOkOLx17zcEcGIn0yO2jQ48gQhMWFLGMWHm0> .
-<ni:///sha-256;ijR1HcavOkOLx17zcEcGIn0yO2jQ48gQhMWFLGMWHm0> rec:patient <urn:uuid:5b809a4e-0f61-8c93-b9a9-b9ae492075d8> ;
+_:698a1529414b2795e9f7c79590d30f94 bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;-n-UTJnNScQu2U5r8Soa5ZGY6S22u4QvgfpZj5bWXSk> .
+<ni:///sha-256;-n-UTJnNScQu2U5r8Soa5ZGY6S22u4QvgfpZj5bWXSk> rec:patient <urn:uuid:5b809a4e-0f61-8c93-b9a9-b9ae492075d8> ;
 	prov:specializationOf <urn:uuid:4aa504a2-d600-8291-9855-7dd82e3c1d9a> .
 <urn:uuid:4aa504a2-d600-8291-9855-7dd82e3c1d9a> health:sourceRecordId "2.16.840.1.113883.19.5.1.3:ALG-1001" ;
 	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.1.3:ALG-1001> ;
 	a health:AllergyRecord .
-_:60cf5a3b4fd6a0de81bfa33aaf4262da bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][3]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
-	bridge:arrivedAs <ni:///sha-256;3wqdAAbQ3ZPzYMov2Rih2uH7vOtKDZ_e99tAgXC1DjM> .
-<ni:///sha-256;3wqdAAbQ3ZPzYMov2Rih2uH7vOtKDZ_e99tAgXC1DjM> rec:patient <urn:uuid:5b809a4e-0f61-8c93-b9a9-b9ae492075d8> ;
+_:aa967ecad43bd47f61afe1a13c19634a bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][3]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;1g-vbPOgT1RfECgmLTP9rJpYyulR913kODqozBIOIXE> .
+<ni:///sha-256;1g-vbPOgT1RfECgmLTP9rJpYyulR913kODqozBIOIXE> rec:patient <urn:uuid:5b809a4e-0f61-8c93-b9a9-b9ae492075d8> ;
 	prov:specializationOf <urn:uuid:d9cdb76d-ee73-87af-b1cd-bf6f8abc619d> .
 <urn:uuid:d9cdb76d-ee73-87af-b1cd-bf6f8abc619d> health:sourceRecordId "2.16.840.1.113883.19.5.1.6:PRB-3310" ;
 	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.1.6:PRB-3310> ;
@@ -89,7 +89,7 @@ _:1411f8ddfb886c6d768eeb6930c3baa0 bridge:selector "/*[local-name()='ClinicalDoc
 	health:resultValue "4.1" .
 _:b8542681d51469e44934faeb574e135e prov:wasDerivedFrom <ni:///sha-256;_OkcCT8Nx0cirDgVQgDosQeLHmUbBntaKaWEZyLh4d0> ;
 	prov:wasGeneratedBy _:400ca9f998d97153c4e52c820b844d17 .
-_:5821c3b068f867336b5cc92faadda829 prov:wasDerivedFrom <ni:///sha-256;_OkcCT8Nx0cirDgVQgDosQeLHmUbBntaKaWEZyLh4d0> ;
+_:698a1529414b2795e9f7c79590d30f94 prov:wasDerivedFrom <ni:///sha-256;_OkcCT8Nx0cirDgVQgDosQeLHmUbBntaKaWEZyLh4d0> ;
 	prov:wasGeneratedBy _:400ca9f998d97153c4e52c820b844d17 .
 _:b0bbab078d851f55289bdd81cf67694 prov:wasDerivedFrom <ni:///sha-256;_OkcCT8Nx0cirDgVQgDosQeLHmUbBntaKaWEZyLh4d0> ;
 	prov:wasGeneratedBy _:400ca9f998d97153c4e52c820b844d17 .
@@ -97,7 +97,7 @@ _:e4abcee51a06127be89cacc3178efebf prov:wasDerivedFrom <ni:///sha-256;_OkcCT8Nx0
 	prov:wasGeneratedBy _:400ca9f998d97153c4e52c820b844d17 .
 _:1411f8ddfb886c6d768eeb6930c3baa0 prov:wasDerivedFrom <ni:///sha-256;_OkcCT8Nx0cirDgVQgDosQeLHmUbBntaKaWEZyLh4d0> ;
 	prov:wasGeneratedBy _:400ca9f998d97153c4e52c820b844d17 .
-_:60cf5a3b4fd6a0de81bfa33aaf4262da prov:wasDerivedFrom <ni:///sha-256;_OkcCT8Nx0cirDgVQgDosQeLHmUbBntaKaWEZyLh4d0> ;
+_:aa967ecad43bd47f61afe1a13c19634a prov:wasDerivedFrom <ni:///sha-256;_OkcCT8Nx0cirDgVQgDosQeLHmUbBntaKaWEZyLh4d0> ;
 	prov:wasGeneratedBy _:400ca9f998d97153c4e52c820b844d17 .
 _:400ca9f998d97153c4e52c820b844d17 rdfs:label "C-CDA download" ;
 	prov:startedAtTime "2025-04-20T08:15:04Z"^^xsd:dateTime .

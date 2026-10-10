@@ -11,7 +11,7 @@ import pytest
 from pyshacl import validate
 from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import OWL, RDF, SH, XSD
+from rdflib.namespace import OWL, RDF, SH, SKOS, XSD
 
 from contract import QUERIES, REC, ROOT
 from engines import parsed
@@ -34,7 +34,7 @@ PREFIXES = """
 ROW = "a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget cvx:88"
 CURATED = "sssom:mapping_justification semapv:ManualMappingCuration"
 CHAINED = "sssom:mapping_justification semapv:MappingChaining"
-NDC = "<http://hl7.org/fhir/sid/ndc/00069153066>"
+NDC = "<https://ns.cascadeprotocol.org/codes/ndc11/00069153066>"
 EARLIER = "a owl:Axiom ; owl:annotatedSource icd:C88.0 ; owl:annotatedProperty skos:exactMatch ; owl:annotatedTarget icd:C88.00"
 CARDINALITY = 'sssom:mapping_cardinality "1:1"'
 CONVERSION = EARLIER.replace("skos:exactMatch", "dct:isReplacedBy") + f" ; {CARDINALITY}"
@@ -81,11 +81,31 @@ def test_every_kind_names_one_row_shape_and_what_its_rows_are_found_by():
             or not set(kinds().objects(kind, REC.foundBy))} == set()
 
 
-def test_every_code_iri_a_matcher_query_builds_starts_with_its_code_systems_uri_space():
-    systems = {str(space): system for system, space in kinds().subject_objects(VOID.uriSpace)}
-    built = {(path.name, systems.get(prefix)) for path in sorted((QUERIES / "matcher").glob("*.rq"))
-             for prefix in re.findall(r'CONCAT\s*\(\s*"([^"]*)"', path.read_text(encoding="utf-8"))}
-    assert built == {("same-mapped-code-and-date.rq", REC.CVX)}
+STEM = re.compile(r"https?://(?:snomed\.info|loinc\.org|www\.nlm\.nih\.gov|hl7\.org/fhir/sid|fdasis\.nlm\.nih\.gov"
+                  r"|www\.ama-assn\.org/go|ns\.cascadeprotocol\.org/codes)/[A-Za-z0-9._/-]*/")
+
+
+def test_every_iri_stem_a_query_or_an_ontology_writes_is_a_code_systems_uri_space():
+    registered = {str(space) for space in kinds().objects(None, VOID.uriSpace)}
+    system_uris = [f"<{uri}>" for uri in kinds().objects(None, SKOS.exactMatch)]
+    written = {}
+    for path in [*sorted(QUERIES.parent.rglob("*.rq")), *sorted((ROOT / "ontologies").rglob("*.ttl"))]:
+        text = path.read_text(encoding="utf-8").replace("\\\\.", ".")
+        for uri in system_uris:
+            text = text.replace(uri, "")
+        if stray := sorted(set(STEM.findall(text)) - registered):
+            written[path.relative_to(ROOT).as_posix()] = stray
+    assert written == {}
+
+
+def test_every_code_system_has_one_iri_stem_ending_in_a_slash_and_one_system_uri_without():
+    systems = set(kinds().subjects(RDF.type, REC.CodeSystem))
+    assert {system.removeprefix(str(REC)) for system in systems} == {
+        "CVX", "RxNorm", "NDC", "ICD10CM", "SNOMEDCT", "LOINC", "UNII", "CPT", "ICD9CM"}
+    for system in systems:
+        stems, uris = list(kinds().objects(system, VOID.uriSpace)), list(kinds().objects(system, SKOS.exactMatch))
+        assert len(stems) == 1 and str(stems[0]).endswith("/"), system
+        assert len(uris) == 1 and isinstance(uris[0], URIRef) and not str(uris[0]).endswith("/"), system
 
 
 def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mapping_row_is_named_by_n11():
@@ -121,8 +141,10 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (REC.CodeNames, 'cvx:141 skos:prefLabel "Influenza"@en ; skos:notation "141" .', "one preferred name"),
     (REC.CodeNames, '<urn:x:141> skos:prefLabel "Influenza" ; skos:notation "141" .', "one of the code systems' forms"),
     (REC.CodeNames, '<http://hl7.org/fhir/sid/cvx/8> skos:prefLabel "x" ; skos:notation "8" .', "one of the code systems' forms"),
-    (REC.CodeNames, '<http://hl7.org/fhir/sid/ndc/00002143380> skos:prefLabel "x" ; skos:notation "0002-1433-80" .', None),
-    (REC.CodeNames, '<http://hl7.org/fhir/sid/ndc/0002-1433-80> skos:prefLabel "x" ; skos:notation "0002-1433-80" .',
+    (REC.CodeNames, '<https://ns.cascadeprotocol.org/codes/ndc11/00002143380> skos:prefLabel "x" ; skos:notation "0002-1433-80" .', None),
+    (REC.CodeNames, '<http://hl7.org/fhir/sid/ndc/00002143380> skos:prefLabel "x" ; skos:notation "0002-1433-80" .',
+     "one of the code systems' forms"),
+    (REC.CodeNames, '<https://ns.cascadeprotocol.org/codes/ndc11/0002-1433-80> skos:prefLabel "x" ; skos:notation "0002-1433-80" .',
      "one of the code systems' forms"),
     (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/E11.9> skos:prefLabel "x" ; skos:notation "E11.9" .', None),
     (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/S72.001A> skos:prefLabel "x" ; skos:notation "S72.001A" .', None),
@@ -130,7 +152,13 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (REC.CodeNames, '<http://hl7.org/fhir/sid/icd-10-cm/E119> skos:prefLabel "x" ; skos:notation "E11.9" .',
      "one of the code systems' forms"),
     (REC.CodeNames, 'rxnorm:RX7980 skos:prefLabel "x" ; skos:notation "7980" .', "one of the code systems' forms"),
-    (REC.CodeNames, '<http://snomed.info/sct/x91936005> skos:prefLabel "x" ; skos:notation "91936005" .',
+    (REC.CodeNames, '<http://snomed.info/id/91936005> skos:prefLabel "x" ; skos:notation "91936005" .', None),
+    (REC.CodeNames, '<http://snomed.info/sct/91936005> skos:prefLabel "x" ; skos:notation "91936005" .',
+     "one of the code systems' forms"),
+    (REC.CodeNames, '<http://snomed.info/id/x91936005> skos:prefLabel "x" ; skos:notation "91936005" .',
+     "one of the code systems' forms"),
+    (REC.CodeNames, '<http://loinc.org/rdf/2823-3> skos:prefLabel "x" ; skos:notation "2823-3" .', None),
+    (REC.CodeNames, '<http://loinc.org/rdf/28233> skos:prefLabel "x" ; skos:notation "2823-3" .',
      "one of the code systems' forms"),
     (REC.ProductIngredients, f"<urn:x:r> {DRUG} ; {CHAINED} .", None),
     (REC.ProductIngredients, f"<urn:x:r> {DRUG.replace('rxnorm:153010', 'cvx:141')} ; {CHAINED} .",
@@ -138,7 +166,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (REC.ProductIngredients, f"<urn:x:r> {DRUG.replace('broadMatch', 'exactMatch')} ; {CHAINED} .",
      "with skos:broadMatch"),
     (REC.BrandGenerics, f"<urn:x:r> {DRUG} ; {CURATED} .", None),
-    (REC.BrandGenerics, f"<urn:x:r> {DRUG.replace('rxnorm:5640', '<http://snomed.info/sct/387207008>')} ; {CURATED} .",
+    (REC.BrandGenerics, f"<urn:x:r> {DRUG.replace('rxnorm:5640', '<http://snomed.info/id/387207008>')} ; {CURATED} .",
      "A brand generic row maps to an RxNorm code"),
     (REC.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC)} ; {CURATED} .", None),
     (REC.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC.replace('/000', '/00'))} ; {CURATED} .",

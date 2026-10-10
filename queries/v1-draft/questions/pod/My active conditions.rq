@@ -1,6 +1,6 @@
 # Read from the view alone, as an app would: each entry whose status is active, with its codes, its onset, and how
 # many records it joins. Each code is its system's IRI, SNOMED CT's or ICD-10-CM's: the one the entry states, or
-# http://snomed.info/sct/ or http://hl7.org/fhir/sid/icd-10-cm/ followed by the code as written; none when what is
+# http://snomed.info/id/ or http://hl7.org/fhir/sid/icd-10-cm/ followed by the code as written; none when what is
 # written cannot end an IRI. An entry stating several codes of one system gives the first as written, in code point
 # order, so that each entry is one row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
@@ -19,7 +19,7 @@ WHERE {
       FILTER ((isIRI(?earlierSnomed) || REGEX(STR(?earlierSnomed), '^[^\\s<>"{}|^`\\\\]+$'))
               && STR(?earlierSnomed) < STR(?writtenSnomed))
     }
-    BIND (IF(isIRI(?writtenSnomed), ?writtenSnomed, IRI(CONCAT("http://snomed.info/sct/", STR(?writtenSnomed))))
+    BIND (IF(isIRI(?writtenSnomed), ?writtenSnomed, IRI(CONCAT("http://snomed.info/id/", STR(?writtenSnomed))))
           AS ?snomed)
   }
   OPTIONAL {

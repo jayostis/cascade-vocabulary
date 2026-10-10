@@ -6,39 +6,39 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;speupt8agVEGEaCBohKJga3wsFRoYK3180tQqSaJTfk> health:allergyCategory "medication" ;
-	health:allergenCode <http://snomed.info/sct/373270004> ;
-	clinical:verificationStatus "confirmed" ;
+<ni:///sha-256;DFLWqnvR4W6YVM-gfEN6ebzCUM1QCnKwpEtP3LTak4Y> health:allergenCode <http://snomed.info/id/373270004> ;
+	clinical:status "active" ;
+	health:reaction "Hives" ;
 	clinical:allergyType "allergy" ;
 	health:allergen "Penicillin" ;
-	health:reaction "Hives" ;
-	clinical:status "active" .
-_:11fe80e6b22a5d92bcef6ba632af31d pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
+	health:allergyCategory "medication" ;
+	clinical:verificationStatus "confirmed" .
+_:9f0b252a50dba0b9336487263a367af8 pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;speupt8agVEGEaCBohKJga3wsFRoYK3180tQqSaJTfk> .
-<ni:///sha-256;speupt8agVEGEaCBohKJga3wsFRoYK3180tQqSaJTfk> rec:patient <urn:uuid:d85089a6-8c4b-8108-b3cc-2cde9217f136> ;
+	bridge:arrivedAs <ni:///sha-256;DFLWqnvR4W6YVM-gfEN6ebzCUM1QCnKwpEtP3LTak4Y> .
+<ni:///sha-256;DFLWqnvR4W6YVM-gfEN6ebzCUM1QCnKwpEtP3LTak4Y> rec:patient <urn:uuid:d85089a6-8c4b-8108-b3cc-2cde9217f136> ;
 	prov:specializationOf <urn:uuid:675129a5-0988-86e9-b7cc-dd37a75bab3a> .
 <urn:uuid:675129a5-0988-86e9-b7cc-dd37a75bab3a> health:sourceRecordId "al-8237461" ;
 	rec:sourceUrl <https://ehr.larkspur.example/fhir/R4/AllergyIntolerance/al-8237461> ;
 	a health:AllergyRecord .
-_:11fe80e6b22a5d92bcef6ba632af31d bridge:selector "" ;
+_:9f0b252a50dba0b9336487263a367af8 bridge:selector "" ;
 	prov:wasDerivedFrom <ni:///sha-256;QikKI44xZW8VbEs_UoN0xtF7wzhrF4TqXE2vwyoQTnw> ;
 	prov:wasGeneratedBy _:dfeb1ef95536ced8f3af4e28c16539a7 .
-<ni:///sha-256;QikKI44xZW8VbEs_UoN0xtF7wzhrF4TqXE2vwyoQTnw> pav:retrievedFrom <https://EHR.Larkspur.example/fhir/R4/AllergyIntolerance/al-8237461> ;
-	pav:retrievedOn "2026-10-14T15:40:00Z"^^xsd:dateTime .
+_:dfeb1ef95536ced8f3af4e28c16539a7 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-10-14T15:42:00Z"^^xsd:dateTime .
+<ni:///sha-256;QikKI44xZW8VbEs_UoN0xtF7wzhrF4TqXE2vwyoQTnw> prov:qualifiedAttribution _:e90f7b8424c23e6ae8bf1af08584c6b4 .
 _:e90f7b8424c23e6ae8bf1af08584c6b4 prov:agent _:3d961b9aeb867dda6398617c290e19ca .
 _:3d961b9aeb867dda6398617c290e19ca <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:e90f7b8424c23e6ae8bf1af08584c6b4 prov:hadRole rec:transmitter .
-<ni:///sha-256;QikKI44xZW8VbEs_UoN0xtF7wzhrF4TqXE2vwyoQTnw> prov:qualifiedAttribution _:e90f7b8424c23e6ae8bf1af08584c6b4 .
+<ni:///sha-256;QikKI44xZW8VbEs_UoN0xtF7wzhrF4TqXE2vwyoQTnw> prov:qualifiedAttribution _:3cc1945a0d3d47856368c4e8386368ee .
 _:3cc1945a0d3d47856368c4e8386368ee prov:agent _:e822580c4d522991248e0072cc389953 .
 _:e822580c4d522991248e0072cc389953 <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
 _:3cc1945a0d3d47856368c4e8386368ee prov:hadRole rec:author .
-<ni:///sha-256;QikKI44xZW8VbEs_UoN0xtF7wzhrF4TqXE2vwyoQTnw> prov:qualifiedAttribution _:3cc1945a0d3d47856368c4e8386368ee ;
-	bridge:serverBaseUrl "https://ehr.larkspur.example/fhir/R4" ;
-	bridge:sourceFormatVersion "4.0.1" .
-_:dfeb1ef95536ced8f3af4e28c16539a7 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2026-10-14T15:42:00Z"^^xsd:dateTime .
-<ni:///sha-256;QikKI44xZW8VbEs_UoN0xtF7wzhrF4TqXE2vwyoQTnw> a prov:Entity .
+<ni:///sha-256;QikKI44xZW8VbEs_UoN0xtF7wzhrF4TqXE2vwyoQTnw> bridge:serverBaseUrl "https://ehr.larkspur.example/fhir/R4" ;
+	pav:retrievedFrom <https://EHR.Larkspur.example/fhir/R4/AllergyIntolerance/al-8237461> ;
+	pav:retrievedOn "2026-10-14T15:40:00Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:dfeb1ef95536ced8f3af4e28c16539a7 a prov:Activity ;
 	prov:used <ni:///sha-256;QikKI44xZW8VbEs_UoN0xtF7wzhrF4TqXE2vwyoQTnw> ;
 	prov:qualifiedAssociation _:984ec573185e000f31a9db1eddf1c141 .

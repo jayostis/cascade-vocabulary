@@ -6,40 +6,40 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;Sq63kFsw9PFqdEz4-s71usH_3DqnBHQmOYgtDM-jrcQ> health:allergyCategory "environment" ;
-	health:allergenCode <http://snomed.info/sct/111088007> ;
-	clinical:verificationStatus "confirmed" ;
-	clinical:criticality "low" ;
+<ni:///sha-256;cMogBcQcKEDJlII03V0wyoP94m-HZC2GeQyJ2uaQzbA> health:allergenCode <http://snomed.info/id/111088007> ;
+	clinical:status "active" ;
+	health:reaction "Contact dermatitis" ;
 	clinical:allergyType "allergy" ;
 	health:allergen "Latex" ;
-	health:reaction "Contact dermatitis" ;
-	clinical:status "active" .
-_:98b30dd3ded15816fcbf5478f8904c8d pav:lastUpdateOn "2026-11-18T09:40:00Z"^^xsd:dateTime ;
+	health:allergyCategory "environment" ;
+	clinical:verificationStatus "confirmed" ;
+	clinical:criticality "low" .
+_:942334d74fce927b93ab8f8fd59b96d7 pav:lastUpdateOn "2026-11-18T09:40:00Z"^^xsd:dateTime ;
 	pav:version "2" ;
-	bridge:arrivedAs <ni:///sha-256;Sq63kFsw9PFqdEz4-s71usH_3DqnBHQmOYgtDM-jrcQ> .
-<ni:///sha-256;Sq63kFsw9PFqdEz4-s71usH_3DqnBHQmOYgtDM-jrcQ> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
+	bridge:arrivedAs <ni:///sha-256;cMogBcQcKEDJlII03V0wyoP94m-HZC2GeQyJ2uaQzbA> .
+<ni:///sha-256;cMogBcQcKEDJlII03V0wyoP94m-HZC2GeQyJ2uaQzbA> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
 	prov:specializationOf <urn:uuid:6477b340-8fb7-8d62-a24a-b8520e30f0d5> .
 <urn:uuid:6477b340-8fb7-8d62-a24a-b8520e30f0d5> health:sourceRecordId "alg-latex-1" ;
 	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/AllergyIntolerance/alg-latex-1> ;
 	a health:AllergyRecord .
-_:98b30dd3ded15816fcbf5478f8904c8d bridge:selector "" ;
+_:942334d74fce927b93ab8f8fd59b96d7 bridge:selector "" ;
 	prov:wasDerivedFrom <ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> ;
 	prov:wasGeneratedBy _:2f32deab676a3cf4e9cc51caccdd6771 .
-<ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/AllergyIntolerance/alg-latex-1> ;
-	pav:retrievedOn "2026-11-20T09:00:00Z"^^xsd:dateTime .
+_:2f32deab676a3cf4e9cc51caccdd6771 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> prov:qualifiedAttribution _:cf7e33dbc4acf4bd4bc04dc015db325e .
 _:cf7e33dbc4acf4bd4bc04dc015db325e prov:agent _:cd35599f495fa81c6e6f5f5ca2009b44 .
 _:cd35599f495fa81c6e6f5f5ca2009b44 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:cf7e33dbc4acf4bd4bc04dc015db325e prov:hadRole rec:transmitter .
-<ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> prov:qualifiedAttribution _:cf7e33dbc4acf4bd4bc04dc015db325e .
+<ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> prov:qualifiedAttribution _:52776c76475482909c2c692ab98fe5f5 .
 _:52776c76475482909c2c692ab98fe5f5 prov:agent _:390ac06fb5b322d2326e43237433e054 .
 _:390ac06fb5b322d2326e43237433e054 <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
 _:52776c76475482909c2c692ab98fe5f5 prov:hadRole rec:author .
-<ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> prov:qualifiedAttribution _:52776c76475482909c2c692ab98fe5f5 ;
-	bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
-	bridge:sourceFormatVersion "4.0.1" .
-_:2f32deab676a3cf4e9cc51caccdd6771 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .
-<ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> a prov:Entity .
+<ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/AllergyIntolerance/alg-latex-1> ;
+	pav:retrievedOn "2026-11-20T09:00:00Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:2f32deab676a3cf4e9cc51caccdd6771 a prov:Activity ;
 	prov:used <ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> ;
 	prov:qualifiedAssociation _:3a0ed1939da64b18698d5b26cc511551 .

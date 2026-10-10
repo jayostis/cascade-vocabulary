@@ -338,38 +338,67 @@ rec:RowSubject a rdf:Property ;
 
 rec:CodeSystem a owl:Class ;
     rdfs:label "code system"@en ;
-    rdfs:comment "A code system whose codes are IRIs of one form: its void:uriSpace followed by the code. A record's code written as a literal joins a table as that IRI, the literal as written."@en .
+    rdfs:comment "A code system whose codes are IRIs of one form: its void:uriSpace, the IRI stem, followed by the code percent-encoded as SPARQL's ENCODE_FOR_URI does. The stem is HL7 Terminology's where THO registers one, and is never the FHIR Coding.system URI, which skos:exactMatch names (https://hl7.org/fhir/R5/rdf.html#iri-stem). A record's code written as a literal joins a table as that IRI, the literal as written."@en .
 
 rec:CVX a rec:CodeSystem ;
     rdfs:label "CVX"@en ;
     rdfs:comment "The code as CDC writes it, leading zero kept and trailing spaces trimmed: 08, 141. A record coded 8 joins nothing."@en ;
-    void:uriSpace "http://hl7.org/fhir/sid/cvx/" .
+    void:uriSpace "http://hl7.org/fhir/sid/cvx/" ;
+    skos:exactMatch <http://hl7.org/fhir/sid/cvx> .
 
 rec:RxNorm a rec:CodeSystem ;
     rdfs:label "RxNorm"@en ;
     rdfs:comment "The RXCUI."@en ;
-    void:uriSpace "http://www.nlm.nih.gov/research/umls/rxnorm/" .
+    void:uriSpace "http://www.nlm.nih.gov/research/umls/rxnorm/" ;
+    skos:exactMatch <http://www.nlm.nih.gov/research/umls/rxnorm> .
 
 rec:NDC a rec:CodeSystem ;
     rdfs:label "NDC"@en ;
-    rdfs:comment "The code as RxNorm's RXNSAT gives it."@en ;
-    void:uriSpace "http://hl7.org/fhir/sid/ndc/" .
+    rdfs:comment "The 11-digit HIPAA form, 5-4-2 with no hyphens, as RxNorm's RXNSAT gives it: Cascade's own space. FHIR's NDC code is the 10-digit hyphenated label code, so an NDC is normalised into this space. Until jayostis/cascade-vocabulary#104 moves NDC, the C-CDA adapter still writes it under FHIR's NDC system URI stem."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/ndc11/" ;
+    skos:exactMatch <http://hl7.org/fhir/sid/ndc> ;
+    dct:source <https://hl7.org/fhir/R4/ndc.html> .
 
 rec:ICD10CM a rec:CodeSystem ;
     rdfs:label "ICD-10-CM"@en ;
     rdfs:comment "The code as FHIR writes it."@en ;
-    void:uriSpace "http://hl7.org/fhir/sid/icd-10-cm/" .
+    void:uriSpace "http://hl7.org/fhir/sid/icd-10-cm/" ;
+    skos:exactMatch <http://hl7.org/fhir/sid/icd-10-cm> .
 
 rec:SNOMEDCT a rec:CodeSystem ;
     rdfs:label "SNOMED CT"@en ;
-    rdfs:comment "The concept ID."@en ;
-    void:uriSpace "http://snomed.info/sct/" .
+    rdfs:comment "The concept ID. snomed.info/sct is the code system's own URI and, with a module, names its editions; it never names a concept."@en ;
+    void:uriSpace "http://snomed.info/id/" ;
+    skos:exactMatch <http://snomed.info/sct> ;
+    dct:source <https://terminology.hl7.org/SNOMEDCT.html> .
 
 rec:LOINC a rec:CodeSystem ;
     rdfs:label "LOINC"@en ;
     rdfs:comment "The LOINC code as LOINC writes it, with its check digit: 2823-3."@en ;
     void:uriSpace "http://loinc.org/rdf/" ;
+    skos:exactMatch <http://loinc.org> ;
     dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/v3/namingSystems/v3-loinc.xml> .
+
+rec:UNII a rec:CodeSystem ;
+    rdfs:label "UNII"@en ;
+    rdfs:comment "The UNII as FDA's GSRS gives it."@en ;
+    void:uriSpace "http://fdasis.nlm.nih.gov/" ;
+    skos:exactMatch <http://fdasis.nlm.nih.gov> ;
+    dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
+
+rec:CPT a rec:CodeSystem ;
+    rdfs:label "CPT"@en ;
+    rdfs:comment "The CPT code."@en ;
+    void:uriSpace "http://www.ama-assn.org/go/cpt/" ;
+    skos:exactMatch <http://www.ama-assn.org/go/cpt> ;
+    dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
+
+rec:ICD9CM a rec:CodeSystem ;
+    rdfs:label "ICD-9-CM"@en ;
+    rdfs:comment "The code as FHIR writes it."@en ;
+    void:uriSpace "http://hl7.org/fhir/sid/icd-9-cm/" ;
+    skos:exactMatch <http://hl7.org/fhir/sid/icd-9-cm> ;
+    dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
 
 void:uriSpace a owl:DatatypeProperty ;
     rdfs:label "URI space"@en ;
@@ -439,6 +468,11 @@ skos:altLabel a owl:AnnotationProperty ;
 
 skos:notation a owl:DatatypeProperty ;
     rdfs:label "notation"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:exactMatch a owl:ObjectProperty ;
+    rdfs:label "has exact match"@en ;
     rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
     dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
 

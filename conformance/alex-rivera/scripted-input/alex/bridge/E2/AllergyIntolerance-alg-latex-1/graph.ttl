@@ -6,39 +6,39 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;nrXFhMX48qHKXEOTARuFeeW-EbnX8GlgwgPmNGC942k> health:allergyCategory "environment" ;
-	health:allergenCode <http://snomed.info/sct/111088007> ;
-	clinical:verificationStatus "unconfirmed" ;
-	clinical:criticality "low" ;
+<ni:///sha-256;QQ0bMfTcbsAe1MKf8joQabrY0O61lg8JhICAMQf3WgQ> health:allergenCode <http://snomed.info/id/111088007> ;
+	clinical:status "active" ;
 	clinical:allergyType "allergy" ;
 	health:allergen "Latex" ;
-	clinical:status "active" .
-_:12031344f094dd77946a0c6bb2aa5039 pav:lastUpdateOn "2026-07-21T10:15:00Z"^^xsd:dateTime ;
+	health:allergyCategory "environment" ;
+	clinical:verificationStatus "unconfirmed" ;
+	clinical:criticality "low" .
+_:49753aa8e8eb122c588c78aca886c90f pav:lastUpdateOn "2026-07-21T10:15:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;nrXFhMX48qHKXEOTARuFeeW-EbnX8GlgwgPmNGC942k> .
-<ni:///sha-256;nrXFhMX48qHKXEOTARuFeeW-EbnX8GlgwgPmNGC942k> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
+	bridge:arrivedAs <ni:///sha-256;QQ0bMfTcbsAe1MKf8joQabrY0O61lg8JhICAMQf3WgQ> .
+<ni:///sha-256;QQ0bMfTcbsAe1MKf8joQabrY0O61lg8JhICAMQf3WgQ> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
 	prov:specializationOf <urn:uuid:6477b340-8fb7-8d62-a24a-b8520e30f0d5> .
 <urn:uuid:6477b340-8fb7-8d62-a24a-b8520e30f0d5> health:sourceRecordId "alg-latex-1" ;
 	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/AllergyIntolerance/alg-latex-1> ;
 	a health:AllergyRecord .
-_:12031344f094dd77946a0c6bb2aa5039 bridge:selector "" ;
+_:49753aa8e8eb122c588c78aca886c90f bridge:selector "" ;
 	prov:wasDerivedFrom <ni:///sha-256;bm2mq4uP9thXyJTWMNmG0Xzsn4EGp53g2afxTgoZQ8w> ;
 	prov:wasGeneratedBy _:f99aa3ccd51e9723881b8dd634678f39 .
-<ni:///sha-256;bm2mq4uP9thXyJTWMNmG0Xzsn4EGp53g2afxTgoZQ8w> pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/AllergyIntolerance/alg-latex-1> ;
-	pav:retrievedOn "2026-09-01T10:00:00Z"^^xsd:dateTime .
+_:f99aa3ccd51e9723881b8dd634678f39 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-09-01T10:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;bm2mq4uP9thXyJTWMNmG0Xzsn4EGp53g2afxTgoZQ8w> prov:qualifiedAttribution _:4c6d88f02e002e17e4a2ecee1a1ec2e8 .
 _:4c6d88f02e002e17e4a2ecee1a1ec2e8 prov:agent _:b5c5868083f4db4fc3d66bf62f730ab4 .
 _:b5c5868083f4db4fc3d66bf62f730ab4 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:4c6d88f02e002e17e4a2ecee1a1ec2e8 prov:hadRole rec:transmitter .
-<ni:///sha-256;bm2mq4uP9thXyJTWMNmG0Xzsn4EGp53g2afxTgoZQ8w> prov:qualifiedAttribution _:4c6d88f02e002e17e4a2ecee1a1ec2e8 .
+<ni:///sha-256;bm2mq4uP9thXyJTWMNmG0Xzsn4EGp53g2afxTgoZQ8w> prov:qualifiedAttribution _:f6a55058782fe7ebb4688fd1d0d25482 .
 _:f6a55058782fe7ebb4688fd1d0d25482 prov:agent _:eb2ae73a62265a99b0f05c39ad958246 .
 _:eb2ae73a62265a99b0f05c39ad958246 <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
 _:f6a55058782fe7ebb4688fd1d0d25482 prov:hadRole rec:author .
-<ni:///sha-256;bm2mq4uP9thXyJTWMNmG0Xzsn4EGp53g2afxTgoZQ8w> prov:qualifiedAttribution _:f6a55058782fe7ebb4688fd1d0d25482 ;
-	bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
-	bridge:sourceFormatVersion "4.0.1" .
-_:f99aa3ccd51e9723881b8dd634678f39 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2026-09-01T10:00:04Z"^^xsd:dateTime .
-<ni:///sha-256;bm2mq4uP9thXyJTWMNmG0Xzsn4EGp53g2afxTgoZQ8w> a prov:Entity .
+<ni:///sha-256;bm2mq4uP9thXyJTWMNmG0Xzsn4EGp53g2afxTgoZQ8w> bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/AllergyIntolerance/alg-latex-1> ;
+	pav:retrievedOn "2026-09-01T10:00:00Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:f99aa3ccd51e9723881b8dd634678f39 a prov:Activity ;
 	prov:used <ni:///sha-256;bm2mq4uP9thXyJTWMNmG0Xzsn4EGp53g2afxTgoZQ8w> ;
 	prov:qualifiedAssociation _:7147d29d9b4bdeed02fbc72be9c5cd5f .
