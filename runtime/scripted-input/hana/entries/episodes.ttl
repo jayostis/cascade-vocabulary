@@ -1,0 +1,77 @@
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:cascade:this-entry> a prov:Activity ;
+  rdfs:label "entered in the Cascade app" ;
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole jdg:patient ] .
+
+<urn:cascade:output-0> a health:ConditionRecord .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
+  health:conditionName "Pneumonia, first report" ;
+  health:icd10Code <http://hl7.org/fhir/sid/icd-10-cm/J18.9> ;
+  health:onsetDate "2019-01-05"^^xsd:date ;
+  clinical:abatementDate "2019-02-01"^^xsd:date ;
+  health:status "resolved" ;
+  rec:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-1> a health:ConditionRecord .
+<urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
+  health:conditionName "Pneumonia, second report" ;
+  health:icd10Code <http://hl7.org/fhir/sid/icd-10-cm/J18.9> ;
+  health:onsetDate "2019-01-07"^^xsd:date ;
+  health:status "resolved" ;
+  rec:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-2> a health:ConditionRecord .
+<urn:cascade:output-2-version> prov:specializationOf <urn:cascade:output-2> ;
+  health:conditionName "Pneumonia, 2024" ;
+  health:icd10Code <http://hl7.org/fhir/sid/icd-10-cm/J18.9> ;
+  health:onsetDate "2024-03-01"^^xsd:date ;
+  health:status "active" ;
+  rec:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-3> a health:ConditionRecord .
+<urn:cascade:output-3-version> prov:specializationOf <urn:cascade:output-3> ;
+  health:conditionName "Type 2 diabetes, clinic" ;
+  health:icd10Code <http://hl7.org/fhir/sid/icd-10-cm/E11.9> ;
+  health:onsetDate "2015-06-01"^^xsd:date ;
+  health:status "active" ;
+  rec:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-4> a health:ConditionRecord .
+<urn:cascade:output-4-version> prov:specializationOf <urn:cascade:output-4> ;
+  health:conditionName "Type 2 diabetes, hospital" ;
+  health:icd10Code <http://hl7.org/fhir/sid/icd-10-cm/E11.9> ;
+  health:onsetDate "2018-02-10"^^xsd:date ;
+  health:status "active" ;
+  rec:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-5> a health:ConditionRecord .
+<urn:cascade:output-5-version> prov:specializationOf <urn:cascade:output-5> ;
+  health:conditionName "Acute viral pharyngitis, 2017" ;
+  health:snomedCode <http://snomed.info/sct/195662009> ;
+  health:onsetDate "2017-01-28"^^xsd:date ;
+  clinical:abatementDate "2017-02-05"^^xsd:date ;
+  health:status "resolved" ;
+  rec:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-6> a health:ConditionRecord .
+<urn:cascade:output-6-version> prov:specializationOf <urn:cascade:output-6> ;
+  health:conditionName "Acute viral pharyngitis, 2020" ;
+  health:snomedCode <http://snomed.info/sct/195662009> ;
+  health:onsetDate "2020-05-21"^^xsd:date ;
+  clinical:abatementDate "2020-06-04"^^xsd:date ;
+  health:status "resolved" ;
+  rec:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-7> a health:ConditionRecord .
+<urn:cascade:output-7-version> prov:specializationOf <urn:cascade:output-7> ;
+  health:conditionName "Abdominal pain, no onset" ;
+  health:icd10Code <http://hl7.org/fhir/sid/icd-10-cm/R10.9> ;
+  health:status "resolved" ;
+  rec:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-8> a health:ConditionRecord .
+<urn:cascade:output-8-version> prov:specializationOf <urn:cascade:output-8> ;
+  health:conditionName "Abdominal pain, 2022" ;
+  health:icd10Code <http://hl7.org/fhir/sid/icd-10-cm/R10.9> ;
+  health:onsetDate "2022-08-01"^^xsd:date ;
+  health:status "resolved" ;
+  rec:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .

@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-code-and-period" ;
+  rdfs:comment "Pairs of conditions: periods that overlap, touch, or are apart; an open period and a later onset; a resolved condition with no abatement, or an abatement before the onset; a dateTime against a date; an abatement before the onset counts as none; two records carrying both codes; no onset; each code system; a procedure's code." ;
+  mf:entries (
+    <#same-code-and-period>
+  ) .
+
+<#same-code-and-period> a mf:QueryEvaluationTest ;
+  mf:name "same-code-and-period" ;
+  rdfs:comment "Only the pairs of one code whose periods overlap match, in either order." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-code-and-period.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-code-and-period.srj> .

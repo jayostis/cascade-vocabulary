@@ -1,0 +1,32 @@
+# Two records of one kind match when their current versions share an ICD-10-CM or SNOMED CT code and their periods
+# overlap, bounds included. A period runs from the onset's day to the abatement's day. An abatement that is not a date
+# or falls before the onset counts as none; with none, the period runs on while the status is active, recurrence or
+# relapse, and is the onset's day alone otherwise. Days are the first ten characters as written, so a time zone never
+# moves one. A version with no onset matches nothing. Each ordered pair is a row.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  VALUES ?property { health:icd10Code health:snomedCode }
+  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
+  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version ?property ?code ; rec:date ?onset .
+  ?otherVersion ?property ?code ; rec:date ?otherOnset .
+  OPTIONAL { ?version clinical:abatementDate ?end }
+  OPTIONAL { ?version rec:status ?status }
+  OPTIONAL { ?otherVersion clinical:abatementDate ?otherEnd }
+  OPTIONAL { ?otherVersion rec:status ?otherStatus }
+  BIND (SUBSTR(STR(?onset), 1, 10) AS ?from)
+  BIND (SUBSTR(STR(?otherOnset), 1, 10) AS ?otherFrom)
+  BIND (IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime) && SUBSTR(STR(?end), 1, 10) >= ?from,
+           SUBSTR(STR(?end), 1, 10),
+           IF(COALESCE(?status, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?from)) AS ?to)
+  BIND (IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime) && SUBSTR(STR(?otherEnd), 1, 10) >= ?otherFrom,
+           SUBSTR(STR(?otherEnd), 1, 10),
+           IF(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?otherFrom)) AS ?otherTo)
+  FILTER (?record != ?other && ?from <= ?otherTo && ?otherFrom <= ?to)
+}

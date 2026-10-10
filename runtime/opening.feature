@@ -3,14 +3,14 @@ Feature: Opening a pod
   holds newer versions.
 
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Hana
-  enters six flu shots in three pairs by date, and later one more, four drug allergies and four conditions. Her pod is made with the
+  enters six flu shots in three pairs by date, and later one more, four drug allergies, four conditions and nine whose codes recur. Her pod is made with the
   vector tables, which are Priya's kit's series. App's tables open it: "app", holding version 1 of the vocabulary's rule
   list and version 1 of "CDC CVX vaccine groups", "app-later", holding versions 2 and 3 as well, "app-new-rules",
   holding a version 2 of the rule list and version 1 of the rule list as an app holds it after a query changed, its
   hash no longer the query's, and "app-rxnorm", holding "app"'s and the vocabulary's rule list's version 2, whose R3
   reads version 1 of "NLM RxNorm Prescribable product ingredients", which it also holds, and "app-icd", holding
   "app"'s, the rule list's versions 2 and 3, whose R7 reads version 1 of "CDC ICD-10-CM code conversions", which it
-  also holds.
+  also holds, and "app-periods", holding "app"'s and the rule list's versions 2 to 4, and no conversions.
 
   Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
     The default is M10's; a version descends from another along the tables' line of prov:wasRevisionOf. A series the
@@ -117,6 +117,26 @@ Feature: Opening a pod
         | Matcher rules version 3                  |
         | CDC ICD-10-CM code conversions           |
         | CDC ICD-10-CM code conversions version 1 |
+
+    Example: adopting the rule list's version 4 judges the pairs its new R8 joins among records already matched, and the earlier same code of two episodes apart no longer counts
+      R1 joined the two pharyngitis episodes under version 1. Version 4 takes conditions out of R1, so nothing is
+      filed again for them and the earlier Same is not retracted, but it was made with a version that now has a newer
+      current one, so it no longer counts and the episodes split.
+
+      Given Hana enters "episodes" on 2026-07-02 at 10:00
+      And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-episodes)
+      When the pod is opened with the tables "app-periods" on 2026-07-03 at 09:00
+      Then the matcher's judgments holding condition SNOMED 195662009 "Acute viral pharyngitis, 2017", condition SNOMED 195662009 "Acute viral pharyngitis, 2020", condition ICD-10-CM J18.9 "Pneumonia, first report", condition ICD-10-CM J18.9 "Pneumonia, second report", condition ICD-10-CM E11.9 "Type 2 diabetes, clinic" and condition ICD-10-CM E11.9 "Type 2 diabetes, hospital" are:
+        | justification        | members                                                                                                                 | at                  | used                                                                                                                                                                         |
+        | same code            | condition SNOMED 195662009 "Acute viral pharyngitis, 2017", condition SNOMED 195662009 "Acute viral pharyngitis, 2020" | 2026-07-02 at 10:05 | Matcher rules version 1, version 1 of condition SNOMED 195662009 "Acute viral pharyngitis, 2017", version 1 of condition SNOMED 195662009 "Acute viral pharyngitis, 2020"    |
+        | same code and period | condition ICD-10-CM J18.9 "Pneumonia, first report", condition ICD-10-CM J18.9 "Pneumonia, second report"               | 2026-07-03 at 09:00 | Matcher rules version 4, version 1 of condition ICD-10-CM J18.9 "Pneumonia, first report", version 1 of condition ICD-10-CM J18.9 "Pneumonia, second report"               |
+        | same code and period | condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"              | 2026-07-03 at 09:00 | Matcher rules version 4, version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"              |
+      And the matcher's same code of condition SNOMED 195662009 "Acute viral pharyngitis, 2017" and condition SNOMED 195662009 "Acute viral pharyngitis, 2020" does not count
+      And that step wrote these reference descriptions:
+        | reference               |
+        | Matcher rules version 2 |
+        | Matcher rules version 3 |
+        | Matcher rules version 4 |
 
   Rule: O2. A series the tables do not hold the pod's version of is left out, and nothing is written of it
     The tables may not hold the series at all, as for a pod made on other tables, or not the pod's version, as for a

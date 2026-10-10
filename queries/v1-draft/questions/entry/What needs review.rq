@@ -1,14 +1,21 @@
 # Entries a person should look at, and why: its members disagree on how severe an allergy is,
-# the matcher joined it for two different reasons, or two records judged different are still joined in it.
+# the matcher joined it for two different reasons, two records judged different are still joined in it, or two of its
+# conditions, in two entries, carry one code and their dates cannot tell whether they are one condition: either has no
+# onset, or one has an unknown end (no abatement that is a date on or after its onset, and no status that keeps it
+# going: active, recurrence or relapse) and its onset is on or before the other's end, the other's period counted as
+# the matcher's rule R8 counts it. A condition with an unknown end that began after the other's end is apart from it:
+# the two are two episodes, not joined and not listed, as are two whose periods are both known and apart.
 # The build never settles these itself; a person does, with a judgment.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
+SELECT DISTINCT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
 WHERE {
   { { SELECT ?entry
       WHERE {
@@ -38,6 +45,38 @@ WHERE {
     OPTIONAL { ?judgment rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?record , ?otherRecord }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+  UNION
+  { VALUES ?property { health:icd10Code health:snomedCode }
+    ?record rec:kind "Condition" ; pav:hasCurrentVersion ?version ; rec:inEntry ?entry .
+    ?otherRecord rec:kind "Condition" ; pav:hasCurrentVersion ?otherVersion ; rec:inEntry ?otherEntry .
+    ?version ?property ?code .
+    ?otherVersion ?property ?code .
+    OPTIONAL { ?version rec:date ?onset }
+    OPTIONAL { ?version clinical:abatementDate ?end }
+    OPTIONAL { ?version rec:status ?status }
+    OPTIONAL { ?otherVersion rec:date ?otherOnset }
+    OPTIONAL { ?otherVersion clinical:abatementDate ?otherEnd }
+    OPTIONAL { ?otherVersion rec:status ?otherStatus }
+    BIND (SUBSTR(STR(?onset), 1, 10) AS ?from)
+    BIND (SUBSTR(STR(?otherOnset), 1, 10) AS ?otherFrom)
+    BIND (BOUND(?end) && isLiteral(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime)
+          && SUBSTR(STR(?end), 1, 10) >= ?from AS ?endKnown)
+    BIND (BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime)
+          && SUBSTR(STR(?otherEnd), 1, 10) >= ?otherFrom AS ?otherEndKnown)
+    BIND (IF(?endKnown, SUBSTR(STR(?end), 1, 10),
+             IF(COALESCE(?status, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?from)) AS ?to)
+    BIND (IF(?otherEndKnown, SUBSTR(STR(?otherEnd), 1, 10),
+             IF(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?otherFrom)) AS ?otherTo)
+    FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
+            && !EXISTS { ?record jdg:currentlyDifferent ?otherRecord }
+            && (!BOUND(?onset) || !BOUND(?otherOnset)
+                || (!?endKnown && !(COALESCE(?status, "") IN ("active", "recurrence", "relapse")) && ?from <= ?otherTo)
+                || (!?otherEndKnown && !(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"))
+                    && ?otherFrom <= ?to)))
+    BIND ("same code, dates cannot tell" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
 }
