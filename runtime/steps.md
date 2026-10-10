@@ -60,7 +60,9 @@ saying why; a document an import must convert and has no saved output for is the
   kind of record it applies to as `rec:kind` words it (`rec:appliesTo`), its comparison query as a path under
   `queries/v1-draft/` (`rec:query`), N5's name for that file's bytes (`rec:queryHash`), and the kind of table the query
   reads, if any (`rec:tableKind`). A matcher judgment uses the rule list's version, so the one row of that version whose
-  `rec:justifiedAs` is the judgment's `jdg:justification` says which query ran, by its bytes.
+  `rec:justifiedAs` is the judgment's `jdg:justification` says which query ran, by its bytes. A folder's index may list
+  a version of the vocabulary's rule list (`runtime/rule-list/`) without the folder holding its file: the rows are those
+  of the file of that name there, unless the folder holds a file of its own.
 
 The rows of each current version of a kind a rule reads are loaded into the graph named by the version's IRI, and the
 descriptions of those versions and their series into the default graph the matcher's queries read (M13). A query reads
