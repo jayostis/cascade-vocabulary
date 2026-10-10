@@ -483,8 +483,8 @@ Feature: The matcher's procedure
     show it. R10 joins only records that share no code, so a brand and its generic that also share a code that is not a
     product are left to a person too.
 
-    Each example opens a new pod for Gus with the drug products table and enters its own entry, so that no example's
-    records join another's.
+    Each example opens a new pod for Gus with the drug products table, the last after version 6's drugs table, and
+    enters its own entry, so that no example's records join another's.
 
     Example: two records sharing a product code are the same product code, although one selected its NDC
       Given a new pod for Gus on 2026-09-01 at 09:00

@@ -4,11 +4,15 @@
 # Left alone: a shared ingredient, strength, dose form, brand name or salt (IN, MIN, PIN, BN, SCDC, SCDF, SCDG and
 # their branded forms); a code the held version does not know, which is every RxNorm code when no drug products table
 # is held; and a pair that shares an NDC, which the rule that joins by NDC has, so no pair is judged by both. A
-# version that carries more than one product code is left out, whatever their term types, because it would join two
-# products and entries would then join through it: A with X, B with X and Y, C with Y would make A, B and C one entry
-# though A and C share nothing. That includes a pack and a component, a pen and a vial, and a brand and its generic,
-# which are left for a person to confirm. Each ordered pair is a row, with the version whose rows joined it; a graph
-# that is not a version of a drug products table is never read for rows.
+# version that carries more than one code that any held drug products version lists is left out, whatever their term
+# types, because it would join two products and entries would then join through it: A with X, B with X and Y, C with Y
+# would make A, B and C one entry though A and C share nothing. That includes a pack and a component, a pen and a vial,
+# and a brand and its generic, which are left for a person to confirm. The codes are counted over every held version of
+# every drug products series, not one, so that a series listing fewer products cannot make a record look single-product.
+# A known limit: a product code that no held version lists yet, such as one newer than the table, is not counted, so a
+# record that carries it beside a listed component joins on the component; it goes to review instead once a held
+# version lists it. Each ordered pair is a row, with the version whose rows joined it; a graph that is not a version of a
+# drug products table is never read for rows.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -16,23 +20,24 @@ PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT DISTINCT ?record ?other ?origin
 WHERE {
-  { SELECT ?origin ?version (SAMPLE(?held) AS ?code)
+  { SELECT ?version (SAMPLE(?held) AS ?code)
     WHERE {
-      ?origin prov:specializationOf/rec:tableKind rec:DrugProducts .
+      ?anyOrigin prov:specializationOf/rec:tableKind rec:DrugProducts .
       ?version clinical:rxNormCode ?held .
-      GRAPH ?origin { ?held rec:termType ?type }
+      GRAPH ?anyOrigin { ?held rec:termType ?type }
     }
-    GROUP BY ?origin ?version
+    GROUP BY ?version
     HAVING (COUNT(DISTINCT ?held) = 1) }
-  { SELECT ?origin ?otherVersion (SAMPLE(?otherHeld) AS ?code)
+  { SELECT ?otherVersion (SAMPLE(?otherHeld) AS ?code)
     WHERE {
-      ?origin prov:specializationOf/rec:tableKind rec:DrugProducts .
+      ?anyOrigin prov:specializationOf/rec:tableKind rec:DrugProducts .
       ?otherVersion clinical:rxNormCode ?otherHeld .
-      GRAPH ?origin { ?otherHeld rec:termType ?otherType }
+      GRAPH ?anyOrigin { ?otherHeld rec:termType ?otherType }
     }
-    GROUP BY ?origin ?otherVersion
+    GROUP BY ?otherVersion
     HAVING (COUNT(DISTINCT ?otherHeld) = 1) }
   ?origin prov:specializationOf/rec:tableKind rec:DrugProducts .
+  GRAPH ?origin { ?code rec:termType ?codeType }
   ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
   ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
   FILTER (?record != ?other)

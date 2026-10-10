@@ -9,7 +9,8 @@
 # the two are two episodes, not joined and not listed, as are two whose periods are both known and apart. Two
 # medications in two entries that share an RxNorm code are possibly the same medication: a pod cannot tell which shared
 # code names a product, and the matcher's rule R11 has already joined every pair that shares one the held drug products
-# table knows, so what is left is a pair sharing an ingredient, a strength, a dose form, a brand name or a salt, or a
+# table knows, so what is left is a pair sharing an ingredient, a strength, a dose form, a brand name or a salt, a pair
+# of which one carries more than one product code (R11 leaves it out, as A with X, B with X and Y, C with Y), or a
 # code no held table knows, which is every shared RxNorm code when no drug products table is held. A pair is listed once,
 # from the entry of its smaller record, unless a person judged it different or a lapsed Same of it is listed already.
 # An entry joined by an NDC (R5) and a product code (R11) alone is joined through one kind of sameness, since both are

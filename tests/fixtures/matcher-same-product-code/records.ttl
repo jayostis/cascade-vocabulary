@@ -146,3 +146,25 @@
     clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000004> .
 :otherKindBRevision a rec:Revision ; rec:revisionOf :otherKindB ; rec:version :otherKindBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:partialA a clinical:Medication .
+:partialAVersion prov:specializationOf :partialA ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Product P" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000005> .
+:partialARevision a rec:Revision ; rec:revisionOf :partialA ; rec:version :partialAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:partialB a clinical:Medication .
+:partialBVersion prov:specializationOf :partialB ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Products P and Q" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000005> ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000006> .
+:partialBRevision a rec:Revision ; rec:revisionOf :partialB ; rec:version :partialBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:partialC a clinical:Medication .
+:partialCVersion prov:specializationOf :partialC ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Product Q" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000006> .
+:partialCRevision a rec:Revision ; rec:revisionOf :partialC ; rec:version :partialCVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
