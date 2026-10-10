@@ -354,7 +354,7 @@ rec:RxNorm a rec:CodeSystem ;
 
 rec:NDC a rec:CodeSystem ;
     rdfs:label "NDC"@en ;
-    rdfs:comment "The 11-digit HIPAA form, 5-4-2 with no hyphens, as RxNorm's RXNSAT gives it: Cascade's own space. FHIR's NDC code is the 10-digit hyphenated label code, so an NDC is normalised into this space and never written under FHIR's system URI."@en ;
+    rdfs:comment "The 11-digit HIPAA form, 5-4-2 with no hyphens, as RxNorm's RXNSAT gives it: Cascade's own space. FHIR's NDC code is the 10-digit hyphenated label code, so an NDC is normalised into this space. Until jayostis/cascade-vocabulary#104 moves NDC, the C-CDA adapter still writes it under FHIR's NDC system URI stem."@en ;
     void:uriSpace "https://ns.cascadeprotocol.org/codes/ndc11/" ;
     skos:exactMatch <http://hl7.org/fhir/sid/ndc> ;
     dct:source <https://hl7.org/fhir/R4/ndc.html> .
@@ -367,7 +367,7 @@ rec:ICD10CM a rec:CodeSystem ;
 
 rec:SNOMEDCT a rec:CodeSystem ;
     rdfs:label "SNOMED CT"@en ;
-    rdfs:comment "The concept ID. snomed.info/sct names editions and versions, never a concept."@en ;
+    rdfs:comment "The concept ID. snomed.info/sct is the code system's own URI and, with a module, names its editions; it never names a concept."@en ;
     void:uriSpace "http://snomed.info/id/" ;
     skos:exactMatch <http://snomed.info/sct> ;
     dct:source <https://terminology.hl7.org/SNOMEDCT.html> .
@@ -381,18 +381,21 @@ rec:LOINC a rec:CodeSystem ;
 
 rec:UNII a rec:CodeSystem ;
     rdfs:label "UNII"@en ;
+    rdfs:comment "The UNII as FDA's GSRS gives it."@en ;
     void:uriSpace "http://fdasis.nlm.nih.gov/" ;
     skos:exactMatch <http://fdasis.nlm.nih.gov> ;
     dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
 
 rec:CPT a rec:CodeSystem ;
     rdfs:label "CPT"@en ;
+    rdfs:comment "The CPT code."@en ;
     void:uriSpace "http://www.ama-assn.org/go/cpt/" ;
     skos:exactMatch <http://www.ama-assn.org/go/cpt> ;
     dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
 
 rec:ICD9CM a rec:CodeSystem ;
     rdfs:label "ICD-9-CM"@en ;
+    rdfs:comment "The code as FHIR writes it."@en ;
     void:uriSpace "http://hl7.org/fhir/sid/icd-9-cm/" ;
     skos:exactMatch <http://hl7.org/fhir/sid/icd-9-cm> ;
     dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
