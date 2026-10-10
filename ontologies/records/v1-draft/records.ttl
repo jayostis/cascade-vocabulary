@@ -359,6 +359,12 @@ rec:SNOMEDCT a rec:CodeSystem ;
     rdfs:comment "The concept ID."@en ;
     void:uriSpace "http://snomed.info/sct/" .
 
+rec:LOINC a rec:CodeSystem ;
+    rdfs:label "LOINC"@en ;
+    rdfs:comment "The LOINC code as LOINC writes it, with its check digit: 2823-3."@en ;
+    void:uriSpace "http://loinc.org/rdf/" ;
+    dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/v3/namingSystems/v3-loinc.xml> .
+
 void:uriSpace a owl:DatatypeProperty ;
     rdfs:label "URI space"@en ;
     rdfs:isDefinedBy <http://rdfs.org/ns/void#> ;
