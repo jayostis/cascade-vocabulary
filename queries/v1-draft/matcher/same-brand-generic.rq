@@ -1,8 +1,9 @@
 # Two records of one kind match when their current versions give two different RxNorm codes that one version of a brand
 # generics table joins: a brand and its generic, either way round, or two brands of one generic. The table holds only
 # branded products mapped to their generics (SBD to SCD, BPCK to GPCK), so no ingredient is read as a generic. Records
-# that share a code are left to the rule that joins them by it. Each ordered pair is a row, with the version whose rows
-# joined it; a graph that is not a version of a brand generics table is never read for rows.
+# that share a code are left out, so no pair is judged by this rule and by the rule that joins records by a shared code.
+# Each ordered pair is a row, with the version whose rows joined it; a graph that is not a version of a brand generics
+# table is never read for rows.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX pav: <http://purl.org/pav/>

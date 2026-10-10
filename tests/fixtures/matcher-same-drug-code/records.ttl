@@ -64,3 +64,23 @@
     clinical:rxNormCode rxnorm:314076, rxnorm:29046 ; rec:selectedCode rxnorm:29046 .
 :chosenIngredientRevision a rec:Revision ; rec:revisionOf :chosenIngredient ; rec:version :chosenIngredientVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:metformin a clinical:Medication .
+:metforminVersion prov:specializationOf :metformin ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:861007 .
+:metforminRevision a rec:Revision ; rec:revisionOf :metformin ; rec:version :metforminVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:selectedNdc a clinical:Medication .
+:selectedNdcVersion prov:specializationOf :selectedNdc ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:861007 ; rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> ;
+    rec:selectedCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> .
+:selectedNdcRevision a rec:Revision ; rec:revisionOf :selectedNdc ; rec:version :selectedNdcVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:selectedNdcSeveral a clinical:Medication .
+:selectedNdcSeveralVersion prov:specializationOf :selectedNdcSeveral ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:861007, rxnorm:6809 ; rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> ;
+    rec:selectedCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> .
+:selectedNdcSeveralRevision a rec:Revision ; rec:revisionOf :selectedNdcSeveral ; rec:version :selectedNdcSeveralVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

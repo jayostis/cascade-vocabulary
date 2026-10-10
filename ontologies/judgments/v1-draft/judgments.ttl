@@ -82,11 +82,6 @@ jdg:SameMedicationCode a owl:NamedIndividual ;
     rdfs:comment "Both medication records share an NDC code, or the same chosen RxNorm code, the one their source selected or their only one, whether each came from a prescription or from a list of what the person takes."@en ;
     skos:broadMatch semapv:LexicalMatching .
 
-jdg:SameProductCode a owl:NamedIndividual ;
-    rdfs:label "same product code"@en ;
-    rdfs:comment "Both medication records carry an RxNorm code that a version of a product ingredients table maps to an ingredient other than itself, and the records' chosen codes do not already make them the same medication code."@en ;
-    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
-
 jdg:SameBrandGeneric a owl:NamedIndividual ;
     rdfs:label "same brand generic"@en ;
     rdfs:comment "One record's branded RxNorm product and the other's generic, or two brands of one generic, by a version of a brand generics table; the records share no code."@en ;

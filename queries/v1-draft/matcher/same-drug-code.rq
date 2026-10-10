@@ -1,8 +1,15 @@
 # Two records of one kind match when their current versions share an NDC, or the same chosen RxNorm code. A version's
-# chosen code is the one its source selected, else its only RxNorm code; one with several RxNorm codes and none
-# selected chooses none, and is left to the rule that reads a table. An NDC names a package, so a shared NDC is enough.
-# No table is read, so the code may be an ingredient's: two records coded only with one ingredient's code match, as
-# they did when this rule compared RxNorm codes alone. Any dates are ignored. Each ordered pair is a row.
+# chosen RxNorm code is its rec:selectedCode when that is an RxNorm code, else its only RxNorm code; one with several
+# RxNorm codes and none selected chooses none, and an NDC it selected does not stop its only RxNorm code being the
+# chosen one. NDC is a separate way to match: a shared NDC is enough, whichever code a version selected. No table is
+# read. A shared RxNorm code is not checked to be a product, so two records coded only with one ingredient's code
+# match, as they did when this rule compared RxNorm codes alone; that is carried from version 5 until
+# jayostis/cascade-vocabulary#121, when this rule joins on a shared RxNorm code only when the held tables show it is
+# a product (SCD, SBD, GPCK, BPCK), and any other shared code becomes a review item for a person to confirm. An NDC
+# names a package within one listing; NDC product codes have been reassigned after a product was discontinued, and
+# dates are ignored here, so a pod spanning years may join two products under one reused NDC, a known limit. Any
+# intents are ignored. Each ordered pair is a row. Every pair this rule joins shares a code, and the rule that reads
+# the brand generics table joins only records that share none, so no pair is judged by both.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
@@ -14,10 +21,13 @@ WHERE {
   ?version rec:ndcCode|rec:selectedCode|clinical:rxNormCode ?code .
   ?otherVersion rec:ndcCode|rec:selectedCode|clinical:rxNormCode ?code .
   FILTER (?record != ?other)
-  FILTER (EXISTS { ?version rec:ndcCode|rec:selectedCode ?code }
-          || (NOT EXISTS { ?version rec:selectedCode ?chosen }
-              && NOT EXISTS { ?version clinical:rxNormCode ?another FILTER (?another != ?code) }))
-  FILTER (EXISTS { ?otherVersion rec:ndcCode|rec:selectedCode ?code }
-          || (NOT EXISTS { ?otherVersion rec:selectedCode ?chosen }
-              && NOT EXISTS { ?otherVersion clinical:rxNormCode ?another FILTER (?another != ?code) }))
+  FILTER (EXISTS { ?version rec:ndcCode ?code . ?otherVersion rec:ndcCode ?code }
+          || ((EXISTS { ?version rec:selectedCode ?code }
+               || (NOT EXISTS { ?version rec:selectedCode ?selected
+                                FILTER (STRSTARTS(STR(?selected), "http://www.nlm.nih.gov/research/umls/rxnorm/")) }
+                   && NOT EXISTS { ?version clinical:rxNormCode ?another FILTER (?another != ?code) }))
+              && (EXISTS { ?otherVersion rec:selectedCode ?code }
+                  || (NOT EXISTS { ?otherVersion rec:selectedCode ?selected
+                                   FILTER (STRSTARTS(STR(?selected), "http://www.nlm.nih.gov/research/umls/rxnorm/")) }
+                      && NOT EXISTS { ?otherVersion clinical:rxNormCode ?another FILTER (?another != ?code) }))))
 }
