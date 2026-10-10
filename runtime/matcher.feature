@@ -223,8 +223,8 @@ Feature: The matcher's procedure
       When the matcher rechecks on 2026-05-05 at 09:00
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
         | justification    | members                                       | at                  | name                                          |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-02 at 09:05 | urn:uuid:b300b191-e8c8-849a-864b-ba5074b9b686 |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-05 at 09:00 | urn:uuid:eb8bdcc4-c099-80be-b13a-17c8b6bd0aac |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-02 at 09:05 | urn:uuid:cdb11dff-50da-83d3-9b1f-bd5d1d55951c |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-05 at 09:00 | urn:uuid:0350fbea-c18b-849b-b2dc-a8082b2ddb91 |
 
     Example: a Same a person retracted is not rechecked
       Given Eve files the judgment "retract-b" on 2026-05-03 at 09:00

@@ -8,21 +8,21 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-<ni:///sha-256;AM8LaiPWDFmbfc7DrrKeNN-0PYzpnkAyx_dlcytKPU0> health:allergyCategory "medication" ;
+<ni:///sha-256;ZqzV8mFABuCqen3Mxzkur8TJUO-13uXZDNZC9r7pvAA> health:allergyCategory "medication" ;
 	clinical:allergyType "allergy" ;
 	health:allergen "Aspirin" ;
+	health:manifestationCode <http://snomed.info/id/126485001> ;
 	health:reaction "Urticaria" ;
-	health:manifestationCode <http://snomed.info/sct/126485001> ;
 	health:allergenCode <http://www.nlm.nih.gov/research/umls/rxnorm/1191> .
-<ni:///sha-256;fmcz5lhxq8_udG4qrYXwFYXVSOszbt-TWfxEiBaDtTk> health:snomedCode <http://snomed.info/sct/367498001> ;
-	clinical:category "problem-list-item" ;
-	health:onsetDate "2024-10-15"^^xsd:date ;
+<ni:///sha-256;PDkvnylT4VeO5Pu3G0wLdznnhYQDxtwH04n50EOKeZA> health:onsetDate "2024-10-15"^^xsd:date ;
 	health:status "active" ;
-	health:conditionName "Hay fever" .
-<ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> prov:qualifiedAttribution _:a164244eea9b51540d6b1df24d4dd3d .
-_:a164244eea9b51540d6b1df24d4dd3d prov:hadRole rec:author ;
-	prov:agent _:ea9358a476cd7bab26e26fb4a2821bae .
-_:ea9358a476cd7bab26e26fb4a2821bae rdfs:label "Fernhill Family Clinic" .
+	health:conditionName "Hay fever" ;
+	clinical:category "problem-list-item" ;
+	health:snomedCode <http://snomed.info/id/367498001> .
+<ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> prov:qualifiedAttribution _:c568af3620b7bbe78182b4e68d305441 .
+_:c568af3620b7bbe78182b4e68d305441 prov:hadRole rec:author ;
+	prov:agent _:d7c7a385bf80ae950fd3f6e81bb2fa3f .
+_:d7c7a385bf80ae950fd3f6e81bb2fa3f rdfs:label "Fernhill Family Clinic" .
 <ni:///sha-256;icL3MpW_fvslUC0UlVhbAMhI-5VRMfneGMYRqTwRegQ> health:vaccineCode "141" ;
 	health:vaccineName "Influenza vaccine" ;
 	health:administrationDate "2024-10-15"^^xsd:date ;
@@ -45,16 +45,16 @@ _:caabe87f4a134e0109b27eb77332ac70 bridge:selector "/*[local-name()='ClinicalDoc
 <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> cascade:sourceRecordId "2.16.840.1.113883.19.5.2.2:20931" ;
 	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.2.2:20931> ;
 	a cascade:PatientProfile .
-_:f5953501914d47f5ad3a7c718ba8059b bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
-	bridge:arrivedAs <ni:///sha-256;AM8LaiPWDFmbfc7DrrKeNN-0PYzpnkAyx_dlcytKPU0> .
-<ni:///sha-256;AM8LaiPWDFmbfc7DrrKeNN-0PYzpnkAyx_dlcytKPU0> rec:patient <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> ;
+_:fdb5cca7f9f1f6fec82717f04beb775e bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;ZqzV8mFABuCqen3Mxzkur8TJUO-13uXZDNZC9r7pvAA> .
+<ni:///sha-256;ZqzV8mFABuCqen3Mxzkur8TJUO-13uXZDNZC9r7pvAA> rec:patient <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> ;
 	prov:specializationOf <urn:uuid:59813511-dfee-8ac7-81d8-514c528e24d7> .
 <urn:uuid:59813511-dfee-8ac7-81d8-514c528e24d7> health:sourceRecordId "2.16.840.1.113883.19.5.2.4:AL-77" ;
 	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.2.4:AL-77> ;
 	a health:AllergyRecord .
-_:150795b3f2892f7cd091b00df6eda342 bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][3]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
-	bridge:arrivedAs <ni:///sha-256;fmcz5lhxq8_udG4qrYXwFYXVSOszbt-TWfxEiBaDtTk> .
-<ni:///sha-256;fmcz5lhxq8_udG4qrYXwFYXVSOszbt-TWfxEiBaDtTk> rec:patient <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> ;
+_:766119f20600408b4f586900c0df9b8 bridge:selector "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][3]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" ;
+	bridge:arrivedAs <ni:///sha-256;PDkvnylT4VeO5Pu3G0wLdznnhYQDxtwH04n50EOKeZA> .
+<ni:///sha-256;PDkvnylT4VeO5Pu3G0wLdznnhYQDxtwH04n50EOKeZA> rec:patient <urn:uuid:907d69c3-4b4f-8243-bcd2-d37d2ee89fe1> ;
 	prov:specializationOf <urn:uuid:815f9e73-4d33-8432-8253-7a0fae70742a> .
 <urn:uuid:815f9e73-4d33-8432-8253-7a0fae70742a> health:sourceRecordId "2.16.840.1.113883.19.5.2.6:P-410" ;
 	rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.2.6:P-410> ;
@@ -82,9 +82,9 @@ _:98478c784147a20288bba11a249dd2da prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRR
 	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
 _:67a1d6e1e7321a16b3a8c3b34147e659 prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
 	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
-_:f5953501914d47f5ad3a7c718ba8059b prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
+_:fdb5cca7f9f1f6fec82717f04beb775e prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
 	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
-_:150795b3f2892f7cd091b00df6eda342 prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
+_:766119f20600408b4f586900c0df9b8 prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
 	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .
 _:caabe87f4a134e0109b27eb77332ac70 prov:wasDerivedFrom <ni:///sha-256;qurj4q_ZRRUEBFDJ5YawdegzxLUUUJn62fRs8J-LcDE> ;
 	prov:wasGeneratedBy _:bd37693405d01670c8ca46ecfef7a043 .

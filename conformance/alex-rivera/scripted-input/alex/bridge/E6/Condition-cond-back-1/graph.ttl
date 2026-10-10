@@ -6,38 +6,38 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;L-r5q80CBkgjq8WxzqpDe8xUsiUqeAwGgew0KbOc1JU> health:status "resolved" ;
-	health:snomedCode <http://snomed.info/sct/279039007> ;
-	health:onsetDate "2026-06-01"^^xsd:date ;
-	health:conditionName "Low back pain" ;
+<ni:///sha-256;lIlo7vZ7HaVSRVVEEA-qfoU8qCPgrxhqOnRdbekIf3g> health:onsetDate "2026-06-01"^^xsd:date ;
+	health:status "resolved" ;
 	clinical:verificationStatus "confirmed" ;
-	clinical:abatementDate "2026-11-10"^^xsd:date .
-_:39d8d3d7cc4abb7feb1d528659cea6 pav:lastUpdateOn "2026-11-10T16:00:00Z"^^xsd:dateTime ;
+	clinical:abatementDate "2026-11-10"^^xsd:date ;
+	health:conditionName "Low back pain" ;
+	health:snomedCode <http://snomed.info/id/279039007> .
+_:a0f5e743c91e26341ffbd04509c19383 pav:lastUpdateOn "2026-11-10T16:00:00Z"^^xsd:dateTime ;
 	pav:version "2" ;
-	bridge:arrivedAs <ni:///sha-256;L-r5q80CBkgjq8WxzqpDe8xUsiUqeAwGgew0KbOc1JU> .
-<ni:///sha-256;L-r5q80CBkgjq8WxzqpDe8xUsiUqeAwGgew0KbOc1JU> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
+	bridge:arrivedAs <ni:///sha-256;lIlo7vZ7HaVSRVVEEA-qfoU8qCPgrxhqOnRdbekIf3g> .
+<ni:///sha-256;lIlo7vZ7HaVSRVVEEA-qfoU8qCPgrxhqOnRdbekIf3g> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
 	prov:specializationOf <urn:uuid:32577616-8317-8671-9b05-b50ac9714136> .
 <urn:uuid:32577616-8317-8671-9b05-b50ac9714136> health:sourceRecordId "cond-back-1" ;
 	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-back-1> ;
 	a health:ConditionRecord .
-_:39d8d3d7cc4abb7feb1d528659cea6 bridge:selector "" ;
+_:a0f5e743c91e26341ffbd04509c19383 bridge:selector "" ;
 	prov:wasDerivedFrom <ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> ;
 	prov:wasGeneratedBy _:d46eea8a080857d6bd4458909e547b65 .
-<ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-back-1> ;
-	pav:retrievedOn "2026-11-20T09:00:00Z"^^xsd:dateTime .
+_:d46eea8a080857d6bd4458909e547b65 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> prov:qualifiedAttribution _:346a062a4d222aad95962a06a5800e82 .
 _:346a062a4d222aad95962a06a5800e82 prov:agent _:c5ea19b9f8df0db73b857835c03a22db .
 _:c5ea19b9f8df0db73b857835c03a22db <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:346a062a4d222aad95962a06a5800e82 prov:hadRole rec:transmitter .
-<ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> prov:qualifiedAttribution _:346a062a4d222aad95962a06a5800e82 .
+<ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> prov:qualifiedAttribution _:a078d42e47591a9d8c6a9027e87c94e7 .
 _:a078d42e47591a9d8c6a9027e87c94e7 prov:agent _:1fa2efae50600402570a4135934bb7fc .
 _:1fa2efae50600402570a4135934bb7fc <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
 _:a078d42e47591a9d8c6a9027e87c94e7 prov:hadRole rec:author .
-<ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> prov:qualifiedAttribution _:a078d42e47591a9d8c6a9027e87c94e7 ;
-	bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
-	bridge:sourceFormatVersion "4.0.1" .
-_:d46eea8a080857d6bd4458909e547b65 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .
-<ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> a prov:Entity .
+<ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-back-1> ;
+	pav:retrievedOn "2026-11-20T09:00:00Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:d46eea8a080857d6bd4458909e547b65 a prov:Activity ;
 	prov:used <ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> ;
 	prov:qualifiedAssociation _:a494a9cf46f3ab2758c075a5d85fc653 .

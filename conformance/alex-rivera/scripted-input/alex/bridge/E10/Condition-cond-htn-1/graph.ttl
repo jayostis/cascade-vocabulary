@@ -6,37 +6,37 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;sLIR4DKy_3iyYGpbM1svWA18W2vH2lU55loy1OvIxFs> health:status "active" ;
-	health:snomedCode <http://snomed.info/sct/38341003> ;
-	health:onsetDate "2021-04-02"^^xsd:date ;
+<ni:///sha-256;t4CGMG66aZJrzmmYnT9u2K2Hp2OuYUn8kQRTVdBtXbY> health:onsetDate "2021-04-02"^^xsd:date ;
+	health:status "active" ;
+	clinical:verificationStatus "confirmed" ;
 	health:conditionName "Essential hypertension" ;
-	clinical:verificationStatus "confirmed" .
-_:6978b699c1e61dfd7840d00f4cc8b8f2 pav:lastUpdateOn "2026-11-15T11:30:00Z"^^xsd:dateTime ;
+	health:snomedCode <http://snomed.info/id/38341003> .
+_:db024764eeb588a662f1d6922bf561c7 pav:lastUpdateOn "2026-11-15T11:30:00Z"^^xsd:dateTime ;
 	pav:version "4" ;
-	bridge:arrivedAs <ni:///sha-256;sLIR4DKy_3iyYGpbM1svWA18W2vH2lU55loy1OvIxFs> .
-<ni:///sha-256;sLIR4DKy_3iyYGpbM1svWA18W2vH2lU55loy1OvIxFs> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
+	bridge:arrivedAs <ni:///sha-256;t4CGMG66aZJrzmmYnT9u2K2Hp2OuYUn8kQRTVdBtXbY> .
+<ni:///sha-256;t4CGMG66aZJrzmmYnT9u2K2Hp2OuYUn8kQRTVdBtXbY> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
 	prov:specializationOf <urn:uuid:17010d8c-e1a5-89e5-8db2-df06153509b9> .
 <urn:uuid:17010d8c-e1a5-89e5-8db2-df06153509b9> health:sourceRecordId "cond-htn-1" ;
 	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-htn-1> ;
 	a health:ConditionRecord .
-_:6978b699c1e61dfd7840d00f4cc8b8f2 bridge:selector "" ;
+_:db024764eeb588a662f1d6922bf561c7 bridge:selector "" ;
 	prov:wasDerivedFrom <ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> ;
 	prov:wasGeneratedBy _:45287b0c35be117c82e8bc8a0e680f03 .
-<ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-htn-1> ;
-	pav:retrievedOn "2026-11-20T09:00:00Z"^^xsd:dateTime .
+_:45287b0c35be117c82e8bc8a0e680f03 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
+<ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> prov:qualifiedAttribution _:fc0fd7723de1f5acbac3dfac050b7e2 .
 _:fc0fd7723de1f5acbac3dfac050b7e2 prov:agent _:8cb55cf4235de1df5287a41b42d089c3 .
 _:8cb55cf4235de1df5287a41b42d089c3 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:fc0fd7723de1f5acbac3dfac050b7e2 prov:hadRole rec:transmitter .
-<ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> prov:qualifiedAttribution _:fc0fd7723de1f5acbac3dfac050b7e2 .
+<ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> prov:qualifiedAttribution _:e29f07ae596fd61667487d3d021c518 .
 _:e29f07ae596fd61667487d3d021c518 prov:agent _:2064d02e5d0f5bd4aadf1f47be18a0dd .
 _:2064d02e5d0f5bd4aadf1f47be18a0dd <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
 _:e29f07ae596fd61667487d3d021c518 prov:hadRole rec:author .
-<ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> prov:qualifiedAttribution _:e29f07ae596fd61667487d3d021c518 ;
-	bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
-	bridge:sourceFormatVersion "4.0.1" .
-_:45287b0c35be117c82e8bc8a0e680f03 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
-<ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> a prov:Entity .
+<ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-htn-1> ;
+	pav:retrievedOn "2026-11-20T09:00:00Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:45287b0c35be117c82e8bc8a0e680f03 a prov:Activity ;
 	prov:used <ni:///sha-256;i9LRQ7hh_dZ0J01IC9aApuzB2FISG4XUcyAp-r_AL18> ;
 	prov:qualifiedAssociation _:d66914c092502ebd422a86a22df20190 .

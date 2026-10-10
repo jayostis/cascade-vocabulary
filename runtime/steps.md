@@ -91,7 +91,7 @@ A record is named by what a person reads in it, never by its IRI, except where a
 
 - **`<kind> <system> <code> "<name>"`**, as `allergy RxNorm 1191 "Ecotrin"`, with the code, the name or both: the
   record of that kind whose version gives them. The kinds are `allergy`, `condition`, `immunization`, `procedure`,
-  `medication` and `lab result`; the systems `SNOMED` (an `http://snomed.info/sct/` IRI, or a `clinical:snomedCode`),
+  `medication` and `lab result`; the systems `SNOMED` (an `http://snomed.info/id/` IRI, or a `clinical:snomedCode`),
   `RxNorm` (an `http://www.nlm.nih.gov/research/umls/rxnorm/` IRI), `ICD-10-CM` (an
   `http://hl7.org/fhir/sid/icd-10-cm/` IRI), `LOINC` (an `http://loinc.org/rdf/` IRI) and `CVX`
   (a `health:vaccineCode`); the name is the version's allergen, condition, vaccine, procedure, drug or test name. Each

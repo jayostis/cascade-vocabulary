@@ -6,37 +6,37 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;ZuH_7h92Aps60usfemtR0lPELIBE9aOl4KcxFpTA6Cc> health:status "active" ;
-	health:snomedCode <http://snomed.info/sct/24079001> ;
-	health:onsetDate "2019-05-10"^^xsd:date ;
+<ni:///sha-256;agPQbNfBxl0DEFyIOC63B8G8ag7t3-zWRhGQKed25uI> health:onsetDate "2019-05-10"^^xsd:date ;
+	health:status "active" ;
+	clinical:verificationStatus "confirmed" ;
 	health:conditionName "Atopic dermatitis" ;
-	clinical:verificationStatus "confirmed" .
-_:e182faf69c1f6d6f7be9c5f5eafda9ea pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
+	health:snomedCode <http://snomed.info/id/24079001> .
+_:f17c081653098877cba1e58360e5ba29 pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;ZuH_7h92Aps60usfemtR0lPELIBE9aOl4KcxFpTA6Cc> .
-<ni:///sha-256;ZuH_7h92Aps60usfemtR0lPELIBE9aOl4KcxFpTA6Cc> rec:patient <urn:uuid:d062f803-3744-884a-b30d-2b4fb273cf5d> ;
+	bridge:arrivedAs <ni:///sha-256;agPQbNfBxl0DEFyIOC63B8G8ag7t3-zWRhGQKed25uI> .
+<ni:///sha-256;agPQbNfBxl0DEFyIOC63B8G8ag7t3-zWRhGQKed25uI> rec:patient <urn:uuid:d062f803-3744-884a-b30d-2b4fb273cf5d> ;
 	prov:specializationOf <urn:uuid:730dea68-b88f-895d-9be7-dd2f19d4de6f> .
 <urn:uuid:730dea68-b88f-895d-9be7-dd2f19d4de6f> health:sourceRecordId "cond-eczema-2" ;
 	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-eczema-2> ;
 	a health:ConditionRecord .
-_:e182faf69c1f6d6f7be9c5f5eafda9ea bridge:selector "" ;
+_:f17c081653098877cba1e58360e5ba29 bridge:selector "" ;
 	prov:wasDerivedFrom <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> ;
 	prov:wasGeneratedBy _:48d9e978e55a5bff512d73efe4b8e97b .
-<ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-eczema-2> ;
-	pav:retrievedOn "2027-02-10T17:19:00Z"^^xsd:dateTime .
+_:48d9e978e55a5bff512d73efe4b8e97b <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
+<ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> prov:qualifiedAttribution _:90ce3f4e3c042fbf0a857ccdfd97043c .
 _:90ce3f4e3c042fbf0a857ccdfd97043c prov:agent _:252a28768ea428bb1c478ee79e4c6603 .
 _:252a28768ea428bb1c478ee79e4c6603 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:90ce3f4e3c042fbf0a857ccdfd97043c prov:hadRole rec:transmitter .
-<ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> prov:qualifiedAttribution _:90ce3f4e3c042fbf0a857ccdfd97043c .
+<ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> prov:qualifiedAttribution _:7ea01a5e1cb2de6687f4a48a1e0a04c4 .
 _:7ea01a5e1cb2de6687f4a48a1e0a04c4 prov:agent _:493d919f1356339ddddc810dca153b2c .
 _:493d919f1356339ddddc810dca153b2c <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
 _:7ea01a5e1cb2de6687f4a48a1e0a04c4 prov:hadRole rec:author .
-<ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> prov:qualifiedAttribution _:7ea01a5e1cb2de6687f4a48a1e0a04c4 ;
-	bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
-	bridge:sourceFormatVersion "4.0.1" .
-_:48d9e978e55a5bff512d73efe4b8e97b <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
-<ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> a prov:Entity .
+<ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-eczema-2> ;
+	pav:retrievedOn "2027-02-10T17:19:00Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:48d9e978e55a5bff512d73efe4b8e97b a prov:Activity ;
 	prov:used <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> ;
 	prov:qualifiedAssociation _:1ac6a4412197a53385e0324e806c8765 .

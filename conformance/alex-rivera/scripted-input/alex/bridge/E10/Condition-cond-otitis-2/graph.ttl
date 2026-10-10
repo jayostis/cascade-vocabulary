@@ -6,37 +6,37 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;Zw2jOwbGsBtqpLYS7eu-nne95bT4Ji4QlTkHnzawuxU> health:status "active" ;
-	health:snomedCode <http://snomed.info/sct/65363002> ;
-	health:onsetDate "2027-01-28"^^xsd:date ;
+<ni:///sha-256;iC0fUYrbAYlF_L7eeiN843vS9s3rVYyWyiR_hblOUfI> health:onsetDate "2027-01-28"^^xsd:date ;
+	health:status "active" ;
+	clinical:verificationStatus "confirmed" ;
 	health:conditionName "Otitis media" ;
-	clinical:verificationStatus "confirmed" .
-_:e33fed2cfb9b83cf76cda10c8a7f09a4 pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
+	health:snomedCode <http://snomed.info/id/65363002> .
+_:7321e2a705fc681326841abf25eeb4ff pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;Zw2jOwbGsBtqpLYS7eu-nne95bT4Ji4QlTkHnzawuxU> .
-<ni:///sha-256;Zw2jOwbGsBtqpLYS7eu-nne95bT4Ji4QlTkHnzawuxU> rec:patient <urn:uuid:d062f803-3744-884a-b30d-2b4fb273cf5d> ;
+	bridge:arrivedAs <ni:///sha-256;iC0fUYrbAYlF_L7eeiN843vS9s3rVYyWyiR_hblOUfI> .
+<ni:///sha-256;iC0fUYrbAYlF_L7eeiN843vS9s3rVYyWyiR_hblOUfI> rec:patient <urn:uuid:d062f803-3744-884a-b30d-2b4fb273cf5d> ;
 	prov:specializationOf <urn:uuid:34a774e3-f83d-8275-89e2-3785085558e6> .
 <urn:uuid:34a774e3-f83d-8275-89e2-3785085558e6> health:sourceRecordId "cond-otitis-2" ;
 	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-otitis-2> ;
 	a health:ConditionRecord .
-_:e33fed2cfb9b83cf76cda10c8a7f09a4 bridge:selector "" ;
+_:7321e2a705fc681326841abf25eeb4ff bridge:selector "" ;
 	prov:wasDerivedFrom <ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> ;
 	prov:wasGeneratedBy _:119901cababd03241b5425113e6c90fc .
-<ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-otitis-2> ;
-	pav:retrievedOn "2027-02-10T17:19:00Z"^^xsd:dateTime .
+_:119901cababd03241b5425113e6c90fc <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
+<ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> prov:qualifiedAttribution _:32a51cb040ce45a15a13d6ea6d859102 .
 _:32a51cb040ce45a15a13d6ea6d859102 prov:agent _:c26c4408bc474f9cc796ff3d0575692b .
 _:c26c4408bc474f9cc796ff3d0575692b <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:32a51cb040ce45a15a13d6ea6d859102 prov:hadRole rec:transmitter .
-<ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> prov:qualifiedAttribution _:32a51cb040ce45a15a13d6ea6d859102 .
+<ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> prov:qualifiedAttribution _:287456dec92bb3a83f754a4b7445d735 .
 _:287456dec92bb3a83f754a4b7445d735 prov:agent _:ef023e79a2f19119326b28bc5f1522a7 .
 _:ef023e79a2f19119326b28bc5f1522a7 <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
 _:287456dec92bb3a83f754a4b7445d735 prov:hadRole rec:author .
-<ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> prov:qualifiedAttribution _:287456dec92bb3a83f754a4b7445d735 ;
-	bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
-	bridge:sourceFormatVersion "4.0.1" .
-_:119901cababd03241b5425113e6c90fc <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
-<ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> a prov:Entity .
+<ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-otitis-2> ;
+	pav:retrievedOn "2027-02-10T17:19:00Z"^^xsd:dateTime ;
+	bridge:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:119901cababd03241b5425113e6c90fc a prov:Activity ;
 	prov:used <ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> ;
 	prov:qualifiedAssociation _:a99676a97b26b76604d8378cb6f5e09 .
