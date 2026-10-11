@@ -25,3 +25,34 @@
     clinical:status "stopped" ; clinical:startDate "2021-01-10"^^xsd:date .
 :stoppedRevision a rec:Revision ; rec:revisionOf :stopped ; rec:version :stoppedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:chosen a clinical:Medication .
+:chosenVersion prov:specializationOf :chosen ; rec:patient :subject ; clinical:drugName "amlodipine 5 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361>, <http://www.nlm.nih.gov/research/umls/rxnorm/17767> ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> ;
+    rec:selectedCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ; clinical:clinicalIntent "prescribed" ;
+    clinical:status "active" ; clinical:startDate "2024-02-01"^^xsd:date .
+:chosenRevision a rec:Revision ; rec:revisionOf :chosen ; rec:version :chosenVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:unchosen a clinical:Medication .
+:unchosenVersion prov:specializationOf :unchosen ; rec:patient :subject ; clinical:drugName "Lisinopril, two codes" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076>, <http://www.nlm.nih.gov/research/umls/rxnorm/29046> ;
+    clinical:clinicalIntent "reportedUse" ; clinical:status "active" .
+:unchosenRevision a rec:Revision ; rec:revisionOf :unchosen ; rec:version :unchosenVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fill a clinical:Medication .
+:fillVersion prov:specializationOf :fill ; rec:patient :subject ; clinical:drugName "Amlodipine 5 mg tablet, pharmacy" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> ;
+    rec:selectedCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> ; clinical:clinicalIntent "prescribed" ;
+    clinical:status "active" ; clinical:startDate "2024-03-01"^^xsd:date .
+:fillRevision a rec:Revision ; rec:revisionOf :fill ; rec:version :fillVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:uncoded a clinical:Medication .
+:uncodedVersion prov:specializationOf :uncoded ; rec:patient :subject ; clinical:drugName "Fish oil" ;
+    clinical:clinicalIntent "reportedUse" ; clinical:status "active" .
+:uncodedRevision a rec:Revision ; rec:revisionOf :uncoded ; rec:version :uncodedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

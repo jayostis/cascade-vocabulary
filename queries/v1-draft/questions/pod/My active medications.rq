@@ -1,22 +1,35 @@
 # Read from the view alone, as an app would: each entry whose status is active, with its RxNorm code, when it started,
-# and how many records it joins. The code is RxNorm's IRI: the one the entry states, or
-# http://www.nlm.nih.gov/research/umls/rxnorm/ followed by the code as written; none when what is written cannot end
-# an IRI.
+# and how many records it joins. The code is RxNorm's IRI, or http://www.nlm.nih.gov/research/umls/rxnorm/ followed by
+# the code as written; none when what is written cannot end an IRI. It is the chosen RxNorm code, as the rule that joins
+# medications by a shared code reads it: the code the source selected, when that is an RxNorm code; else the entry's one
+# RxNorm code, even when the source selected an NDC; none when it states several and the source chose none. A pod holds
+# no table, so it cannot tell a product from an ingredient among several, and no code stands in for the choice.
 PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT ?medication ?code ?started (COUNT(?record) AS ?records) ?entry ?entryLabel
 WHERE {
+  {
+    SELECT ?entry (COUNT(DISTINCT ?candidate) AS ?candidates) (SAMPLE(?candidate) AS ?only)
+    WHERE {
+      ?entry a clinical:Medication .
+      OPTIONAL {
+        ?entry clinical:rxNormCode ?written .
+        FILTER (isIRI(?written) || REGEX(STR(?written), '^[^\\s<>"{}|^`\\\\]+$'))
+        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://www.nlm.nih.gov/research/umls/rxnorm/", STR(?written)))) AS ?candidate)
+      }
+    }
+    GROUP BY ?entry
+  }
   ?entry a clinical:Medication ; clinical:status "active" ;
          clinical:drugName ?medication ; cascade:mergedFrom ?record .
-  OPTIONAL {
-    ?entry clinical:rxNormCode ?written .
-    FILTER (isIRI(?written) || REGEX(STR(?written), '^[^\\s<>"{}|^`\\\\]+$'))
-    BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://www.nlm.nih.gov/research/umls/rxnorm/", STR(?written)))) AS ?code)
-  }
+  OPTIONAL { ?entry rec:selectedCode ?chosen }
   OPTIONAL { ?entry clinical:startDate ?started }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
+  BIND (COALESCE(IF(STRSTARTS(STR(?chosen), "http://www.nlm.nih.gov/research/umls/rxnorm/"), ?chosen, ?nothing),
+                 IF(?candidates = 1, ?only, ?nothing)) AS ?code)
 }
 GROUP BY ?entry ?medication ?code ?started ?entryLabel
 ORDER BY ?medication ?entry

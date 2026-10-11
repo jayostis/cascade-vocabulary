@@ -1,0 +1,86 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:lisinopril a clinical:Medication .
+:lisinoprilVersion prov:specializationOf :lisinopril ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:314076 .
+:lisinoprilRevision a rec:Revision ; rec:revisionOf :lisinopril ; rec:version :lisinoprilVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:lisinoprilAgain a clinical:Medication .
+:lisinoprilAgainVersion prov:specializationOf :lisinoprilAgain ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:314076 .
+:lisinoprilAgainRevision a rec:Revision ; rec:revisionOf :lisinoprilAgain ; rec:version :lisinoprilAgainVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:several a clinical:Medication .
+:severalVersion prov:specializationOf :several ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:314076, rxnorm:29046 .
+:severalRevision a rec:Revision ; rec:revisionOf :several ; rec:version :severalVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:ingredientA a clinical:Medication .
+:ingredientAVersion prov:specializationOf :ingredientA ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:29046 .
+:ingredientARevision a rec:Revision ; rec:revisionOf :ingredientA ; rec:version :ingredientAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:ingredientB a clinical:Medication .
+:ingredientBVersion prov:specializationOf :ingredientB ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:29046 .
+:ingredientBRevision a rec:Revision ; rec:revisionOf :ingredientB ; rec:version :ingredientBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fillMarch a clinical:Medication .
+:fillMarchVersion prov:specializationOf :fillMarch ; clinical:clinicalIntent "prescribed" ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
+:fillMarchRevision a rec:Revision ; rec:revisionOf :fillMarch ; rec:version :fillMarchVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fillApril a clinical:Medication .
+:fillAprilVersion prov:specializationOf :fillApril ; clinical:clinicalIntent "prescribed" ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
+:fillAprilRevision a rec:Revision ; rec:revisionOf :fillApril ; rec:version :fillAprilVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fillOther a clinical:Medication .
+:fillOtherVersion prov:specializationOf :fillOther ; clinical:clinicalIntent "prescribed" ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> .
+:fillOtherRevision a rec:Revision ; rec:revisionOf :fillOther ; rec:version :fillOtherVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:chosenProduct a clinical:Medication .
+:chosenProductVersion prov:specializationOf :chosenProduct ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:314076, rxnorm:29046 ; rec:selectedCode rxnorm:314076 .
+:chosenProductRevision a rec:Revision ; rec:revisionOf :chosenProduct ; rec:version :chosenProductVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:chosenIngredient a clinical:Medication .
+:chosenIngredientVersion prov:specializationOf :chosenIngredient ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:314076, rxnorm:29046 ; rec:selectedCode rxnorm:29046 .
+:chosenIngredientRevision a rec:Revision ; rec:revisionOf :chosenIngredient ; rec:version :chosenIngredientVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:metformin a clinical:Medication .
+:metforminVersion prov:specializationOf :metformin ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:861007 .
+:metforminRevision a rec:Revision ; rec:revisionOf :metformin ; rec:version :metforminVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:selectedNdc a clinical:Medication .
+:selectedNdcVersion prov:specializationOf :selectedNdc ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:861007 ; rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> ;
+    rec:selectedCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> .
+:selectedNdcRevision a rec:Revision ; rec:revisionOf :selectedNdc ; rec:version :selectedNdcVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:selectedNdcSeveral a clinical:Medication .
+:selectedNdcSeveralVersion prov:specializationOf :selectedNdcSeveral ; clinical:clinicalIntent "prescribed" ;
+    clinical:rxNormCode rxnorm:861007, rxnorm:6809 ; rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> ;
+    rec:selectedCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> .
+:selectedNdcSeveralRevision a rec:Revision ; rec:revisionOf :selectedNdcSeveral ; rec:version :selectedNdcSeveralVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-drug-code" ;
+  rdfs:comment "Medications of one RxNorm code and no other; of that code and an ingredient's, with that code selected, with the ingredient's selected, and with none selected; of the ingredient's code alone; of one NDC and of another; of one RxNorm code and an NDC, with the NDC selected, beside one of that RxNorm code alone, and beside one of that code and another with the same NDC selected. No table is held." ;
+  mf:entries (
+    <#same-drug-code>
+  ) .
+
+<#same-drug-code> a mf:QueryEvaluationTest ;
+  mf:name "same-drug-code" ;
+  rdfs:comment "Records whose chosen code is one RxNorm code match, the code a record's source selected or the only one it has, ingredient or not; so do the two fills of one NDC. A record with an NDC selected still matches one of its only RxNorm code, and one of the same NDC; with several RxNorm codes it matches by the NDC alone. A record with two codes and none selected, a record of another NDC, and one RxNorm code against an NDC, match nothing." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-drug-code.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-drug-code.srj> .

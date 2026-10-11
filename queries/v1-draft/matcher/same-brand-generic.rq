@@ -1,0 +1,30 @@
+# Two records of one kind match when their current versions give two different RxNorm codes that one version of a brand
+# generics table joins: a brand and its generic, either way round, or two brands of one generic. The table holds only
+# branded products mapped to their generics (SBD to SCD, BPCK to GPCK), so no ingredient is read as a generic. Records
+# that share a code are left out, so no pair is judged by this rule and by the rule that joins records by a shared code.
+# Each ordered pair is a row, with the version whose rows joined it; a graph that is not a version of a brand generics
+# table is never read for rows.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT DISTINCT ?record ?other ?origin
+WHERE {
+  ?origin prov:specializationOf/rec:tableKind rec:BrandGenerics .
+  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
+  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version clinical:rxNormCode ?code .
+  ?otherVersion clinical:rxNormCode ?otherCode .
+  GRAPH ?origin {
+    ?code ^owl:annotatedSource/owl:annotatedTarget
+      | ^owl:annotatedTarget/owl:annotatedSource
+      | ^owl:annotatedSource/owl:annotatedTarget/^owl:annotatedTarget/owl:annotatedSource ?otherCode
+  }
+  FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
+  FILTER NOT EXISTS {
+    ?version clinical:rxNormCode|rec:ndcCode ?shared .
+    ?otherVersion clinical:rxNormCode|rec:ndcCode ?shared
+  }
+}
