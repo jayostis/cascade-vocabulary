@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-ndc-code" ;
+  rdfs:comment "Two fills of one NDC; a fill and a record of that NDC and an RxNorm code; two records of one RxNorm code and no NDC; a record of that RxNorm code beside one that also carries an NDC; a record of another NDC. No table is held." ;
+  mf:entries (
+    <#same-ndc-code>
+  ) .
+
+<#same-ndc-code> a mf:QueryEvaluationTest ;
+  mf:name "same-ndc-code" ;
+  rdfs:comment "Records whose current versions share an NDC match, whatever else each carries; a shared RxNorm code alone, or another NDC, matches nothing." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-ndc-code.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-ndc-code.srj> .

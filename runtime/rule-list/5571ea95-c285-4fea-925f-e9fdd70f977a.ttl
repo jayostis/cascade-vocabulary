@@ -1,0 +1,67 @@
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameCode ;
+    rec:appliesTo "Allergy", "Procedure" ;
+    rec:query "matcher/same-code.rq" ;
+    rec:queryHash <ni:///sha-256;l-aRkMIvfHe5mQVT7cIfzUIVAeQtlzU8045zZJ1e6CQ> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameCodeAndDate ;
+    rec:appliesTo "Immunization" ;
+    rec:query "matcher/same-code-and-date.rq" ;
+    rec:queryHash <ni:///sha-256;Y3tTorFmXGAj9Wbhip4Xz6jWJ0soFhSy2g68JvQCyIw> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameMappedCode ;
+    rec:appliesTo "Allergy" ;
+    rec:query "matcher/same-ingredient.rq" ;
+    rec:queryHash <ni:///sha-256;OgrXFFDjgMihtXo3Lgu0EnSO39LjTkwGiqKHfYJuw0s> ;
+    rec:tableKind rec:ProductIngredients .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameMappedCodeAndDate ;
+    rec:appliesTo "Immunization" ;
+    rec:query "matcher/same-mapped-code-and-date.rq" ;
+    rec:queryHash <ni:///sha-256;V4_dbhWapeez7bkLi1ClKZUgsSTrXaqCaGegerdgREk> ;
+    rec:tableKind rec:VaccineGroups .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameMedicationCode ;
+    rec:appliesTo "Medication" ;
+    rec:query "matcher/same-ndc-code.rq" ;
+    rec:queryHash <ni:///sha-256;_g-0xWyv9hMI1uTa67eB7DfI5b0QXI-AjnIoSdy4jAI> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameResult ;
+    rec:appliesTo "Lab result" ;
+    rec:query "matcher/same-result.rq" ;
+    rec:queryHash <ni:///sha-256;YPr1uwnpi-rWC-hN6tlpH3ZJSyPL4KV5IPASjsiL818> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameConvertedCode ;
+    rec:appliesTo "Condition" ;
+    rec:query "matcher/same-one-to-one-conversion.rq" ;
+    rec:queryHash <ni:///sha-256;_2NPKu2sduXswqLFQgL4K5O3zTiwZhOSyjE0hTjkBhQ> ;
+    rec:tableKind rec:CodeConversions .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameCodeAndPeriod ;
+    rec:appliesTo "Condition" ;
+    rec:query "matcher/same-code-and-period.rq" ;
+    rec:queryHash <ni:///sha-256;B1fPkBdKd1QUiNZtF8mmxZ3qGnadaodYzL1aEE59bCo> .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameBrandGeneric ;
+    rec:appliesTo "Medication" ;
+    rec:query "matcher/same-brand-generic.rq" ;
+    rec:queryHash <ni:///sha-256;MpHyWMgElBJutvquIFRkhp4l7LZP6En4z5ZxN6gR1Us> ;
+    rec:tableKind rec:BrandGenerics .
+
+[] a rec:MatcherRule ;
+    rec:justifiedAs jdg:SameProductCode ;
+    rec:appliesTo "Medication" ;
+    rec:query "matcher/same-product-code.rq" ;
+    rec:queryHash <ni:///sha-256;SAG3WLSsKkS027Q6bApG9dSF6YXWOn6nBf_9Tt6weF4> ;
+    rec:tableKind rec:DrugProducts .

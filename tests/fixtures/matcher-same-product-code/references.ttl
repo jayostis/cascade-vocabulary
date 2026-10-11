@@ -1,0 +1,17 @@
+@prefix : <urn:x:> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+:products a rec:ReferenceSeries ; rdfs:label "Drug products" ; rec:tableKind rec:DrugProducts .
+:products-1 prov:specializationOf :products ; pav:version "1" .
+
+:ingredients a rec:ReferenceSeries ; rdfs:label "Product ingredients" ; rec:tableKind rec:ProductIngredients .
+:ingredients-1 prov:specializationOf :ingredients ; pav:version "1" .
+
+:partial-p a rec:ReferenceSeries ; rdfs:label "Drug products, a smaller list" ; rec:tableKind rec:DrugProducts .
+:partial-p-1 prov:specializationOf :partial-p ; pav:version "1" .
+
+:partial-q a rec:ReferenceSeries ; rdfs:label "Drug products, another smaller list" ; rec:tableKind rec:DrugProducts .
+:partial-q-1 prov:specializationOf :partial-q ; pav:version "1" .

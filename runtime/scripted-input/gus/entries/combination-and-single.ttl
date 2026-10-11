@@ -1,0 +1,23 @@
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<urn:cascade:this-entry> a prov:Activity ;
+  rdfs:label "entered in the Cascade app" ;
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole jdg:patient ] .
+<urn:cascade:output-0> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "amlodipine 2.5 MG / benazepril hydrochloride 10 MG Oral Capsule" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/898350> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/104416> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-1> a <https://ns.cascadeprotocol.org/clinical/v1#Medication> .
+<urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#drugName> "amlodipine 2.5 MG Oral Tablet" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/308136> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#rxNormCode> <http://www.nlm.nih.gov/research/umls/rxnorm/104416> ;
+  <https://ns.cascadeprotocol.org/clinical/v1#clinicalIntent> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/clinical/v1#status> "active" ;
+  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .

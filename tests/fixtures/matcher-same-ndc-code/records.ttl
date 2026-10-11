@@ -1,0 +1,62 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:march a clinical:Medication .
+:marchVersion prov:specializationOf :march ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Lisinopril 10 mg, March" ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
+:marchRevision a rec:Revision ; rec:revisionOf :march ; rec:version :marchVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:april a clinical:Medication .
+:aprilVersion prov:specializationOf :april ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Lisinopril 10 mg, April" ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
+:aprilRevision a rec:Revision ; rec:revisionOf :april ; rec:version :aprilVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:refill a clinical:Medication .
+:refillVersion prov:specializationOf :refill ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Amlodipine 5 mg, refill" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> .
+:refillRevision a rec:Revision ; rec:revisionOf :refill ; rec:version :refillVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fill a clinical:Medication .
+:fillVersion prov:specializationOf :fill ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Amlodipine 5 mg, fill" ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> .
+:fillRevision a rec:Revision ; rec:revisionOf :fill ; rec:version :fillVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:listed a clinical:Medication .
+:listedVersion prov:specializationOf :listed ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "metformin 500 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/861007> .
+:listedRevision a rec:Revision ; rec:revisionOf :listed ; rec:version :listedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:reported a clinical:Medication .
+:reportedVersion prov:specializationOf :reported ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Metformin 500 mg" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/861007> .
+:reportedRevision a rec:Revision ; rec:revisionOf :reported ; rec:version :reportedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:sameDrug a clinical:Medication .
+:sameDrugVersion prov:specializationOf :sameDrug ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "amlodipine 5 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> .
+:sameDrugRevision a rec:Revision ; rec:revisionOf :sameDrug ; rec:version :sameDrugVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:other a clinical:Medication .
+:otherVersion prov:specializationOf :other ; clinical:clinicalIntent "prescribed" ;
+    clinical:drugName "Metformin 500 mg, other NDC" ;
+    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> .
+:otherRevision a rec:Revision ; rec:revisionOf :other ; rec:version :otherVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
