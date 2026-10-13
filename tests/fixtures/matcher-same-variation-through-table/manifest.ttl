@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-variation-through-table" ;
+  rdfs:comment "Two versions of a variant classifications table, both holding rows 90011 and 90012, and a names version and a pod file that hold expression rows too. Variants of one row by expression on two transcripts, three of them with the second series holding only one transcript; an ID and an expression of the same row; an ID on no row beside its expression on a row; two IDs with an expression of the other's row; a shared ID; an expression on two rows; an expression on no row; an ID that is only another column's value; and an expression only a names version and a pod file hold." ;
+  mf:entries (
+    <#same-variation-through-table>
+  ) .
+
+<#same-variation-through-table> a mf:QueryEvaluationTest ;
+  mf:name "same-variation-through-table" ;
+  rdfs:comment "Two records match with each version that holds the row both find, either way round: through the expression on both transcripts of 90011, through an ID and an expression of 90012 in both series, and through an expression and an ID of 90013. None matches by an ID that is on no row, by two different IDs, by a shared ID, by an expression on two rows, by no row, or by rows of another kind or a pod file." ;
+  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-variation-through-table.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <same-variation-through-table.srj> .

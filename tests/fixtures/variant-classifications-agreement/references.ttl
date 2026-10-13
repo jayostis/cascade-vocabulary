@@ -1,0 +1,10 @@
+@prefix : <urn:x:> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+:lynch a rec:ReferenceSeries ; rdfs:label "ClinVar Lynch classifications" ; rec:tableKind rec:VariantClassifications .
+:lynch-1 prov:specializationOf :lynch ; pav:version "1" ; rec:coversGene "MLH1" , "MSH2" , "MSH6" , "PMS2" , "EPCAM" .
+:other a rec:ReferenceSeries ; rdfs:label "ClinVar other classifications" ; rec:tableKind rec:VariantClassifications .
+:other-1 prov:specializationOf :other ; pav:version "1" .

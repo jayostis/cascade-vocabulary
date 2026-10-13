@@ -87,6 +87,16 @@ jdg:SameProductCode a owl:NamedIndividual ;
     rdfs:comment "Both medication records carry one RxNorm code that a version of a drug products table says names one drug product (SCD, SBD, GPCK or BPCK); they share no NDC."@en ;
     skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
 
+jdg:SameVariation a owl:NamedIndividual ;
+    rdfs:label "same variation"@en ;
+    rdfs:comment "Both variant records carry one ClinVar VariationID. Rule M17 and decisions/variant-identity.md say why."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+jdg:SameVariationThroughTable a owl:NamedIndividual ;
+    rdfs:label "same variation through the table"@en ;
+    rdfs:comment "Both variant records find one row of a version of a variant classifications table: a version that carries a ClinVar VariationID finds the row of that variation, and one that carries none finds the row holding its HGVS expression. The classification plays no part. Rule M17 and decisions/variant-identity.md say why."@en ;
+    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
+
 jdg:SameBrandGeneric a owl:NamedIndividual ;
     rdfs:label "same brand generic"@en ;
     rdfs:comment "One record's branded RxNorm product and the other's generic, or two brands of one generic, by a version of a brand generics table; the records share no code."@en ;

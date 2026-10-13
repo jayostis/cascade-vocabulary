@@ -1,0 +1,81 @@
+@prefix : <urn:x:> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Row 90011 is in both series, with the expression on transcript 3 in both and the one on transcript 4 in the first alone.
+:v1 a genomics:Variant .
+:v1Version prov:specializationOf :v1 ; genomics:hgvsCDot "NM_000249.3:c.2042C>T" .
+:v1Revision a rec:Revision ; rec:revisionOf :v1 ; rec:version :v1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:v2 a genomics:Variant .
+:v2Version prov:specializationOf :v2 ; genomics:hgvsCDot "NM_000249.4:c.2042C>T" .
+:v2Revision a rec:Revision ; rec:revisionOf :v2 ; rec:version :v2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:v3 a genomics:Variant .
+:v3Version prov:specializationOf :v3 ; genomics:hgvsCDot "NM_000249.3:c.2042C>T" .
+:v3Revision a rec:Revision ; rec:revisionOf :v3 ; rec:version :v3Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# An ID on one side and an expression on the row of the other; row 90012 is in both series with its expression.
+:w1 a genomics:Variant .
+:w1Version prov:specializationOf :w1 ; genomics:hgvsCDot "NM_000249.4:c.1990-8A>G" .
+:w1Revision a rec:Revision ; rec:revisionOf :w1 ; rec:version :w1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:w2 a genomics:Variant .
+:w2Version prov:specializationOf :w2 ; genomics:clinvarVariationId "90012" .
+:w2Revision a rec:Revision ; rec:revisionOf :w2 ; rec:version :w2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# An ID that is on no row finds nothing, though its expression is on row 90013; the expression alone finds that row.
+:x1 a genomics:Variant .
+:x1Version prov:specializationOf :x1 ; genomics:clinvarVariationId "12345" ; genomics:hgvsCDot "NM_000249.4:c.100A>G" .
+:x1Revision a rec:Revision ; rec:revisionOf :x1 ; rec:version :x1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:x2 a genomics:Variant .
+:x2Version prov:specializationOf :x2 ; genomics:hgvsCDot "NM_000249.4:c.100A>G" .
+:x2Revision a rec:Revision ; rec:revisionOf :x2 ; rec:version :x2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:y a genomics:Variant .
+:yVersion prov:specializationOf :y ; genomics:clinvarVariationId "90013" .
+:yRevision a rec:Revision ; rec:revisionOf :y ; rec:version :yVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# Different IDs: z1 holds the expression of z2's row, which it does not read.
+:z1 a genomics:Variant .
+:z1Version prov:specializationOf :z1 ; genomics:clinvarVariationId "90015" ; genomics:hgvsCDot "NM_000249.4:c.800A>G" .
+:z1Revision a rec:Revision ; rec:revisionOf :z1 ; rec:version :z1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:z2 a genomics:Variant .
+:z2Version prov:specializationOf :z2 ; genomics:clinvarVariationId "90016" .
+:z2Revision a rec:Revision ; rec:revisionOf :z2 ; rec:version :z2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# One ID on both sides is the rule that joins by ID, whatever the row holds.
+:s1 a genomics:Variant .
+:s1Version prov:specializationOf :s1 ; genomics:clinvarVariationId "90017" ; genomics:hgvsCDot "NM_000249.4:c.900A>G" .
+:s1Revision a rec:Revision ; rec:revisionOf :s1 ; rec:version :s1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:s2 a genomics:Variant .
+:s2Version prov:specializationOf :s2 ; genomics:clinvarVariationId "90017" ; genomics:hgvsCDot "NM_000249.3:c.900A>G" .
+:s2Revision a rec:Revision ; rec:revisionOf :s2 ; rec:version :s2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# An expression on two rows, 90011 of the second series and 90014 of the first, finds two and joins nothing.
+:u1 a genomics:Variant .
+:u1Version prov:specializationOf :u1 ; genomics:hgvsCDot "NM_000249.4:c.555del" .
+:u1Revision a rec:Revision ; rec:revisionOf :u1 ; rec:version :u1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:u2 a genomics:Variant .
+:u2Version prov:specializationOf :u2 ; genomics:clinvarVariationId "90014" .
+:u2Revision a rec:Revision ; rec:revisionOf :u2 ; rec:version :u2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# An expression on no row, and an ID that appears only as another column's value.
+:t1 a genomics:Variant .
+:t1Version prov:specializationOf :t1 ; genomics:hgvsCDot "NM_000249.4:c.9999A>G" .
+:t1Revision a rec:Revision ; rec:revisionOf :t1 ; rec:version :t1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:t2 a genomics:Variant .
+:t2Version prov:specializationOf :t2 ; genomics:hgvsCDot "NM_000249.4:c.9999A>G" .
+:t2Revision a rec:Revision ; rec:revisionOf :t2 ; rec:version :t2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:q1 a genomics:Variant .
+:q1Version prov:specializationOf :q1 ; genomics:clinvarVariationId "90018" .
+:q1Revision a rec:Revision ; rec:revisionOf :q1 ; rec:version :q1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:q2 a genomics:Variant .
+:q2Version prov:specializationOf :q2 ; genomics:hgvsCDot "NM_000249.4:c.1100A>G" .
+:q2Revision a rec:Revision ; rec:revisionOf :q2 ; rec:version :q2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# Two records whose expression only a pod file holds.
+:r1 a genomics:Variant .
+:r1Version prov:specializationOf :r1 ; genomics:hgvsCDot "NM_000249.4:c.2000A>G" .
+:r1Revision a rec:Revision ; rec:revisionOf :r1 ; rec:version :r1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:r2 a genomics:Variant .
+:r2Version prov:specializationOf :r2 ; genomics:hgvsCDot "NM_000249.4:c.2000A>G" .
+:r2Revision a rec:Revision ; rec:revisionOf :r2 ; rec:version :r2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

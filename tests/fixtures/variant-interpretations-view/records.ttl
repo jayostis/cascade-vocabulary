@@ -1,0 +1,45 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:panel a genomics:Variant .
+:panelVersion prov:specializationOf :panel ; rec:patient :subject ; genomics:geneSymbol "MLH1" ; genomics:hgvsCDot "NM_000249.3:c.2042C>T" .
+:panelRevision a rec:Revision ; rec:revisionOf :panel ; rec:version :panelVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:exome a genomics:Variant .
+:exomeVersion prov:specializationOf :exome ; rec:patient :subject ; genomics:geneSymbol "MLH1" ; genomics:hgvsCDot "NM_000249.4:c.2042C>T" ;
+    genomics:clinvarVariationId "90011" .
+:exomeRevision a rec:Revision ; rec:revisionOf :exome ; rec:version :exomeVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:benign a genomics:Variant .
+:benignVersion prov:specializationOf :benign ; rec:patient :subject ; genomics:geneSymbol "MSH2" ; genomics:clinvarVariationId "41612" .
+:benignRevision a rec:Revision ; rec:revisionOf :benign ; rec:version :benignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:panelReport a genomics:VariantInterpretation .
+:panelReportVersion prov:specializationOf :panelReport ; rec:patient :subject ; genomics:variantInterpreted :panel ;
+    genomics:acmgClassification genomics:VUS ; genomics:interpretedDate "2022-06-15"^^xsd:date ; clinical:status "final" .
+:panelReportRevision a rec:Revision ; rec:revisionOf :panelReport ; rec:version :panelReportVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:exomeReport a genomics:VariantInterpretation .
+:exomeReportVersion prov:specializationOf :exomeReport ; rec:patient :subject ; genomics:variantInterpreted :exome ;
+    genomics:acmgClassification genomics:LikelyPathogenic ; genomics:interpretedDate "2024-03-12"^^xsd:date .
+:exomeReportRevision a rec:Revision ; rec:revisionOf :exomeReport ; rec:version :exomeReportVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:benignReport a genomics:VariantInterpretation .
+:benignReportVersion prov:specializationOf :benignReport ; rec:patient :subject ; genomics:variantInterpreted :benign ;
+    genomics:acmgClassification genomics:Benign ; genomics:interpretedDate "2025-01-10"^^xsd:date .
+:benignReportRevision a rec:Revision ; rec:revisionOf :benignReport ; rec:version :benignReportVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:otherAnswer a genomics:VariantInterpretation .
+:otherAnswerVersion prov:specializationOf :otherAnswer ; rec:patient :subject ; genomics:variantInterpreted :exome ;
+    genomics:interpretedDate "2024-04-01"^^xsd:date .
+:otherAnswerRevision a rec:Revision ; rec:revisionOf :otherAnswer ; rec:version :otherAnswerVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:unattached a genomics:VariantInterpretation .
+:unattachedVersion prov:specializationOf :unattached ; rec:patient :subject ; genomics:acmgClassification genomics:LikelyBenign .
+:unattachedRevision a rec:Revision ; rec:revisionOf :unattached ; rec:version :unattachedVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,0 +1,57 @@
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a rec:ReferenceSeries ;
+    rdfs:label "Matcher rules" ;
+    rec:shipsWith <urn:uuid:bd40f64f-b01a-4246-ae63-29f6554415fc> .
+
+<urn:uuid:f32ebeea-4ed7-4da7-b08c-031dc619538e> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "1" .
+
+<urn:uuid:1cbf4776-02c0-4315-b992-a2037c1905fa> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "2" ;
+    prov:wasRevisionOf <urn:uuid:f32ebeea-4ed7-4da7-b08c-031dc619538e> .
+
+<urn:uuid:5decd4e5-a731-4ef1-901e-351c30d448d6> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "3" ;
+    prov:wasRevisionOf <urn:uuid:1cbf4776-02c0-4315-b992-a2037c1905fa> .
+
+<urn:uuid:61c46e5f-d837-4e98-86b0-dc3ce3cdcc76> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "4" ;
+    prov:wasRevisionOf <urn:uuid:5decd4e5-a731-4ef1-901e-351c30d448d6> .
+
+<urn:uuid:d8bb1c46-835e-49a2-83d5-d11817cf3ec6> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "5" ;
+    prov:wasRevisionOf <urn:uuid:61c46e5f-d837-4e98-86b0-dc3ce3cdcc76> .
+
+<urn:uuid:34bf5e12-8ed8-452a-a48b-2409e24dfaaf> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "6" ;
+    prov:wasRevisionOf <urn:uuid:d8bb1c46-835e-49a2-83d5-d11817cf3ec6> .
+
+<urn:uuid:5571ea95-c285-4fea-925f-e9fdd70f977a> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "7" ;
+    prov:wasRevisionOf <urn:uuid:34bf5e12-8ed8-452a-a48b-2409e24dfaaf> .
+
+<urn:uuid:bd40f64f-b01a-4246-ae63-29f6554415fc> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "8" ;
+    prov:wasRevisionOf <urn:uuid:5571ea95-c285-4fea-925f-e9fdd70f977a> .
+
+<urn:uuid:c1a2320c-0a92-4bcd-8c24-524c8913b524> a rec:ReferenceSeries ;
+    rdfs:label "ClinVar variant classifications" ;
+    rec:tableKind rec:VariantClassifications ;
+    rec:shipsWith <urn:uuid:57a18cdb-b597-46b1-baef-bc6476d2b26b> .
+
+<urn:uuid:57a18cdb-b597-46b1-baef-bc6476d2b26b> a prov:Entity ;
+    prov:specializationOf <urn:uuid:c1a2320c-0a92-4bcd-8c24-524c8913b524> ;
+    pav:version "1" ;
+    rec:coversGene "MLH1" .

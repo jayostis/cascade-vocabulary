@@ -1,5 +1,6 @@
 @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
 @prefix dct: <http://purl.org/dc/terms/> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
@@ -305,13 +306,15 @@ rec:CodeNames a rec:TableKind ;
     rdfs:label "code names"@en ;
     rdfs:comment "A code's names in SKOS, as its publisher gives them."@en ;
     rec:rowShape rec:CodeNameRowShape ;
-    rec:foundBy rec:RowSubject .
+    rec:foundBy rec:RowSubject ;
+    rec:readByPages true .
 
 rec:CodeStatus a rec:TableKind ;
     rdfs:label "code status"@en ;
     rdfs:comment "A retired code, with each replacement its publisher gives. A code that is not retired has no row; a mapping kind keeps a retired code's rows."@en ;
     rec:rowShape rec:CodeStatusRowShape ;
-    rec:foundBy rec:RowSubject .
+    rec:foundBy rec:RowSubject ;
+    rec:readByPages true .
 
 rec:SubstanceIngredients a rec:TableKind ;
     rdfs:label "substance ingredients"@en ;
@@ -354,13 +357,60 @@ rec:CodeConversions a rec:TableKind ;
     rec:rowShape rec:CodeConversionRowShape ;
     rec:foundBy owl:annotatedSource , owl:annotatedTarget .
 
+rec:VariantClassifications a rec:TableKind ;
+    rdfs:label "variant classifications"@en ;
+    rdfs:comment "What a source such as ClinVar says of a variant: a row for each variation, found by its variation IRI and by each coding NM_ expression a submitter used, holding the aggregate germline classification and review status as concepts, the day it was last evaluated and how many submitters contribute. A join through these rows is identity and reads no classification. A version states the genes it covers (rec:coversGene), so a page can tell a variant in a gene the series does not cover from a covered one the rows do not hold."@en ;
+    rec:rowShape rec:VariantClassificationRowShape ;
+    rec:foundBy rec:RowSubject , rec:hgvsExpression ;
+    rec:readByPages true .
+
+rec:readByPages a owl:DatatypeProperty ;
+    rdfs:label "read by pages"@en ;
+    rdfs:comment "True when an app keeps a series of the kind, and packs it, though no rule of its rule list reads the kind: its pages read the rows. A kind that is neither named by a rule list nor marked is skipped."@en ;
+    rdfs:domain rec:TableKind ;
+    rdfs:range xsd:boolean .
+
+rec:coversGene a owl:DatatypeProperty ;
+    rdfs:label "covers gene"@en ;
+    rdfs:comment "Of a version of a series of a kind that covers some genes, an HGNC approved symbol of a gene it covers, any number. A version without it covers no named gene, and a changed list of genes is a new version."@en ;
+    rdfs:range xsd:string .
+
+rec:hgvsExpression a owl:ObjectProperty ;
+    rdfs:label "HGVS expression"@en ;
+    rdfs:comment "Of a variant classification row, a coding NM_ expression a submitter used for its variation, as the rec:HGVS IRI."@en .
+
+rec:clinvarClassification a owl:ObjectProperty ;
+    rdfs:label "ClinVar classification"@en ;
+    rdfs:comment "Of a variant classification row, a concept of rec:ClinVarClassifications its aggregate germline classification parses to."@en ;
+    rdfs:range skos:Concept .
+
+rec:clinvarReviewStatus a owl:ObjectProperty ;
+    rdfs:label "ClinVar review status"@en ;
+    rdfs:comment "Of a variant classification row, the concept of rec:ClinVarReviewStatuses its review status is."@en ;
+    rdfs:range skos:Concept .
+
+rec:lastEvaluated a owl:DatatypeProperty ;
+    rdfs:label "last evaluated"@en ;
+    rdfs:comment "Of a variant classification row, the day its newest submitter evaluated the variation. It is not the day the aggregate changed."@en ;
+    rdfs:range xsd:date .
+
+rec:contributingSubmitters a owl:DatatypeProperty ;
+    rdfs:label "contributing submitters"@en ;
+    rdfs:comment "Of a variant classification row, how many submissions contribute to its aggregate classification, from a release that lists them (SCVsForAggregateGermlineClassification)."@en ;
+    rdfs:range xsd:integer .
+
+rec:submitters a owl:DatatypeProperty ;
+    rdfs:label "submitters"@en ;
+    rdfs:comment "Of a variant classification row, how many submitters it has, as an older release counts them (NumberSubmitters), which includes any whose submission does not contribute. A row holds this or rec:contributingSubmitters, so it says which count it has."@en ;
+    rdfs:range xsd:integer .
+
 rec:RowSubject a rdf:Property ;
     rdfs:label "the row's subject"@en ;
     rdfs:comment "Not stated by any row: as a kind's rec:foundBy, that each row is found by its own subject, the code it is about."@en .
 
 rec:CodeSystem a owl:Class ;
     rdfs:label "code system"@en ;
-    rdfs:comment "A code system whose codes are IRIs of one form: its void:uriSpace, the IRI stem, followed by the code percent-encoded as SPARQL's ENCODE_FOR_URI does. The stem is HL7 Terminology's where THO registers one, and is never the FHIR Coding.system URI, which skos:exactMatch names (https://hl7.org/fhir/R5/rdf.html#iri-stem). A record's code written as a literal joins a table as that IRI, the literal as written."@en .
+    rdfs:comment "A code system whose codes are IRIs of one form: its void:uriSpace, the IRI stem, followed by the code percent-encoded as SPARQL's ENCODE_FOR_URI does. The stem is HL7 Terminology's where THO registers one, and is never the FHIR Coding.system URI, which skos:exactMatch names (https://hl7.org/fhir/R5/rdf.html#iri-stem). A record's code written as a literal joins a table as that IRI: the stem followed by the literal percent-encoded as ENCODE_FOR_URI does, so a literal of unreserved characters only is its own tail and NM_000249.4:c.2042C>T is http://varnomen.hgvs.org/NM_000249.4%3Ac.2042C%3ET."@en .
 
 rec:CVX a rec:CodeSystem ;
     rdfs:label "CVX"@en ;
@@ -421,6 +471,210 @@ rec:ICD9CM a rec:CodeSystem ;
     void:uriSpace "http://hl7.org/fhir/sid/icd-9-cm/" ;
     skos:exactMatch <http://hl7.org/fhir/sid/icd-9-cm> ;
     dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
+
+rec:HGVS a rec:CodeSystem ;
+    rdfs:label "HGVS"@en ;
+    rdfs:comment "A coding expression in its normal form: the reference sequence with its version, a colon and c., then the change, as NM_000249.4:c.2042C>T, with no gene in parentheses and no protein change. The code holds characters an IRI cannot, so it is percent-encoded: the colon is %3A and > is %3E. Only an NM_ expression is a key of a table."@en ;
+    void:uriSpace "http://varnomen.hgvs.org/" ;
+    skos:exactMatch <http://varnomen.hgvs.org> ;
+    dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/v3/namingSystems/v3-hgvs.xml> .
+
+rec:ClinVar a rec:CodeSystem ;
+    rdfs:label "ClinVar"@en ;
+    rdfs:comment "A ClinVar variation, by its VariationID: the digits, no leading zero, as 90011. The accession VCV000090011 is that number zero-padded and an SCV or RCV accession is not a variation."@en ;
+    void:uriSpace "http://www.ncbi.nlm.nih.gov/clinvar/" ;
+    skos:exactMatch <http://www.ncbi.nlm.nih.gov/clinvar> ;
+    dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/hta/namingSystems/clinVarV.xml> .
+
+rec:ClinVarClassifications a skos:ConceptScheme ;
+    rdfs:label "ClinVar classifications"@en ;
+    rdfs:comment "The values of ClinVar's aggregate germline classification, as it spells them. ClinVar joins ACMG terms with a slash and other terms with a semicolon, so a value is parsed into concepts, never matched whole. A renamed label is an alternative label of the concept it names."@en ;
+    skos:hasTopConcept genomics:Pathogenic , genomics:LikelyPathogenic , genomics:VUS , genomics:LikelyBenign , genomics:Benign ,
+        rec:ClinVarConflicting , rec:ClinVarConflictingData , rec:ClinVarEstablishedRiskAllele , rec:ClinVarLikelyRiskAllele ,
+        rec:ClinVarUncertainRiskAllele , rec:ClinVarDrugResponse , rec:ClinVarRiskFactor , rec:ClinVarAssociation ,
+        rec:ClinVarProtective , rec:ClinVarConfersSensitivity , rec:ClinVarAffects , rec:ClinVarOther , rec:ClinVarNotProvided ,
+        rec:ClinVarCombinationOnly , rec:ClinVarNoClassificationsFromUnflaggedRecords , rec:ClinVarNoClassificationForTheSingleVariant .
+
+rec:ClinVarReviewStatuses a skos:ConceptScheme ;
+    rdfs:label "ClinVar review statuses"@en ;
+    rdfs:comment "The values of ClinVar's review status, as it spells them. A value holds commas and is matched whole, never split."@en ;
+    skos:hasTopConcept rec:ClinVarPracticeGuideline , rec:ClinVarExpertPanel , rec:ClinVarMultipleSubmittersNoConflicts ,
+        rec:ClinVarConflictingClassifications , rec:ClinVarSingleSubmitter , rec:ClinVarNoAssertionCriteria ,
+        rec:ClinVarNoClassificationProvided , rec:ClinVarNoClassificationForTheSingleVariant ,
+        rec:ClinVarNoClassificationsFromUnflaggedRecords .
+
+genomics:Pathogenic a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Pathogenic" ;
+    skos:exactMatch <http://loinc.org/rdf/LA6668-3> .
+
+genomics:LikelyPathogenic a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Likely pathogenic" ;
+    skos:exactMatch <http://loinc.org/rdf/LA26332-9> .
+
+genomics:VUS a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Uncertain significance" ;
+    skos:exactMatch <http://loinc.org/rdf/LA26333-7> .
+
+genomics:LikelyBenign a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Likely benign" ;
+    skos:exactMatch <http://loinc.org/rdf/LA26334-5> .
+
+genomics:Benign a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Benign" ;
+    skos:exactMatch <http://loinc.org/rdf/LA6675-8> .
+
+rec:ClinVarConflicting a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Conflicting classifications of pathogenicity" ;
+    skos:altLabel "Conflicting interpretations of pathogenicity" .
+
+rec:ClinVarConflictingData a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "conflicting data from submitters" .
+
+rec:ClinVarPathogenicLowPenetrance a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Pathogenic, low penetrance" ;
+    skos:broader genomics:Pathogenic .
+
+rec:ClinVarLikelyPathogenicLowPenetrance a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Likely pathogenic, low penetrance" ;
+    skos:broader genomics:LikelyPathogenic .
+
+rec:ClinVarVusHigh a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "VUS-high" ;
+    skos:broader genomics:VUS .
+
+rec:ClinVarVusMid a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "VUS-mid" ;
+    skos:broader genomics:VUS .
+
+rec:ClinVarVusLow a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "VUS-low" ;
+    skos:broader genomics:VUS .
+
+rec:ClinVarEstablishedRiskAllele a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Established risk allele" .
+
+rec:ClinVarLikelyRiskAllele a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Likely risk allele" .
+
+rec:ClinVarUncertainRiskAllele a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Uncertain risk allele" .
+
+rec:ClinVarDrugResponse a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "drug response" .
+
+rec:ClinVarRiskFactor a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "risk factor" .
+
+rec:ClinVarAssociation a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "association" .
+
+rec:ClinVarProtective a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "protective" .
+
+rec:ClinVarConfersSensitivity a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "confers sensitivity" .
+
+rec:ClinVarAffects a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "Affects" .
+
+rec:ClinVarOther a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "other" .
+
+rec:ClinVarNotProvided a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "not provided" .
+
+rec:ClinVarCombinationOnly a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications ;
+    skos:prefLabel "classified only as part of a combination" ;
+    skos:notation "-" ;
+    rdfs:comment "ClinVar writes a hyphen for a variation classified only in combination with another variant; the hyphen is the concept's notation and the whole value."@en .
+
+rec:ClinVarNoClassificationsFromUnflaggedRecords a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications , rec:ClinVarReviewStatuses ;
+    skos:prefLabel "no classifications from unflagged records" .
+
+rec:ClinVarNoClassificationForTheSingleVariant a skos:Concept ;
+    skos:inScheme rec:ClinVarClassifications , rec:ClinVarReviewStatuses ;
+    skos:prefLabel "no classification for the single variant" ;
+    skos:altLabel "no interpretation for the single variant" .
+
+rec:ClinVarPracticeGuideline a skos:Concept ;
+    skos:inScheme rec:ClinVarReviewStatuses ;
+    skos:prefLabel "practice guideline" .
+
+rec:ClinVarExpertPanel a skos:Concept ;
+    skos:inScheme rec:ClinVarReviewStatuses ;
+    skos:prefLabel "reviewed by expert panel" .
+
+rec:ClinVarMultipleSubmittersNoConflicts a skos:Concept ;
+    skos:inScheme rec:ClinVarReviewStatuses ;
+    skos:prefLabel "criteria provided, multiple submitters, no conflicts" .
+
+rec:ClinVarConflictingClassifications a skos:Concept ;
+    skos:inScheme rec:ClinVarReviewStatuses ;
+    skos:prefLabel "criteria provided, conflicting classifications" ;
+    skos:altLabel "criteria provided, conflicting interpretations" .
+
+rec:ClinVarSingleSubmitter a skos:Concept ;
+    skos:inScheme rec:ClinVarReviewStatuses ;
+    skos:prefLabel "criteria provided, single submitter" .
+
+rec:ClinVarNoAssertionCriteria a skos:Concept ;
+    skos:inScheme rec:ClinVarReviewStatuses ;
+    skos:prefLabel "no assertion criteria provided" .
+
+rec:ClinVarNoClassificationProvided a skos:Concept ;
+    skos:inScheme rec:ClinVarReviewStatuses ;
+    skos:prefLabel "no classification provided" ;
+    skos:altLabel "no assertion provided" .
+
+skos:Concept a owl:Class ;
+    rdfs:label "Concept"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:ConceptScheme a owl:Class ;
+    rdfs:label "Concept Scheme"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:inScheme a owl:ObjectProperty ;
+    rdfs:label "is in scheme"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:hasTopConcept a owl:ObjectProperty ;
+    rdfs:label "has top concept"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:broader a owl:ObjectProperty ;
+    rdfs:label "has broader"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
 
 void:uriSpace a owl:DatatypeProperty ;
     rdfs:label "URI space"@en ;

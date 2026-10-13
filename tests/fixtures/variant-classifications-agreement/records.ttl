@@ -1,0 +1,92 @@
+@prefix : <urn:x:> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+# Martin's variant: two reports of one variant, on two transcripts, one of them with the ID.
+:panel a genomics:Variant .
+:panelVersion prov:specializationOf :panel ; rec:patient :subject ; genomics:geneSymbol "MLH1" ; genomics:hgvsCDot "NM_000249.3:c.2042C>T" .
+:panelRevision a rec:Revision ; rec:revisionOf :panel ; rec:version :panelVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:exome a genomics:Variant .
+:exomeVersion prov:specializationOf :exome ; rec:patient :subject ; genomics:geneSymbol "MLH1" ; genomics:hgvsCDot "NM_000249.4:c.2042C>T" ;
+    genomics:clinvarVariationId "90011" .
+:exomeRevision a rec:Revision ; rec:revisionOf :exome ; rec:version :exomeVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+# A variant found by its ID alone, one by an expression alone for each kind of row, and three that get no verdict.
+:benign a genomics:Variant .
+:benignVersion prov:specializationOf :benign ; rec:patient :subject ; genomics:geneSymbol "MSH2" ; genomics:clinvarVariationId "90012" .
+:benignRevision a rec:Revision ; rec:revisionOf :benign ; rec:version :benignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:conflicting a genomics:Variant .
+:conflictingVersion prov:specializationOf :conflicting ; rec:patient :subject ; genomics:geneSymbol "MSH6" ; genomics:hgvsCDot "NM_000179.3:c.100A>G" .
+:conflictingRevision a rec:Revision ; rec:revisionOf :conflicting ; rec:version :conflictingVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:riskFactor a genomics:Variant .
+:riskFactorVersion prov:specializationOf :riskFactor ; rec:patient :subject ; genomics:geneSymbol "MSH6" ; genomics:hgvsCDot "NM_000179.3:c.200A>G" .
+:riskFactorRevision a rec:Revision ; rec:revisionOf :riskFactor ; rec:version :riskFactorVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:conflictingData a genomics:Variant .
+:conflictingDataVersion prov:specializationOf :conflictingData ; rec:patient :subject ; genomics:geneSymbol "PMS2" ; genomics:hgvsCDot "NM_000535.7:c.700A>G" .
+:conflictingDataRevision a rec:Revision ; rec:revisionOf :conflictingData ; rec:version :conflictingDataVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:noClassification a genomics:Variant .
+:noClassificationVersion prov:specializationOf :noClassification ; rec:patient :subject ; genomics:geneSymbol "PMS2" ; genomics:hgvsCDot "NM_000535.7:c.900A>G" .
+:noClassificationRevision a rec:Revision ; rec:revisionOf :noClassification ; rec:version :noClassificationVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoRows a genomics:Variant .
+:twoRowsVersion prov:specializationOf :twoRows ; rec:patient :subject ; genomics:geneSymbol "EPCAM" ; genomics:clinvarVariationId "90016" .
+:twoRowsRevision a rec:Revision ; rec:revisionOf :twoRows ; rec:version :twoRowsVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoRowsOther a genomics:Variant .
+:twoRowsOtherVersion prov:specializationOf :twoRowsOther ; rec:patient :subject ; genomics:geneSymbol "EPCAM" ; genomics:clinvarVariationId "90017" .
+:twoRowsOtherRevision a rec:Revision ; rec:revisionOf :twoRowsOther ; rec:version :twoRowsOtherVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:idOnNoRow a genomics:Variant .
+:idOnNoRowVersion prov:specializationOf :idOnNoRow ; rec:patient :subject ; genomics:geneSymbol "MSH6" ; genomics:clinvarVariationId "12345" ;
+    genomics:hgvsCDot "NM_000179.3:c.100A>G" .
+:idOnNoRowRevision a rec:Revision ; rec:revisionOf :idOnNoRow ; rec:version :idOnNoRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:idOnNoRowVus a genomics:VariantInterpretation .
+:idOnNoRowVusVersion prov:specializationOf :idOnNoRowVus ; rec:patient :subject ; genomics:variantInterpreted :idOnNoRow ; genomics:acmgClassification genomics:VUS .
+:idOnNoRowVusRevision a rec:Revision ; rec:revisionOf :idOnNoRowVus ; rec:version :idOnNoRowVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:noRow a genomics:Variant .
+:noRowVersion prov:specializationOf :noRow ; rec:patient :subject ; genomics:geneSymbol "MLH1" ; genomics:hgvsCDot "NM_000249.4:c.9999A>G" .
+:noRowRevision a rec:Revision ; rec:revisionOf :noRow ; rec:version :noRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# The reports. Each is named by the variant and the answer it gives.
+:panelVus a genomics:VariantInterpretation .
+:panelVusVersion prov:specializationOf :panelVus ; rec:patient :subject ; genomics:variantInterpreted :panel ; genomics:acmgClassification genomics:VUS .
+:panelVusRevision a rec:Revision ; rec:revisionOf :panelVus ; rec:version :panelVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:exomeLikelyPathogenic a genomics:VariantInterpretation .
+:exomeLikelyPathogenicVersion prov:specializationOf :exomeLikelyPathogenic ; rec:patient :subject ; genomics:variantInterpreted :exome ; genomics:acmgClassification genomics:LikelyPathogenic .
+:exomeLikelyPathogenicRevision a rec:Revision ; rec:revisionOf :exomeLikelyPathogenic ; rec:version :exomeLikelyPathogenicVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:exomeNoAcmg a genomics:VariantInterpretation .
+:exomeNoAcmgVersion prov:specializationOf :exomeNoAcmg ; rec:patient :subject ; genomics:variantInterpreted :exome .
+:exomeNoAcmgRevision a rec:Revision ; rec:revisionOf :exomeNoAcmg ; rec:version :exomeNoAcmgVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:benignBenign a genomics:VariantInterpretation .
+:benignBenignVersion prov:specializationOf :benignBenign ; rec:patient :subject ; genomics:variantInterpreted :benign ; genomics:acmgClassification genomics:Benign .
+:benignBenignRevision a rec:Revision ; rec:revisionOf :benignBenign ; rec:version :benignBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:benignLikelyBenign a genomics:VariantInterpretation .
+:benignLikelyBenignVersion prov:specializationOf :benignLikelyBenign ; rec:patient :subject ; genomics:variantInterpreted :benign ; genomics:acmgClassification genomics:LikelyBenign .
+:benignLikelyBenignRevision a rec:Revision ; rec:revisionOf :benignLikelyBenign ; rec:version :benignLikelyBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:conflictingPathogenic a genomics:VariantInterpretation .
+:conflictingPathogenicVersion prov:specializationOf :conflictingPathogenic ; rec:patient :subject ; genomics:variantInterpreted :conflicting ; genomics:acmgClassification genomics:Pathogenic .
+:conflictingPathogenicRevision a rec:Revision ; rec:revisionOf :conflictingPathogenic ; rec:version :conflictingPathogenicVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:riskFactorVus a genomics:VariantInterpretation .
+:riskFactorVusVersion prov:specializationOf :riskFactorVus ; rec:patient :subject ; genomics:variantInterpreted :riskFactor ; genomics:acmgClassification genomics:VUS .
+:riskFactorVusRevision a rec:Revision ; rec:revisionOf :riskFactorVus ; rec:version :riskFactorVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:conflictingDataBenign a genomics:VariantInterpretation .
+:conflictingDataBenignVersion prov:specializationOf :conflictingDataBenign ; rec:patient :subject ; genomics:variantInterpreted :conflictingData ; genomics:acmgClassification genomics:Benign .
+:conflictingDataBenignRevision a rec:Revision ; rec:revisionOf :conflictingDataBenign ; rec:version :conflictingDataBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:noClassificationVus a genomics:VariantInterpretation .
+:noClassificationVusVersion prov:specializationOf :noClassificationVus ; rec:patient :subject ; genomics:variantInterpreted :noClassification ; genomics:acmgClassification genomics:VUS .
+:noClassificationVusRevision a rec:Revision ; rec:revisionOf :noClassificationVus ; rec:version :noClassificationVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoRowsPathogenic a genomics:VariantInterpretation .
+:twoRowsPathogenicVersion prov:specializationOf :twoRowsPathogenic ; rec:patient :subject ; genomics:variantInterpreted :twoRows ; genomics:acmgClassification genomics:Pathogenic .
+:twoRowsPathogenicRevision a rec:Revision ; rec:revisionOf :twoRowsPathogenic ; rec:version :twoRowsPathogenicVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:noRowVus a genomics:VariantInterpretation .
+:noRowVusVersion prov:specializationOf :noRowVus ; rec:patient :subject ; genomics:variantInterpreted :noRow ; genomics:acmgClassification genomics:VUS .
+:noRowVusRevision a rec:Revision ; rec:revisionOf :noRowVus ; rec:version :noRowVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# A variant written only on the first transcript, held by no judgment: the second series' row 90011 does not hold that expression.
+:firstTranscript a genomics:Variant .
+:firstTranscriptVersion prov:specializationOf :firstTranscript ; rec:patient :subject ; genomics:geneSymbol "MLH1" ; genomics:hgvsCDot "NM_000249.3:c.2042C>T" .
+:firstTranscriptRevision a rec:Revision ; rec:revisionOf :firstTranscript ; rec:version :firstTranscriptVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:firstTranscriptBenign a genomics:VariantInterpretation .
+:firstTranscriptBenignVersion prov:specializationOf :firstTranscriptBenign ; rec:patient :subject ; genomics:variantInterpreted :firstTranscript ; genomics:acmgClassification genomics:Benign .
+:firstTranscriptBenignRevision a rec:Revision ; rec:revisionOf :firstTranscriptBenign ; rec:version :firstTranscriptBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

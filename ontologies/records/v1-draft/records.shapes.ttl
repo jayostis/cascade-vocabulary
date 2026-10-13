@@ -1,4 +1,5 @@
 @prefix dct: <http://purl.org/dc/terms/> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
@@ -97,7 +98,7 @@ rec:ReferenceSeriesShape a sh:NodeShape ;
         sh:severity sh:Violation
     ], [
         sh:path rec:tableKind ;
-        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients rec:ProductIngredients rec:BrandGenerics rec:DrugProducts rec:NdcDrugs rec:CodeConversions ) ;
+        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients rec:ProductIngredients rec:BrandGenerics rec:DrugProducts rec:NdcDrugs rec:CodeConversions rec:VariantClassifications ) ;
         sh:maxCount 1 ;
         sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
         sh:severity sh:Violation
@@ -105,7 +106,9 @@ rec:ReferenceSeriesShape a sh:NodeShape ;
 
 rec:ReferenceVersionShape a sh:NodeShape ;
     sh:property [ sh:path pav:version ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ,
-                [ sh:path prov:wasRevisionOf ; sh:nodeKind sh:IRI ; sh:maxCount 1 ] .
+                [ sh:path prov:wasRevisionOf ; sh:nodeKind sh:IRI ; sh:maxCount 1 ] ,
+                [ sh:path rec:coversGene ; sh:datatype xsd:string ; sh:minLength 1 ;
+                  sh:message "A version covers genes by their symbols, each a non-empty plain string"@en ] .
 
 rec:MappingRowShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
@@ -271,7 +274,7 @@ rec:CodeConversionFormShape a sh:NodeShape ;
 
 rec:CodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
-    sh:or ( rec:CvxCodeShape rec:NdcCodeShape rec:IcdTenCmCodeShape rec:RxNormCodeShape rec:SnomedCtCodeShape rec:LoincCodeShape ) ;
+    sh:or ( rec:CvxCodeShape rec:NdcCodeShape rec:IcdTenCmCodeShape rec:RxNormCodeShape rec:SnomedCtCodeShape rec:LoincCodeShape rec:ClinVarCodeShape ) ;
     sh:message "A code is an IRI of one of the code systems' forms."@en ;
     sh:severity sh:Violation .
 
@@ -298,6 +301,14 @@ rec:SnomedCtCodeShape a sh:NodeShape ;
 rec:LoincCodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
     sh:pattern "^http://loinc\\.org/rdf/[A-Za-z0-9]+-[0-9]$" .
+
+rec:ClinVarCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://www\\.ncbi\\.nlm\\.nih\\.gov/clinvar/[1-9][0-9]*$" .
+
+rec:HgvsCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://varnomen\\.hgvs\\.org/NM_[0-9]+\\.[0-9]+%3Ac\\.([A-Za-z0-9._~-]|%[0-9A-F]{2})+$" .
 
 rec:CodeNameRowShape a sh:NodeShape ;
     sh:node rec:CodeShape ;
@@ -358,6 +369,70 @@ rec:DrugProductRowShape a sh:NodeShape ;
         sh:message "A drug product's term type is one of SCD, SBD, GPCK or BPCK."@en ;
         sh:severity sh:Violation
     ] .
+
+rec:VariantClassificationRowShape a sh:NodeShape ;
+    sh:node rec:ClinVarCodeShape , rec:SubmitterCountShape ;
+    sh:closed true ;
+    sh:message "A variant classification row holds only its variation's HGVS expressions, classification concepts, review status, date last evaluated and submitter count."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path rec:hgvsExpression ;
+        sh:node rec:HgvsCodeShape ;
+        sh:message "A variant classification row is found by coding NM_ expressions, each the rec:HGVS IRI with the expression percent-encoded."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path ( rec:hgvsExpression [ sh:inversePath rec:hgvsExpression ] ) ;
+        sh:maxCount 1 ;
+        sh:message "An expression finds one row: an expression of this row is on another row too."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path rec:clinvarClassification ;
+        sh:in ( genomics:Pathogenic genomics:LikelyPathogenic genomics:VUS genomics:LikelyBenign genomics:Benign
+                rec:ClinVarConflicting rec:ClinVarConflictingData rec:ClinVarPathogenicLowPenetrance
+                rec:ClinVarLikelyPathogenicLowPenetrance rec:ClinVarVusHigh rec:ClinVarVusMid rec:ClinVarVusLow
+                rec:ClinVarEstablishedRiskAllele rec:ClinVarLikelyRiskAllele rec:ClinVarUncertainRiskAllele
+                rec:ClinVarDrugResponse rec:ClinVarRiskFactor rec:ClinVarAssociation rec:ClinVarProtective
+                rec:ClinVarConfersSensitivity rec:ClinVarAffects rec:ClinVarOther rec:ClinVarNotProvided
+                rec:ClinVarCombinationOnly rec:ClinVarNoClassificationsFromUnflaggedRecords
+                rec:ClinVarNoClassificationForTheSingleVariant ) ;
+        sh:message "A classification is a concept of rec:ClinVarClassifications."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path rec:clinvarReviewStatus ;
+        sh:in ( rec:ClinVarPracticeGuideline rec:ClinVarExpertPanel rec:ClinVarMultipleSubmittersNoConflicts
+                rec:ClinVarConflictingClassifications rec:ClinVarSingleSubmitter rec:ClinVarNoAssertionCriteria
+                rec:ClinVarNoClassificationProvided rec:ClinVarNoClassificationForTheSingleVariant
+                rec:ClinVarNoClassificationsFromUnflaggedRecords ) ;
+        sh:maxCount 1 ;
+        sh:message "A row has at most one review status, a concept of rec:ClinVarReviewStatuses."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path rec:lastEvaluated ;
+        sh:datatype xsd:date ;
+        sh:maxCount 1 ;
+        sh:message "The day last evaluated is one xsd:date."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path rec:contributingSubmitters ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxCount 1 ;
+        sh:message "The contributing submitters are counted once, a non-negative xsd:integer."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path rec:submitters ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxCount 1 ;
+        sh:message "The submitters are counted once, a non-negative xsd:integer."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:SubmitterCountShape a sh:NodeShape ;
+    sh:not [ sh:property [ sh:path rec:contributingSubmitters ; sh:minCount 1 ] ,
+                         [ sh:path rec:submitters ; sh:minCount 1 ] ] ;
+    sh:message "A row holds the count of contributing submitters or the count of submitters, never both, so it says which it has."@en ;
+    sh:severity sh:Violation .
 
 rec:PlacementShape a sh:NodeShape ;
     sh:targetClass rec:Placement ;

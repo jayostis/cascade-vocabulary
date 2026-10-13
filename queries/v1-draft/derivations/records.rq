@@ -2,6 +2,7 @@
 # that hold its name, status and date, and whether its status comes only from documents. Every record becomes a
 # rec:Record, and every version of one gets rec:name, rec:status and rec:date, so later steps read any record alike.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX genomics: <https://ns.cascadeprotocol.org/genomics/v1#>
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
@@ -18,6 +19,8 @@ WHERE {
     (clinical:Procedure        "Procedure"    clinical:procedureName clinical:status false clinical:procedureDate)
     (clinical:Medication       "Medication"   clinical:drugName      clinical:status false clinical:startDate)
     (health:LabResultRecord    "Lab result"   health:testName        clinical:status false health:performedDate)
+    (genomics:Variant          "Variant"      genomics:hgvsCDot      clinical:status false UNDEF)
+    (genomics:VariantInterpretation "Variant interpretation" UNDEF   clinical:status false genomics:interpretedDate)
   }
   ?record a ?type .
   OPTIONAL { ?version prov:specializationOf ?record }

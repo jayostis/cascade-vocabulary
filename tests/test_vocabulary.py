@@ -11,7 +11,7 @@ from contract import QUERIES, ROOT
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
 SHAPES = [path for path in ONTOLOGIES if path.name.endswith(".shapes.ttl")]
 COPIED = [
-    path for path in ONTOLOGIES if path.parts[-3] in ("core", "health", "clinical")
+    path for path in ONTOLOGIES if path.parts[-3] in ("core", "health", "clinical", "genomics")
 ]
 SOURCE_COMMIT = "https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/"
 FOAF_RELEASE = "http://xmlns.com/foaf/spec/20140114.rdf"

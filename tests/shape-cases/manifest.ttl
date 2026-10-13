@@ -1,6 +1,7 @@
 @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
 @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
@@ -246,3 +247,35 @@
   mf:action [ sht:dataGraph <record-lab-result/two-values.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape health:LabResultRecordShape ; sh:resultPath health:resultValue ] ] .
+
+<#record-variant/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-variant/two-hgvs> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant/two-hgvs.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape genomics:VariantShape ; sh:resultPath genomics:hgvsCDot ] ] .
+
+<#record-variant-interpretation/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant-interpretation/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-variant-interpretation/date-a-time> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant-interpretation/date-a-time.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape genomics:VariantInterpretationShape ; sh:resultPath genomics:interpretedDate ] ] .
+
+<#reference-series/classifications-valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <reference-series/classifications-valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#reference-series/classifications-no-genes> a sht:Validate ;
+  mf:action [ sht:dataGraph <reference-series/classifications-no-genes.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#reference-series/version-gene-not-a-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <reference-series/version-gene-not-a-string.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:ReferenceSeriesShape ;
+                          sh:resultPath [ sh:inversePath prov:specializationOf ] ] ] .

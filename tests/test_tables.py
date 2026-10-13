@@ -31,8 +31,15 @@ PREFIXES = """
 @prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
 @prefix icd: <http://hl7.org/fhir/sid/icd-10-cm/> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 """
-ROW = "a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget cvx:88"
+VARIATION = "<http://www.ncbi.nlm.nih.gov/clinvar/90011>"
+EXPRESSION = "<http://varnomen.hgvs.org/NM_000249.3%3Ac.2042C%3ET>"
+CLASSIFIED = (f"{VARIATION} rec:hgvsExpression {EXPRESSION} ; rec:clinvarClassification genomics:Pathogenic , "
+              'genomics:LikelyPathogenic ; rec:clinvarReviewStatus rec:ClinVarMultipleSubmittersNoConflicts ; '
+              'rec:lastEvaluated "2024-12-11"^^xsd:date ; rec:contributingSubmitters 5')
+ROW ="a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget cvx:88"
 CURATED = "sssom:mapping_justification semapv:ManualMappingCuration"
 CHAINED = "sssom:mapping_justification semapv:MappingChaining"
 NDC = "<https://ns.cascadeprotocol.org/codes/ndc11/00069153066>"
@@ -99,7 +106,8 @@ def test_every_kind_names_one_row_shape_and_what_its_rows_are_found_by():
 
 
 STEM = re.compile(r"https?://(?:snomed\.info|loinc\.org|www\.nlm\.nih\.gov|hl7\.org/fhir/sid|fdasis\.nlm\.nih\.gov"
-                  r"|www\.ama-assn\.org/go|ns\.cascadeprotocol\.org/codes)/[A-Za-z0-9._/-]*/")
+                  r"|www\.ama-assn\.org/go|ns\.cascadeprotocol\.org/codes)/[A-Za-z0-9._/-]*/"
+                  r"|https?://(?:varnomen\.hgvs\.org|www\.ncbi\.nlm\.nih\.gov/clinvar)/")
 
 
 def test_every_iri_stem_a_query_or_an_ontology_writes_is_a_code_systems_uri_space():
@@ -118,7 +126,7 @@ def test_every_iri_stem_a_query_or_an_ontology_writes_is_a_code_systems_uri_spac
 def test_every_code_system_has_one_iri_stem_ending_in_a_slash_and_one_system_uri_without():
     systems = set(kinds().subjects(RDF.type, REC.CodeSystem))
     assert {system.removeprefix(str(REC)) for system in systems} == {
-        "CVX", "RxNorm", "NDC", "ICD10CM", "SNOMEDCT", "LOINC", "UNII", "CPT", "ICD9CM"}
+        "CVX", "RxNorm", "NDC", "ICD10CM", "SNOMEDCT", "LOINC", "UNII", "CPT", "ICD9CM", "HGVS", "ClinVar"}
     for system in systems:
         stems, uris = list(kinds().objects(system, VOID.uriSpace)), list(kinds().objects(system, SKOS.exactMatch))
         assert len(stems) == 1 and str(stems[0]).endswith("/"), system
@@ -135,7 +143,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
             inputs = [str(rows.value(row, p)) for p in (OWL.annotatedSource, OWL.annotatedProperty, OWL.annotatedTarget)]
             if str(row) != record_name(inputs):
                 misnamed.add(str(row))
-    assert found == 38
+    assert found == 39
     assert broken == {}
     assert misnamed == set()
 
@@ -209,6 +217,25 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (REC.DrugProducts, 'cvx:141 rec:termType "SCD" .', "holds only the code's term type"),
     (REC.DrugProducts, 'rxnorm:197361 rec:termType "SCD" ; skos:prefLabel "x" .', "holds only the code's term type"),
     (REC.DrugProducts, 'rxnorm:197361 rec:termType "SCD", "SBD" .', "one of SCD, SBD, GPCK or BPCK"),
+    (REC.VariantClassifications, f"{CLASSIFIED} .", None),
+    (REC.VariantClassifications, f"{VARIATION} rec:hgvsExpression {EXPRESSION} .", None),
+    (REC.VariantClassifications, f'{CLASSIFIED.replace("contributingSubmitters 5", "submitters 6")} .', None),
+    (REC.VariantClassifications, f"{VARIATION} rec:hgvsExpression <http://varnomen.hgvs.org/NM_000249.3:c.2042C%3ET> .",
+     "percent-encoded"),
+    (REC.VariantClassifications, f"{VARIATION} rec:hgvsExpression <http://varnomen.hgvs.org/NG_000249.3%3Ac.2042C%3ET> .",
+     "coding NM_ expressions"),
+    (REC.VariantClassifications, f"{VARIATION} rec:hgvsExpression {EXPRESSION} . "
+     f"<http://www.ncbi.nlm.nih.gov/clinvar/90012> rec:hgvsExpression {EXPRESSION} .", "finds one row"),
+    (REC.VariantClassifications, f"{VARIATION} rec:clinvarClassification <urn:x:made-up> .", "concept of rec:ClinVarClassifications"),
+    (REC.VariantClassifications, f"{VARIATION} rec:clinvarReviewStatus rec:ClinVarExpertPanel , rec:ClinVarSingleSubmitter .",
+     "at most one review status"),
+    (REC.VariantClassifications, f"{VARIATION} rec:contributingSubmitters 5 ; rec:submitters 6 .", "never both"),
+    (REC.VariantClassifications, f"{VARIATION} rec:contributingSubmitters -1 .", "non-negative"),
+    (REC.VariantClassifications, f'{VARIATION} rec:lastEvaluated "soon" .', "one xsd:date"),
+    (REC.VariantClassifications, f'{VARIATION} rec:lastEvaluated "2024-12-11T10:00:00Z"^^xsd:dateTime .', "one xsd:date"),
+    (REC.VariantClassifications, f'{VARIATION} skos:note "x" .', "holds only its variation"),
+    (REC.VariantClassifications, '<http://www.ncbi.nlm.nih.gov/clinvar/090011> rec:lastEvaluated "2024-12-11"^^xsd:date .',
+     "holds only its variation"),
 ])
 def test_the_row_shapes_accept_a_row_of_each_kind_and_refuse_each_break_with_its_message(kind, rows, message):
     said = messages(kind, Graph().parse(data=PREFIXES + rows, format="turtle"))
