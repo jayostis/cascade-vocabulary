@@ -115,7 +115,7 @@ def test_each_planted_case_a_kit_names_is_a_rule_of_it_with_an_example():
     planted, shown = {}, {}
     for kit in KITS:
         feature = Parser().parse((kit / f"{kit.name}.feature").read_text(encoding="utf-8"))["feature"]
-        named = re.search(r"\b([A-Z])1 to \1(\d+)", " ".join(feature["description"].split()))
+        named = re.search(r"\bplanted cases? ([A-Z])1 to \1(\d+)", " ".join(feature["description"].split()))
         planted[kit.name] = set(range(1, int(named.group(2)) + 1)) if named else set()
         letter = named.group(1) if named else "P"
         shown[kit.name] = {int(found.group(1)) for child in feature["children"] if "rule" in child

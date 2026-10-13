@@ -35,7 +35,7 @@ def genomics_shapes():
 
 
 def said(data):
-    """The messages the genomics shapes, and the records shape of a variant version, give about the data."""
+    """The messages the genomics shapes give about the data."""
     prefixes = ("@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .\n"
                 "@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .\n"
                 "@prefix prov: <http://www.w3.org/ns/prov#> .\n"
@@ -53,16 +53,16 @@ def said(data):
     ('<urn:x:v> genomics:hgvsCDot "NM_000249.3(MLH1):c.2042C>T" .', "normal form"),
     ('<urn:x:v> genomics:hgvsCDot "NM_000249.4:p.Ala681Val" .', "normal form"),
     ('<urn:x:v> genomics:hgvsCDot "c.2042C>T" .', "normal form"),
-    ('<urn:x:v> prov:specializationOf <urn:x:r> ; genomics:hgvsCDot "NM_000249.4:c.2042C>T", "NM_000249.3:c.2042C>T" .',
+    ('<urn:x:r> a genomics:Variant . <urn:x:v> prov:specializationOf <urn:x:r> ; genomics:hgvsCDot "NM_000249.4:c.2042C>T", "NM_000249.3:c.2042C>T" .',
      "at most one HGVS"),
     ('<urn:x:e> cascade:mergedFrom <urn:x:a>, <urn:x:b> ; genomics:hgvsCDot "NM_000249.4:c.2042C>T", "NM_000249.3:c.2042C>T" ;'
      ' genomics:geneSymbol "MLH1", "EPCAM" ; genomics:clinvarVariationId "90011", "90012" .', None),
     ('<urn:x:v> genomics:clinvarVariationId "90011" .', None),
     ('<urn:x:v> genomics:clinvarVariationId "VCV000090011" .', "no leading zero"),
     ('<urn:x:v> genomics:clinvarVariationId "090011" .', "no leading zero"),
-    ('<urn:x:v> prov:specializationOf <urn:x:r> ; genomics:clinvarVariationId "90011", "90012" .', "at most one ClinVar"),
+    ('<urn:x:r> a genomics:Variant . <urn:x:v> prov:specializationOf <urn:x:r> ; genomics:clinvarVariationId "90011", "90012" .', "at most one ClinVar"),
     ('<urn:x:v> genomics:geneSymbol "MLH1" .', None),
-    ('<urn:x:v> prov:specializationOf <urn:x:r> ; genomics:geneSymbol "MLH1", "EPCAM" .', "at most one gene symbol"),
+    ('<urn:x:r> a genomics:Variant . <urn:x:v> prov:specializationOf <urn:x:r> ; genomics:geneSymbol "MLH1", "EPCAM" .', "at most one gene symbol"),
     ('<urn:x:i> genomics:interpretedDate "2024-01-05"^^xsd:date .', None),
     ('<urn:x:i> genomics:interpretedDate "2024-01-05T10:00:00Z"^^xsd:dateTime .', "one xsd:date"),
     ('<urn:x:i> genomics:interpretedDate "2024-01-05" .', "one xsd:date"),

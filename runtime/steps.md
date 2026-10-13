@@ -108,11 +108,11 @@ A record is named by what a person reads in it, never by its IRI, except where a
   `health:sourceRecordId` the export gave as `codeine-1`. A variant has no such term, so it is never named so.
 - **A handle** a kit's `expected/handles.json` gives, as `H1-ALG-PCN`: the record or profile it names by its server,
   type and ID (`rec:sourceUrl`), by its entry's file and the draft's position, or by its download's file. A FHIR record
-  or profile with no `id` and a `urn:uuid:` `fullUrl` is named by that `fullUrl` alone, `{"fullUrl": "urn:uuid:…"}`,
-  the input cascade-bridge-spec's `engine/sparql.md` (*Naming a record*) names it from. A C-CDA record is named by the inputs cascade-bridge-spec's `engine/sparql.md` names it from: its `class`, its
-  `identifier`, `root:extension` or the root alone, `""` where it has none, and its `key`, a list of
-  `field=value` strings, where its name takes the key's fingerprint, or, with no identifier and no key, its
-  `members`, a list of member strings.
+  or profile with no `id` and a `urn:uuid:` `fullUrl` is named by that `fullUrl` alone, `{"fullUrl": "urn:uuid:…"}`, the
+  input cascade-bridge-spec's `engine/sparql.md` (*Naming a record*) names it from. A C-CDA record is named by the
+  inputs cascade-bridge-spec's `engine/sparql.md` names it from: its `class`, its `identifier`, `root:extension` or the
+  root alone, `""` where it has none, and its `key`, a list of `field=value` strings, where its name takes the key's
+  fingerprint, or, with no identifier and no key, its `members`, a list of member strings.
 - **A person's name**, as `Alex`: the pod's subject.
 
 Each names exactly one thing in the pod, or the step fails.
