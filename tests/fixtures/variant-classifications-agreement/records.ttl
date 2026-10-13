@@ -32,9 +32,18 @@
 :noClassificationVersion prov:specializationOf :noClassification ; rec:patient :subject ; genomics:geneSymbol "PMS2" ; genomics:hgvsCDot "NM_000535.7:c.900A>G" .
 :noClassificationRevision a rec:Revision ; rec:revisionOf :noClassification ; rec:version :noClassificationVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :twoRows a genomics:Variant .
-:twoRowsVersion prov:specializationOf :twoRows ; rec:patient :subject ; genomics:geneSymbol "EPCAM" ; genomics:clinvarVariationId "90016" ;
-    genomics:hgvsCDot "NM_002354.3:c.800A>G" .
+:twoRowsVersion prov:specializationOf :twoRows ; rec:patient :subject ; genomics:geneSymbol "EPCAM" ; genomics:clinvarVariationId "90016" .
 :twoRowsRevision a rec:Revision ; rec:revisionOf :twoRows ; rec:version :twoRowsVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoRowsOther a genomics:Variant .
+:twoRowsOtherVersion prov:specializationOf :twoRowsOther ; rec:patient :subject ; genomics:geneSymbol "EPCAM" ; genomics:clinvarVariationId "90017" .
+:twoRowsOtherRevision a rec:Revision ; rec:revisionOf :twoRowsOther ; rec:version :twoRowsOtherVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:idOnNoRow a genomics:Variant .
+:idOnNoRowVersion prov:specializationOf :idOnNoRow ; rec:patient :subject ; genomics:geneSymbol "MSH6" ; genomics:clinvarVariationId "12345" ;
+    genomics:hgvsCDot "NM_000179.3:c.100A>G" .
+:idOnNoRowRevision a rec:Revision ; rec:revisionOf :idOnNoRow ; rec:version :idOnNoRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:idOnNoRowVus a genomics:VariantInterpretation .
+:idOnNoRowVusVersion prov:specializationOf :idOnNoRowVus ; rec:patient :subject ; genomics:variantInterpreted :idOnNoRow ; genomics:acmgClassification genomics:VUS .
+:idOnNoRowVusRevision a rec:Revision ; rec:revisionOf :idOnNoRowVus ; rec:version :idOnNoRowVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :noRow a genomics:Variant .
 :noRowVersion prov:specializationOf :noRow ; rec:patient :subject ; genomics:geneSymbol "MLH1" ; genomics:hgvsCDot "NM_000249.4:c.9999A>G" .
 :noRowRevision a rec:Revision ; rec:revisionOf :noRow ; rec:version :noRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
