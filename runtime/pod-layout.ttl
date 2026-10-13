@@ -2,6 +2,7 @@
 @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
 @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
 @prefix pim: <http://www.w3.org/ns/pim/space#> .
@@ -17,6 +18,8 @@
 [] a rec:Placement ; solid:forClass clinical:Procedure ; solid:instanceContainer <records/procedures/> ; rec:fanOut 2 .
 [] a rec:Placement ; solid:forClass clinical:Medication ; solid:instanceContainer <records/medications/> ; rec:fanOut 2 .
 [] a rec:Placement ; solid:forClass health:LabResultRecord ; solid:instanceContainer <records/lab-results/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass genomics:Variant ; solid:instanceContainer <records/variants/> ; rec:fanOut 2 .
+[] a rec:Placement ; solid:forClass genomics:VariantInterpretation ; solid:instanceContainer <records/variant-interpretations/> ; rec:fanOut 2 .
 [] a rec:Placement ; solid:forClass cascade:PatientProfile ; solid:instanceContainer <records/patient-profile/> ; rec:fanOut 2 .
 
 [] a rec:Placement ; rec:filedWith prov:specializationOf ; rec:fanOut 2 .
@@ -43,6 +46,10 @@
    rec:writtenBy "views/medications.rq" ; dct:title "Medications" .
 [] a rec:Placement ; solid:forClass health:LabResultRecord ; solid:instance <clinical/lab-results.ttl> ;
    rec:writtenBy "views/lab-results.rq" ; dct:title "Lab results" .
+[] a rec:Placement ; solid:forClass genomics:Variant ; solid:instance <clinical/variants.ttl> ;
+   rec:writtenBy "views/variants.rq" ; dct:title "Variants" .
+[] a rec:Placement ; solid:forClass genomics:VariantInterpretation ; solid:instance <clinical/variant-interpretations.ttl> ;
+   rec:writtenBy "views/variant-interpretations.rq" ; dct:title "Variant interpretations" .
 [] a rec:Placement ; solid:forClass cascade:PatientProfile ; solid:instance <clinical/patient-profile.ttl> ;
    rec:writtenBy "views/patient-profile.rq" ; rec:writtenAlways true ; dct:title "Patient profile" .
 [] a rec:Placement ; solid:instance <clinical/labels.ttl> ; rec:writtenBy "labels.rq" .

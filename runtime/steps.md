@@ -79,8 +79,8 @@ list's rows are `[] a rec:MatcherRule`: no row shape and no N12 cover them.
 | `{name}` | `"[^"]*"` | `"first-export"` | a name in quotes: of a step, a file or a series |
 | `{step}` | `that step\|that import\|that entry\|"[^"]*"` | `that step`, `that import`, `that entry`, `"E13"` | the last step before this one, or, in a `Then`, the last step the pod is read after; the last import or entry of those; the step of that name |
 | `{steps}` | `that step\|"[^"]*"(?:(?:, \|, and \| and \|, or \| or )"[^"]*")*` | `"E15" and "M8"` | steps by name, joined by `,`, `and` or `or` |
-| `{record}`, `{records}` | `[^:]+` | `allergy RxNorm 1191 "Ecotrin"`, `H1-ALG-PCN` | records in words, below; several joined by `,` and `and` |
-| `{judgment}` | `[^:]+` | `J21`, `the matcher's same code of H2O-ALG-SULFA and H1-ALG-SULFA` | a judgment in words, below |
+| `{record}`, `{records}` | `(?:[^:]\|:(?=\S))+` | `allergy RxNorm 1191 "Ecotrin"`, `H1-ALG-PCN`, `variant HGVS NM_000249.4:c.2042C>T` | records in words, below; several joined by `,` and `and`; a colon is part of the words when a non-space follows it, and the colon ending a step is not |
+| `{judgment}` | `(?:[^:]\|:(?=\S))+` | `J21`, `the matcher's same code of H2O-ALG-SULFA and H1-ALG-SULFA` | a judgment in words, below |
 | `{view}` | `allergies\|conditions\|immunizations\|procedures\|medications\|lab-results\|patient-profile` | `allergies` | a view |
 | `{lens}` | `[a-z]+` | `export` | a lens under `queries/v1-draft/lenses/` |
 | `{count}` | `no file\|1 file\|\d+ files` | `no file`, `1 file`, `3 files` | how many files |
@@ -94,14 +94,18 @@ A record is named by what a person reads in it, never by its IRI, except where a
 
 - **`<kind> <system> <code> "<name>"`**, as `allergy RxNorm 1191 "Ecotrin"`, with the code, the name or both: the
   record of that kind whose version gives them. The kinds are `allergy`, `condition`, `immunization`, `procedure`,
-  `medication` and `lab result`; the systems `SNOMED` (an `http://snomed.info/id/` IRI, or a `clinical:snomedCode`),
+  `medication`, `lab result`, `variant` and `variant interpretation`; the systems `SNOMED` (an `http://snomed.info/id/` IRI, or a `clinical:snomedCode`),
   `RxNorm` (an `http://www.nlm.nih.gov/research/umls/rxnorm/` IRI), `NDC` (an
   `https://ns.cascadeprotocol.org/codes/ndc11/` IRI, a medication's `rec:ndcCode`), `ICD-10-CM` (an
   `http://hl7.org/fhir/sid/icd-10-cm/` IRI), `LOINC` (an `http://loinc.org/rdf/` IRI) and `CVX`
-  (a `health:vaccineCode`); the name is the version's allergen, condition, vaccine, procedure, drug or test name. Each
+  (a `health:vaccineCode`), `HGVS` (a variant's `genomics:hgvsCDot`, the expression as written, as in
+  `variant HGVS NM_000249.4:c.2042C>T`) and `ClinVar` (a variant's `genomics:clinvarVariationId`, the digits, as in
+  `variant ClinVar 90011`); the name is the version's allergen, condition, vaccine, procedure, drug or test name, or a
+  variant's HGVS expression. A `variant interpretation` has neither a code nor a name, so no step names one: a step
+  names the variant it interprets, and the interpretation is read by its place in the view. Each
   draft of an entry has a name of its own, so no record is named by its position.
 - **`… from <source>`**, where two imported records share code and name: `from codeine-1` is the record whose
-  `health:sourceRecordId` the export gave as `codeine-1`.
+  `health:sourceRecordId` the export gave as `codeine-1`. A variant has no such term, so it is never named so.
 - **A handle** a kit's `expected/handles.json` gives, as `H1-ALG-PCN`: the record or profile it names by its server,
   type and ID (`rec:sourceUrl`), by its entry's file and the draft's position, or by its download's file. A C-CDA
   record is named by the inputs cascade-bridge-spec's `engine/sparql.md` names it from: its `class`, its
@@ -115,7 +119,8 @@ Each names exactly one thing in the pod, or the step fails.
 A judgment a person makes is named by its handle in a kit (`J21`) or by its file's name (`"retract-b"`). A matcher
 judgment is named `the matcher's <justification> of <records>`, the justification in words: `same code`,
 `same code and date`, `same mapped code`, `same mapped code and date`, `same medication code`, `same result`,
-`same converted code`, `same code and period`, `same brand generic` or `same product code`. A
+`same converted code`, `same code and period`, `same brand generic`, `same product code`, `same variation` or
+`same variation through the table`. A
 reference series is named by its `rdfs:label` in `references/` or any of the person's `tables/` folders, one series per label, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
 name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5.

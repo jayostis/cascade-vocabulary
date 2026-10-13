@@ -1,0 +1,44 @@
+# Each report that states an ACMG classification, the one row of a version of a variant classifications table that the
+# codes of the variant it interprets find, and one verdict on how the report stands to the row. It reads the entries of
+# the views, as the pod questions do, and the rows inside GRAPH ?origin, as a rule's query does. A variant's codes are
+# its ClinVar VariationIDs, found as the rows of those variations, and its HGVS expressions, found as the rows holding
+# them; they find one row when the rows they find, counted as distinct row subjects over every held version, are one. Only
+# a row a code finds is read, and a version that holds it gives a verdict of its own. The verdict is "labs disagree" when
+# the row holds a conflicting classification; else "agrees" when the report's ACMG value is among the row's, or "differs"
+# when the row holds one of the five ACMG values and not the report's; else "as ClinVar writes it", for a row that holds
+# none of the five. A report with no ACMG value has no verdict, and neither has one whose variant's codes find no row or
+# two or more. Sub-tiers such as low penetrance and VUS-high are not among the five.
+PREFIX genomics: <https://ns.cascadeprotocol.org/genomics/v1#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?report ?variant ?origin ?row
+  (IF(SUM(IF(BOUND(?held) && ?held IN (rec:ClinVarConflicting, rec:ClinVarConflictingData), 1, 0)) > 0, "labs disagree",
+      IF(SUM(IF(BOUND(?held) && ?held = ?acmg, 1, 0)) > 0, "agrees",
+         IF(SUM(IF(BOUND(?held) && ?held IN (genomics:Pathogenic, genomics:LikelyPathogenic, genomics:VUS,
+                                              genomics:LikelyBenign, genomics:Benign), 1, 0)) > 0,
+            "differs", "as ClinVar writes it"))) AS ?verdict)
+WHERE {
+  { SELECT ?variant (SAMPLE(?found) AS ?row)
+    WHERE {
+      { ?variant genomics:clinvarVariationId ?id
+        BIND (IRI(CONCAT("http://www.ncbi.nlm.nih.gov/clinvar/", ENCODE_FOR_URI(STR(?id)))) AS ?found)
+        ?anyOrigin prov:specializationOf/rec:tableKind rec:VariantClassifications .
+        GRAPH ?anyOrigin { ?found ?any [] } }
+      UNION
+      { ?variant genomics:hgvsCDot ?hgvs
+        BIND (IRI(CONCAT("http://varnomen.hgvs.org/", ENCODE_FOR_URI(STR(?hgvs)))) AS ?lookup)
+        ?anyOrigin prov:specializationOf/rec:tableKind rec:VariantClassifications .
+        GRAPH ?anyOrigin { ?found rec:hgvsExpression ?lookup } }
+    }
+    GROUP BY ?variant
+    HAVING (COUNT(DISTINCT ?found) = 1) }
+  ?report genomics:variantInterpreted ?variant ; genomics:acmgClassification ?acmg .
+  ?origin prov:specializationOf/rec:tableKind rec:VariantClassifications .
+  GRAPH ?origin {
+    ?row ?present []
+    OPTIONAL { ?row rec:clinvarClassification ?held }
+  }
+}
+GROUP BY ?report ?variant ?origin ?row ?acmg
+ORDER BY ?report ?origin

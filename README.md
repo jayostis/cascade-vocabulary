@@ -5,9 +5,12 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
 
 - [`ontologies/`](ontologies): the terms and shapes a
   [Cascade Bridge Adapter](https://github.com/jayostis/cascade-bridge-spec)'s output and a pod are read against.
-  `core`, `health` and `clinical` are copied from
-  [the-cascade-protocol/spec](https://github.com/the-cascade-protocol/spec) (CC BY 4.0);
+  `core`, `health`, `clinical` and `genomics` are copied from
+  [the-cascade-protocol/spec](https://github.com/the-cascade-protocol/spec) (CC BY 4.0), `genomics` keeping its
+  `genomics/v1#` IRIs in a `v1-draft` folder until each of its terms has a decision note;
   `records` and `judgments` are first declared here (Apache-2.0).
+- [`decisions/`](decisions): why a term or a rule is as it is, one note for each, with what others do, the alternatives
+  that lost and what would change our mind.
 - [`queries/v1-draft/`](queries/v1-draft): the standard queries over a pod: the derivations and lenses, the views and
   labels, the matcher's comparisons, and the questions.
 - [`runtime/`](runtime): what a runtime does when something arrives, as numbered rules in Gherkin feature files, each

@@ -1,0 +1,14 @@
+@prefix : <#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:record a genomics:VariantInterpretation ;
+    rec:sourceUrl <https://fhir.example/Observation/10> .
+
+:version prov:specializationOf :record ;
+    rec:patient :patient ;
+    genomics:variantInterpreted <urn:uuid:5b1f2c3e-7a4d-4e8b-9c60-1d2e3f4a5b6c> ;
+    genomics:acmgClassification genomics:LikelyPathogenic ;
+    genomics:interpretedDate "2024-03-12T09:30:00Z"^^xsd:dateTime .

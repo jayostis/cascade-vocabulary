@@ -1,5 +1,6 @@
 @prefix : <urn:x:> .
 @prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
 @prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
@@ -38,4 +39,15 @@
 :labResultVersion prov:specializationOf :labResult ; health:testName "Potassium" ; clinical:status "final" ;
     health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
 :labResultRevision a rec:Revision ; rec:revisionOf :labResult ; rec:version :labResultVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:variant a genomics:Variant .
+:variantVersion prov:specializationOf :variant ; genomics:hgvsCDot "NM_000249.4:c.2042C>T" ; clinical:status "final" .
+:variantRevision a rec:Revision ; rec:revisionOf :variant ; rec:version :variantVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:interpretation a genomics:VariantInterpretation .
+:interpretationVersion prov:specializationOf :interpretation ; genomics:acmgClassification genomics:LikelyPathogenic ;
+    genomics:interpretedDate "2024-03-12"^^xsd:date ; clinical:status "final" .
+:interpretationRevision a rec:Revision ; rec:revisionOf :interpretation ; rec:version :interpretationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
