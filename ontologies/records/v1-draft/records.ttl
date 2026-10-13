@@ -414,7 +414,7 @@ rec:CodeSystem a owl:Class ;
 
 rec:pageTemplate a owl:DatatypeProperty ;
     rdfs:label "page template"@en ;
-    rdfs:comment "The address of each code's own page at the code system's publisher, as an RFC 6570 level 1 template whose only expression is {code}. {code} is the code as its IRI writes it after the void:uriSpace, already percent-encoded as ENCODE_FOR_URI does, which is what RFC 6570 simple expansion does. A code system without one publishes no page per code."@en ;
+    rdfs:comment "The address of each code's own page at the code system's publisher, as an RFC 6570 level 1 template whose only expression is {code}. {code} is the code as written, and expanding it by RFC 6570 simple expansion percent-encodes it as ENCODE_FOR_URI does, so it yields the same tail the code's IRI has after the void:uriSpace. A code system without one publishes no page per code."@en ;
     rdfs:domain rec:CodeSystem ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://www.wikidata.org/wiki/Property:P1630> ;
