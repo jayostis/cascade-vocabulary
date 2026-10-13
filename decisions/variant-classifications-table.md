@@ -18,7 +18,7 @@ browser keeps?
 - **OMOP's Genomic vocabulary** holds a ClinVar subset only, for size (see `variant-record.md`).
 - **openEHR** has no table.
 
-Sources: ClinVar documentation (https://www.ncbi.nlm.nih.gov/clinvar/docs/) and its tab-delimited files
+Sources: ClinVar documentation (https://www.ncbi.nlm.nih.gov/clinvar/docs/help/) and its tab-delimited files
 `variant_summary` and `hgvs4variation` (https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/); FHIR Genomics
 Reporting IG STU3 (https://hl7.org/fhir/uv/genomics-reporting/STU3/); GA4GH VRS (https://vrs.ga4gh.org/en/stable/) for
 the identifier set aside; OMOP as cited in `variant-record.md`. The sizes (4.6 million variations, 90011's 29

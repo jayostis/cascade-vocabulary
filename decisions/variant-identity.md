@@ -16,7 +16,7 @@ and which joins would be wrong?
 
 Sources: FHIR Genomics Reporting IG STU3, Variant profile
 (https://hl7.org/fhir/uv/genomics-reporting/STU3/StructureDefinition-variant.html); GA4GH VRS
-(https://vrs.ga4gh.org/en/stable/); ClinVar documentation (https://www.ncbi.nlm.nih.gov/clinvar/docs/) and its
+(https://vrs.ga4gh.org/en/stable/); ClinVar documentation (https://www.ncbi.nlm.nih.gov/clinvar/docs/help/) and its
 `hgvs4variation` file (https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/); openEHR and OMOP as cited in
 `variant-record.md`. The join-safety probe (which ID and expression pairs find one row, none or several) is the epic's
 evidence, `epic-107/evidence/clinvar-sizes/results.md` in the epic's working folder.
