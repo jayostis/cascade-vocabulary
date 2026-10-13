@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "variant-classifications-agreement" ;
-  rdfs:comment "A version of a variant classifications table with a pathogenic and likely pathogenic row found by two transcripts, a benign row found by ID, a conflicting row, a conflicting data row, a risk factor row, a row with no classification, and two pathogenic rows. A variant of two reports on two transcripts, one of them not an ACMG answer; a variant with a benign and a likely benign report; one variant for each other row; one whose two IDs, joined by a person, find two rows; one with an expression on no row; one with an ID on no row beside an expression on a row; and one found on no row." ;
+  rdfs:comment "A version of a variant classifications table with a pathogenic and likely pathogenic row found by two transcripts, a benign row found by ID, a conflicting row, a conflicting data row, a risk factor row, a row with no classification, and two pathogenic rows. A variant of two reports on two transcripts, one of them not an ACMG answer; a variant with a benign and a likely benign report; one variant for each other row; one whose two IDs, joined by a person, find two rows; one with an expression on no row; one with an ID on no row beside an expression on a row; and one found on no row. A variant written only on the first transcript. A second series holds row 90011 with only the .4 expression." ;
   mf:entries (
     <#agreement>
   ) .
 
 <#agreement> a mf:QueryEvaluationTest ;
   mf:name "agreement" ;
-  rdfs:comment "A report agrees when its ACMG value is among the row's, and differs when the row holds one of the five and not the report's. A conflicting or conflicting-data row gives labs disagree whatever the report says, a row with no ACMG value gives as ClinVar writes it. A variant that carries an ID finds its row by the ID alone, so an ID on no row gives no verdict though its expression is on a row. A report with no ACMG value, a variant whose IDs find two rows and a variant found on no row give no verdict." ;
+  rdfs:comment "A report agrees when its ACMG value is among the row's, and differs when the row holds one of the five and not the report's. A conflicting or conflicting-data row gives labs disagree whatever the report says, a row with no ACMG value gives as ClinVar writes it. A variant that carries an ID finds its row by the ID alone, so an ID on no row gives no verdict though its expression is on a row. A version gives a verdict on a row found by an expression only when it holds that expression on the row: the report on the variant written only .3 gets none from the second series, whose row 90011 holds only .4, while the merged entry that carries the ID gets one. A report with no ACMG value, a variant whose IDs find two rows and a variant found on no row give no verdict." ;
   mf:action [ qt:query <../../../queries/v1-draft/tables/agreement.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <agreement.srj> .

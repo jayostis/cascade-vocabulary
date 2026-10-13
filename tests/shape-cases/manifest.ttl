@@ -272,9 +272,7 @@
 
 <#reference-series/classifications-no-genes> a sht:Validate ;
   mf:action [ sht:dataGraph <reference-series/classifications-no-genes.ttl> ] ;
-  mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape rec:ReferenceSeriesShape ;
-                          sh:resultPath [ sh:inversePath prov:specializationOf ] ] ] .
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
 <#reference-series/version-gene-not-a-string> a sht:Validate ;
   mf:action [ sht:dataGraph <reference-series/version-gene-not-a-string.ttl> ] ;

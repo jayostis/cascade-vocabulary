@@ -104,16 +104,7 @@ rec:ReferenceSeriesShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
-rec:VariantClassificationsVersionShape a sh:NodeShape ;
-    sh:or (
-        [ sh:not [ sh:property [ sh:path ( prov:specializationOf rec:tableKind ) ; sh:hasValue rec:VariantClassifications ] ] ]
-        [ sh:property [ sh:path rec:coversGene ; sh:minCount 1 ] ]
-    ) ;
-    sh:message "A version of a variant classifications series states at least one gene it covers, with rec:coversGene, so a page can tell a variant it does not cover from one it holds no row for."@en ;
-    sh:severity sh:Violation .
-
 rec:ReferenceVersionShape a sh:NodeShape ;
-    sh:node rec:VariantClassificationsVersionShape ;
     sh:property [ sh:path pav:version ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ,
                 [ sh:path prov:wasRevisionOf ; sh:nodeKind sh:IRI ; sh:maxCount 1 ] ,
                 [ sh:path rec:coversGene ; sh:datatype xsd:string ; sh:minLength 1 ;

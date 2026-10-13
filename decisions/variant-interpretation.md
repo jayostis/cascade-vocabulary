@@ -22,6 +22,11 @@ said beside what a table says today?
   record there (the extension's status is unclear).
 - **SPHN.** Unverified.
 
+Sources: FHIR Genomics Reporting IG STU3, Diagnostic Implication profile
+(https://hl7.org/fhir/uv/genomics-reporting/STU3/StructureDefinition-diagnostic-implication.html); GA4GH VA-spec
+(https://va-ga4gh.readthedocs.io/en/latest/) and VRS (https://vrs.ga4gh.org/en/stable/); ClinVar's classification
+documentation (https://www.ncbi.nlm.nih.gov/clinvar/docs/clinsig/); openEHR and OMOP as cited in `variant-record.md`.
+
 ## Choice
 
 A report's classification is its own record, `genomics:VariantInterpretation`, pointing to the variant record it is

@@ -82,3 +82,11 @@
 :noRowVus a genomics:VariantInterpretation .
 :noRowVusVersion prov:specializationOf :noRowVus ; rec:patient :subject ; genomics:variantInterpreted :noRow ; genomics:acmgClassification genomics:VUS .
 :noRowVusRevision a rec:Revision ; rec:revisionOf :noRowVus ; rec:version :noRowVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# A variant written only on the first transcript, held by no judgment: the second series' row 90011 does not hold that expression.
+:firstTranscript a genomics:Variant .
+:firstTranscriptVersion prov:specializationOf :firstTranscript ; rec:patient :subject ; genomics:geneSymbol "MLH1" ; genomics:hgvsCDot "NM_000249.3:c.2042C>T" .
+:firstTranscriptRevision a rec:Revision ; rec:revisionOf :firstTranscript ; rec:version :firstTranscriptVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:firstTranscriptBenign a genomics:VariantInterpretation .
+:firstTranscriptBenignVersion prov:specializationOf :firstTranscriptBenign ; rec:patient :subject ; genomics:variantInterpreted :firstTranscript ; genomics:acmgClassification genomics:Benign .
+:firstTranscriptBenignRevision a rec:Revision ; rec:revisionOf :firstTranscriptBenign ; rec:version :firstTranscriptBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -18,6 +18,14 @@ browser keeps?
 - **OMOP's Genomic vocabulary** holds a ClinVar subset only, for size (see `variant-record.md`).
 - **openEHR** has no table.
 
+Sources: ClinVar documentation (https://www.ncbi.nlm.nih.gov/clinvar/docs/) and its tab-delimited files
+`variant_summary` and `hgvs4variation` (https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/); FHIR Genomics
+Reporting IG STU3 (https://hl7.org/fhir/uv/genomics-reporting/STU3/); GA4GH VRS (https://vrs.ga4gh.org/en/stable/) for
+the identifier set aside; OMOP as cited in `variant-record.md`. The sizes (4.6 million variations, 90011's 29
+expressions cut to 2, Lynch's 34,428 coding expressions) and the archived classification values are the epic's
+evidence: `epic-107/evidence/clinvar-sizes/results.md` and `epic-107/evidence/clinvar-verify/results.md` in the epic's
+working folder.
+
 ## Choice
 
 - One table kind: a row per variation, found by its variation IRI (`rec:RowSubject`) and by each coding `NM_` expression
@@ -31,8 +39,8 @@ browser keeps?
   shows and whose notation is the hyphen. Two concepts, `rec:ClinVarNoClassificationForTheSingleVariant` and
   `rec:ClinVarNoClassificationsFromUnflaggedRecords`, are one IRI each in both schemes, because ClinVar writes each value
   in both columns.
-- `rec:coversGene` is on the version, as an HGNC symbol, any number; a changed gene list is a new version. A version of
-  the kind states at least one. A version without it covers no named gene.
+- `rec:coversGene` is on the version, as an HGNC symbol, any number, including none; a changed gene list is a new
+  version. A version without it covers no named gene.
 - `rec:readByPages true` marks the kinds an app keeps and packs because its pages read them, though no rule does:
   `rec:CodeNames`, `rec:CodeStatus` and `rec:VariantClassifications`. It replaces the set a runtime hard-coded.
 - A row whose classification parses to no known concept keeps its keys: the join is identity.
