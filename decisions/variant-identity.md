@@ -20,6 +20,9 @@ and which joins would be wrong?
 - **R13** joins two variants whose current versions find one row of one version of a variant classifications table. A
   version that carries a VariationID finds the row of that variation, and only that row: its expression is not read. A
   version with none finds the row that holds its expression, percent-encoded. The classification plays no part.
+- **A page finds a variant's row the same way:** through the ClinVar IDs of the variant's entry when it carries any,
+  through its HGVS expressions only when it carries none, never through both (`tables/agreement.rq`). Otherwise a variant
+  with ID 12345, on no row, and an expression on row 90011 would be shown 90011's classification.
 - **Left alone:** a pair that shares an ID (R12's, so no pair has two justifications); a pair whose versions carry
   different IDs, whatever expressions they hold; a version whose expression is on more than one row, rows counted as
   distinct row subjects over every held version of every series of the kind; a version whose ID is on no row.
