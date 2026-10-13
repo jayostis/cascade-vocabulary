@@ -63,3 +63,17 @@
     clinical:clinicalIntent "reportedUse" ; clinical:status "active" .
 :uncodedRevision a rec:Revision ; rec:revisionOf :uncoded ; rec:version :uncodedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:paused a clinical:Medication .
+:pausedVersion prov:specializationOf :paused ; rec:patient :subject ; clinical:drugName "atorvastatin 20 MG Oral Tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/617310> ; clinical:clinicalIntent "prescribed" ;
+    clinical:status "stopped" ; clinical:startDate "2020-05-01"^^xsd:date ; clinical:endDate "2021-05-01"^^xsd:date .
+:pausedRevision a rec:Revision ; rec:revisionOf :paused ; rec:version :pausedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:resumed a clinical:Medication .
+:resumedVersion prov:specializationOf :resumed ; rec:patient :subject ; clinical:drugName "Atorvastatin 20 mg tablet" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/617310> ; clinical:clinicalIntent "prescribed" ;
+    clinical:status "active" ; clinical:startDate "2022-08-01"^^xsd:date .
+:resumedRevision a rec:Revision ; rec:revisionOf :resumed ; rec:version :resumedVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
