@@ -81,7 +81,7 @@ list's rows are `[] a rec:MatcherRule`: no row shape and no N12 cover them.
 | `{steps}` | `that step\|"[^"]*"(?:(?:, \|, and \| and \|, or \| or )"[^"]*")*` | `"E15" and "M8"` | steps by name, joined by `,`, `and` or `or` |
 | `{record}`, `{records}` | `(?:[^:]\|:(?=\S))+` | `allergy RxNorm 1191 "Ecotrin"`, `H1-ALG-PCN`, `variant HGVS NM_000249.4:c.2042C>T` | records in words, below; several joined by `,` and `and`; a colon is part of the words when a non-space follows it, and the colon ending a step is not |
 | `{judgment}` | `(?:[^:]\|:(?=\S))+` | `J21`, `the matcher's same code of H2O-ALG-SULFA and H1-ALG-SULFA` | a judgment in words, below |
-| `{view}` | `allergies\|conditions\|immunizations\|procedures\|medications\|lab-results\|patient-profile` | `allergies` | a view |
+| `{view}` | `allergies\|conditions\|immunizations\|procedures\|medications\|lab-results\|patient-profile\|variants\|variant-interpretations` | `allergies` | a view |
 | `{lens}` | `[a-z]+` | `export` | a lens under `queries/v1-draft/lenses/` |
 | `{count}` | `no file\|1 file\|\d+ files` | `no file`, `1 file`, `3 files` | how many files |
 
@@ -107,11 +107,12 @@ A record is named by what a person reads in it, never by its IRI, except where a
 - **`… from <source>`**, where two imported records share code and name: `from codeine-1` is the record whose
   `health:sourceRecordId` the export gave as `codeine-1`. A variant has no such term, so it is never named so.
 - **A handle** a kit's `expected/handles.json` gives, as `H1-ALG-PCN`: the record or profile it names by its server,
-  type and ID (`rec:sourceUrl`), by its entry's file and the draft's position, or by its download's file. A C-CDA
-  record is named by the inputs cascade-bridge-spec's `engine/sparql.md` names it from: its `class`, its
-  `identifier`, `root:extension` or the root alone, `""` where it has none, and its `key`, a list of
-  `field=value` strings, where its name takes the key's fingerprint, or, with no identifier and no key, its
-  `members`, a list of member strings.
+  type and ID (`rec:sourceUrl`), by its entry's file and the draft's position, or by its download's file. A FHIR record
+  or profile with no `id` and a `urn:uuid:` `fullUrl` is named by that `fullUrl` alone, `{"fullUrl": "urn:uuid:…"}`, the
+  input cascade-bridge-spec's `engine/sparql.md` (*Naming a record*) names it from. A C-CDA record is named by the
+  inputs cascade-bridge-spec's `engine/sparql.md` names it from: its `class`, its `identifier`, `root:extension` or the
+  root alone, `""` where it has none, and its `key`, a list of `field=value` strings, where its name takes the key's
+  fingerprint, or, with no identifier and no key, its `members`, a list of member strings.
 - **A person's name**, as `Alex`: the pod's subject.
 
 Each names exactly one thing in the pod, or the step fails.

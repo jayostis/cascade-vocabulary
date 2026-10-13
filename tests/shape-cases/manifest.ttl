@@ -255,7 +255,16 @@
 <#record-variant/two-hgvs> a sht:Validate ;
   mf:action [ sht:dataGraph <record-variant/two-hgvs.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape genomics:VariantShape ; sh:resultPath [ sh:inversePath prov:specializationOf ] ] ] .
+
+<#record-variant/hgvs-with-gene> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant/hgvs-with-gene.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape genomics:VariantShape ; sh:resultPath genomics:hgvsCDot ] ] .
+
+<#record-variant/entry-with-two-expressions> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant/entry-with-two-expressions.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
 <#record-variant-interpretation/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-variant-interpretation/valid.ttl> ] ;

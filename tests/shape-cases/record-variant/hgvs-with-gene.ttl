@@ -1,0 +1,11 @@
+@prefix : <#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+:record a genomics:Variant ;
+    rec:sourceUrl <https://fhir.example/Observation/9> .
+
+:version prov:specializationOf :record ;
+    rec:patient :patient ;
+    genomics:hgvsCDot "NM_000249.4(MLH1):c.2042C>T" .

@@ -1,0 +1,300 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001",
+      "resource": {
+        "resourceType": "Patient",
+        "name": [{ "family": "Okafor", "given": ["Martin"] }],
+        "birthDate": "1979-02-08"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91002",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "status": "final",
+        "category": [{ "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v2-0074", "code": "GE" }] }],
+        "code": { "coding": [{ "system": "http://loinc.org", "code": "51969-4", "display": "Genetic analysis report" }] },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "issued": "2024-03-21T14:20:00+00:00",
+        "result": [
+          { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91011" },
+          { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91022" },
+          { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91012" },
+          { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91024" },
+          { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91014" },
+          { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91025" }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91011",
+      "resource": {
+        "resourceType": "Observation",
+        "meta": { "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"] },
+        "status": "final",
+        "category": [
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "laboratory" }] },
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v2-0074", "code": "GE" }] }
+        ],
+        "code": { "coding": [{ "system": "http://loinc.org", "code": "69548-6", "display": "Genetic variant assessment" }] },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "issued": "2024-03-21T14:20:00+00:00",
+        "valueCodeableConcept": { "coding": [{ "system": "http://loinc.org", "code": "LA9633-4", "display": "Present" }] },
+        "component": [
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "48004-6", "display": "DNA change (c.HGVS)" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://varnomen.hgvs.org", "code": "NM_000249.4:c.2042C>T" }] }
+          },
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "81252-9", "display": "Discrete genetic variant" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://www.ncbi.nlm.nih.gov/clinvar", "code": "90011" }] }
+          },
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "48018-6", "display": "Gene studied [ID]" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://www.genenames.org/geneId", "code": "HGNC:7127", "display": "MLH1" }] }
+          },
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "53034-5", "display": "Allelic state" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://loinc.org", "code": "LA6706-1", "display": "Heterozygous" }] }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91022",
+      "resource": {
+        "resourceType": "Observation",
+        "meta": { "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/diagnostic-implication"] },
+        "status": "final",
+        "category": [
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "laboratory" }] },
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v2-0074", "code": "GE" }] }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/uv/genomics-reporting/CodeSystem/tbd-codes-cs",
+              "code": "diagnostic-implication",
+              "display": "Diagnostic Implication"
+            }
+          ]
+        },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "issued": "2024-03-21T14:20:00+00:00",
+        "derivedFrom": [{ "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91011" }],
+        "component": [
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "53037-8", "display": "Genetic variation clinical significance [Imp]" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://loinc.org", "code": "LA26332-9", "display": "Likely pathogenic" }] }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91012",
+      "resource": {
+        "resourceType": "Observation",
+        "meta": { "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"] },
+        "status": "final",
+        "category": [
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "laboratory" }] },
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v2-0074", "code": "GE" }] }
+        ],
+        "code": { "coding": [{ "system": "http://loinc.org", "code": "69548-6", "display": "Genetic variant assessment" }] },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "issued": "2024-03-21T14:20:00+00:00",
+        "valueCodeableConcept": { "coding": [{ "system": "http://loinc.org", "code": "LA9633-4", "display": "Present" }] },
+        "component": [
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "48004-6", "display": "DNA change (c.HGVS)" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://varnomen.hgvs.org", "code": "NM_000179.3:c.2633T>C" }] }
+          },
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "81252-9", "display": "Discrete genetic variant" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://www.ncbi.nlm.nih.gov/clinvar", "code": "8931" }] }
+          },
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "48018-6", "display": "Gene studied [ID]" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://www.genenames.org/geneId", "code": "HGNC:7329", "display": "MSH6" }] }
+          },
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "53034-5", "display": "Allelic state" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://loinc.org", "code": "LA6706-1", "display": "Heterozygous" }] }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91024",
+      "resource": {
+        "resourceType": "Observation",
+        "meta": { "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/diagnostic-implication"] },
+        "status": "final",
+        "category": [
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "laboratory" }] },
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v2-0074", "code": "GE" }] }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/uv/genomics-reporting/CodeSystem/tbd-codes-cs",
+              "code": "diagnostic-implication",
+              "display": "Diagnostic Implication"
+            }
+          ]
+        },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "issued": "2024-03-21T14:20:00+00:00",
+        "derivedFrom": [{ "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91012" }],
+        "component": [
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "53037-8", "display": "Genetic variation clinical significance [Imp]" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://loinc.org", "code": "LA6675-8", "display": "Benign" }] }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91014",
+      "resource": {
+        "resourceType": "Observation",
+        "meta": { "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"] },
+        "status": "final",
+        "category": [
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "laboratory" }] },
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v2-0074", "code": "GE" }] }
+        ],
+        "code": { "coding": [{ "system": "http://loinc.org", "code": "69548-6", "display": "Genetic variant assessment" }] },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "issued": "2024-03-21T14:20:00+00:00",
+        "valueCodeableConcept": { "coding": [{ "system": "http://loinc.org", "code": "LA9633-4", "display": "Present" }] },
+        "component": [
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "48004-6", "display": "DNA change (c.HGVS)" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://varnomen.hgvs.org", "code": "NM_000059.4:c.7865A>G" }] }
+          },
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "48018-6", "display": "Gene studied [ID]" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://www.genenames.org/geneId", "code": "HGNC:1101", "display": "BRCA2" }] }
+          },
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "53034-5", "display": "Allelic state" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://loinc.org", "code": "LA6706-1", "display": "Heterozygous" }] }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91025",
+      "resource": {
+        "resourceType": "Observation",
+        "meta": { "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/diagnostic-implication"] },
+        "status": "final",
+        "category": [
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "laboratory" }] },
+          { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v2-0074", "code": "GE" }] }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/uv/genomics-reporting/CodeSystem/tbd-codes-cs",
+              "code": "diagnostic-implication",
+              "display": "Diagnostic Implication"
+            }
+          ]
+        },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "issued": "2024-03-21T14:20:00+00:00",
+        "derivedFrom": [{ "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91014" }],
+        "component": [
+          {
+            "code": { "coding": [{ "system": "http://loinc.org", "code": "53037-8", "display": "Genetic variation clinical significance [Imp]" }] },
+            "valueCodeableConcept": { "coding": [{ "system": "http://loinc.org", "code": "LA26333-7", "display": "Uncertain significance" }] }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91031",
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "coding": [{ "system": "http://snomed.info/sct", "code": "38341003", "display": "Essential hypertension" }],
+          "text": "Essential hypertension"
+        },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "onsetDateTime": "2019-05-14"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91032",
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "coding": [{ "system": "http://snomed.info/sct", "code": "55822004", "display": "Hyperlipidemia" }],
+          "text": "Hyperlipidemia"
+        },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "onsetDateTime": "2021-09-30"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91041",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "617312",
+              "display": "atorvastatin calcium 10 MG Oral Tablet"
+            }
+          ],
+          "text": "Atorvastatin 10 mg tablet"
+        },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "authoredOn": "2024-01-09",
+        "dosageInstruction": [{ "text": "Take 1 tablet by mouth at bedtime." }]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91042",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "197361",
+              "display": "amlodipine 5 MG Oral Tablet"
+            }
+          ],
+          "text": "Amlodipine 5 mg tablet"
+        },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "authoredOn": "2023-02-20",
+        "dosageInstruction": [{ "text": "Take 1 tablet by mouth once daily." }]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91051",
+      "resource": {
+        "resourceType": "Procedure",
+        "status": "completed",
+        "code": {
+          "coding": [{ "system": "http://snomed.info/sct", "code": "73761001", "display": "Colonoscopy" }],
+          "text": "Colonoscopy"
+        },
+        "subject": { "reference": "urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001" },
+        "performedDateTime": "2023-11-08"
+      }
+    }
+  ]
+}
