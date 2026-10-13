@@ -81,6 +81,25 @@ rec:SubjectShape a sh:NodeShape ;
     sh:message "A subject holds no data: what is known about the person lives in profiles."@en ;
     sh:severity sh:Violation .
 
+rec:VariantVersionShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:specializationOf ;
+    sh:property [
+        sh:path genomics:hgvsCDot ;
+        sh:maxCount 1 ;
+        sh:message "A variant version states at most one HGVS coding expression: only an entry of the variants view takes every member's"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path genomics:clinvarVariationId ;
+        sh:maxCount 1 ;
+        sh:message "A variant version states at most one ClinVar VariationID: only an entry of the variants view takes every member's"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path genomics:geneSymbol ;
+        sh:maxCount 1 ;
+        sh:message "A variant version states at most one gene symbol: only an entry of the variants view takes every member's"@en ;
+        sh:severity sh:Violation
+    ] .
+
 rec:ReferenceSeriesShape a sh:NodeShape ;
     sh:targetClass rec:ReferenceSeries ;
     sh:property [

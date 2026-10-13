@@ -1,0 +1,16 @@
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:5dac6796-039c-47e9-874b-768b738e5dfd> a jdg:Judgment ;
+    jdg:verdict jdg:About ;
+    jdg:subject <urn:uuid:fc701698-ca04-470f-9576-d057826b1d08> ;
+    jdg:basis jdg:OwnerStatement ;
+    prov:hadMember <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> ;
+    prov:wasAttributedTo <https://pod.martin-okafor.example/profile/card.ttl#me> ;
+    prov:qualifiedAttribution [ a prov:Attribution ;
+        prov:agent <https://pod.martin-okafor.example/profile/card.ttl#me> ;
+        prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2026-10-13T09:20:30Z"^^xsd:dateTime .
+
+<https://pod.martin-okafor.example/profile/card.ttl#me> a prov:Person .
