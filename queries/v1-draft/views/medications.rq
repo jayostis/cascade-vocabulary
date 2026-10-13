@@ -1,6 +1,6 @@
 # Each entry takes the name, every RxNorm code, every NDC code and the code the source chose of its latest member, the
-# status of the member chosen for status, the start of the member chosen for the date, and every intent a member states,
-# so an entry joining a prescription and a list entry says both.
+# status and end date of the member chosen for status, the start of the member chosen for the date, and every intent a
+# member states, so an entry joining a prescription and a list entry says both.
 PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX pav: <http://purl.org/pav/>
@@ -14,6 +14,7 @@ CONSTRUCT {
     rec:selectedCode ?selected ;
     clinical:status ?status ;
     clinical:startDate ?date ;
+    clinical:endDate ?end ;
     clinical:clinicalIntent ?intent ;
     rec:latestMember ?latest ;
     rec:statusFrom ?statusFrom ;
@@ -29,5 +30,6 @@ WHERE {
   OPTIONAL { ?record pav:hasCurrentVersion/clinical:clinicalIntent ?intent }
   OPTIONAL { ?entry rec:statusFrom ?statusFrom .
              ?statusFrom pav:hasCurrentVersion/clinical:status ?status }
+  OPTIONAL { ?entry rec:statusFrom/pav:hasCurrentVersion/clinical:endDate ?end }
   OPTIONAL { ?entry rec:dateFrom/pav:hasCurrentVersion/clinical:startDate ?date }
 }

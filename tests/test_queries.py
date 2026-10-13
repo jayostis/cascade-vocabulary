@@ -221,12 +221,16 @@ def test_no_two_kinds_of_record_share_a_word():
 
 def kinds_named_out_of_place(relative, text):
     """The record types the query names though it is not about that one kind: only the derivation that lists them, a
-    view, and a question named for a view may name its kind."""
+    view, and a question named for a view, in the singular or the plural, may name its kind."""
     if relative == RECORDS:
         return set()
     views = record_types()
     named = set(iris(prepared(text).algebra)) & set(views)
-    return {kind for kind in named if f"-{views[kind]}-" not in f"-{'-'.join(words(Path(relative).stem))}-"}
+
+    def singular(name):
+        return "-" + "-".join(word.removesuffix("s") for word in words(name)) + "-"
+
+    return {kind for kind in named if singular(views[kind]) not in singular(Path(relative).stem)}
 
 
 def test_the_kind_check_refuses_a_record_type_named_by_a_query_not_about_that_one_kind():
@@ -238,6 +242,10 @@ def test_the_kind_check_refuses_a_record_type_named_by_a_query_not_about_that_on
     assert kinds_named_out_of_place("views/allergies.rq", query) == set()
     lab = URIRef("https://ns.cascadeprotocol.org/health/v1#LabResultRecord")
     assert kinds_named_out_of_place("questions/pod/My lab results.rq", f"SELECT ?r WHERE {{ ?r a <{lab}> }}") == set()
+    medication = URIRef("https://ns.cascadeprotocol.org/clinical/v1#Medication")
+    query = f"SELECT ?r WHERE {{ ?r a <{medication}> }}"
+    assert kinds_named_out_of_place("questions/pod/My medication history.rq", query) == set()
+    assert kinds_named_out_of_place("questions/pod/My procedures.rq", query) == {medication}
 
 
 @pytest.mark.parametrize("relative", every_query())

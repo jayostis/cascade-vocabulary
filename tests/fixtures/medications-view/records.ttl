@@ -22,8 +22,15 @@
 :stopped a clinical:Medication .
 :stoppedVersion prov:specializationOf :stopped ; rec:patient :subject ; clinical:drugName "metformin 500 MG Oral Tablet" ;
     clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/861007> ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "stopped" ; clinical:startDate "2021-01-10"^^xsd:date .
+    clinical:status "stopped" ; clinical:startDate "2021-01-10"^^xsd:date ; clinical:endDate "2023-04-02"^^xsd:date .
 :stoppedRevision a rec:Revision ; rec:revisionOf :stopped ; rec:version :stoppedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:completed a clinical:Medication .
+:completedVersion prov:specializationOf :completed ; rec:patient :subject ; clinical:drugName "amoxicillin 500 MG Oral Capsule" ;
+    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/308191> ; clinical:clinicalIntent "prescribed" ;
+    clinical:status "completed" ; clinical:startDate "2022-09-01"^^xsd:date .
+:completedRevision a rec:Revision ; rec:revisionOf :completed ; rec:version :completedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :chosen a clinical:Medication .
