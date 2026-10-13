@@ -412,6 +412,14 @@ rec:CodeSystem a owl:Class ;
     rdfs:label "code system"@en ;
     rdfs:comment "A code system whose codes are IRIs of one form: its void:uriSpace, the IRI stem, followed by the code percent-encoded as SPARQL's ENCODE_FOR_URI does. The stem is HL7 Terminology's where THO registers one, and is never the FHIR Coding.system URI, which skos:exactMatch names (https://hl7.org/fhir/R5/rdf.html#iri-stem). A record's code written as a literal joins a table as that IRI: the stem followed by the literal percent-encoded as ENCODE_FOR_URI does, so a literal of unreserved characters only is its own tail and NM_000249.4:c.2042C>T is http://varnomen.hgvs.org/NM_000249.4%3Ac.2042C%3ET."@en .
 
+rec:pageTemplate a owl:DatatypeProperty ;
+    rdfs:label "page template"@en ;
+    rdfs:comment "The address of each code's own page at the code system's publisher, as an RFC 6570 level 1 template whose only expression is {code}. {code} is the code as its IRI writes it after the void:uriSpace, already percent-encoded as ENCODE_FOR_URI does, which is what RFC 6570 simple expansion does. A code system without one publishes no page per code."@en ;
+    rdfs:domain rec:CodeSystem ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://www.wikidata.org/wiki/Property:P1630> ;
+    dct:source <https://www.rfc-editor.org/rfc/rfc6570> .
+
 rec:CVX a rec:CodeSystem ;
     rdfs:label "CVX"@en ;
     rdfs:comment "The code as CDC writes it, leading zero kept and trailing spaces trimmed: 08, 141. A record coded 8 joins nothing."@en ;
@@ -483,6 +491,7 @@ rec:ClinVar a rec:CodeSystem ;
     rdfs:label "ClinVar"@en ;
     rdfs:comment "A ClinVar variation, by its VariationID: the digits, no leading zero, as 90011. The accession VCV000090011 is that number zero-padded and an SCV or RCV accession is not a variation."@en ;
     void:uriSpace "http://www.ncbi.nlm.nih.gov/clinvar/" ;
+    rec:pageTemplate "https://www.ncbi.nlm.nih.gov/clinvar/variation/{code}/" ;
     skos:exactMatch <http://www.ncbi.nlm.nih.gov/clinvar> ;
     dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/hta/namingSystems/clinVarV.xml> .
 

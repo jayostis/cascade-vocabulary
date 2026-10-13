@@ -113,10 +113,11 @@ STEM = re.compile(r"https?://(?:snomed\.info|loinc\.org|www\.nlm\.nih\.gov|hl7\.
 def test_every_iri_stem_a_query_or_an_ontology_writes_is_a_code_systems_uri_space():
     registered = {str(space) for space in kinds().objects(None, VOID.uriSpace)}
     system_uris = [f"<{uri}>" for uri in kinds().objects(None, SKOS.exactMatch)]
+    templates = [f'"{template}"' for template in kinds().objects(None, REC.pageTemplate)]
     written = {}
     for path in [*sorted(QUERIES.parent.rglob("*.rq")), *sorted((ROOT / "ontologies").rglob("*.ttl"))]:
         text = path.read_text(encoding="utf-8").replace("\\\\.", ".")
-        for uri in system_uris:
+        for uri in [*system_uris, *templates]:
             text = text.replace(uri, "")
         if stray := sorted(set(STEM.findall(text)) - registered):
             written[path.relative_to(ROOT).as_posix()] = stray
@@ -131,6 +132,17 @@ def test_every_code_system_has_one_iri_stem_ending_in_a_slash_and_one_system_uri
         stems, uris = list(kinds().objects(system, VOID.uriSpace)), list(kinds().objects(system, SKOS.exactMatch))
         assert len(stems) == 1 and str(stems[0]).endswith("/"), system
         assert len(uris) == 1 and isinstance(uris[0], URIRef) and not str(uris[0]).endswith("/"), system
+
+
+def test_every_page_template_is_one_address_with_the_code_as_its_only_expression():
+    templated = {system: list(kinds().objects(system, REC.pageTemplate)) for system in set(kinds().subjects(REC.pageTemplate, None))}
+    assert templated.keys() == {REC.ClinVar}
+    for system, templates in templated.items():
+        assert (system, RDF.type, REC.CodeSystem) in kinds() and len(templates) == 1, system
+        template = str(templates[0])
+        assert template.startswith("https://") and template.count("{code}") == 1, system
+        assert template.replace("{code}", "").count("{") == 0 and template.replace("{code}", "").count("}") == 0, system
+    assert str(templated[REC.ClinVar][0]).replace("{code}", "90011") == "https://www.ncbi.nlm.nih.gov/clinvar/variation/90011/"
 
 
 def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mapping_row_is_named_by_n11():
