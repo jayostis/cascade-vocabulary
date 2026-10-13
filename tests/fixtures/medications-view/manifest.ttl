@@ -5,10 +5,11 @@
 
 <> a mf:Manifest ;
   rdfs:label "medications-view" ;
-  rdfs:comment "A medication entry joining a prescription and, later, a list entry stating no status and no date; and a stopped medication." ;
+  rdfs:comment "A medication entry joining a prescription and, later, a list entry stating no status and no date; and a stopped medication with its end, a completed one without, and a stopped member followed by a newer active one, which takes no end." ;
   mf:entries (
     <#the-medications-view>
     <#my-active-medications>
+    <#my-medication-history>
   ) .
 
 <#the-medications-view> a mf:QueryEvaluationTest ;
@@ -24,3 +25,10 @@
   mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20active%20medications.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <my-active-medications.srj> .
+
+<#my-medication-history> a mf:QueryEvaluationTest ;
+  mf:name "my-medication-history" ;
+  rdfs:comment "Every entry whatever its status; the end date on the stopped entry alone, none on the completed one that states no stop." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20medication%20history.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <my-medication-history.srj> .
