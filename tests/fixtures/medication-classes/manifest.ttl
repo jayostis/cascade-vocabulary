@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "medication-classes" ;
+  rdfs:comment "A version of a product ingredients table mapping lisinopril 10 MG Oral Tablet (314076), lisinopril anhydrous (1546022) and lisinopril (29046) to lisinopril, a combination of lisinopril and hydrochlorothiazide (206771) to its multiple ingredient concept, and atorvastatin (83367) and a tablet of it (617310) to atorvastatin; and two versions of a drug classes table, of two series, FDA's rows on lisinopril anhydrous, on atorvastatin and on a code no product ingredients row reaches. Active medications for the tablet, for the combination, for a drug the tables do not map and for an atorvastatin tablet; and a stopped one for atorvastatin." ;
+  mf:entries (
+    <#medication-classes>
+  ) .
+
+<#medication-classes> a mf:QueryEvaluationTest ;
+  mf:name "medication-classes" ;
+  rdfs:comment "The tablet reaches its ingredient's classes through lisinopril anhydrous, the code FDA gives them on, once for each relation and version, and the ingredient itself reaches them too; a second series that holds the same class gives a row of its own, for its version. The atorvastatin tablet reaches atorvastatin's class through the ingredient itself. The combination, a drug no product ingredients row maps, a stopped medication and a class row on a code no ingredient row reaches give none." ;
+  mf:action [ qt:query <../../../queries/v1-draft/tables/medication-classes.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <medication-classes.srj> .

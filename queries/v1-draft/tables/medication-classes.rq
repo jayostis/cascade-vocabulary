@@ -1,0 +1,36 @@
+# Each class of each active medication entry, by the drug class rows of the tables an app holds. It reads the entries of
+# the views, as the pod questions do, and the rows inside GRAPH ?product and GRAPH ?origin, as a rule's query does. The
+# entry is active by rule L1, as pod/My active medications has it, and its codes are the RxNorm codes it states, the
+# one the source selected and each it carries, a literal read as the IRI of that code. ?entry, ?medication and ?class
+# are as they sound, ?relation is the class row's predicate (rec:establishedPharmacologicClass, rec:mechanismOfAction,
+# rec:physiologicEffect or rec:chemicalStructure), ?origin the version of the drug classes table that holds the row,
+# and ?through the code the row is on.
+#
+# MED-RT classes the ingredient and the precise ingredient, never a product, and FDA keys a class on whichever of them
+# its label names. So the walk is: a code to its ingredient in a version of a product ingredients table (an ingredient
+# maps to itself), the ingredient to every code that maps to it (the ingredient, its precise ingredients, its products),
+# and each of those to its class rows. 314076, lisinopril 10 MG Oral Tablet, maps to 29046; 1546022, lisinopril
+# anhydrous, maps to 29046 too and is the code FDA gives the class on. A combination product maps to its multiple
+# ingredient concept, which MED-RT does not class, so it reaches no class here. An entry reaches a class once for each
+# relation and version, whatever the codes it reached it through; ?through is the least of them.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?entry ?medication ?class ?relation ?origin (MIN(STR(?same)) AS ?through)
+WHERE {
+  ?entry a clinical:Medication ; rec:lifecycle rec:MedicationActive ; clinical:drugName ?medication .
+  ?entry (rec:selectedCode | clinical:rxNormCode) ?written .
+  BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://www.nlm.nih.gov/research/umls/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
+  FILTER (STRSTARTS(STR(?code), "http://www.nlm.nih.gov/research/umls/rxnorm/"))
+  ?product prov:specializationOf/rec:tableKind rec:ProductIngredients .
+  GRAPH ?product {
+    ?own owl:annotatedSource ?code ; owl:annotatedTarget ?ingredient .
+    ?sibling owl:annotatedTarget ?ingredient ; owl:annotatedSource ?same .
+  }
+  ?origin prov:specializationOf/rec:tableKind rec:DrugClasses .
+  GRAPH ?origin { ?row owl:annotatedSource ?same ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?class }
+}
+GROUP BY ?entry ?medication ?class ?relation ?origin
+ORDER BY ?medication ?entry ?relation ?class

@@ -1,0 +1,44 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:tablet a clinical:Medication .
+:tabletVersion prov:specializationOf :tablet ; rec:patient :subject ; clinical:drugName "Lisinopril 10 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:314076 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:tabletRevision a rec:Revision ; rec:revisionOf :tablet ; rec:version :tabletVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:written a clinical:Medication .
+:writtenVersion prov:specializationOf :written ; rec:patient :subject ; clinical:drugName "Lisinopril" ;
+    clinical:rxNormCode rxnorm:29046 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:writtenRevision a rec:Revision ; rec:revisionOf :written ; rec:version :writtenVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:combination a clinical:Medication .
+:combinationVersion prov:specializationOf :combination ; rec:patient :subject ; clinical:drugName "Lisinopril 10 MG / Hydrochlorothiazide 12.5 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:206771 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:combinationRevision a rec:Revision ; rec:revisionOf :combination ; rec:version :combinationVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:unmapped a clinical:Medication .
+:unmappedVersion prov:specializationOf :unmapped ; rec:patient :subject ; clinical:drugName "A drug no table maps" ;
+    clinical:rxNormCode rxnorm:9999999 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:unmappedRevision a rec:Revision ; rec:revisionOf :unmapped ; rec:version :unmappedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:atorvastatinTablet a clinical:Medication .
+:atorvastatinTabletVersion prov:specializationOf :atorvastatinTablet ; rec:patient :subject ; clinical:drugName "Atorvastatin 20 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:617310 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:atorvastatinTabletRevision a rec:Revision ; rec:revisionOf :atorvastatinTablet ; rec:version :atorvastatinTabletVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:stopped a clinical:Medication .
+:stoppedVersion prov:specializationOf :stopped ; rec:patient :subject ; clinical:drugName "Atorvastatin" ;
+    clinical:rxNormCode rxnorm:83367 ; clinical:clinicalIntent "prescribed" ; clinical:status "stopped" .
+:stoppedRevision a rec:Revision ; rec:revisionOf :stopped ; rec:version :stoppedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
