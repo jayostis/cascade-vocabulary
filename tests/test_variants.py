@@ -187,7 +187,7 @@ def test_the_kinds_an_app_keeps_are_those_a_rule_list_names_and_those_marked_rea
     marked = {kind for kind in declared if (kind, REC.readByPages, Literal(True)) in kinds()}
     named = {kind for path in (ROOT / "runtime" / "rule-list").glob("*.ttl") if path.name != "references.ttl"
              for kind in parsed(path).objects(None, REC.tableKind)}
-    assert marked == {REC.CodeNames, REC.CodeStatus, REC.VariantClassifications}
+    assert marked == {REC.CodeNames, REC.CodeStatus, REC.VariantClassifications, REC.PanelMembers, REC.DrugClasses}
     assert declared - named - marked == {REC.SubstanceIngredients, REC.NdcDrugs}
 
 
@@ -210,7 +210,8 @@ def only_unreserved(pattern, stem):
     return all(c in UNRESERVED for c in re.sub(r"[()|?+*]", "", tail))
 
 
-PINNED = {"matcher/same-mapped-code-and-date.rq": (REC.VaccineGroups, REC.CVX, REC.CvxCodeShape)}
+PINNED = {"matcher/same-mapped-code-and-date.rq": (REC.VaccineGroups, REC.CVX, REC.CvxCodeShape),
+          "matcher/same-vaccine-group-and-date.rq": (REC.VaccineGroups, REC.CVX, REC.CvxCodeShape)}
 
 
 def test_the_encoding_check_sees_a_stem_joined_to_a_literal_without_ENCODE_FOR_URI():

@@ -23,6 +23,7 @@ VERSIONS = ROOT / "tests" / "table-versions"
 FOLDERS = sorted(index.parent for top in ("runtime", "conformance") for index in (ROOT / top).rglob("references.ttl"))
 PREFIXES = """
 @prefix dct: <http://purl.org/dc/terms/> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix semapv: <https://w3id.org/semapv/vocab/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -39,7 +40,7 @@ EXPRESSION = "<http://varnomen.hgvs.org/NM_000249.3%3Ac.2042C%3ET>"
 CLASSIFIED = (f"{VARIATION} rec:hgvsExpression {EXPRESSION} ; rec:clinvarClassification genomics:Pathogenic , "
               'genomics:LikelyPathogenic ; rec:clinvarReviewStatus rec:ClinVarMultipleSubmittersNoConflicts ; '
               'rec:lastEvaluated "2024-12-11"^^xsd:date ; rec:contributingSubmitters 5')
-ROW ="a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget cvx:88"
+ROW = "a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty obo:RO_0002350 ; owl:annotatedTarget cvx:88"
 CURATED = "sssom:mapping_justification semapv:ManualMappingCuration"
 CHAINED = "sssom:mapping_justification semapv:MappingChaining"
 NDC = "<https://ns.cascadeprotocol.org/codes/ndc11/00069153066>"
@@ -47,6 +48,12 @@ EARLIER = "a owl:Axiom ; owl:annotatedSource icd:C88.0 ; owl:annotatedProperty s
 CARDINALITY = 'sssom:mapping_cardinality "1:1"'
 CONVERSION = EARLIER.replace("skos:exactMatch", "dct:isReplacedBy") + f" ; {CARDINALITY}"
 DRUG = "a owl:Axiom ; owl:annotatedSource rxnorm:153010 ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget rxnorm:5640"
+INGREDIENT = DRUG.replace("skos:broadMatch", "obo:RO_0002248")
+PANEL = ("a owl:Axiom ; owl:annotatedSource <http://loinc.org/rdf/24318-8> ; owl:annotatedProperty obo:RO_0002351 ; "
+         "owl:annotatedTarget <http://loinc.org/rdf/30395-8> ; rec:panelSequence 4")
+CLASSIFIED_DRUG = ("a owl:Axiom ; owl:annotatedSource rxnorm:5640 ; owl:annotatedProperty rec:establishedPharmacologicClass ; "
+                   "owl:annotatedTarget <https://ns.cascadeprotocol.org/codes/medrt/N0000175722>")
+MESH = "<http://id.nlm.nih.gov/mesh/M0006414>"
 
 
 @cache
@@ -127,7 +134,7 @@ def test_every_iri_stem_a_query_or_an_ontology_writes_is_a_code_systems_uri_spac
 def test_every_code_system_has_one_iri_stem_ending_in_a_slash_and_one_system_uri_without():
     systems = set(kinds().subjects(RDF.type, REC.CodeSystem))
     assert {system.removeprefix(str(REC)) for system in systems} == {
-        "CVX", "RxNorm", "NDC", "ICD10CM", "SNOMEDCT", "LOINC", "UNII", "CPT", "ICD9CM", "HGVS", "ClinVar"}
+        "CVX", "RxNorm", "NDC", "ICD10CM", "SNOMEDCT", "LOINC", "UNII", "CPT", "ICD9CM", "HGVS", "ClinVar", "MEDRT", "MeSH"}
     for system in systems:
         stems, uris = list(kinds().objects(system, VOID.uriSpace)), list(kinds().objects(system, SKOS.exactMatch))
         assert len(stems) == 1 and str(stems[0]).endswith("/"), system
@@ -136,24 +143,49 @@ def test_every_code_system_has_one_iri_stem_ending_in_a_slash_and_one_system_uri
 
 def test_every_page_template_is_one_address_with_the_code_as_its_only_expression():
     templated = {system: list(kinds().objects(system, REC.pageTemplate)) for system in set(kinds().subjects(REC.pageTemplate, None))}
-    assert templated.keys() == {REC.ClinVar}
+    assert templated.keys() == {REC.ClinVar, REC.MeSH}
     for system, templates in templated.items():
         assert (system, RDF.type, REC.CodeSystem) in kinds() and len(templates) == 1, system
         template = str(templates[0])
         assert template.startswith("https://") and template.count("{code}") == 1, system
         assert template.replace("{code}", "").count("{") == 0 and template.replace("{code}", "").count("}") == 0, system
     assert str(templated[REC.ClinVar][0]).replace("{code}", "90011") == "https://www.ncbi.nlm.nih.gov/clinvar/variation/90011/"
+    assert str(templated[REC.MeSH][0]).replace("{code}", "M0006414") == "https://id.nlm.nih.gov/mesh/M0006414.html"
+
+
+def name_inputs(rows, row):
+    """N11's inputs for a row: its source, property and target, and a panel member's sequence as written."""
+    inputs = [str(rows.value(row, p)) for p in (OWL.annotatedSource, OWL.annotatedProperty, OWL.annotatedTarget)]
+    sequence = rows.value(row, REC.panelSequence)
+    return inputs if sequence is None else [*inputs, str(sequence)]
+
+
+def test_a_panel_member_listed_at_two_sequences_is_two_rows_with_two_names_and_a_nested_panel_is_its_own_rows():
+    rows = parsed(VERSIONS / "panel-members-1.ttl")
+    assert messages(REC.PanelMembers, rows) == set()
+    named = {}
+    for row in rows.subjects(RDF.type, OWL.Axiom):
+        assert str(row) == record_name(name_inputs(rows, row))
+        named.setdefault((rows.value(row, OWL.annotatedSource), rows.value(row, OWL.annotatedTarget)), set()).add(row)
+    twice = {pair: names for pair, names in named.items() if len(names) == 2}
+    assert [pair[1] for pair in twice] == [URIRef("http://loinc.org/rdf/30395-8")]
+    members = lambda panel: {m for p, m in named if p == URIRef(f"http://loinc.org/rdf/{panel}")}
+    nested = URIRef("http://loinc.org/rdf/24320-4")
+    assert nested in members("24318-8") and members("24320-4") == {URIRef("http://loinc.org/rdf/718-7")}
+
+
+PUBLISHED_BEFORE_RO = ROOT / "runtime" / "scripted-input" / "hana" / "tables"
 
 
 def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mapping_row_is_named_by_n11():
     found, broken, misnamed = 0, {}, set()
     for folder, stem, kind, rows in versions():
         found += 1
-        if said := messages(kind, rows):
+        held_as_published = folder.parent == PUBLISHED_BEFORE_RO and kind in (REC.ProductIngredients, REC.VaccineGroups)
+        if (said := messages(kind, rows)) and not held_as_published:
             broken[f"{folder.relative_to(ROOT).as_posix()}/{stem}"] = said
         for row in rows.subjects(RDF.type, OWL.Axiom):
-            inputs = [str(rows.value(row, p)) for p in (OWL.annotatedSource, OWL.annotatedProperty, OWL.annotatedTarget)]
-            if str(row) != record_name(inputs):
+            if str(row) != record_name(name_inputs(rows, row)):
                 misnamed.add(str(row))
     assert found == 40
     assert broken == {}
@@ -165,7 +197,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (REC.VaccineGroups, f"[] {ROW} ; {CURATED} .", "A mapping row is an owl:Axiom named by an IRI"),
     (REC.VaccineGroups, f"<urn:x:r> {ROW}, cvx:89 ; {CURATED} .", "A mapping row maps to one object code"),
     (REC.VaccineGroups, f"<urn:x:r> {ROW} ; {CURATED} ; skos:note \"x\" .", "A mapping row is an owl:Axiom named by an IRI"),
-    (REC.VaccineGroups, f"<urn:x:r> {ROW.replace('broadMatch', 'exactMatch')} ; {CURATED} .", "with skos:broadMatch"),
+    (REC.VaccineGroups, f"<urn:x:r> {ROW.replace('obo:RO_0002350', 'skos:broadMatch')} ; {CURATED} .", "with obo:RO_0002350"),
     (REC.VaccineGroups, f"<urn:x:r> {ROW.replace('cvx:141', 'rxnorm:7980')} ; {CURATED} .", "maps a CVX code"),
     (REC.VaccineGroups, f"<urn:x:r> {ROW.replace('cvx:141', '<http://hl7.org/fhir/sid/cvx/8>')} ; {CURATED} .",
      "maps a CVX code"),
@@ -197,11 +229,33 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (REC.CodeNames, '<http://loinc.org/rdf/2823-3> skos:prefLabel "x" ; skos:notation "2823-3" .', None),
     (REC.CodeNames, '<http://loinc.org/rdf/28233> skos:prefLabel "x" ; skos:notation "2823-3" .',
      "one of the code systems' forms"),
-    (REC.ProductIngredients, f"<urn:x:r> {DRUG} ; {CHAINED} .", None),
-    (REC.ProductIngredients, f"<urn:x:r> {DRUG.replace('rxnorm:153010', 'cvx:141')} ; {CHAINED} .",
+    (REC.ProductIngredients, f"<urn:x:r> {INGREDIENT} ; {CHAINED} .", None),
+    (REC.ProductIngredients, f"<urn:x:r> {INGREDIENT.replace('rxnorm:153010', 'cvx:141')} ; {CHAINED} .",
      "A product ingredient row maps an RxNorm code"),
-    (REC.ProductIngredients, f"<urn:x:r> {DRUG.replace('broadMatch', 'exactMatch')} ; {CHAINED} .",
-     "with skos:broadMatch"),
+    (REC.ProductIngredients, f"<urn:x:r> {DRUG} ; {CHAINED} .", "with obo:RO_0002248"),
+    (REC.PanelMembers, f"<urn:x:r> {PANEL} ; {CURATED} .", None),
+    (REC.PanelMembers, f'<urn:x:r> {PANEL} ; {CURATED} ; rec:observationRequiredInPanel "Rflx-a" .', None),
+    (REC.PanelMembers, f"<urn:x:r> {PANEL.replace('; rec:panelSequence 4', '')} ; {CURATED} .", "one sequence"),
+    (REC.PanelMembers, f"<urn:x:r> {PANEL.replace('Sequence 4', 'Sequence \"4\"')} ; {CURATED} .", "one sequence"),
+    (REC.PanelMembers, f"<urn:x:r> {PANEL} ; {CURATED} ; rec:observationRequiredInPanel \"R\", \"O\" .", "at most one requirement"),
+    (REC.PanelMembers, f"<urn:x:r> {PANEL.replace('30395-8', 'XYZ')} ; {CURATED} .", "one member, a LOINC code"),
+    (REC.PanelMembers, f"<urn:x:r> {PANEL.replace('24318-8', '24318')} ; {CURATED} .", "one panel, a LOINC code"),
+    (REC.PanelMembers, f"<urn:x:r> {PANEL.replace('RO_0002351', 'RO_0002350')} ; {CURATED} .", "with obo:RO_0002351"),
+    (REC.PanelMembers, f"<urn:x:r> {PANEL} ; {CURATED} ; sssom:mapping_cardinality \"1:1\" .", "holding only its panel"),
+    (REC.DrugClasses, f"<urn:x:r> {CLASSIFIED_DRUG} ; {CURATED} .", None),
+    (REC.DrugClasses, f"<urn:x:r> {CLASSIFIED_DRUG.replace('establishedPharmacologicClass', 'chemicalStructure').replace('<https://ns.cascadeprotocol.org/codes/medrt/N0000175722>', MESH)} ; {CURATED} .", None),
+    (REC.DrugClasses, f"<urn:x:r> {CLASSIFIED_DRUG.replace('<https://ns.cascadeprotocol.org/codes/medrt/N0000175722>', MESH)} ; {CURATED} .",
+     "or, with rec:chemicalStructure, to a MeSH code"),
+    (REC.DrugClasses, f"<urn:x:r> {CLASSIFIED_DRUG.replace('rxnorm:5640', 'cvx:141')} ; {CURATED} .", "maps an RxNorm code"),
+    (REC.DrugClasses, f"<urn:x:r> {CLASSIFIED_DRUG.replace('rec:establishedPharmacologicClass', 'skos:broadMatch')} ; {CURATED} .",
+     "with rec:establishedPharmacologicClass, rec:mechanismOfAction"),
+    (REC.DrugClasses, f"<urn:x:r> {CLASSIFIED_DRUG} ; {CHAINED} .", "justified as the publisher's curated row"),
+    (REC.CodeNames, f'<https://ns.cascadeprotocol.org/codes/medrt/N0000175722> skos:prefLabel "Beta-Adrenergic Blocker [EPC]" ; skos:notation "N0000175722" .', None),
+    (REC.CodeNames, f'{MESH} skos:prefLabel "Ibuprofen" ; skos:notation "M0006414" .', None),
+    (REC.CodeNames, '<http://id.nlm.nih.gov/mesh/D004095> skos:prefLabel "x" ; skos:notation "D004095" .', None),
+    (REC.CodeNames, '<http://id.nlm.nih.gov/mesh/X1> skos:prefLabel "x" ; skos:notation "X1" .', "one of the code systems' forms"),
+    (REC.CodeNames, '<https://ns.cascadeprotocol.org/codes/medrt/N000017572> skos:prefLabel "x" ; skos:notation "N000017572" .',
+     "one of the code systems' forms"),
     (REC.BrandGenerics, f"<urn:x:r> {DRUG} ; {CURATED} .", None),
     (REC.BrandGenerics, f"<urn:x:r> {DRUG.replace('rxnorm:5640', '<http://snomed.info/id/387207008>')} ; {CURATED} .",
      "A brand generic row maps to an RxNorm code"),

@@ -1,5 +1,6 @@
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
@@ -98,7 +99,7 @@ rec:ReferenceSeriesShape a sh:NodeShape ;
         sh:severity sh:Violation
     ], [
         sh:path rec:tableKind ;
-        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients rec:ProductIngredients rec:BrandGenerics rec:DrugProducts rec:NdcDrugs rec:CodeConversions rec:VariantClassifications ) ;
+        sh:in ( rec:VaccineGroups rec:CodeNames rec:CodeStatus rec:SubstanceIngredients rec:ProductIngredients rec:BrandGenerics rec:DrugProducts rec:NdcDrugs rec:CodeConversions rec:VariantClassifications rec:PanelMembers rec:DrugClasses ) ;
         sh:maxCount 1 ;
         sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
         sh:severity sh:Violation
@@ -162,8 +163,8 @@ rec:VaccineGroupRowShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path owl:annotatedProperty ;
-        sh:hasValue skos:broadMatch ;
-        sh:message "A vaccine group row puts its code in a group with skos:broadMatch."@en ;
+        sh:hasValue obo:RO_0002350 ;
+        sh:message "A vaccine group row puts its code in a group with obo:RO_0002350, member of."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path owl:annotatedTarget ;
@@ -200,8 +201,8 @@ rec:ProductIngredientRowShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path owl:annotatedProperty ;
-        sh:hasValue skos:broadMatch ;
-        sh:message "A product ingredient row puts its code under its ingredient with skos:broadMatch."@en ;
+        sh:hasValue obo:RO_0002248 ;
+        sh:message "A product ingredient row gives its code its ingredient with obo:RO_0002248, has active ingredient."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path owl:annotatedTarget ;
@@ -209,6 +210,85 @@ rec:ProductIngredientRowShape a sh:NodeShape ;
         sh:message "A product ingredient row maps to an RxNorm code."@en ;
         sh:severity sh:Violation
     ] .
+
+rec:PanelMemberRowShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:class owl:Axiom ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:message "A panel member row is an owl:Axiom named by an IRI, its record_id, holding only its panel, obo:RO_0002351, its member, its justification, its sequence and at most one requirement."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node rec:LoincCodeShape ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row has one panel, a LOINC code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue obo:RO_0002351 ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row gives its panel its member with obo:RO_0002351, has member."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node rec:LoincCodeShape ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row has one member, a LOINC code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path sssom:mapping_justification ;
+        sh:hasValue semapv:ManualMappingCuration ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row is justified as the publisher's curated row."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path rec:panelSequence ;
+        sh:datatype xsd:integer ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row has one sequence, an xsd:integer."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path rec:observationRequiredInPanel ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row has at most one requirement, a non-empty plain string as LOINC writes it."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:DrugClassRowShape a sh:NodeShape ;
+    sh:node rec:MappingRowShape , rec:DrugClassFormShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node rec:RxNormCodeShape ;
+        sh:message "A drug class row maps an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:in ( rec:establishedPharmacologicClass rec:mechanismOfAction rec:physiologicEffect rec:chemicalStructure ) ;
+        sh:message "A drug class row gives its code its class with rec:establishedPharmacologicClass, rec:mechanismOfAction, rec:physiologicEffect or rec:chemicalStructure."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path sssom:mapping_justification ;
+        sh:hasValue semapv:ManualMappingCuration ;
+        sh:message "A drug class row is justified as the publisher's curated row."@en ;
+        sh:severity sh:Violation
+    ] .
+
+rec:DrugClassFormShape a sh:NodeShape ;
+    sh:or (
+        [ sh:property [ sh:path owl:annotatedTarget ; sh:node rec:MedrtCodeShape ] ]
+        [ sh:property [ sh:path owl:annotatedProperty ; sh:hasValue rec:chemicalStructure ] ,
+                      [ sh:path owl:annotatedTarget ; sh:node rec:MeshCodeShape ] ]
+    ) ;
+    sh:message "A drug class row maps to a MED-RT code, or, with rec:chemicalStructure, to a MeSH code."@en ;
+    sh:severity sh:Violation .
 
 rec:BrandGenericRowShape a sh:NodeShape ;
     sh:node rec:MappingRowShape ;
@@ -274,7 +354,7 @@ rec:CodeConversionFormShape a sh:NodeShape ;
 
 rec:CodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
-    sh:or ( rec:CvxCodeShape rec:NdcCodeShape rec:IcdTenCmCodeShape rec:RxNormCodeShape rec:SnomedCtCodeShape rec:LoincCodeShape rec:ClinVarCodeShape ) ;
+    sh:or ( rec:CvxCodeShape rec:NdcCodeShape rec:IcdTenCmCodeShape rec:RxNormCodeShape rec:SnomedCtCodeShape rec:LoincCodeShape rec:ClinVarCodeShape rec:MedrtCodeShape rec:MeshCodeShape ) ;
     sh:message "A code is an IRI of one of the code systems' forms."@en ;
     sh:severity sh:Violation .
 
@@ -305,6 +385,14 @@ rec:LoincCodeShape a sh:NodeShape ;
 rec:ClinVarCodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
     sh:pattern "^http://www\\.ncbi\\.nlm\\.nih\\.gov/clinvar/[1-9][0-9]*$" .
+
+rec:MedrtCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/medrt/N[0-9]{10}$" .
+
+rec:MeshCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://id\\.nlm\\.nih\\.gov/mesh/[CDMQ][0-9]+$" .
 
 rec:HgvsCodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;

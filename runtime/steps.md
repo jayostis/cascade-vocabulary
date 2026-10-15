@@ -54,7 +54,8 @@ saying why; a document an import must convert and has no saved output for is the
   series and the version, less `rec:shipsWith`.
 - **One file per version, holding its rows,** named from the version's name by N9. Each row conforms to its kind's
   `rec:rowShape` in `records.shapes.ttl` and holds no blank node: a mapping row is an `owl:Axiom` named by N11 with
-  its `owl:annotatedSource`, `owl:annotatedProperty`, `owl:annotatedTarget` and `sssom:mapping_justification`. A
+  its `owl:annotatedSource`, `owl:annotatedProperty`, `owl:annotatedTarget` and `sssom:mapping_justification` (a panel
+  member row also holds its `rec:panelSequence` and at most one `rec:observationRequiredInPanel`). A
   version with no rows is a file with no triples.
 - **The rule list is not a table.** Each row is a `rec:MatcherRule` giving its justification (`rec:justifiedAs`), each
   kind of record it applies to as `rec:kind` words it (`rec:appliesTo`), its comparison query as a path under
