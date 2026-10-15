@@ -777,12 +777,18 @@ rec:lens a owl:ObjectProperty ;
 
 rec:lifecycle a owl:ObjectProperty ;
     rdfs:label "lifecycle"@en ;
-    rdfs:comment "Derived: the concept of rec:MedicationLifecycle the status of the member chosen for status classifies to, and rec:MedicationUnknown where it states none."@en ;
+    rdfs:comment "Of a medication entry in its view, the concept of rec:MedicationLifecycle that its status classifies to, so an app reads whether the medication is still taken without the status; rec:MedicationUnknown where it states none."@en ;
     rdfs:domain clinical:Medication ;
     rdfs:range skos:Concept .
 
-rec:lifecycleStep a owl:DatatypeProperty ;
-    rdfs:label "lifecycle step"@en ;
+rec:statusLifecycle a owl:ObjectProperty ;
+    rdfs:label "status lifecycle"@en ;
+    rdfs:comment "Derived: the lifecycle class of the status the entry shows. The medications view says it as rec:lifecycle, a name of its own because a query reading both the derived state and the view would otherwise find each triple twice."@en ;
+    rdfs:domain clinical:Medication ;
+    rdfs:range skos:Concept .
+
+rec:statusLifecycleStep a owl:DatatypeProperty ;
+    rdfs:label "status lifecycle step"@en ;
     rdfs:comment "Derived: which step of the matching order in runtime rule L1 classified the entry: 2 for an absent or blank status, 3 for a FHIR status code, 4 for a synonym, 5 for a fragment, 6 for none of them, which leaves the class unknown and unmatched."@en ;
     rdfs:domain clinical:Medication ;
     rdfs:range xsd:integer .

@@ -5,6 +5,6 @@ PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 SELECT ?medication ?lifecycle ?step
 WHERE {
   ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-  ?entry rec:lifecycle ?lifecycle ; rec:lifecycleStep ?step .
+  ?entry rec:statusLifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
 }
 ORDER BY ?medication

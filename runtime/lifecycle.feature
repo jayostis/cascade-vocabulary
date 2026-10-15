@@ -7,7 +7,8 @@ Feature: Medication lifecycle
 
   Rule: L1. A medication entry's status is classed active, stopped, paused, unknown or entered-in-error by the first step of this order that holds
     The entry's status is the one of the member it takes its status from. The class is the concept of rec:MedicationLifecycle
-    the entry shows as rec:lifecycle, and the step that gave it rec:lifecycleStep. The rows each step reads, and the
+    the entry shows as rec:lifecycle (derived as rec:statusLifecycle), and the step that gave it as
+    rec:statusLifecycleStep. The rows each step reads, and the
     precedence of step 5, are in queries/v1-draft/derivations/medication-lifecycles.rq.
 
     1. The key is the status lower-cased, each run of other characters than a-z and 0-9 made one space, and trimmed. A
@@ -39,7 +40,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: ON-HOLD" "status: d/c" }
           ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:lifecycleStep ?step .
+          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -53,7 +54,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: none" "status: blank" }
           ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:lifecycleStep ?step .
+          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -67,7 +68,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: completed" "status: draft" }
           ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:lifecycleStep ?step .
+          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -81,7 +82,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: discontinued" "status: aborted" "status: nullified" }
           ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:lifecycleStep ?step .
+          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -96,7 +97,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: no longer taking" "status: suspended" "status: currently taking" }
           ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:lifecycleStep ?step .
+          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -111,7 +112,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: see pharmacy" "status: new" }
           ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:lifecycleStep ?step .
+          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
         }
         """
       Then it answers:

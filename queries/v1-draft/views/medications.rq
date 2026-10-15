@@ -32,7 +32,7 @@ WHERE {
   OPTIONAL { ?record pav:hasCurrentVersion/clinical:clinicalIntent ?intent }
   OPTIONAL { ?entry rec:statusFrom ?statusFrom .
              ?statusFrom pav:hasCurrentVersion/clinical:status ?status }
-  OPTIONAL { ?entry rec:lifecycle ?lifecycle }
+  OPTIONAL { ?entry rec:statusLifecycle ?lifecycle }
   OPTIONAL { ?entry rec:statusFrom/pav:hasCurrentVersion/clinical:endDate ?end }
   OPTIONAL { ?entry rec:dateFrom/pav:hasCurrentVersion/clinical:startDate ?date }
 }

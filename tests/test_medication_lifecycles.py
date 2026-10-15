@@ -44,9 +44,10 @@ def lifecycles(engine, statuses):
             triples.add((version, URIRef(CLINICAL + "status"), Literal(status)))
     store.add(triples)
     found = store.construct(query(DERIVATION))
-    return {number: (next(o for s, p, o in found if s == URIRef(f"urn:x:entry{number}") and p == URIRef(REC + "lifecycle")),
-                     int(next(o for s, p, o in found if s == URIRef(f"urn:x:entry{number}") and p == URIRef(REC + "lifecycleStep"))))
-            for number in range(len(statuses))}
+    def of(number, name):
+        return next(o for s, p, o in found if s == URIRef(f"urn:x:entry{number}") and p == URIRef(REC + name))
+
+    return {number: (of(number, "statusLifecycle"), int(of(number, "statusLifecycleStep"))) for number in range(len(statuses))}
 
 
 @pytest.mark.parametrize("engine", sorted(ENGINES))

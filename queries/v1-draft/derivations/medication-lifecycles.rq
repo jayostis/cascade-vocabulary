@@ -11,7 +11,7 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-CONSTRUCT { ?entry rec:lifecycle ?class ; rec:lifecycleStep ?step }
+CONSTRUCT { ?entry rec:statusLifecycle ?class ; rec:statusLifecycleStep ?step }
 WHERE {
   { SELECT ?entry (MIN(?score) AS ?best)
     WHERE {
