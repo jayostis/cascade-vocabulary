@@ -1,8 +1,8 @@
 Feature: Medication lifecycle
 
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Ben
-  enters fourteen medications, each named by the status it states: a FHIR code in capitals, an abbreviation, none, a
-  blank one, FHIR codes, the HL7 v3 ActStatus codes a C-CDA medication activity carries, a synonym, phrases and text
+  enters fifteen medications, each named by the status it states: a FHIR code in capitals, an abbreviation, none, a
+  blank one, FHIR codes, the HL7 v3 ActStatus codes a C-CDA medication activity carries, a synonym, phrases, run-together text and text
   nothing matches.
 
   Rule: L1. A medication entry's status is classed active, stopped, paused, unknown or entered-in-error by the first step of this order that holds
@@ -80,7 +80,7 @@ Feature: Medication lifecycle
       When the query is:
         """
         SELECT ?medication ?lifecycle ?step WHERE {
-          VALUES ?medication { "status: discontinued" "status: aborted" "status: nullified" }
+          VALUES ?medication { "status: discontinued" "status: aborted" "status: nullified" "status: suspended" }
           ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
           ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
         }
@@ -90,12 +90,13 @@ Feature: Medication lifecycle
         | "status: discontinued"  | rec:MedicationStopped          | 4    |
         | "status: aborted"       | rec:MedicationStopped          | 4    |
         | "status: nullified"     | rec:MedicationEnteredInError   | 4    |
+        | "status: suspended"     | rec:MedicationPaused           | 4    |
 
-    Example: step 5, a fragment gives the most conservative class, so a medication no longer taken is stopped
+    Example: step 5, a fragment gives the most conservative class, so a medication no longer taken is stopped, however its words are run together
       When the query is:
         """
         SELECT ?medication ?lifecycle ?step WHERE {
-          VALUES ?medication { "status: no longer taking" "status: suspended" "status: currently taking" }
+          VALUES ?medication { "status: no longer taking" "status: NotActive" "status: currently taking" }
           ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
           ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
         }
@@ -103,7 +104,7 @@ Feature: Medication lifecycle
       Then it answers:
         | medication                  | lifecycle             | step |
         | "status: no longer taking"  | rec:MedicationStopped | 5    |
-        | "status: suspended"         | rec:MedicationPaused  | 5    |
+        | "status: NotActive"         | rec:MedicationStopped | 5    |
         | "status: currently taking"  | rec:MedicationActive  | 5    |
 
     Example: step 6, text nothing matches is unknown and unmatched, as is a C-CDA status the ConceptMap leaves unmapped

@@ -1,7 +1,7 @@
 # An entry's status, however its source wrote it, is classed by the first step of runtime rule L1 that holds, and the step
 # is recorded. The key is the status lower-cased, each run of other characters than a-z and 0-9 made one space, trimmed.
 # A step-2 to step-4 row holds when it equals the key, or equals it with the spaces of both removed ('d/c' is dc). A
-# step-5 row, a fragment, holds when the key contains it, and the class among those that do is the most conservative: the
+# step-5 row, a fragment, holds when the compact key contains the fragment with its spaces removed (so NotActive is read as not active), and the class among those that do is the most conservative: the
 # lowest precedence. Step 6 holds always, so every entry has a class and 'unmatched' is step 6. The FHIR rows are the codes
 # of R4's MedicationRequest.status and MedicationStatement.status (a code in both has one row), 'aborted' and 'nullified'
 # are HL7 v3 ActStatus codes mapped by the C-CDA on FHIR ConceptMap CF-MedicationStatus 2.0.0, and the rest are
@@ -49,9 +49,11 @@ WHERE {
         (4 "on" rec:MedicationActive)
         (4 "ongoing" rec:MedicationActive)
         (4 "stop" rec:MedicationStopped)
+        (4 "suspended" rec:MedicationPaused)
         (4 "taking" rec:MedicationActive)
         (5 "active" rec:MedicationActive)
         (5 "cancel" rec:MedicationStopped)
+        (5 "entered in error" rec:MedicationEnteredInError)
         (5 "ceased" rec:MedicationStopped)
         (5 "completed" rec:MedicationStopped)
         (5 "continu" rec:MedicationActive)
@@ -69,9 +71,12 @@ WHERE {
         (5 "inactive" rec:MedicationStopped)
         (5 "never started" rec:MedicationStopped)
         (5 "never taken" rec:MedicationStopped)
+        (5 "non active" rec:MedicationStopped)
         (5 "no longer" rec:MedicationStopped)
         (5 "not active" rec:MedicationStopped)
-        (5 "not currently" rec:MedicationStopped)
+        (5 "not current" rec:MedicationStopped)
+        (5 "not continu" rec:MedicationStopped)
+        (5 "not ongoing" rec:MedicationStopped)
         (5 "not started" rec:MedicationStopped)
         (5 "not taking" rec:MedicationStopped)
         (5 "on hold" rec:MedicationPaused)
@@ -82,6 +87,7 @@ WHERE {
         (5 "prior med" rec:MedicationStopped)
         (5 "started" rec:MedicationActive)
         (5 "stopped" rec:MedicationStopped)
+        (5 "stop taking" rec:MedicationStopped)
         (5 "suspended" rec:MedicationPaused)
         (5 "taking" rec:MedicationActive)
         (6 "" rec:MedicationUnknown)
@@ -90,7 +96,7 @@ WHERE {
         (rec:MedicationEnteredInError 0) (rec:MedicationStopped 1) (rec:MedicationPaused 2)
         (rec:MedicationUnknown 3) (rec:MedicationActive 4)
       }
-      FILTER (?by = 6 || IF(?by = 5, CONTAINS(?key, ?text), ?compact = REPLACE(?text, " ", "")))
+      FILTER (?by = 6 || IF(?by = 5, CONTAINS(?compact, REPLACE(?text, " ", "")), ?compact = REPLACE(?text, " ", "")))
       BIND (?by * 10 + ?precedence AS ?score)
     }
     GROUP BY ?entry }
