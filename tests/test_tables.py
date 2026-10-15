@@ -174,11 +174,15 @@ def test_a_panel_member_listed_at_two_sequences_is_two_rows_with_two_names_and_a
     assert nested in members("24318-8") and members("24320-4") == {URIRef("http://loinc.org/rdf/718-7")}
 
 
+PUBLISHED_BEFORE_RO = ROOT / "runtime" / "scripted-input" / "hana" / "tables"
+
+
 def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mapping_row_is_named_by_n11():
     found, broken, misnamed = 0, {}, set()
     for folder, stem, kind, rows in versions():
         found += 1
-        if said := messages(kind, rows):
+        held_as_published = folder.parent == PUBLISHED_BEFORE_RO and kind in (REC.ProductIngredients, REC.VaccineGroups)
+        if (said := messages(kind, rows)) and not held_as_published:
             broken[f"{folder.relative_to(ROOT).as_posix()}/{stem}"] = said
         for row in rows.subjects(RDF.type, OWL.Axiom):
             if str(row) != record_name(name_inputs(rows, row)):

@@ -4,7 +4,9 @@ Feature: Opening a pod
 
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Hana
   enters six flu shots in three pairs by date, and later one more, four drug allergies, four conditions and nine whose codes recur. Her pod is made with the
-  vector tables, which are Priya's kit's series. App's tables open it: "app", holding version 1 of the vocabulary's rule
+  vector tables, which are Priya's kit's series. The apps' product ingredient and vaccine group rows are as the live
+  feed published them before rule list version 9, with skos:broadMatch, which versions 1 to 8 read and the row shapes
+  now refuse. App's tables open it: "app", holding version 1 of the vocabulary's rule
   list and version 1 of "CDC CVX vaccine groups", "app-later", holding versions 2 and 3 as well, "app-new-rules",
   holding a version 2 of the rule list and version 1 of the rule list as an app holds it after a query changed, its
   hash no longer the query's, and "app-rxnorm", holding "app"'s and the vocabulary's rule list's version 2, whose R3
@@ -72,8 +74,8 @@ Feature: Opening a pod
       When the pod is opened with the tables "app-new-rules" on 2026-07-03 at 09:00
       Then that step wrote these matcher judgments:
         | justification             | members                                                                    | used                                                                                                                                                             |
-        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | Matcher rules version 9, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"           |
-        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 9, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
+        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | Matcher rules version 2, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"           |
+        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 2, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
 
     Example: opening again with the same tables writes nothing
       When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
