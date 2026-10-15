@@ -1,4 +1,5 @@
-# Read from the view alone, as an app would: each entry whose status is active, with its RxNorm code, when it started,
+# Read from the view alone, as an app would: each entry whose status is of the active lifecycle class (rule L1), so not
+# one on hold, stopped, not taken or without a status, with its RxNorm code, when it started,
 # and how many records it joins. The code is RxNorm's IRI, or http://www.nlm.nih.gov/research/umls/rxnorm/ followed by
 # the code as written, percent-encoded as ENCODE_FOR_URI does (rule M4). It is the chosen RxNorm code, as the rule that joins
 # medications by a shared code reads it: the code the source selected, when that is an RxNorm code; else the entry's one
@@ -22,7 +23,7 @@ WHERE {
     }
     GROUP BY ?entry
   }
-  ?entry a clinical:Medication ; clinical:status "active" ;
+  ?entry a clinical:Medication ; rec:lifecycle rec:MedicationActive ;
          clinical:drugName ?medication ; cascade:mergedFrom ?record .
   OPTIONAL { ?entry rec:selectedCode ?chosen }
   OPTIONAL { ?entry clinical:startDate ?started }
