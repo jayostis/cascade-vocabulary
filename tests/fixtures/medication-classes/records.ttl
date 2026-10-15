@@ -20,8 +20,8 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :combination a clinical:Medication .
-:combinationVersion prov:specializationOf :combination ; rec:patient :subject ; clinical:drugName "Lisinopril 10 MG / Hydrochlorothiazide 12.5 MG Oral Tablet" ;
-    clinical:rxNormCode rxnorm:206771 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:combinationVersion prov:specializationOf :combination ; rec:patient :subject ; clinical:drugName "Hydrochlorothiazide 12.5 MG / Lisinopril 10 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:197885 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
 :combinationRevision a rec:Revision ; rec:revisionOf :combination ; rec:version :combinationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
@@ -41,4 +41,16 @@
 :stoppedVersion prov:specializationOf :stopped ; rec:patient :subject ; clinical:drugName "Atorvastatin" ;
     clinical:rxNormCode rxnorm:83367 ; clinical:clinicalIntent "prescribed" ; clinical:status "stopped" .
 :stoppedRevision a rec:Revision ; rec:revisionOf :stopped ; rec:version :stoppedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:estradiolTablet a clinical:Medication .
+:estradiolTabletVersion prov:specializationOf :estradiolTablet ; rec:patient :subject ; clinical:drugName "Estradiol 1 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:197658 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:estradiolTabletRevision a rec:Revision ; rec:revisionOf :estradiolTablet ; rec:version :estradiolTabletVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fluoroestradiol a clinical:Medication .
+:fluoroestradiolVersion prov:specializationOf :fluoroestradiol ; rec:patient :subject ; clinical:drugName "Fluoroestradiol F-18" ;
+    clinical:rxNormCode rxnorm:2372221 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:fluoroestradiolRevision a rec:Revision ; rec:revisionOf :fluoroestradiol ; rec:version :fluoroestradiolVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
