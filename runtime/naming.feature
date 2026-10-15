@@ -200,8 +200,8 @@ Feature: Naming
     Its IRI is its SSSOM record_id, and the record rule's three inputs, in this order, are the IRIs of its
     owl:annotatedSource, owl:annotatedProperty and owl:annotatedTarget. A row in two versions has one name in both.
 
-    A panel member row (rec:PanelMembers) has a fourth input, the lexical form of its rec:panelSequence, because LOINC
-    lists a member of a panel at two sequences, and the two places are two rows.
+    A panel member row (rec:PanelMembers) has a fourth input, the canonical lexical form of its rec:panelSequence (no
+    sign, no leading zeros), because LOINC lists a member of a panel at two sequences, and the two places are two rows.
 
     No example shows this rule, because no step writes a row. The vocabulary's tests check every row of every kit and
     vector against it.

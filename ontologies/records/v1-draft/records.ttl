@@ -367,7 +367,7 @@ rec:VariantClassifications a rec:TableKind ;
 
 rec:PanelMembers a rec:TableKind ;
     rdfs:label "panel members"@en ;
-    rdfs:comment "An SSSOM mapping kind: a LOINC panel and each member it directly has (obo:RO_0002351), both LOINC codes, with the member's place in the panel (rec:panelSequence) and whether the panel requires it (rec:observationRequiredInPanel) as LOINC gives them. A nested panel is a member of its parent and has its own members as rows of its own, so nesting is the rows, never a flattened tree. A member listed at two places in one panel is two rows. A row is found by its panel and by its member."@en ;
+    rdfs:comment "An SSSOM mapping kind: a LOINC panel and each member it directly has (obo:RO_0002351), both LOINC codes, with the member's place in the panel (rec:panelSequence) and whether the panel requires it (rec:observationRequiredInPanel) as LOINC gives them. A nested panel is a member of its parent and has its own members as rows of its own, so nesting is the rows, never a flattened tree. A member listed at two places in one panel is two rows. OMOP's relationship Panel contains is the same relation, and has no IRI. A row is found by its panel and by its member."@en ;
     rec:rowShape rec:PanelMemberRowShape ;
     rec:foundBy owl:annotatedSource , owl:annotatedTarget ;
     rec:readByPages true .
@@ -805,19 +805,18 @@ obo:RO_0002248 a owl:ObjectProperty ;
     rdfs:label "has active ingredient"@en ;
     rdfs:isDefinedBy <http://purl.obolibrary.org/obo/ro.owl> ;
     rdfs:seeAlso <http://snomed.info/id/127489000> , <https://www.wikidata.org/wiki/Property:P3781> ;
-    dct:source <https://oborel.github.io/obo-relations/> .
+    dct:source <http://purl.obolibrary.org/obo/ro/releases/2026-09-04/ro.owl> .
 
 obo:RO_0002350 a owl:ObjectProperty ;
     rdfs:label "member of"@en ;
     rdfs:isDefinedBy <http://purl.obolibrary.org/obo/ro.owl> ;
-    dct:source <https://oborel.github.io/obo-relations/> .
+    dct:source <http://purl.obolibrary.org/obo/ro/releases/2026-09-04/ro.owl> .
 
 obo:RO_0002351 a owl:ObjectProperty ;
     rdfs:label "has member"@en ;
-    rdfs:comment "OMOP's relationship Panel contains is the same relation between a panel and its tests; it has no IRI."@en ;
     rdfs:isDefinedBy <http://purl.obolibrary.org/obo/ro.owl> ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.hasMember> ;
-    dct:source <https://oborel.github.io/obo-relations/> .
+    dct:source <http://purl.obolibrary.org/obo/ro/releases/2026-09-04/ro.owl> .
 
 skos:prefLabel a owl:AnnotationProperty ;
     rdfs:label "preferred label"@en ;

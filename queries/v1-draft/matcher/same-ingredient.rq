@@ -3,11 +3,11 @@
 # those, never to one of them, so it matches no record of only one. Each ordered pair is a row, with the version whose
 # rows joined it; a graph that is not a version of a product ingredient table is never read for rows.
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
-PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT DISTINCT ?record ?other ?origin
 WHERE {
@@ -17,8 +17,8 @@ WHERE {
   ?version health:allergenCode ?code .
   ?otherVersion health:allergenCode ?otherCode .
   GRAPH ?origin {
-    ?row owl:annotatedSource ?code ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedTarget ?ingredient .
-    ?otherRow owl:annotatedSource ?otherCode ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedTarget ?ingredient .
+    ?row owl:annotatedSource ?code ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?ingredient .
+    ?otherRow owl:annotatedSource ?otherCode ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?ingredient .
   }
   FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
 }

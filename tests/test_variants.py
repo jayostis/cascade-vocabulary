@@ -210,7 +210,8 @@ def only_unreserved(pattern, stem):
     return all(c in UNRESERVED for c in re.sub(r"[()|?+*]", "", tail))
 
 
-PINNED = {"matcher/same-mapped-code-and-date.rq": (REC.VaccineGroups, REC.CVX, REC.CvxCodeShape)}
+PINNED = {"matcher/same-mapped-code-and-date.rq": (REC.VaccineGroups, REC.CVX, REC.CvxCodeShape),
+          "matcher/same-vaccine-group-and-date.rq": (REC.VaccineGroups, REC.CVX, REC.CvxCodeShape)}
 
 
 def test_the_encoding_check_sees_a_stem_joined_to_a_literal_without_ENCODE_FOR_URI():
