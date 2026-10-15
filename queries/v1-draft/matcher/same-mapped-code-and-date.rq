@@ -4,11 +4,11 @@
 # end with joins nothing. Each ordered pair is a row, with the version whose rows joined it; a graph that is not a
 # version of a vaccine group table is never read for rows.
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT DISTINCT ?record ?other ?origin
 WHERE {
@@ -18,8 +18,8 @@ WHERE {
   ?version health:vaccineCode ?code ; rec:date ?date .
   ?otherVersion health:vaccineCode ?otherCode ; rec:date ?date .
   GRAPH ?origin {
-    ?row owl:annotatedSource ?cvx ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?group .
-    ?otherRow owl:annotatedSource ?otherCvx ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?group .
+    ?row owl:annotatedSource ?cvx ; owl:annotatedProperty obo:RO_0002350 ; owl:annotatedTarget ?group .
+    ?otherRow owl:annotatedSource ?otherCvx ; owl:annotatedProperty obo:RO_0002350 ; owl:annotatedTarget ?group .
   }
   FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
   FILTER (STR(?cvx) = CONCAT("http://hl7.org/fhir/sid/cvx/", STR(?code)))

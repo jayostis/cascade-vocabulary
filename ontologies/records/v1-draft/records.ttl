@@ -2,6 +2,7 @@
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
 @prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
@@ -298,7 +299,7 @@ rec:foundBy a owl:ObjectProperty ;
 
 rec:VaccineGroups a rec:TableKind ;
     rdfs:label "vaccine groups"@en ;
-    rdfs:comment "An SSSOM mapping kind: a vaccine code and a group it is in. A code in several groups has a row for each, and a group's own code maps to itself."@en ;
+    rdfs:comment "An SSSOM mapping kind: a vaccine code and a group it is a member of (obo:RO_0002350). A code in several groups has a row for each, and a group's own code is a member of itself."@en ;
     rec:rowShape rec:VaccineGroupRowShape ;
     rec:foundBy owl:annotatedSource .
 
@@ -324,7 +325,7 @@ rec:SubstanceIngredients a rec:TableKind ;
 
 rec:ProductIngredients a rec:TableKind ;
     rdfs:label "product ingredients"@en ;
-    rdfs:comment "An SSSOM mapping kind: an RxNorm concept and its ingredient, its one ingredient or, with several, the multiple ingredient concept of exactly those. An ingredient maps to itself."@en ;
+    rdfs:comment "An SSSOM mapping kind: an RxNorm concept and its active ingredient (obo:RO_0002248), its one ingredient or, with several, the multiple ingredient concept of exactly those. An ingredient has itself as its ingredient."@en ;
     rec:rowShape rec:ProductIngredientRowShape ;
     rec:foundBy owl:annotatedSource .
 
@@ -363,6 +364,52 @@ rec:VariantClassifications a rec:TableKind ;
     rec:rowShape rec:VariantClassificationRowShape ;
     rec:foundBy rec:RowSubject , rec:hgvsExpression ;
     rec:readByPages true .
+
+rec:PanelMembers a rec:TableKind ;
+    rdfs:label "panel members"@en ;
+    rdfs:comment "An SSSOM mapping kind: a LOINC panel and each member it directly has (obo:RO_0002351), both LOINC codes, with the member's place in the panel (rec:panelSequence) and whether the panel requires it (rec:observationRequiredInPanel) as LOINC gives them. A nested panel is a member of its parent and has its own members as rows of its own, so nesting is the rows, never a flattened tree. A member listed at two places in one panel is two rows. A row is found by its panel and by its member."@en ;
+    rec:rowShape rec:PanelMemberRowShape ;
+    rec:foundBy owl:annotatedSource , owl:annotatedTarget ;
+    rec:readByPages true .
+
+rec:DrugClasses a rec:TableKind ;
+    rdfs:label "drug classes"@en ;
+    rdfs:comment "An SSSOM mapping kind: an RxNorm code and a class it is in, one predicate for each relation: its established pharmacologic class (rec:establishedPharmacologicClass), its mechanism of action (rec:mechanismOfAction), its physiologic effect (rec:physiologicEffect) or its chemical structure (rec:chemicalStructure). The rows are FDA's (Authority FDASPL) as MED-RT indexes them, on an ingredient, a precise ingredient or a code outside the prescribable set; a class is a MED-RT code, and a chemical structure also a MeSH code."@en ;
+    rec:rowShape rec:DrugClassRowShape ;
+    rec:foundBy owl:annotatedSource ;
+    rec:readByPages true .
+
+rec:panelSequence a owl:DatatypeProperty ;
+    rdfs:label "panel sequence"@en ;
+    rdfs:comment "Of a panel member row, the member's SEQUENCE in the panel, as LOINC gives it in its PanelsAndForms file."@en ;
+    rdfs:range xsd:integer .
+
+rec:observationRequiredInPanel a owl:DatatypeProperty ;
+    rdfs:label "observation required in panel"@en ;
+    rdfs:comment "Of a panel member row, whether the panel requires the member, as LOINC writes ObservationRequiredInPanel in its PanelsAndForms file (R, O, C, R-a, Rflx, Rflx-a). A row without it is a member LOINC gives no requirement for."@en ;
+    rdfs:range xsd:string .
+
+rec:establishedPharmacologicClass a owl:ObjectProperty ;
+    rdfs:label "established pharmacologic class"@en ;
+    rdfs:comment "Of a drug, a class FDA lists it in by its established pharmacologic class, MED-RT's has_EPC."@en ;
+    dct:source <https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html> .
+
+rec:mechanismOfAction a owl:ObjectProperty ;
+    rdfs:label "mechanism of action"@en ;
+    rdfs:comment "Of a drug, a class naming how it acts, MED-RT's has_MoA."@en ;
+    rdfs:seeAlso obo:NCIT_R124 ;
+    dct:source <https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html> .
+
+rec:physiologicEffect a owl:ObjectProperty ;
+    rdfs:label "physiologic effect"@en ;
+    rdfs:comment "Of a drug, a class naming what it does in the body, MED-RT's has_PE."@en ;
+    rdfs:seeAlso obo:NCIT_R125 ;
+    dct:source <https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html> .
+
+rec:chemicalStructure a owl:ObjectProperty ;
+    rdfs:label "chemical structure"@en ;
+    rdfs:comment "Of a drug, a class naming its chemical structure, MED-RT's has_SC: a MED-RT code or a MeSH code."@en ;
+    dct:source <https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html> .
 
 rec:readByPages a owl:DatatypeProperty ;
     rdfs:label "read by pages"@en ;
@@ -458,6 +505,21 @@ rec:LOINC a rec:CodeSystem ;
     void:uriSpace "http://loinc.org/rdf/" ;
     skos:exactMatch <http://loinc.org> ;
     dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/v3/namingSystems/v3-loinc.xml> .
+
+rec:MEDRT a rec:CodeSystem ;
+    rdfs:label "MED-RT"@en ;
+    rdfs:comment "The NUI as MED-RT writes it: N0000175562. Cascade's own space: neither VA, HL7 Terminology nor NCI EVS publishes an IRI per code."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/medrt/" ;
+    skos:exactMatch <http://va.gov/terminology/medrt> ;
+    dct:source <https://terminology.hl7.org/MEDRT.html> .
+
+rec:MeSH a rec:CodeSystem ;
+    rdfs:label "MeSH"@en ;
+    rdfs:comment "A MeSH unique ID as NLM writes it: a concept M0006414, as MED-RT gives them, or a descriptor D004095."@en ;
+    void:uriSpace "http://id.nlm.nih.gov/mesh/" ;
+    rec:pageTemplate "https://id.nlm.nih.gov/mesh/{code}.html" ;
+    skos:exactMatch <https://www.nlm.nih.gov/mesh> ;
+    dct:source <https://terminology.hl7.org/CodeSystem-MSH.html> .
 
 rec:UNII a rec:CodeSystem ;
     rdfs:label "UNII"@en ;
@@ -738,6 +800,24 @@ sssom:mapping_cardinality a owl:DatatypeProperty ;
     rdfs:label "mapping cardinality"@en ;
     rdfs:isDefinedBy <https://w3id.org/sssom/schema/> ;
     dct:source <https://github.com/mapping-commons/sssom/blob/667d3c579d92ad2e1a480503625eeef1e6af8e6d/src/sssom_schema/schema/sssom_schema.yaml> .
+
+obo:RO_0002248 a owl:ObjectProperty ;
+    rdfs:label "has active ingredient"@en ;
+    rdfs:isDefinedBy <http://purl.obolibrary.org/obo/ro.owl> ;
+    rdfs:seeAlso <http://snomed.info/id/127489000> , <https://www.wikidata.org/wiki/Property:P3781> ;
+    dct:source <https://oborel.github.io/obo-relations/> .
+
+obo:RO_0002350 a owl:ObjectProperty ;
+    rdfs:label "member of"@en ;
+    rdfs:isDefinedBy <http://purl.obolibrary.org/obo/ro.owl> ;
+    dct:source <https://oborel.github.io/obo-relations/> .
+
+obo:RO_0002351 a owl:ObjectProperty ;
+    rdfs:label "has member"@en ;
+    rdfs:comment "OMOP's relationship Panel contains is the same relation between a panel and its tests; it has no IRI."@en ;
+    rdfs:isDefinedBy <http://purl.obolibrary.org/obo/ro.owl> ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.hasMember> ;
+    dct:source <https://oborel.github.io/obo-relations/> .
 
 skos:prefLabel a owl:AnnotationProperty ;
     rdfs:label "preferred label"@en ;

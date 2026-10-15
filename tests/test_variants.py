@@ -187,7 +187,7 @@ def test_the_kinds_an_app_keeps_are_those_a_rule_list_names_and_those_marked_rea
     marked = {kind for kind in declared if (kind, REC.readByPages, Literal(True)) in kinds()}
     named = {kind for path in (ROOT / "runtime" / "rule-list").glob("*.ttl") if path.name != "references.ttl"
              for kind in parsed(path).objects(None, REC.tableKind)}
-    assert marked == {REC.CodeNames, REC.CodeStatus, REC.VariantClassifications}
+    assert marked == {REC.CodeNames, REC.CodeStatus, REC.VariantClassifications, REC.PanelMembers, REC.DrugClasses}
     assert declared - named - marked == {REC.SubstanceIngredients, REC.NdcDrugs}
 
 

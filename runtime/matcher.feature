@@ -92,7 +92,7 @@ Feature: The matcher's procedure
     two upper-case hexadecimal digits of its UTF-8), <http://hl7.org/fhir/sid/cvx/141>; and an HGVS expression, which
     holds reserved characters, as genomics:hgvsCDot "NM_000249.4:c.2042C>T" is
     <http://varnomen.hgvs.org/NM_000249.4%3Ac.2042C%3ET>. The comparison same-mapped-code-and-date.rq, whose bytes
-    every rule list version from 1 to 7 pins, joins the unencoded literal, and it reads CVX rows only, whose codes are
+    every rule list version from 1 to 9 pins, joins the unencoded literal, and it reads CVX rows only, whose codes are
     digits, which the encoding leaves as they are. The rationale is decisions/hgvs-and-clinvar-codes.md.
 
     - R1, jdg:SameCode: queries/v1-draft/matcher/same-code.rq.
@@ -151,10 +151,16 @@ Feature: The matcher's procedure
       rec:VariantClassifications, for variants only. Two variants whose current versions find one row of one version
       of a variant classifications table.
 
+    Version 9 of the vocabulary's list changes R3's and R4's queries to read the rows of the product ingredients and
+    vaccine groups kinds under the relations their prior art uses, obo:RO_0002248 (has active ingredient) and
+    obo:RO_0002350 (member of), where they read skos:broadMatch. The two files keep their names, so versions 1 to 8
+    name the same bytes; the tables that were read under skos:broadMatch are republished with the new relations.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
-    and R10 in its version 6, R5's newer query and R11 in its version 7, and R12 and R13 in its version 8.
+    and R10 in its version 6, R5's newer query and R11 in its version 7, R12 and R13 in its version 8, and R3's and
+    R4's changed queries in its version 9.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
