@@ -11,6 +11,7 @@ rest of its prose, with the examples that show it beneath it; a rule no example 
 | Arrivals | [`arrivals.feature`](arrivals.feature) |
 | The matcher's procedure | [`matcher.feature`](matcher.feature) |
 | Opening a pod | [`opening.feature`](opening.feature) |
+| Medication lifecycle | [`lifecycle.feature`](lifecycle.feature) |
 | Nothing is edited or deleted | [`nothing-is-edited.feature`](nothing-is-edited.feature) |
 | Write order | [`write-order.feature`](write-order.feature) |
 | The conformance kit | [`the-kit.feature`](the-kit.feature) |

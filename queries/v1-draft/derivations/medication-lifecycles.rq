@@ -1,0 +1,103 @@
+# An entry's status, however its source wrote it, is classed by the first step of runtime rule L1 that holds, and the step
+# is recorded. The key is the status lower-cased, each run of other characters than a-z and 0-9 made one space, trimmed.
+# A step-2 to step-4 row holds when it equals the key, or equals it with the spaces of both removed ('d/c' is dc). A
+# step-5 row, a fragment, holds when the key contains it, and the class among those that do is the most conservative: the
+# lowest precedence. Step 6 holds always, so every entry has a class and 'unmatched' is step 6. The FHIR rows are the codes
+# of R4's MedicationRequest.status and MedicationStatement.status (a code in both has one row), 'aborted' and 'nullified'
+# are HL7 v3 ActStatus codes mapped by the C-CDA on FHIR ConceptMap CF-MedicationStatus 2.0.0, and the rest are
+# cascade-knowledge's medication-status-synonym rows. A negated hold ('no longer on hold') is a reader's job, not a row's.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT { ?entry rec:lifecycle ?class ; rec:lifecycleStep ?step }
+WHERE {
+  { SELECT ?entry (MIN(?score) AS ?best)
+    WHERE {
+      ?record a clinical:Medication ; rec:inEntry ?entry .
+      OPTIONAL { ?entry rec:statusFrom/pav:hasCurrentVersion/clinical:status ?stated }
+      BIND (REPLACE(REPLACE(LCASE(STR(COALESCE(?stated, ""))), "[^a-z0-9]+", " "), "^ +| +$", "") AS ?key)
+      BIND (REPLACE(?key, " ", "") AS ?compact)
+      VALUES (?by ?text ?kind) {
+        (2 "" rec:MedicationUnknown)
+        (3 "active" rec:MedicationActive)
+        (3 "cancelled" rec:MedicationStopped)
+        (3 "completed" rec:MedicationStopped)
+        (3 "draft" rec:MedicationUnknown)
+        (3 "entered in error" rec:MedicationEnteredInError)
+        (3 "intended" rec:MedicationUnknown)
+        (3 "not taken" rec:MedicationStopped)
+        (3 "on hold" rec:MedicationPaused)
+        (3 "stopped" rec:MedicationStopped)
+        (3 "unknown" rec:MedicationUnknown)
+        (4 "aborted" rec:MedicationStopped)
+        (4 "canceled" rec:MedicationStopped)
+        (4 "cont" rec:MedicationActive)
+        (4 "continue" rec:MedicationActive)
+        (4 "continued" rec:MedicationActive)
+        (4 "continuing" rec:MedicationActive)
+        (4 "current" rec:MedicationActive)
+        (4 "dc" rec:MedicationStopped)
+        (4 "dcd" rec:MedicationStopped)
+        (4 "discontinued" rec:MedicationStopped)
+        (4 "held" rec:MedicationPaused)
+        (4 "hold" rec:MedicationPaused)
+        (4 "inactive" rec:MedicationStopped)
+        (4 "nullified" rec:MedicationEnteredInError)
+        (4 "off" rec:MedicationStopped)
+        (4 "on" rec:MedicationActive)
+        (4 "ongoing" rec:MedicationActive)
+        (4 "stop" rec:MedicationStopped)
+        (4 "taking" rec:MedicationActive)
+        (5 "active" rec:MedicationActive)
+        (5 "cancel" rec:MedicationStopped)
+        (5 "ceased" rec:MedicationStopped)
+        (5 "completed" rec:MedicationStopped)
+        (5 "continu" rec:MedicationActive)
+        (5 "continued off" rec:MedicationStopped)
+        (5 "current" rec:MedicationActive)
+        (5 "did not start" rec:MedicationStopped)
+        (5 "discontinu" rec:MedicationStopped)
+        (5 "expired" rec:MedicationStopped)
+        (5 "finished" rec:MedicationStopped)
+        (5 "former" rec:MedicationStopped)
+        (5 "historical" rec:MedicationStopped)
+        (5 "history of" rec:MedicationStopped)
+        (5 "hx of" rec:MedicationStopped)
+        (5 "in the past" rec:MedicationStopped)
+        (5 "inactive" rec:MedicationStopped)
+        (5 "never started" rec:MedicationStopped)
+        (5 "never taken" rec:MedicationStopped)
+        (5 "no longer" rec:MedicationStopped)
+        (5 "not active" rec:MedicationStopped)
+        (5 "not currently" rec:MedicationStopped)
+        (5 "not started" rec:MedicationStopped)
+        (5 "not taking" rec:MedicationStopped)
+        (5 "on hold" rec:MedicationPaused)
+        (5 "ongoing" rec:MedicationActive)
+        (5 "past med" rec:MedicationStopped)
+        (5 "presently" rec:MedicationActive)
+        (5 "previously" rec:MedicationStopped)
+        (5 "prior med" rec:MedicationStopped)
+        (5 "started" rec:MedicationActive)
+        (5 "stopped" rec:MedicationStopped)
+        (5 "suspended" rec:MedicationPaused)
+        (5 "taking" rec:MedicationActive)
+        (6 "" rec:MedicationUnknown)
+      }
+      VALUES (?kind ?precedence) {
+        (rec:MedicationEnteredInError 0) (rec:MedicationStopped 1) (rec:MedicationPaused 2)
+        (rec:MedicationUnknown 3) (rec:MedicationActive 4)
+      }
+      FILTER (?by = 6 || IF(?by = 5, CONTAINS(?key, ?text), ?compact = REPLACE(?text, " ", "")))
+      BIND (?by * 10 + ?precedence AS ?score)
+    }
+    GROUP BY ?entry }
+  BIND (xsd:integer(FLOOR(?best / 10)) AS ?step)
+  VALUES (?class ?held) {
+    (rec:MedicationEnteredInError 0) (rec:MedicationStopped 1) (rec:MedicationPaused 2)
+    (rec:MedicationUnknown 3) (rec:MedicationActive 4)
+  }
+  FILTER (?held = ?best - 10 * ?step)
+}

@@ -1,0 +1,26 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "medication-lifecycles" ;
+  rdfs:comment "One medication for each way a status reaches an entry: each FHIR R4 code the table needs, no status at all, the HL7 v3 ActStatus codes aborted and suspended as C-CDA writes them, a synonym, a fragment that a more conservative one outranks, and text nothing matches." ;
+  mf:entries (
+    <#what-each-status-is-classed-as>
+    <#my-active-medications>
+  ) .
+
+<#what-each-status-is-classed-as> a mf:QueryEvaluationTest ;
+  mf:name "what-each-status-is-classed-as" ;
+  rdfs:comment "Each entry has one lifecycle class and the step of the matching order that gave it; an absent status is unknown at step 2, and text nothing matches is unknown at step 6." ;
+  mf:action [ qt:query <what-each-status-is-classed-as.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <what-each-status-is-classed-as.srj> .
+
+<#my-active-medications> a mf:QueryEvaluationTest ;
+  mf:name "my-active-medications" ;
+  rdfs:comment "Only the active entry: not one on hold, not taken, completed, stopped, cancelled, a draft, one without a status, a C-CDA aborted or suspended one, a discontinued one or one no longer taken." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20active%20medications.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <my-active-medications.srj> .

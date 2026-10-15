@@ -1,0 +1,10 @@
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?medication ?lifecycle ?step
+WHERE {
+  ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
+  ?entry rec:lifecycle ?lifecycle ; rec:lifecycleStep ?step .
+}
+ORDER BY ?medication
