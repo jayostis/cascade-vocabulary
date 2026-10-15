@@ -772,3 +772,56 @@ dct:isReplacedBy a rdf:Property ;
 rec:lens a owl:ObjectProperty ;
     rdfs:label "lens"@en ;
     rdfs:comment "The query file of the lens a query test builds its pod under."@en .
+
+# Medication lifecycle
+
+rec:lifecycle a owl:ObjectProperty ;
+    rdfs:label "lifecycle"@en ;
+    rdfs:comment "Of a medication entry in its view, the concept of rec:MedicationLifecycle that its status classifies to, so an app reads whether the medication is still taken without the status; rec:MedicationUnknown where it states none."@en ;
+    rdfs:domain clinical:Medication ;
+    rdfs:range skos:Concept .
+
+rec:statusLifecycle a owl:ObjectProperty ;
+    rdfs:label "status lifecycle"@en ;
+    rdfs:comment "Derived: the lifecycle class of the status the entry shows. The medications view says it as rec:lifecycle, a name of its own because a query reading both the derived state and the view would otherwise find each triple twice."@en ;
+    rdfs:domain clinical:Medication ;
+    rdfs:range skos:Concept .
+
+rec:statusLifecycleStep a owl:DatatypeProperty ;
+    rdfs:label "status lifecycle step"@en ;
+    rdfs:comment "Derived: which step of the matching order in runtime rule L1 classified the entry: 2 for an absent or blank status, 3 for a FHIR status code, 4 for a synonym, 5 for a fragment, 6 for none of them, which leaves the class unknown and unmatched."@en ;
+    rdfs:domain clinical:Medication ;
+    rdfs:range xsd:integer .
+
+rec:MedicationLifecycle a skos:ConceptScheme ;
+    rdfs:label "Medication lifecycle"@en ;
+    rdfs:comment "Whether a medication is still being taken, however its source states a status. The classes are cascade-knowledge's medication-status-lifecycle, the codes of FHIR R4's MedicationRequest.status and MedicationStatement.status each in one, so an absent status is unknown rather than ended. The form follows a FHIR ConceptMap, a table of source codes to target codes published with a specification; the rows are in derivations/medication-lifecycles.rq, because they change only with this vocabulary."@en ;
+    dct:source <https://hl7.org/fhir/R4/valueset-medicationrequest-status.html> , <https://hl7.org/fhir/R4/valueset-medication-statement-status.html> ,
+        <https://hl7.org/fhir/us/ccda/ConceptMap-CF-MedicationStatus.html> ;
+    skos:hasTopConcept rec:MedicationActive , rec:MedicationStopped , rec:MedicationPaused , rec:MedicationUnknown ,
+        rec:MedicationEnteredInError .
+
+rec:MedicationActive a skos:Concept ;
+    skos:inScheme rec:MedicationLifecycle ;
+    skos:prefLabel "active" ;
+    skos:definition "The source states the medication is being taken now."@en .
+
+rec:MedicationStopped a skos:Concept ;
+    skos:inScheme rec:MedicationLifecycle ;
+    skos:prefLabel "stopped" ;
+    skos:definition "The source states the medication is not being taken: it ended, was withdrawn before use, or was never taken."@en .
+
+rec:MedicationPaused a skos:Concept ;
+    skos:inScheme rec:MedicationLifecycle ;
+    skos:prefLabel "paused" ;
+    skos:definition "The source states the medication is temporarily halted and expected to continue. Not being taken today, but not ended either."@en .
+
+rec:MedicationUnknown a skos:Concept ;
+    skos:inScheme rec:MedicationLifecycle ;
+    skos:prefLabel "unknown" ;
+    skos:definition "The source states neither: the status is absent, unknown, or describes an order or intention that has not started. Not evidence either way."@en .
+
+rec:MedicationEnteredInError a skos:Concept ;
+    skos:inScheme rec:MedicationLifecycle ;
+    skos:prefLabel "entered-in-error" ;
+    skos:definition "The record itself is repudiated. Not a statement about the medication at all, so not read as stopped; \"My active medications\" leaves it out."@en .
