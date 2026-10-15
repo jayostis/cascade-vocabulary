@@ -4,7 +4,7 @@
 # one the source selected and each it carries, a literal read as the IRI of that code. ?entry, ?medication and ?class
 # are as they sound, ?relation is the class row's predicate (rec:establishedPharmacologicClass, rec:mechanismOfAction,
 # rec:physiologicEffect or rec:chemicalStructure), ?origin the version of the drug classes table that holds the row,
-# and ?through the code the row is on.
+# and ?through the code the row is on, which ?stated says the entry states itself.
 #
 # MED-RT classes the ingredient and the precise ingredient, never a product, and FDA keys a class on whichever of them
 # its label names. A join is made only on exact evidence, relation by relation, for each code an entry states:
@@ -28,7 +28,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT ?entry ?medication ?class ?relation ?origin (SUBSTR(MIN(CONCAT(?step, STR(?on))), 2) AS ?through)
+SELECT ?entry ?medication ?class ?relation ?origin (SUBSTR(MIN(CONCAT(?step, STR(?on))), 2) AS ?through) (STRSTARTS(MIN(CONCAT(?step, STR(?on))), "0") AS ?stated)
 WHERE {
   {
     { SELECT ?entry ?medication ?code
