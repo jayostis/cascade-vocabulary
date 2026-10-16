@@ -23,7 +23,9 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
 - [`conformance/`](conformance): the conformance kits, the scenarios every runtime must pass, each a story, its
   scripted input and its right answers: [Alex Rivera's](conformance/alex-rivera), from FHIR, and
   [Priya Natarajan's](conformance/priya-natarajan), from FHIR and C-CDA together, with medications and lab results, and
-  [Martin Okafor's](conformance/martin-okafor), one variant in two FHIR reports beside what ClinVar says of it.
+  [Martin Okafor's](conformance/martin-okafor), one variant in two FHIR reports beside what ClinVar says of it. An
+  example reads the tables its story holds as the matcher's queries do, so a kit may ask a published query by its file,
+  as Priya's asks `tables/medication-classes.rq` of an app's tables.
 
 Beside them, [`tests/fixtures/`](tests/fixtures) holds the small hand-made pods each query is tested on.
 
