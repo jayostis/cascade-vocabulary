@@ -379,3 +379,25 @@ Feature: Priya Natarajan's pod
         | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2823-3> | 2        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 | the entry of KHF-LAB-K-0327 |
         | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2823-3> | 2        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 | the entry of KHF-LAB-K-0610 |
         | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2075-0> | 3        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 |                             |
+
+  Rule: An estradiol tablet is an estrogen, told from a product of fluoroestradiol F-18 by its precise ingredient
+    Priya enters estradiol 1 MG Oral Tablet (RxNorm 197658) she takes. An app opens her pod with tables of its own
+    (app-precise): RxNorm product ingredients that state precise ingredients, MED-RT drug classes and MED-RT names, each
+    only the rows her estradiol needs, and the vocabulary's rule list version 9. Estradiol (4083) and its precise
+    ingredient fluoroestradiol F-18 (2372221) are classed differently: FDA gives estradiol Estrogen [EPC] (N0000175825)
+    and Estrogen Receptor Agonists [MoA] (N0000000100), and fluoroestradiol F-18 Radioactive Diagnostic Agent [EPC] and
+    Positron Emitting Activity [MoA]. The version gives her tablet no precise ingredient, and it states precise
+    ingredients (estradiol valerate 10 MG/ML Injectable Solution, 310189, has one), so her tablet holds estradiol itself
+    and is in estradiol's own classes. Asked the published tables/medication-classes.rq, which cannot tell the two
+    apart, it is in neither.
+
+    Example: her estradiol is an estrogen through estradiol
+      Given Priya enters "estradiol" on 2025-08-13 at 08:00
+      When the pod is opened with the tables "app-precise" on 2025-08-13 at 09:00
+      Then "app-precise" wrote 6 files
+      When the query "tables/medication-classes-through-precise-ingredients.rq" is asked
+      Then it answers:
+        | entry                                                         | medication                   | class                                                    | relation                          | origin                                                                         | through                                            | stated |
+        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000175825> | rec:establishedPharmacologicClass | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/4083" | false  |
+        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000100> | rec:mechanismOfAction             | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/4083" | false  |
+        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <http://id.nlm.nih.gov/mesh/M0447348>                    | rec:chemicalStructure             | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/4083" | false  |
