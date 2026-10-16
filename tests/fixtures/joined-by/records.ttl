@@ -1,0 +1,47 @@
+@prefix : <urn:x:> .
+@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:a1 a health:AllergyRecord .
+:a1Version prov:specializationOf :a1 ; rec:patient :subject ; health:allergen "Allergen a1" .
+:a1Revision a rec:Revision ; rec:revisionOf :a1 ; rec:version :a1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:a2 a health:AllergyRecord .
+:a2Version prov:specializationOf :a2 ; rec:patient :subject ; health:allergen "Allergen a2" .
+:a2Revision a rec:Revision ; rec:revisionOf :a2 ; rec:version :a2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:b1 a health:AllergyRecord .
+:b1Version prov:specializationOf :b1 ; rec:patient :subject ; health:allergen "Allergen b1" .
+:b1Revision a rec:Revision ; rec:revisionOf :b1 ; rec:version :b1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:b2 a health:AllergyRecord .
+:b2Version prov:specializationOf :b2 ; rec:patient :subject ; health:allergen "Allergen b2" .
+:b2Revision a rec:Revision ; rec:revisionOf :b2 ; rec:version :b2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:c1 a health:AllergyRecord .
+:c1Version prov:specializationOf :c1 ; rec:patient :subject ; health:allergen "Allergen c1" .
+:c1Revision a rec:Revision ; rec:revisionOf :c1 ; rec:version :c1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:c2 a health:AllergyRecord .
+:c2Version prov:specializationOf :c2 ; rec:patient :subject ; health:allergen "Allergen c2" .
+:c2Revision a rec:Revision ; rec:revisionOf :c2 ; rec:version :c2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:d1 a health:AllergyRecord .
+:d1Version prov:specializationOf :d1 ; rec:patient :subject ; health:allergen "Allergen d1" .
+:d1Revision a rec:Revision ; rec:revisionOf :d1 ; rec:version :d1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:d2 a health:AllergyRecord .
+:d2Version prov:specializationOf :d2 ; rec:patient :subject ; health:allergen "Allergen d2" .
+:d2Revision a rec:Revision ; rec:revisionOf :d2 ; rec:version :d2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

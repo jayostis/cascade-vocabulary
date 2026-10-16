@@ -309,6 +309,18 @@ Feature: Alex Rivera's pod
         | justification       |
         | jdg:SameCodeAndDate |
 
+    Example: under everyday the flu entry names the vaccine group table that joined it, and no rule list or record version
+      When the pod is read as it stood after "E13"
+      And the query "tables/joined-by.rq" is asked
+      Then it answers:
+        | entry                     | used                                    |
+        | the entry of H1-IMM-FLU25 | CVX vaccine group table version 2026-08 |
+
+    Example: under export J17's table does not count, so no entry names one
+      When the pod is read as it stood after "E13", under the export lens
+      And the query "tables/joined-by.rq" is asked
+      Then it answers nothing
+
   Rule: P13. A retracted judgment
     J20 retracts J10: bronchitis and asthma are apart again, and nothing replaces J10.
 

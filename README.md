@@ -26,7 +26,7 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
   [Martin Okafor's](conformance/martin-okafor), one variant in two FHIR reports beside what ClinVar says of it. An
   example reads the tables its story holds as the matcher's queries do, so a kit may ask a published query by its file,
   as Priya's asks `tables/medication-classes.rq` of an app's tables, and `tables/panel-results.rq`, her lab results in
-  a LOINC panel she names.
+  a LOINC panel she names; Alex's asks `tables/joined-by.rq`, the tables that joined his flu shots.
 
 Beside them, [`tests/fixtures/`](tests/fixtures) holds the small hand-made pods each query is tested on.
 
