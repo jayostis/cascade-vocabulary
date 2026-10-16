@@ -201,8 +201,8 @@ rec:ProductIngredientRowShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path owl:annotatedProperty ;
-        sh:hasValue obo:RO_0002248 ;
-        sh:message "A product ingredient row gives its code its ingredient with obo:RO_0002248, has active ingredient."@en ;
+        sh:in ( obo:RO_0002248 rec:hasPreciseIngredient ) ;
+        sh:message "A product ingredient row gives its code its ingredient with obo:RO_0002248, has active ingredient, or a precise ingredient with rec:hasPreciseIngredient."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path owl:annotatedTarget ;

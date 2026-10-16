@@ -1,0 +1,102 @@
+@prefix : <urn:x:> .
+@prefix medrt: <https://ns.cascadeprotocol.org/codes/medrt/> .
+@prefix mesh: <http://id.nlm.nih.gov/mesh/> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix sssom: <https://w3id.org/sssom/> .
+
+:ingredients-1 {
+  :ketoconazole a owl:Axiom ; owl:annotatedSource rxnorm:6135 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:6135 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :levoketoconazole a owl:Axiom ; owl:annotatedSource rxnorm:2588846 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:6135 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :levoketoconazoleTablet a owl:Axiom ; owl:annotatedSource rxnorm:2588848 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:6135 ; sssom:mapping_justification semapv:MappingChaining .
+  :levoketoconazoleTabletPrecisely a owl:Axiom ; owl:annotatedSource rxnorm:2588848 ; owl:annotatedProperty rec:hasPreciseIngredient ;
+      owl:annotatedTarget rxnorm:2588846 ; sssom:mapping_justification semapv:MappingChaining .
+  :recorlev a owl:Axiom ; owl:annotatedSource rxnorm:2588849 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:6135 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :recorlevPrecisely a owl:Axiom ; owl:annotatedSource rxnorm:2588849 ; owl:annotatedProperty rec:hasPreciseIngredient ;
+      owl:annotatedTarget rxnorm:2588846 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :estradiol a owl:Axiom ; owl:annotatedSource rxnorm:4083 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:4083 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :fluoroestradiol a owl:Axiom ; owl:annotatedSource rxnorm:2372221 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:4083 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :estradiolTablet a owl:Axiom ; owl:annotatedSource rxnorm:197658 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:4083 ; sssom:mapping_justification semapv:MappingChaining .
+  :lisinopril a owl:Axiom ; owl:annotatedSource rxnorm:29046 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:29046 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :anhydrous a owl:Axiom ; owl:annotatedSource rxnorm:1546022 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:29046 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :lisinoprilTablet a owl:Axiom ; owl:annotatedSource rxnorm:314076 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:29046 ; sssom:mapping_justification semapv:MappingChaining .
+  :dotatate a owl:Axiom ; owl:annotatedSource rxnorm:1797118 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:1797118 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :lutetiumDotatate a owl:Axiom ; owl:annotatedSource rxnorm:1999335 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:1797118 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :galliumDotatate a owl:Axiom ; owl:annotatedSource rxnorm:676679 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:1797118 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :lutathera a owl:Axiom ; owl:annotatedSource rxnorm:1999687 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:1797118 ; sssom:mapping_justification semapv:MappingChaining .
+  :lutatheraPrecisely a owl:Axiom ; owl:annotatedSource rxnorm:1999687 ; owl:annotatedProperty rec:hasPreciseIngredient ;
+      owl:annotatedTarget rxnorm:1999335 ; sssom:mapping_justification semapv:MappingChaining .
+  :choline a owl:Axiom ; owl:annotatedSource rxnorm:2449 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:2449 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :cholineCarbon a owl:Axiom ; owl:annotatedSource rxnorm:1425419 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:2449 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :cholineTablet a owl:Axiom ; owl:annotatedSource rxnorm:198581 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:2449 ; sssom:mapping_justification semapv:MappingChaining .
+  :combination a owl:Axiom ; owl:annotatedSource rxnorm:1191262 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:465680 ; sssom:mapping_justification semapv:MappingChaining .
+  :combinationPrecisely a owl:Axiom ; owl:annotatedSource rxnorm:1191262 ; owl:annotatedProperty rec:hasPreciseIngredient ;
+      owl:annotatedTarget rxnorm:4461 ; sssom:mapping_justification semapv:MappingChaining .
+  :fluocinoloneAcetonide a owl:Axiom ; owl:annotatedSource rxnorm:4461 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:25126 ; sssom:mapping_justification semapv:ManualMappingCuration .
+}
+
+:older-1 {
+  :olderEstradiol a owl:Axiom ; owl:annotatedSource rxnorm:4083 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:4083 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :olderFluoroestradiol a owl:Axiom ; owl:annotatedSource rxnorm:2372221 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:4083 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :olderEstradiolTablet a owl:Axiom ; owl:annotatedSource rxnorm:197659 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:4083 ; sssom:mapping_justification semapv:MappingChaining .
+  :olderLisinopril a owl:Axiom ; owl:annotatedSource rxnorm:29046 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:29046 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :olderAnhydrous a owl:Axiom ; owl:annotatedSource rxnorm:1546022 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:29046 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :olderLisinoprilTablet a owl:Axiom ; owl:annotatedSource rxnorm:314077 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:29046 ; sssom:mapping_justification semapv:MappingChaining .
+}
+
+:classes-1 {
+  :ketoconazoleEpc a owl:Axiom ; owl:annotatedSource rxnorm:6135 ; owl:annotatedProperty rec:establishedPharmacologicClass ;
+      owl:annotatedTarget medrt:N0000175487 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :ketoconazoleSc a owl:Axiom ; owl:annotatedSource rxnorm:6135 ; owl:annotatedProperty rec:chemicalStructure ;
+      owl:annotatedTarget mesh:M0002083 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :levoketoconazoleEpc a owl:Axiom ; owl:annotatedSource rxnorm:2588846 ; owl:annotatedProperty rec:establishedPharmacologicClass ;
+      owl:annotatedTarget medrt:N0000193935 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :estradiolEpc a owl:Axiom ; owl:annotatedSource rxnorm:4083 ; owl:annotatedProperty rec:establishedPharmacologicClass ;
+      owl:annotatedTarget medrt:N0000175825 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :estradiolMoa a owl:Axiom ; owl:annotatedSource rxnorm:4083 ; owl:annotatedProperty rec:mechanismOfAction ;
+      owl:annotatedTarget medrt:N0000000100 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :estradiolSc a owl:Axiom ; owl:annotatedSource rxnorm:4083 ; owl:annotatedProperty rec:chemicalStructure ;
+      owl:annotatedTarget mesh:M0447348 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :fluoroestradiolEpc a owl:Axiom ; owl:annotatedSource rxnorm:2372221 ; owl:annotatedProperty rec:establishedPharmacologicClass ;
+      owl:annotatedTarget medrt:N0000177914 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :fluoroestradiolMoa a owl:Axiom ; owl:annotatedSource rxnorm:2372221 ; owl:annotatedProperty rec:mechanismOfAction ;
+      owl:annotatedTarget medrt:N0000175869 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :galliumDotatateEpc a owl:Axiom ; owl:annotatedSource rxnorm:676679 ; owl:annotatedProperty rec:establishedPharmacologicClass ;
+      owl:annotatedTarget medrt:N0000177914 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :galliumDotatateMoa a owl:Axiom ; owl:annotatedSource rxnorm:676679 ; owl:annotatedProperty rec:mechanismOfAction ;
+      owl:annotatedTarget medrt:N0000175869 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :cholineCarbonEpc a owl:Axiom ; owl:annotatedSource rxnorm:1425419 ; owl:annotatedProperty rec:establishedPharmacologicClass ;
+      owl:annotatedTarget medrt:N0000177914 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :anhydrousEpc a owl:Axiom ; owl:annotatedSource rxnorm:1546022 ; owl:annotatedProperty rec:establishedPharmacologicClass ;
+      owl:annotatedTarget medrt:N0000175562 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :fluocinoloneAcetonideEpc a owl:Axiom ; owl:annotatedSource rxnorm:4461 ; owl:annotatedProperty rec:establishedPharmacologicClass ;
+      owl:annotatedTarget medrt:N0000175576 ; sssom:mapping_justification semapv:ManualMappingCuration .
+}

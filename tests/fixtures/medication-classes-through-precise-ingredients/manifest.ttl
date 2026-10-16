@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "medication-classes-through-precise-ingredients" ;
+  rdfs:comment "Two versions of product ingredients tables. The first states precise ingredients: it maps levoketoconazole 150 MG Oral Tablet (2588848) and the brand name Recorlev (2588849) to ketoconazole (6135) and to their precise ingredient levoketoconazole (2588846); estradiol 1 MG Oral Tablet (197658), with none, and fluoroestradiol F-18 (2372221) to estradiol (4083); lisinopril 10 MG Oral Tablet (314076), with none, and lisinopril anhydrous (1546022) to lisinopril (29046); a cream of fluocinolone acetonide, hydroquinone and tretinoin (1191262) to its multiple ingredient concept (465680) and to fluocinolone acetonide (4461), a form of fluocinolone (25126); Lutathera (1999687) to dotatate (1797118) and to its precise ingredient lutetium Lu 177 dotatate (1999335), beside gallium Ga-68 dotatate (676679); and choline 650 MG Oral Tablet (198581), with none, beside choline C-11 (1425419), to choline (2449). The second states none, and maps estradiol 2 MG Oral Tablet (197659) and lisinopril 20 MG Oral Tablet (314077) with their ingredients' forms. One version of a drug classes table holds FDA's rows on ketoconazole, levoketoconazole, estradiol, fluoroestradiol F-18, lisinopril anhydrous, fluocinolone acetonide, gallium Ga-68 dotatate and choline C-11. Active medications for each of the nine products and for fluoroestradiol F-18; and a stopped one for levoketoconazole." ;
+  mf:entries (
+    <#medication-classes-through-precise-ingredients>
+  ) .
+
+<#medication-classes-through-precise-ingredients> a mf:QueryEvaluationTest ;
+  mf:name "medication-classes-through-precise-ingredients" ;
+  rdfs:comment "The levoketoconazole tablet and Recorlev take their precise ingredient's established pharmacologic class, not ketoconazole's, and ketoconazole's chemical structure, which levoketoconazole bears none of. The estradiol 1 MG tablet, which the version gives no precise ingredient, takes estradiol's own class, mechanism of action and chemical structure, though fluoroestradiol F-18 bears others. Fluoroestradiol F-18 keeps its own class and mechanism and takes estradiol's chemical structure. The lisinopril 10 MG tablet is given no class, for FDA classes lisinopril anhydrous, which the version does not tie to it. The cream takes no class through fluocinolone acetonide, a form of another ingredient than its own. Lutathera, whose own precise ingredient bears no class, takes none of gallium Ga-68 dotatate's, and the choline tablet, with no precise ingredient and no class on choline, takes none of choline C-11's. In the version that states no precise ingredient, the estradiol 2 MG and lisinopril 20 MG tablets are given no class. The stopped medication gives none." ;
+  mf:action [ qt:query <../../../queries/v1-draft/tables/medication-classes-through-precise-ingredients.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <medication-classes-through-precise-ingredients.srj> .
