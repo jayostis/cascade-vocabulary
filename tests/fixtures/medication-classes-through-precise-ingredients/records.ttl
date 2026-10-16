@@ -50,6 +50,25 @@
 :olderLisinoprilTabletRevision a rec:Revision ; rec:revisionOf :olderLisinoprilTablet ; rec:version :olderLisinoprilTabletVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+:recorlev a clinical:Medication .
+:recorlevVersion prov:specializationOf :recorlev ; rec:patient :subject ; clinical:drugName "Recorlev" ;
+    clinical:rxNormCode rxnorm:2588849 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:recorlevRevision a rec:Revision ; rec:revisionOf :recorlev ; rec:version :recorlevVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:lutathera a clinical:Medication .
+:lutatheraVersion prov:specializationOf :lutathera ; rec:patient :subject ;
+    clinical:drugName "25 ML lutetium Lu 177 dotatate 10 MCI/ML Injection [Lutathera]" ;
+    clinical:rxNormCode rxnorm:1999687 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:lutatheraRevision a rec:Revision ; rec:revisionOf :lutathera ; rec:version :lutatheraVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:choline a clinical:Medication .
+:cholineVersion prov:specializationOf :choline ; rec:patient :subject ; clinical:drugName "choline 650 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:198581 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:cholineRevision a rec:Revision ; rec:revisionOf :choline ; rec:version :cholineVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
 :stopped a clinical:Medication .
 :stoppedVersion prov:specializationOf :stopped ; rec:patient :subject ; clinical:drugName "Levoketoconazole" ;
     clinical:rxNormCode rxnorm:2588846 ; clinical:clinicalIntent "prescribed" ; clinical:status "stopped" .

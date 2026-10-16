@@ -1,5 +1,5 @@
 # Each class of each active medication entry, by the drug class rows of the tables an app holds, told apart by the
-# precise ingredient a product holds. It reads the entries of the views, as the pod questions do, and the rows inside
+# precise ingredient a code holds. It reads the entries of the views, as the pod questions do, and the rows inside
 # GRAPH ?product and GRAPH ?origin, as a rule's query does. The entry is active by rule L1, as pod/My active medications
 # has it, and its codes are the RxNorm codes it states, the one the source selected and each it carries, a literal read
 # as the IRI of that code. ?entry, ?medication and ?class are as they sound, ?relation is the class row's predicate
@@ -9,27 +9,24 @@
 #
 # MED-RT classes the ingredient and the precise ingredient, never a product, and FDA keys a class on whichever of them
 # its label names. A join is made only on exact evidence, relation by relation, for each code an entry states, in a
-# version of a product ingredients table where the code maps to an ingredient (obo:RO_0002248), in this order:
+# version of a product ingredients table where the code maps to an ingredient (obo:RO_0002248), and from nothing else:
 #   1. a class row on the code itself is the code's class;
 #   2. else, the version gives the code precise ingredients (rec:hasPreciseIngredient) that map to that ingredient, and
-#      one or more of them bear rows of the relation: their classes are the code's, ?through each, and never another
-#      code's under the ingredient. That keeps a product of fluoroestradiol F-18 (2372221) out of Estrogen [EPC];
+#      one or more of them bear rows of the relation: their classes are the code's, ?through each. That keeps a product
+#      of fluoroestradiol F-18 (2372221) out of Estrogen [EPC], and levoketoconazole 150 MG Oral Tablet (2588848) and
+#      Recorlev (2588849) out of Azole Antifungal [EPC];
 #   3. else, the version states precise ingredients (it holds a rec:hasPreciseIngredient row, so by its kind it holds one
-#      for every product whose component has one), and the ingredient itself bears rows of the relation: they are the
-#      code's, ?through the ingredient, whatever its precise ingredients bear. That gives estradiol 1 MG Oral Tablet
-#      (197658, no precise ingredient) Estrogen [EPC] through estradiol (4083), and estradiol valerate its class too;
-#   4. else, the ingredient (which maps to itself) and the codes that map to it are the codes that may bear the class.
-#      When every one of them that bears a row of the relation gives the same classes (the distinct pairs of a code and a
-#      class number the codes times the classes), the code has them, ?through the ingredient if it bears them, else the
-#      least of the others. Lisinopril 10 MG Oral Tablet (314076) maps to lisinopril (29046), which bears no class, and
-#      is in ACE inhibitor [EPC] through lisinopril anhydrous (1546022), the only code under it FDA gives the class on;
-#   5. else, when those codes give different classes, the code has none for that relation, and a row says so: ?class is
-#      unbound and ?through is the ingredient whose forms are classed differently.
-# A version that states no precise ingredient gives what steps 1, 4 and 5 give. A combination product maps to its
-# multiple ingredient concept, which MED-RT does not class and none of its precise ingredients maps to, so it reaches no
-# class here. An entry reaches a class once for each relation and version, whatever the codes it reached it through;
-# ?through is the one of the lowest step (the entry's own code, then its precise ingredient, then the ingredient, then
-# another code under it), the least of them within a step.
+#      for every code RxNorm ties to one), and the ingredient itself bears rows of the relation: they are the code's,
+#      ?through the ingredient. That gives estradiol 1 MG Oral Tablet (197658, no precise ingredient) Estrogen [EPC]
+#      through estradiol (4083).
+# A class on another precise ingredient of the same ingredient is never the code's, whatever the codes under the
+# ingredient agree on: Lutathera (1999687) is not given gallium Ga-68 dotatate's Radioactive Diagnostic Agent [EPC], nor
+# choline salicylate (315666) choline C-11's. So lisinopril 10 MG Oral Tablet (314076), whose RxNorm relations name only
+# lisinopril (29046), has no ACE inhibitor [EPC]: FDA classes lisinopril anhydrous (1546022), a different form. A version
+# that states no precise ingredient gives step 1 only, as step 3 would give levoketoconazole products ketoconazole's
+# class. A combination product maps to its multiple ingredient concept, which MED-RT does not class and none of its
+# precise ingredients maps to, so it reaches no class here. An entry reaches a class once for each relation and version,
+# whatever the codes it reached it through; ?through is the one of the lowest step, the least of them within a step.
 PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -77,8 +74,7 @@ WHERE {
     BIND ("1" AS ?step)
   } UNION {
     { SELECT ?product ?ingredient ?origin ?relation ?code
-        (SUM(IF(?held = ?code, 1, 0)) AS ?owned) (SUM(IF(?held = ?ingredient, 1, 0)) AS ?based)
-        (SUM(IF(BOUND(?precise), 1, 0)) AS ?precisely)
+        (SUM(IF(?held = ?code, 1, 0)) AS ?owned) (SUM(IF(BOUND(?precise), 1, 0)) AS ?precisely)
       WHERE {
         ?product prov:specializationOf/rec:tableKind rec:ProductIngredients .
         ?origin prov:specializationOf/rec:tableKind rec:DrugClasses .
@@ -102,69 +98,7 @@ WHERE {
         FILTER (STRSTARTS(STR(?code), "http://www.nlm.nih.gov/research/umls/rxnorm/"))
       } }
     GRAPH ?origin { ?row owl:annotatedSource ?ingredient ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?class }
-    FILTER (?owned = 0 && ?precisely = 0 && ?stating > 0 && ?based > 0)
-    BIND (?ingredient AS ?on)
-    BIND ("2" AS ?step)
-  } UNION {
-    { SELECT ?product ?ingredient ?origin ?relation ?code
-        (COUNT(DISTINCT ?held) AS ?bearers) (COUNT(DISTINCT ?given) AS ?kinds)
-        (COUNT(DISTINCT CONCAT(STR(?held), " ", STR(?given))) AS ?pairs) (SUM(IF(?held = ?code, 1, 0)) AS ?owned)
-        (SUM(IF(?held = ?ingredient, 1, 0)) AS ?based) (SUM(IF(BOUND(?precise), 1, 0)) AS ?precisely)
-      WHERE {
-        ?product prov:specializationOf/rec:tableKind rec:ProductIngredients .
-        ?origin prov:specializationOf/rec:tableKind rec:DrugClasses .
-        GRAPH ?product { ?member owl:annotatedSource ?code ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedTarget ?ingredient .
-                         ?left owl:annotatedTarget ?ingredient ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedSource ?held
-                         OPTIONAL { ?precise owl:annotatedSource ?code ; owl:annotatedProperty rec:hasPreciseIngredient ; owl:annotatedTarget ?held } }
-        GRAPH ?origin { ?by owl:annotatedSource ?held ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?given }
-      }
-      GROUP BY ?product ?ingredient ?origin ?relation ?code }
-    { SELECT ?product (COUNT(?some) AS ?stating)
-      WHERE {
-        ?product prov:specializationOf/rec:tableKind rec:ProductIngredients .
-        GRAPH ?product { OPTIONAL { ?some owl:annotatedProperty rec:hasPreciseIngredient } }
-      }
-      GROUP BY ?product }
-    { SELECT ?entry ?medication ?code
-      WHERE {
-        ?entry a clinical:Medication ; rec:lifecycle rec:MedicationActive ; clinical:drugName ?medication .
-        ?entry (rec:selectedCode | clinical:rxNormCode) ?written .
-        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://www.nlm.nih.gov/research/umls/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
-        FILTER (STRSTARTS(STR(?code), "http://www.nlm.nih.gov/research/umls/rxnorm/"))
-      } }
-    GRAPH ?product { ?sibling owl:annotatedTarget ?ingredient ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedSource ?via }
-    GRAPH ?origin { ?row owl:annotatedSource ?via ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?class }
-    FILTER (?owned = 0 && ?precisely = 0 && (?stating = 0 || ?based = 0) && ?pairs = ?bearers * ?kinds)
-    BIND (?via AS ?on)
-    BIND (IF(?via = ?ingredient, "2", "3") AS ?step)
-  } UNION {
-    { SELECT ?product ?ingredient ?origin ?relation ?code
-        (COUNT(DISTINCT ?held) AS ?bearers) (COUNT(DISTINCT ?given) AS ?kinds)
-        (COUNT(DISTINCT CONCAT(STR(?held), " ", STR(?given))) AS ?pairs) (SUM(IF(?held = ?code, 1, 0)) AS ?owned)
-        (SUM(IF(?held = ?ingredient, 1, 0)) AS ?based) (SUM(IF(BOUND(?precise), 1, 0)) AS ?precisely)
-      WHERE {
-        ?product prov:specializationOf/rec:tableKind rec:ProductIngredients .
-        ?origin prov:specializationOf/rec:tableKind rec:DrugClasses .
-        GRAPH ?product { ?member owl:annotatedSource ?code ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedTarget ?ingredient .
-                         ?left owl:annotatedTarget ?ingredient ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedSource ?held
-                         OPTIONAL { ?precise owl:annotatedSource ?code ; owl:annotatedProperty rec:hasPreciseIngredient ; owl:annotatedTarget ?held } }
-        GRAPH ?origin { ?by owl:annotatedSource ?held ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?given }
-      }
-      GROUP BY ?product ?ingredient ?origin ?relation ?code }
-    { SELECT ?product (COUNT(?some) AS ?stating)
-      WHERE {
-        ?product prov:specializationOf/rec:tableKind rec:ProductIngredients .
-        GRAPH ?product { OPTIONAL { ?some owl:annotatedProperty rec:hasPreciseIngredient } }
-      }
-      GROUP BY ?product }
-    { SELECT ?entry ?medication ?code
-      WHERE {
-        ?entry a clinical:Medication ; rec:lifecycle rec:MedicationActive ; clinical:drugName ?medication .
-        ?entry (rec:selectedCode | clinical:rxNormCode) ?written .
-        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://www.nlm.nih.gov/research/umls/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
-        FILTER (STRSTARTS(STR(?code), "http://www.nlm.nih.gov/research/umls/rxnorm/"))
-      } }
-    FILTER (?owned = 0 && ?precisely = 0 && (?stating = 0 || ?based = 0) && ?pairs != ?bearers * ?kinds)
+    FILTER (?owned = 0 && ?precisely = 0 && ?stating > 0)
     BIND (?ingredient AS ?on)
     BIND ("2" AS ?step)
   }

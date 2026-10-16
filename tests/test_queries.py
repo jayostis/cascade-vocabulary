@@ -1,4 +1,5 @@
 import hashlib
+import json
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -376,15 +377,16 @@ def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no
     }
 
 
-PUBLISHED_TABLE_QUERIES = {
-    "tables/agreement.rq": "78a0d56f82fc3ff713f285f76b75cf819986a27898b1a362ce63739317154cf1",
-    "tables/medication-classes.rq": "e66556127aa016303b17630ba62850bf7685b1ca6dcf0a028773b81418f63f29",
-}
+PUBLISHED = json.loads((ROOT / "tests" / "published-bytes.json").read_text())
+PUBLISHED_FILES = ("runtime/rule-list/[0-9a-f]*.ttl", "queries/v1-draft/matcher/*.rq")
 
 
-@pytest.mark.parametrize("relative", sorted(PUBLISHED_TABLE_QUERIES))
-def test_a_published_table_query_keeps_its_bytes(relative):
-    assert hashlib.sha256((contract.QUERIES / relative).read_bytes()).hexdigest() == PUBLISHED_TABLE_QUERIES[relative]
+def test_a_published_rule_list_and_matcher_query_keep_their_bytes_and_a_changed_rule_is_a_new_file():
+    held = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in PUBLISHED}
+    edited = sorted(name for name in PUBLISHED if held[name] != PUBLISHED[name])
+    assert not edited, f"publish a new file instead of editing {edited}"
+    listed = {p.relative_to(ROOT).as_posix() for pattern in PUBLISHED_FILES for p in ROOT.glob(pattern)}
+    assert listed <= set(PUBLISHED), f"a new rule list or matcher query is listed in tests/published-bytes.json: {sorted(listed - set(PUBLISHED))}"
 
 
 def test_why_it_is_in_no_view_reads_only_the_recorded_reasons_and_labels():

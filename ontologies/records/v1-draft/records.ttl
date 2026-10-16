@@ -325,13 +325,13 @@ rec:SubstanceIngredients a rec:TableKind ;
 
 rec:ProductIngredients a rec:TableKind ;
     rdfs:label "product ingredients"@en ;
-    rdfs:comment "An SSSOM mapping kind: an RxNorm concept and its active ingredient (obo:RO_0002248), its one ingredient or, with several, the multiple ingredient concept of exactly those. An ingredient has itself as its ingredient. A product also has a row to each distinct precise ingredient of its components (rec:hasPreciseIngredient). A version holding any precise ingredient row holds one for each product whose component has a precise ingredient, so a product such a version gives none holds its ingredient itself."@en ;
+    rdfs:comment "An SSSOM mapping kind: an RxNorm concept and its active ingredient (obo:RO_0002248), its one ingredient or, with several, the multiple ingredient concept of exactly those. An ingredient has itself as its ingredient. A concept also has a row to each distinct precise ingredient RxNorm ties to it (rec:hasPreciseIngredient). A version holding any precise ingredient row holds one for each concept whose RxNorm relations reach a precise ingredient, a brand name, a drug, a component and a dose form or dose form group version of one alike, so a concept such a version gives none holds its ingredient itself."@en ;
     rec:rowShape rec:ProductIngredientRowShape ;
     rec:foundBy owl:annotatedSource .
 
 rec:hasPreciseIngredient a owl:ObjectProperty ;
     rdfs:label "has precise ingredient"@en ;
-    rdfs:comment "Of an RxNorm product, a precise ingredient (PIN) one of its components states its strength in, RxNorm's has_precise_ingredient from the component (SCDC) to the PIN. The ingredient the PIN is a form of stays the product's active ingredient (obo:RO_0002248)."@en ;
+    rdfs:comment "Of an RxNorm concept, a precise ingredient (PIN) RxNorm ties to it: a component's or a brand name's has_precise_ingredient, a dose form's has_boss, or a drug's, a brand's or a dose form group's by way of those. The ingredient the PIN is a form of stays the concept's active ingredient (obo:RO_0002248)."@en ;
     dct:source <https://lhncbc.nlm.nih.gov/RxNav/APIs/api-RxNorm.getRelaTypes.html> .
 
 rec:BrandGenerics a rec:TableKind ;
