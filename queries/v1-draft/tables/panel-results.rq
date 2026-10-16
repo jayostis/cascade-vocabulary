@@ -11,10 +11,10 @@
 # returned.
 #
 # A member is missing when the person has no entry for it, its row requires it (R), it is not itself a panel (its own
-# members are listed instead), and no row on the way from ?panel down to ?via gives a requirement other than R: a nested
-# panel LOINC makes optional or conditional does not make its members required in its parent, and one it gives no
-# requirement for leaves them as they are, so the electrolytes inside a comprehensive metabolic panel are still
-# required. A missing member is a row with ?entry unbound and ?required "R". R-a marks one of several alternatives, and
+# members are listed instead), and every row on the way from ?panel down to ?via says R: a nested panel's members are
+# required in its parent only when the parent's row for it says so. A row that gives O, C or no requirement passes
+# nothing up, since LOINC saying nothing is not a requirement, so the electrolytes inside a comprehensive metabolic
+# panel are missing only when the electrolytes panel is the one picked. A missing member is a row with ?entry unbound and ?required "R". R-a marks one of several alternatives, and
 # the rows do not say which go together, so an alternative is never said to be missing; an optional member with no
 # entry is no row.
 PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
@@ -46,10 +46,10 @@ WHERE {
            rec:observationRequiredInPanel "R" .
       FILTER NOT EXISTS { ?nested owl:annotatedSource ?member }
       MINUS {
-        ?link rec:observationRequiredInPanel ?given ; owl:annotatedSource ?above ; owl:annotatedTarget ?below .
+        ?link owl:annotatedSource ?above ; owl:annotatedTarget ?below .
         ?below (^owl:annotatedSource/owl:annotatedTarget)* ?via .
         ?above (^owl:annotatedTarget/owl:annotatedSource)* ?panel .
-        FILTER (?given != "R")
+        FILTER NOT EXISTS { ?link rec:observationRequiredInPanel "R" }
       }
     }
     FILTER NOT EXISTS { ?entry health:testCode ?member ; rec:latestMember ?latest }
