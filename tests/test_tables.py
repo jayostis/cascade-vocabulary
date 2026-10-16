@@ -232,6 +232,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (REC.ProductIngredients, f"<urn:x:r> {INGREDIENT} ; {CHAINED} .", None),
     (REC.ProductIngredients, f"<urn:x:r> {INGREDIENT.replace('rxnorm:153010', 'cvx:141')} ; {CHAINED} .",
      "A product ingredient row maps an RxNorm code"),
+    (REC.ProductIngredients, f"<urn:x:r> {INGREDIENT.replace('obo:RO_0002248', 'rec:hasPreciseIngredient')} ; {CHAINED} .", None),
     (REC.ProductIngredients, f"<urn:x:r> {DRUG} ; {CHAINED} .", "with obo:RO_0002248"),
     (REC.PanelMembers, f"<urn:x:r> {PANEL} ; {CURATED} .", None),
     (REC.PanelMembers, f'<urn:x:r> {PANEL} ; {CURATED} ; rec:observationRequiredInPanel "Rflx-a" .', None),
