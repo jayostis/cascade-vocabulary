@@ -309,3 +309,53 @@ Feature: Priya Natarajan's pod
       Then the patient-profile view holds these entries:
         | members                    |
         | KHF-PAT, KHC-PAT, FFC-PAT  |
+
+  Rule: The tables an app holds name her potassium and class her lisinopril
+    An app opens her pod with tables of its own (app-names-classes): the published LOINC names, RxNorm product
+    ingredients, MED-RT drug classes and MED-RT names, each only the rows her potassium and her lisinopril need, and the
+    vocabulary's rule list version 9. Which names an app shows is its own choice, so the example asks only that her
+    potassium's code, LOINC 2823-3, joins the held names version. Lisinopril 10 MG Oral Tablet (RxNorm 314076) bears no
+    class row: it maps to lisinopril (29046), and FDA classes lisinopril anhydrous (1546022), which maps to lisinopril
+    too, as an angiotensin converting enzyme inhibitor (N0000175562) acting by that mechanism (N0000000181).
+
+    Opening writes six files, by O1: her pod names no version of the vocabulary's rule list, so version 9 judges every
+    pair it joins, four Sames, and the open describes that list and its version.
+
+    Example: her potassium's code joins the names version the app holds
+      When the pod is opened with the tables "app-names-classes" on 2025-08-13 at 09:00
+      Then "app-names-classes" wrote 6 files
+      When the query is:
+        """
+        PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+        SELECT ?record ?name ?version WHERE {
+          ?record pav:hasCurrentVersion/health:testCode ?code .
+          ?version prov:specializationOf/rec:tableKind rec:CodeNames .
+          GRAPH ?version { ?code skos:prefLabel ?name }
+        }
+        """
+      Then it answers:
+        | record         | name                                          | version                                                         |
+        | KHF-LAB-K-0327 | "Potassium [Moles/volume] in Serum or Plasma" | Regenstrief LOINC names subset for Priya Natarajan version 2.83 |
+        | KHC-LAB-K-0327 | "Potassium [Moles/volume] in Serum or Plasma" | Regenstrief LOINC names subset for Priya Natarajan version 2.83 |
+        | KHF-LAB-K-0610 | "Potassium [Moles/volume] in Serum or Plasma" | Regenstrief LOINC names subset for Priya Natarajan version 2.83 |
+
+    Example: her lisinopril is an angiotensin converting enzyme inhibitor through lisinopril anhydrous
+      When the pod is opened with the tables "app-names-classes" on 2025-08-13 at 09:00
+      And the query "tables/medication-classes.rq" is asked
+      Then it answers:
+        | entry                           | medication                     | class                                                    | relation                          | origin                                                              | through                                               | stated |
+        | the entry of KHF-MED-LISINOPRIL | "lisinopril 10 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000175562> | rec:establishedPharmacologicClass | VA MED-RT drug classes subset for Priya Natarajan version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/1546022" | false  |
+        | the entry of KHF-MED-LISINOPRIL | "lisinopril 10 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000181> | rec:mechanismOfAction             | VA MED-RT drug classes subset for Priya Natarajan version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/1546022" | false  |
+      When the query is:
+        """
+        PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+        SELECT ?class ?name WHERE {
+          ?version prov:specializationOf/rec:tableKind rec:CodeNames .
+          GRAPH ?version { ?class skos:prefLabel ?name }
+          FILTER (?class IN (<https://ns.cascadeprotocol.org/codes/medrt/N0000175562>, <https://ns.cascadeprotocol.org/codes/medrt/N0000000181>))
+        }
+        """
+      Then it answers:
+        | class                                                    | name                                             |
+        | <https://ns.cascadeprotocol.org/codes/medrt/N0000175562> | "Angiotensin Converting Enzyme Inhibitor [EPC]"  |
+        | <https://ns.cascadeprotocol.org/codes/medrt/N0000000181> | "Angiotensin-converting Enzyme Inhibitors [MoA]" |

@@ -250,3 +250,59 @@ Feature: Opening a pod
       And that step wrote these matcher judgments:
         | justification      | members                                                              | used                                                                                                                    |
         | same code and date | immunization CVX 141 "Fluarix Tetra", immunization CVX 141 "Fluarix" | Matcher rules version 1, version 1 of immunization CVX 141 "Fluarix Tetra", version 1 of immunization CVX 141 "Fluarix" |
+
+  Rule: O3. What an example reads holds the rows of the tables the pod is opened with, each current version a graph of its own
+    A step reads the tables as the matcher's queries read them (runtime/steps.md, "The dataset a Then reads"): the
+    rows of each series' current version in the graph named by the version, outside the default graph, and their
+    descriptions in it. Until an open, they are Hana's references/, whose "CVX vaccine group table" maps CVX 141 to its
+    group 88; "app" holds that row in "CDC CVX vaccine groups" instead, and no version of the other series.
+
+    Background:
+      Given a new pod for Hana on 2026-07-01 at 09:00
+      And the pod is opened with the tables "app" on 2026-07-01 at 09:01
+
+    Example: a held version's rows answer a query
+      When the query is:
+        """
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        SELECT ?version ?group WHERE {
+          ?version prov:specializationOf/rec:tableKind rec:VaccineGroups .
+          GRAPH ?version { ?row owl:annotatedSource <http://hl7.org/fhir/sid/cvx/141> ; owl:annotatedTarget ?group }
+        }
+        """
+      Then it answers:
+        | version                          | group                          |
+        | CDC CVX vaccine groups version 1 | <http://hl7.org/fhir/sid/cvx/88> |
+
+    Example: before the open, the story's references/ answer instead
+      When the pod is read as it stood after "pod"
+      And the query is:
+        """
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        SELECT ?version ?group WHERE {
+          ?version prov:specializationOf/rec:tableKind rec:VaccineGroups .
+          GRAPH ?version { ?row owl:annotatedSource <http://hl7.org/fhir/sid/cvx/141> ; owl:annotatedTarget ?group }
+        }
+        """
+      Then it answers:
+        | version                           | group                          |
+        | CVX vaccine group table version 1 | <http://hl7.org/fhir/sid/cvx/88> |
+
+    Example: after an open with tables that lack a series, its rows answer nothing
+      When the query is:
+        """
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        SELECT ?row WHERE {
+          ?version prov:specializationOf/rdfs:label "CVX vaccine group table" .
+          GRAPH ?version { ?row owl:annotatedSource <http://hl7.org/fhir/sid/cvx/141> }
+        }
+        """
+      Then it answers nothing
+
+    Example: rows are not in the default graph
+      When the query is:
+        """
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        SELECT ?row WHERE { ?row owl:annotatedSource <http://hl7.org/fhir/sid/cvx/141> }
+        """
+      Then it answers nothing

@@ -25,6 +25,12 @@ pod's layout, [`pod-layout.ttl`](pod-layout.ttl) read with the pod's address as 
 the default graph, lists what each step wrote, up to the one read at: `<urn:cascade:step:NAME> prov:generated <file>`,
 each file new to the pod, `attachments/` included.
 
+The dataset also holds the story's tables. At a read point, the version of each of their series current then (the
+`open` step's tables from that step on, else `references/`: its shipped versions and those that have arrived) is a
+named graph of its rows, named by the version's IRI, **outside** the default graph. The descriptions of those versions
+and their series, as the matcher reads them (M13), are the graph `urn:cascade:references`, which is **in** the default
+graph. These are the graphs the matcher's queries read, so a published query reads in an example as it does in an app.
+
 **Scripted input** is in the folder `scripted-input/<person>/` beside the feature file, the person's name in lower case,
 and `scripted-input/people.ttl` gives each person's subject (`foaf:name`) and pod (`pim:storage`):
 
@@ -125,7 +131,8 @@ judgment is named `the matcher's <justification> of <records>`, the justificatio
 `same variation through the table`. A
 reference series is named by its `rdfs:label` in `references/` or any of the person's `tables/` folders, one series per label, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
-name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5.
+name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5. An entry of a view is
+`the entry of <record>`, the one holding the record (`cascade:mergedFrom`).
 
 The matcher is `urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76`, a `prov:SoftwareAgent` labelled `Cascade matcher`.
 
@@ -187,6 +194,11 @@ It changes nothing.
 ### `the query is:`
 
 The SPARQL `SELECT` query in the DocString beneath it is the one the next `it answers` step asks. It changes nothing: the step is written `When`, as the read point is.
+
+### `the query {name} is asked`
+
+The SPARQL `SELECT` query in the file at that path under `queries/v1-draft/` is the one the next `it answers` step asks,
+as the file holds it. It changes nothing: the step is written `When`, as the read point is.
 
 ## Then
 
