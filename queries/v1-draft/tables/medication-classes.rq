@@ -1,0 +1,94 @@
+# Each class of each active medication entry, by the drug class rows of the tables an app holds. It reads the entries of
+# the views, as the pod questions do, and the rows inside GRAPH ?product and GRAPH ?origin, as a rule's query does. The
+# entry is active by rule L1, as pod/My active medications has it, and its codes are the RxNorm codes it states, the
+# one the source selected and each it carries, a literal read as the IRI of that code. ?entry, ?medication and ?class
+# are as they sound, ?relation is the class row's predicate (rec:establishedPharmacologicClass, rec:mechanismOfAction,
+# rec:physiologicEffect or rec:chemicalStructure), ?origin the version of the drug classes table that holds the row,
+# and ?through the code the row is on, which ?stated says the entry states itself.
+#
+# MED-RT classes the ingredient and the precise ingredient, never a product, and FDA keys a class on whichever of them
+# its label names. A join is made only on exact evidence, relation by relation, for each code an entry states:
+#   1. a class row on the code itself is the code's class;
+#   2. else, in a version of a product ingredients table, the code maps to an ingredient, and the ingredient (which maps
+#      to itself) and the precise ingredients that map to it are the codes that may bear the class. When every one of
+#      them that bears a row of the relation gives the same classes (the distinct pairs of a code and a class number
+#      the codes times the classes), the code has them, ?through the ingredient if it bears them, else the least of the
+#      precise ingredients;
+#   3. else, when those codes give different classes, the code has none for that relation, and a row says so: ?class is
+#      unbound and ?through is the ingredient whose forms are classed differently. A product maps to its ingredient,
+#      never to its own precise ingredient, so estradiol 1 MG Oral Tablet cannot be told from a product of
+#      fluoroestradiol F-18 (precise ingredient 2372221), and neither is given the class of the other.
+# 314076, lisinopril 10 MG Oral Tablet, maps to 29046; 1546022, lisinopril anhydrous, maps to 29046 too and is the only
+# code under it FDA gives the class on. A combination product maps to its multiple ingredient concept, which MED-RT
+# does not class, so it reaches no class here. An entry reaches a class once for each relation and version, whatever
+# the codes it reached it through; ?through is the one of the lowest step (the entry's own code, then the ingredient,
+# then a precise ingredient), the least of them within a step.
+PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+
+SELECT ?entry ?medication ?class ?relation ?origin (SUBSTR(MIN(CONCAT(?step, STR(?on))), 2) AS ?through) (STRSTARTS(MIN(CONCAT(?step, STR(?on))), "0") AS ?stated)
+WHERE {
+  {
+    { SELECT ?entry ?medication ?code
+      WHERE {
+        ?entry a clinical:Medication ; rec:lifecycle rec:MedicationActive ; clinical:drugName ?medication .
+        ?entry (rec:selectedCode | clinical:rxNormCode) ?written .
+        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://www.nlm.nih.gov/research/umls/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
+        FILTER (STRSTARTS(STR(?code), "http://www.nlm.nih.gov/research/umls/rxnorm/"))
+      } }
+    ?origin prov:specializationOf/rec:tableKind rec:DrugClasses .
+    GRAPH ?origin { ?row owl:annotatedSource ?code ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?class }
+    BIND (?code AS ?on)
+    BIND ("0" AS ?step)
+  } UNION {
+    { SELECT ?product ?ingredient ?origin ?relation ?code
+        (COUNT(DISTINCT ?held) AS ?bearers) (COUNT(DISTINCT ?given) AS ?kinds)
+        (COUNT(DISTINCT CONCAT(STR(?held), " ", STR(?given))) AS ?pairs) (SUM(IF(?held = ?code, 1, 0)) AS ?owned)
+      WHERE {
+        ?product prov:specializationOf/rec:tableKind rec:ProductIngredients .
+        ?origin prov:specializationOf/rec:tableKind rec:DrugClasses .
+        GRAPH ?product { ?member owl:annotatedSource ?code ; owl:annotatedTarget ?ingredient .
+                         ?left owl:annotatedTarget ?ingredient ; owl:annotatedSource ?held }
+        GRAPH ?origin { ?by owl:annotatedSource ?held ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?given }
+      }
+      GROUP BY ?product ?ingredient ?origin ?relation ?code }
+    { SELECT ?entry ?medication ?code
+      WHERE {
+        ?entry a clinical:Medication ; rec:lifecycle rec:MedicationActive ; clinical:drugName ?medication .
+        ?entry (rec:selectedCode | clinical:rxNormCode) ?written .
+        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://www.nlm.nih.gov/research/umls/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
+        FILTER (STRSTARTS(STR(?code), "http://www.nlm.nih.gov/research/umls/rxnorm/"))
+      } }
+    GRAPH ?product { ?sibling owl:annotatedTarget ?ingredient ; owl:annotatedSource ?via }
+    GRAPH ?origin { ?row owl:annotatedSource ?via ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?class }
+    FILTER (?owned = 0 && ?pairs = ?bearers * ?kinds)
+    BIND (?via AS ?on)
+    BIND (IF(?via = ?ingredient, "1", "2") AS ?step)
+  } UNION {
+    { SELECT ?product ?ingredient ?origin ?relation ?code
+        (COUNT(DISTINCT ?held) AS ?bearers) (COUNT(DISTINCT ?given) AS ?kinds)
+        (COUNT(DISTINCT CONCAT(STR(?held), " ", STR(?given))) AS ?pairs) (SUM(IF(?held = ?code, 1, 0)) AS ?owned)
+      WHERE {
+        ?product prov:specializationOf/rec:tableKind rec:ProductIngredients .
+        ?origin prov:specializationOf/rec:tableKind rec:DrugClasses .
+        GRAPH ?product { ?member owl:annotatedSource ?code ; owl:annotatedTarget ?ingredient .
+                         ?left owl:annotatedTarget ?ingredient ; owl:annotatedSource ?held }
+        GRAPH ?origin { ?by owl:annotatedSource ?held ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?given }
+      }
+      GROUP BY ?product ?ingredient ?origin ?relation ?code }
+    { SELECT ?entry ?medication ?code
+      WHERE {
+        ?entry a clinical:Medication ; rec:lifecycle rec:MedicationActive ; clinical:drugName ?medication .
+        ?entry (rec:selectedCode | clinical:rxNormCode) ?written .
+        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://www.nlm.nih.gov/research/umls/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
+        FILTER (STRSTARTS(STR(?code), "http://www.nlm.nih.gov/research/umls/rxnorm/"))
+      } }
+    FILTER (?owned = 0 && ?pairs != ?bearers * ?kinds)
+    BIND (?ingredient AS ?on)
+    BIND ("1" AS ?step)
+  }
+}
+GROUP BY ?entry ?medication ?class ?relation ?origin
+ORDER BY ?medication ?entry ?relation ?class

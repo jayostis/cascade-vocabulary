@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "medication-classes" ;
+  rdfs:comment "A version of a product ingredients table mapping lisinopril 10 MG Oral Tablet (314076), lisinopril anhydrous (1546022) and lisinopril (29046) to lisinopril, a combination of lisinopril and hydrochlorothiazide (197885) to its multiple ingredient concept (214618), atorvastatin (83367) and a tablet of it (617310) to atorvastatin, and estradiol 1 MG Oral Tablet (197658), fluoroestradiol F-18 (2372221) and estradiol (4083) to estradiol; and two versions of a drug classes table, of two series, FDA's rows on lisinopril anhydrous, on atorvastatin, on estradiol, on fluoroestradiol F-18 and on a code no entry states. Active medications for the tablet, for the combination, for a drug the tables do not map, for an atorvastatin tablet, for estradiol tablet and for fluoroestradiol F-18; and a stopped one for atorvastatin." ;
+  mf:entries (
+    <#medication-classes>
+  ) .
+
+<#medication-classes> a mf:QueryEvaluationTest ;
+  mf:name "medication-classes" ;
+  rdfs:comment "The tablet reaches its ingredient's classes through lisinopril anhydrous, the code FDA gives them on, once for each relation and version, and the ingredient itself reaches them too; a second series that holds the same class gives a row of its own, for its version. The atorvastatin tablet reaches atorvastatin's class through the ingredient itself. The combination, a drug no product ingredients row maps, a stopped medication and a class row on a code no entry states give none. Estradiol and its precise ingredient fluoroestradiol F-18 are classed differently: the estradiol tablet is given no established pharmacologic class and no mechanism of action, a row for each says the forms of estradiol disagree, and fluoroestradiol F-18 keeps its own and is not given estradiol's; both reach estradiol's chemical structure, the one relation only the ingredient bears." ;
+  mf:action [ qt:query <../../../queries/v1-draft/tables/medication-classes.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <medication-classes.srj> .
