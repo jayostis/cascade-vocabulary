@@ -1,0 +1,16 @@
+@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:db33a7fa-85e4-4cf6-8726-a8a56d76f1a6> a jdg:Judgment ;
+    jdg:verdict jdg:About ;
+    jdg:subject <urn:uuid:27731b6d-0635-4974-af7b-17a5c2a17153> ;
+    jdg:basis jdg:OwnerStatement ;
+    prov:hadMember <urn:uuid:30bc3cb9-0031-8069-bf64-45fd591995a6> ;
+    prov:wasAttributedTo <https://pod.tamsin-vale.example/profile/card.ttl#me> ;
+    prov:qualifiedAttribution [ a prov:Attribution ;
+        prov:agent <https://pod.tamsin-vale.example/profile/card.ttl#me> ;
+        prov:hadRole jdg:patient ] ;
+    prov:generatedAtTime "2024-02-01T09:05:30Z"^^xsd:dateTime .
+
+<https://pod.tamsin-vale.example/profile/card.ttl#me> a prov:Person .

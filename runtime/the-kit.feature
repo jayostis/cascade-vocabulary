@@ -5,8 +5,10 @@ Feature: The conformance kit
   Natarajan's, from https://github.com/jayostis/cascade-runtime-js/issues/70: one pod from FHIR and C-CDA together, with
   medications and lab results, laid out as Alex's and with its own planted cases P1 to P17. conformance/martin-okafor/
   is Martin Okafor's, from https://github.com/jayostis/cascade-vocabulary/issues/138: one variant in two FHIR reports,
-  each saved as a pull, with the story's subset of ClinVar's table and its own planted cases M1 to M6. What follows says
-  it of Alex's kit; Priya's and Martin's are alike.
+  each saved as a pull, with the story's subset of ClinVar's table and its own planted cases M1 to M6.
+  conformance/tamsin-vale/ is Tamsin Vale's, from cascade-runtime-js#343: one hospital's record pulled twice, a year
+  apart, a medication stopped between the pulls, with its own planted cases T1 to T4. What follows says it of Alex's
+  kit; Priya's, Martin's and Tamsin's are alike.
 
   - alex-rivera.feature is her story, the Background every example replays: each of Alex's judgments is a step of its
     own, and each matcher run a step with its time. Under it, each planted case P1 to P25 is a rule, and each example
