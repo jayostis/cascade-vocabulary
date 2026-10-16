@@ -45,10 +45,10 @@ WHERE {
       ?row owl:annotatedSource ?via ; owl:annotatedTarget ?member ; rec:panelSequence ?sequence ;
            rec:observationRequiredInPanel "R" .
       FILTER NOT EXISTS { ?nested owl:annotatedSource ?member }
-      FILTER NOT EXISTS {
-        ?panel (^owl:annotatedSource/owl:annotatedTarget)* ?above .
-        ?link owl:annotatedSource ?above ; owl:annotatedTarget ?below ; rec:observationRequiredInPanel ?given .
+      MINUS {
+        ?link rec:observationRequiredInPanel ?given ; owl:annotatedSource ?above ; owl:annotatedTarget ?below .
         ?below (^owl:annotatedSource/owl:annotatedTarget)* ?via .
+        ?above (^owl:annotatedTarget/owl:annotatedSource)* ?panel .
         FILTER (?given != "R")
       }
     }
