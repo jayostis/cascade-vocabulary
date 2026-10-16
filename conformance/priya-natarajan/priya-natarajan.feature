@@ -359,3 +359,23 @@ Feature: Priya Natarajan's pod
         | class                                                    | name                                             |
         | <https://ns.cascadeprotocol.org/codes/medrt/N0000175562> | "Angiotensin Converting Enzyme Inhibitor [EPC]"  |
         | <https://ns.cascadeprotocol.org/codes/medrt/N0000000181> | "Angiotensin-converting Enzyme Inhibitors [MoA]" |
+
+  Rule: Her lab results in a LOINC panel she names
+    An app opens her pod with tables of its own (app-panels): the published LOINC panel members rows of the Electrolytes
+    1998 panel (24326-1), and the vocabulary's rule list version 9. LOINC lists sodium (2951-2), potassium (2823-3) and
+    chloride (2075-0) in it, in that order and required (R), bicarbonate (1963-8) and carbon dioxide (2028-9) as
+    alternatives (R-a), and the anion gap (33037-3) as optional. Her two potassium entries are in it, and she has no
+    sodium and no chloride: the panel is hers to pick, and nothing says her potassium was drawn in it.
+
+    Opening writes six files, by O1, as it does for app-names-classes: the same rule list judges the same pairs.
+
+    Example: her potassium is in the electrolytes panel, which misses her sodium and chloride
+      When the pod is opened with the tables "app-panels" on 2025-08-13 at 09:00
+      Then "app-panels" wrote 6 files
+      When the query "tables/panel-results.rq" is asked
+      Then it answers:
+        | panel                          | member                        | sequence | required | via                            | origin                                                                  | entry                       |
+        | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2951-2> | 1        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 |                             |
+        | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2823-3> | 2        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 | the entry of KHF-LAB-K-0327 |
+        | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2823-3> | 2        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 | the entry of KHF-LAB-K-0610 |
+        | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2075-0> | 3        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 |                             |

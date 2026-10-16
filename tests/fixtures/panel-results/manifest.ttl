@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "panel-results" ;
+  rdfs:comment "A version of a panel members table, LOINC's rows: the electrolytes panel (24326-1) requiring sodium, potassium and chloride, listing bicarbonate and carbon dioxide as alternatives (R-a) and the anion gap as optional; the comprehensive metabolic panel (24323-8) requiring glucose and holding the electrolytes panel with no requirement; the vital signs panel (85353-1) holding the blood pressure panel (85354-9) as optional, which lists systolic pressure as optional; the neutrophil cytoplasmic antibody panel (87427-1) holding the myeloperoxidase and proteinase 3 panel (57777-5) as optional, which requires both; and a basic metabolic panel (51990-0) requiring a blood glucose (2339-0) and the electrolytes panel, which is itself a panel. A version of a code names table holds a row of the same shape listing hemoglobin A1c in the electrolytes panel. Lab results for potassium, sodium, systolic pressure, myeloperoxidase antibody and hemoglobin A1c." ;
+  mf:entries (
+    <#panel-results>
+  ) .
+
+<#panel-results> a mf:QueryEvaluationTest ;
+  mf:name "panel-results" ;
+  rdfs:comment "Potassium and sodium are direct members of the electrolytes panel, at their places and required, and chloride is missing; the alternatives and the optional anion gap are neither. In the comprehensive metabolic panel they are reached through the electrolytes panel, whose row there gives no requirement and so passes none up: only glucose is missing there, and chloride is not. In the basic metabolic panel the electrolytes panel's row says R, so chloride is missing there too, beside the blood glucose, and the electrolytes panel itself, a required member the person has no result for, is never listed as missing. Systolic pressure is in the blood pressure panel and, through it, in the vital signs panel, and nothing is missing. Myeloperoxidase antibody is in its panel, which misses proteinase 3; in the antibody panel that holds it as optional, nothing is missing. Hemoglobin A1c is in no panel: the row listing it is in a version that is not a panel members version, and is never read." ;
+  mf:action [ qt:query <../../../queries/v1-draft/tables/panel-results.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <panel-results.srj> .
