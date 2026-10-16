@@ -230,6 +230,7 @@
         { "@id": "conformance/alex-rivera/" },
         { "@id": "conformance/priya-natarajan/" },
         { "@id": "conformance/martin-okafor/" },
+        { "@id": "conformance/tamsin-vale/" },
         { "@id": "queries/v1-draft/views/medications.rq" },
         { "@id": "queries/v1-draft/views/lab-results.rq" },
         { "@id": "queries/v1-draft/views/variants.rq" },
@@ -1197,6 +1198,54 @@
         { "@id": "conformance/martin-okafor/scripted-input/martin/bridge/E5/bundle/graph.ttl" }
       ]
     },
+    {
+      "@id": "conformance/tamsin-vale/",
+      "@type": "Dataset",
+      "name": "Tamsin Vale",
+      "description": "Tamsin Vale's story, replayed by a runtime: one hospital's record pulled twice, a year apart, her metformin stopped between the pulls, so its stop arrives as a revision while unchanged results write nothing. Her story and the planted cases T1 to T4 in tamsin-vale.feature; her two saved pulls, which the runtime's generator made from the demo hospital's versions, the Bridge's saved output and her judgment claiming the profile both pulls name, in scripted-input/; the views a correct runtime builds, and the handles, in expected/.",
+      "hasPart": [
+        { "@id": "conformance/tamsin-vale/expected/handles.json" },
+        { "@id": "conformance/tamsin-vale/expected/lab-results.ttl" },
+        { "@id": "conformance/tamsin-vale/expected/medications.ttl" },
+        { "@id": "conformance/tamsin-vale/expected/patient-profile.ttl" },
+        { "@id": "conformance/tamsin-vale/tamsin-vale.feature" },
+        { "@id": "conformance/tamsin-vale/scripted-input/people.ttl" },
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/judgments/J1.ttl" },
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2024-02/" },
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2025-02/" },
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/" }
+      ],
+      "mentions": [{ "@id": "#tamsin-vale-pulls" }, { "@id": "#tamsin-vale-conversions" }]
+    },
+    {
+      "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2024-02/",
+      "@type": "Dataset",
+      "name": "The pull of 2024-02-01, as Cascade North's record stood then",
+      "hasPart": [
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2024-02/bundle.json" },
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2024-02/pull.json" }
+      ]
+    },
+    {
+      "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2025-02/",
+      "@type": "Dataset",
+      "name": "The pull of 2025-02-01, as Cascade North's record stood then",
+      "hasPart": [
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2025-02/bundle.json" },
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2025-02/pull.json" }
+      ]
+    },
+    {
+      "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/",
+      "@type": "Dataset",
+      "name": "The Bridge's saved output, for each import step",
+      "hasPart": [
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/E2/bundle/findings.ttl" },
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/E2/bundle/graph.ttl" },
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/E3/bundle/findings.ttl" },
+        { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/E3/bundle/graph.ttl" }
+      ]
+    },
     { "@id": "conformance/priya-natarajan/expected/allergies.ttl", "@type": "File", "encodingFormat": "text/turtle" },
     { "@id": "conformance/priya-natarajan/expected/conditions.ttl", "@type": "File", "encodingFormat": "text/turtle" },
     { "@id": "conformance/priya-natarajan/expected/handles.json", "@type": "File", "encodingFormat": "application/json" },
@@ -1297,6 +1346,21 @@
     { "@id": "conformance/martin-okafor/scripted-input/martin/tables/clinvar-story/a6ad9ff5-c6b5-4772-85fa-43c9c9cb4420.ttl", "@type": "File", "encodingFormat": "text/turtle", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-reference-tables/releases/download/ncbi-clinvar-11ef85d76afa/26be80bd6720d2be1110ec4aad4b22bfe87013670794142f72ccf0b3eaf8dfc8.nq.gz" } },
     { "@id": "conformance/martin-okafor/scripted-input/martin/tables/clinvar-story/references.ttl", "@type": "File", "encodingFormat": "text/turtle" },
     { "@id": "conformance/martin-okafor/scripted-input/people.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "conformance/tamsin-vale/expected/handles.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "conformance/tamsin-vale/expected/lab-results.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "conformance/tamsin-vale/expected/medications.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "conformance/tamsin-vale/expected/patient-profile.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "conformance/tamsin-vale/tamsin-vale.feature", "@type": "File", "encodingFormat": "text/x-gherkin" },
+    { "@id": "conformance/tamsin-vale/scripted-input/people.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "conformance/tamsin-vale/scripted-input/tamsin/judgments/J1.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2024-02/bundle.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2024-02/pull.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2025-02/bundle.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2025-02/pull.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/E2/bundle/findings.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/E2/bundle/graph.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/E3/bundle/findings.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/E3/bundle/graph.ttl", "@type": "File", "encodingFormat": "text/turtle" },
     { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/blob/190c61fabbe343fec64e00e88b227064b3167a16/fixtures/in/martin-okafor-harbourline-panel-2022.json", "@type": "CreativeWork", "name": "cascade-bridge-adapter-fhir-r4 fixtures/in/martin-okafor-harbourline-panel-2022.json" },
     { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/blob/b6f9657a6797913befe238fca4bdea8723dd4868/fixtures/in/martin-okafor-st-columba-exome-2024.json", "@type": "CreativeWork", "name": "cascade-bridge-adapter-fhir-r4 fixtures/in/martin-okafor-st-columba-exome-2024.json" },
     { "@id": "https://github.com/jayostis/cascade-reference-tables/releases/download/ncbi-clinvar-11ef85d76afa/26be80bd6720d2be1110ec4aad4b22bfe87013670794142f72ccf0b3eaf8dfc8.nq.gz", "@type": "CreativeWork", "name": "cascade-reference-tables release ncbi-clinvar-11ef85d76afa, the 2026-10 rows of the ClinVar series" },
@@ -1314,6 +1378,10 @@
     { "@id": "#martin-okafor-conversions", "@type": "CreateAction", "name": "The Bridge's conversions of the two saved pulls, as the runtime's pull importer hands them on", "instrument": [{ "@id": "https://github.com/jayostis/cascade-bridge-rs/tree/1751e00fe4ec6d3d0374e002d10de1ac22344ffb" }, { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/tree/b6f9657a6797913befe238fca4bdea8723dd4868" }, { "@id": "https://github.com/jayostis/cascade-runtime-js/tree/a218adc63d8d376ccb3acb826e203b5ebc520308" }], "result": { "@id": "conformance/martin-okafor/scripted-input/martin/bridge/" } },
     { "@id": "https://github.com/jayostis/cascade-bridge-rs/tree/1751e00fe4ec6d3d0374e002d10de1ac22344ffb", "@type": "SoftwareSourceCode", "name": "cascade-bridge-rs", "codeRepository": { "@id": "https://github.com/jayostis/cascade-bridge-rs" }, "version": "1751e00fe4ec6d3d0374e002d10de1ac22344ffb", "description": "The Bridge, its WebAssembly build released for this commit, which ran both conversions.", "conformsTo": { "@id": "https://github.com/jayostis/cascade-bridge-spec/tree/510ba7d73bf8c6b406a82f2d357260eac45bd699" } },
     { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/tree/b6f9657a6797913befe238fca4bdea8723dd4868", "@type": "SoftwareSourceCode", "name": "cascade-bridge-adapter-fhir-r4", "codeRepository": { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4" }, "version": "b6f9657a6797913befe238fca4bdea8723dd4868", "description": "The adapter of each Bundle, in its #envelope-bundle envelope, at the commit that gave the St Columba input's two conditions a clinicalStatus of active.", "conformsTo": { "@id": "https://github.com/jayostis/cascade-bridge-spec/tree/510ba7d73bf8c6b406a82f2d357260eac45bd699" } },
-    { "@id": "https://github.com/jayostis/cascade-runtime-js/tree/a218adc63d8d376ccb3acb826e203b5ebc520308", "@type": "SoftwareSourceCode", "name": "cascade-runtime-js", "codeRepository": { "@id": "https://github.com/jayostis/cascade-runtime-js" }, "version": "a218adc63d8d376ccb3acb826e203b5ebc520308", "description": "Its pull importer, which handed each Bundle on with its facts at its step's time." }
+    { "@id": "https://github.com/jayostis/cascade-runtime-js/tree/a218adc63d8d376ccb3acb826e203b5ebc520308", "@type": "SoftwareSourceCode", "name": "cascade-runtime-js", "codeRepository": { "@id": "https://github.com/jayostis/cascade-runtime-js" }, "version": "a218adc63d8d376ccb3acb826e203b5ebc520308", "description": "Its pull importer, which handed each Bundle on with its facts at its step's time." },
+    { "@id": "#tamsin-vale-pulls", "@type": "CreateAction", "name": "The two pulls, as the runtime's generator made them from the demo hospital's versions", "instrument": [{ "@id": "https://github.com/jayostis/cascade-runtime-js/tree/9d84c0bf6b141215ca73b923d5817af3902ed9b0" }], "result": [{ "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2024-02/" }, { "@id": "conformance/tamsin-vale/scripted-input/tamsin/downloads/north-2025-02/" }] },
+    { "@id": "#tamsin-vale-conversions", "@type": "CreateAction", "name": "The Bridge's conversions of the two saved pulls, as the runtime's pull importer hands them on", "instrument": [{ "@id": "https://github.com/jayostis/cascade-bridge-rs/tree/1751e00fe4ec6d3d0374e002d10de1ac22344ffb" }, { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/tree/010637edb9bc707574b879bbd0a809e6fccf3d0c" }, { "@id": "https://github.com/jayostis/cascade-runtime-js/tree/9d84c0bf6b141215ca73b923d5817af3902ed9b0" }], "result": { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/" } },
+    { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/tree/010637edb9bc707574b879bbd0a809e6fccf3d0c", "@type": "SoftwareSourceCode", "name": "cascade-bridge-adapter-fhir-r4", "codeRepository": { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4" }, "version": "010637edb9bc707574b879bbd0a809e6fccf3d0c", "description": "The adapter of each Bundle, in its #envelope-bundle envelope.", "conformsTo": { "@id": "https://github.com/jayostis/cascade-bridge-spec/tree/510ba7d73bf8c6b406a82f2d357260eac45bd699" } },
+    { "@id": "https://github.com/jayostis/cascade-runtime-js/tree/9d84c0bf6b141215ca73b923d5817af3902ed9b0", "@type": "SoftwareSourceCode", "name": "cascade-runtime-js", "codeRepository": { "@id": "https://github.com/jayostis/cascade-runtime-js" }, "version": "9d84c0bf6b141215ca73b923d5817af3902ed9b0", "description": "Its story:pulls generator, which signed in to the demo hospital and pulled Tamsin's record as it stood at each pull's date, and its pull importer, which handed each Bundle on with its facts at its step's time." }
   ]
 }
