@@ -1,0 +1,63 @@
+@prefix : <urn:x:> .
+@prefix loinc: <http://loinc.org/rdf/> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix sssom: <https://w3id.org/sssom/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:panels-1 {
+  :sodium a owl:Axiom ; owl:annotatedSource loinc:24326-1 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:2951-2 ; rec:panelSequence 1 ; rec:observationRequiredInPanel "R" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+  :potassium a owl:Axiom ; owl:annotatedSource loinc:24326-1 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:2823-3 ; rec:panelSequence 2 ; rec:observationRequiredInPanel "R" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+  :chloride a owl:Axiom ; owl:annotatedSource loinc:24326-1 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:2075-0 ; rec:panelSequence 3 ; rec:observationRequiredInPanel "R" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+  :bicarbonate a owl:Axiom ; owl:annotatedSource loinc:24326-1 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:1963-8 ; rec:panelSequence 4 ; rec:observationRequiredInPanel "R-a" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+  :carbonDioxide a owl:Axiom ; owl:annotatedSource loinc:24326-1 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:2028-9 ; rec:panelSequence 5 ; rec:observationRequiredInPanel "R-a" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+  :anionGap a owl:Axiom ; owl:annotatedSource loinc:24326-1 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:33037-3 ; rec:panelSequence 6 ; rec:observationRequiredInPanel "O" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+
+  :glucose a owl:Axiom ; owl:annotatedSource loinc:24323-8 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:2345-7 ; rec:panelSequence 1 ; rec:observationRequiredInPanel "R" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+  :electrolytes a owl:Axiom ; owl:annotatedSource loinc:24323-8 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:24326-1 ; rec:panelSequence 21 ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+
+  :bloodPressure a owl:Axiom ; owl:annotatedSource loinc:85353-1 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:85354-9 ; rec:panelSequence 16 ; rec:observationRequiredInPanel "O" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+  :systolic a owl:Axiom ; owl:annotatedSource loinc:85354-9 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:8480-6 ; rec:panelSequence 1 ; rec:observationRequiredInPanel "O" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+
+  :antibodies a owl:Axiom ; owl:annotatedSource loinc:87427-1 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:57777-5 ; rec:panelSequence 11 ; rec:observationRequiredInPanel "O" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+  :myeloperoxidase a owl:Axiom ; owl:annotatedSource loinc:57777-5 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:6969-0 ; rec:panelSequence 1 ; rec:observationRequiredInPanel "R" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+  :proteinase a owl:Axiom ; owl:annotatedSource loinc:57777-5 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:6968-2 ; rec:panelSequence 2 ; rec:observationRequiredInPanel "R" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+
+  :hemoglobin a owl:Axiom ; owl:annotatedSource loinc:51990-0 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:2339-0 ; rec:panelSequence 1 ; rec:observationRequiredInPanel "R" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+}
+
+:names-1 {
+  :stray a owl:Axiom ; owl:annotatedSource loinc:24326-1 ; owl:annotatedProperty obo:RO_0002351 ;
+      owl:annotatedTarget loinc:4548-4 ; rec:panelSequence 7 ; rec:observationRequiredInPanel "R" ;
+      sssom:mapping_justification semapv:ManualMappingCuration .
+}
