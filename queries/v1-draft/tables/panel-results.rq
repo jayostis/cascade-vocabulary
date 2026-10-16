@@ -22,7 +22,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-SELECT ?panel ?member ?sequence ?required ?via ?origin ?entry
+SELECT DISTINCT ?panel ?member ?sequence ?required ?via ?origin ?entry
 WHERE {
   {
     ?entry health:testCode ?member ; rec:latestMember ?latest .
