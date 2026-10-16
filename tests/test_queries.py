@@ -1,3 +1,4 @@
+import hashlib
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -373,6 +374,17 @@ def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no
         "PatientNotClaimed": ["derivations/excluded-for-their-patient.rq"],
         "NoPatient": ["derivations/excluded-for-their-patient.rq"],
     }
+
+
+PUBLISHED_TABLE_QUERIES = {
+    "tables/agreement.rq": "78a0d56f82fc3ff713f285f76b75cf819986a27898b1a362ce63739317154cf1",
+    "tables/medication-classes.rq": "e66556127aa016303b17630ba62850bf7685b1ca6dcf0a028773b81418f63f29",
+}
+
+
+@pytest.mark.parametrize("relative", sorted(PUBLISHED_TABLE_QUERIES))
+def test_a_published_table_query_keeps_its_bytes(relative):
+    assert hashlib.sha256((contract.QUERIES / relative).read_bytes()).hexdigest() == PUBLISHED_TABLE_QUERIES[relative]
 
 
 def test_why_it_is_in_no_view_reads_only_the_recorded_reasons_and_labels():

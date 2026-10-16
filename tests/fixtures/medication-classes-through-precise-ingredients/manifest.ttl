@@ -1,0 +1,18 @@
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+
+<> a mf:Manifest ;
+  rdfs:label "medication-classes-through-precise-ingredients" ;
+  rdfs:comment "Two versions of product ingredients tables. The first states precise ingredients: it maps levoketoconazole 150 MG Oral Tablet (2588848) to ketoconazole (6135) and to its precise ingredient levoketoconazole (2588846); estradiol 1 MG Oral Tablet (197658), with none, and fluoroestradiol F-18 (2372221) to estradiol (4083); lisinopril 10 MG Oral Tablet (314076), with none, and lisinopril anhydrous (1546022) to lisinopril (29046); and a cream of fluocinolone acetonide, hydroquinone and tretinoin (1191262) to its multiple ingredient concept (465680) and to fluocinolone acetonide (4461), a form of fluocinolone (25126). The second states none, and maps estradiol 2 MG Oral Tablet (197659) and lisinopril 20 MG Oral Tablet (314077) with their ingredients' forms. One version of a drug classes table holds FDA's rows on ketoconazole, levoketoconazole, estradiol, fluoroestradiol F-18, lisinopril anhydrous and fluocinolone acetonide. Active medications for each of the six products and for fluoroestradiol F-18; and a stopped one for levoketoconazole." ;
+  mf:entries (
+    <#medication-classes-through-precise-ingredients>
+  ) .
+
+<#medication-classes-through-precise-ingredients> a mf:QueryEvaluationTest ;
+  mf:name "medication-classes-through-precise-ingredients" ;
+  rdfs:comment "The levoketoconazole tablet takes its precise ingredient's established pharmacologic class, not ketoconazole's, and ketoconazole's chemical structure, which levoketoconazole bears none of. The estradiol 1 MG tablet, which the version gives no precise ingredient, takes estradiol's own class and mechanism of action, though fluoroestradiol F-18 bears others. The lisinopril 10 MG tablet takes lisinopril anhydrous's class, as the codes under lisinopril agree. The cream takes no class through fluocinolone acetonide, a form of another ingredient than its own. In the version that states no precise ingredient, the estradiol 2 MG tablet is given no class and no mechanism, a row for each says the forms of estradiol disagree, and the lisinopril 20 MG tablet takes lisinopril anhydrous's class. Fluoroestradiol F-18 keeps its own class and mechanism and takes estradiol's chemical structure. The stopped medication gives none." ;
+  mf:action [ qt:query <../../../queries/v1-draft/tables/medication-classes-through-precise-ingredients.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <medication-classes-through-precise-ingredients.srj> .

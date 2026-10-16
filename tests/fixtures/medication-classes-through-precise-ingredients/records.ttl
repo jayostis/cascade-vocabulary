@@ -1,0 +1,57 @@
+@prefix : <urn:x:> .
+@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a rec:Subject .
+
+:levoketoconazole a clinical:Medication .
+:levoketoconazoleVersion prov:specializationOf :levoketoconazole ; rec:patient :subject ; clinical:drugName "Levoketoconazole 150 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:2588848 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:levoketoconazoleRevision a rec:Revision ; rec:revisionOf :levoketoconazole ; rec:version :levoketoconazoleVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:estradiolTablet a clinical:Medication .
+:estradiolTabletVersion prov:specializationOf :estradiolTablet ; rec:patient :subject ; clinical:drugName "Estradiol 1 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:197658 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:estradiolTabletRevision a rec:Revision ; rec:revisionOf :estradiolTablet ; rec:version :estradiolTabletVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:fluoroestradiol a clinical:Medication .
+:fluoroestradiolVersion prov:specializationOf :fluoroestradiol ; rec:patient :subject ; clinical:drugName "Fluoroestradiol F-18" ;
+    clinical:rxNormCode rxnorm:2372221 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:fluoroestradiolRevision a rec:Revision ; rec:revisionOf :fluoroestradiol ; rec:version :fluoroestradiolVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:lisinoprilTablet a clinical:Medication .
+:lisinoprilTabletVersion prov:specializationOf :lisinoprilTablet ; rec:patient :subject ; clinical:drugName "Lisinopril 10 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:314076 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:lisinoprilTabletRevision a rec:Revision ; rec:revisionOf :lisinoprilTablet ; rec:version :lisinoprilTabletVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:combination a clinical:Medication .
+:combinationVersion prov:specializationOf :combination ; rec:patient :subject ;
+    clinical:drugName "Fluocinolone Acetonide 0.1 MG/ML / Hydroquinone 40 MG/ML / Tretinoin 0.5 MG/ML Topical Cream" ;
+    clinical:rxNormCode rxnorm:1191262 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:combinationRevision a rec:Revision ; rec:revisionOf :combination ; rec:version :combinationVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:olderEstradiolTablet a clinical:Medication .
+:olderEstradiolTabletVersion prov:specializationOf :olderEstradiolTablet ; rec:patient :subject ; clinical:drugName "Estradiol 2 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:197659 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:olderEstradiolTabletRevision a rec:Revision ; rec:revisionOf :olderEstradiolTablet ; rec:version :olderEstradiolTabletVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:olderLisinoprilTablet a clinical:Medication .
+:olderLisinoprilTabletVersion prov:specializationOf :olderLisinoprilTablet ; rec:patient :subject ; clinical:drugName "Lisinopril 20 MG Oral Tablet" ;
+    clinical:rxNormCode rxnorm:314077 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
+:olderLisinoprilTabletRevision a rec:Revision ; rec:revisionOf :olderLisinoprilTablet ; rec:version :olderLisinoprilTabletVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:stopped a clinical:Medication .
+:stoppedVersion prov:specializationOf :stopped ; rec:patient :subject ; clinical:drugName "Levoketoconazole" ;
+    clinical:rxNormCode rxnorm:2588846 ; clinical:clinicalIntent "prescribed" ; clinical:status "stopped" .
+:stoppedRevision a rec:Revision ; rec:revisionOf :stopped ; rec:version :stoppedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
