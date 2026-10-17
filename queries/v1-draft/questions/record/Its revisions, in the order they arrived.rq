@@ -6,7 +6,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT ?record ?recordLabel ?arrived ?revision ?revisionLabel ?current ?previous ?previousLabel ?version ?versionLabel
-       ?change ?document ?documentLabel ?retrieved ?hospital ?transmitter ?import ?importLabel ?started
+       ?change ?document ?documentLabel ?retrieved ?generated ?hospital ?transmitter ?import ?importLabel ?started
 WHERE {
   { SELECT ?version (MIN(?received) AS ?first)
     WHERE { ?any rec:version ?version ; prov:generatedAtTime ?received . }
@@ -23,6 +23,7 @@ WHERE {
   OPTIONAL { ?revision prov:wasDerivedFrom ?document .
              OPTIONAL { ?document rdfs:label ?documentLabel }
              OPTIONAL { ?document pav:retrievedOn ?retrieved }
+             OPTIONAL { ?document prov:generatedAtTime ?generated }
              OPTIONAL { ?document prov:qualifiedAttribution ?author .
                         ?author prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
              OPTIONAL { ?document prov:qualifiedAttribution ?sender .
@@ -31,4 +32,4 @@ WHERE {
              OPTIONAL { ?import rdfs:label ?importLabel }
              OPTIONAL { ?import prov:startedAtTime ?started } }
 }
-ORDER BY ?recordLabel ?record ?arrived ?revision ?document ?retrieved ?hospital ?transmitter
+ORDER BY ?recordLabel ?record ?arrived ?revision ?document ?retrieved ?generated ?hospital ?transmitter
