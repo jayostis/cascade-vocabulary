@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ElementTree
 
 import pytest
 from jsonschema import Draft202012Validator
-from rdflib import Graph, Namespace
+from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import FOAF
 
 from contract import KITS, ROOT
@@ -94,6 +94,36 @@ def sources(folder, root):
             yield path.stem, path, [from_cda(path)]
 
 
+def strays(folder, root):
+    """Each entry of a person's sources that is not a source file, and each source that holds none, as (where, reason)."""
+    where = lambda path: path.relative_to(root).as_posix()
+    rule = "a source holds fhir.json and ccda/<day>.xml"
+    found = []
+    for source in sorted((folder / "sources").glob("*")):
+        if not source.is_dir():
+            found.append((where(source), f"is not a source folder: {rule}"))
+            continue
+        holds = False
+        for entry in sorted(source.iterdir()):
+            if entry.name == "fhir.json" and entry.is_file():
+                holds = True
+            elif entry.name == "ccda" and entry.is_dir():
+                for day_file in sorted(entry.iterdir()):
+                    if day_file.is_file() and day_file.suffix == ".xml":
+                        holds = True
+                    else:
+                        found.append((where(day_file), f"is not a source file: {rule}"))
+            else:
+                found.append((where(entry), f"is not a source file: {rule}"))
+        if not holds:
+            found.append((where(source), f"holds no source file: {rule}"))
+    return found
+
+
+def labelled(pid):
+    return f"Patient {pid}" if pid is not None else "a Patient with no id"
+
+
 def refusals(folder, root=ROOT):
     """Why a person folder is refused, as (where, reason): nothing when it is whole."""
     where = lambda path: path.relative_to(root).as_posix()
@@ -111,11 +141,13 @@ def refusals(folder, root=ROOT):
         found.append((where(card), f"has the id {person['id']}, but its folder is {folder.name}"))
     declared = {(d["source"], d["field"]): d["value"] for d in person.get("differences", [])}
     seen = set()
+    found += strays(folder, root)
     for source, path, patients in sources(folder, root):
+        records = {pid if pid is not None else index for index, (pid, _) in enumerate(patients)}
         if not patients:
             found.append((where(path), "holds no Patient"))
-        elif len({pid for pid, _ in patients}) > 1:
-            found.append((where(path), f"holds {len({pid for pid, _ in patients})} Patients: a source holds one"))
+        elif len(records) > 1:
+            found.append((where(path), f"holds {len(records)} Patients: a source holds one"))
         for pid, stated in patients:
             for field, value in stated.items():
                 if value == person[field]:
@@ -123,7 +155,7 @@ def refusals(folder, root=ROOT):
                 if declared.get((source, field)) == value:
                     seen.add((source, field))
                 else:
-                    found.append((where(path), f"Patient {pid} says {field} {shown(value)}, "
+                    found.append((where(path), f"{labelled(pid)} says {field} {shown(value)}, "
                                                f"person.json says {shown(person[field])}"))
     found += [(where(card), f"declares a difference in {field} at {source} that its Patient does not show")
               for source, field in sorted(set(declared) - seen)]
@@ -132,10 +164,13 @@ def refusals(folder, root=ROOT):
     elif "subject" in person:
         rows = root / person["kit"] / "scripted-input" / "people.ttl"
         graph = Graph().parse(rows)
-        iri = next(graph.subjects(FOAF.name, None), None)
-        row = {"iri": iri, "name": graph.value(iri, FOAF.name), "storage": graph.value(iri, PIM.storage)}
-        found += [(where(card), f"has the subject {key} {value}, but {where(rows)} says {row[key]}")
-                  for key, value in person["subject"].items() if row[key] is None or str(row[key]) != value]
+        iri = URIRef(person["subject"]["iri"])
+        if (iri, FOAF.name, None) not in graph:
+            found.append((where(card), f"has the subject {iri}, which {where(rows)} has no row for"))
+        else:
+            row = {"name": graph.value(iri, FOAF.name), "storage": graph.value(iri, PIM.storage)}
+            found += [(where(card), f"has the subject {key} {value}, but {where(rows)} says {row[key]}")
+                      for key, value in person["subject"].items() if key != "iri" and str(row[key]) != value]
     return found
 
 
@@ -149,9 +184,27 @@ def test_every_kit_follows_a_person():
     assert {kit.relative_to(ROOT).as_posix() for kit in KITS} <= kits
 
 
+def story_keys(told):
+    """Why a story's keys are refused (settlements §1.7): nothing when they are whole."""
+    missing, stray = {"hospital", "story", "findings"} - set(told), set(told) - {"hospital", "story", "findings",
+                                                                               "pulls", "ccda"}
+    return [*(f"lacks {key}" for key in sorted(missing)), *(f"has {key}, which a story does not" for key in sorted(stray))]
+
+
+@pytest.mark.parametrize("told, reasons", [
+    ({"hospital": "h", "story": "s", "findings": []}, []),
+    ({"hospital": "h", "story": "s", "findings": [], "pulls": [], "ccda": "x"}, []),
+    ({"hospital": "h", "story": "s", "findings": [], "patient": "pt-9"}, ["has patient, which a story does not"]),
+    ({"hospital": "h", "story": "s", "findngs": []}, ["lacks findings", "has findngs, which a story does not"]),
+], ids=["whole", "with pulls and ccda", "a leftover patient", "a misspelled key"])
+def test_a_story_has_only_the_keys_of_a_story(told, reasons):
+    assert story_keys(told) == reasons
+
+
 def test_a_story_names_a_source_and_a_document_of_its_person():
     for story in sorted(PEOPLE.glob("*/expected/story.json")):
         told, folder = json.loads(story.read_text(encoding="utf-8")), story.parent.parent
+        assert story_keys(told) == [], story
         assert (folder / "sources" / told["hospital"] / "fhir.json").is_file(), story
         assert "ccda" not in told or (folder / told["ccda"]).is_file(), story
 
@@ -167,35 +220,54 @@ HEDDA = {"id": "hedda-quill", "name": {"family": "Quill", "given": ["Hedda"]}, "
          "gender": "female"}
 SUBJECT = {"iri": "urn:uuid:00000000-0000-4000-8000-000000000001", "name": "Hedda",
            "storage": "https://pod.hedda-quill.example/"}
-ROW = "<urn:uuid:00000000-0000-4000-8000-000000000001> <http://xmlns.com/foaf/0.1/name> \"Hedda\" ; " \
+ROW = "<urn:uuid:00000000-0000-4000-8000-000000000009> <http://xmlns.com/foaf/0.1/name> \"Zed\" .\n" \
+      "<urn:uuid:00000000-0000-4000-8000-000000000001> <http://xmlns.com/foaf/0.1/name> \"Hedda\" ; " \
       "<http://www.w3.org/ns/pim/space#storage> <https://pod.hedda-quill.example/> .\n"
+FHIR = "people/hedda-quill/sources/north/fhir.json"
+CARD = "people/hedda-quill/person.json"
+NO_ID = {key: value for key, value in PATIENT.items() if key != "id"}
+RULE = "a source holds fhir.json and ccda/<day>.xml"
 
 
-@pytest.mark.parametrize("person, patients, where, reason", [
-    ({**HEDDA, "birthDate": "1980-02-01"}, [PATIENT], "people/hedda-quill/sources/north/fhir.json",
+@pytest.mark.parametrize("person, patients, extra, where, reason", [
+    ({**HEDDA, "birthDate": "1980-02-01"}, [PATIENT], (), FHIR,
      "Patient p1 says birthDate 1980-01-02, person.json says 1980-02-01"),
     ({**HEDDA, "differences": [{"source": "north", "field": "gender", "value": "male", "reason": "Entered wrong.",
-                                "expectedMatch": "probable"}]}, [PATIENT], "people/hedda-quill/person.json",
+                                "expectedMatch": "probable"}]}, [PATIENT], (), CARD,
      "declares a difference in gender at north that its Patient does not show"),
-    ({**HEDDA, "id": "hedda-quil"}, [PATIENT], "people/hedda-quill/person.json",
-     "has the id hedda-quil, but its folder is hedda-quill"),
-    ({**HEDDA, "kit": "conformance/hedda", "subject": {**SUBJECT, "name": "Heddy"}}, [PATIENT],
-     "people/hedda-quill/person.json", "has the subject name Heddy, but conformance/hedda/scripted-input/people.ttl says Hedda"),
-    ({**HEDDA, "kit": "conformance/nobody"}, [PATIENT], "people/hedda-quill/person.json",
+    ({**HEDDA, "id": "hedda-quil"}, [PATIENT], (), CARD, "has the id hedda-quil, but its folder is hedda-quill"),
+    ({**HEDDA, "kit": "conformance/hedda", "subject": {**SUBJECT, "name": "Heddy"}}, [PATIENT], (), CARD,
+     "has the subject name Heddy, but conformance/hedda/scripted-input/people.ttl says Hedda"),
+    ({**HEDDA, "kit": "conformance/hedda", "subject": {**SUBJECT, "iri": "urn:uuid:00000000-0000-4000-8000-000000000002"}},
+     [PATIENT], (), CARD, "has the subject urn:uuid:00000000-0000-4000-8000-000000000002, which "
+                          "conformance/hedda/scripted-input/people.ttl has no row for"),
+    ({**HEDDA, "kit": "conformance/hedda"}, [PATIENT], (), CARD, "'subject' is a dependency of 'kit'"),
+    ({**HEDDA, "kit": "conformance/nobody", "subject": SUBJECT}, [PATIENT], (), CARD,
      "names the kit conformance/nobody, which is not there"),
-    ({**HEDDA, "gender": "woman"}, [PATIENT], "people/hedda-quill/person.json",
-     "'woman' is not one of ['male', 'female', 'other', 'unknown']"),
-    (HEDDA, [], "people/hedda-quill/sources/north/fhir.json", "holds no Patient"),
-    (HEDDA, [PATIENT, {**PATIENT, "id": "p2"}], "people/hedda-quill/sources/north/fhir.json",
-     "holds 2 Patients: a source holds one"),
+    ({**HEDDA, "gender": "woman"}, [PATIENT], (), CARD, "'woman' is not one of ['male', 'female', 'other', 'unknown']"),
+    (HEDDA, [], (), FHIR, "holds no Patient"),
+    (HEDDA, [PATIENT, {**PATIENT, "id": "p2"}], (), FHIR, "holds 2 Patients: a source holds one"),
+    (HEDDA, [NO_ID, dict(NO_ID)], (), FHIR, "holds 2 Patients: a source holds one"),
+    ({**HEDDA, "gender": "male"}, [NO_ID], (), FHIR, "a Patient with no id says gender female, person.json says male"),
+    (HEDDA, [PATIENT], ("north/patient.json",), "people/hedda-quill/sources/north/patient.json",
+     f"is not a source file: {RULE}"),
+    (HEDDA, [PATIENT], ("north/ccda/2025-01-01.txt",), "people/hedda-quill/sources/north/ccda/2025-01-01.txt",
+     f"is not a source file: {RULE}"),
+    (HEDDA, None, (), "people/hedda-quill/sources/north", f"holds no source file: {RULE}"),
 ], ids=["an undeclared birth date", "a declared difference not shown", "a folder not its id",
-        "a subject not the people.ttl row", "a kit not there", "a field the schema refuses", "no Patient", "two Patients"])
-def test_a_person_is_refused_for_each_reason(tmp_path, person, patients, where, reason):
+        "a subject not the people.ttl row", "a subject with no people.ttl row", "a kit without a subject",
+        "a kit not there", "a field the schema refuses", "no Patient", "two Patients", "two Patients with no id",
+        "a Patient with no id", "a file that is not a source", "a ccda entry that is not xml", "a source with no file"])
+def test_a_person_is_refused_for_each_reason(tmp_path, person, patients, extra, where, reason):
     folder = tmp_path / "people" / "hedda-quill"
     (folder / "sources" / "north").mkdir(parents=True)
     (folder / "person.json").write_text(json.dumps(person), encoding="utf-8")
-    bundle = {"resourceType": "Bundle", "type": "collection", "entry": [{"resource": p} for p in patients]}
-    (folder / "sources" / "north" / "fhir.json").write_text(json.dumps(bundle), encoding="utf-8")
+    if patients is not None:
+        bundle = {"resourceType": "Bundle", "type": "collection", "entry": [{"resource": p} for p in patients]}
+        (folder / "sources" / "north" / "fhir.json").write_text(json.dumps(bundle), encoding="utf-8")
+    for name in extra:
+        (folder / "sources" / name).parent.mkdir(parents=True, exist_ok=True)
+        (folder / "sources" / name).write_text("{}", encoding="utf-8")
     (tmp_path / "conformance" / "hedda" / "scripted-input").mkdir(parents=True)
     (tmp_path / "conformance" / "hedda" / "scripted-input" / "people.ttl").write_text(ROW, encoding="utf-8")
     assert refusals(folder, tmp_path) == [(where, reason)]
