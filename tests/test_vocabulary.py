@@ -155,9 +155,9 @@ def parts(entities, dataset):
     return found
 
 
-def test_the_crate_lists_every_ontology_query_runtime_and_conformance_file_and_nothing_else():
+def test_the_crate_lists_every_ontology_query_runtime_conformance_and_people_file_and_nothing_else():
     files = (sorted(ROOT.glob("ontologies/**/*.ttl")) + sorted(QUERIES.rglob("*.rq"))
-             + sorted(path for folder in ("runtime", "conformance") for path in (ROOT / folder).rglob("*") if path.is_file()))
+             + sorted(path for folder in ("runtime", "conformance", "people") for path in (ROOT / folder).rglob("*") if path.is_file()))
     assert parts(crate(), "./") == {path.relative_to(ROOT).as_posix(): FORMATS[path.suffix] for path in files}
 
 
