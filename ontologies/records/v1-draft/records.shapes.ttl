@@ -24,6 +24,16 @@ rec:SourceUrlShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+rec:AnsweredAsOfShape a sh:NodeShape ;
+    sh:targetSubjectsOf rec:answeredAsOf ;
+    sh:property [
+        sh:path rec:answeredAsOf ;
+        sh:datatype xsd:dateTime ;
+        sh:maxCount 1 ;
+        sh:message "A document says one instant its source answered as of, an xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] .
+
 rec:PatientShape a sh:NodeShape ;
     sh:targetSubjectsOf rec:patient ;
     sh:property [

@@ -288,3 +288,8 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape rec:ReferenceSeriesShape ;
                           sh:resultPath [ sh:inversePath prov:specializationOf ] ] ] .
+
+<#derived-current-revision/two-answered-as-of> a sht:Validate ;
+  mf:action [ sht:dataGraph <derived-current-revision/two-answered-as-of.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape rec:AnsweredAsOfShape ; sh:resultPath rec:answeredAsOf ] ] .
