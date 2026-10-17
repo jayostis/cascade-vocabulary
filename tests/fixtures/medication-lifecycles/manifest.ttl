@@ -5,9 +5,10 @@
 
 <> a mf:Manifest ;
   rdfs:label "medication-lifecycles" ;
-  rdfs:comment "One medication for each way a status reaches an entry: each FHIR R4 code the table needs, no status at all, the HL7 v3 ActStatus codes aborted and suspended as C-CDA writes them, a synonym, a fragment that a more conservative one outranks, and text nothing matches." ;
+  rdfs:comment "One medication for each way a status reaches an entry: each FHIR R4 code the table needs, no status at all, the HL7 v3 ActStatus codes aborted and suspended as C-CDA writes them, a synonym, a fragment that a more conservative one outranks, text nothing matches, and the R4 code entered-in-error and the ActStatus code nullified." ;
   mf:entries (
     <#my-active-medications>
+    <#my-medication-history>
   ) .
 
 <#my-active-medications> a mf:QueryEvaluationTest ;
@@ -16,3 +17,10 @@
   mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20active%20medications.rq> ;
               rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
   mf:result <my-active-medications.srj> .
+
+<#my-medication-history> a mf:QueryEvaluationTest ;
+  mf:name "my-medication-history" ;
+  rdfs:comment "Every entry with its status's lifecycle class: active; stopped for not taken, completed, stopped, cancelled, aborted, discontinued and no longer taken; paused for on hold and suspended; entered in error for entered-in-error and nullified; unknown for a draft, no status and text nothing matches." ;
+  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20medication%20history.rq> ;
+              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:result <my-medication-history.srj> .

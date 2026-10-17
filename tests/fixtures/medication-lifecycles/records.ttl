@@ -83,4 +83,16 @@
 :seePharmacyRevision a rec:Revision ; rec:revisionOf :seePharmacy ; rec:version :seePharmacyVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+:enteredInError a clinical:Medication .
+:enteredInErrorVersion prov:specializationOf :enteredInError ; rec:patient :subject ; clinical:drugName "status: entered-in-error" ; clinical:clinicalIntent "prescribed" ;
+    clinical:status "entered-in-error" .
+:enteredInErrorRevision a rec:Revision ; rec:revisionOf :enteredInError ; rec:version :enteredInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:nullified a clinical:Medication .
+:nullifiedVersion prov:specializationOf :nullified ; rec:patient :subject ; clinical:drugName "status: nullified" ; clinical:clinicalIntent "prescribed" ;
+    clinical:status "nullified" .
+:nullifiedRevision a rec:Revision ; rec:revisionOf :nullified ; rec:version :nullifiedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
 
