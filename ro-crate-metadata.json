@@ -11,7 +11,7 @@
       "@id": "./",
       "@type": "Dataset",
       "name": "Cascade vocabulary and standard queries",
-      "description": "The ontology and shapes files a Cascade Bridge Adapter's output is read against: clinical terms copied from the-cascade-protocol/spec under their own IRIs, each naming the commit it was copied from with dct:source, and the records and judgments terms first declared here. Beside them, the standard SPARQL queries over a pod written in those terms; each derivation and each lens carries the position it runs at. Under runtime/, the rules a runtime follows when it fills a pod, as Gherkin feature files with the examples that show each rule, the steps they are written in, and the scripted input the examples name. Under conformance/, the scenarios every runtime must pass: Alex Rivera's story, Priya Natarajan's and Martin Okafor's, each with its scripted input and its right answers.",
+      "description": "The ontology and shapes files a Cascade Bridge Adapter's output is read against: clinical terms copied from the-cascade-protocol/spec under their own IRIs, each naming the commit it was copied from with dct:source, and the records and judgments terms first declared here. Beside them, the standard SPARQL queries over a pod written in those terms; each derivation and each lens carries the position it runs at. Under runtime/, the rules a runtime follows when it fills a pod, as Gherkin feature files with the examples that show each rule, the steps they are written in, and the scripted input the examples name. Under conformance/, the scenarios every runtime must pass: Alex Rivera's story, Priya Natarajan's and Martin Okafor's, each with its scripted input and its right answers. Under people/, the hand-written test people, each the one place their name, birth date and gender are written, with what each hospital holds of them.",
       "version": "0.1.0",
       "license": { "@id": "https://spdx.org/licenses/Apache-2.0" },
       "isBasedOn": { "@id": "https://github.com/the-cascade-protocol/spec" },
@@ -231,6 +231,7 @@
         { "@id": "conformance/priya-natarajan/" },
         { "@id": "conformance/martin-okafor/" },
         { "@id": "conformance/tamsin-vale/" },
+        { "@id": "people/" },
         { "@id": "queries/v1-draft/views/medications.rq" },
         { "@id": "queries/v1-draft/views/lab-results.rq" },
         { "@id": "queries/v1-draft/views/variants.rq" },
@@ -1246,6 +1247,156 @@
         { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/E3/bundle/graph.ttl" }
       ]
     },
+    {
+      "@id": "people/",
+      "@type": "Dataset",
+      "name": "People",
+      "description": "The hand-written test people, one folder each: person.json, the one place a person's name, birth date, gender and pod subject are written, against person.schema.json; what each source holds of them under sources/; and a story's written answer under expected/. Every source, and every download of the kit that follows a person, agrees with person.json except where it declares the difference.",
+      "hasPart": [
+        { "@id": "people/README.md" },
+        { "@id": "people/person.schema.json" },
+        { "@id": "people/alex-rivera/" },
+        { "@id": "people/ines-calloway/" },
+        { "@id": "people/martin-okafor/" },
+        { "@id": "people/odalys-brandt/" },
+        { "@id": "people/pell-hargrove/" },
+        { "@id": "people/priya-natarajan/" },
+        { "@id": "people/rafferty-moon/" },
+        { "@id": "people/rowan-ellery-marsh/" },
+        { "@id": "people/tamsin-vale/" },
+        { "@id": "people/tobias-fenn/" }
+      ]
+    },
+    {
+      "@id": "people/alex-rivera/",
+      "@type": "Dataset",
+      "name": "Alex Rivera",
+      "description": "Alex Rivera: who she is, in person.json, with the subject of the kit conformance/alex-rivera, which follows her.",
+      "hasPart": [
+        { "@id": "people/alex-rivera/person.json" }
+      ]
+    },
+    {
+      "@id": "people/ines-calloway/",
+      "@type": "Dataset",
+      "name": "Ines Calloway",
+      "description": "Ines Calloway: who she is, in person.json; what cascade-north holds of her, in sources/; her story's written answer, in expected/story.json.",
+      "hasPart": [
+        { "@id": "people/ines-calloway/expected/story.json" },
+        { "@id": "people/ines-calloway/person.json" },
+        { "@id": "people/ines-calloway/sources/cascade-north/fhir.json" }
+      ]
+    },
+    {
+      "@id": "people/martin-okafor/",
+      "@type": "Dataset",
+      "name": "Martin Okafor",
+      "description": "Martin Okafor: who they are, in person.json, with the subject of the kit conformance/martin-okafor, which follows them.",
+      "hasPart": [
+        { "@id": "people/martin-okafor/person.json" }
+      ]
+    },
+    {
+      "@id": "people/odalys-brandt/",
+      "@type": "Dataset",
+      "name": "Odalys Brandt",
+      "description": "Odalys Brandt: who she is, in person.json; what cascade-north holds of her, in sources/; her story's written answer, in expected/story.json.",
+      "hasPart": [
+        { "@id": "people/odalys-brandt/expected/story.json" },
+        { "@id": "people/odalys-brandt/person.json" },
+        { "@id": "people/odalys-brandt/sources/cascade-north/fhir.json" }
+      ]
+    },
+    {
+      "@id": "people/pell-hargrove/",
+      "@type": "Dataset",
+      "name": "Pell Hargrove",
+      "description": "Pell Hargrove: who he is, in person.json; what cascade-north holds of him, in sources/; his story's written answer, in expected/story.json.",
+      "hasPart": [
+        { "@id": "people/pell-hargrove/expected/story.json" },
+        { "@id": "people/pell-hargrove/person.json" },
+        { "@id": "people/pell-hargrove/sources/cascade-north/fhir.json" }
+      ]
+    },
+    {
+      "@id": "people/priya-natarajan/",
+      "@type": "Dataset",
+      "name": "Priya Natarajan",
+      "description": "Priya Natarajan: who she is, in person.json, with the subject of the kit conformance/priya-natarajan, which follows her.",
+      "hasPart": [
+        { "@id": "people/priya-natarajan/person.json" }
+      ]
+    },
+    {
+      "@id": "people/rafferty-moon/",
+      "@type": "Dataset",
+      "name": "Rafferty Moon",
+      "description": "Rafferty Moon: who he is, in person.json; what cascade-north holds of him, in sources/; his story's written answer, in expected/story.json.",
+      "hasPart": [
+        { "@id": "people/rafferty-moon/expected/story.json" },
+        { "@id": "people/rafferty-moon/person.json" },
+        { "@id": "people/rafferty-moon/sources/cascade-north/fhir.json" }
+      ]
+    },
+    {
+      "@id": "people/rowan-ellery-marsh/",
+      "@type": "Dataset",
+      "name": "Rowan Ellery Marsh",
+      "description": "Rowan Ellery Marsh: who she is, in person.json; what cascade-north and cascade-south hold of her, in sources/.",
+      "hasPart": [
+        { "@id": "people/rowan-ellery-marsh/person.json" },
+        { "@id": "people/rowan-ellery-marsh/sources/cascade-north/fhir.json" },
+        { "@id": "people/rowan-ellery-marsh/sources/cascade-south/fhir.json" }
+      ]
+    },
+    {
+      "@id": "people/tamsin-vale/",
+      "@type": "Dataset",
+      "name": "Tamsin Vale",
+      "description": "Tamsin Vale: who she is, in person.json, with the subject of the kit conformance/tamsin-vale, which follows her; what cascade-north holds of her, in sources/; her story's written answer, in expected/story.json.",
+      "hasPart": [
+        { "@id": "people/tamsin-vale/expected/story.json" },
+        { "@id": "people/tamsin-vale/person.json" },
+        { "@id": "people/tamsin-vale/sources/cascade-north/ccda/2025-02-01.xml" },
+        { "@id": "people/tamsin-vale/sources/cascade-north/fhir.json" }
+      ]
+    },
+    {
+      "@id": "people/tobias-fenn/",
+      "@type": "Dataset",
+      "name": "Tobias Fenn",
+      "description": "Tobias Fenn: who he is, in person.json; what cascade-north holds of him, in sources/.",
+      "hasPart": [
+        { "@id": "people/tobias-fenn/person.json" },
+        { "@id": "people/tobias-fenn/sources/cascade-north/fhir.json" }
+      ]
+    },
+    { "@id": "people/README.md", "@type": "File", "encodingFormat": "text/markdown" },
+    { "@id": "people/person.schema.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/alex-rivera/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/ines-calloway/expected/story.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/stories/stories.json" } },
+    { "@id": "people/ines-calloway/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/ines-calloway/sources/cascade-north/fhir.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/data/cascade-north/patients/story-statin.json" } },
+    { "@id": "people/martin-okafor/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/odalys-brandt/expected/story.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/stories/stories.json" } },
+    { "@id": "people/odalys-brandt/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/odalys-brandt/sources/cascade-north/fhir.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/data/cascade-north/patients/story-side-effect.json" } },
+    { "@id": "people/pell-hargrove/expected/story.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/stories/stories.json" } },
+    { "@id": "people/pell-hargrove/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/pell-hargrove/sources/cascade-north/fhir.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/data/cascade-north/patients/story-red-herring.json" } },
+    { "@id": "people/priya-natarajan/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/rafferty-moon/expected/story.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/stories/stories.json" } },
+    { "@id": "people/rafferty-moon/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/rafferty-moon/sources/cascade-north/fhir.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/data/cascade-north/patients/story-too-little.json" } },
+    { "@id": "people/rowan-ellery-marsh/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/rowan-ellery-marsh/sources/cascade-north/fhir.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/data/cascade-north/patients/pt-1001.json" } },
+    { "@id": "people/rowan-ellery-marsh/sources/cascade-south/fhir.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/data/cascade-south/patients/s-48213.json" } },
+    { "@id": "people/tamsin-vale/expected/story.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/stories/stories.json" } },
+    { "@id": "people/tamsin-vale/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/tamsin-vale/sources/cascade-north/ccda/2025-02-01.xml", "@type": "File", "encodingFormat": "application/xml", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/stories/story-stopped.xml" } },
+    { "@id": "people/tamsin-vale/sources/cascade-north/fhir.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/data/cascade-north/patients/story-stopped.json" } },
+    { "@id": "people/tobias-fenn/person.json", "@type": "File", "encodingFormat": "application/json" },
+    { "@id": "people/tobias-fenn/sources/cascade-north/fhir.json", "@type": "File", "encodingFormat": "application/json", "isBasedOn": { "@id": "https://github.com/jayostis/cascade-sandbox/blob/26a037695e3d9ed7c3c8f248145866c2d1307ccd/data/cascade-north/patients/pt-1002.json" } },
     { "@id": "conformance/priya-natarajan/expected/allergies.ttl", "@type": "File", "encodingFormat": "text/turtle" },
     { "@id": "conformance/priya-natarajan/expected/conditions.ttl", "@type": "File", "encodingFormat": "text/turtle" },
     { "@id": "conformance/priya-natarajan/expected/handles.json", "@type": "File", "encodingFormat": "application/json" },
