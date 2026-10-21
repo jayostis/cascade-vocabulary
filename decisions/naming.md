@@ -1,8 +1,9 @@
 # How everything in a pod is named
 
 Status: draft, 2026-10-21, from the review on #130. Replaces N2's inputs, N4's single parent, N6's matcher constant
-and A3; moves `pav:version` off the revision; adds a Before verdict, a server node and a Same over servers to
-judgments, and a review question; built by #191. Every recipe detail (constant, escaping, bit layout,
+and A3; moves `pav:version` off the revision; adds a Before verdict, a server node and a Same over servers, an
+assertion activity per matcher run and a release's migration to judgments, and a review question; built by #193 then
+#191, one re-mint. Every recipe detail (constant, escaping, bit layout,
 canonical form) lives in the rule terms and `runtime/naming.feature`, not here.
 
 ## Question
@@ -64,7 +65,8 @@ says is the same is hashed; what we infer is the same is a judgment, never a nam
 | current | git refs and manual merge | derived, never stored: less any revision an Erroneous names or a person's Before places before another candidate, the revisions at the latest source change time (or with none), then greatest `rec:asOf`, then least IRI, which is arbitrary and said so | diverges: the source's clock resolves by default; a person resolves by stating order, not by merging |
 | order of states | git merge commit | a person's judgment, verdict Before, two revisions of one record in order; machines never make one; listed for review wherever the source's change time did not decide | ours; the merge commit's job, as a fact rather than a merge |
 | import, session, person's judgment | openEHR `CONTRIBUTION`; FHIR `urn:uuid` | random v4, minted once; a person's judgment keeps the IRI it arrived with | the import is the contribution; borrowed |
-| machine judgment | nanopub assertion | hash of rule IRI, justification, member count, members sorted, used sorted; attributed to the runtime release and its run | borrowed in spirit |
+| machine judgment | nanopub assertion | the claim named once, by rule IRI, justification, member count, members sorted, used sorted; each run that reaches it writes an assertion activity naming the release, the rule-list version and the time | borrowed from nanopubs' claim and assertion split |
+| a release's migration | database migrations; git fix-forward | a rule-list version says which rules it changed; on first open under it, the runtime re-runs those rules' judgments and retracts, attributed to the release with the rule change as reason, each one the new rule no longer makes; a person's judgments are never touched; the review page lists what was withdrawn | ours |
 | retraction | nanopub `npx:retracts` | a `prov:Activity` that `prov:invalidated`; replacement by `dcterms:replaces` | diverges: npx's domains make a judgment an agent |
 | document, finding | RFC 6920; Web Annotation | bytes hashed; content hashed | borrowed |
 | view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; rebuilt with the view, cited by nothing outside it | ours |
@@ -131,8 +133,12 @@ and lets a v8 name say which rule made it. Base URLs are normalised because `:44
 userinfo is refused because a credential must never be a name input. A contained resource is scoped by its container's
 source version because a renumbered one would otherwise become a revision of another record. An entry hashes a
 session the app minted because the subject and a timestamp collide across devices in one instant. Custodian and
-patient in a C-CDA name stop two patients' id-less statements from one clinic fusing. A machine judgment is attributed
-to a release because the same software on every run must have one name. A retraction is an activity because PROV
+patient in a C-CDA name stop two patients' id-less statements from one clinic fusing. A machine judgment is one claim
+with an assertion per run because the same inputs give the same name, so a second release that agrees could otherwise
+write nothing, and a release that stops agreeing would leave the claim counting: silence is not retraction. The
+release that changed a rule knows what it changed, so it carries the fix, re-running only that rule's judgments and
+retracting what it no longer makes, named deterministically so two devices write one file; the review page is where
+a release says what it took back. A retraction is an activity because PROV
 already says how an entity is invalidated. A snapshot exists because per-file integrity says nothing about the set
 being whole. A fragment on a hashed parent (`#source-version`, `#identifier-n`) is a stated convention because the
 node is inside the parent's hashed content and needs no name of its own; RFC 6920's grammar has no fragment, and we
@@ -178,6 +184,10 @@ its own vectors proves nothing.
   with the same recomputation property, and one IRI form serves documents, versions and revisions alike.
 - **`npx:retracts` and `npx:supersedes`.** The strongest case: nanopublication vocabulary built for retraction. Their
   domains make a judgment an agent or a nanopublication.
+- **A machine judgment named once and owned by the first release.** The strongest case: simplest, and nothing
+  duplicates. No record of which later releases agreed, and a migration cannot find what a changed rule made.
+- **The release hashed into the judgment's name.** The strongest case: nothing is ever lost. A judgment per release
+  for one pair, views that dedupe, and a retraction per copy.
 - **Blank-node judgments and software agents.** The strongest case: nothing to mint. Apps link to judgments, and the
   same software on every run needs one name.
 - **UUIDv5.** The strongest case: a standard name-based layout. SHA-1, and no room for a stated layout.
@@ -195,15 +205,13 @@ its own vectors proves nothing.
 - The view's latest member across a Same group is chosen by `rec:asOf`, so a re-publisher's stale copy pulled later
   shows over the origin's correction. Lean: the group's rule follows the record's ladder, the source's change time
   first; and a Before may order revisions of any two records a Same joins.
-- One unversioned namespace (#193) is agreed in direction, not ruled. Versions and machine judgments hash `v1-draft`
-  IRIs today, so the re-mint must follow the consolidation, or names change twice.
 - An arrival with no source time whose version the record already holds: lean, write nothing, or a stale copy with no
   `meta` becomes current on `rec:asOf` alone.
 - A `urn:uuid` `fullUrl` trusted as identity across bundles, beyond FHIR's within-one-bundle promise: lean, trust it as
   a server's id is trusted; a reused one is repaired by an Erroneous, and an exporter that re-mints per export makes
   duplicates the matcher joins.
-- A matcher judgment's identity across procedure changes (#59): lean, the claim named once plus an assertion activity
-  per run, decided now, because the judgment name already changes once under this note and must not change twice.
+- The shape of a rule-list version's change list (which rules changed, whether their judgments are re-evaluated) and
+  the opening step that runs the migration (#59, ruled above as to the judgment's identity).
 - A server rollback carrying old timestamps reads as stale and is not followed: lean, accept.
 - An import that kept nothing writes nothing: lean, keep A11.
 - Whether a judgment that leaves the pod carries the owner's `urn:uuid`: lean, yes.
