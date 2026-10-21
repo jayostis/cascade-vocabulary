@@ -75,7 +75,10 @@ says is the same is hashed; what we infer is the same is a judgment, never a nam
 | scheme | | declared per pod at creation: source URL as IRI, opaque hash (default), or keyed hash; C-CDA, entries and judgments hashed under all three; a test key for kits | ours |
 
 The rules are the vocabulary's: each a term with `rdfs:seeAlso` to its standard, a `.rq` where SPARQL can state it,
-vectors cross-checked against an independent library, a reference implementation, and a self-check shape (#191).
+vectors cross-checked against an independent library, a reference implementation, and a self-check shape (#191). One
+unversioned namespace holds every term a pod file carries or a name hashes (#193), and it lands before the rules move,
+so every name is re-minted once: a version hashes its predicates and a machine judgment its justification IRI, and
+either change alone would re-mint them all.
 
 ## Why
 
