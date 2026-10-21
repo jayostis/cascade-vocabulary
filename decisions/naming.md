@@ -37,7 +37,9 @@ generation (https://sphn-semantic-framework.readthedocs.io/en/latest/user_guide/
 (https://ohdsi.github.io/CommonDataModel/); git objects (https://git-scm.com/book/en/v2/Git-Internals-Git-Objects);
 trusty URIs (https://trustyuri.net/); Web Annotation (https://www.w3.org/TR/annotation-model/); RFC 6920
 (https://www.rfc-editor.org/rfc/rfc6920), RFC 9562 §5.8 and §6.6 (https://www.rfc-editor.org/rfc/rfc9562), RFC 3986
-§6 (https://www.rfc-editor.org/rfc/rfc3986#section-6); RDFC-1.0 (https://www.w3.org/TR/rdf-canon/).
+§6 (https://www.rfc-editor.org/rfc/rfc3986#section-6); RDFC-1.0 (https://www.w3.org/TR/rdf-canon/). Base URL churn
+measured from Epic's and Oracle's published endpoint lists, 2021 to 2026, with the standards' stability clauses quoted
+(https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6327416626).
 
 ## Choice
 
@@ -72,9 +74,16 @@ vectors cross-checked against an independent library, a reference implementation
 
 **Why hash the server away when FHIR says the pair is not durable.** A patient's pod shows views the person shares, and
 a URL there names every hospital they have used. SPHN already scopes by provider and carries sameness separately; we
-keep that shape and hash the scope. The cost FHIR warns of is real: a hospital that moves its base URL makes a new
-record, joined to the old by `jdg:SameBusinessIdentifier` or a person's Same, exactly as a new hospital would be. A
-record is one thing at one source, so a moved source is a new source, and the join is a judgment because it is one.
+keep that shape and hash the scope. The cost FHIR warns of is real, and measured (the churn research on #130,
+2026-10-21): a hospital changes vendor, and so re-issues every id on a new base, at roughly 1 to 4.5% of US hospitals a
+year; no naming scheme survives that, and the old and new records are joined by `jdg:SameBusinessIdentifier` or a
+person's Same, exactly as a new hospital's would be. A record is one thing at one source, so a moved source is a new
+source, and the join is a judgment because it is one. The second kind of change is the one to design for: the URL a
+client holds changes while the server and its ids stay the same. Epic's own list moved 2 to 3% of its base URLs a
+year to a new address for the same organisation, and its current Brands list rewrote about 40% of them at once with a
+path segment; every old and new pair tested reports one server in `CapabilityStatement.implementation.url`. Oracle
+Millennium moved none in four years. Hashing the URL the client used would make one resource two records there, so
+which base is hashed is still open below.
 
 **Why identifiers are evidence, not names.** An accession alone would merge a whole panel; sources disagree on
 identifier systems; and a name input that a source may correct later is a name that changes. So the identifier rides in
@@ -142,6 +151,13 @@ its own vectors proves nothing.
 
 ## Still open
 
+- Which base URL a server record hashes: the one the client pulled from, or the one the server asserts in
+  `CapabilityStatement.implementation.url`. Lean: the server's own, normalised, with the client's kept as
+  `rec:sourceUrl`, so an alias or path change at one server does not split a record; it needs the research's
+  inference that ids survive such a change confirmed by reading one `Patient/{id}` on both bases.
+- Whether the pod lists, on the review page, records whose current revision was picked on weak evidence (no source
+  change time, or a device-clock tiebreak), so a person can file an Erroneous. Lean: yes, as a derivation, not a filed
+  judgment.
 - One unversioned namespace (#193) is agreed in direction, not ruled. Versions and machine judgments hash `v1-draft`
   IRIs today, so the re-mint must follow the consolidation, or names change twice.
 - An arrival with no source time whose version the record already holds: lean, write nothing, or a stale copy with no
@@ -160,7 +176,8 @@ its own vectors proves nothing.
 ## What would change our mind
 
 Sources stamping no change time often enough that currency falls to device clocks would reopen the open-fork
-alternative. An exporter that re-mints `urn:uuid` fullUrls per export would end trusting them. Hospitals moving base
-URLs often enough that record names churn would make business identifiers a name input after all. Servers giving every
+alternative. An exporter that re-mints `urn:uuid` fullUrls per export would end trusting them. Vendor switches rising
+well above the measured 1 to 4.5% of hospitals a year, or ids turning out not to survive a same-server URL change,
+would make business identifiers a name input after all. Servers giving every
 record a long random id would make the keyed scheme unnecessary; cross-pod reconciliation needing shared names would
 rule it out. A signed or hashed-graph standard adopted across tools would replace the version and revision forms.
