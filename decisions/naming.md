@@ -1,9 +1,10 @@
 # How everything in a pod is named
 
 Status: draft, 2026-10-21, from the review on #130. Replaces N2's inputs, N4's single parent, N6's matcher constant
-and A3; moves `pav:version` off the revision; adds a Before verdict, a server node and a Same over servers, an
-assertion activity per matcher run and a release's migration to judgments, and a review question; built by #193 then
-#191, one re-mint. Every recipe detail (constant, escaping, bit layout,
+and A3; moves `pav:version` off the revision; makes servers and organisations (`prov:Organization`) kinds of record;
+adds to judgments a Before verdict, a Same over servers, organisations and documents with a derivation each, an
+assertion activity per matcher run and a release's migration; adds a review question and within-organisation matcher
+rules; built by #193 then #191, one re-mint. Every recipe detail (constant, escaping, bit layout,
 canonical form) lives in the rule terms and `runtime/naming.feature`, not here.
 
 ## Question
@@ -55,7 +56,10 @@ says is the same is hashed; what we infer is the same is a judgment, never a nam
 | derived name | RFC 9562 §5.8, §6.6 | UUIDv8 over a random v4 namespace, the rule's IRI, then the inputs, escaped and joined | borrowed; the rule IRI as first input is ours |
 | rule | FHIR extensions named by URL | a term in an unversioned namespace; a changed recipe is a new IRI | borrowed from FHIR's URL-named rules |
 | record from a server | FHIR server + id; SPHN provider-scoped IRI | hash of the normalised base URL the client used, type, id; `rec:sourceUrl` and the server's self-asserted base both stated in the file | SPHN's scope, hashed so a shared view names no host; diverges from FHIR, which calls this pair not durable |
-| server | FHIR `CapabilityStatement.implementation.url` | a node per server pulled from, named by the base used, carrying the self-asserted base, login endpoint and software; a Same whose members are servers joins every record with one type and id under both, by derivation | ours; the self-URL is evidence for a judgment, never a name input |
+| record from a document | FHIR documents; C-CDA | named by the document and a selector; an id the generator minted is the document's, never the hospital's, and a `urn:uuid` fullUrl is never identity across documents | borrowed from FHIR's own promise, uniqueness within one bundle only |
+| server | FHIR `CapabilityStatement` | a record named by the base URL the client used; each connect yields a version of what the server reported (self-asserted base, login endpoint, software) | ours; the self-URL is evidence for a judgment, never a name input |
+| organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | a record, `prov:Organization`, named by server plus `Organization/{id}` or by the custodian's OID; name, address and identifiers on its versions; a document names its custodian and author by it | borrowed from PROV; named as any record |
+| sameness of sources | git remotes; openEHR `creating_system_id` | a Same whose members are two servers, two organisations or two documents, each with its derivation: servers join every record of one type and id under both; document editions join entries whose content matches within the pair and scope the matcher to the pair; organisations give the matcher a within-organisation scope, where a shared identifier or a shared code and date joins | ours |
 | record from C-CDA | CDA `id` roots | custodian and patient scopes, then the class's identifier ladder | ours; no standard names an id-less CDA statement |
 | record from an entry | | hash of the session's IRI and the draft's position | ours |
 | sameness across sources | FHIR business identifiers; SPHN `hasSharedIdentifier` | a judgment (`jdg:SameBusinessIdentifier`), never a name input | borrowed from SPHN; diverges from FHIR's "preferred basis" |
@@ -103,6 +107,24 @@ from the self-URL, the login endpoint and the publisher's stable endpoint id; ma
 because it was never baked into a name. Records pulled under the new address are still written, so a name never
 depends on a judgment in one pod. A vendor switch re-issues ids, so a server Same joins nothing there; those records
 join on their own evidence, a business identifier or a code and date, because that is the only evidence there is.
+
+**Why a source is a record, and why sameness is one judgment per source.** Everything observed from a source is a record
+with versions, revisions and a current state: a flu shot, the server it came from, the hospital that holds it. An
+organisation is named by the server's id for it or the custodian's OID, which is one of the few identifiers that
+survives across documents; its name and address sit on versions, so a merger's rename is history, not a new thing.
+Mercy's FHIR `Organization` and Mercy's C-CDA custodian usually share an NPI or OID, so the shared-identifier rule
+joins them as a machine judgment. The three re-publisher problems are then one problem at three levels, answered by
+one mechanism: name by the source, join by one judgment per source-level fact, and let the matcher work per record
+only inside the scope that judgment gives it. An address change is a server Same, and ids survive, so the derivation
+joins by id. Two summaries from one hospital are a document Same, and the derivation joins unchanged entries by
+content within the pair, which is nearly safe where content matching across the pod is not, and sends changed entries
+to the matcher within the pair. A vendor switch is an organisation Same, and ids are gone, so nothing joins by id;
+but within one organisation a shared identifier is certain and a shared code and date is nearly so, and those rules
+join most of the history with what is left on the review page. A document's minted ids (research 3 on #130: two of
+three open converters mint a random id per run; a summary generator masks server ids on purpose) are the document's,
+so a record from a document is named per document and joined across documents like any re-published record; nothing
+in a resource says whether a server or a generator assigned its id. The floor is a source that carries no identifier
+at all, which falls back to labels and a person's judgment, as today.
 
 **Why identifiers are evidence, not names.** An accession alone would merge a whole panel; sources disagree on
 identifier systems; and a name input that a source may correct later is a name that changes. So the identifier rides in
@@ -161,6 +183,12 @@ its own vectors proves nothing.
   benefit and makes the failure retractable.
 - **Pin to the first address the pod saw for a server.** The strongest case: it would survive a hosting move too.
   The name would then depend on one pod's memory, so no other holder could recompute it.
+- **A `urn:uuid` fullUrl or a minted id trusted as identity across documents.** The strongest case: a deterministic
+  converter repeats it, and a server's id is trusted the same way. Two of three converters mint a new one per run,
+  the deterministic one gives one id to identical content in unrelated documents, and FHIR promises uniqueness within
+  one bundle only.
+- **Organisations as blank nodes with a label.** The strongest case: nothing pointed at one, and labels collide. A
+  proposal, a view and a Same now point at one, and the source gives an OID or NPI to name it by.
 - **Business identifiers as name inputs.** The strongest case: FHIR says they are the basis for sameness across
   systems, and they survive a server move. They are not unique across kinds, sources disagree on systems, and a
   corrected identifier would rename the record.
@@ -210,9 +238,10 @@ its own vectors proves nothing.
   first; and a Before may order revisions of any two records a Same joins.
 - An arrival with no source time whose version the record already holds: lean, write nothing, or a stale copy with no
   `meta` becomes current on `rec:asOf` alone.
-- A `urn:uuid` `fullUrl` trusted as identity across bundles, beyond FHIR's within-one-bundle promise: lean, trust it as
-  a server's id is trusted; a reused one is repaired by an Erroneous, and an exporter that re-mints per export makes
-  duplicates the matcher joins.
+- The guards under which the app proposes a document Same (same custodian, a later date, how much content matches)
+  and the within-organisation matcher rules (which pairs of code and date are near-certain inside one organisation).
+- Whether the NPI registry becomes a reference table kind, so a pod can show a hospital's name and address from its
+  NPI; the organisation record does not wait on it.
 - The shape of a rule-list version's change list (which rules changed, whether their judgments are re-evaluated) and
   the opening step that runs the migration (#59, ruled above as to the judgment's identity).
 - A server rollback carrying old timestamps reads as stale and is not followed: lean, accept.
