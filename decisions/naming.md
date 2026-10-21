@@ -1,127 +1,166 @@
 # How everything in a pod is named
 
-Status: decided 2026-10-21 (#130), not yet built (#191, #193). Rules: N1 to N12, A1 to A15 where they name, M-rules
-where they read a name. Review: two independent designs, a red team on each, one arbiter, every citation checked; the
-record is on #130.
+Status: draft, 2026-10-21, from the review on #130. Replaces N2's inputs, N4's single parent, N6's matcher constant
+and A3; moves `pav:version` off the revision; built by #191. Every recipe detail (constant, escaping, bit layout,
+canonical form) lives in the rule terms and `runtime/naming.feature`, not here.
 
 ## Question
 
-A pod holds records from hospitals, versions of each, the pod's own revisions, stored documents, imports, entries, a
-person's judgments and a machine's, findings, tables and views. Each needs a name that two runtimes give the same thing,
-that one thing keeps, that nobody can forge, and that says nothing a shared view should not say.
+A pod holds records from several hospitals, versions of each, the pod's own revisions, stored documents, imports,
+entries, a person's judgments and a machine's, findings, tables and views. The pod has no server of record, lives on
+more than one device, and shows views the person may share. Each thing needs a name two runtimes give alike, that it
+keeps, that nobody can forge, and that says nothing a shared view should not.
 
 ## What others do
 
-- **FHIR** names a resource by its server plus a logical id, and says a `fullUrl` is unique within a bundle; identifiers
-  are "the preferred basis to recognize the same content on different systems"; a version is `meta.versionId`, a
-  server's counter.
-- **openEHR** names a versioned object by `object_id::creating_system_id::version_tree_id`, one string holding what
-  Cascade splits into record, source and revision; a contribution groups the versions one act committed.
-- **git** names a blob, a tree and a commit by the SHA of their content; a commit names its parents, one or several,
-  and its one tree, so one hash covers the whole state.
-- **RFC 6920** gives a content hash an IRI, `ni:///sha-256;…`, that any holder of the bytes recomputes with no other
-  knowledge. **RFC 9562** gives an application its own UUID layout (version 8) and recommends a random v4 as a
-  namespace. **RDFC-1.0** canonicalises a graph so its hash is the same from any serialisation.
-- **SPHN** and **OMOP** keep source-assigned identifiers and say nothing about naming across sources.
-- **Nanopublications** name an assertion by its hash (trusty URIs); **Web Annotation** gives each annotation exactly one
-  IRI.
+- **FHIR** names a resource by its server plus a logical id and warns that neither is durable across systems; business
+  identifiers are "the preferred basis to recognize the same content on different systems"; a `fullUrl` is unique
+  within one bundle; a version is `meta.versionId`, one server's counter.
+- **openEHR** names a versioned object `object_id::creating_system_id::version_tree_id`, the system visible in the
+  name and branches in the tree; a `CONTRIBUTION` records each commit; a person resolves a merge.
+- **SPHN** scopes every instance IRI by its data provider and keeps cross-provider sameness in a separate
+  `hasSharedIdentifier`. **OMOP** keeps each source's own value beside the concept it maps to and names nothing across
+  sources.
+- **git** names blob, tree and commit by the hash of their content; a commit names its parents, one or several, and one
+  tree, so one hash covers the whole state; a fork stays open until a person writes the merge.
+- **Nanopublications** hash a self-referencing graph with the self-reference blanked (trusty URIs). **Web Annotation**
+  gives each annotation exactly one IRI.
+- **RFC 6920** gives a hash of bytes an IRI, `ni:///sha-256;…`. **RFC 9562** gives an application its own UUID layout
+  (version 8) and recommends a random v4 or v7 as a namespace. **RFC 3986 §6** says which URL differences are not
+  differences. **RDFC-1.0** canonicalises a graph so its hash is the same from any serialisation.
 
 Sources: FHIR R4 resource identity (https://hl7.org/fhir/R4/resource.html#id), bundle uniqueness
 (https://hl7.org/fhir/R4/bundle.html#bundle-unique), `Identifier` (https://hl7.org/fhir/R4/datatypes.html#Identifier);
 openEHR `OBJECT_VERSION_ID` (https://specifications.openehr.org/releases/BASE/latest/base_types.html#_object_version_id_class)
-and `CONTRIBUTION` (https://specifications.openehr.org/releases/RM/latest/common.html#_contribution_class); git objects
-(https://git-scm.com/book/en/v2/Git-Internals-Git-Objects); RFC 6920 (https://www.rfc-editor.org/rfc/rfc6920), RFC 9562
-§5.8 and §6.6 (https://www.rfc-editor.org/rfc/rfc9562), RFC 3986 §6 (https://www.rfc-editor.org/rfc/rfc3986#section-6);
-RDFC-1.0 (https://www.w3.org/TR/rdf-canon/); Web Annotation (https://www.w3.org/TR/annotation-model/).
+and `CONTRIBUTION` (https://specifications.openehr.org/releases/RM/latest/common.html#_contribution_class); SPHN data
+generation (https://sphn-semantic-framework.readthedocs.io/en/latest/user_guide/data_generation.html); OMOP CDM
+(https://ohdsi.github.io/CommonDataModel/); git objects (https://git-scm.com/book/en/v2/Git-Internals-Git-Objects);
+trusty URIs (https://trustyuri.net/); Web Annotation (https://www.w3.org/TR/annotation-model/); RFC 6920
+(https://www.rfc-editor.org/rfc/rfc6920), RFC 9562 §5.8 and §6.6 (https://www.rfc-editor.org/rfc/rfc9562), RFC 3986
+§6 (https://www.rfc-editor.org/rfc/rfc3986#section-6); RDFC-1.0 (https://www.w3.org/TR/rdf-canon/).
 
 ## Choice
 
-**Two tests decide every input:** two things never share a name, and one thing never changes its name. What the source
+Two tests decide every input: two things never share a name, and one thing never changes its name. What the source
 says is the same is hashed; what we infer is the same is a judgment, never a name.
 
-- **A derived name is a UUIDv8:** SHA-256 over the namespace UUID `90c60849-c5ef-4ca6-bfb8-8662bd07d2b5`, then the rule's
-  IRI, then the rule's inputs in order, joined with `|` after `%` becomes `%25` and `|` becomes `%7C`; the first 128
-  bits with the version and variant bits set. Lists carry their count. The constant is a random v4 minted once
-  (cascade-bridge-spec b406c3a) and never changes.
-- **The first input is the rule's IRI,** in an unversioned namespace. A rule is immutable: a changed recipe is a new rule
-  with a new IRI, and the old IRI keeps naming what it named.
-- **A record from a server** hashes the base URL (normalised per RFC 3986; userinfo, query and fragment refused), the
-  resource type and the logical id. A `urn:uuid:` `fullUrl` is trusted as an id. A contained resource is scoped by its
-  container's source version. A record with no server hashes the document and a selector. **A C-CDA record** hashes
-  the custodian and the patient as well, and id-less twins are told apart by their members' fingerprint, then ordinal.
-  **A record from an entry** hashes the session's IRI and the draft's position. The record states its `rec:sourceUrl`
-  in its own file, so any holder recomputes the name.
-- **A version is its content:** canonical sorted N-Triples of exactly its triples, `prov:specializationOf` the record
-  and `rec:patient` included, business identifiers nested and sorted, hashed to `ni:///sha-256;…`. No rule IRI: the
-  content is the name, and RFC 6920 holders recompute it knowing nothing of Cascade. A document is its bytes, the same
-  way. A finding is its content.
-- **A revision is the pod's commit:** self-hashed over its own triples with `urn:cascade:this-revision` as placeholder,
-  carrying the import's random id, so two arrivals are two revisions. It names every revision of the record it saw when
-  written (`prov:wasRevisionOf`, one or several, as git's parents), never only "the one before". It carries two
-  clocks: `rec:asOf`, when the source said it was so, and `prov:generatedAtTime`, when the pod wrote it. The source's
-  own version sits in a nested `rec:SourceVersion` node, never on the revision.
-- **Current is derived, not arrival order:** among a record's revisions carrying the source's latest change time, the
-  greatest by (`rec:asOf`, `prov:generatedAtTime`), least IRI as the last tiebreak. An arrival whose content is the
-  current version writes nothing; a held (content, source version, time) that would not become current writes nothing.
-- **An import, a session and a person's judgment** are random v4 `urn:uuid`s minted once; the pod files a person's
-  judgment under the IRI it arrived with. **A machine judgment** hashes the rule IRI, the justification, the member
-  count, the members sorted and what it used sorted, and is attributed to the runtime's release and its run. A
-  retraction is a `prov:Activity` that `prov:invalidated` the judgment; a replacement says `dcterms:replaces`.
-- **A view entry** is `<view>#` plus the hex SHA-256 of its least member. Only PROV qualification nodes, organisation
-  agents and the Bridge's transient arrival are blank. A fragment on a hashed parent is a stated convention.
-- **A snapshot** per import and session: one node naming the root of the pod's files after it, over the sorted (path,
-  name) pairs, so one hash says the set is whole.
-- **No name ever includes the pod's address, a WebID or a DID.** The subject is the pod's random `urn:uuid`, the owner
-  named on a person's judgments; the address is a mount point and is written in no file.
-- **A pod declares its record-naming scheme** at creation, fixed for its life: the normalised source URL as the IRI,
-  the opaque hash above (the default, the only one the kits cover at first), or the same hash over a pod key. A switch
-  is a new pod re-importing the stored documents.
-- **The vocabulary owns the rules.** Each is a term with its IRI, `rdfs:comment`, ordered inputs and `rdfs:seeAlso` to
-  the standard; beside it a plain `.rq` where SPARQL can state it, vectors every implementation reproduces, cross-checked
-  against an independent library, a reference implementation under `tests/`, and a shape that recomputes a record's
-  name from its file. The version rule has no `.rq` and no shape: canonicalising a graph is not SPARQL.
+| thing | prior art | what we do | borrowed or diverged |
+|---|---|---|---|
+| derived name | RFC 9562 §5.8, §6.6 | UUIDv8 over a random v4 namespace, the rule's IRI, then the inputs, escaped and joined | borrowed; the rule IRI as first input is ours |
+| rule | FHIR extensions named by URL | a term in an unversioned namespace; a changed recipe is a new IRI | borrowed from FHIR's URL-named rules |
+| record from a server | FHIR server + id; SPHN provider-scoped IRI | hash of normalised base URL, type, id; `rec:sourceUrl` stated in the file | SPHN's scope, hashed so a shared view names no host; diverges from FHIR, which calls this pair not durable |
+| record from C-CDA | CDA `id` roots | custodian and patient scopes, then the class's identifier ladder | ours; no standard names an id-less CDA statement |
+| record from an entry | | hash of the session's IRI and the draft's position | ours |
+| sameness across sources | FHIR business identifiers; SPHN `hasSharedIdentifier` | a judgment (`jdg:SameBusinessIdentifier`), never a name input | borrowed from SPHN; diverges from FHIR's "preferred basis" |
+| version | git blob; RFC 6920; RDFC-1.0 | `ni:` hash of RDFC-1.0 canonical N-Quads of exactly its triples, identifiers nested and sorted | borrowed; diverges from FHIR's and openEHR's per-system counters |
+| source's own version | openEHR `creating_system_id`; FHIR `versionId` | a nested node on the revision, never in a name | diverges: hashed or nested away, not visible |
+| revision | git commit; trusty URIs | self-hashed over its own triples, carrying the import's id, `rec:asOf`, `prov:generatedAtTime` and every revision it saw | borrowed from both; `ni:` form rather than trusty URI syntax |
+| current | git refs and manual merge | derived: at the latest source change time (or none), greatest `rec:asOf`, then `prov:generatedAtTime`, then least IRI, less any an Erroneous names | diverges: resolved by the source's clock, never by a person |
+| import, session, person's judgment | openEHR `CONTRIBUTION`; FHIR `urn:uuid` | random v4, minted once; a person's judgment keeps the IRI it arrived with | the import is the contribution; borrowed |
+| machine judgment | nanopub assertion | hash of rule IRI, justification, member count, members sorted, used sorted; attributed to the runtime release and its run | borrowed in spirit |
+| retraction | nanopub `npx:retracts` | a `prov:Activity` that `prov:invalidated`; replacement by `dcterms:replaces` | diverges: npx's domains make a judgment an agent |
+| document, finding | RFC 6920; Web Annotation | bytes hashed; content hashed | borrowed |
+| view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; rebuilt with the view, cited by nothing outside it | ours |
+| snapshot | git tree | one node per import or session naming the set of files it left on that device | borrowed; the merged set is open |
+| pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID | diverges from Solid, which names a pod by its URL |
+| scheme | | declared per pod at creation: source URL as IRI, opaque hash (default), or keyed hash; C-CDA, entries and judgments hashed under all three; a test key for kits | ours |
+
+The rules are the vocabulary's: each a term with `rdfs:seeAlso` to its standard, a `.rq` where SPARQL can state it,
+vectors cross-checked against an independent library, a reference implementation, and a self-check shape (#191).
 
 ## Why
 
-A name is recomputed by whoever holds the file, so every input is in the file or in the standard. The rule's IRI in
-the hash means two rules of equal arity never collide and a name says which rule made it; a bare word said neither.
-Escaping closes a verified collision: `("a|b")` and `("a","b")` named one thing. Content names make the same version
-from any path, which is where idempotency comes from, and make a sync a union of files: every file is immutable and
-either content-named or randomly minted, and every answer is a function of the set, never of write order. Currency
-from the source's clocks stops a stale copy un-correcting or un-retracting a record, which arrival order allowed, and a
-revision naming every revision it saw lets two offline devices both import a correction and merge. Custodian and
-patient in a C-CDA name stop two patients' id-less statements from one clinic fusing into one record. The address out
-of every name keeps a pod movable and a shared view from naming its host; the opaque hash hides a hospital from a
-casual reader of a shared view, and the scheme declaration says plainly that only a key hides it from a determined one.
+**Why hash the server away when FHIR says the pair is not durable.** A patient's pod shows views the person shares, and
+a URL there names every hospital they have used. SPHN already scopes by provider and carries sameness separately; we
+keep that shape and hash the scope. The cost FHIR warns of is real: a hospital that moves its base URL makes a new
+record, joined to the old by `jdg:SameBusinessIdentifier` or a person's Same, exactly as a new hospital would be. A
+record is one thing at one source, so a moved source is a new source, and the join is a judgment because it is one.
+
+**Why identifiers are evidence, not names.** An accession alone would merge a whole panel; sources disagree on
+identifier systems; and a name input that a source may correct later is a name that changes. So the identifier rides in
+the version, sorted, and a judgment says when two records share one plus a code.
+
+**Why content names a version, not a counter.** Many servers, counters that reset, and the same state arriving by
+several paths (a pull, Apple's copy, a C-CDA). A content hash is the same from any path, which is where idempotency
+comes from, and is recomputable by anyone with the file and the rule. The counter rides in a nested node because the
+revision is the pod's commit, not the server's.
+
+**Why the revision is a commit with parents, and why forks resolve by clock.** Two arrivals of one state are two
+events, so the import's id is hashed in; a random name would check nothing, so the revision is self-hashed. Naming
+every revision it saw, as git's parents do, lets two offline devices both import a correction and merge by union.
+git leaves the fork to a person; a pod is a mirror of sources it does not author, so the source's own change time is
+the authority, and a stale copy can never un-correct or un-retract a record, which arrival order allowed. Device clocks
+decide only after the source's time and `rec:asOf` have tied.
+
+**Why the smaller rules.** Escaping closes a verified collision, `("a|b")` and `("a","b")` named one thing; a list
+carries its count so two lists back to back are unambiguous; the rule IRI makes two rules of equal arity never collide
+and lets a v8 name say which rule made it. Base URLs are normalised because `:443` and none are one server, and
+userinfo is refused because a credential must never be a name input. A contained resource is scoped by its container's
+source version because a renumbered one would otherwise become a revision of another record. An entry hashes a
+session the app minted because the subject and a timestamp collide across devices in one instant. Custodian and
+patient in a C-CDA name stop two patients' id-less statements from one clinic fusing. A machine judgment is attributed
+to a release because the same software on every run must have one name. A retraction is an activity because PROV
+already says how an entity is invalidated. A snapshot exists because per-file integrity says nothing about the set
+being whole. A fragment on a hashed parent (`#source-version`, `#identifier-n`) is a stated convention because the
+node is inside the parent's hashed content and needs no name of its own; RFC 6920's grammar has no fragment, and we
+say so. The opaque default hides a hospital from a casual reader of a shared view; the scheme declaration says in plain
+words that only a key hides it from a determined one. The address stays out of every name because a hostname in a name
+is a commitment nobody can undo: moving host renames everything, and a shared view names the host. The vocabulary owns
+the rules because a pod reader has only the vocabulary; vectors are cross-checked because an implementation that minted
+its own vectors proves nothing.
 
 ## Alternatives that lost
 
-- **The namespace as a hash of the project URL.** Ties uniqueness to owning a domain and invites re-derivation when it
-  moves; RFC 9562 recommends a random one.
-- **No tag, or a word.** No tag needs a written invariant that no two rules share a first input's kind; a word is
-  arbitrary and nothing looks it up. The IRI is a term.
-- **The source URL as every record's IRI.** It names the hospital in every shared view. Kept as a scheme a pod may
-  choose.
-- **A keyed hash as the default.** The Bridge must hold the key to mint; losing it orphans every record; two pods never
-  share a name. Kept as a scheme a pod may choose.
-- **Current = the last arrival, and A3 (a seen source version suppresses content).** A stale export re-imported won;
-  a counter reset's correction was dropped.
-- **One `prov:wasRevisionOf` line.** Two offline imports fork, and the union was refused.
-- **UUIDv5.** SHA-1, and no room for a stated layout.
-- **A versioned rule namespace.** Whatever is hashed into a name must be as permanent as the constant.
-- **`npx:retracts` and `npx:supersedes`.** Their domains make a judgment an agent or a nanopublication.
-- **Blank-node judgments and software agents.** The same software on every run must have one name.
-- **A hostname or DID as the pod's identity.** An irreversible commitment; the prototype rejected it and so do we.
+- **FHIR's pair as the visible IRI.** The strongest case: it is what every FHIR client already resolves, and it is
+  honest about where a record came from. It names the hospital in every shared view. Kept as a scheme a pod may choose.
+- **Business identifiers as name inputs.** The strongest case: FHIR says they are the basis for sameness across
+  systems, and they survive a server move. They are not unique across kinds, sources disagree on systems, and a
+  corrected identifier would rename the record.
+- **openEHR's visible system id and version tree.** The strongest case: twenty years of practice, and a reader sees the
+  branch. The system id is the hospital, and a shared view would show it; the branch is kept, as parents on the revision.
+- **git's open fork, merged by a person.** The strongest case: no clock is trusted and nothing is decided silently. The
+  person did not author the sources and cannot judge which hospital state is later; the source's change time can.
+- **Current is the last arrival, and A3.** The strongest case: simplest to compute and today's rule. A stale export
+  re-imported won, and a counter reset's correction was dropped.
+- **A keyed hash as the default.** The strongest case: it is the only scheme that actually hides the source. The Bridge
+  must hold the key to mint, losing it orphans every record, and two pods never share a name. Kept as a scheme.
+- **No rule tag, or a bare word.** The strongest case: shorter inputs, and today's names survive. No tag needs a written
+  invariant that no two rules share a first input's kind; a word is nothing a reader can look up.
+- **A namespace hashed from the project URL.** The strongest case: derivable by anyone. It ties uniqueness to owning a
+  domain, and RFC 9562 recommends a random one.
+- **A versioned rule namespace.** The strongest case: it matches the other ontologies' IRIs. Whatever is hashed into a
+  name must be as permanent as the constant.
+- **Trusty URIs for revisions.** The strongest case: an existing convention for exactly this. `ni:` is an IETF standard
+  with the same recomputation property, and one IRI form serves documents, versions and revisions alike.
+- **`npx:retracts` and `npx:supersedes`.** The strongest case: nanopublication vocabulary built for retraction. Their
+  domains make a judgment an agent or a nanopublication.
+- **Blank-node judgments and software agents.** The strongest case: nothing to mint. Apps link to judgments, and the
+  same software on every run needs one name.
+- **UUIDv5.** The strongest case: a standard name-based layout. SHA-1, and no room for a stated layout.
+- **A hostname or a DID as the pod's identity.** The strongest case: resolvable and familiar. A hostname is a
+  commitment nobody can undo, and a DID is what a person signs as, not what a pod is about.
 
 ## Still open
 
-The rule IRIs' local names. A matcher judgment's identity across procedure changes (#59; lean: the claim named once
-plus an assertion activity per run). A server rollback carrying old timestamps reads as stale (lean: accept). An import
-that kept nothing is not recorded (lean: keep A11). Whether a judgment that leaves the pod carries the owner's
-`urn:uuid` (lean: yes). The snapshot rule's exact recipe.
+- One unversioned namespace (#193) is agreed in direction, not ruled. Versions and machine judgments hash `v1-draft`
+  IRIs today, so the re-mint must follow the consolidation, or names change twice.
+- An arrival with no source time whose version the record already holds: lean, write nothing, or a stale copy with no
+  `meta` becomes current on `rec:asOf` alone.
+- A `urn:uuid` `fullUrl` trusted as identity across bundles, beyond FHIR's within-one-bundle promise: lean, trust it as
+  a server's id is trusted; a reused one is repaired by an Erroneous, and an exporter that re-mints per export makes
+  duplicates the matcher joins.
+- A matcher judgment's identity across procedure changes (#59): lean, the claim named once plus an assertion activity
+  per run, decided now, because the judgment name already changes once under this note and must not change twice.
+- A server rollback carrying old timestamps reads as stale and is not followed: lean, accept.
+- An import that kept nothing writes nothing: lean, keep A11.
+- Whether a judgment that leaves the pod carries the owner's `urn:uuid`: lean, yes.
+- The snapshot rule's recipe, and what names a merged set after two devices sync.
+- The rule IRIs' local names.
 
 ## What would change our mind
 
-A standard content-addressing scheme for RDF graphs adopted across tools would replace the version rule's own canonical
-form. Servers giving every record a long random id would make the keyed scheme unnecessary. Cross-pod reconciliation
-that needs shared record names would rule out the keyed scheme.
+Sources stamping no change time often enough that currency falls to device clocks would reopen the open-fork
+alternative. An exporter that re-mints `urn:uuid` fullUrls per export would end trusting them. Hospitals moving base
+URLs often enough that record names churn would make business identifiers a name input after all. Servers giving every
+record a long random id would make the keyed scheme unnecessary; cross-pod reconciliation needing shared names would
+rule it out. A signed or hashed-graph standard adopted across tools would replace the version and revision forms.
