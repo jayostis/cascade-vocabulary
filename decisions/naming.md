@@ -1,7 +1,8 @@
 # How everything in a pod is named
 
 Status: draft, 2026-10-21, from the review on #130. Replaces N2's inputs, N4's single parent, N6's matcher constant
-and A3; moves `pav:version` off the revision; adds a Before verdict to judgments and a review question; built by #191. Every recipe detail (constant, escaping, bit layout,
+and A3; moves `pav:version` off the revision; adds a Before verdict, a server node and a Same over servers to
+judgments, and a review question; built by #191. Every recipe detail (constant, escaping, bit layout,
 canonical form) lives in the rule terms and `runtime/naming.feature`, not here.
 
 ## Question
@@ -39,7 +40,9 @@ trusty URIs (https://trustyuri.net/); Web Annotation (https://www.w3.org/TR/anno
 (https://www.rfc-editor.org/rfc/rfc6920), RFC 9562 §5.8 and §6.6 (https://www.rfc-editor.org/rfc/rfc9562), RFC 3986
 §6 (https://www.rfc-editor.org/rfc/rfc3986#section-6); RDFC-1.0 (https://www.w3.org/TR/rdf-canon/). Base URL churn
 measured from Epic's and Oracle's published endpoint lists, 2021 to 2026, with the standards' stability clauses quoted
-(https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6327416626).
+(https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6327416626); the server's self-asserted base
+probed across seven vendors, and across Epic's path edits and hosting moves
+(https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328100407).
 
 ## Choice
 
@@ -50,7 +53,8 @@ says is the same is hashed; what we infer is the same is a judgment, never a nam
 |---|---|---|---|
 | derived name | RFC 9562 §5.8, §6.6 | UUIDv8 over a random v4 namespace, the rule's IRI, then the inputs, escaped and joined | borrowed; the rule IRI as first input is ours |
 | rule | FHIR extensions named by URL | a term in an unversioned namespace; a changed recipe is a new IRI | borrowed from FHIR's URL-named rules |
-| record from a server | FHIR server + id; SPHN provider-scoped IRI | hash of normalised base URL, type, id; `rec:sourceUrl` stated in the file | SPHN's scope, hashed so a shared view names no host; diverges from FHIR, which calls this pair not durable |
+| record from a server | FHIR server + id; SPHN provider-scoped IRI | hash of the normalised base URL the client used, type, id; `rec:sourceUrl` and the server's self-asserted base both stated in the file | SPHN's scope, hashed so a shared view names no host; diverges from FHIR, which calls this pair not durable |
+| server | FHIR `CapabilityStatement.implementation.url` | a node per server pulled from, named by the base used, carrying the self-asserted base, login endpoint and software; a Same whose members are servers joins every record with one type and id under both, by derivation | ours; the self-URL is evidence for a judgment, never a name input |
 | record from C-CDA | CDA `id` roots | custodian and patient scopes, then the class's identifier ladder | ours; no standard names an id-less CDA statement |
 | record from an entry | | hash of the session's IRI and the draft's position | ours |
 | sameness across sources | FHIR business identifiers; SPHN `hasSharedIdentifier` | a judgment (`jdg:SameBusinessIdentifier`), never a name input | borrowed from SPHN; diverges from FHIR's "preferred basis" |
@@ -83,8 +87,17 @@ source, and the join is a judgment because it is one. The second kind of change 
 client holds changes while the server and its ids stay the same. Epic's own list moved 2 to 3% of its base URLs a
 year to a new address for the same organisation, and its current Brands list rewrote about 40% of them at once with a
 path segment; every old and new pair tested reports one server in `CapabilityStatement.implementation.url`. Oracle
-Millennium moved none in four years. Hashing the URL the client used would make one resource two records there, so
-which base is hashed is still open below.
+Millennium moved none in four years. Hashing the URL the client used makes one resource two records there. Hashing the
+server's self-asserted base instead was measured (research 2 on #130) and lost: it survives a path edit and not a
+hosting move (19 of 19 old Epic hosts now report the new host as themselves), MEDITECH never sends it, and
+eClinicalWorks reports one base for every practice, so two people at two practices could hash to one record, the one
+failure no judgment could undo. So the client's URL is hashed, the self-URL is recorded, and one judgment joins the two
+servers: a Same whose members are servers, from which every record with one type and id under both is the same by
+derivation. One file, every join, retractable. The app can propose it at connect time, before a record is pulled,
+from the self-URL, the login endpoint and the publisher's stable endpoint id; made later, it has the same effect,
+because it was never baked into a name. Records pulled under the new address are still written, so a name never
+depends on a judgment in one pod. A vendor switch re-issues ids, so a server Same joins nothing there; those records
+join on their own evidence, a business identifier or a code and date, because that is the only evidence there is.
 
 **Why identifiers are evidence, not names.** An accession alone would merge a whole panel; sources disagree on
 identifier systems; and a name input that a source may correct later is a name that changes. So the identifier rides in
@@ -133,6 +146,12 @@ its own vectors proves nothing.
 
 - **FHIR's pair as the visible IRI.** The strongest case: it is what every FHIR client already resolves, and it is
   honest about where a record came from. It names the hospital in every shared view. Kept as a scheme a pod may choose.
+- **The server's self-asserted base as the name input.** The strongest case: it survived every Epic path edit
+  measured, which is the common churn. It does not survive a hosting move, is absent from MEDITECH, and is one value
+  for every eClinicalWorks practice, which would merge two people into one name. As a judgment input it keeps the
+  benefit and makes the failure retractable.
+- **Pin to the first address the pod saw for a server.** The strongest case: it would survive a hosting move too.
+  The name would then depend on one pod's memory, so no other holder could recompute it.
 - **Business identifiers as name inputs.** The strongest case: FHIR says they are the basis for sameness across
   systems, and they survive a server move. They are not unique across kinds, sources disagree on systems, and a
   corrected identifier would rename the record.
@@ -167,10 +186,15 @@ its own vectors proves nothing.
 
 ## Still open
 
-- Which base URL a server record hashes: the one the client pulled from, or the one the server asserts in
-  `CapabilityStatement.implementation.url`. Lean: the server's own, normalised, with the client's kept as
-  `rec:sourceUrl`, so an alias or path change at one server does not split a record; it needs the research's
-  inference that ids survive such a change confirmed by reading one `Patient/{id}` on both bases.
+- The guard under which the matcher may make a server Same itself. Same self-URL and same login endpoint is the Epic
+  path case; eClinicalWorks shows self-URL alone joins every practice. Until written, the judgment is a person's, on
+  the app's proposal.
+- Whether ids survive an Epic path edit on one server: every sign says yes (one capability statement and one token
+  endpoint under three path forms), not yet observed; one patient read under two paths with a registered test client
+  settles it.
+- The view's latest member across a Same group is chosen by `rec:asOf`, so a re-publisher's stale copy pulled later
+  shows over the origin's correction. Lean: the group's rule follows the record's ladder, the source's change time
+  first; and a Before may order revisions of any two records a Same joins.
 - One unversioned namespace (#193) is agreed in direction, not ruled. Versions and machine judgments hash `v1-draft`
   IRIs today, so the re-mint must follow the consolidation, or names change twice.
 - An arrival with no source time whose version the record already holds: lean, write nothing, or a stale copy with no
