@@ -1,7 +1,7 @@
 # How everything in a pod is named
 
 Status: draft, 2026-10-21, from the review on #130. Replaces N2's inputs, N4's single parent, N6's matcher constant
-and A3; moves `pav:version` off the revision; built by #191. Every recipe detail (constant, escaping, bit layout,
+and A3; moves `pav:version` off the revision; adds a Before verdict to judgments and a review question; built by #191. Every recipe detail (constant, escaping, bit layout,
 canonical form) lives in the rule terms and `runtime/naming.feature`, not here.
 
 ## Question
@@ -57,7 +57,8 @@ says is the same is hashed; what we infer is the same is a judgment, never a nam
 | version | git blob; RFC 6920; RDFC-1.0 | `ni:` hash of RDFC-1.0 canonical N-Quads of exactly its triples, identifiers nested and sorted | borrowed; diverges from FHIR's and openEHR's per-system counters |
 | source's own version | openEHR `creating_system_id`; FHIR `versionId` | a nested node on the revision, never in a name | diverges: hashed or nested away, not visible |
 | revision | git commit; trusty URIs | self-hashed over its own triples, carrying the import's id, `rec:asOf`, `prov:generatedAtTime` and every revision it saw | borrowed from both; `ni:` form rather than trusty URI syntax |
-| current | git refs and manual merge | derived: at the latest source change time (or none), greatest `rec:asOf`, then `prov:generatedAtTime`, then least IRI, less any an Erroneous names | diverges: resolved by the source's clock, never by a person |
+| current | git refs and manual merge | derived, never stored: less any revision an Erroneous names or a person's Before places before another candidate, the revisions at the latest source change time (or with none), then greatest `rec:asOf`, then least IRI, which is arbitrary and said so | diverges: the source's clock resolves by default; a person resolves by stating order, not by merging |
+| order of states | git merge commit | a person's judgment, verdict Before, two revisions of one record in order; machines never make one; listed for review wherever the source's change time did not decide | ours; the merge commit's job, as a fact rather than a merge |
 | import, session, person's judgment | openEHR `CONTRIBUTION`; FHIR `urn:uuid` | random v4, minted once; a person's judgment keeps the IRI it arrived with | the import is the contribution; borrowed |
 | machine judgment | nanopub assertion | hash of rule IRI, justification, member count, members sorted, used sorted; attributed to the runtime release and its run | borrowed in spirit |
 | retraction | nanopub `npx:retracts` | a `prov:Activity` that `prov:invalidated`; replacement by `dcterms:replaces` | diverges: npx's domains make a judgment an agent |
@@ -98,8 +99,18 @@ revision is the pod's commit, not the server's.
 events, so the import's id is hashed in; a random name would check nothing, so the revision is self-hashed. Naming
 every revision it saw, as git's parents do, lets two offline devices both import a correction and merge by union.
 git leaves the fork to a person; a pod is a mirror of sources it does not author, so the source's own change time is
-the authority, and a stale copy can never un-correct or un-retract a record, which arrival order allowed. Device clocks
-decide only after the source's time and `rec:asOf` have tied.
+the authority by default, and a stale copy can never un-correct or un-retract a record, which arrival order allowed.
+The change time ranks states of the source; `rec:asOf` ranks observations of one state, a later look at a source
+being better evidence of its current state, and a person's later session being their later edit. The version number
+is kept in the nested source version and never ranks: counters reset and are strings. The device's write time ranks
+nothing: it was a clock that happens to be right, which is a bias, not a reason, so the last step is the least IRI,
+there only so two devices agree, and the note says it is arbitrary. A person outranks the clocks, as Different
+outranks Same: a Before states which of two states came first, a fact the clocks were only inferring, and it
+composes across three states where a verdict on one would not. Erroneous is for a state that is wrong, not one that
+is stale; a stale copy was a true observation and stays in history. Because current is derived and never stored, the
+pod cannot record that it guessed, so the review page lists every record whose current state the source's change
+time did not decide, with the state shown, the state not shown, and the reason ("observed later", or "no basis"), and
+the fix is one Before.
 
 **Why the smaller rules.** Escaping closes a verified collision, `("a|b")` and `("a","b")` named one thing; a list
 carries its count so two lists back to back are unambiguous; the rule IRI makes two rules of equal arity never collide
@@ -128,7 +139,12 @@ its own vectors proves nothing.
 - **openEHR's visible system id and version tree.** The strongest case: twenty years of practice, and a reader sees the
   branch. The system id is the hospital, and a shared view would show it; the branch is kept, as parents on the revision.
 - **git's open fork, merged by a person.** The strongest case: no clock is trusted and nothing is decided silently. The
-  person did not author the sources and cannot judge which hospital state is later; the source's change time can.
+  person did not author the sources and cannot judge every pair; the source's change time can, and where it cannot,
+  the review page says so and a Before is the person's merge.
+- **A device clock as a tiebreak, before the arbitrary step.** The strongest case: it is usually right. Usually right
+  with no reason is a hidden guess; the arbitrary step is a visible one, and the review page shows it.
+- **Erroneous as the override.** The strongest case: it exists. It means wrong and hides the revision from every view;
+  a stale state is not wrong, and an ordering composes where a mark on one revision does not.
 - **Current is the last arrival, and A3.** The strongest case: simplest to compute and today's rule. A stale export
   re-imported won, and a counter reset's correction was dropped.
 - **A keyed hash as the default.** The strongest case: it is the only scheme that actually hides the source. The Bridge
@@ -155,9 +171,6 @@ its own vectors proves nothing.
   `CapabilityStatement.implementation.url`. Lean: the server's own, normalised, with the client's kept as
   `rec:sourceUrl`, so an alias or path change at one server does not split a record; it needs the research's
   inference that ids survive such a change confirmed by reading one `Patient/{id}` on both bases.
-- Whether the pod lists, on the review page, records whose current revision was picked on weak evidence (no source
-  change time, or a device-clock tiebreak), so a person can file an Erroneous. Lean: yes, as a derivation, not a filed
-  judgment.
 - One unversioned namespace (#193) is agreed in direction, not ruled. Versions and machine judgments hash `v1-draft`
   IRIs today, so the re-mint must follow the consolidation, or names change twice.
 - An arrival with no source time whose version the record already holds: lean, write nothing, or a stale copy with no
