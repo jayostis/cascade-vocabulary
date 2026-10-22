@@ -371,7 +371,7 @@ rec:CodeConversions a rec:TableKind ;
 
 rec:VariantClassifications a rec:TableKind ;
     rdfs:label "variant classifications"@en ;
-    rdfs:comment "What a source such as ClinVar says of a variant: a row for each variation, found by its variation IRI and by each coding NM_ expression a submitter used, holding the aggregate germline classification and review status as concepts, the day it was last evaluated and how many submitters contribute. A join through these rows is identity and reads no classification. A version states the genes it covers (rec:coversGene), so a page can tell a variant in a gene the series does not cover from a covered one the rows do not hold."@en ;
+    rdfs:comment "What a source such as ClinVar says of a variant: a row for each variation, found by its variation IRI and by each coding NM_ expression a submitter used or its ClinVar name holds, holding the aggregate germline classification and review status as concepts, the day it was last evaluated and how many submitters contribute. A join through these rows is identity and reads no classification. A version states the genes it covers (rec:coversGene), so a page can tell a variant in a gene the series does not cover from a covered one the rows do not hold."@en ;
     rec:rowShape rec:VariantClassificationRowShape ;
     rec:foundBy rec:RowSubject , rec:hgvsExpression ;
     rec:readByPages true .
@@ -435,7 +435,7 @@ rec:coversGene a owl:DatatypeProperty ;
 
 rec:hgvsExpression a owl:ObjectProperty ;
     rdfs:label "HGVS expression"@en ;
-    rdfs:comment "Of a variant classification row, a coding NM_ expression a submitter used for its variation, as the rec:HGVS IRI."@en .
+    rdfs:comment "Of a variant classification row, a coding NM_ expression a submitter used for its variation, or the one its ClinVar name holds, as the rec:HGVS IRI."@en .
 
 rec:clinvarClassification a owl:ObjectProperty ;
     rdfs:label "ClinVar classification"@en ;
