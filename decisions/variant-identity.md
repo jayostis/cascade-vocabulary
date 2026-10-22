@@ -38,7 +38,7 @@ what does the pod read to decide, with no server of record to ask?
   knowledge-based matching, which "exploits background knowledge from external resources". **SKOS** `skos:broadMatch`
   states "a hierarchical mapping link between two concepts".
 - **SPARQL** `ENCODE_FOR_URI` returns "a simple literal with the lexical form obtained from the lexical form of its
-  input", reserved characters percent-encoded, which is how an expression becomes a row's key (`hgvs-and-clinvar-codes.md`).
+  input", reserved characters percent-encoded, which is how an expression becomes a row's key (`code-iris.md`).
 
 Sources: FHIR Genomics Reporting IG STU3, Variant profile
 (https://hl7.org/fhir/uv/genomics-reporting/STU3/StructureDefinition-variant.html, verified); HGVS reference sequences
