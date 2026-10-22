@@ -81,3 +81,5 @@ brought to it on 2026-10-22 under #202:
   and how a literal holding reserved characters joins as an IRI.
 - [`performance.md`](performance.md): what a ten-year pod costs as it grows, and which rulings keep every cost
   tracking what changed rather than the square of the pod.
+- [`one-meaning-per-term.md`](one-meaning-per-term.md): which list a clinical status is from, and the clinical terms
+  renamed so that none means something other than the FHIR element it is filled from.
