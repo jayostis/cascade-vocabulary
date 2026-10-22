@@ -81,6 +81,9 @@
     <#base-url-ipv6>
     <#base-url-ipv6-port>
     <#base-url-ipvfuture>
+    <#base-url-port-leading-zeros-default>
+    <#base-url-port-leading-zeros>
+    <#base-url-port-highest>
     <#base-url-space>
     <#base-url-nul>
     <#base-url-del>
@@ -103,6 +106,7 @@
     <#base-url-ipv6-zone>
     <#base-url-bad-percent-in-host>
     <#base-url-port-non-ascii-digits>
+    <#base-url-port-too-high>
   ) .
 
 <#record-from-server> a bridge:NamingTest ;
@@ -611,6 +615,24 @@
   mf:action [ cascade:serverBaseUrl "https://[V1.Fe]/r4" ] ;
   mf:result [ cascade:serverBaseUrl "https://[v1.fe]/r4" ] .
 
+<#base-url-port-leading-zeros-default> a bridge:BaseUrlNormalisationTest ;
+  mf:name "base-url-port-leading-zeros-default" ;
+  rdfs:comment "A port is an integer (RFC 3986 section 3.2.3): 0443 is 443, https's default, so it is dropped." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org:0443/r4" ] ;
+  mf:result [ cascade:serverBaseUrl "https://fhir.example.org/r4" ] .
+
+<#base-url-port-leading-zeros> a bridge:BaseUrlNormalisationTest ;
+  mf:name "base-url-port-leading-zeros" ;
+  rdfs:comment "Leading zeros are dropped from a port that is not the default." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org:08080/r4" ] ;
+  mf:result [ cascade:serverBaseUrl "https://fhir.example.org:8080/r4" ] .
+
+<#base-url-port-highest> a bridge:BaseUrlNormalisationTest ;
+  mf:name "base-url-port-highest" ;
+  rdfs:comment "65535 is the highest port, and is kept." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org:65535/r4" ] ;
+  mf:result [ cascade:serverBaseUrl "https://fhir.example.org:65535/r4" ] .
+
 <#base-url-space> a bridge:BaseUrlRefusalTest ;
   mf:name "base-url-space" ;
   rdfs:comment "A space is refused." ;
@@ -720,3 +742,8 @@
   mf:name "base-url-port-non-ascii-digits" ;
   rdfs:comment "A port is ASCII digits: Arabic-Indic digits are refused." ;
   mf:action [ cascade:serverBaseUrl "https://fhir.example.org:٤٤٣/r4" ] .
+
+<#base-url-port-too-high> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-port-too-high" ;
+  rdfs:comment "A port above 65535 is refused." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org:65536/r4" ] .
