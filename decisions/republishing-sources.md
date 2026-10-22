@@ -48,6 +48,7 @@ is one judgment per source-level fact, from which the per-record joins are deriv
 | two documents from one organisation | CDA `setId`, `versionNumber`, `relatedDocument` `RPLC`; FHIR `relatesTo` | no judgment: a document names its custodian by the identifier it carries (a C-CDA custodian's `id` root and extension; a FHIR document's custodian `Organization` by its NPI or OID identifier, never by its id in the bundle), so two documents from one organisation point at one organisation record by name; where a document declares that it replaces another, the adapter reads it onto the document's version; the overlap between the two is joined by name for C-CDA entries and by the within-organisation rules for a FHIR document's | borrowed: a declared replacement is the standards' fact, stored as stated; "edition" as a judgment of ours is dropped |
 | within-organisation rules | | inside one organisation a shared business identifier joins, and a shared code and date joins; which pairs, and what belongs to an organisation when one server serves many, is open | ours |
 | record from a document | FHIR documents | named per document; joined across documents like any re-published record | borrowed from FHIR's within-one-bundle promise |
+| what leaves the pod | | a shared view carries records, by their opaque names, and their current states; never a server or organisation record, an act, or a Same over them, so a name outside the pod is stable and citable and says nothing of where the record came from; the keyed scheme is for a pod that must hide it even from one who knows the address, and the URL scheme for one that need hide nothing | ours |
 | what joins mean | `jdg:currentlySame` | a derived join counts as a counting Same; a record-level Different still wins; the amended definition is open | ours |
 
 ## Why
@@ -78,7 +79,10 @@ said. An organisation is a
 record because a proposal, a view and a Same now point at one, and the source gives an OID or NPI to name it by; its
 name and address sit on versions so a merger's rename is history. Everything here is derived, so timing does not
 matter and retraction undoes every join at once. The floor is a source that carries no identifier at all, which falls
-back to labels and a person's judgment, as today.
+back to labels and a person's judgment, as today. The server and organisation records are in the clear inside the
+pod because the person owns the pod; the opaque name earns its keep at the boundary, where a receiver gets a name it
+can cite and reconcile by, and nothing that says where the record came from, because what leaves the pod is the
+person's choice, record by record, and the source is one more thing they may not want known.
 
 ## Alternatives that lost
 
@@ -102,12 +106,16 @@ back to labels and a person's judgment, as today.
   proposal, a view and a Same now point at one, and the source gives an OID or NPI to name it by.
 - **Name by the visible pair and pseudonymise at share time.** The strongest case: FHIR already has every part
   (`Provenance`, identifiers, `Linkage`, `relatesTo`), privacy belongs at the one boundary where it matters, and the
-  pod stores source URLs, organisation names and OIDs in plain text anyway. Not yet answered; it is open below.
+  pod stores source URLs, organisation names and OIDs in plain text anyway. A pseudonym per share is a new name per
+  share, so a receiver cannot tell two shares apart or cite a record back, and a hospital importing over the protocol
+  needs the pod's names stable for the same reconciliation the pod does; the opaque name is stable and says nothing,
+  and the line is drawn at what a share carries instead.
 
 ## Still open
 
-- What a shared view may carry: never server or organisation records or their Sames, or the opaque scheme hides
-  nothing once source records are shared. The alternative above stands or falls on this.
+- The full list of what a shared view may carry, beyond "records and their current states, no source records, acts
+  or Sames": a views decision, resting on the tenet that anything in the pod may be what the person does not want
+  shared, so the person chooses what leaves and nothing leaves by default.
 - Which code-and-date pairs are near-certain inside one organisation; and how a record is assigned to an
   organisation on a server that serves many (81 brands on one Epic server; every eClinicalWorks practice on one base),
   which the within-organisation derivation now depends on.
