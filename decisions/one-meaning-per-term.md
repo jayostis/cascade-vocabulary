@@ -1,7 +1,10 @@
 # Clinical terms with one meaning each
 
-Status: draft, 2026-10-22, from #132 and the FHIR mapping on #128; a proposal per row, for the owner to rule. Applied by
-#132 once ruled, which writes the terms, shapes, adapter queries and the feature rules each row names. Amends M4's
+Status: ruled 2026-10-22, from #132 and the FHIR mapping on #128. The owner ruled the rows on `vaccineCode` (a code IRI
+per coding), on renamed terms being removed in the re-mint, and the descriptive-name rule; the remaining rows were
+accepted as proposed after the independent critical read, under the owner's delegation, and are listed on #204 for him
+to reverse. Applied by #132, which writes the terms, shapes, adapter queries and the feature rules each row names. The
+final name of every term is in `epic-alpha/term-map.csv`'s `new` column, which this note follows. Amends M4's
 literal example (`health:vaccineCode "141"`), M14's status clause, the time term M12 reads, and #132's "deprecated, not
 deleted". The duplicate declarations (`snomedCode`, `sourceRecordId`) and the `status` collision across namespaces are
 #193's, ruled by `naming.md` and merged there; this note rules only what the merge leaves: what a status value means.
@@ -124,7 +127,7 @@ the 59 clinical terms (https://github.com/jayostis/cascade-vocabulary/issues/128
 
 ## Choice
 
-Every row is proposed, for the owner to rule. "#132" in the last column means the build that applies this note.
+Every row is ruled, as the status line says. "#132" in the last column means the build that applies this note.
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
@@ -135,11 +138,12 @@ Every row is proposed, for the owner to rule. "#132" in the last column means th
 | 5. one status for every kind | nothing: no standard defines one | refused: a page that needs "is it current?" for a kind derives a class from that kind's list, as L1 does for medications | ours, by having none |
 | 6. `vaccineCode` | FHIR CodeableConcept; `testCode`, `allergenCode`, `icd10Code` here, one IRI per coding | keeps its name, becomes an IRI per coding in a registered code system (CVX now), and becomes repeatable, as `testCode` is; the immunization view and `My immunizations.rq` show the CVX code among them, and the vaccine comparisons change in a new rule list version. M4 rewritten by #132 | borrowed from FHIR, flattened as `testCode` is |
 | 7. `reaction` | FHIR `reaction` backbone, its `manifestation` a CodeableConcept | renamed `reactionManifestationText`, beside `manifestationCode` renamed `reactionManifestationCode` (row 12). Shapes and adapters; #132 | borrowed from FHIR's element name |
-| 8. a lab result's time | FHIR `effective[x]`; C-CDA "clinically relevant time"; FHIR `performed[x]` is an R4 procedure's | renamed `clinicallyRelevantTime`, with FHIR's definition; never the time the lab ran the test. M12 and `quantities.md`'s matcher row read it under the new name; #132 | borrowed from FHIR and C-CDA |
+| 8. a lab result's time | FHIR `effective[x]`; C-CDA "clinically relevant time"; FHIR `performed[x]` is an R4 procedure's | renamed `resultClinicallyRelevantTime`, with FHIR's definition; never the time the lab ran the test. M12 and `quantities.md`'s matcher row read it under the new name; #132 | borrowed from FHIR and C-CDA |
 | 9. a medication's start | FHIR `MedicationStatement.effective[x]`; `MedicationRequest.authoredOn`, written; R5 `effectiveDosePeriod`; C-CDA `effectiveTime` low; PAV `authoredOn` | `startDate`, renamed `medicationUseStartDate` (row 12), never takes `authoredOn`; a new `prescriptionWrittenDate` holds the day the prescription was written; an R5 source's `effectiveDosePeriod.start` is a start; `records.rq`'s date for a medication becomes `COALESCE(medicationUseStartDate, prescriptionWrittenDate)`, so a prescription keeps a place on a timeline; the view shows both. #132 | borrowed from FHIR's split; diverges from PAV's term, see Why |
 | 10. duplicates | `naming.md`; #193 | one declaration each by #193's merge: `snomedCode`, `sourceRecordId`, `status`. Not ruled here; see Why for what the merge must pick | #193's |
 | 11. `Procedure rdfs:subClassOf fhir:Procedure` | #128: a close match; FHIR RDF's `fhir:Procedure` is a resource | removed; the pointer is a closeMatch row in #128's mapping table naming FHIR R4, the release the adapter reads; no `rdfs:seeAlso` on the class, which the copied-term rule forbids. #132 for the axiom, #128 for the row | diverged from the prototype's claim, toward #128's table |
-| 12. names of the classes and properties this note touches | FHIR resource and element names; OMOP CDM table and column names; openEHR archetypes; SPHN classes; PROV and PAV | the owner's rule: a name says what every instance or value is, read alone in a query, and is as long as that takes and no longer; never a word an instance can falsify, as "administered" or "performed" is by a not-done one; no `Record` suffix, which says nothing of the kind. Classes: `AllergyOrIntolerance`, `ProblemOrDiagnosis`, `Vaccination`, `LaboratoryTestResult`, `MedicalProcedure`, `PrescribedOrReportedMedication`, `GeneticVariantFinding`; `VariantInterpretation` and `PatientProfile` pass. Properties: `workflowStatus`, `clinicalStatus`, `verificationStatus`, `vaccineCode`, `reactionManifestationText`, `reactionManifestationCode`, `clinicallyRelevantTime`, `medicationUseStartDate`, `medicationUseEndDate`, `prescriptionWrittenDate`. The table under Why gives each one's today, alternative and reason. Widens #132's scope. #132 | borrowed per name, see Why; removes the clashes with FHIR's `Procedure` and `Medication` |
+| 12. names of the classes and properties this note touches | FHIR resource and element names; OMOP CDM table and column names; openEHR archetypes; SPHN classes; PROV and PAV | the owner's rule: a name says what every instance or value is, read alone in a query, and is as long as that takes and no longer; never a word an instance can falsify, as "administered" or "performed" is by a not-done one; no `Record` suffix, which says nothing of the kind. Classes: `AllergyOrIntolerance`, `ProblemOrDiagnosis`, `Vaccination`, `LaboratoryTestResult`, `MedicalProcedure`, `PrescribedOrReportedMedication`, `GeneticVariantFinding`; `VariantInterpretation` and `PatientProfile` pass. Properties: `workflowStatus`, `clinicalStatus`, `verificationStatus`, `vaccineCode`, `reactionManifestationText`, `reactionManifestationCode`, `resultClinicallyRelevantTime`, `vaccinationOccurrenceTime`, `prescribedOrReported`,
+`medicationUseStartDate`, `medicationUseEndDate`, `prescriptionWrittenDate`. The table under Why gives each one's today, alternative and reason. Widens #132's scope. #132 | borrowed per name, see Why; removes the clashes with FHIR's `Procedure` and `Medication` |
 | 13. R5's renames | R5 `occurrence[x]`, `medication[x]` a CodeableReference, kept in R6; SSSOM `object_source_version` | no term changes: none is named after an element R5 renames; each row of #128's mapping table names the FHIR release in `object_source_version`. #128 | borrowed from SSSOM |
 | 14. how a renamed term goes | #132: "deprecated, not deleted, until alpha"; #193: never renamed after its namespace lands | removed outright, not deprecated, in #191's re-mint, before #193's promise starts at v1; one `Depends-On` set across the vocabulary, both adapters and cascade-runtime-js | ours; departs from #132's wording, see Why |
 
@@ -190,8 +194,9 @@ join later without a new term; that is also why it becomes repeatable, and why t
 immunization view and `My immunizations.rq`'s GROUP BY, pick the CVX one. The comparisons whose bytes old rule list
 versions pin (`same-mapped-code-and-date.rq`, versions 1 to 8; `same-vaccine-group-and-date.rq`, version 9) get a
 successor in a new version; whether the old versions survive #191's re-mint is #191's (lean: they go, since no pod
-holds a claim under them). `reactionManifestationText` takes FHIR's path, `reaction.manifestation.text`. `clinicallyRelevantTime` takes FHIR's
-name for FHIR's element; C-CDA calls the same time "clinically relevant" and gives the sample's draw as its example,
+holds a claim under them). `reactionManifestationText` takes FHIR's path, `reaction.manifestation.text`.
+`resultClinicallyRelevantTime` takes FHIR's name for FHIR's element, prefixed with what it is the time of, as
+`resultValue` is; C-CDA calls the same time "clinically relevant" and gives the sample's draw as its example,
 so "performed" says something neither source says.
 
 **A start is not a prescription's date.** R4's MedicationRequest has no `effective[x]`, so the FHIR adapter's
@@ -227,14 +232,14 @@ OMOP CDM 5.4's tables and columns (verified, its user guide), SPHN 2026's classe
 openEHR's archetype names in its Clinical Knowledge Manager (from knowledge; not re-read, unverified). This widens
 #132, which named only the subclass axiom.
 
-| today | what fills it | proposed | alternative | why |
+| today | what fills it | name | alternative | why |
 |---|---|---|---|---|
 | `AllergyRecord` | FHIR AllergyIntolerance; C-CDA Allergy Concern; `allergyType` allergy or intolerance, `verificationStatus` up to refuted and entered-in-error | `AllergyOrIntolerance` | `AdverseReactionRisk` (openEHR's archetype; FHIR's and SPHN's definition, "risk of harmful or undesirable, physiological response") | every instance is an allergy or an intolerance, both of which the class holds; FHIR's resource name, spelt out; the alternative is the most exact but reads as an assessment, not as the thing a person reports |
 | `ConditionRecord` | FHIR Condition; C-CDA Problem Observation; `category` problem-list-item or encounter-diagnosis | `ProblemOrDiagnosis` | `Condition` (FHIR; OMOP `CONDITION_OCCURRENCE`) | the two categories it holds are exactly a problem and a diagnosis; openEHR's Problem/Diagnosis, SPHN's Problem Condition and Diagnosis; "condition" alone says less, and OMOP's "occurrence" is false of a refuted one |
 | `ImmunizationRecord` | FHIR Immunization; C-CDA Immunization Activity; statuses completed, not-done (negationInd), entered-in-error | `Vaccination` | `VaccineAdministration` | the act of giving a vaccine, which a not-done status qualifies; "immunization" claims immunity, which no record shows; OMOP files vaccines under `DRUG_EXPOSURE`, and SPHN has no class for it; the alternative reads as given |
 | `LabResultRecord` | FHIR Observations of category laboratory, or uncategorised with a LOINC code that is no vital sign, never a panel; C-CDA Result Observations; statuses up to registered and cancelled | `LaboratoryTestResult` | `LaboratoryObservation` | openEHR's archetype and SPHN's Lab Result; FHIR's Observation.status is "the status of the result value", so a cancelled one is a result, cancelled; OMOP's `MEASUREMENT` holds vital signs too, which this class does not |
 | `Procedure` | FHIR Procedure; C-CDA Procedure Activity Procedure; statuses preparation to completed, not-done (negationInd), stopped | `MedicalProcedure` | `ClinicalProcedure` | SPHN's name; says a procedure on the person, not a software one; a not-done status qualifies it as it does a vaccination; OMOP's `PROCEDURE_OCCURRENCE` says "ordered by, or carried out by", which the class matches but "occurrence" does not |
-| `Medication` | FHIR MedicationRequest and MedicationStatement; C-CDA Medication Activity in INT and EVN mood; every version's `clinicalIntent` prescribed or reportedUse (`clinical.shapes.ttl:55-65`) | `PrescribedOrReportedMedication` | `MedicationPrescriptionOrUse` | every instance is one of the two, which the shape requires, so the name is true of all; FHIR's `Medication` is the product; OMOP's `DRUG_EXPOSURE` holds "prescriptions written, prescriptions dispensed, and drugs administered" in one table, the precedent for one kind, but "exposure" is false of a prescription never filled; SPHN splits Drug Prescription from Drug Administration Event |
+| `Medication` | FHIR MedicationRequest and MedicationStatement; C-CDA Medication Activity in INT and EVN mood; every version's `clinicalIntent`, renamed `prescribedOrReported`, prescribed or reportedUse (`clinical.shapes.ttl:55-65`) | `PrescribedOrReportedMedication` | `MedicationPrescriptionOrUse` | every instance is one of the two, which the shape requires, so the name is true of all; FHIR's `Medication` is the product; OMOP's `DRUG_EXPOSURE` holds "prescriptions written, prescriptions dispensed, and drugs administered" in one table, the precedent for one kind, but "exposure" is false of a prescription never filled; SPHN splits Drug Prescription from Drug Administration Event |
 | `Variant` | FHIR Genomics Reporting's Variant observation | `GeneticVariantFinding` | keep `Variant` | read alone, `Variant` may be a catalogue's variant, as ClinVar's is; #202 makes the record a finding about the person |
 | `VariantInterpretation` | Genomics Reporting's Diagnostic Implication | keep | `VariantClassification` | says what it is: a report's or ClinVar's interpretation of a variant |
 | `PatientProfile` | FHIR Patient | keep | `PatientDemographics` | says what it is, a source's description of the person |
@@ -244,13 +249,15 @@ openEHR's archetype names in its Clinical Knowledge Manager (from knowledge; not
 | `vaccineCode` | each CVX coding (row 6) | keep | `vaccineProductCode` | FHIR's name, and read alone it says a code naming the vaccine; CVX names a vaccine type, so "product" would be false of most codes |
 | `reaction` | each `reaction.manifestation.text` | `reactionManifestationText` | `reactionSymptom` | FHIR's path, `reaction.manifestation.text`, spelt out; "symptom" is false of a sign |
 | `manifestationCode` | each SNOMED coding of `reaction.manifestation` | `reactionManifestationCode` | keep | pairs with the text, and says whose manifestation |
-| `performedDate` | `Observation.effective[x]`; C-CDA `effectiveTime` | `clinicallyRelevantTime` | `specimenCollectionTime` | C-CDA's words, "the clinically relevant time"; FHIR's `effective` is opaque read alone; the alternative is what a reader usually means, but false where the source's time is not the draw |
+| `performedDate` | `Observation.effective[x]`; C-CDA `effectiveTime` | `resultClinicallyRelevantTime` | `specimenCollectionTime` | C-CDA's words, "the clinically relevant time"; FHIR's `effective` is opaque read alone; the alternative is what a reader usually means, but false where the source's time is not the draw |
 | `startDate` (medication) | `MedicationStatement.effective[x]` start; C-CDA `effectiveTime` low, the start of use or, in INT mood, its intended start | `medicationUseStartDate` | `dateMedicationStarted` | OMOP's `drug_exposure_start_date` with "use" for "exposure", true of an intended start; `startDate` read alone may be the prescription's validity |
 | `endDate` (medication) | `effectivePeriod.end`; C-CDA `effectiveTime` high | `medicationUseEndDate` | `dateMedicationStopped` | the pair of the above, OMOP's `drug_exposure_end_date` |
+| `administrationDate` | the vaccination's date, or the date it was meant to occur, which a not-done one has | `vaccinationOccurrenceTime` | `vaccineAdministrationDate` | "administered" is false of a not-done vaccination (row 12's rule); FHIR's `occurrence[x]` names when an immunization event occurred |
+| `clinicalIntent` | whether a version came from a prescription or from a list of what the person takes | `prescribedOrReported` | keep | the two values are the two sources, and the class's name now says them |
 | new (row 9) | `MedicationRequest.authoredOn` | `prescriptionWrittenDate` | `prescriptionAuthoredDate` | FHIR's definition, "when the prescription was initially written"; PAV's `authoredOn` is about the resource (row 9) |
 
-`allergen`, `allergenCode`, `testCode`, `icd10Code` and the date terms the note does not touch are left to the rule's
-next pass, which #132 can make in the same re-mint.
+The rule's pass over every other term of the vocabulary was made in the same re-mint; its result, each term's final
+name, is `epic-alpha/term-map.csv`'s `new` column.
 
 **Removed, not deprecated.** Deprecation would protect the readers that name the old terms: both adapters, their
 views, cascade-runtime-js and the nightly compatibility check; no pod exists (`epic-alpha/delivery.md`). #191's re-mint
@@ -295,7 +302,6 @@ called v1"; if the owner reads it as starting when #193 merges, the renames must
 
 Each with its lean, and the one fact that decides it:
 
-- **Rows 1 to 14 await the owner's ruling.** Lean: as proposed.
 - **When #193's promise starts.** Lean: at v1, so the renames ride #191. Decides it: the owner's reading of #193 item 2.
 - **Old rule list versions in #191's re-mint.** Lean: dropped. Decides it: #191.
 - **A reaction's severity.** `allergySeverity` takes the first reaction's (fhir-r4 `allergy-intolerance.rq:139`), and
@@ -309,8 +315,6 @@ Each with its lean, and the one fact that decides it:
   kind stays one; a split would name each half.
 - **openEHR's archetype names**, cited from knowledge. Lean: none of row 12's names rests on them alone. Decides it: a
   read of the Clinical Knowledge Manager.
-- **The rest of the vocabulary under row 12's rule.** Lean: one pass over every term in #132's re-mint. Decides it: the
-  owner.
 
 ## What would change our mind
 
