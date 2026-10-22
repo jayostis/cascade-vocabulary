@@ -49,12 +49,13 @@ A ruling in a note is applied in the ontology, the queries, the feature files an
 in one the note names. A note never contradicts them silently. A change to a term, a shape or a query says why in its
 commit message, never in the file, and the note is where the longer why lives.
 
-A note that replaces an older rule names it, as `naming.md` names N1, N2, N6, N7 and A2, and `currency.md` names A3 to
+A note that replaces an older rule names it, as `naming.md` names N1, N2, N6, N7, A2, M5 and M9, and `currency.md` names A3 to
 A5, M1 and M3. Notes cite one another by file name.
 
 ## The notes
 
-Written to this standard, from the review on #130:
+Written to this standard, from the review on #130; the five genomics notes after them, written before it settled, were
+brought to it on 2026-10-22 under #202:
 
 - [`naming.md`](naming.md): how everything in a pod is named, so that two runtimes give alike a name nobody can forge
   and a shared view says nothing it should not.
@@ -64,9 +65,6 @@ Written to this standard, from the review on #130:
   ones the pod holds, with one judgment where one will do.
 - [`judgments.md`](judgments.md): what a judgment is, who makes one, and what it borrows from the vocabularies for
   beliefs about things.
-
-Written before the standard settled, and to be reviewed against it:
-
 - [`variant-record.md`](variant-record.md): what a pod holds when a report names a genetic variant.
 - [`variant-identity.md`](variant-identity.md): when two variant records are one variant, and which codes join them.
 - [`variant-interpretation.md`](variant-interpretation.md): where a report's classification of a variant lives, and

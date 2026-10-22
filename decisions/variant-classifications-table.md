@@ -3,8 +3,8 @@
 Status: draft, 2026-10-13, brought to the `README.md` standard on 2026-10-22 under #202. Terms:
 `rec:VariantClassifications`, its row properties, `rec:readByPages`, `rec:coversGene`, the schemes
 `rec:ClinVarClassifications` and `rec:ClinVarReviewStatuses`. Depends on `naming.md` (how a table version is named,
-and what a judgment's used holds), `judgments.md` (R13, the identity rule that reads the rows, per
-`variant-identity.md`), `hgvs-and-clinvar-codes.md` (the IRIs a row is found by), and the evidence issue
+and what a judgment's used holds), `variant-identity.md` (R13, the identity rule that reads the rows),
+`hgvs-and-clinvar-codes.md` (the IRIs a row is found by), and the evidence issue
 [#203](https://github.com/jayostis/cascade-vocabulary/issues/203). #193 will move the `rec:` and `genomics:` terms into
 the one unversioned Cascade namespace.
 
@@ -93,8 +93,7 @@ releases (verified for 90011; for every variation inferred,
 
 **Why only the expressions a submitter used.** A report cites what a lab wrote (#107), and the rest is size. Keeping
 the submitted expressions cuts variation 90011 from 29 expressions to 2, and Lynch's variations from 692,290 coding
-expressions to 34,405 (both verified, #203; this note said "about 700,000 to 34,428" before, the second counted by the
-file's gene column, the first never counted). Every expression would break the keep bounds even for Lynch: 2.24 GB at
+expressions to 34,405 (both verified, #203). Every expression would break the keep bounds even for Lynch: 2.24 GB at
 the first check, against 0.60 GB for the submitted ones (verified, Step 0, one laptop, N = 3; #203).
 
 **Why a grammar mapped to concepts.** ClinVar writes 107 distinct values in one release (verified, #203), built from

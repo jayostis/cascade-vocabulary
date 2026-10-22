@@ -4,11 +4,11 @@ Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the revi
 `genomics:VariantInterpretation`, `acmgClassification`, `variantInterpreted`, `interpretedDate` and the class `AcmgClass`
 with `Pathogenic`, `LikelyPathogenic`, `VUS`, `LikelyBenign`, `Benign`. Replaces this note's own "it is unnamed" and "the
 record may be outside the document it came from", which yield to `naming.md`: the interpretation is named like any
-record, and since `naming.md` never lets a `urn:uuid` be identity across documents, a reference from one document to a
-variant held from another is a join under `republishing-sources.md`, not a name. Not yet applied in
-`genomics.shapes.ttl:83`, whose message still says the record may be outside the document. Names are `naming.md`; which
-revision is current is `currency.md`; the lab is an organisation record in `republishing-sources.md`; the variant is
-`variant-record.md`. #193 renames the `genomics/v1#` namespace into the one unversioned namespace, and #191 the rule
+record, and `naming.md` never lets a `urn:uuid` be identity across documents; how a variant held from another document
+is reached is open. Applied in `genomics.shapes.ttl:83`, whose message this pull request (#200) changed to say the
+record is one in the same document. Names are `naming.md`; which revision is current is `currency.md`; the lab is an
+organisation record in `republishing-sources.md`; the variant is `variant-record.md`; that two labs' variants are one is
+`variant-identity.md`, by R12 and R13, not a republishing join. #193 renames the `genomics/v1#` namespace into the one unversioned namespace, and #191 the rule
 terms.
 
 ## Question
@@ -54,8 +54,8 @@ verified) and its Statement
 SEPIO (https://sepio-framework.github.io/sepio-linkml/about/, verified); openEHR, OMOP and SPHN as cited in
 `variant-record.md`; PROV-O (https://www.w3.org/TR/prov-o/, verified); SKOS (https://www.w3.org/TR/skos-reference/,
 verified). Research: #107's body (https://github.com/jayostis/cascade-vocabulary/issues/107) and its Step 0 comment
-(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340) (evidence issue: see #202); the
-scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
+(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340); the evidence issue
+(https://github.com/jayostis/cascade-vocabulary/issues/203); the scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
 
 ## Choice
 
@@ -63,7 +63,7 @@ scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
 |---|---|---|---|
 | the interpretation | FHIR Diagnostic Implication, an Observation; VA-spec Statement; SEPIO | its own record, `genomics:VariantInterpretation`, a `prov:Entity`, separate from the variant | borrowed from FHIR in being separate; diverged from FHIR's Observation and VA-spec's Statement in form; the reason is owed (Still open) |
 | its name | `naming.md` | named as any record from its source is | borrowed from `naming.md` |
-| link to its variant | FHIR `derivedFrom`; VA-spec proposition's subject | `variantInterpreted`, at most one, the variant record's IRI, as `rec:patient` points to its profile record; within one document that is a name; a variant held from another document is reached by a join (`republishing-sources.md`, `variant-identity.md`), never by a name crossing documents | borrowed from FHIR's `derivedFrom` |
+| link to its variant | FHIR `derivedFrom`; VA-spec proposition's subject | `variantInterpreted`, at most one, the variant record's IRI, as `rec:patient` points to its profile record; within one document that is a name; a `urn:uuid` never crosses documents, and how a variant held from another document is reached is open (Still open) | borrowed from FHIR's `derivedFrom` |
 | classification | FHIR 53037-8, LOINC LL4034-6 (example); ACMG/AMP 2015; VA-spec classification | `acmgClassification`, at most one, one of the five individuals of `genomics:AcmgClass`; a report whose answer is not one of the five states none | borrowed: the five ACMG terms; diverged from LOINC's answer codes and from a SKOS concept scheme; the reason is owed (Still open) |
 | date | FHIR `issued`, else `effective[x]` | `interpretedDate`, at most one `xsd:date` | borrowed |
 | which revision is current | `currency.md` | `currency.md`'s ladder; `interpretedDate` is content, not a rung | borrowed from `currency.md` |

@@ -19,13 +19,15 @@ what does the pod read to decide, with no server of record to ask?
 - **FHIR Genomics Reporting IG STU3.** The Variant carries a variation code (81252-9, "ClinVar ID or similar") and a
   c.HGVS description (48004-6), and says nothing about when two Variants are one.
 - **HGVS nomenclature.** "Variant descriptions lacking a version number are not valid", so one variant on
-  `NM_000249.3` and on `NM_000249.4` is two expressions; nothing in the expressions says they are one.
+  `NM_000249.3` and on `NM_000249.4` is two expressions; nothing in the expressions says they are one. Its reference
+  sequences page says "reference sequences must come from data sources that provide stable and permanent identifiers"
+  (verified 2026-10-22).
 - **ClinVar** keys a variation by its VariationID, "a unique integer identifier to each set of variants", and
   `hgvs4variation` lists the expressions that map to each, marking which a submitter gave. 90011's two submitted
-  expressions are `NM_000249.3:c.2042C>T` and `NM_000249.4:c.2042C>T` (unverified: read in #107's body, not recounted). An
+  expressions are `NM_000249.3:c.2042C>T` and `NM_000249.4:c.2042C>T` (verified, #203). An
   expression is not unique across variations: 195 of 3,304,067 submitted coding expressions map to two VariationIDs in the
-  2026-10 snapshot (unverified: counted in #107's body, not recounted), 3 within Lynch's five genes and 21 within the
-  26-gene panel (verified, counted in #107's Step 0 comment) (evidence issue: see #202).
+  2026-10 snapshot, 3 within Lynch's five genes and 21 within the 26-gene panel (all verified,
+  [#203](https://github.com/jayostis/cascade-vocabulary/issues/203)).
 - **ClinGen Allele Registry** does the join this note needs as a service: "All contextual alleles corresponding to a
   same variant are associated with the same canonical allele", across transcripts and assemblies, under one CA id.
 - **GA4GH VRS** gives one variant one digest from any source, set aside in `variant-record.md`. **Cat-VRS** names a
@@ -40,7 +42,8 @@ what does the pod read to decide, with no server of record to ask?
 
 Sources: FHIR Genomics Reporting IG STU3, Variant profile
 (https://hl7.org/fhir/uv/genomics-reporting/STU3/StructureDefinition-variant.html, verified); HGVS reference sequences
-(https://hgvs-nomenclature.org/stable/background/refseq/, verified); ClinVar identifiers
+(https://hgvs-nomenclature.org/stable/background/refseq/, verified 2026-10-22, the source of "stable and permanent
+identifiers"); ClinVar identifiers
 (https://www.ncbi.nlm.nih.gov/clinvar/docs/identifiers/, verified) and the tab-delimited README
 (https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/README, verified); Pawliczek et al., ClinGen Allele Registry,
 Hum Mutat 2018 (https://pmc.ncbi.nlm.nih.gov/articles/PMC6519371/, verified); GA4GH VRS (https://vrs.ga4gh.org/en/stable/,
@@ -49,22 +52,22 @@ SEMAPV (https://mapping-commons.github.io/semantic-mapping-vocabulary/, verified
 (https://www.w3.org/TR/skos-reference/#mapping, verified); SPARQL 1.1 `ENCODE_FOR_URI`
 (https://www.w3.org/TR/sparql11-query/#func-encode, verified). Research: #107's body
 (https://github.com/jayostis/cascade-vocabulary/issues/107) and its Step 0 comment
-(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340) (evidence issue: see #202); the
-scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
+(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340); the evidence issue
+(https://github.com/jayostis/cascade-vocabulary/issues/203); the scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
 
 ## Choice
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | join by ID (R12) | ClinVar VariationID; FHIR variation code | joins two variants whose current versions carry one ClinVar VariationID | borrowed: the ID as ClinVar defines it; the rule is ours |
-| join through the table (R13) | ClinVar `hgvs4variation`; ClinGen's canonical allele | joins two variants whose current versions find one row of one version of a variant classifications table; the classification plays no part | borrowed in kind from ClinGen's contextual-to-canonical join, done by a table the pod holds rather than a service |
+| join through the table (R13) | ClinVar `hgvs4variation`; ClinGen's canonical allele | joins two variants whose current versions find one row of one version of a variant classifications table; the classification plays no part | ours: ClinGen's canonical allele does this join as a service (prior art), set aside under Alternatives |
 | how a version finds its row | | a version with a VariationID finds that variation's row and only that row, its expression unread; one with none finds the row holding its expression, percent-encoded as `ENCODE_FOR_URI` does | ours; the encoding is SPARQL's |
 | left alone | | a pair that shares an ID (R12's, so no pair has two justifications); a pair whose versions carry different IDs, whatever expressions they hold; a version whose expression is on more than one row, rows counted as distinct row subjects over every held version of every series of the kind; a version whose ID is on no row | ours |
 | a page's lookup | | through the ClinVar IDs of the variant's entry when it carries any, through its HGVS expressions only when it carries none, never both (`tables/agreement.rq`) | ours |
 | justification kinds | SEMAPV | `jdg:SameVariation` `skos:broadMatch` `semapv:LexicalMatching` (`judgments.ttl:93`); `jdg:SameVariationThroughTable` `skos:broadMatch` `semapv:BackgroundKnowledgeBasedMatching` (`judgments.ttl:98`) | borrowed from SEMAPV at the kind level, as `judgments.md` rules |
 | maker | PROV agents; `judgments.md` | `jdg:CascadeMatcher`, one unversioned `prov:SoftwareAgent`; not yet in `judgments.ttl` | borrowed from `judgments.md` |
 | used | `naming.md`: each member's version and each table version the rule read | each member's version and `?origin`, the table version whose row joined them | diverged from `naming.md` for R13, which reads every held version to count rows; open |
-| scope | `republishing-sources.md`: within-organisation rules | across organisations: both are identity rules on global codes | diverged from the within-organisation scope (Why) |
+| scope | `republishing-sources.md`: within-organisation rules | across organisations: both are identity rules on global codes | ours: `republishing-sources.md` adds rules within one organisation, and these two are not among them (Why) |
 | rule IRI | `naming.md`: descriptive terms in the one unversioned namespace | short tags in a versioned namespace today | yields to `naming.md` under #191 and #193 |
 | computed identity | VRS digest; CA id | none | diverged; `variant-record.md` says why |
 
@@ -95,7 +98,7 @@ and that is right for a variant.
 
 **Why the SEMAPV kinds.** R12 compares one code string on two records, which is SEMAPV's lexical matching; R13 joins two
 records through a table neither states, which is its background knowledge-based matching. Declaring the kind lets a view
-treat both as kinds of shared-identifier join without knowing the rule (`judgments.md`).
+treat both by kind without knowing the rule (`judgments.md`).
 
 ## Alternatives that lost
 

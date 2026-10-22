@@ -35,8 +35,8 @@ one without; the pod has no server of record to say they are one, and a view the
 - **ClinVar** gives "a unique integer identifier to each set of variants" (the VariationID; a VCV aggregates every
   submitted record for it), an AlleleID to each single variant, an RCV per variant and condition, and an SCV to each
   submitted record. Its `hgvs4variation` file reports "HGVS expressions ClinVar reports per VariationID and AlleleID",
-  with columns marking which a submitter gave. VariationID 90011 has 29 coding expressions, two of them submitted
-  (unverified: counted in #107's body, not recounted); of 46,242,796 rows, 5,384,668 are `Submitted` Current and
+  with columns marking which a submitter gave. VariationID 90011 has 29 expressions, two of them submitted coding
+  expressions and 22 on other transcripts (verified, [#203](https://github.com/jayostis/cascade-vocabulary/issues/203)); of 46,242,796 rows, 5,384,668 are `Submitted` Current and
   1,225 Previous (verified, counted in #107's Step 0 comment).
 - **GA4GH VRS** names a variation by a digest of its serialisation: "All valid implementations of the VRS Computed
   Identifier will generate the same identifier when the objects are identical." An allele is located on a sequence
@@ -80,8 +80,8 @@ unverified: search excerpt); OMOP genomic forum thread
 (https://forums.ohdsi.org/t/representing-germline-somatic-variants-in-omop-whos-actively-using-the-genomic-cdm-extension/25398,
 verified); PROV-O (https://www.w3.org/TR/prov-o/, verified). Research: #107's body
 (https://github.com/jayostis/cascade-vocabulary/issues/107) and its Step 0 comment
-(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340) (evidence issue: see #202); the
-scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
+(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340); the evidence issue
+(https://github.com/jayostis/cascade-vocabulary/issues/203); the scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
 
 ## Choice
 
@@ -105,8 +105,8 @@ source says identifies it. A report says which record it holds by its server and
 does not say its expression identifies a variant, and HGVS itself makes two transcript versions two expressions. That two
 expressions are one variant is a judgment, filed by a rule that reads a table (`variant-identity.md`), so it can be wrong
 and be retracted without touching a name. An expression is not even unique to one variation: 195 of 3,304,067 submitted
-coding expressions map to two VariationIDs across the 2026-10 file (unverified: counted in #107's body, not
-recounted; within Lynch's five genes it is 3, verified, counted in #107's Step 0 comment) (evidence issue: see #202).
+coding expressions map to two VariationIDs across the 2026-10 file, and 3 within Lynch's five genes (both verified,
+[#203](https://github.com/jayostis/cascade-vocabulary/issues/203)).
 
 **Why these three codes.** They are what a report states and what a page looks a variant up by. The ClinVar VariationID
 is the code the IG puts in its variation component and the key of ClinVar's rows; the HGVS expression is the IG's
@@ -114,8 +114,8 @@ required c.HGVS component; both are copied as #107 asked ("Copy only what the st
 reference sequence's version, which HGVS requires, and drops the gene in parentheses, which is not part of the
 expression.
 
-**Why the gene is a symbol.** A variant classifications table states the genes it covers by symbol (`rec:coversGene
-"MLH1"`, `records.ttl:374`), and the page tells "not covered" from "not found" by comparing them (#107, "`geneSymbol`,
+**Why the gene is a symbol.** A variant classifications table states the genes it covers by symbol (`rec:coversGene`,
+`records.ttl:431`; `rec:coversGene "MLH1"` in `runtime/scripted-input/ivo/tables/app-variants/references.ttl:57`), and the page tells "not covered" from "not found" by comparing them (#107, "`geneSymbol`,
 which the page needs to tell 'not covered'"; #138, case M4). ClinVar's files carry the symbol too. `hgncId` waits, with
 `zygosity`, `genomeAssembly` and `transcriptRef`, for a planted case that reads it (#107).
 

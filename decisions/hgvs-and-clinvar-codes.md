@@ -2,8 +2,7 @@
 
 Status: draft, 2026-10-13, brought to the `README.md` standard on 2026-10-22 under #202. Terms: `rec:HGVS`,
 `rec:ClinVar`, `rec:HgvsCodeShape`, `rec:ClinVarCodeShape`; rule M4. Depends on `naming.md` (how everything in a
-pod is named) and `judgments.md` (the identity rules R12 and R13 that join on these IRIs, per
-`variant-identity.md`); the counts are the evidence issue
+pod is named) and `variant-identity.md` (the identity rules R12 and R13 that join on these IRIs); the counts are the evidence issue
 [#203](https://github.com/jayostis/cascade-vocabulary/issues/203). #193 will move the `rec:` terms into the one
 unversioned Cascade namespace; the stems are not Cascade IRIs and do not move.
 
@@ -84,7 +83,7 @@ in the evidence issue (https://github.com/jayostis/cascade-vocabulary/issues/203
 | the pinned CVX comparisons | | `same-mapped-code-and-date.rq`, whose bytes every rule list version from 1 to 8 pins, and its successor `same-vaccine-group-and-date.rq`, whose bytes version 9 pins, join the unencoded literal; a test checks that every query joining a stem to a literal encodes it unless a rule list pins it and its kind's code shape allows unreserved characters only | ours: a pinned query's bytes are its version's, and a CVX code is digits, which the encoding leaves as they are |
 | an HGVS key's form | HGVS: `NM_` a coding transcript, `c.`, a version required; ClinVar's `Type` column | `rec:HgvsCodeShape`: a coding `NM_` expression by its form, encoded; the row's `Type` plays no part | HGVS's form borrowed; ClinVar's `Type` set aside, since 2,302 of 34,428 submitted `NM_` rows of Lynch's genes are typed "genomic" (verified, [#203](https://github.com/jayostis/cascade-vocabulary/issues/203)) |
 | a variation's normal form | ClinVar's Variation ID and VCV accession; the IG's digits | `rec:ClinVarCodeShape`: the digits without a leading zero, in `rec:CodeShape` so a names series can follow; `VCV000090011` and `VCV000090011.7` give `90011`; an SCV or RCV accession is not a variation | borrowed |
-| other allele identifiers | ClinGen CA ids; VRS digests | neither is a code system here | diverged: VRS needs the reference sequence, which neither ClinVar's files nor a browser hold (#107, `variant-record.md`); for CA ids the reason is owed (Still open) |
+| other allele identifiers | ClinGen CA ids; VRS digests | neither is a code system here | diverged: VRS needs the reference sequence, which neither ClinVar's files nor a browser hold (#107, `variant-record.md`); no report in the story carries a CA id, and the table built from ClinVar already lists the expressions (`variant-record.md`) |
 
 ## Why
 
@@ -126,12 +125,11 @@ the digits; so a report's `90011`, `VCV000090011` and `VCV000090011.7` are one c
   in what it joins.
 - **A ClinGen CA id or a VRS digest as the code.** The strongest case: one identity for a variant across transcripts and
   assemblies, where two HGVS expressions of one variant are two codes. A VRS digest needs the reference sequence to
-  compute (`variant-record.md`). Why a CA id lost is not written anywhere; it is owed below.
+  compute. No report in the story carries a CA id, and the table built from ClinVar already lists the expressions
+  submitters used under one VariationID (`variant-record.md`; #107, "Copy only what the story uses").
 
 ## Still open
 
-- Why a ClinGen CA id is not a code system here. #202 names the Allele Registry as prior art the notes skipped, and
-  neither #107 nor #139 weighs it; the divergence stands, and its reason is owed.
 - Whether a code IRI should resolve. Neither stem does (verified 2026-10-22); ClinVar's page is under
   `/clinvar/variation/`, and HGVS has moved to hgvs-nomenclature.org. Nothing in the pod dereferences a code today.
 - Whether `rec:HgvsCodeShape`'s pattern should follow the EBNF grammar HGVS 21 is moving to, once it is complete.
