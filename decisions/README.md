@@ -79,3 +79,5 @@ brought to it on 2026-10-22 under #202:
   variant today, at a size a browser keeps.
 - [`hgvs-and-clinvar-codes.md`](hgvs-and-clinvar-codes.md): the IRIs of an HGVS expression and a ClinVar variation,
   and how a literal holding reserved characters joins as an IRI.
+- [`performance.md`](performance.md): what a ten-year pod costs as it grows, and which rulings keep every cost
+  tracking what changed rather than the square of the pod.

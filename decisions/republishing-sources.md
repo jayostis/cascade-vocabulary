@@ -50,6 +50,7 @@ is one judgment per source-level fact, from which the per-record joins are deriv
 | two organisations are one | `Patient.link`; SPHN | a Same whose members are two organisations, usually the machine's from a shared NPI or OID; derivation: the matcher's within-organisation rules run over both | ours |
 | two documents from one organisation | CDA `setId`, `versionNumber`, `relatedDocument` `RPLC`; FHIR `relatesTo` | no judgment: a document names its custodian by the identifier it carries (a C-CDA custodian's `id` root and extension; a FHIR document's custodian `Organization` by its NPI or OID identifier, never by its id in the bundle), so two documents from one organisation point at one organisation record by name; where a document declares that it replaces another, the adapter reads it onto the document's version; the overlap between the two is joined by name for C-CDA entries and by the within-organisation rules for a FHIR document's | borrowed: a declared replacement is the standards' fact, stored as stated; "edition" as a judgment of ours is dropped |
 | within-organisation rules | | inside one organisation a shared business identifier joins, and a shared code and date joins; which pairs, and what belongs to an organisation when one server serves many, is open | ours |
+| what a run compares | | a matcher run binds `?record` to the records the import, entry or sync that triggered it brought, never the whole pod; a sync is a trigger, named as the run's cause (M1); the matcher queries change to bind it | ours |
 | record from a FHIR document | FHIR documents | named per document; joined across documents like any re-published record; a C-CDA's entries are named across documents by CDA id, per `naming.md` | borrowed from FHIR's within-one-bundle promise |
 | what leaves the pod | | a shared view carries records, by their opaque names, and their current states; never a server or organisation record, an act, or a Same over them, so a name outside the pod is stable and citable and says nothing of where the record came from; the keyed scheme is for a pod that must hide it even from one who knows the address, and the URL scheme for one that need hide nothing | ours |
 | what joins mean | `jdg:currentlySame` | a derived join counts as a counting Same; a record-level Different still wins; the amended definition is open | ours |
@@ -86,6 +87,12 @@ multi-tenant server is one server, so the Same is true, and `Patient/1` under tw
 joins nothing; but within one organisation a shared identifier is certain and a shared code and date is strong, and
 those rules join most of the history, with what is left on the review page. The floor is a source that carries no
 identifier at all, which falls back to labels and a person's judgment, as today.
+
+**Why a run is bound to what arrived.** A pair neither of whose records arrived was compared when the later of them
+did, so a run compares the arrived records with their code groups and nothing else; a sync is a trigger because a union leaves
+pairs no matcher saw together. With `?record` unbound, every run enumerates every ordered pair of every code group,
+about 1 to 5M rows, and same-result within one code is about 80M comparisons, where bound it is about 100k
+(assumed ten-year pod, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)).
 
 **Why two documents from one organisation need no judgment.** Two summaries from one hospital need no judgment of
 their own: each names its custodian by the identifier it carries, so both point at one organisation record by name, a
@@ -129,6 +136,10 @@ record by record, and the source is one more thing they may not want known.
   share, so a receiver cannot tell that two shares hold one record, or cite one back, and a hospital importing over the protocol
   needs the pod's names stable for the same reconciliation the pod does; the opaque name is stable and says nothing,
   and the line is drawn at what a share carries instead.
+- **A run over the whole pod, filtered to its records afterwards.** The strongest case: the matcher queries as written
+  leave `?record` unbound, so a run needs no list of what arrived and misses nothing. Every run then enumerates every
+  pair of every code group, 1 to 5M rows and 80M same-result comparisons, a thousand times in ten years (assumed,
+  #206).
 
 ## Still open
 
@@ -138,8 +149,7 @@ record by record, and the source is one more thing they may not want known.
 - Which code-and-date pairs are near-certain inside one organisation; and how a record is assigned to an
   organisation on a server that serves many (81 brands on one Epic server, verified, [research 2](https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328100407); every eClinicalWorks practice on one base),
   which the within-organisation derivation now depends on.
-- The amended `jdg:currentlySame`, and M1's triggers for the scoped runs; a sync act is one trigger, since a union
-  leaves pairs no matcher saw together, and the run names the sync as its cause.
+- The amended `jdg:currentlySame`.
 - A matcher rule for organisations: `jdg:SameBusinessIdentifier` needs a shared code, which an organisation lacks,
   and M2 takes only the subject's records.
 - Whether the NPI registry becomes a reference table kind; the organisation record does not wait on it.

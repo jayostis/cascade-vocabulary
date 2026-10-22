@@ -49,14 +49,14 @@ who makes judgments.
 | reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, the matching kinds each `skos:broadMatch` a SEMAPV kind (`jdg:Demographics` and the About bases have none); `jdg:basis` for a person's | borrowed from SEMAPV at the kind level; the kinds are ours |
 | confidence | SSSOM `confidence` | none; the justification kind stands in for it, and the review page lists the weaker kinds | diverged; see open |
 | retraction | `npx:retracts` | a `prov:Activity` that `prov:invalidated` the judgment, per `naming.md` | diverged: the pod's retraction is an act, not an agent's statement |
-| machine claim and assertion | nanopub assertion | a claim named once from its maker, rule, justification, members and used, and an assertion per rule list version that reaches it, per `naming.md` | borrowed split; ours in the parts |
+| machine claim and assertion | nanopub assertion | a claim named once from its maker, rule, justification, members and used, its members the record and the least member of each entry it matched, a star that `same-pairs.rq` derives; an assertion per rule list version that reaches it and changed its rule's `rec:queryHash`, per `naming.md` | borrowed split; ours in the parts |
 
 Every judgment names its maker, and nothing else about a judgment depends on there being one matcher.
 
 | maker | its term | how its judgment is named | its version | counts while |
 |---|---|---|---|---|
 | a person | their own IRI | minted once by them | none | always; outranks every machine |
-| the Cascade matcher: any runtime following `runtime/matcher.feature` and the Cascade rule list | `jdg:CascadeMatcher`, one `prov:SoftwareAgent`, unversioned | hashed from maker, rule, justification, members and used, per `naming.md` | the rule list version, on the assertion; the runtime, on the run's act | the app uses that rule list version and the used versions are current |
+| the Cascade matcher: any runtime following `runtime/matcher.feature` and the Cascade rule list | `jdg:CascadeMatcher`, one `prov:SoftwareAgent`, unversioned | hashed from maker, rule, justification, members and used, per `naming.md` | the rule list version, on the assertion; the runtime, on the run's act | it is asserted under a rule list version whose row for its rule carries the same `rec:queryHash` as the version the app uses, and the used versions are current |
 | a matcher of another procedure: an app's own rules | the app's own agent term, in its own namespace, with its rules as its own terms | hashed the same way, under its rule IRIs | the app's version, on the assertion; the app, on the act | the pod trusts that maker and version, and the used versions are current |
 | a maker whose answer its inputs do not determine: a model | its own agent term, with model and version | minted once, as a person's is, since no hash of inputs names an answer the inputs do not fix; its reason is text and its confidence a number | the model's version, on the judgment | the pod trusts that maker and version |
 
@@ -89,9 +89,13 @@ Erroneous over an act hides bad data from any of them.
 assertion per rule list version because the same inputs give the same name, so a later version that agrees could
 otherwise write nothing, and a run that reaches an asserted claim writes nothing, so a daily run adds no files. The
 rule list's version is out of the claim's name because with it in, every version renamed every claim, the duplication
-the split exists to stop. The Cascade matcher is one unversioned agent because the matcher feature promises every
-runtime that follows it reaches the same claims, so which runtime ran is forensics, and it sits on the run's act with
-every other act's performer (`naming.md`).
+the split exists to stop. A claim counts under any version that keeps its rule's `rec:queryHash` because M11 pins the
+rule's bytes, so such versions reach the same claims; an assertion per claim per version would be 600k to 1.2M files
+over ten years ([#206](https://github.com/jayostis/cascade-vocabulary/issues/206)). A claim's members are a star, the
+record and the least member of each entry it matched, because entries come out the same and every earlier copy as a
+member expands to about 58M pairs over ten years (#206). The Cascade matcher is one unversioned agent because the
+matcher feature promises every runtime that follows it reaches the same claims, so which runtime ran is forensics, and
+it sits on the run's act with every other act's performer (`naming.md`).
 
 **Why a model's judgment is minted, not hashed.** No hash of inputs names an answer the inputs do not fix, so a
 model's judgment is minted once, as a person's is.
@@ -111,6 +115,12 @@ domain `foaf:Agent`, making the retractor an agent and the retracted a nanopubli
   and which code. Per version, the maker changes every release, which is the duplicate problem again; per runtime,
   two correct runtimes would make two claims of one conclusion, which the matcher feature forbids. The version is on
   the assertion and the runtime on the act (`naming.md`).
+- **A claim counting while the app uses that rule list version.** The strongest case: each version says for itself
+  what it reaches. Every version then asserts every claim again, 600k to 1.2M assertions in ten years, more than the
+  whole pod (computed, #206), where versions with one query hash reach the same claims (`naming.md`).
+- **A claim whose members are the record and everything it matched.** The strongest case: one file shows the whole
+  join. A fact in every monthly summary makes it cubic, about 58M derived pairs in ten years (computed, #206), where a
+  star gives the same entries (`naming.md`).
 
 ## Still open
 

@@ -81,6 +81,7 @@ as cited in `variant-record.md`. The counts, the scripts and the archived classi
 | gene coverage | nothing found | `rec:coversGene` on the version, an HGNC symbol, any number including none; a changed gene list is a new version; a version without it covers no named gene | ours |
 | kinds an app keeps for its pages | nothing found | `rec:readByPages true` marks the kinds an app keeps and packs because its pages read them, though no rule does: `rec:CodeNames`, `rec:CodeStatus`, `rec:VariantClassifications`, `rec:PanelMembers` and `rec:DrugClasses` (`records.ttl`); it replaces the set a runtime hard-coded | ours |
 | a row whose classification parses to no concept | | keeps its keys | ours: the join through a row is identity and reads no classification |
+| versions an app keeps | ClinVar archives `variant_summary` monthly | R13 counts over current versions only (`variant-identity.md`), so an old version's rows may be dropped; a new version re-mints only the claims whose joining rows changed in it (M7) | ours |
 
 ## Why
 
@@ -111,6 +112,10 @@ conditions would be the linkage #107 leaves out.
 which carries no content. A series is described once, on first publish, and a runtime keeps only the series fields it
 lists (#139), so a changed gene list can only be a new version.
 
+**Why current versions only.** A page and R13 both ask what ClinVar says today. Held for the count, a monthly 0.60 GB
+version is 72 GB in ten years (computed, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)), against
+a browser's keep bounds.
+
 **Why a marker, not a list.** A runtime that hard-codes the kinds its pages read changes for every new kind a page
 reads; a marker in the vocabulary changes none.
 
@@ -131,6 +136,10 @@ reads; a marker in the vocabulary changes none.
   version.
 - **A hard-coded list of the kinds an app keeps.** The strongest case: no vocabulary term, and the runtime already knows
   what its pages read. It was the state before; every new kind a page reads would change a runtime.
+- **Every held version counted by R13.** The strongest case: an expression ClinVar ever put on two rows stays left
+  alone. Every version is then kept, 72 GB of ClinVar in ten years (computed, #206).
+- **Every table-reading claim re-minted per adopted version (M7).** The strongest case: each claim names the version it
+  was last read under. About 960k claims in ten years for rows that did not change (assumed monthly adoption, #206).
 
 ## Still open
 
@@ -139,8 +148,6 @@ reads; a marker in the vocabulary changes none.
   query and a kit expectation, or for the ruling to move here.
 - The table version is named by `urn:uuid` in the kit, where `naming.md` says nothing else a runtime mints is random.
   #191 changes it.
-- How a version is cited as used: R13 reads every held version of the table but cites only `?origin`, where `naming.md`
-  says used holds each table the rule read.
 - Which revision of a variant record is current when R13 and the table queries read its codes: they read the
   derivation `currency.md` replaces.
 - The row's keys. #139 settled them as the submitted expressions plus the one in the variation's own ClinVar name, which

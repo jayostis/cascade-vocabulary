@@ -62,11 +62,11 @@ SEMAPV (https://mapping-commons.github.io/semantic-mapping-vocabulary/, verified
 | join by ID (R12) | ClinVar VariationID; FHIR variation code | joins two variants whose current versions carry one ClinVar VariationID | borrowed: the ID as ClinVar defines it; the rule is ours |
 | join through the table (R13) | ClinVar `hgvs4variation`; ClinGen's canonical allele | joins two variants whose current versions find one row of one version of a variant classifications table; the classification plays no part | ours: ClinGen's canonical allele does this join as a service (prior art), set aside under Alternatives |
 | how a version finds its row | | a version with a VariationID finds that variation's row and only that row, its expression unread; one with none finds the row holding its expression, percent-encoded as `ENCODE_FOR_URI` does | ours; the encoding is SPARQL's |
-| left alone | | a pair that shares an ID (R12's, so no pair has two justifications); a pair whose versions carry different IDs, whatever expressions they hold; a version whose expression is on more than one row, rows counted as distinct row subjects over every held version of every series of the kind; a version whose ID is on no row | ours |
+| left alone | | a pair that shares an ID (R12's, so no pair has two justifications); a pair whose versions carry different IDs, whatever expressions they hold; a version whose expression is on more than one row, rows counted as distinct row subjects over the current version of every series of the kind, never an older one, so an old version's rows may be dropped; a version whose ID is on no row | ours |
 | a page's lookup | | through the ClinVar IDs of the variant's entry when it carries any, through its HGVS expressions only when it carries none, never both (`tables/agreement.rq`) | ours |
 | justification kinds | SEMAPV | `jdg:SameVariation` `skos:broadMatch` `semapv:LexicalMatching` (`judgments.ttl:93`); `jdg:SameVariationThroughTable` `skos:broadMatch` `semapv:BackgroundKnowledgeBasedMatching` (`judgments.ttl:98`) | borrowed from SEMAPV at the kind level, as `judgments.md` rules |
 | maker | PROV agents; `judgments.md` | `jdg:CascadeMatcher`, one unversioned `prov:SoftwareAgent`; not yet in `judgments.ttl` | borrowed from `judgments.md` |
-| used | `naming.md`: each member's version and each table version the rule read | each member's version and `?origin`, the table version whose row joined them | diverged from `naming.md` for R13, which reads every held version to count rows; open |
+| used | `naming.md`: each member's version and each table version the rule read | each member's version and `?origin`, the table version whose row joined them; a new table version re-mints only the claims whose joining rows changed in it (M7) | borrowed from `naming.md` where the kind has one series, since the count reads current versions only; with several, open |
 | scope | `republishing-sources.md`: within-organisation rules | across organisations: both are identity rules on global codes | ours: `republishing-sources.md` adds rules within one organisation, and these two are not among them (Why) |
 | rule IRI | `naming.md`: descriptive terms in the one unversioned namespace | short tags in a versioned namespace today | yields to `naming.md` under #191 and #193 |
 | computed identity | VRS digest; CA id | none | diverged; `variant-record.md` says why |
@@ -77,7 +77,9 @@ SEMAPV (https://mapping-commons.github.io/semantic-mapping-vocabulary/, verified
 strings and nothing in the pod says they are one variant; only a table does, by listing both under one VariationID, as
 ClinVar's `hgvs4variation` does for 90011. Sameness is a claim the pod makes from a table that says so, which is the
 rubric's second test, and the table version is in the claim's used, so a later table that says otherwise makes a
-different claim.
+different claim. A later table whose joining rows are unchanged says the same, so M7 re-mints only the claims whose
+joining rows changed: re-minting every table-reading claim per adopted version is about 960k claims in ten years
+(assumed monthly adoption, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)).
 
 **Why an ID is read before an expression.** An ID is a stronger claim than an expression, so a version that carries one
 is read by it alone: otherwise a report carrying ID 12345 and an expression of another variation would join that
@@ -87,7 +89,9 @@ same way, or a variant with ID 12345, on no row, and an expression on row 90011 
 **Why an expression on two rows joins nothing.** 195 submitted expressions name two variations in ClinVar's file, 3
 within Lynch's genes (unverified and verified as above); one of them on a version would join two variations, and entries
 would then join through it. Counting distinct row subjects, as `same-product-code.rq` counts, keeps two series that both
-hold a variation from leaving every pair alone.
+hold a variation from leaving every pair alone. The count reads current versions only, because the question is what
+the table says today, and an app keeping every monthly version for the count holds 72 GB of ClinVar alone in ten
+years (computed, #206).
 
 **Why these rules cross organisations.** `republishing-sources.md` confines its rules to one organisation, inside which
 a shared business identifier is certain and a shared code and date is strong. A ClinVar VariationID is
@@ -116,13 +120,18 @@ treat both by kind without knowing the rule (`judgments.md`).
 - **Confine the rules to one organisation.** The strongest case: one scope for every matcher rule, as
   `republishing-sources.md` draws it. Two labs are two organisations, so the two reports of Martin's story (#138)
   would never join, though ClinVar says they are one variation.
+- **Counting an expression's rows over every held version.** The strongest case: an expression that ever named two
+  variations stays left alone, whatever the current version says. Every version is then kept for the count, 72 GB of
+  ClinVar in ten years (computed, #206), and a superseded version's rows are no evidence of today's.
+- **A re-mint of every table-reading claim per adopted table version (M7).** The strongest case: each claim names the
+  version it was last read under, so used is always current by construction. About 960k claims in ten years (assumed,
+  #206), for rows that did not change.
 
 ## Still open
 
-- R13 reads every held version of every variant classifications series to count an expression's rows (`?anyOrigin` in
-  `same-variation-through-table.rq`), but cites only `?origin` as used, where `naming.md` says used holds each table
-  version the rule read. Whether used lists every version the count read, or the count is confined to `?origin`, is
-  open.
+- Where a kind has more than one series, whether used lists the current version of each series the count read or
+  only `?origin`. `same-variation-through-table.rq` still counts over every held version (`?anyOrigin`) until it is
+  confined to current ones.
 - R12 and R13 are cross-organisation identity rules because a ClinVar ID or an HGVS expression is a global identity, not
   an organisation's. Whether every matcher rule on a global code (an RxNorm code, a LOINC code with a date) holds across
   organisations the same way, or only identity codes do, is open.
