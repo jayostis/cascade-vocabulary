@@ -78,6 +78,12 @@
     <#base-url-percent-encoding>
     <#base-url-host-alone>
     <#base-url-percent-encoded-host>
+    <#base-url-ipv6>
+    <#base-url-ipv6-port>
+    <#base-url-ipvfuture>
+    <#base-url-port-leading-zeros-default>
+    <#base-url-port-leading-zeros>
+    <#base-url-port-highest>
     <#base-url-space>
     <#base-url-nul>
     <#base-url-del>
@@ -91,6 +97,16 @@
     <#base-url-no-host>
     <#base-url-tab>
     <#base-url-line-feed>
+    <#base-url-non-ascii-host>
+    <#base-url-non-ascii-compatibility-host>
+    <#base-url-bracket-unclosed>
+    <#base-url-bracket-unopened>
+    <#base-url-bracket-not-ip>
+    <#base-url-bracket-empty>
+    <#base-url-ipv6-zone>
+    <#base-url-bad-percent-in-host>
+    <#base-url-port-non-ascii-digits>
+    <#base-url-port-too-high>
   ) .
 
 <#record-from-server> a bridge:NamingTest ;
@@ -581,6 +597,42 @@
   mf:action [ cascade:serverBaseUrl "https://%41PI.%c3%a9xample.ORG/r4" ] ;
   mf:result [ cascade:serverBaseUrl "https://api.%C3%A9xample.org/r4" ] .
 
+<#base-url-ipv6> a bridge:BaseUrlNormalisationTest ;
+  mf:name "base-url-ipv6" ;
+  rdfs:comment "A bracketed IPv6 address in lower case, and the scheme's default port dropped after it." ;
+  mf:action [ cascade:serverBaseUrl "HTTPS://[2001:DB8::1]:443/r4/" ] ;
+  mf:result [ cascade:serverBaseUrl "https://[2001:db8::1]/r4" ] .
+
+<#base-url-ipv6-port> a bridge:BaseUrlNormalisationTest ;
+  mf:name "base-url-ipv6-port" ;
+  rdfs:comment "A bracketed IPv6 address keeps any other port." ;
+  mf:action [ cascade:serverBaseUrl "https://[::1]:8443/r4" ] ;
+  mf:result [ cascade:serverBaseUrl "https://[::1]:8443/r4" ] .
+
+<#base-url-ipvfuture> a bridge:BaseUrlNormalisationTest ;
+  mf:name "base-url-ipvfuture" ;
+  rdfs:comment "An IPvFuture literal (RFC 3986 §3.2.2) is kept, in lower case." ;
+  mf:action [ cascade:serverBaseUrl "https://[V1.Fe]/r4" ] ;
+  mf:result [ cascade:serverBaseUrl "https://[v1.fe]/r4" ] .
+
+<#base-url-port-leading-zeros-default> a bridge:BaseUrlNormalisationTest ;
+  mf:name "base-url-port-leading-zeros-default" ;
+  rdfs:comment "A port is an integer (RFC 3986 section 3.2.3): 0443 is 443, https's default, so it is dropped." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org:0443/r4" ] ;
+  mf:result [ cascade:serverBaseUrl "https://fhir.example.org/r4" ] .
+
+<#base-url-port-leading-zeros> a bridge:BaseUrlNormalisationTest ;
+  mf:name "base-url-port-leading-zeros" ;
+  rdfs:comment "Leading zeros are dropped from a port that is not the default." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org:08080/r4" ] ;
+  mf:result [ cascade:serverBaseUrl "https://fhir.example.org:8080/r4" ] .
+
+<#base-url-port-highest> a bridge:BaseUrlNormalisationTest ;
+  mf:name "base-url-port-highest" ;
+  rdfs:comment "65535 is the highest port, and is kept." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org:65535/r4" ] ;
+  mf:result [ cascade:serverBaseUrl "https://fhir.example.org:65535/r4" ] .
+
 <#base-url-space> a bridge:BaseUrlRefusalTest ;
   mf:name "base-url-space" ;
   rdfs:comment "A space is refused." ;
@@ -645,3 +697,53 @@
   mf:name "base-url-line-feed" ;
   rdfs:comment "A line feed is refused, not dropped as a URL parser drops it." ;
   mf:action [ cascade:serverBaseUrl "https://fhir.example.org/r4\n" ] .
+
+<#base-url-non-ascii-host> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-non-ascii-host" ;
+  rdfs:comment "A host holding a non-ASCII character is refused: a source sends an IDN punycoded." ;
+  mf:action [ cascade:serverBaseUrl "https://ΟΔΟΣ.example.org/r4" ] .
+
+<#base-url-non-ascii-compatibility-host> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-non-ascii-compatibility-host" ;
+  rdfs:comment "A host holding a compatibility character (U+2100) is refused, not folded." ;
+  mf:action [ cascade:serverBaseUrl "https://a℀b/r4" ] .
+
+<#base-url-bracket-unclosed> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-bracket-unclosed" ;
+  rdfs:comment "A host opening a bracket it never closes is refused." ;
+  mf:action [ cascade:serverBaseUrl "https://[abc/r4" ] .
+
+<#base-url-bracket-unopened> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-bracket-unopened" ;
+  rdfs:comment "A host closing a bracket it never opened is refused." ;
+  mf:action [ cascade:serverBaseUrl "https://abc]/r4" ] .
+
+<#base-url-bracket-not-ip> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-bracket-not-ip" ;
+  rdfs:comment "A bracketed host that is neither IPv6 nor IPvFuture is refused." ;
+  mf:action [ cascade:serverBaseUrl "https://[zzz]/r4" ] .
+
+<#base-url-bracket-empty> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-bracket-empty" ;
+  rdfs:comment "Empty brackets are refused." ;
+  mf:action [ cascade:serverBaseUrl "https://[]/r4" ] .
+
+<#base-url-ipv6-zone> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-ipv6-zone" ;
+  rdfs:comment "A zone id is refused: RFC 3986 section 3.2.2 has none." ;
+  mf:action [ cascade:serverBaseUrl "https://[fe80::1%25eth0]/r4" ] .
+
+<#base-url-bad-percent-in-host> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-bad-percent-in-host" ;
+  rdfs:comment "A host's % must open two hex digits." ;
+  mf:action [ cascade:serverBaseUrl "https://a%zz.example.org/r4" ] .
+
+<#base-url-port-non-ascii-digits> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-port-non-ascii-digits" ;
+  rdfs:comment "A port is ASCII digits: Arabic-Indic digits are refused." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org:٤٤٣/r4" ] .
+
+<#base-url-port-too-high> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-port-too-high" ;
+  rdfs:comment "A port above 65535 is refused." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org:65536/r4" ] .
