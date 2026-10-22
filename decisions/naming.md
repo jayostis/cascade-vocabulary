@@ -79,7 +79,7 @@ appears here only as evidence for a judgment.
 | rule | FHIR extensions named by URL | a term in an unversioned namespace; a changed recipe is a new IRI | borrowed |
 | record from a server | FHIR server + id; SPHN provider-scoped IRI | hash of the normalised base URL the client used, the type and the id; `rec:sourceUrl` stated in the file | SPHN's scope, hashed so a shared view names no host; diverges from FHIR, which calls the pair not durable, and ignores the server's own `implementation.url` (see `republishing-sources.md`) |
 | record from a document | FHIR documents | named by the document and a selector; an id the generator minted is the document's, never the hospital's; a `urn:uuid` fullUrl is never identity across documents | borrowed from FHIR's promise, uniqueness within one bundle only |
-| record from C-CDA | CDA `id` roots | custodian and patient scopes, then the class's identifier ladder | ours; open against the document row below |
+| record from C-CDA | CDA `id` roots; Sequoia Data Usability "same ID for unchanged data" | custodian and patient scopes, then the entry's CDA `id` root and extension, so the same statement in two documents from one system is one record; two entries of one document with one `id` and different content fall back to document-and-selector names and a finding says the source broke its own definition | borrowed from the networks' SHALL; diverges from the document row because CDA ids are measured stable where generator UUIDs are not |
 | record from an entry | | hash of the session's IRI and the draft's position | ours |
 | server, organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | records: a server by the base URL the client used; an organisation by server plus `Organization/{id}`, or by the custodian's `id` root and extension; what they report sits on versions | borrowed from PROV for the class; a versioned record typed as an Agent, which PROV allows |
 | version | git blob; RFC 6920; RDFC-1.0 | `ni:` hash of RDFC-1.0 canonical N-Quads of exactly its triples (a sort, since no blank node is allowed), business identifiers nested and sorted | borrowed; diverges from FHIR's and openEHR's per-system version ids |
@@ -153,7 +153,18 @@ none are one server, and userinfo is refused because a credential must never be 
 scoped by its container's source version because a renumbered one would otherwise become a revision of another
 record. An entry hashes a session the app minted because the subject and a timestamp collide across devices in one
 instant. Custodian and patient in a C-CDA name stop two patients' id-less statements from one clinic fusing. A
-person's judgment keeps its IRI because whoever made it minted it once, so another pod can cite it. A document and a
+C-CDA entry is named by its CDA `id` across documents where a FHIR document's entry is not, because the two promises
+differ and the measurements differ (research 4 on #130): FHIR says a document's ids are unique within that bundle
+only, and converters mint them at random per run; CDA's networks say "organizations SHALL send the same ID for
+clinical data which has not changed", HL7's companion guide makes it a SHOULD, and in the only public pairs from one
+system every observation, medication and procedure kept its id (Greenway, 77 of 91 statements; Allscripts, 26 of 26;
+Synthea a month on, 97%), as did every record with a source id in two downloads seven weeks apart from one EHR
+(cascade-cli #121). What failed was the wrappers, a concern act or a vitals organizer re-minted per export, which the
+matcher joins like any duplicate, and an id reused for two different entries (2 in Synthea; 22 of 344 within one
+document in #121), which would fuse two facts under one name that no judgment could split; so the collision inside a
+document falls back to the document's name with a finding, and the rare reuse across documents is accepted over the
+per-document alternative's cost, thousands of records and a claim file per join on every re-download of a stable
+sender. A person's judgment keeps its IRI because whoever made it minted it once, so another pod can cite it. A document and a
 finding are named by content so the same one from two devices is one file, and Web Annotation wants exactly one IRI
 per annotation. A view entry is a fragment of its view because the view is rebuilt from the set, so its entries are
 too, and nothing outside the view may cite one. A machine judgment is one claim with an assertion per run because the
@@ -203,12 +214,16 @@ only the vocabulary; vectors are cross-checked because an implementation that mi
 - **UUIDv5.** The strongest case: a standard name-based layout. SHA-1, and no room for a stated layout.
 - **A hostname or a DID as the pod's identity.** The strongest case: resolvable and familiar. A hostname is a
   commitment nobody can undo, and a DID is what a person signs as, not what a pod is about.
+- **C-CDA records named per document, like FHIR documents.** The strongest case: one rule for every document kind,
+  and a name that can never fuse two facts, since a reused id becomes a derived join a Different can undo. The
+  measured senders keep their ids, the networks require it, and a stable sender re-downloaded would write thousands of
+  records and a claim file per join each time; the in-document collision is caught, and the cross-document reuse is
+  rare enough to accept.
 
 ## Still open
 
-- The C-CDA ladder names records across documents by CDA entry ids, which C-CDA on FHIR maps to business identifiers;
-  nothing measured their stability across editions. Either C-CDA records are named per document too, or the note says
-  why a CDA `id` is trusted where a generator's is not.
+- Which nested element of a C-CDA entry carries the stable id: the networks' SHALL does not say, and the measured
+  pairs show the inner statement stable and its wrapper re-minted.
 - What a machine claim's "used" holds: today it includes the rule-list version and each member's version, so every
   rule-list change renames every claim; lean, the rule-list version moves to the assertion, and a claim whose used
   versions are no longer current stops counting or is retracted.
@@ -226,7 +241,9 @@ only the vocabulary; vectors are cross-checked because an implementation that mi
 
 ## What would change our mind
 
-A generator that guaranteed deterministic ids across documents would make trusting them right for that generator.
+A generator that guaranteed deterministic ids across documents would make trusting them right for that generator. A
+C-CDA sender measured re-minting its inner statements' ids per export, or reusing ids across documents at any real
+rate, would move C-CDA to per-document names.
 Vendor switches rising well above the measured rate, or ids turning out not to survive a same-server URL change, would
 make business identifiers a name input after all. Servers giving every record a long random id would make the keyed
 scheme unnecessary; cross-pod reconciliation needing shared names would rule it out. A signed or hashed-graph
