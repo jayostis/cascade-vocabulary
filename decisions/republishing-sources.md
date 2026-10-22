@@ -2,7 +2,7 @@
 
 Status: draft, 2026-10-21, from the review on #130. Adds server and organisation records, a connect act, a Same over
 servers and over organisations with a derivation each, and within-organisation matcher rules; changes M2
-(organisations are not the subject's records) and M1's triggers, and amends `jdg:currentlySame`. Names are
+(organisations are not the subject's records) and M1's triggers, and leaves `jdg:currentlySame`'s amendment open. Names are
 `naming.md`, whose rubric this note applies: a re-published record is a new definition (test 1), its join is a
 judgment (test 2), one per server or organisation pair (test 3); which revision is current is
 `currency.md`; what a judgment is and borrows is `judgments.md`.
@@ -47,7 +47,7 @@ is one judgment per source-level fact, from which the per-record joins are deriv
 | two organisations are one | `Patient.link`; SPHN | a Same whose members are two organisations, usually the machine's from a shared NPI or OID; derivation: the matcher's within-organisation rules run over both | ours |
 | two documents from one organisation | CDA `setId`, `versionNumber`, `relatedDocument` `RPLC`; FHIR `relatesTo` | no judgment: a document names its custodian by the identifier it carries (a C-CDA custodian's `id` root and extension; a FHIR document's custodian `Organization` by its NPI or OID identifier, never by its id in the bundle), so two documents from one organisation point at one organisation record by name; where a document declares that it replaces another, the adapter reads it onto the document's version; the overlap between the two is joined by name for C-CDA entries and by the within-organisation rules for a FHIR document's | borrowed: a declared replacement is the standards' fact, stored as stated; "edition" as a judgment of ours is dropped |
 | within-organisation rules | | inside one organisation a shared business identifier joins, and a shared code and date joins; which pairs, and what belongs to an organisation when one server serves many, is open | ours |
-| record from a document | FHIR documents | named per document; joined across documents like any re-published record | borrowed from FHIR's within-one-bundle promise |
+| record from a FHIR document | FHIR documents | named per document; joined across documents like any re-published record; a C-CDA's entries are named across documents by CDA id, per `naming.md` | borrowed from FHIR's within-one-bundle promise |
 | what leaves the pod | | a shared view carries records, by their opaque names, and their current states; never a server or organisation record, an act, or a Same over them, so a name outside the pod is stable and citable and says nothing of where the record came from; the keyed scheme is for a pod that must hide it even from one who knows the address, and the URL scheme for one that need hide nothing | ours |
 | what joins mean | `jdg:currentlySame` | a derived join counts as a counting Same; a record-level Different still wins; the amended definition is open | ours |
 
@@ -62,8 +62,8 @@ id; as a judgment input it keeps the benefit and makes the failure retractable. 
 and ids survive (inferred, not observed), so the derivation joins by id; the machine makes it only from two of the
 pod's own connects under one client id, because Epic documents that the self-URL can differ by the client id asking
 and a pod holds connects from several apps, so a mismatch across apps proves nothing and is left to the person, the
-safe direction; before a record is pulled, and made later it has the same effect because it was never baked into a
-name. The common case needs no join at all: Apple's copy of a Mercy record carries the address Apple used, and where
+safe direction; the app may propose it before a record is pulled, and a judgment made later has the same effect
+because it was never baked into a name. The common case needs no join at all: Apple's copy of a Mercy record carries the address Apple used, and where
 that is the address the app used the names already agree and the copy is one more revision; where Apple's address is
 the older one, the pod never spoke to it, so the join is the person's, or the app connects to the old address itself
 and earns like-for-like evidence while it still answers. The derivation is confined to one organisation because a
@@ -107,14 +107,14 @@ person's choice, record by record, and the source is one more thing they may not
 - **Name by the visible pair and pseudonymise at share time.** The strongest case: FHIR already has every part
   (`Provenance`, identifiers, `Linkage`, `relatesTo`), privacy belongs at the one boundary where it matters, and the
   pod stores source URLs, organisation names and OIDs in plain text anyway. A pseudonym per share is a new name per
-  share, so a receiver cannot tell two shares apart or cite a record back, and a hospital importing over the protocol
+  share, so a receiver cannot tell that two shares hold one record, or cite one back, and a hospital importing over the protocol
   needs the pod's names stable for the same reconciliation the pod does; the opaque name is stable and says nothing,
   and the line is drawn at what a share carries instead.
 
 ## Still open
 
 - The full list of what a shared view may carry, beyond "records and their current states, no source records, acts
-  or Sames": a views decision, resting on the tenet that anything in the pod may be what the person does not want
+  or the Sames over them, and a person's judgment only as the share-time choice says": a views decision, resting on the tenet that anything in the pod may be what the person does not want
   shared, so the person chooses what leaves and nothing leaves by default.
 - Which code-and-date pairs are near-certain inside one organisation; and how a record is assigned to an
   organisation on a server that serves many (81 brands on one Epic server; every eClinicalWorks practice on one base),

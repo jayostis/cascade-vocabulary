@@ -1,7 +1,9 @@
 # How everything in a pod is named
 
-Status: draft, 2026-10-21, from the review on #130. Replaces N1's owner, N2's inputs, N6's constant, N7's "nothing
-else" (six kinds of act are random now) and A2's single parent; built by #193 then #191, one re-mint. Which revision
+Status: draft, 2026-10-22, from the review on #130. Replaces N1's owner, N2's inputs, N6's constant and its "used"
+(the rule list's version leaves it, the maker becomes `jdg:CascadeMatcher`), N7's "nothing else" (six kinds of act
+are random now), A2's single parent, and M5's and M9's "at the run's time" (an assertion carries no time); built by
+#193 then #191, one re-mint. Which revision
 is current is `currency.md`; how a moved, switched or re-issued source's records are joined is
 `republishing-sources.md`; what a judgment is and borrows is `judgments.md`. The rubric below is the one the four
 notes share. Recipe detail (constant, escaping, bit layout, canonical form) lives in the rule terms and
@@ -23,7 +25,7 @@ four tests.
    nothing past that: a server's record by that server's address, type and id; an entry by its document and position.
    Two things share a name only where the source itself gave them one definition.
 2. **Everything past the definition is a judgment.** That two records are one fact, that two servers are one hospital,
-   that two documents are editions: each is a belief, filed with its reason and its maker, so that it can be wrong and
+   that a source's patient is this person: each is a belief, filed with its reason and its maker, so that it can be wrong and
    can be retracted without touching a name.
 3. **One judgment per fact, where a fact exists.** Where one fact joins thousands of records, a moved server or a
    merged hospital, it is said once and the joins are derived. Where no such fact exists, a vendor switch that
@@ -76,26 +78,26 @@ appears here only as evidence for a judgment.
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | derived name | RFC 9562 §5.8, §6.6 | UUIDv8 over a random v4 namespace, the rule's IRI, then the inputs, escaped and joined; lists carry their count | borrowed; the rule IRI as first input is ours |
-| rule | FHIR extensions named by URL | a term in the one unversioned Cascade namespace (#193); a changed recipe is a new IRI; local names are descriptive words in the ontology's own style, one per row of this table: `RecordFromServer`, `RecordFromDocument`, `RecordFromCcda`, `ContainedRecord`, `Entry`, `Version`, `Revision`, `ViewEntry`, `Snapshot`, `Server`, `Organisation`, `Claim`, `Assertion`, `Retraction`, never a short tag like `fhir-resource` | borrowed |
+| rule | FHIR extensions named by URL | a term in the one unversioned Cascade namespace (#193); a changed recipe is a new IRI; local names are descriptive words in the ontology's own style, one per naming recipe: `RecordFromServer`, `RecordFromDocument`, `RecordFromCcda`, `ContainedRecord`, `Entry`, `Version`, `Revision`, `ViewEntry`, `Snapshot`, `Server`, `Organisation`, `Claim`, `Assertion`, `Retraction`, never a short tag like `fhir-resource` | borrowed |
 | record from a server | FHIR server + id; SPHN provider-scoped IRI | hash of the normalised base URL the client used, the type and the id; `rec:sourceUrl` stated in the file | SPHN's scope, hashed so a shared view names no host; diverges from FHIR, which calls the pair not durable, and ignores the server's own `implementation.url` (see `republishing-sources.md`) |
 | record from a document | FHIR documents | named by the document and a selector; an id the generator minted is the document's, never the hospital's; a `urn:uuid` fullUrl is never identity across documents | borrowed from FHIR's promise, uniqueness within one bundle only |
 | record from C-CDA | CDA `id` roots; Sequoia Data Usability "same ID for unchanged data" | custodian and patient scopes, then the entry's CDA `id` root and extension, so the same statement in two documents from one system is one record; two entries of one document with one `id` and different content fall back to document-and-selector names and a finding says the source broke its own definition | borrowed from the networks' SHALL; diverges from the document row because CDA ids are measured stable where generator UUIDs are not |
 | record from an entry | | hash of the session's IRI and the draft's position | ours |
-| server, organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | records: a server by the base URL the client used; an organisation by server plus `Organization/{id}`, or by the custodian's `id` root and extension; what they report sits on versions | borrowed from PROV for the class; a versioned record typed as an Agent, which PROV allows |
+| server, organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | records: a server by the base URL the client used; an organisation by server plus `Organization/{id}` from a server, and from a document by its business identifier, a C-CDA custodian's `id` root and extension or a FHIR document's `Organization.identifier`; what they report sits on versions | borrowed from PROV for the class; a versioned record typed as an Agent, which PROV allows |
 | version | git blob; RFC 6920; RDFC-1.0 | `ni:` hash of RDFC-1.0 canonical N-Quads of exactly its triples (a sort, since no blank node is allowed), business identifiers nested and sorted | borrowed; diverges from FHIR's and openEHR's per-system version ids |
 | source's own version | openEHR `creating_system_id`; FHIR `versionId` | a nested node on the revision, never in a name | diverges: not visible in a name |
 | revision | git commit; trusty URIs | self-hashed over its own triples, carrying its act's id, `rec:asOf`, `prov:generatedAtTime`, and the record's heads it saw as `prov:wasRevisionOf` | borrowed; `ni:` form rather than trusty URI syntax; `prov:wasRevisionOf` used for the pod's own observation DAG |
-| act | openEHR `CONTRIBUTION`; FHIR `urn:uuid` | six kinds, each a random v4 minted once: an import, an entry session, a connect (what a server reports), a release's migration (renames, retracts what a release declares wrong, rewrites what a release changes in form), a matcher run, a sync; every file is generated by one, and every act names the software and version that performed it; nothing else is random | the act is the contribution; the kinds are ours |
-| sync | git merge commit | an act the receiving device writes only when the merged set's hash differs from its last snapshot, naming the acts that arrived; a sync that brings nothing writes nothing, so receiving another device's sync act is itself no act | borrowed; written on arrival rather than by a merger, and never for a no-op |
+| act | openEHR `CONTRIBUTION`; FHIR `urn:uuid` | six kinds, each a random v4 minted once: an import, an entry session, a connect (what a server reports), a release's migration (renames, retracts what a release declares wrong, rewrites what a release changes in form), a matcher run, a sync; every file is generated by one, and every act names the software and version that performed it; nothing else a runtime mints is random (the subject's `urn:uuid` and a person's judgment are minted once by their owners) | the act is the contribution; the kinds are ours |
+| sync | git merge commit | an act the receiving device writes only when the merged set's hash, taken over every file but sync acts and snapshots, differs from the set its last snapshot names, naming the acts that arrived; a sync that brings nothing but another device's sync acts and snapshots writes nothing | borrowed; written on arrival rather than by a merger, and never for a no-op |
 | person's judgment | | keeps the IRI it arrived with, minted once by whoever made it | ours |
-| machine judgment | nanopub assertion | the claim named once, by maker, rule IRI, justification, member count, members sorted, and used sorted, where used is the version of each member and of each table the rule read, never the rule list's version; an assertion named by the rule list version and the claim, no time, so one per version per claim, however many runs reach it, pointing at the first run that did; a claim counts while its maker is trusted, its used versions are current, and it has an assertion under the rule list version the app uses | borrowed from nanopubs' claim and assertion split |
-| assertion, retraction by a release | | deterministic: an assertion from the rule list version and the claim; a release's retraction from the release, the claim and the rule it declares wrong; two devices on one release write one file | ours |
+| machine judgment | nanopub assertion | the claim named once, by the naming rule `Claim`, then the maker, the matcher's rule, the justification, the member count, the members sorted and used sorted, where used is the version of each member and of each table the matcher's rule read, never the rule list's version; a claim counts while its maker is trusted, its used versions are current, and it has an assertion under the rule list version the app uses | borrowed from nanopubs' claim and assertion split |
+| assertion, retraction by a release | | deterministic, with no time and no run: an assertion from the rule list version and the claim, so one per version per claim however many runs reach it, and the run that wrote it is known from its snapshot; a release's retraction from the release, the claim and the rule it declares wrong; two devices on one release write one file with one content | ours |
 | maker | PROV agents | the Cascade matcher is `jdg:CascadeMatcher`, one `prov:SoftwareAgent`, unversioned, for any runtime that follows `runtime/matcher.feature`; a matcher of another procedure is its own agent term in its own namespace; the runtime that ran is on the act, not the claim | borrowed; one agent for one procedure is ours |
-| retraction | nanopub `npx:retracts` | a `prov:Activity` that `prov:invalidated`; replacement by `dcterms:replaces` | diverges: npx's domains make a judgment an agent |
+| retraction | nanopub `npx:retracts` | a `prov:Activity` that `prov:invalidated`; replacement by `dcterms:replaces` | diverges: `npx:retracts` has domain `foaf:Agent`, making the retractor an agent and the retracted a nanopublication, where ours is an activity over any entity |
 | document, finding | RFC 6920; Web Annotation | bytes hashed; content hashed | borrowed |
 | view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; rebuilt with the view, cited by nothing outside it; carries every member's current state, with a lead per `currency.md` | ours |
-| snapshot | git tree | one node per act naming the set of files it left on that device; a sync's snapshot names the merged set, so two devices are in sync when their latest snapshots are equal | borrowed |
-| pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID; a judgment that leaves the pod carries it as the author, so a receiver can cite the person and reconcile their shares, and whether the author leaves at all is the share-time choice like every field; keying it adds nothing, since it is random already | diverges from Solid, which names a pod by its URL |
+| snapshot | git tree | one node per act naming the set of files it left on that device; a sync's snapshot names the merged set, and two devices are in sync when the sets their latest snapshots name, less sync acts and snapshots, are equal | borrowed |
+| pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID; a judgment that leaves the pod carries it as the author, so a receiver can cite the person and reconcile their shares, and whether the author leaves at all is the share-time choice like every field; keying it hides nothing more, since it is random already, and a per-receiver id is open below | diverges from Solid, which names a pod by its URL |
 | scheme | | declared per pod at creation: source URL as IRI, opaque hash (default), or keyed hash; what has no URL (C-CDA, entries, judgments) is hashed under all three; a test key for kits | ours |
 
 The rules are the vocabulary's: each a term with `rdfs:seeAlso` to its standard, a `.rq` where SPARQL can state it,
@@ -194,9 +196,10 @@ only the vocabulary; vectors are cross-checked because an implementation that mi
 
 - **FHIR's pair as the visible IRI.** The strongest case: it is what every FHIR client already resolves, and it is
   honest about where a record came from. It names the hospital in every shared view. Kept as a scheme a pod may choose.
-- **Business identifiers as name inputs.** The strongest case: FHIR says they are the basis for sameness across
-  systems, and they survive a server move. They are not unique across kinds, sources disagree on systems, and a
-  corrected identifier would rename the record.
+- **Business identifiers as name inputs for clinical records.** The strongest case: FHIR says they are the basis for
+  sameness across systems, and they survive a server move. They are not unique across kinds, sources disagree on
+  systems, and a corrected identifier would rename the record. An organisation is the exception: its NPI or OID is
+  the one identifier a document carries for it, so it names the organisation record (`republishing-sources.md`).
 - **A `urn:uuid` fullUrl or a minted id trusted across documents.** The strongest case: a deterministic converter
   repeats it, and a server's id is trusted the same way. Two of three converters mint a new one per run, the
   deterministic one gives one id to identical content in unrelated documents, and FHIR promises uniqueness within one

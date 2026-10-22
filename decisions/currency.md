@@ -39,10 +39,12 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
 - **A revision names the record's heads it saw** as `prov:wasRevisionOf`, one or several; a sync is a union of files.
 - **What an arrival writes.** A first arrival writes the record, its version and a revision. An arrival whose version
   is the current revision's writes nothing. An arrival whose (version, source version, source time) a revision already
-  holds writes nothing, whether or not it would become current. Otherwise a revision, with its heads. The held
+  holds writes nothing, whether or not it would become current; so does an arrival with no source time whose version
+  the record already holds, whatever stamp the held revision carries. Otherwise a revision, with its heads. The held
   state is skipped unconditionally because the only time it would become current is when a judgment removed the
-  revision that holds it, and writing it again would undo that judgment; a copy by another path that re-arrives with
-  no stamp, or with the stamp it had, is held already, and an arrival with a new stamp is new evidence and is written.
+  revision that holds it, and writing it again would undo that judgment; an unstamped copy of a held state is skipped
+  because it is a copy by another path of a state the pod has seen, and written it could win at step 4 on its
+  observation time alone; an arrival with a new stamp is new evidence and is written.
 - **Current is derived, never stored.** A Before orders one pair, not the set, so it removes rather than sorts, and
   the pick is a maximum over what remains:
   1. Remove every revision a counting Erroneous names.
@@ -54,7 +56,7 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
 
   A record with nothing left after step 1 has no current state and appears in no view, which is what its Erroneous
   judgments said; it remains in the pod with its history. Example: A is stamped 1 January by the server, B 1 February,
-  C is Apple's copy with no stamp. The clocks pick B. The person files "B before A"; step 2 removes B, step 3 keeps A
+  C is Apple's copy of a third state with no stamp, observed before B arrived. The clocks pick B. The person files "B before A"; step 2 removes B, step 3 keeps A
   and C, step 4 picks whichever the pod observed later. The ranked order is "latest source time, then latest
   observation": a Before removes before the clocks rank, never after, or the clocks would re-admit what the person
   ruled out.
@@ -69,8 +71,8 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
   3. Say what it is: the person enters the fact as their own record, a Same joins it to the group, and a person's own
      record leads any group it is in, by rule, since it is the one statement the person authored.
   No merged record is stored; the entry is computed from the members. "Latest observed member" is gone.
-- **Before** is a person's judgment, verdict Before, two revisions of one record in order, never two versions; machines
-  never make one; a Before outranks every clock, as Different outranks Same. Revisions, because a state recurs: a
+- **Before** is a person's judgment, verdict Before, two revisions in order, of one record or of two records a Same
+  joins (the lead above), never two versions; machines never make one; a Before outranks every clock, as Different outranks Same. Revisions, because a state recurs: a
   medication stopped and restarted is the running version twice, and a Before over versions filed while the drug was
   stopped would hide the real restart for good, with nothing on the review page because the clocks never got to decide
   it; over revisions the restart is a new revision the Before does not name, so it shows, and the cost is a refile
@@ -78,15 +80,17 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
   records can share one, so a Before over versions would need a record scope or leak; and because the finding below
   names an act and a record, which picks out exactly one revision, so the derived Befores are recomputable from the
   finding and the file set after a sync.
-- **A source that goes backwards raises one finding.** An import whose source reports a state older than that same
-  source's own earlier report writes no revision and files one finding on the act, naming the earlier act and each
-  record that went back. A copy by another path (Apple's copy of a hospital record, a document exported last year)
+- **A source that goes backwards raises a finding.** An import whose source reports a state older than that same
+  source's own earlier report files a finding on the act per earlier act it contradicts, naming it and each record
+  that went back; it writes no revision where the older state is held, and writes one where it never was, which the
+  ladder then ranks below the later state. A copy by another path (Apple's copy of a hospital record, a document exported last year)
   that is older than a direct pull files nothing: it is a stale copy, not a contradiction. The current pick is
   unchanged either way. One finding per source per earlier act it contradicts: a repeat pull of the rolled-back state
   files nothing new while that finding stands. A finding is something kept, so A11 stands: an import that kept nothing
   writes nothing.
-- **A Before over a finding** is one judgment: its member is the finding, and the derivation places each named record's
-  rolled-back revision before the ones it superseded, as a Same over two servers derives a join per record. Retracting
+- **A Before over a finding** is one judgment: its member is the finding, and the derivation places, for each named
+  record, the revision the earlier act wrote before the revision holding the older state the source now reports, so
+  the rollback wins, as a Same over two servers derives a join per record. Retracting
   it lifts every derived Before at once.
 - **The review page** lists every record whose current state the source's change time did not decide, with the state
   shown, the state not shown, and the reason ("observed later", or "no basis"); the fix is one Before. It lists each

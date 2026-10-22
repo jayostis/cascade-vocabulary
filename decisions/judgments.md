@@ -40,8 +40,8 @@ Sources: OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
 | judgment | nanopub assertion; SSSOM row | `jdg:Judgment`, a `prov:Collection` whose `prov:hadMember` are the records; one verdict | borrowed from PROV; the verdict is ours |
 | maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` | borrowed |
 | verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`; a Before is proposed in `currency.md` | ours: a belief with a maker, not an axiom, and Different wins over Same |
-| judgment over a source-level thing | | a Same whose members are servers or organisations, and a Before whose member is a rollback finding, each with a derivation to records, per `republishing-sources.md` and `currency.md` | ours: test 3 of the rubric |
-| reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, each `skos:broadMatch` a SEMAPV matching kind; `jdg:basis` for a person's | borrowed from SEMAPV at the kind level; the kinds are ours |
+| judgment over a source-level thing | | a Same whose members are servers or organisations, a Before whose member is a rollback finding, and a Same whose member is the finding of what a rule list version no longer reaches, each with a derivation to records or pairs, per `republishing-sources.md`, `currency.md` and `naming.md` | ours: test 3 of the rubric |
+| reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, the matching kinds each `skos:broadMatch` a SEMAPV kind (`jdg:Demographics` and the About bases have none); `jdg:basis` for a person's | borrowed from SEMAPV at the kind level; the kinds are ours |
 | confidence | SSSOM `confidence` | none; the justification kind stands in for it, and the review page lists the weaker kinds | diverged; see open |
 | retraction | `npx:retracts` | a `prov:Activity` that `prov:invalidated` the judgment, per `naming.md` | diverged: the pod's retraction is an act, not an agent's statement |
 | machine claim and assertion | nanopub assertion | a claim named once from its maker, rule, justification, members and used, and an assertion per rule list version that reaches it, per `naming.md` | borrowed split; ours in the parts |
@@ -58,8 +58,9 @@ Every judgment names its maker, and nothing else about a judgment depends on the
 | a maker whose answer its inputs do not determine: a model | its own agent term, with model and version | minted once, as a person's is, since no hash of inputs names an answer the inputs do not fix; its reason is text and its confidence a number | the model's version, on the judgment | the pod trusts that maker and version |
 
 The pod's trusted makers are a list the person controls: installing an app adds its maker, removing it drops it, and
-a dropped maker's judgments stop counting by derivation with nothing retracted. Makers combine by kind, never by
-who: a Different from any maker outranks a Same from any other, a person outranks every machine, and a machine
+a dropped maker's judgments stop counting by derivation with nothing retracted. Makers combine by who first, then
+by kind: a person outranks every machine, so a person's Same stands over a machine's Different, since the person has
+seen the objection and overridden it; among machines a Different outranks a Same from any maker; and a machine
 judgment on weaker grounds is surfaced by the rubric's fourth test, which for a model means its confidence. An app's
 rule may declare itself `skos:broadMatch` a vocabulary justification kind, as the vocabulary's own rules do SEMAPV,
 so a view can treat "the app's lot-number rule" as a kind of shared-identifier join without knowing the rule. Where
@@ -75,7 +76,8 @@ of them.
   it syncs) or the device's.
 - A model's judgment: the term for its confidence, and whether a model asked twice about one pair, giving two
   answers, files two judgments or the later supersedes.
-- Whether a Before verdict is a verdict of `jdg:Judgment` or a kind of its own.
+- Whether a Before verdict is a verdict of `jdg:Judgment` or a kind of its own, now that it orders revisions of one
+  record and, for a lead, of two records a Same joins.
 - An acknowledgement: a person's "seen, do nothing" on a finding, so a rollback finding clears from the review page
   while the later states stay. No verdict says it today; whether it is a verdict over the finding, or a mark on the
   finding outside `jdg:`.
@@ -84,7 +86,8 @@ of them.
 - A verdict over an act saying its observation times are known wrong, per `currency.md`: its name, and whether it
   carries an offset or only discounts.
 - A declined act leaves no finding, because no act generated one; whether a refusal needs a home.
-- Whether `jdg:currentlySame` survives the derived joins in `republishing-sources.md`.
+- How `jdg:currentlySame` is amended for the derived joins, or whether it survives them; `republishing-sources.md`
+  leaves the same question open.
 - What of this note a shared view may carry: a judgment names records a view may not show.
 
 ## What would change our mind
