@@ -44,8 +44,19 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
   none; of those, the greatest `rec:asOf`; then the least IRI, which is arbitrary and said so.
 - **Before** is a person's judgment, verdict Before, two revisions of one record in order; machines never make one;
   a Before outranks every clock, as Different outranks Same.
+- **A source that goes backwards raises one finding.** An import whose source reports a state older than that same
+  source's own earlier report writes no revision and files one finding on the act, naming the earlier act and each
+  record that went back. A copy by another path (Apple's copy of a hospital record, a document exported last year)
+  that is older than a direct pull files nothing: it is a stale copy, not a contradiction. The current pick is
+  unchanged either way. A finding is something kept, so A11 stands: an import that kept nothing writes nothing.
+- **A Before over a finding** is one judgment: its member is the finding, and the derivation places each named record's
+  rolled-back revision before the ones it superseded, as a Same over two servers derives a join per record. Retracting
+  it lifts every derived Before at once.
 - **The review page** lists every record whose current state the source's change time did not decide, with the state
-  shown, the state not shown, and the reason ("observed later", or "no basis"); the fix is one Before.
+  shown, the state not shown, and the reason ("observed later", or "no basis"); the fix is one Before. It lists each
+  rollback finding as one line, "this source reports N records at states older than it reported on that date",
+  expanding to the records, with three answers: a Before over the finding; an acknowledgement, so the later states stay
+  and the finding clears; or a Before per record from the expanded list.
 - **Erroneous** is for a state that is wrong, and hides it from every view; a stale state is not wrong and stays.
 
 ## Why
@@ -63,7 +74,10 @@ is arbitrary. A pod is a mirror of sources it does not author, so git's open for
 cannot judge every pair, and the source's change time can. Where it cannot, a person outranks the clocks with a
 Before, which states a fact the clocks were only inferring and composes across three states where a verdict on one
 would not. Because current is derived and never stored, the pod cannot record that it guessed, so the review page is
-the confession. Heads rather than a line let two offline devices both import a correction and merge by union; a
+the confession. A rollback is noticed by the same test that keeps a stale copy quiet: a source contradicting its own
+earlier report is one fact, so it is one finding and, if the person agrees with the source, one Before with the
+per-record orderings derived, where a copy that is merely behind is what the ladder already expects. The pod keeps
+showing the later state because a hospital that restores a backup has usually lost data it will re-enter. Heads rather than a line let two offline devices both import a correction and merge by union; a
 maximum over the set needs no walk of the line.
 
 ## Alternatives that lost
@@ -93,10 +107,11 @@ maximum over the set needs no walk of the line.
 - The stamp-less copy: revisions with no source time are candidates beside those at the latest time, so a stale copy
   with its `meta` stripped can become current on `rec:asOf` alone. Lean: an arrival with no source time whose version
   the record already holds writes nothing; a stale copy of a state the pod never saw is still open.
-- A server rollback keeping old timestamps: its content and source version are already held, so nothing is written
-  and nothing is shown; a rollback that re-stamps follows the server on its own. Whether the silent case raises a
-  finding, so the review page can list it. Lean: yes.
-- An import that kept nothing writes nothing (A11). Stands if a rollback's finding counts as keeping something.
+- A rollback that re-stamps its change times follows the server on its own and raises nothing; whether that is
+  acceptable, since the person is not told.
+- A source that no longer returns a record at all, as against returning an older state: nothing contradicts the
+  record the pod holds, so no finding fires and the record stays current. Source deletion is a question of its own.
+- The acknowledgement that clears a finding has no verdict today; it is open in `judgments.md`.
 - The latest member of a Same group is chosen by `rec:asOf`, so a re-publisher's stale copy pulled later shows over
   the origin's correction. Lean: the group's rule follows this ladder, and a Before may order revisions of any two
   records a Same joins.
