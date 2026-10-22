@@ -38,7 +38,10 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
 - **A revision names the record's heads it saw** as `prov:wasRevisionOf`, one or several; a sync is a union of files.
 - **What an arrival writes.** A first arrival writes the record, its version and a revision. An arrival whose version
   is the current revision's writes nothing. An arrival whose (version, source version, source time) a revision already
-  holds, and which would not become current, writes nothing. Otherwise a revision, with its heads.
+  holds writes nothing, whether or not it would become current. Otherwise a revision, with its heads. The held
+  state is skipped unconditionally because the only time it would become current is when a judgment removed the
+  revision that holds it, and writing it again would undo that judgment; a copy by another path that re-arrives with
+  no stamp, or with the stamp it had, is held already, and an arrival with a new stamp is new evidence and is written.
 - **Current is derived, never stored.** A Before orders one pair, not the set, so it removes rather than sorts, and
   the pick is a maximum over what remains:
   1. Remove every revision a counting Erroneous names.
@@ -57,13 +60,22 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
 - **A view materialises the pick.** Current changes only when an act writes, so a view rebuilt with the act holds each
   entry's current revision, and the act's snapshot says whether a view is stale; a read is a lookup, and two devices at
   one snapshot rebuild one view.
-- **Before** is a person's judgment, verdict Before, two revisions of one record in order; machines never make one;
-  a Before outranks every clock, as Different outranks Same.
+- **Before** is a person's judgment, verdict Before, two revisions of one record in order, never two versions; machines
+  never make one; a Before outranks every clock, as Different outranks Same. Revisions, because a state recurs: a
+  medication stopped and restarted is the running version twice, and a Before over versions filed while the drug was
+  stopped would hide the real restart for good, with nothing on the review page because the clocks never got to decide
+  it; over revisions the restart is a new revision the Before does not name, so it shows, and the cost is a refile
+  when a fresh stamp arrives, which is new evidence. Also because a version is hashed from content alone and two
+  records can share one, so a Before over versions would need a record scope or leak; and because the finding below
+  names an act and a record, which picks out exactly one revision, so the derived Befores are recomputable from the
+  finding and the file set after a sync.
 - **A source that goes backwards raises one finding.** An import whose source reports a state older than that same
   source's own earlier report writes no revision and files one finding on the act, naming the earlier act and each
   record that went back. A copy by another path (Apple's copy of a hospital record, a document exported last year)
   that is older than a direct pull files nothing: it is a stale copy, not a contradiction. The current pick is
-  unchanged either way. A finding is something kept, so A11 stands: an import that kept nothing writes nothing.
+  unchanged either way. One finding per source per earlier act it contradicts: a repeat pull of the rolled-back state
+  files nothing new while that finding stands. A finding is something kept, so A11 stands: an import that kept nothing
+  writes nothing.
 - **A Before over a finding** is one judgment: its member is the finding, and the derivation places each named record's
   rolled-back revision before the ones it superseded, as a Same over two servers derives a join per record. Retracting
   it lifts every derived Before at once.
@@ -112,13 +124,19 @@ maximum over the set needs no walk of the line.
   Before composes and states a fact.
 - **Currency as a filed machine judgment.** The strongest case: honest provenance of every pick. A file per record
   per import, for what is mostly not a judgment at all: the source's change time is what the source said.
+- **Before over versions.** The strongest case: a rollback is a claim about states, and a stale copy of the
+  superseded state re-arriving by another path would be covered without a refile. The re-arrival is already held and
+  writes nothing, so the case never occurs; and the claim is timeless where states recur, so it hides a genuine
+  restart silently. Arbitrated on #130 after the two sides tied.
+- **Skipping a held state only when it would not become current.** The strongest case: a held state that would win
+  is new information. It wins only because a judgment removed the revision holding it, so the write undoes the
+  judgment; everything else that wins has a new stamp.
 
 ## Still open
 
-- Whether Before orders versions or revisions: a revision may repeat an earlier version, so the two differ.
-- The stamp-less copy: revisions with no source time are candidates beside those at the latest time, so a stale copy
-  with its `meta` stripped can become current on `rec:asOf` alone. Lean: an arrival with no source time whose version
-  the record already holds writes nothing; a stale copy of a state the pod never saw is still open.
+- A stamp-less copy of a state the pod never saw is written with no source time, stands beside the latest-stamped
+  revision at step 3, and can win at step 4 on `rec:asOf`; the review page lists it as "observed later". Whether that
+  listing is enough.
 - A rollback that re-stamps its change times follows the server on its own and raises nothing; whether that is
   acceptable, since the person is not told.
 - A source that no longer returns a record at all, as against returning an older state: nothing contradicts the
