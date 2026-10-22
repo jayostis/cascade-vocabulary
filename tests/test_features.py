@@ -1,15 +1,12 @@
 """Every feature file is Gherkin a standard parser reads, every step it takes is one runtime/steps.md lists, and the
 scripted input it names is whole."""
 
-import base64
-import hashlib
 import re
 from functools import cache
 
 import pytest
 from gherkin.parser import Parser
 from gherkin.pickles.compiler import Compiler
-
 from rdflib import Variable
 from rdflib.namespace import RDF
 from rdflib.plugins.sparql import prepareQuery
@@ -18,6 +15,7 @@ from rdflib.plugins.sparql.parserutils import CompValue
 
 from contract import KITS, PROV, QUERIES, REC, ROOT
 from engines import parsed
+from naming import ni_name
 
 FEATURES = sorted([*ROOT.glob("runtime/*.feature"), *ROOT.glob("conformance/*/*.feature")])
 TIME = re.compile(r" on (\d{4}-\d{2}-\d{2}) at (\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?)(?: \(|$)")
@@ -123,10 +121,6 @@ def test_each_planted_case_a_kit_names_is_a_rule_of_it_with_an_example():
                            if found and any("scenario" in inner for inner in child["rule"]["children"])}
     assert all(planted.values()), planted
     assert shown == planted
-
-
-def ni_name(octets):
-    return "ni:///sha-256;" + base64.urlsafe_b64encode(hashlib.sha256(octets).digest()).decode().rstrip("=")
 
 
 def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_guards_on_its_kind_but_those_examples_break():

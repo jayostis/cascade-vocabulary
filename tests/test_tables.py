@@ -1,20 +1,19 @@
 """Every table row conforms to its kind's shape and is named by N11, the shapes refuse broken rows, and a table version is
 named by N12 (runtime/naming.feature)."""
 
-import base64
-import hashlib
 import json
 import re
 from functools import cache
 
 import pytest
 from pyshacl import validate
-from rdflib import BNode, Graph, Literal, Namespace, URIRef
+from rdflib import Graph, Namespace, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import OWL, RDF, SH, SKOS, XSD
+from rdflib.namespace import OWL, RDF, SH, SKOS
 
 from contract import QUERIES, REC, ROOT
 from engines import parsed
+from naming import content, table_version_name
 from test_naming import record_name
 
 PROV = Namespace("http://www.w3.org/ns/prov#")
@@ -320,47 +319,14 @@ def test_a_conversion_row_broken_otherwise_does_not_also_say_its_form_is_wrong(r
     assert not any("with dct:isReplacedBy" in m for m in said), said
 
 
-ESCAPES = {"\\": "\\\\", '"': '\\"', "\b": "\\b", "\t": "\\t", "\n": "\\n", "\f": "\\f", "\r": "\\r"}
-
-
-def canonical(term):
-    """A term in canonical N-Triples, as RDFC-1.0 writes it for a graph with no blank node."""
-    if isinstance(term, BNode):
-        raise ValueError("N12 names no version whose rows hold a blank node")
-    if isinstance(term, URIRef):
-        return f"<{term}>"
-    escaped = "".join(ESCAPES.get(c) or (f"\\u{ord(c):04X}" if c < " " or c == "\x7f" else c) for c in str(term))
-    if term.language:
-        return f'"{escaped}"@{term.language}'
-    if term.datatype is not None and term.datatype != XSD.string:
-        return f'"{escaped}"^^<{term.datatype}>'
-    return f'"{escaped}"'
-
-
-def test_canonical_escapes_a_literal_as_rdfc_writes_it_and_refuses_a_blank_node():
-    assert canonical(Literal('a"\\\b\t\n\f\r\x01\x7fé')) == r'"a\"\\\b\t\n\f\r\u0001\u007Fé"'
-    with pytest.raises(ValueError, match="blank node"):
-        canonical(BNode())
-
-
-def version_name(triples):
-    lines = sorted(" ".join(map(canonical, triple)) + " .\n" for triple in triples)
-    digest = hashlib.sha256("".join(lines).encode()).digest()
-    return "ni:///sha-256;" + base64.urlsafe_b64encode(digest).decode().rstrip("=")
-
-
 def test_each_table_version_is_named_by_n12_from_its_series_the_version_it_revises_and_its_rows():
-    this = URIRef("urn:cascade:this-version")
     cases = json.loads((VERSIONS / "cases.json").read_text(encoding="utf-8"))
     named = []
     for case in cases:
-        triples = {(this, PROV.specializationOf, URIRef(case["series"]))}
-        if case["revises"]:
-            triples.add((this, PROV.wasRevisionOf, URIRef(case["revises"])))
+        rows = set()
         if case["rows"]:
-            rows = parsed(VERSIONS / case["rows"])
-            assert messages(REC[case["kind"]], rows) == set(), case["rows"]
-            triples |= set(rows)
-        named.append(version_name(triples))
+            assert messages(REC[case["kind"]], parsed(VERSIONS / case["rows"])) == set(), case["rows"]
+            rows = content((VERSIONS / case["rows"]).read_text(encoding="utf-8"), "turtle")
+        named.append(table_version_name(case["series"], case["revises"] or None, rows))
     assert named == [case["name"] for case in cases]
     assert len(set(named)) == len(cases)
