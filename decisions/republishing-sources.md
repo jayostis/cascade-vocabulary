@@ -3,7 +3,9 @@
 Status: draft, 2026-10-21, from the review on #130. Adds server and organisation records, a connect act, a Same over
 servers, organisations and documents with a derivation each, and within-organisation matcher rules; changes M2
 (organisations are not the subject's records) and M1's triggers, and amends `jdg:currentlySame`. Names are
-`naming.md`; which revision is current is `currency.md`.
+`naming.md`, whose rubric this note applies: a re-published record is a new definition (test 1), its join is a
+judgment (test 2), one per server, organisation or document pair (test 3); which revision is current is
+`currency.md`; what a judgment is and borrows is `judgments.md`.
 
 ## Question
 

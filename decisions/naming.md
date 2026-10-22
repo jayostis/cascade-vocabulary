@@ -3,7 +3,8 @@
 Status: draft, 2026-10-21, from the review on #130. Replaces N1's owner, N2's inputs, N6's constant, N7's "nothing
 else" (five kinds of act are random now) and A2's single parent; built by #193 then #191, one re-mint. Which revision
 is current is `currency.md`; how a moved, switched or re-issued source's records are joined is
-`republishing-sources.md`. Recipe detail (constant, escaping, bit layout, canonical form) lives in the rule terms and
+`republishing-sources.md`; what a judgment is and borrows is `judgments.md`. The rubric below is the one the four
+notes share. Recipe detail (constant, escaping, bit layout, canonical form) lives in the rule terms and
 `runtime/naming.feature`.
 
 ## Question
@@ -12,6 +13,23 @@ A pod holds records from several hospitals, versions of each, the pod's own revi
 person's judgments and a machine's, findings, tables and views. It has no server of record, lives on more than one
 device, and shows views the person may share. Each thing needs a name two runtimes give alike, that it keeps, that
 nobody can forge, and that says nothing a shared view should not.
+
+## Rubric
+
+Every rule in this note, in `currency.md`, in `republishing-sources.md` and in `judgments.md` is one input run through
+four tests.
+
+1. **A name is identity by definition, not by inference.** A thing is named by what its source says identifies it, and
+   nothing past that: a server's record by that server's address, type and id; an entry by its document and position.
+   Two things share a name only where the source itself gave them one definition.
+2. **Everything past the definition is a judgment.** That two records are one fact, that two servers are one hospital,
+   that two documents are editions: each is a belief, filed with its reason and its maker, so that it can be wrong and
+   can be retracted without touching a name.
+3. **One judgment per fact.** Where one fact joins thousands of records, a moved server or a merged hospital, it is
+   said once and the joins are derived; never a judgment per record.
+4. **A machine's judgment is reviewable in proportion to its confidence.** A join from a shared business identifier
+   goes through; a join from a code and a date, or a pick between revisions no source time decided, is listed for a
+   person, whose own judgment outranks the machine's.
 
 ## What others do
 
@@ -49,8 +67,9 @@ https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-632855780
 
 ## Choice
 
-Two tests decide every input: two things never share a name, and a name never changes for one source at one address.
-What a source states and can be relied on is hashed; anything else is a judgment, never a name.
+Each row below is the rubric's first test applied to one kind of thing: what its source says identifies it, and so
+what is hashed. Whatever failed that test, the server's self-asserted base, a generator's `urn:uuid`, a version id,
+appears here only as evidence for a judgment.
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|

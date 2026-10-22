@@ -2,7 +2,9 @@
 
 Status: draft, 2026-10-21, from the review on #130. Replaces A3, A4's "the one the record is at", A5's "after the
 record's last one", the single line of `prov:wasRevisionOf`, `derivations/current-revisions.rq`, and M1's and M3's
-reliance on that line; adds `rec:asOf`, a Before verdict and a review question. Names are `naming.md`.
+reliance on that line; adds `rec:asOf`, a Before verdict and a review question. Names are `naming.md`, whose rubric
+this note applies: the source's change time is the definition (test 1), a Before is a judgment past it (test 2), and
+the review page is test 4.
 
 ## Question
 
