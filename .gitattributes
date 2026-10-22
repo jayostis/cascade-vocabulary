@@ -1,3 +1,6 @@
 # Text files are stored and checked out with LF line endings on every platform,
 # so the bytes a Linux Bridge reads are the bytes a Windows editor wrote.
 * text=auto eol=lf
+
+# Documents are named by their bytes, so a checkout must never rewrite them.
+tests/vectors/naming/documents/* -text

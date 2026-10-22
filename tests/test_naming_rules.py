@@ -1,5 +1,6 @@
 """Every naming vector under tests/vectors/naming/ is reproduced by tests/naming.py, and independently of it by its
-rule's query on Oxigraph or, for a content name, by Oxigraph's RDFC-1.0 and its SHA256."""
+rule's query on Oxigraph, by one query over its flattened inputs for a list rule, or, for a content name, by Oxigraph's
+RDFC-1.0 and its SHA256."""
 
 import base64
 import re
@@ -7,9 +8,10 @@ from dataclasses import dataclass
 from functools import cache
 
 import pytest
-from pyoxigraph import CanonicalizationAlgorithm, Dataset, RdfFormat, Store, Variable, parse, serialize
+from pyoxigraph import BlankNode, CanonicalizationAlgorithm, Dataset, NamedNode, RdfFormat, Store, Triple, Variable
 from pyoxigraph import Literal as OxigraphLiteral
-from rdflib import BNode, Graph, Namespace, URIRef
+from pyoxigraph import parse, serialize
+from rdflib import BNode, Graph, Namespace
 from rdflib.collection import Collection
 from rdflib.namespace import RDF
 
@@ -75,6 +77,12 @@ def base_urls():
             for entry in entries if (entry, RDF.type, BRIDGE.BaseUrlNormalisationTest) in graph]
 
 
+def refused_base_urls():
+    graph, entries = manifest()
+    return [(str(graph.value(entry, MF.name)), str(graph.value(graph.value(entry, MF.action), CASCADE.serverBaseUrl)))
+            for entry in entries if (entry, RDF.type, BRIDGE.BaseUrlRefusalTest) in graph]
+
+
 def reference_name(vector):
     if vector.rule == "DocumentNamingRule":
         return naming.document_name(vector.input.read_bytes())
@@ -104,6 +112,31 @@ def ni_from_hex(hexed):
 def test_every_vector_of_a_rule_with_a_query_is_what_the_query_gives_on_oxigraph(vector):
     substitutions = {Variable(f"input{n}"): OxigraphLiteral(value) for n, value in enumerate(vector.inputs, 1)}
     solutions = Store().query(vector.query.read_text(encoding="utf-8"), substitutions=substitutions)
+    assert [solution["name"].value for solution in solutions] == [vector.expected]
+
+
+def flattened(inputs):
+    return [part for item in inputs
+            for part in ([str(len(set(item))), *sorted(set(item))] if isinstance(item, tuple) else [item])]
+
+
+def v8_query(rule, count):
+    escaped = "".join(f', "|", REPLACE(REPLACE(?input{n}, "%", "%25"), "\\\\|", "%7C")' for n in range(1, count + 1))
+    projected = " ".join(f"?input{n}" for n in range(1, count + 1))
+    return f"""SELECT {projected} ?name WHERE {{
+      BIND (SHA256(CONCAT("{naming.NAMESPACE}|{naming.CASCADE}{rule}"{escaped})) AS ?hash)
+      BIND (REPLACE(REPLACE(REPLACE(REPLACE(SUBSTR(?hash, 17, 1), "[048c]", "8"), "[159d]", "9"), "[26ae]", "a"),
+                    "[37bf]", "b") AS ?variant)
+      BIND (IRI(CONCAT("urn:uuid:", SUBSTR(?hash, 1, 8), "-", SUBSTR(?hash, 9, 4), "-8", SUBSTR(?hash, 14, 3), "-",
+                       ?variant, SUBSTR(?hash, 18, 3), "-", SUBSTR(?hash, 21, 12))) AS ?name)
+    }}"""
+
+
+@pytest.mark.parametrize("vector", [v for v in vectors() if v.query is None and v.input is None], ids=str)
+def test_every_vector_of_a_list_rule_is_what_one_query_over_its_flattened_inputs_gives_on_oxigraph(vector):
+    inputs = flattened(vector.inputs)
+    substitutions = {Variable(f"input{n}"): OxigraphLiteral(value) for n, value in enumerate(inputs, 1)}
+    solutions = Store().query(v8_query(vector.rule, len(inputs)), substitutions=substitutions)
     assert [solution["name"].value for solution in solutions] == [vector.expected]
 
 
@@ -145,9 +178,10 @@ def test_every_base_url_vector_is_normalised_as_rfc_3986_section_6_says(name, gi
     assert naming.normalised_base_url(given) == expected
 
 
-def test_a_base_url_carrying_userinfo_is_refused():
-    with pytest.raises(ValueError, match="userinfo"):
-        naming.server_name("https://user:secret@fhir.example.org/r4")
+@pytest.mark.parametrize("name, given", refused_base_urls(), ids=[case[0] for case in refused_base_urls()])
+def test_every_refused_base_url_vector_names_nothing(name, given):
+    with pytest.raises(ValueError):
+        naming.server_name(given)
 
 
 def test_a_code_joins_its_stem_as_encode_for_uri_writes_it():
@@ -159,4 +193,12 @@ def test_a_code_joins_its_stem_as_encode_for_uri_writes_it():
 
 def test_a_content_name_refuses_a_blank_node():
     with pytest.raises(ValueError, match="blank node"):
-        naming.version_name({(BNode(), URIRef("urn:x:p"), URIRef("urn:x:o"))})
+        naming.version_name({Triple(BlankNode(), NamedNode("urn:x:p"), NamedNode("urn:x:o"))})
+
+
+def test_content_keeps_each_turtle_number_as_written():
+    triples = naming.content("<urn:x:s> <urn:x:p> 007, +5, .5, -0 .", "turtle")
+    integer, decimal = "http://www.w3.org/2001/XMLSchema#integer", "http://www.w3.org/2001/XMLSchema#decimal"
+    assert naming.canonical_nquads(triples) == "".join(sorted(
+        f'<urn:x:s> <urn:x:p> "{form}"^^<{kind}> .\n'
+        for form, kind in [("007", integer), ("+5", integer), (".5", decimal), ("-0", integer)]))
