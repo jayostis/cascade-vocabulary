@@ -13,7 +13,7 @@ from rdflib.namespace import OWL, RDF, SH, SKOS
 
 from contract import QUERIES, REC, ROOT
 from engines import parsed
-from naming import table_version_name
+from naming import content, table_version_name
 from test_naming import record_name
 
 PROV = Namespace("http://www.w3.org/ns/prov#")
@@ -325,8 +325,8 @@ def test_each_table_version_is_named_by_n12_from_its_series_the_version_it_revis
     for case in cases:
         rows = set()
         if case["rows"]:
-            rows = parsed(VERSIONS / case["rows"])
-            assert messages(REC[case["kind"]], rows) == set(), case["rows"]
-        named.append(table_version_name(case["series"], case["revises"] or None, set(rows)))
+            assert messages(REC[case["kind"]], parsed(VERSIONS / case["rows"])) == set(), case["rows"]
+            rows = content((VERSIONS / case["rows"]).read_text(encoding="utf-8"), "turtle")
+        named.append(table_version_name(case["series"], case["revises"] or None, rows))
     assert named == [case["name"] for case in cases]
     assert len(set(named)) == len(cases)

@@ -6,22 +6,21 @@ import hashlib
 import re
 from urllib.parse import urlsplit, urlunsplit
 
-import rdflib
-from rdflib import BNode, Graph, URIRef
-from rdflib.namespace import XSD
+from pyoxigraph import BlankNode, NamedNode, RdfFormat, Triple, parse
 
 CASCADE = "https://ns.cascadeprotocol.org/cascade#"
 NAMESPACE = "90c60849-c5ef-4ca6-bfb8-8662bd07d2b5"
 PROV = "http://www.w3.org/ns/prov#"
+XSD_STRING = "http://www.w3.org/2001/XMLSchema#string"
 
 RULES = {local: CASCADE + local for local in (
     "RecordFromServerNamingRule", "RecordFromDocumentNamingRule", "RecordFromCcdaNamingRule",
-    "ContainedRecordNamingRule", "EnteredRecordNamingRule", "VersionNamingRule", "RevisionNamingRule",
+    "RecordFromCcdaWithoutIdNamingRule", "ContainedRecordNamingRule", "EnteredRecordNamingRule", "VersionNamingRule", "RevisionNamingRule",
     "DocumentNamingRule", "FindingNamingRule", "TableRowNamingRule", "TableVersionNamingRule", "ViewEntryNamingRule",
     "SnapshotNamingRule", "ServerNamingRule", "OrganizationNamingRule", "ClaimNamingRule", "AssertionNamingRule",
     "RetractionNamingRule")}
 
-THIS_VERSION = URIRef("urn:cascade:this-version")
+THIS_VERSION = NamedNode("urn:cascade:this-version")
 
 
 def escaped(text):
@@ -54,12 +53,18 @@ UNRESERVED = re.compile(r"[A-Za-z0-9\-._~]")
 DEFAULT_PORTS = {"http": "80", "https": "443"}
 
 
-def _percent_normalised(text):
-    def one(match):
-        character = chr(int(match.group(1), 16))
-        return character if UNRESERVED.fullmatch(character) else "%" + match.group(1).upper()
+def _percent_normalised(text, lower=False):
+    """Every percent-encoded unreserved character decoded and every other encoding's hex digits in upper case; with
+    lower, every other character in lower case too, an encoding's hex digits kept upper (RFC 3986 §6.2.2.1)."""
+    def one(piece):
+        if not re.fullmatch(r"%[0-9A-Fa-f]{2}", piece):
+            return piece.lower() if lower else piece
+        character = chr(int(piece[1:], 16))
+        if UNRESERVED.fullmatch(character):
+            return character.lower() if lower else character
+        return piece.upper()
 
-    return re.sub(r"%([0-9A-Fa-f]{2})", one, text)
+    return "".join(one(piece) for piece in re.split(r"(%[0-9A-Fa-f]{2})", text))
 
 
 def _without_dot_segments(path):
@@ -93,14 +98,24 @@ def _without_dot_segments(path):
 
 def normalised_base_url(url):
     """RFC 3986 §6.2.2 and §6.2.3: scheme and host in lower case, percent-encodings in upper case and unreserved
-    characters decoded, dot segments removed, the scheme's default port dropped; then every trailing / removed. A URL
-    carrying userinfo is refused: a credential is never a name input."""
+    characters decoded, dot segments removed, the scheme's default port dropped; then every trailing / removed. Refused
+    with ValueError: userinfo, since a credential is never a name input; a control character or space, which a URL
+    parser would otherwise drop; no scheme or no host; a port that is not digits."""
+    if re.search(r"[\x00-\x20\x7f]", url):
+        raise ValueError(f"a base URL holding a control character or space names nothing: {url!r}")
     parts = urlsplit(url)
+    if not parts.scheme:
+        raise ValueError(f"a base URL with no scheme or no host names nothing: {url}")
     if "@" in parts.netloc:
         raise ValueError(f"a base URL carrying userinfo names nothing: {url}")
     scheme = parts.scheme.lower()
-    host, port = re.fullmatch(r"(\[[^\]]*\]|[^:]*)(?::(\d*))?", parts.netloc).groups(default="")
-    host = _percent_normalised(host).lower()
+    authority = re.fullmatch(r"(\[[^\]]*\]|[^:]*)(?::(\d*))?", parts.netloc)
+    if authority is None:
+        raise ValueError(f"a base URL whose port is not digits names nothing: {url}")
+    host, port = authority.groups(default="")
+    if not host:
+        raise ValueError(f"a base URL with no scheme or no host names nothing: {url}")
+    host = _percent_normalised(host, lower=True)
     netloc = host if port in ("", DEFAULT_PORTS.get(scheme)) else f"{host}:{port}"
     path = _without_dot_segments(_percent_normalised(parts.path)).rstrip("/")
     return urlunsplit((scheme, netloc, path, parts.query, parts.fragment))
@@ -130,8 +145,15 @@ def record_from_ccda_name(custodian, patient, entry):
     return v8_name("RecordFromCcdaNamingRule", [*custodian, *patient, *entry])
 
 
+def record_from_ccda_without_id_name(custodian, patient, record_class, key, members):
+    """An entry with no id, named inside its custodian and patient scopes: its record class's IRI, its key
+    fingerprint, and its members fingerprint where it has no key; "" for each it lacks."""
+    return v8_name("RecordFromCcdaWithoutIdNamingRule", [*custodian, *patient, record_class, key, members])
+
+
 def contained_record_name(container, container_source_version, contained_id):
-    """container_source_version is the version id the source gives the container, "" where it gives none."""
+    """container_source_version is the version id the source gives the container (FHIR meta.versionId); where it
+    gives none, the container's meta.lastUpdated as written; where it gives neither, ""."""
     return v8_name("ContainedRecordNamingRule", [container, container_source_version, contained_id])
 
 
@@ -170,9 +192,9 @@ def table_row_name(source, predicate, target, panel_sequence=None):
     return v8_name("TableRowNamingRule", [source, predicate, target, *extra])
 
 
-def snapshot_name(first_parent, merged_parents, set_hash):
-    """first_parent is None on a writer's first snapshot."""
-    return v8_name("SnapshotNamingRule", [*counted([] if first_parent is None else [first_parent]),
+def snapshot_name(act, first_parent, merged_parents, set_hash):
+    """The snapshot of one act; first_parent is None on a writer's first snapshot."""
+    return v8_name("SnapshotNamingRule", [act, *counted([] if first_parent is None else [first_parent]),
                                           *counted(merged_parents), set_hash])
 
 
@@ -189,6 +211,8 @@ def named(rule, inputs):
         "RecordFromServerNamingRule": lambda: record_from_server_name(*inputs),
         "RecordFromDocumentNamingRule": lambda: record_from_document_name(*inputs),
         "RecordFromCcdaNamingRule": lambda: record_from_ccda_name(inputs[0:2], inputs[2:4], inputs[4:6]),
+        "RecordFromCcdaWithoutIdNamingRule": lambda: record_from_ccda_without_id_name(inputs[0:2], inputs[2:4],
+                                                                                      *inputs[4:]),
         "ContainedRecordNamingRule": lambda: contained_record_name(*inputs),
         "EnteredRecordNamingRule": lambda: entered_record_name(*inputs),
         "ServerNamingRule": lambda: server_name(*inputs),
@@ -198,7 +222,7 @@ def named(rule, inputs):
         "AssertionNamingRule": lambda: assertion_name(*inputs),
         "RetractionNamingRule": lambda: retraction_name(*inputs),
         "TableRowNamingRule": lambda: table_row_name(*inputs),
-        "SnapshotNamingRule": lambda: snapshot_name(*(inputs[0] or [None]), inputs[1], inputs[2]),
+        "SnapshotNamingRule": lambda: snapshot_name(inputs[0], *(inputs[1] or [None]), inputs[2], inputs[3]),
         "ViewEntryNamingRule": lambda: view_entry_name(*inputs),
     }
     return one_of[rule]()
@@ -208,33 +232,35 @@ ECHAR = {"\\": "\\\\", '"': '\\"', "\b": "\\b", "\t": "\\t", "\n": "\\n", "\f": 
 
 
 def canonical(term):
-    """A term as RDFC-1.0's canonical N-Quads write it, for a graph with no blank node."""
-    if isinstance(term, BNode):
+    """A pyoxigraph term as RDFC-1.0's canonical N-Quads write it, for a graph with no blank node; Oxigraph holds a language tag
+    in lower case, since BCP 47 tags are case-insensitive."""
+    if isinstance(term, BlankNode):
         raise ValueError("a content name is never taken over a blank node")
-    if isinstance(term, URIRef):
-        return f"<{term}>"
-    text = "".join(ECHAR.get(c) or (f"\\u{ord(c):04X}" if c < " " or c == "\x7f" else c) for c in str(term))
+    if isinstance(term, NamedNode):
+        return f"<{term.value}>"
+    text = "".join(ECHAR.get(c) or (f"\\u{ord(c):04X}" if c < " " or c == "\x7f" else c) for c in term.value)
     if term.language:
         return f'"{text}"@{term.language}'
-    if term.datatype is not None and term.datatype != XSD.string:
-        return f'"{text}"^^<{term.datatype}>'
+    if term.datatype.value != XSD_STRING:
+        return f'"{text}"^^<{term.datatype.value}>'
     return f'"{text}"'
 
 
+FORMATS = {"nt": RdfFormat.N_TRIPLES, "turtle": RdfFormat.TURTLE}
+
+
 def content(text, format="nt"):
-    """The triples of an RDF text with every literal's lexical form as written: rdflib would otherwise normalise
-    "007"^^xsd:integer to "7" on parsing, and RDFC-1.0 hashes the form written."""
-    kept = rdflib.NORMALIZE_LITERALS
-    rdflib.NORMALIZE_LITERALS = False
-    try:
-        return set(Graph().parse(data=text, format=format))
-    finally:
-        rdflib.NORMALIZE_LITERALS = kept
+    """The triples of an N-Triples or Turtle text as Oxigraph parses them, every literal's lexical form as written:
+    rdflib rewrites Turtle's 007, +5, .5 and -0 even with its literal normalisation off, and RDFC-1.0 hashes the form
+    written."""
+    return {Triple(quad.subject, quad.predicate, quad.object)
+            for quad in parse(text.encode("utf-8"), format=FORMATS[format])}
 
 
 def canonical_nquads(triples):
     """RDFC-1.0 of a graph with no blank node: its N-Quads lines, each once, in code point order."""
-    return "".join(sorted({" ".join(map(canonical, triple)) + " .\n" for triple in triples}))
+    return "".join(sorted({f"{canonical(t.subject)} {canonical(t.predicate)} {canonical(t.object)} .\n"
+                           for t in triples}))
 
 
 def content_name(triples):
@@ -261,7 +287,8 @@ def document_name(octets):
 
 
 def table_version_name(series, revises, rows):
-    triples = {(THIS_VERSION, URIRef(PROV + "specializationOf"), URIRef(series)), *rows}
+    """rows: the version's row triples as content() gives them."""
+    triples = {Triple(THIS_VERSION, NamedNode(PROV + "specializationOf"), NamedNode(series)), *rows}
     if revises is not None:
-        triples.add((THIS_VERSION, URIRef(PROV + "wasRevisionOf"), URIRef(revises)))
+        triples.add(Triple(THIS_VERSION, NamedNode(PROV + "wasRevisionOf"), NamedNode(revises)))
     return content_name(triples)
