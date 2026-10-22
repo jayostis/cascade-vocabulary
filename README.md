@@ -75,3 +75,4 @@ python3 -m pytest -n auto --dist loadgroup
 They check the ontologies, the shapes and the crate; that every feature file uses only the steps `runtime/steps.md`
 lists; and each query, over
 the fixtures, on two SPARQL engines.
+
