@@ -1,10 +1,10 @@
 # When a source moves, switches vendor or issues a new edition
 
 Status: draft, 2026-10-21, from the review on #130. Adds server and organisation records, a connect act, a Same over
-servers, organisations and documents with a derivation each, and within-organisation matcher rules; changes M2
+servers and over organisations with a derivation each, and within-organisation matcher rules; changes M2
 (organisations are not the subject's records) and M1's triggers, and amends `jdg:currentlySame`. Names are
 `naming.md`, whose rubric this note applies: a re-published record is a new definition (test 1), its join is a
-judgment (test 2), one per server, organisation or document pair (test 3); which revision is current is
+judgment (test 2), one per server or organisation pair (test 3); which revision is current is
 `currency.md`; what a judgment is and borrows is `judgments.md`.
 
 ## Question
@@ -42,10 +42,10 @@ is one judgment per source-level fact, from which the per-record joins are deriv
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | server | FHIR `CapabilityStatement` | a record named by the base URL the client used; a connect is an act, and each writes a version of what the server reported: self-asserted base, login endpoint, software, and the client id it was reported to, since a pod holds connects from several apps; an address known only from a document or an export (Apple's copy carries the URL, not what the server said) has a server record with no version | ours; the self-URL is evidence, never a name input, diverging from FHIR's own statement of where a server lives |
-| organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | a record, `prov:Organization`, named by server plus `Organization/{id}` or the custodian's `id` root and extension; name, address and identifiers on versions; a document names its custodian and author by it | borrowed from PROV; FHIR's `Organization` resource treated as any record |
+| organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | a record, `prov:Organization`, named by server plus `Organization/{id}` from a server, and by a business identifier (a C-CDA custodian's `id` root and extension, a FHIR document's `Organization.identifier`) from a document; name, address and identifiers on versions; a document names its custodian and author by it | borrowed from PROV; FHIR's `Organization` resource treated as any record |
 | two servers are one | git remotes | a Same whose members are two servers, by a person on the app's proposal, or by the machine when two connects made with one client id report the same self-URL, the same login endpoint and the same host (the Epic path edit: 57 of 57 kept the self-URL, 19 of 19 hosting moves changed it); with no like-for-like connect, the app proposes and the person decides; derivation: every record of one type and id under both, within one organisation, is one record | ours; the derivation is `Linkage` computed rather than asserted |
 | two organisations are one | `Patient.link`; SPHN | a Same whose members are two organisations, usually the machine's from a shared NPI or OID; derivation: the matcher's within-organisation rules run over both | ours |
-| two documents are editions | CDA `RPLC`; `relatesTo` | a judgment between two documents from one custodian, the later edition named; derivation: entries whose content matches within the pair are one record, changed entries go to the matcher within the pair, the rest are new or dropped; the verdict is open | borrowed in substance from CDA and FHIR, which the adapters read where present |
+| two documents from one organisation | CDA `setId`, `versionNumber`, `relatedDocument` `RPLC`; FHIR `relatesTo` | no judgment: a document names its custodian by the identifier it carries (a C-CDA custodian's `id` root and extension; a FHIR document's custodian `Organization` by its NPI or OID identifier, never by its id in the bundle), so two documents from one organisation point at one organisation record by name; where a document declares that it replaces another, the adapter reads it onto the document's version; the overlap between the two is joined by name for C-CDA entries and by the within-organisation rules for a FHIR document's | borrowed: a declared replacement is the standards' fact, stored as stated; "edition" as a judgment of ours is dropped |
 | within-organisation rules | | inside one organisation a shared business identifier joins, and a shared code and date joins; which pairs, and what belongs to an organisation when one server serves many, is open | ours |
 | record from a document | FHIR documents | named per document; joined across documents like any re-published record | borrowed from FHIR's within-one-bundle promise |
 | what joins mean | `jdg:currentlySame` | a derived join counts as a counting Same; a record-level Different still wins; the amended definition is open | ours |
@@ -69,9 +69,12 @@ and earns like-for-like evidence while it still answers. The derivation is confi
 multi-tenant server is one server, so the Same is true, and `Patient/1` under two of its practices are two people. Records pulled under the new address are still written, so a name never depends on a
 judgment in one pod. A vendor switch re-issues ids, so a server Same joins nothing; but within one organisation a
 shared identifier is certain and a shared code and date is strong, and those rules join most of the history, with
-what is left on the review page. Two summaries from one hospital are editions: their custodian is one organisation
-record by its OID, which survives across documents where entry ids do not, so the app can propose the edition, and
-content matching within the pair is nearly safe where content matching across the pod is not. An organisation is a
+what is left on the review page. Two summaries from one hospital need no judgment of their own: each names its
+custodian by the identifier it carries, so both point at one organisation record by name, a C-CDA's entries are
+named across documents by their CDA ids under that custodian, and a FHIR document's entries fall to the
+within-organisation rules like a vendor switch's; "edition" as a judgment would have been a story told about two
+documents that are only sometimes editions, and where one is, the document says so and the adapter stores what it
+said. An organisation is a
 record because a proposal, a view and a Same now point at one, and the source gives an OID or NPI to name it by; its
 name and address sit on versions so a merger's rename is history. Everything here is derived, so timing does not
 matter and retraction undoes every join at once. The floor is a source that carries no identifier at all, which falls
@@ -88,6 +91,11 @@ back to labels and a person's judgment, as today.
   another app's connects too. Apple's export carries no capability statement, so there is nothing to compare, and a
   self-URL reported to another client id can differ for the same server, so the comparison would miss joins it
   should make and could not be told from a real move.
+- **An edition judgment between two documents, with a derivation.** The strongest case: CDA and FHIR both name the
+  relation, and one judgment would join a whole summary's entries at once. Two summaries from one organisation are
+  only sometimes editions; where they are, the document says so and that is a fact, not a judgment; and the entry
+  joins already come from names (C-CDA) or the within-organisation rules (FHIR), so the derivation had nothing left
+  to do.
 - **A judgment per record.** The strongest case: it is what the matcher does today and needs nothing new. A moved
   server is one fact and thousands of records; one judgment says it once and is retracted once.
 - **Organisations as blank nodes with a label.** The strongest case: nothing pointed at one, and labels collide. A
@@ -100,11 +108,6 @@ back to labels and a person's judgment, as today.
 
 - What a shared view may carry: never server or organisation records or their Sames, or the opaque scheme hides
   nothing once source records are shared. The alternative above stands or falls on this.
-- The verdict for editions: `jdg:Same` means "one thing", and two editions are two documents; an edition relation of
-  its own, citing CDA `RPLC` and `relatesTo`, or a Same with the documents' dates giving order.
-- "Content matches" within a pair: entries that reference another record of their own document hash differently, so
-  references must not count.
-- The guard under which the app proposes an edition.
 - Which code-and-date pairs are near-certain inside one organisation; and how a record is assigned to an
   organisation on a server that serves many (81 brands on one Epic server; every eClinicalWorks practice on one base),
   which the within-organisation derivation now depends on.
@@ -118,4 +121,4 @@ back to labels and a person's judgment, as today.
 
 Vendors publishing an old-to-new address mapping, or a stable server identity the client can read, would make the
 server Same a derivation with no judgment. Servers keeping ids across a vendor switch would let the server Same cover
-it. Generators guaranteeing deterministic entry ids would make editions join by id.
+it. Generators guaranteeing deterministic entry ids in FHIR documents would let those join by name as C-CDA entries do.

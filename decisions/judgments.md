@@ -40,7 +40,7 @@ Sources: OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
 | judgment | nanopub assertion; SSSOM row | `jdg:Judgment`, a `prov:Collection` whose `prov:hadMember` are the records; one verdict | borrowed from PROV; the verdict is ours |
 | maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` | borrowed |
 | verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`; a Before is proposed in `currency.md` | ours: a belief with a maker, not an axiom, and Different wins over Same |
-| judgment over a source-level thing | | a Same whose members are servers, organisations or documents, and a Before whose member is a rollback finding, each with a derivation to records, per `republishing-sources.md` and `currency.md` | ours: test 3 of the rubric |
+| judgment over a source-level thing | | a Same whose members are servers or organisations, and a Before whose member is a rollback finding, each with a derivation to records, per `republishing-sources.md` and `currency.md` | ours: test 3 of the rubric |
 | reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, each `skos:broadMatch` a SEMAPV matching kind; `jdg:basis` for a person's | borrowed from SEMAPV at the kind level; the kinds are ours |
 | confidence | SSSOM `confidence` | none; the justification kind stands in for it, and the review page lists the weaker kinds | diverged; see open |
 | retraction | `npx:retracts` | a `prov:Activity` that `prov:invalidated` the judgment, per `naming.md` | diverged: the pod's retraction is an act, not an agent's statement |
@@ -52,8 +52,7 @@ Sources: OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
   page's listing is the whole of the rubric's fourth test.
 - Which questions move here from `naming.md`'s open list: what a claim's "used" hashes, whether a retraction covers an
   assertion or a claim, and the naming rows for assertion and retraction.
-- Whether a Before verdict, and the edition relation `republishing-sources.md` leaves open, are verdicts of
-  `jdg:Judgment` or kinds of their own.
+- Whether a Before verdict is a verdict of `jdg:Judgment` or a kind of its own.
 - An acknowledgement: a person's "seen, do nothing" on a finding, so a rollback finding clears from the review page
   while the later states stay. No verdict says it today; whether it is a verdict over the finding, or a mark on the
   finding outside `jdg:`.
