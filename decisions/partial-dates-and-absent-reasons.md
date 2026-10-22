@@ -1,11 +1,12 @@
 # Partial dates, and values absent for a stated reason
 
-Status: draft, 2026-10-22, proposed for the owner's ruling; from the research on #133. Nothing here is decided: every
-row of the Choice table is a proposal, and Still open lists each as the owner's ruling. Amends the date shapes at
+Status: ruled, 2026-10-22, from the research on #133 and the owner's rulings of that day; applied by #133, which
+writes the terms, shapes, queries and feature rules. Amends the date shapes at
 `ontologies/health/v1/health.shapes.ttl:47-50`, `ontologies/clinical/v1/clinical.shapes.ttl:22-25` and
 `ontologies/core/v1/core.shapes.ttl:13-15`, and the matcher queries `same-code-and-date.rq` and
 `same-code-and-period.rq`. Which revision is current is `currency.md`, which partial dates never meet (row 4). A result
-whose quantity is absent for a reason meets this note at row 7; the quantity side is `quantities.md`. The adapters'
+whose value is absent for a reason is row 7, never a value kind of `quantities.md`; row 5 follows that note's row
+"number". The adapters'
 side is cascade-bridge-adapter-fhir-r4#20 and cascade-bridge-adapter-ccda#35, which make each loss a finding.
 
 ## Question
@@ -89,17 +90,17 @@ research on #133, with the Oxigraph and rdflib code it read
 
 ## Choice
 
-Every row is proposed, none ruled. Rows 1 to 5 are partial dates, 6 to 8 absent reasons.
+Every row is ruled, 2026-10-22. Rows 1 to 5 are partial dates, 6 to 8 absent reasons.
 
-| thing | prior art | what we propose | borrowed or diverged |
+| thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | 1. datatype | FHIR RDF's union; DCAT 3; openEHR's reduced-accuracy string; against: HL7 v2's retired precision component, CDISC's flags, SPHN's and OMOP's parts | one property per date, typed `xsd:gYear`, `xsd:gYearMonth`, `xsd:date` or `xsd:dateTime` by the precision the source wrote, through `sh:or`; nothing padded; `dateOfBirth` takes the same four | borrowed from FHIR RDF, union and all |
 | 2. comparison and order | XSD's disjoint value spaces; SPARQL 1.1; Oxigraph 0.5.11; rdflib 7.6.0 | "2019" never equals "2019-06-01", by term or by value, which is the matcher's requirement met by the datatype alone; a query that sorts mixed precisions orders by the written form, so a year sorts before its months and its days | borrowed from XSD; the sort rule is ours, since SPARQL defines none |
 | 3. matching partial to full | FHIR search's implied range, `eq` contains, `ap` overlaps; v3's TS to IVL_TS | `same-code-and-date.rq:11-12` stays term-equal, so a year never joins a day; `same-code-and-period.rq` reads each bound as the range its type implies, replacing the ten-character string compare at lines 23-31 | borrowed from FHIR search's ranges for periods; term equality for dates is ours |
 | 4. the currency ladder | FHIR `meta.lastUpdated`, an `instant`; CDA document `effectiveTime`, at least the day | partial dates never reach `currency.md`'s ladder: no source change time and no `rec:asOf` is a clinical date | borrowed; nothing to decide past saying so |
-| 5. hour precision from CDA | C-CDA on FHIR's precision rule; FHIR and XSD `dateTime`, which need seconds | refuse with a finding, keeping the day as an `xsd:date`, as the C-CDA adapter writes it today, and saying the hour was not carried | diverges from C-CDA on FHIR's own minute example, which no XSD form allows |
-| 6. the reason's code | FHIR data-absent-reason, 15 codes; v3 NullFlavor, 17 in a hierarchy; the draft map, 9 of 15 | one term whose value is the code IRI the source gave, FHIR's or NullFlavor's, with no crosswalk at write time | borrowed from both; keeping either system is ours, since the map is a draft and leaves NI and six FHIR codes out |
-| 7. where it sits | FHIR obs-6 and the extension; CDA `@nullFlavor` anywhere; openEHR ELEMENT; HL7 v2 `""` | on the record's version, naming the property it stands for, and only where that property is absent; a result's absent quantity is `quantities.md`; v2's `""` is a delete and is never read as a reason | borrowed from obs-6, widened to any property as the extension is |
+| 5. hour precision from CDA | C-CDA on FHIR's precision rule; FHIR and XSD `dateTime`, which need seconds; `quantities.md` row "number" | kept, the pattern of `quantities.md`'s decimal: an `xsd:dateTime` padded with zeros to the second (`2023-05-31T14:00:00`), with no timezone where the source gave none, which sorts, compares and falls in a range; and `writtenDate`, a plain string of the characters the source sent (`2023053114`), only where the typed form was padded, below the day; no finding, since nothing is dropped; a padded time is never read as exact, and a query needing the precision reads the string | borrowed from C-CDA on FHIR's precision rule and from `quantities.md` row "number" |
+| 6. the reason's code | FHIR data-absent-reason, 15 codes; v3 NullFlavor, 17 in a hierarchy; the draft map, 9 of 15 | one term whose value is exactly the code IRI the source gave, FHIR's or NullFlavor's, with no crosswalk at write time; a view that needs one list applies HL7's `cm-data-absent-reason-v3` at read, where it maps, and the source's own term where it does not (NI, and the six FHIR codes it leaves out); the map is a versioned table like the matcher's code tables, cited as used, replaceable when HL7 finishes it | borrowed from both systems, and from HL7's map, applied at read |
+| 7. where it sits | FHIR obs-6 and the extension; CDA `@nullFlavor` anywhere; openEHR ELEMENT; HL7 v2 `""` | on the record's version, naming the property it stands for, and only where that property is absent; a result's absent value is this row, and no value kind of `quantities.md`; v2's `""` is a delete and is never read as a reason | borrowed from obs-6, widened to any property as the extension is |
 | 8. negation | C-CDA `negationInd`; US Core | out of scope: "no known allergies" is a statement, not an absent value, and is #152's "no known X" | borrowed from C-CDA's split |
 
 ## Why
@@ -130,16 +131,25 @@ is `Meta.lastUpdated`, an `instant`; a C-CDA document's `effectiveTime` "SHALL b
 never a clock (inferred). The ladder has its own mix, a day-precision C-CDA `effectiveTime` beside a FHIR `instant`,
 which Oxigraph cannot order with `<`; that is `currency.md`'s to note, not this note's.
 
-**Why refuse the hour.** A CDA time to the hour has no FHIR or XSD form short of padding the minutes and seconds
-(inferred), and padding is the one thing every standard here declines. The C-CDA adapter already keeps the day; a
-finding says what was lost, which is ccda#35's ask (the adapter's `in/sparql/result.rq:319-322` writes the day). How often a
-source sends hours is not counted (unverified).
+**Why pad the hour, and keep what was sent.** A CDA time to the hour has no FHIR or XSD form short of padding the
+minutes and seconds (inferred), so it follows `quantities.md` row "number": a typed literal that does the typed jobs
+and a plain string that keeps the source's characters. Padded to the second, `2023-05-31T14:00:00` sorts, compares and
+falls in a range as every other `xsd:dateTime` does, where keeping only the day, as the C-CDA adapter does today
+(`in/sparql/result.rq:319-322`), dropped the hour. XSD allows a `dateTime` with no timezone, and a source that gave
+none gets none, since inventing one would be a lie. The padding is the risk the standards guard against, so the padded
+literal is never read as "at 14:00:00 exactly": `writtenDate` holds `2023053114`, the precision is recoverable from it,
+and a query that needs the precision reads it. It is written only where the adapter padded, which the adapter knows;
+a year, a month or a day carries its precision in its own type (row 1), so this is the separate written property that
+lost for row 1, used only where no typed form holds the precision. Nothing is dropped, so no finding is written. How
+often a source sends hours is not counted (unverified).
 
-**Why the source's own code.** The draft map covers 9 of FHIR's 15 codes, and NI, CDA's default and the most general
-code, has no FHIR counterpart (verified). Mapping at write time would invent a counterpart for NI or drop it, and the
-adapter would then be stating HL7's draft as fact. Both systems are hierarchies with published IRIs, so a query that
-wants "any kind of unknown" walks the one it was given, and the crosswalk lives in a query, where a ruling on it can
-change without rewriting a pod.
+**Why the source's own code, and HL7's map at read.** The draft map covers 9 of FHIR's 15 codes, and NI, CDA's default
+and the most general code, has no FHIR counterpart (verified). Mapping at write time would invent a counterpart for NI
+or drop it, and the adapter would then be stating HL7's draft as fact, so the version stores exactly the IRI the
+source gave. A view that needs one list, as the review page does, applies `cm-data-absent-reason-v3` at read where it
+maps and shows the source's own term where it does not. The map is a table like the code tables the matcher reads,
+versioned and cited as used, so a view says which map it applied; when HL7 finishes it, the table is replaced and every
+view improves without touching a record. Nothing is lost and nothing invented.
 
 **Why on the version, beside the property.** Open-world RDF makes a missing triple say nothing (verified), so only a
 written term can say "absent because", and no PROV or W3C term does (none found). FHIR's obs-6 already gives the shape:
@@ -169,31 +179,31 @@ turn a delete into a statement.
 - **A finding only.** The strongest case: OMOP leaves the field NULL, SPHN has no term, US Core omits a min=0 element,
   and a finding already says what was dropped. A finding is on the act, so a view of the record cannot show "masked"
   beside the missing value, and "never sent", "dropped" and "absent because" become one graph.
+- **Refusing the hour with a finding, keeping the day.** The strongest case: no padded value ever lies. The hour is
+  then lost, though a string holds it at no risk, and a finding stands for something that need not have been dropped.
+- **Padding the hour with a flag, as CDISC does.** The strongest case: a flag is queryable. The string is the flag and
+  more: its presence says the time was padded, and its characters say to what precision.
+- **Mapping the reason at write time.** The strongest case: one list in the pod. It writes HL7's draft into every
+  record as fact, and invents or drops a counterpart for NI and the six FHIR codes the map leaves out.
+- **The source's code, never aligned.** The strongest case: no draft map in or near the pod. The review page then
+  shows two lists for one question, and the map applied at read leaves every record as the source wrote it.
 
 ## Still open
 
-Every row is the owner's ruling. Each with the lean and the one fact that decides it:
+Each with the lean and the one fact that decides it:
 
-1. Datatype. Lean: FHIR RDF's union. Decides it: whether any consumer must sort dates across engines, where the union
-   gives no common order.
-2. Sort rule for mixed precisions. Lean: the written form, year before its months. Decides it: whether a timeline can
-   show a year as a span rather than a point.
-3. Matching. Lean: term-equal for `same-code-and-date.rq`, implied ranges for `same-code-and-period.rq`. Decides it:
-   whether a vaccine stated to the year is ever the same dose as one stated to the day, which only a person can say.
-4. The ladder. Lean: say they never meet, and leave the day-against-instant mix to `currency.md`. Decides it: a source
-   whose change time is coarser than a day, none seen.
-5. Hour precision. Lean: a finding, keeping the day. Decides it: a source in reach that sends hours, none counted.
-6. The reason's code. Lean: the source's own IRI from either system. Decides it: whether HL7 finalises the crosswalk
-   with NI mapped.
-7. Placement and the term's name and namespace (`records` or `health`). Lean: on the version, naming the property.
-   Decides it: whether a source ever gives two reasons on one property, which one triple per property cannot hold.
-8. Negation. Lean: out of scope here, in #152. Decides it: #152's ruling on "no known X".
+- The reason term's name and namespace (`records` or `health`), which #133 writes. Lean: none stated. Decides it:
+  whether a source ever gives two reasons on one property, which one triple per property cannot hold.
+- Which date a `writtenDate` belongs to on a version holding several dates. Lean: name the property, as row 7's reason
+  does. Decides it: whether any record type carries two dates below the day.
+- How often partial dates, hours and absent reasons occur in real FHIR and C-CDA data. Unmeasured (unverified); rows 1,
+  5 and 7 rest on the standards, not on counts.
 
 ## What would change our mind
 
 A measurement, none of which exists (unverified): partial dates rare enough in real FHIR and C-CDA data that a
 finding is cheaper than a union every client must handle would favour Cyganiak's case; absent reasons rare enough
 would favour a finding only. A health standard or FHIR RDF moving to a precision term would reopen row 1. HL7
-publishing the crosswalk as final, with NI mapped, would favour one code system. An engine the runtime adopts that
-orders across date types would let the sort rule follow it. A source sending hour-precision times in volume would
-reopen row 5.
+publishing the crosswalk as final, with NI mapped, would favour mapping at write time. An engine the runtime adopts
+that orders across date types would let the sort rule follow it. A query or view found reading a padded time as exact
+would reopen row 5.
