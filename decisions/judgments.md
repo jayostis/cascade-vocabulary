@@ -1,9 +1,9 @@
 # What a judgment is, and what it borrows
 
-Status: placeholder, 2026-10-21, opened from the review on #130. Records what `ontologies/judgments/v1-draft/judgments.ttl`
+Status: draft, 2026-10-22, opened from the review on #130. Records what `ontologies/judgments/v1-draft/judgments.ttl`
 already is, against the vocabularies it could have reused, so that the rubric's second and fourth tests in `naming.md`
-have a note behind them. Nothing here is decided beyond what the ontology states today; the open questions are listed
-at the end.
+have a note behind them; adds `jdg:CascadeMatcher`, the trusted-makers list, and the frame for makers of other
+procedures and for makers whose inputs do not determine their answer. The open questions are listed at the end.
 
 ## Question
 
@@ -44,14 +44,37 @@ Sources: OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
 | reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, each `skos:broadMatch` a SEMAPV matching kind; `jdg:basis` for a person's | borrowed from SEMAPV at the kind level; the kinds are ours |
 | confidence | SSSOM `confidence` | none; the justification kind stands in for it, and the review page lists the weaker kinds | diverged; see open |
 | retraction | `npx:retracts` | a `prov:Activity` that `prov:invalidated` the judgment, per `naming.md` | diverged: the pod's retraction is an act, not an agent's statement |
-| machine claim and run | | a claim named once from its rule, justification and members, and an assertion per matcher run, per `naming.md` | ours |
+| machine claim and assertion | nanopub assertion | a claim named once from its maker, rule, justification, members and used, and an assertion per rule list version that reaches it, per `naming.md` | borrowed split; ours in the parts |
+
+## Who makes judgments
+
+Every judgment names its maker, and nothing else about a judgment depends on there being one matcher.
+
+| maker | its term | how its judgment is named | its version | counts while |
+|---|---|---|---|---|
+| a person | their own IRI | minted once by them | none | always; outranks every machine |
+| the Cascade matcher: any runtime following `runtime/matcher.feature` and the Cascade rule list | `jdg:CascadeMatcher`, one `prov:SoftwareAgent`, unversioned | hashed from maker, rule, justification, members and used, per `naming.md` | the rule list version, on the assertion; the runtime, on the run's act | the app uses that rule list version and the used versions are current |
+| a matcher of another procedure: an app's own rules | the app's own agent term, in its own namespace, with its rules as its own terms | hashed the same way, under its rule IRIs | the app's version, on the assertion; the app, on the act | the pod trusts that maker and version, and the used versions are current |
+| a maker whose answer its inputs do not determine: a model | its own agent term, with model and version | minted once, as a person's is, since no hash of inputs names an answer the inputs do not fix; its reason is text and its confidence a number | the model's version, on the judgment | the pod trusts that maker and version |
+
+The pod's trusted makers are a list the person controls: installing an app adds its maker, removing it drops it, and
+a dropped maker's judgments stop counting by derivation with nothing retracted. Makers combine by kind, never by
+who: a Different from any maker outranks a Same from any other, a person outranks every machine, and a machine
+judgment on weaker grounds is surfaced by the rubric's fourth test, which for a model means its confidence. An app's
+rule may declare itself `skos:broadMatch` a vocabulary justification kind, as the vocabulary's own rules do SEMAPV,
+so a view can treat "the app's lot-number rule" as a kind of shared-identifier join without knowing the rule. Where
+a maker went wrong, its trail is what finds the damage: a rule list version by the assertions under it, a runtime by
+the acts it performed, an app by its agent and version, and a person's Erroneous over an act hides bad data from any
+of them.
 
 ## Still open
 
 - Whether a confidence term is borrowed from SSSOM, or the justification kind remains the only grade and the review
   page's listing is the whole of the rubric's fourth test.
-- Which questions move here from `naming.md`'s open list: what a claim's "used" hashes, whether a retraction covers an
-  assertion or a claim, and the naming rows for assertion and retraction.
+- The shape of the trusted-makers list: per maker, per maker and version, and whether it is a file in the pod (so
+  it syncs) or the device's.
+- A model's judgment: the term for its confidence, and whether a model asked twice about one pair, giving two
+  answers, files two judgments or the later supersedes.
 - Whether a Before verdict is a verdict of `jdg:Judgment` or a kind of its own.
 - An acknowledgement: a person's "seen, do nothing" on a finding, so a rollback finding clears from the review page
   while the later states stay. No verdict says it today; whether it is a verdict over the finding, or a mark on the
