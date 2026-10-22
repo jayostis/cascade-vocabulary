@@ -25,11 +25,13 @@ four tests.
 2. **Everything past the definition is a judgment.** That two records are one fact, that two servers are one hospital,
    that two documents are editions: each is a belief, filed with its reason and its maker, so that it can be wrong and
    can be retracted without touching a name.
-3. **One judgment per fact.** Where one fact joins thousands of records, a moved server or a merged hospital, it is
-   said once and the joins are derived; never a judgment per record.
-4. **A machine's judgment is reviewable in proportion to its confidence.** A join from a shared business identifier
-   goes through; a join from a code and a date, or a pick between revisions no source time decided, is listed for a
-   person, whose own judgment outranks the machine's.
+3. **One judgment per fact, where a fact exists.** Where one fact joins thousands of records, a moved server or a
+   merged hospital, it is said once and the joins are derived. Where no such fact exists, a vendor switch that
+   re-issues every id, judgments are per record, scoped as narrowly as the facts allow.
+4. **The machine surfaces what it is less sure of.** Every judgment can be reviewed and overridden by a person, whose
+   judgment outranks the machine's. The machine lists for the person the ones it made on weaker grounds, a code and a
+   date rather than a shared identifier, or a pick between revisions no source time decided, so review goes where it
+   is needed.
 
 ## What others do
 
