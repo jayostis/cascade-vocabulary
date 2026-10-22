@@ -3,7 +3,9 @@
 Status: draft, 2026-10-22, opened from the review on #130. Records what `ontologies/judgments/v1-draft/judgments.ttl`
 already is, against the vocabularies it could have reused, so that the rubric's second and fourth tests in `naming.md`
 have a note behind them; adds `jdg:CascadeMatcher`, the trusted-makers list, and the frame for makers of other
-procedures and for makers whose inputs do not determine their answer. The open questions are listed at the end.
+procedures and for makers whose inputs do not determine their answer. Names, claims and assertions are `naming.md`;
+the Before and the findings it orders are `currency.md`; the Sames over servers and organisations are
+`republishing-sources.md`. The open questions are listed at the end.
 
 ## Question
 
@@ -14,6 +16,8 @@ its confidence and its retraction, or does the pod define one?
 
 ## What others do
 
+- **FHIR** `Linkage` lists resources that "refer to the same real-world occurrence", `Patient.link` merges patients;
+  neither carries a maker beyond the server, a reason, or a retraction.
 - **OWL** `owl:sameAs` and `owl:differentFrom` state logical identity: a reasoner merges whatever they touch, nobody is
   recorded as having said so, and there is no retraction.
 - **SSSOM** records a mapping as a row with a predicate, a `mapping_justification` from **SEMAPV**, an author, and a
@@ -23,17 +27,18 @@ its confidence and its retraction, or does the pod define one?
 - **PROV-O** gives the parts: `prov:Collection` with `prov:hadMember`, `prov:Person` and `prov:SoftwareAgent`,
   `prov:Activity`, `prov:wasAttributedTo`, `prov:invalidated`; and `prov:alternateOf`, "two entities present aspects
   of the same thing", which is weaker than a verdict.
-- **FHIR** `Linkage` lists resources that "refer to the same real-world occurrence", `Patient.link` merges patients;
-  neither carries a maker beyond the server, a reason, or a retraction.
 - **skos** `exactMatch` and `closeMatch` relate concepts, and the pod uses them for codes, not records.
 
-Sources: OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
+Sources: FHIR `Linkage` (https://hl7.org/fhir/R4/linkage.html), `Patient.link`
+(https://hl7.org/fhir/R4/patient.html#links); OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
 (https://mapping-commons.github.io/sssom/spec-model/) and SEMAPV (https://w3id.org/semapv); nanopublication guidelines
 (https://nanopub.net/guidelines/working_draft/) and `npx:retracts` (http://purl.org/nanopub/x/retracts); PROV-O
-(https://www.w3.org/TR/prov-o/); FHIR `Linkage` (https://hl7.org/fhir/R4/linkage.html), `Patient.link`
-(https://hl7.org/fhir/R4/patient.html#links); SKOS (https://www.w3.org/TR/skos-reference/#mapping).
+(https://www.w3.org/TR/prov-o/); SKOS (https://www.w3.org/TR/skos-reference/#mapping).
 
-## What the ontology is today
+## Choice
+
+The first table is what the judgments ontology is today, against the vocabularies it could have reused; the second is
+who makes judgments.
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
@@ -46,8 +51,6 @@ Sources: OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
 | retraction | `npx:retracts` | a `prov:Activity` that `prov:invalidated` the judgment, per `naming.md` | diverged: the pod's retraction is an act, not an agent's statement |
 | machine claim and assertion | nanopub assertion | a claim named once from its maker, rule, justification, members and used, and an assertion per rule list version that reaches it, per `naming.md` | borrowed split; ours in the parts |
 
-## Who makes judgments
-
 Every judgment names its maker, and nothing else about a judgment depends on there being one matcher.
 
 | maker | its term | how its judgment is named | its version | counts while |
@@ -59,14 +62,51 @@ Every judgment names its maker, and nothing else about a judgment depends on the
 
 The pod's trusted makers are a list the person controls: installing an app adds its maker, removing it drops it, and
 a dropped maker's judgments stop counting by derivation with nothing retracted. Makers combine by who first, then
-by kind: a person outranks every machine, so a person's Same stands over a machine's Different, since the person has
-seen the objection and overridden it; among machines a Different outranks a Same from any maker; and a machine
-judgment on weaker grounds is surfaced by the rubric's fourth test, which for a model means its confidence. An app's
-rule may declare itself `skos:broadMatch` a vocabulary justification kind, as the vocabulary's own rules do SEMAPV,
-so a view can treat "the app's lot-number rule" as a kind of shared-identifier join without knowing the rule. Where
-a maker went wrong, its trail is what finds the damage: a rule list version by the assertions under it, a runtime by
-the acts it performed, an app by its agent and version, and a person's Erroneous over an act hides bad data from any
-of them.
+by kind: a person outranks every machine, so a person's Same stands over a machine's Different; among machines a
+Different outranks a Same from any maker; and a machine judgment on weaker grounds is surfaced by the rubric's fourth
+test, which for a model means its confidence. An app's rule may declare itself `skos:broadMatch` a vocabulary
+justification kind, as the vocabulary's own rules do SEMAPV, so a view can treat "the app's lot-number rule" as a
+kind of shared-identifier join without knowing the rule.
+
+## Why
+
+**Why a belief with a maker, not an axiom.** That two records are one fact, that two servers are one hospital, that a
+source's patient is this person: each is a belief, filed with its reason and its maker, so that it can be wrong and
+can be retracted without touching a name (`naming.md`, the rubric's second test).
+
+**Why a person outranks every machine.** A person's Same stands over a machine's Different since the person has seen
+the objection and overridden it.
+
+**Why every maker leaves a trail.** Where a maker went wrong, its trail is what finds the damage: a rule list version
+by the assertions under it, a runtime by the acts it performed, an app by its agent and version, and a person's
+Erroneous over an act hides bad data from any of them.
+
+**Why a claim, an assertion per rule list version, and one matcher agent.** A machine judgment is one claim with an
+assertion per rule list version because the same inputs give the same name, so a later version that agrees could
+otherwise write nothing, and a run that reaches an asserted claim writes nothing, so a daily run adds no files. The
+rule list's version is out of the claim's name because with it in, every version renamed every claim, the duplication
+the split exists to stop. The Cascade matcher is one unversioned agent because the matcher feature promises every
+runtime that follows it reaches the same claims, so which runtime ran is forensics, and it sits on the run's act with
+every other act's performer (`naming.md`).
+
+**Why a model's judgment is minted, not hashed.** No hash of inputs names an answer the inputs do not fix, so a
+model's judgment is minted once, as a person's is.
+
+**Why a retraction is an activity.** PROV already says how an entity is invalidated (`naming.md`); `npx:retracts` has
+domain `foaf:Agent`, making the retractor an agent and the retracted a nanopublication.
+
+## Alternatives that lost
+
+- **OWL `owl:sameAs` and `owl:differentFrom`.** The strongest case: they are the web's statement of logical identity,
+  and a reasoner acts on them. A reasoner merges whatever they touch, nobody is recorded as having said so, and there
+  is no retraction, where a judgment must be able to be wrong and be retracted without touching a name.
+- **`npx:retracts` for retraction.** The strongest case: nanopublication vocabulary built for retraction. Its domain
+  is an agent, so the retractor would be an agent and the retracted a nanopublication, where ours is an activity over
+  any entity.
+- **The matcher named per rule list version, or per runtime.** The strongest case: the agent would say which rules
+  and which code. Per version, the maker changes every release, which is the duplicate problem again; per runtime,
+  two correct runtimes would make two claims of one conclusion, which the matcher feature forbids. The version is on
+  the assertion and the runtime on the act (`naming.md`).
 
 ## Still open
 

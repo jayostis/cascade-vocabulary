@@ -29,10 +29,13 @@ Sources: FHIR `Provenance` (https://hl7.org/fhir/R4/provenance.html), `Linkage` 
 `Patient.link` (https://hl7.org/fhir/R4/patient.html#links), `DocumentReference.relatesTo`
 (https://hl7.org/fhir/R4/documentreference.html), `CapabilityStatement.implementation`
 (https://hl7.org/fhir/R4/capabilitystatement.html); CDA `relatedDocument` (HL7 CDA R2, §4.2.3.3,
-https://www.hl7.org/implement/standards/product_brief.cfm?product_id=7); research 1 to 3 on #130
+https://www.hl7.org/implement/standards/product_brief.cfm?product_id=7); research 1 to 5 on #130
 (https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6327416626,
 https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328100407,
-https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328557801).
+https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328557801,
+https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6334427968,
+https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6334428443); the evidence issue keeping the
+churn and self-URL counts and scripts (https://github.com/jayostis/cascade-vocabulary/issues/201).
 
 ## Choice
 
@@ -53,36 +56,52 @@ is one judgment per source-level fact, from which the per-record joins are deriv
 
 ## Why
 
-The three problems are one problem at three levels, answered by one mechanism: name by the source, join by one
-judgment per source-level fact, and let the matcher work per record only inside the scope that judgment gives it.
-Hashing the server's self-asserted base instead of the client's address was measured and lost (research 2): it
-survives a path edit and not a hosting move (19 of 19 old Epic hosts now report the new host as themselves), MEDITECH
-never sends it, eClinicalWorks reports one base for every practice, and Epic documents that it can differ per client
-id; as a judgment input it keeps the benefit and makes the failure retractable. An address change is a server Same,
-and ids survive (inferred, not observed), so the derivation joins by id; the machine makes it only from two of the
-pod's own connects under one client id, because Epic documents that the self-URL can differ by the client id asking
-and a pod holds connects from several apps, so a mismatch across apps proves nothing and is left to the person, the
-safe direction; the app may propose it before a record is pulled, and a judgment made later has the same effect
-because it was never baked into a name. The common case needs no join at all: Apple's copy of a Mercy record carries the address Apple used, and where
-that is the address the app used the names already agree and the copy is one more revision; where Apple's address is
-the older one, the pod never spoke to it, so the join is the person's, or the app connects to the old address itself
-and earns like-for-like evidence while it still answers. The derivation is confined to one organisation because a
-multi-tenant server is one server, so the Same is true, and `Patient/1` under two of its practices are two people. Records pulled under the new address are still written, so a name never depends on a
-judgment in one pod. A vendor switch re-issues ids, so a server Same joins nothing; but within one organisation a
-shared identifier is certain and a shared code and date is strong, and those rules join most of the history, with
-what is left on the review page. Two summaries from one hospital need no judgment of their own: each names its
-custodian by the identifier it carries, so both point at one organisation record by name, a C-CDA's entries are
-named across documents by their CDA ids under that custodian, and a FHIR document's entries fall to the
-within-organisation rules like a vendor switch's; "edition" as a judgment would have been a story told about two
-documents that are only sometimes editions, and where one is, the document says so and the adapter stores what it
-said. An organisation is a
-record because a proposal, a view and a Same now point at one, and the source gives an OID or NPI to name it by; its
-name and address sit on versions so a merger's rename is history. Everything here is derived, so timing does not
-matter and retraction undoes every join at once. The floor is a source that carries no identifier at all, which falls
-back to labels and a person's judgment, as today. The server and organisation records are in the clear inside the
-pod because the person owns the pod; the opaque name earns its keep at the boundary, where a receiver gets a name it
-can cite and reconcile by, and nothing that says where the record came from, because what leaves the pod is the
-person's choice, record by record, and the source is one more thing they may not want known.
+**Why one mechanism.** The three problems are one problem at three levels, answered by one mechanism: name by the
+source, join by one judgment per source-level fact, and let the matcher work per record only inside the scope that
+judgment gives it. Everything here is derived, so timing does not matter and retraction undoes every join at once.
+
+**Why the client's address, and the self-URL only as evidence.** Hashing the server's self-asserted base instead of
+the client's address was measured and lost (research 2): it survives a path edit and not a hosting move (verified,
+probed: 19 of 19 old Epic hosts now report the new host as themselves), MEDITECH never sends it, eClinicalWorks
+reports one base for every practice (both verified, probed), and Epic documents that it can differ per client id; as
+a judgment input it keeps the benefit and makes the failure retractable.
+
+**Why the machine's server Same needs two connects under one client id.** An address change is a server Same, and ids
+survive (inferred, not observed), so the derivation joins by id; the machine makes it only from two of the pod's own
+connects under one client id, because Epic documents that the self-URL can differ by the client id asking and a pod
+holds connects from several apps, so a mismatch across apps proves nothing and is left to the person, the safe
+direction; the app may propose it before a record is pulled, and a judgment made later has the same effect because it
+was never baked into a name. Records pulled under the new address are still written, so a name never depends on a
+judgment in one pod.
+
+**Why Apple's copy usually needs no join.** The common case needs no join at all: Apple's copy of a Mercy record
+carries the address Apple used, and where that is the address the app used the names already agree and the copy is
+one more revision; where Apple's address is the older one, the pod never spoke to it, so the join is the person's, or
+the app connects to the old address itself and earns like-for-like evidence while it still answers.
+
+**Why a server Same joins only within one organisation.** The derivation is confined to one organisation because a
+multi-tenant server is one server, so the Same is true, and `Patient/1` under two of its practices are two people.
+
+**Why a vendor switch is joined by the within-organisation rules.** A vendor switch re-issues ids, so a server Same
+joins nothing; but within one organisation a shared identifier is certain and a shared code and date is strong, and
+those rules join most of the history, with what is left on the review page. The floor is a source that carries no
+identifier at all, which falls back to labels and a person's judgment, as today.
+
+**Why two documents from one organisation need no judgment.** Two summaries from one hospital need no judgment of
+their own: each names its custodian by the identifier it carries, so both point at one organisation record by name, a
+C-CDA's entries are named across documents by their CDA ids under that custodian, and a FHIR document's entries fall
+to the within-organisation rules like a vendor switch's; "edition" as a judgment would have been a story told about
+two documents that are only sometimes editions, and where one is, the document says so and the adapter stores what it
+said.
+
+**Why an organisation is a record.** An organisation is a record because a proposal, a view and a Same now point at
+one, and the source gives an OID or NPI to name it by; its name and address sit on versions so a merger's rename is
+history.
+
+**Why privacy is drawn at the boundary.** The server and organisation records are in the clear inside the pod because
+the person owns the pod; the opaque name earns its keep at the boundary, where a receiver gets a name it can cite and
+reconcile by, and nothing that says where the record came from, because what leaves the pod is the person's choice,
+record by record, and the source is one more thing they may not want known.
 
 ## Alternatives that lost
 
