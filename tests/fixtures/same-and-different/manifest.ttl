@@ -17,26 +17,26 @@
   mf:name "currently-the-same" ;
   rdfs:comment "Only the pair a counting Same names and no Different names is currently the same." ;
   mf:action [ qt:query <currently-the-same.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <currently-the-same.srj> .
 
 <#currently-different> a mf:QueryEvaluationTest ;
   mf:name "currently-different" ;
   rdfs:comment "The pair a counting Different names is currently different." ;
   mf:action [ qt:query <currently-different.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <currently-different.srj> .
 
 <#which-judgments-name-it> a mf:QueryEvaluationTest ;
   mf:name "which-judgments-name-it" ;
   rdfs:comment "Each record with each judgment naming it and whether that judgment counts." ;
-  mf:action [ qt:query <../../../queries/v1-draft/questions/record/Which%20judgments%20name%20it.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/questions/record/Which%20judgments%20name%20it.rq> ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <which-judgments-name-it.srj> .
 
 <#which-entry-shows-it> a mf:QueryEvaluationTest ;
   mf:name "which-entry-shows-it" ;
   rdfs:comment "Each record with the one entry that shows it: the pair currently the same share one, and each other record has its own." ;
-  mf:action [ qt:query <../../../queries/v1-draft/questions/record/Which%20entry%20shows%20it.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/questions/record/Which%20entry%20shows%20it.rq> ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <which-entry-shows-it.srj> .

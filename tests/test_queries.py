@@ -378,7 +378,7 @@ def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no
 
 
 PUBLISHED = json.loads((ROOT / "tests" / "published-bytes.json").read_text())
-PUBLISHED_FILES = ("runtime/rule-list/[0-9a-f]*.ttl", "queries/v1-draft/matcher/*.rq")
+PUBLISHED_FILES = ("runtime/rule-list/[0-9a-f]*.ttl", "queries/matcher/*.rq")
 
 
 def test_a_published_rule_list_and_matcher_query_keep_their_bytes_and_a_changed_rule_is_a_new_file():

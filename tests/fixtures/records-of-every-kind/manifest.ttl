@@ -16,19 +16,19 @@
   mf:name "what-each-record-is" ;
   rdfs:comment "Each record becomes a rec:Record of its kind, and only an allergy takes its status only from documents." ;
   mf:action [ qt:query <what-each-record-is.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-each-record-is.srj> .
 
 <#the-name-status-and-date-of-each-version> a mf:QueryEvaluationTest ;
   mf:name "the-name-status-and-date-of-each-version" ;
   rdfs:comment "Each version gets rec:name, rec:status and rec:date from its kind's own properties; an allergy states no date." ;
   mf:action [ qt:query <the-name-status-and-date-of-each-version.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-name-status-and-date-of-each-version.srj> .
 
 <#what-each-version-says> a mf:QueryEvaluationTest ;
   mf:name "what-each-version-says" ;
   rdfs:comment "One row per statement of each version as its file states it, and none of the name, status and date the derivations copy." ;
-  mf:action [ qt:query <../../../queries/v1-draft/questions/record/What%20each%20version%20says.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/questions/record/What%20each%20version%20says.rq> ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-each-version-says.srj> .

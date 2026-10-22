@@ -68,7 +68,7 @@ saying why; a document an import must convert and has no saved output for is the
   version with no rows is a file with no triples.
 - **The rule list is not a table.** Each row is a `rec:MatcherRule` giving its justification (`rec:justifiedAs`), each
   kind of record it applies to as `rec:kind` words it (`rec:appliesTo`), its comparison query as a path under
-  `queries/v1-draft/` (`rec:query`), N5's name for that file's bytes (`rec:queryHash`), and the kind of table the query
+  `queries/` (`rec:query`), N5's name for that file's bytes (`rec:queryHash`), and the kind of table the query
   reads, if any (`rec:tableKind`). A matcher judgment uses the rule list's version, so the one row of that version whose
   `rec:justifiedAs` is the judgment's `jdg:justification` says which query ran, by its bytes. A tables folder an `open` step
   names may list a version of the vocabulary's rule list (`runtime/rule-list/`) without holding its file: the rows are
@@ -92,7 +92,7 @@ list's rows are `[] a rec:MatcherRule`: no row shape and no N12 cover them.
 | `{record}`, `{records}` | `(?:[^:]\|:(?=\S))+` | `allergy RxNorm 1191 "Ecotrin"`, `H1-ALG-PCN`, `variant HGVS NM_000249.4:c.2042C>T` | records in words, below; several joined by `,` and `and`; a colon is part of the words when a non-space follows it, and the colon ending a step is not |
 | `{judgment}` | `(?:[^:]\|:(?=\S))+` | `J21`, `the matcher's same code of H2O-ALG-SULFA and H1-ALG-SULFA` | a judgment in words, below |
 | `{view}` | `allergies\|conditions\|immunizations\|procedures\|medications\|lab-results\|patient-profile\|variants\|variant-interpretations` | `allergies` | a view |
-| `{lens}` | `[a-z]+` | `export` | a lens under `queries/v1-draft/lenses/` |
+| `{lens}` | `[a-z]+` | `export` | a lens under `queries/lenses/` |
 | `{count}` | `no file\|1 file\|\d+ files` | `no file`, `1 file`, `3 files` | how many files |
 
 A parameter matches the regular expression beside it, each `\|` written so in the table being an alternation. A time in
@@ -201,7 +201,7 @@ The SPARQL `SELECT` query in the DocString beneath it is the one the next `it an
 
 ### `the query {name} is asked`
 
-The SPARQL `SELECT` query in the file at that path under `queries/v1-draft/` is the one the next `it answers` step asks,
+The SPARQL `SELECT` query in the file at that path under `queries/` is the one the next `it answers` step asks,
 as the file holds it. It changes nothing: the step is written `When`, as the read point is.
 
 ## Then

@@ -15,12 +15,12 @@
   mf:name "the-variant-interpretations-view" ;
   rdfs:comment "Each entry takes the classification and date of its latest member and the entry of the variant its member interprets, so the three reports of the first variant name one entry, and the report that names no variant names none." ;
   mf:action [ qt:query <the-variant-interpretations-view.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-variant-interpretations-view.srj> .
 
 <#what-each-report-says-of-a-variant> a mf:QueryEvaluationTest ;
   mf:name "what-each-report-says-of-a-variant" ;
   rdfs:comment "One row for each report that names a variant, newest first within a variant, without a classification for the answer that is none of the five, and none for the report that names no variant." ;
-  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/What%20each%20report%20says%20of%20a%20variant.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/questions/pod/What%20each%20report%20says%20of%20a%20variant.rq> ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-each-report-says-of-a-variant.srj> .

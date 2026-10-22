@@ -15,12 +15,12 @@
   mf:name "the-procedures-view" ;
   rdfs:comment "Each entry takes the name and code of its latest member, the status of the member chosen for status, and the date of the member chosen for the date." ;
   mf:action [ qt:query <the-procedures-view.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-procedures-view.srj> .
 
 <#my-procedures> a mf:QueryEvaluationTest ;
   mf:name "my-procedures" ;
   rdfs:comment "Every entry, newest first, with its code as SNOMED CT's IRI and how many records it joins." ;
-  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20procedures.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20procedures.rq> ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-procedures.srj> .

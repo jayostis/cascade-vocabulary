@@ -15,12 +15,12 @@
   mf:name "the-current-reference-version" ;
   rdfs:comment "A series' current version is the one no newer version revises." ;
   mf:action [ qt:query <the-current-reference-version.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-current-reference-version.srj> .
 
 <#which-reference-versions-are-current> a mf:QueryEvaluationTest ;
   mf:name "which-reference-versions-are-current" ;
   rdfs:comment "The question lists the series and its current version only." ;
-  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/Which%20reference%20versions%20are%20current.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/questions/pod/Which%20reference%20versions%20are%20current.rq> ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <which-reference-versions-are-current.srj> .

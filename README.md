@@ -11,7 +11,7 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
   `records` and `judgments` are first declared here (Apache-2.0).
 - [`decisions/`](decisions): why a term or a rule is as it is, one note for each, with what others do, the alternatives
   that lost and what would change our mind.
-- [`queries/v1-draft/`](queries/v1-draft): the standard queries over a pod: the derivations and lenses, the views and
+- [`queries/`](queries): the standard queries over a pod: the derivations and lenses, the views and
   labels, the matcher's comparisons, and the questions.
 - [`runtime/`](runtime): what a runtime does when something arrives, as numbered rules in Gherkin feature files, each
   with the examples that show it; [`runtime/steps.md`](runtime/steps.md) lists the steps they are written in, and

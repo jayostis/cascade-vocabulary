@@ -14,13 +14,13 @@
 <#my-active-medications> a mf:QueryEvaluationTest ;
   mf:name "my-active-medications" ;
   rdfs:comment "Only the active entry: not one on hold, not taken, completed, stopped, cancelled, a draft, one without a status, a C-CDA aborted or suspended one, a discontinued one or one no longer taken." ;
-  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20active%20medications.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-active-medications.srj> .
 
 <#my-medication-history> a mf:QueryEvaluationTest ;
   mf:name "my-medication-history" ;
   rdfs:comment "Every entry with its status's lifecycle class: active; stopped for not taken, completed, stopped, cancelled, aborted, discontinued and no longer taken; paused for on hold and suspended; entered in error for entered-in-error and nullified; unknown for a draft, no status and text nothing matches." ;
-  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/My%20medication%20history.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20medication%20history.rq> ;
+              rec:lens <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-medication-history.srj> .

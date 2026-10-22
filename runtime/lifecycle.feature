@@ -9,7 +9,7 @@ Feature: Medication lifecycle
     The entry's status is the one of the member it takes its status from. The class is the concept of rec:MedicationLifecycle
     the entry shows as rec:lifecycle (derived as rec:statusLifecycle), and the step that gave it as
     rec:statusLifecycleStep. The rows each step reads, and the
-    precedence of step 5, are in queries/v1-draft/derivations/medication-lifecycles.rq.
+    precedence of step 5, are in queries/derivations/medication-lifecycles.rq.
 
     1. The key is the status lower-cased, each run of other characters than a-z and 0-9 made one space, and trimmed. A
        key also equals a row's text when both agree with their spaces removed.
