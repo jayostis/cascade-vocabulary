@@ -1,32 +1,37 @@
-from collections import Counter
 from functools import cache
+from pathlib import Path
 
 import pytest
 from rdflib import URIRef
 
-from contract import built, derivations, named, query, questions
+from contract import QUERIES, built, derivations, named, query, questions
 from engines import ENGINES
 from manifests import entries, failure, lens_name
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
 LENSES = sorted(named("lenses"))
 ASKED = {**questions(), **{f"matcher/{name}": relative for name, relative in named("matcher").items()}}
+ORDERED = {(QUERIES / relative).resolve() for relative in ASKED.values() if "ORDER BY" in query(relative)}
 ENTRIES = [on_its_worker(fixture, entry, id=f"{fixture.name}-{entry.name}")
            for fixture in FIXTURES for entry in entries(fixture.manifest)]
 
 
 @cache
-def answers(fixture, engine, lens):
+def answers(fixture, lens):
     """The rows of every question and every matcher comparison."""
-    held = built_once(fixture, engine, lens).store
+    held = built_once(fixture, "oxigraph", lens).store
     return {name: held.select(query(relative)) for name, relative in ASKED.items()}
 
 
 @pytest.mark.parametrize("fixture, entry", ENTRIES)
-def test_the_entry_gives_its_expected_rows_on_each_engine(fixture, entry):
-    failed = {engine: why for engine in sorted(ENGINES)
-              if (why := failure(entry, built_once(fixture, engine, lens_name(entry.lens)).store))}
+def test_the_entry_gives_its_expected_rows_on_each_engine_and_an_ordered_question_gives_them_in_one_order(fixture, entry):
+    stores = {engine: built_once(fixture, engine, lens_name(entry.lens)).store for engine in sorted(ENGINES)}
+    failed = {engine: why for engine, store in stores.items() if (why := failure(entry, store))}
     assert not failed, "\n\n".join(f"on {engine}:\n{why}" for engine, why in failed.items())
+    if Path(entry.query).resolve() in ORDERED:
+        text = Path(entry.query).read_text(encoding="utf-8")
+        one, other = (store.select(text) for store in stores.values())
+        assert one == other
 
 
 def lenses_that_differ(fixture):
@@ -38,22 +43,12 @@ def lenses_that_differ(fixture):
     return sorted(found.values())
 
 
-def comparable(name, rows):
-    """The rows in their order where the query orders them, and as a multiset where it leaves the order open."""
-    if "ORDER BY" in query(ASKED[name]):
-        return rows
-    return Counter(frozenset(row.items()) for row in rows)
-
-
 @every_fixture
-def test_oxigraph_and_rdflib_agree_on_the_derived_state_the_files_built_from_it_and_every_questions_rows(fixture):
+def test_oxigraph_and_rdflib_agree_on_the_derived_state_and_the_files_built_from_it(fixture):
     for lens in LENSES:
         one, other = (built_once(fixture, engine, lens) for engine in sorted(ENGINES))
         assert one.added_by_step == other.added_by_step, lens
         assert one.files == other.files, lens
-    for lens in lenses_that_differ(fixture):
-        one, other = (answers(fixture, engine, lens) for engine in sorted(ENGINES))
-        assert {name for name in one if comparable(name, one[name]) != comparable(name, other[name])} == set(), lens
 
 
 @every_fixture
@@ -89,7 +84,7 @@ def test_every_derivation_lens_view_and_the_labels_add_a_triple_and_every_questi
             quiet -= {built()[path] for path, triples in build.files.items()
                       if any(subject != URIRef(ADDRESS + path) for subject, _, _ in triples)}
             if lens in lenses_that_differ(fixture):
-                quiet -= {ASKED[name] for name, rows in answers(fixture, "oxigraph", lens).items() if rows}
+                quiet -= {ASKED[name] for name, rows in answers(fixture, lens).items() if rows}
     assert quiet == set()
 
 
