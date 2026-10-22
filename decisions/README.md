@@ -52,6 +52,12 @@ commit message, never in the file, and the note is where the longer why lives.
 A note that replaces an older rule names it, as `naming.md` names N1, N2, N6, N7, A2, M5 and M9, and `currency.md` names A3 to
 A5, M1 and M3. Notes cite one another by file name.
 
+A note and a feature rule point at each other. A Choice row states the rule in one sentence and names the rule in
+`runtime/` that applies it (`N3`, `M17`); that rule's first line names the note and the row that ruled it. Neither
+leans on the other to be read: the note says what and why, the feature says exactly how, with the examples. An
+example belongs in the feature, never in the note; a reason belongs in the note, never in the feature. A ruling with
+no feature rule yet names the issue that will write it.
+
 ## The notes
 
 Written to this standard, from the review on #130; the five genomics notes after them, written before it settled, were
