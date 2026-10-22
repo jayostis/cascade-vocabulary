@@ -77,6 +77,10 @@ can be retracted without touching a name (`naming.md`, the rubric's second test)
 **Why a person outranks every machine.** A person's Same stands over a machine's Different since the person has seen
 the objection and overridden it.
 
+**Why Different outranks Same among machines.** Keeping two records apart is the mistake that can be undone: a later
+Same joins them and nothing was lost. A wrong merge hides one record behind the other, and the person may never see
+it. So where two makers disagree, the pod errs toward showing two things, and a person's Same settles it.
+
 **Why every maker leaves a trail.** Where a maker went wrong, its trail is what finds the damage: a rule list version
 by the assertions under it, a runtime by the acts it performed, an app by its agent and version, and a person's
 Erroneous over an act hides bad data from any of them.
