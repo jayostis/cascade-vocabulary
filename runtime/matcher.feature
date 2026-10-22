@@ -94,7 +94,7 @@ Feature: The matcher's procedure
     <http://varnomen.hgvs.org/NM_000249.4%3Ac.2042C%3ET>. The comparison same-mapped-code-and-date.rq, whose bytes
     every rule list version from 1 to 8 pins, and its successor same-vaccine-group-and-date.rq, whose bytes version 9
     pins, join the unencoded literal, and they read CVX rows only, whose codes are digits, which the encoding leaves as
-    they are. The rationale is decisions/hgvs-and-clinvar-codes.md.
+    they are. The rationale is decisions/code-iris.md.
 
     - R1, jdg:SameCode: queries/v1-draft/matcher/same-code.rq.
     - R2, jdg:SameCodeAndDate: queries/v1-draft/matcher/same-code-and-date.rq.

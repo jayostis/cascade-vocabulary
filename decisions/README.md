@@ -77,7 +77,7 @@ brought to it on 2026-10-22 under #202:
   its shape.
 - [`variant-classifications-table.md`](variant-classifications-table.md): how an app holds what ClinVar says of a
   variant today, at a size a browser keeps.
-- [`hgvs-and-clinvar-codes.md`](hgvs-and-clinvar-codes.md): the IRIs of an HGVS expression and a ClinVar variation,
-  and how a literal holding reserved characters joins as an IRI.
+- [`code-iris.md`](code-iris.md): the IRI of every code, by code system, deferring to the owner or a community scheme
+  where one passes, and how a literal holding reserved characters joins as an IRI.
 - [`performance.md`](performance.md): what a ten-year pod costs as it grows, and which rulings keep every cost
   tracking what changed rather than the square of the pod.
