@@ -36,7 +36,8 @@ the other, the pod has no server of record to say which is right, and a view the
   classification, evidence lines and contributions, "Specific actions taken by an Agent"; its Variant Pathogenicity
   Statement profile follows ACMG 2015. It is built on **SEPIO**, which represents "assertions and their evidence and
   provenance of any kind".
-- **openEHR.** The sequencing-test variant cluster (`genomic_variant_result.v1`) does not hold the classification.
+- **openEHR.** The sequencing-test variant cluster (`genomic_variant_result.v1`, rev 1.1.1) holds the classification
+  in its "ACMG classification" element, a `DV_CODED_TEXT` bound to the five LOINC answer codes (verified, #202).
 - **OMOP.** The Genomic vocabulary holds variants and knowledge-base concepts; a classification is not a patient-level
   record there.
 - **SPHN.** Its genomic concepts were not read (see `variant-record.md`).
@@ -113,11 +114,17 @@ found hard to compare (#107: "written as a code IRI, not a string").
 
 ## Still open
 
-- Why an interpretation is its own class rather than an Observation-shaped lab result record, and why its form diverges
-  from VA-spec's Statement and SEPIO's assertion (proposition, direction, strength, evidence, agent): the class was copied
-  (#107, "Copy, don't invent"), and no note gives the reason. Owed.
-- Why the five values are `owl:Class` individuals of the copied `AcmgClass` rather than LOINC's answer codes or a SKOS
-  concept scheme. Owed.
+- Ruled as a direction on 2026-10-22 (#202, the reopening): the interpretation stays a record, because it is the
+  source's own signed content, which the rubric's first test keeps as stated, where a judgment is a belief past what a
+  source defines; it takes VA-spec's Statement shape (about the variant record; an optional object, a condition or a
+  therapy; the classification; optional ACMG evidence codes; a date), and its version is `prov:wasAttributedTo` the
+  lab's organisation record, the property judgments use, so "who said what" lists alike over both. The five values are
+  already `skos:Concept`s in `records.ttl:588-611`, each `skos:exactMatch` its LOINC answer code; `AcmgClass` and its
+  duplicate typing are dropped, and the label clash ("Likely Pathogenic" against "Likely pathogenic") fixed, one IRI
+  per class. Applied in the genomics build; the Choice rows above read as before until then.
+- Cases neither the record nor a judgment frame handles, for that build: a somatic variant (AMP/ASCO/CAP tiers, not
+  ACMG classes; a pharmacogenomic implication names a drug and a phenotype, not a pathogenicity); a VUS later resolved
+  by a reissued report with a new id, which leaves both calls current unless the source declares the replacement.
 - Which revision is current follows `currency.md`'s ladder, not `interpretedDate`. The view
   (`views/variant-interpretations.rq`) takes its classification and date from `rec:latestMember`
   (`derivations/latest-members.rq`, by arrival) over `pav:hasCurrentVersion` (`derivations/current-revisions.rq`), the

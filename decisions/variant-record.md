@@ -144,9 +144,15 @@ expression as written, exact.
 
 ## Still open
 
-- Why a variant is its own class rather than a lab result record shaped as the IG's Observation: the class was copied
-  (#107, "Copy, don't invent"), and #107 counts the FHIR adapter's mapping of a Variant as a lab result as the problem,
-  but no note gives the reason. Owed.
+- Ruled as a direction on 2026-10-22 (#202, the reopening): the variant stays its own class, and gains what every
+  standard's finding has and this record lacks: a performer (the lab's organisation record), an effective date, the
+  specimen where given, the reference build, zygosity (the kit's reports send it on every variant and the pod keeps
+  none of it), and whether it is germline or somatic. Not a FHIR Observation subclass: it would share one code with
+  every variant, the lab-result rules would have to exclude it, and a germline fact would sit on a time axis. Applied
+  in the genomics build.
+- Cases for that build: a somatic variant, which R12 and R13 would merge with a germline finding of the same ClinVar
+  id, and whose allele fraction over time is an observation the model lacks; two findings of one variant from one lab
+  on two dates, right to join when germline and wrong when somatic.
 - Which revision of a variant is current follows `currency.md`'s ladder; the queries that read a variant
   (`views/variants.rq`, `matcher/same-variation.rq`, `matcher/same-variation-through-table.rq`) still read
   `pav:hasCurrentVersion` from `derivations/current-revisions.rq`, the derivation `currency.md` replaces, and follow when
