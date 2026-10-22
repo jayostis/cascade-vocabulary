@@ -98,7 +98,8 @@ back to labels and a person's judgment, as today.
   case; the self-URL read with which client id), and under which the app proposes an edition.
 - What belongs to an organisation when one server serves many (81 brands on one Epic server; every eClinicalWorks
   practice on one base), and which code-and-date pairs are near-certain inside one organisation.
-- The amended `jdg:currentlySame`, and M1's triggers for the scoped runs.
+- The amended `jdg:currentlySame`, and M1's triggers for the scoped runs; a sync act is one trigger, since a union
+  leaves pairs no matcher saw together, and the run names the sync as its cause.
 - A matcher rule for organisations: `jdg:SameBusinessIdentifier` needs a shared code, which an organisation lacks,
   and M2 takes only the subject's records.
 - Whether the NPI registry becomes a reference table kind; the organisation record does not wait on it.
