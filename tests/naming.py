@@ -130,7 +130,8 @@ def normalised_base_url(url):
     with ValueError, never echoing the URL: userinfo, since a credential is never a name input; a control character or
     space, which a URL parser would otherwise drop; a query or a fragment, even an empty one, since a server's base has
     neither and a credential must never be a name input; no scheme or no host; a host that is not a reg-name of ASCII
-    characters and percent-encodings or a bracketed IPv6 address or IPvFuture; a port that is not ASCII digits."""
+    characters and percent-encodings or a bracketed IPv6 address or IPvFuture; a port that is not ASCII digits or is
+    above 65535. A port is read as an integer, so its leading zeros are dropped."""
     if re.search(r"[\x00-\x20\x7f]", url):
         raise ValueError("a base URL holding a control character or space names nothing")
     if re.search(r"[?#]", url):
@@ -153,6 +154,10 @@ def normalised_base_url(url):
         raise ValueError("a base URL with no scheme or no host names nothing")
     if not re.fullmatch(r"[0-9]*", port):
         raise ValueError("a base URL whose port is not ASCII digits names nothing")
+    if port:
+        port = port.lstrip("0") or "0"
+        if len(port) > 5 or int(port) > 65535:
+            raise ValueError("a base URL whose port is above 65535 names nothing")
     host = _host(host)
     netloc = host if port in ("", DEFAULT_PORTS.get(scheme)) else f"{host}:{port}"
     return f"{scheme}://{netloc}{_without_dot_segments(_percent_normalised(path)).rstrip('/')}"
