@@ -39,9 +39,24 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
 - **What an arrival writes.** A first arrival writes the record, its version and a revision. An arrival whose version
   is the current revision's writes nothing. An arrival whose (version, source version, source time) a revision already
   holds, and which would not become current, writes nothing. Otherwise a revision, with its heads.
-- **Current is derived, never stored:** first drop any revision an Erroneous names and any a counting Before places
-  before another candidate; of the rest, take those at the latest source change time, together with those carrying
-  none; of those, the greatest `rec:asOf`; then the least IRI, which is arbitrary and said so.
+- **Current is derived, never stored.** A Before orders one pair, not the set, so it removes rather than sorts, and
+  the pick is a maximum over what remains:
+  1. Remove every revision a counting Erroneous names.
+  2. Remove every revision a counting Before places before another revision still present. Befores that form a cycle
+     (two devices, "X before Y" and "Y before X") remove nothing and the pair is listed for review.
+  3. Of what remains, keep those at the latest source change time, together with those carrying none.
+  4. Of those, the greatest `rec:asOf`.
+  5. Then the least IRI, which is arbitrary and said so.
+
+  A record with nothing left after step 1 has no current state and appears in no view, which is what its Erroneous
+  judgments said; it remains in the pod with its history. Example: A is stamped 1 January by the server, B 1 February,
+  C is Apple's copy with no stamp. The clocks pick B. The person files "B before A"; step 2 removes B, step 3 keeps A
+  and C, step 4 picks whichever the pod observed later. The ranked order is "latest source time, then latest
+  observation": a Before removes before the clocks rank, never after, or the clocks would re-admit what the person
+  ruled out.
+- **A view materialises the pick.** Current changes only when an act writes, so a view rebuilt with the act holds each
+  entry's current revision, and the act's snapshot says whether a view is stale; a read is a lookup, and two devices at
+  one snapshot rebuild one view.
 - **Before** is a person's judgment, verdict Before, two revisions of one record in order; machines never make one;
   a Before outranks every clock, as Different outranks Same.
 - **A source that goes backwards raises one finding.** An import whose source reports a state older than that same
@@ -100,9 +115,6 @@ maximum over the set needs no walk of the line.
 
 ## Still open
 
-- Order of the steps: whether the latest source time is taken before or after Before and Erroneous remove revisions
-  (the ladder above removes first); what a Before cycle from two devices yields, and what an empty candidate set
-  yields.
 - Whether Before orders versions or revisions: a revision may repeat an earlier version, so the two differ.
 - The stamp-less copy: revisions with no source time are candidates beside those at the latest time, so a stale copy
   with its `meta` stripped can become current on `rec:asOf` alone. Lean: an arrival with no source time whose version
