@@ -91,7 +91,7 @@ appears here only as evidence for a judgment.
 | machine judgment | nanopub assertion | the claim named once, by rule IRI, justification, member count, members sorted, used sorted; each run that reaches it writes an assertion; what "used" holds is open | borrowed from nanopubs' claim and assertion split |
 | retraction | nanopub `npx:retracts` | a `prov:Activity` that `prov:invalidated`; replacement by `dcterms:replaces` | diverges: npx's domains make a judgment an agent |
 | document, finding | RFC 6920; Web Annotation | bytes hashed; content hashed | borrowed |
-| view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; rebuilt with the view, cited by nothing outside it | ours |
+| view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; rebuilt with the view, cited by nothing outside it; carries every member's current state, with a lead per `currency.md` | ours |
 | snapshot | git tree | one node per act naming the set of files it left on that device; a sync's snapshot names the merged set, so two devices are in sync when their latest snapshots are equal | borrowed |
 | pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID | diverges from Solid, which names a pod by its URL |
 | scheme | | declared per pod at creation: source URL as IRI, opaque hash (default), or keyed hash; what has no URL (C-CDA, entries, judgments) is hashed under all three; a test key for kits | ours |

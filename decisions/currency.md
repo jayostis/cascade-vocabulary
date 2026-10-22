@@ -61,6 +61,14 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
 - **A view materialises the pick.** Current changes only when an act writes, so a view rebuilt with the act holds each
   entry's current revision, and the act's snapshot says whether a view is stale; a read is a lookup, and two devices at
   one snapshot rebuild one view.
+- **An entry on a Same group shows every member.** Each member's current state is picked by its own ladder, and the
+  entry is the union of their fields, each field saying which member it came from; where members disagree on a field,
+  every value shows, the lead's first. The lead is decided three ways, and the person picks which:
+  1. Say nothing: the lead is the member ranking first by this ladder over the members' current states.
+  2. Say which leads: a Before across two members' current revisions, "show this one first".
+  3. Say what it is: the person enters the fact as their own record, a Same joins it to the group, and a person's own
+     record leads any group it is in, by rule, since it is the one statement the person authored.
+  No merged record is stored; the entry is computed from the members. "Latest observed member" is gone.
 - **Before** is a person's judgment, verdict Before, two revisions of one record in order, never two versions; machines
   never make one; a Before outranks every clock, as Different outranks Same. Revisions, because a state recurs: a
   medication stopped and restarted is the running version twice, and a Before over versions filed while the drug was
@@ -142,6 +150,9 @@ maximum over the set needs no walk of the line.
   superseded state re-arriving by another path would be covered without a refile. The re-arrival is already held and
   writes nothing, so the case never occurs; and the claim is timeless where states recur, so it hides a genuine
   restart silently. Arbitrated on #130 after the two sides tied.
+- **A Same group shows its latest-observed member.** The strongest case: one rule, no judgment, and it was the rule.
+  Which member was pulled last is an accident of the person's day, and it hid a field one member had and another
+  lacked; showing every member hides nothing, and the lead is the person's to set.
 - **Skipping a held state only when it would not become current.** The strongest case: a held state that would win
   is new information. It wins only because a judgment removed the revision holding it, so the write undoes the
   judgment; everything else that wins has a new stamp.
@@ -156,9 +167,6 @@ maximum over the set needs no walk of the line.
 - A source that no longer returns a record at all, as against returning an older state: nothing contradicts the
   record the pod holds, so no finding fires and the record stays current. Source deletion is a question of its own.
 - The acknowledgement that clears a finding has no verdict today; it is open in `judgments.md`.
-- The latest member of a Same group is chosen by `rec:asOf`, so a re-publisher's stale copy pulled later shows over
-  the origin's correction. Lean: the group's rule follows this ladder, and a Before may order revisions of any two
-  records a Same joins.
 - The term: `rec:asOf` beside the existing `rec:answeredAsOf` on documents, and whether one name serves both.
 
 ## What would change our mind
