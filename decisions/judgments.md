@@ -59,6 +59,9 @@ Sources: OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
   finding outside `jdg:`.
 - Whether a derivation from a source-level judgment to records is written as a rule term the derived joins cite, so
   a derived Before or Same can say which judgment it came from.
+- A verdict over an act saying its observation times are known wrong, per `currency.md`: its name, and whether it
+  carries an offset or only discounts.
+- A declined act leaves no finding, because no act generated one; whether a refusal needs a home.
 - Whether `jdg:currentlySame` survives the derived joins in `republishing-sources.md`.
 - What of this note a shared view may carry: a judgment names records a view may not show.
 

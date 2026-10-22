@@ -31,8 +31,9 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
 
 - **A revision carries two clocks.** `prov:generatedAtTime`, when the pod wrote it, and `rec:asOf`, when the source was
   observed saying this state: the first of the document's `rec:answeredAsOf`, the document's `pav:retrievedOn`, the
-  source's own change time, and the act's start. For an entry it is the session's start. The second, third and fourth
-  rungs are device clocks for a live pull or an entry; the first two are the exporter's.
+  source's own change time, and the act's start. For an entry it is the session's start. The first two rungs are the
+  exporter's clock, the third the source's, and the fourth the device's: an unstamped record from a live pull, and
+  every entry, carry the device's clock as their observation time.
 - **The source's own version** (`meta.versionId`, `meta.lastUpdated`, or a C-CDA document's `effectiveTime`) sits in a
   node nested in the revision, hashed with it, never on the revision itself.
 - **A revision names the record's heads it saw** as `prov:wasRevisionOf`, one or several; a sync is a union of files.
@@ -84,6 +85,19 @@ Sources: FHIR R4 `Meta` (https://hl7.org/fhir/R4/resource.html#Meta); openEHR ve
   rollback finding as one line, "this source reports N records at states older than it reported on that date",
   expanding to the records, with three answers: a Before over the finding; an acknowledgement, so the later states stay
   and the finding clears; or a Before per record from the expanded list.
+- **A wrong device clock is caught after the fact and discounted by one judgment.** Stamped records never use the
+  device's clock, so a skew touches only unstamped pulls and entries, at step 4. Two checks run on each act and file
+  a finding, "this device's clock was at least N days behind": a revision whose `rec:asOf` precedes a head it names,
+  and a pull returning a record the source stamped after the pull's own time. The remedy is a person's judgment whose
+  member is the act, saying its observation times are known wrong, usually by confirming the finding; the derivation
+  treats every revision that act generated as carrying no `rec:asOf`, so its picks fall to step 5 and the review
+  page. Nothing is rewritten, and the judgment is retractable. It is not Erroneous over the act: the content is
+  sound, only its clocks are not. The verdict's name is open in `judgments.md`.
+- **An act's findings are known before it is committed.** An act is atomic, so an app may run an import to a staging
+  area, show the person what it found, and let them commit it, commit it with a judgment filed in the same step, or
+  decline it. A declined act never existed: no name, no snapshot, nothing for another device to receive. The next
+  pull will find the same thing and ask again; a declined act leaves no finding because no act generated one. The
+  vocabulary permits staging and does not require it.
 - **Erroneous** is for a state that is wrong, and hides it from every view; a stale state is not wrong and stays.
 
 ## Why
