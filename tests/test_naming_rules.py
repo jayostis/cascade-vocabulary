@@ -184,6 +184,17 @@ def test_every_refused_base_url_vector_names_nothing(name, given):
         naming.server_name(given)
 
 
+def test_oxigraph_finds_each_new_refused_base_url_holding_a_forbidden_character_or_a_query_or_fragment_mark():
+    refused = dict(refused_base_urls())
+    for name in ("base-url-space", "base-url-nul", "base-url-del"):
+        with pytest.raises(ValueError):
+            NamedNode(refused[name])
+    for name in ("base-url-query", "base-url-empty-query", "base-url-fragment", "base-url-empty-fragment"):
+        [solution] = Store().query('SELECT ?given (REGEX(?given, "[?#]") AS ?holds) {}',
+                                   substitutions={Variable("given"): OxigraphLiteral(refused[name])})
+        assert solution["holds"].value == "true", name
+
+
 def test_a_code_joins_its_stem_as_encode_for_uri_writes_it():
     codes = ["NM_000249.4:c.2042C>T", "NM_000249.4:c.(116+1_117-1)_(380+1_381-1)del", "E11.65", "08", "Ñ \U0001F95C~"]
     [solution] = Store().query("SELECT " + " ".join(f'(ENCODE_FOR_URI("{c}") AS ?c{n})' for n, c in enumerate(codes))

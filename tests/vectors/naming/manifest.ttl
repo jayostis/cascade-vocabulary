@@ -59,6 +59,8 @@
     <#version-nested-identifiers>
     <#version-literal-forms>
     <#version-language-tag-case>
+    <#version-code-point-order>
+    <#version-repeated-triple>
     <#revision>
     <#finding>
     <#table-version-first>
@@ -76,6 +78,13 @@
     <#base-url-percent-encoding>
     <#base-url-host-alone>
     <#base-url-percent-encoded-host>
+    <#base-url-space>
+    <#base-url-nul>
+    <#base-url-del>
+    <#base-url-query>
+    <#base-url-empty-query>
+    <#base-url-fragment>
+    <#base-url-empty-fragment>
     <#base-url-userinfo>
     <#base-url-port-not-digits>
     <#base-url-no-scheme>
@@ -191,7 +200,7 @@
 
 <#record-from-ccda-without-id-members> a bridge:NamingTest ;
   mf:name "record-from-ccda-without-id-members" ;
-  rdfs:comment "An id-less entry with no key: \"\" for the key, then its members fingerprint, so a key and a members fingerprint of one value name two records." ;
+  rdfs:comment "An id-less entry whose key fingerprint is absent or \"\": \"\" for the key, then its members fingerprint, so a key and a members fingerprint of one value name two records." ;
   bridge:namingRule cascade:RecordFromCcdaWithoutIdNamingRule ;
   mf:action [ qt:query <RecordFromCcdaWithoutIdNamingRule.rq> ; bridge:nameInputs ( "2.16.840.1.113883.19.5" "CLINIC-1" "2.16.840.1.113883.19.5.99" "MRN-1234" "https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance" "" "31544120" ) ] ;
   mf:result [ bridge:expectedName <urn:uuid:1ecaba18-53b4-8dc7-a139-a37458cc20de> ] .
@@ -212,7 +221,7 @@
 
 <#contained-record-last-updated> a bridge:NamingTest ;
   mf:name "contained-record-last-updated" ;
-  rdfs:comment "A container with no meta.versionId gives its meta.lastUpdated as written." ;
+  rdfs:comment "A container whose meta.versionId is absent or \"\" gives its meta.lastUpdated as written." ;
   bridge:namingRule cascade:ContainedRecordNamingRule ;
   mf:action [ qt:query <ContainedRecordNamingRule.rq> ; bridge:nameInputs ( "urn:uuid:7435b3b8-2d93-8912-9d48-940c5870dc81" "2026-03-01T10:00:00.000+00:00" "r1" ) ] ;
   mf:result [ bridge:expectedName <urn:uuid:e8e1e56b-adc0-89dd-bb4b-12a66c30100c> ] .
@@ -448,6 +457,20 @@
   mf:action [ bridge:input <content/version-language-tag-case.nt> ] ;
   mf:result [ bridge:expectedName <ni:///sha-256;YZvBMln2ccupi06IT5zkjwmaSa6hbU_wHF5VC2w2yAk> ; bridge:canonicalContent <content/version-language-tag-case.nq> ] .
 
+<#version-code-point-order> a bridge:NamingTest ;
+  mf:name "version-code-point-order" ;
+  rdfs:comment "Canonical lines are in code point order: U+FF5E (a UTF-16 unit of 0xFF5E) before U+1F600 (a surrogate pair starting 0xD83D), which a UTF-16 sort would put the other way round." ;
+  bridge:namingRule cascade:VersionNamingRule ;
+  mf:action [ bridge:input <content/version-code-point-order.nt> ] ;
+  mf:result [ bridge:expectedName <ni:///sha-256;K8Z4H3UpO4nZMzq3OyssdbKrQmaL1mp_7TuYvUTrceA> ; bridge:canonicalContent <content/version-code-point-order.nq> ] .
+
+<#version-repeated-triple> a bridge:NamingTest ;
+  mf:name "version-repeated-triple" ;
+  rdfs:comment "A triple written twice is one triple: a graph is a set, so its canonical form holds one line for it." ;
+  bridge:namingRule cascade:VersionNamingRule ;
+  mf:action [ bridge:input <content/version-repeated-triple.nt> ] ;
+  mf:result [ bridge:expectedName <ni:///sha-256;wozFEeN9darCg3lk8CQBiPSn3eDcKBQ5mGYYTo0xagw> ; bridge:canonicalContent <content/version-repeated-triple.nq> ] .
+
 <#revision> a bridge:NamingTest ;
   mf:name "revision" ;
   rdfs:comment "A revision: the same hash over its triples, its subject urn:cascade:this-revision." ;
@@ -557,6 +580,41 @@
   rdfs:comment "A host in lower case but for a percent-encoding's hex digits, which are upper case (RFC 3986 §6.2.2.1); an encoded unreserved character decoded, then lower-cased with the host." ;
   mf:action [ cascade:serverBaseUrl "https://%41PI.%c3%a9xample.ORG/r4" ] ;
   mf:result [ cascade:serverBaseUrl "https://api.%C3%A9xample.org/r4" ] .
+
+<#base-url-space> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-space" ;
+  rdfs:comment "A space is refused." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org/r 4" ] .
+
+<#base-url-nul> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-nul" ;
+  rdfs:comment "U+0000 is refused." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org/r4\u0000" ] .
+
+<#base-url-del> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-del" ;
+  rdfs:comment "U+007F (DEL) is refused." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org/r4\u007F" ] .
+
+<#base-url-query> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-query" ;
+  rdfs:comment "A query is refused: a server's base never has one, and a credential in it must never be a name input." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org/r4?tok=abc" ] .
+
+<#base-url-empty-query> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-empty-query" ;
+  rdfs:comment "An empty query is refused too." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org/r4?" ] .
+
+<#base-url-fragment> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-fragment" ;
+  rdfs:comment "A fragment is refused." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org/r4#x" ] .
+
+<#base-url-empty-fragment> a bridge:BaseUrlRefusalTest ;
+  mf:name "base-url-empty-fragment" ;
+  rdfs:comment "An empty fragment is refused too." ;
+  mf:action [ cascade:serverBaseUrl "https://fhir.example.org/r4#" ] .
 
 <#base-url-userinfo> a bridge:BaseUrlRefusalTest ;
   mf:name "base-url-userinfo" ;
