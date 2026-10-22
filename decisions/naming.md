@@ -76,7 +76,7 @@ appears here only as evidence for a judgment.
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | derived name | RFC 9562 §5.8, §6.6 | UUIDv8 over a random v4 namespace, the rule's IRI, then the inputs, escaped and joined; lists carry their count | borrowed; the rule IRI as first input is ours |
-| rule | FHIR extensions named by URL | a term in an unversioned namespace; a changed recipe is a new IRI | borrowed |
+| rule | FHIR extensions named by URL | a term in the one unversioned Cascade namespace (#193); a changed recipe is a new IRI; local names are descriptive words in the ontology's own style, one per row of this table: `RecordFromServer`, `RecordFromDocument`, `RecordFromCcda`, `ContainedRecord`, `Entry`, `Version`, `Revision`, `ViewEntry`, `Snapshot`, `Server`, `Organisation`, `Claim`, `Assertion`, `Retraction`, never a short tag like `fhir-resource` | borrowed |
 | record from a server | FHIR server + id; SPHN provider-scoped IRI | hash of the normalised base URL the client used, the type and the id; `rec:sourceUrl` stated in the file | SPHN's scope, hashed so a shared view names no host; diverges from FHIR, which calls the pair not durable, and ignores the server's own `implementation.url` (see `republishing-sources.md`) |
 | record from a document | FHIR documents | named by the document and a selector; an id the generator minted is the document's, never the hospital's; a `urn:uuid` fullUrl is never identity across documents | borrowed from FHIR's promise, uniqueness within one bundle only |
 | record from C-CDA | CDA `id` roots; Sequoia Data Usability "same ID for unchanged data" | custodian and patient scopes, then the entry's CDA `id` root and extension, so the same statement in two documents from one system is one record; two entries of one document with one `id` and different content fall back to document-and-selector names and a finding says the source broke its own definition | borrowed from the networks' SHALL; diverges from the document row because CDA ids are measured stable where generator UUIDs are not |
@@ -95,7 +95,7 @@ appears here only as evidence for a judgment.
 | document, finding | RFC 6920; Web Annotation | bytes hashed; content hashed | borrowed |
 | view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; rebuilt with the view, cited by nothing outside it; carries every member's current state, with a lead per `currency.md` | ours |
 | snapshot | git tree | one node per act naming the set of files it left on that device; a sync's snapshot names the merged set, so two devices are in sync when their latest snapshots are equal | borrowed |
-| pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID | diverges from Solid, which names a pod by its URL |
+| pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID; a judgment that leaves the pod carries it as the author, so a receiver can cite the person and reconcile their shares, and whether the author leaves at all is the share-time choice like every field; keying it adds nothing, since it is random already | diverges from Solid, which names a pod by its URL |
 | scheme | | declared per pod at creation: source URL as IRI, opaque hash (default), or keyed hash; what has no URL (C-CDA, entries, judgments) is hashed under all three; a test key for kits | ours |
 
 The rules are the vocabulary's: each a term with `rdfs:seeAlso` to its standard, a `.rq` where SPARQL can state it,
@@ -256,7 +256,10 @@ only the vocabulary; vectors are cross-checked because an implementation that mi
   which kits re-author (Priya's C-CDA fixtures need a custodian and a patient id).
 - Whether ids survive an Epic path edit on one server: inferred from one capability statement and one token endpoint
   under three path forms, not observed; one patient read under two paths with a registered test client settles it.
-- The rule IRIs' local names.
+- A feature under consideration, not ruled: under the keyed scheme, a shared judgment's author derived from the key
+  and the receiver, so the person is one stable id to each receiver and unlinkable across receivers. One field, so
+  it works where pseudonymising every name did not; whether it earns its complexity is open, and nothing proves
+  authorship without a signature either way.
 
 ## What would change our mind
 
