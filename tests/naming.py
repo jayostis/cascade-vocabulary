@@ -3,8 +3,8 @@ under tests/vectors/naming/ are what every other implementation reproduces."""
 
 import base64
 import hashlib
+import ipaddress
 import re
-from urllib.parse import urlsplit, urlunsplit
 
 from pyoxigraph import BlankNode, NamedNode, RdfFormat, Triple, parse
 
@@ -96,32 +96,66 @@ def _without_dot_segments(path):
     return "".join(output)
 
 
+HOST_NAME = re.compile(r"(?:[A-Za-z0-9\-._~!$&'()*+,;=]|%[0-9A-Fa-f]{2})+")
+IP_FUTURE = re.compile(r"[vV][0-9A-Fa-f]+\.[A-Za-z0-9\-._~!$&'()*+,;=:]+")
+
+
+def _host(text):
+    """RFC 3986 §3.2.2: a reg-name of ASCII characters and percent-encodings, or an IP-literal in brackets holding an
+    IPv6 address or an IPvFuture, with no zone id. Returns it normalised."""
+    if not text.isascii():
+        raise ValueError("a base URL whose host is not ASCII names nothing: a source sends an IDN punycoded")
+    if text.startswith("[") and text.endswith("]"):
+        inner = text[1:-1]
+        if IP_FUTURE.fullmatch(inner):
+            return f"[{inner.lower()}]"
+        if "%" not in inner:
+            try:
+                ipaddress.IPv6Address(inner)
+            except ValueError:
+                pass
+            else:
+                return f"[{inner.lower()}]"
+        raise ValueError("a base URL whose bracketed host is not an IPv6 address or an IPvFuture names nothing")
+    if "[" in text or "]" in text:
+        raise ValueError("a base URL whose host has a bracket that is not an IP-literal's names nothing")
+    if not HOST_NAME.fullmatch(text):
+        raise ValueError("a base URL whose host is not a reg-name names nothing")
+    return _percent_normalised(text, lower=True)
+
+
 def normalised_base_url(url):
     """RFC 3986 §6.2.2 and §6.2.3: scheme and host in lower case, percent-encodings in upper case and unreserved
     characters decoded, dot segments removed, the scheme's default port dropped; then every trailing / removed. Refused
-    with ValueError: userinfo, since a credential is never a name input; a control character or space, which a URL
-    parser would otherwise drop; a query or a fragment, even an empty one, since a server's base has neither and a
-    credential must never be a name input; no scheme or no host; a port that is not digits."""
+    with ValueError, never echoing the URL: userinfo, since a credential is never a name input; a control character or
+    space, which a URL parser would otherwise drop; a query or a fragment, even an empty one, since a server's base has
+    neither and a credential must never be a name input; no scheme or no host; a host that is not a reg-name of ASCII
+    characters and percent-encodings or a bracketed IPv6 address or IPvFuture; a port that is not ASCII digits."""
     if re.search(r"[\x00-\x20\x7f]", url):
-        raise ValueError(f"a base URL holding a control character or space names nothing: {url!r}")
+        raise ValueError("a base URL holding a control character or space names nothing")
     if re.search(r"[?#]", url):
-        raise ValueError(f"a base URL carrying a query or a fragment names nothing: {url}")
-    parts = urlsplit(url)
-    if not parts.scheme:
-        raise ValueError(f"a base URL with no scheme or no host names nothing: {url}")
-    if "@" in parts.netloc:
-        raise ValueError(f"a base URL carrying userinfo names nothing: {url}")
-    scheme = parts.scheme.lower()
-    authority = re.fullmatch(r"(\[[^\]]*\]|[^:]*)(?::(\d*))?", parts.netloc)
-    if authority is None:
-        raise ValueError(f"a base URL whose port is not digits names nothing: {url}")
-    host, port = authority.groups(default="")
+        raise ValueError("a base URL carrying a query or a fragment names nothing")
+    parts = re.fullmatch(r"([A-Za-z][A-Za-z0-9+.\-]*):(?://([^/]*))?(.*)", url, re.DOTALL)
+    if parts is None or parts[2] is None:
+        raise ValueError("a base URL with no scheme or no host names nothing")
+    scheme, authority, path = parts[1].lower(), parts[2], parts[3]
+    if "@" in authority:
+        raise ValueError("a base URL carrying userinfo names nothing")
+    if authority.startswith("["):
+        close = authority.find("]") + 1
+        host, rest = (authority[:close], authority[close:]) if close else (authority, "")
+        if rest and not rest.startswith(":"):
+            raise ValueError("a base URL whose bracketed host is not followed by a port names nothing")
+        port = rest[1:]
+    else:
+        host, _, port = authority.partition(":")
     if not host:
-        raise ValueError(f"a base URL with no scheme or no host names nothing: {url}")
-    host = _percent_normalised(host, lower=True)
+        raise ValueError("a base URL with no scheme or no host names nothing")
+    if not re.fullmatch(r"[0-9]*", port):
+        raise ValueError("a base URL whose port is not ASCII digits names nothing")
+    host = _host(host)
     netloc = host if port in ("", DEFAULT_PORTS.get(scheme)) else f"{host}:{port}"
-    path = _without_dot_segments(_percent_normalised(parts.path)).rstrip("/")
-    return urlunsplit((scheme, netloc, path, "", ""))
+    return f"{scheme}://{netloc}{_without_dot_segments(_percent_normalised(path)).rstrip('/')}"
 
 
 def encoded_for_uri(text):
