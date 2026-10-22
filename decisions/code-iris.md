@@ -9,7 +9,8 @@ the settlement words them. Terms: `rec:CodeSystem` and its thirteen members (`re
 `vocab/*-code-systems.ttl`, `rec:HgvsCodeShape`, `rec:ClinVarCodeShape`; rule M4. Depends on `naming.md` (names hash
 a version's content, codes included) and `variant-identity.md` (R12 and R13 join on the HGVS and ClinVar IRIs). The
 new stems land in #193's one re-mint, with `cascade:codingSystemUri`; nothing in the ontology, the adapters or the
-tables changes in this note's pull request. The research log is on that pull request.
+tables changes in this note's pull request. The research log is
+[on #227](https://github.com/jayostis/cascade-vocabulary/pull/227#issuecomment-6350708032).
 
 ## Question
 
@@ -155,8 +156,8 @@ and migration (https://docs.identifiers.org/pages/identification_scheme.html, â€
 (https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/gks-core-source.yaml) and VRS
 (https://github.com/ga4gh/vrs/blob/2.0/schema/vrs/vrs-source.yaml); W3C Web Architecture
 (https://www.w3.org/TR/webarch/#uri-ownership); and the sources of `hgvs-and-clinvar-codes.md` for encoding, HGVS and
-ClinVar, kept in its history and on #203. The commands and their answers are the research log on the pull request
-that brought this note.
+ClinVar, kept in its history and on #203. The commands and their answers are the research log on #227
+(https://github.com/jayostis/cascade-vocabulary/pull/227#issuecomment-6350708032).
 
 ## Choice
 
