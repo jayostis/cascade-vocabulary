@@ -150,9 +150,11 @@ reads; a marker in the vocabulary changes none.
   #191 changes it.
 - Which revision of a variant record is current when R13 and the table queries read its codes: they read the
   derivation `currency.md` replaces.
-- The row's keys. #139 settled them as the submitted expressions plus the one in the variation's own ClinVar name, which
-  raises Lynch's variations found by HGVS from 74.7% to 97.0% (verified, Step 0, #203); this note and `records.ttl`'s
-  comment on `rec:VariantClassifications` say submitted only. Which is ruled is owed.
+- The row's keys, checked against the builder on 2026-10-22 and closed: `cascade-reference-tables`'
+  `builders/ncbi-clinvar/build.ts` keys a row by the submitted expressions plus the one in the variation's ClinVar
+  name, as #139 settled (its test: "found by its name's expression"), which raises Lynch's variations found by HGVS
+  from 74.7% to 97.0% (verified, Step 0, #203). This note's "submitted only" and `records.ttl`'s comments were stale and
+  now say so.
 - The two-VariationIDs guard. 195 of 3,304,067 submitted coding expressions name two variations across the whole file
   (verified, #203), but the guard as settled counts every `NM_` row and every variation's name expression, which nobody
   has counted (unverified, #203).
