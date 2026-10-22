@@ -195,6 +195,33 @@ def test_oxigraph_finds_each_new_refused_base_url_holding_a_forbidden_character_
         assert solution["holds"].value == "true", name
 
 
+def test_oxigraph_finds_each_malformed_bracketed_host_invalid_and_each_normalised_ip_literal_valid():
+    refused = dict(refused_base_urls())
+    for name in ("base-url-bracket-unclosed", "base-url-bracket-unopened", "base-url-bracket-not-ip",
+                 "base-url-bracket-empty", "base-url-ipv6-zone"):
+        with pytest.raises(ValueError):
+            NamedNode(refused[name])
+    for name, _, expected in base_urls():
+        if "[" in expected:
+            NamedNode(expected)
+
+
+@pytest.mark.parametrize("name, given", refused_base_urls(), ids=[case[0] for case in refused_base_urls()])
+def test_a_refusal_says_why_without_echoing_the_url(name, given):
+    with pytest.raises(ValueError) as refusal:
+        naming.normalised_base_url(given)
+    assert given not in str(refusal.value) and repr(given) not in str(refusal.value)
+
+
+@pytest.mark.parametrize("given", ["https://s3cr3t@fhir.example.org/r4", "https://fhir.example.org/r4?tok=s3cr3t",
+                                   "https://fhir.example.org:s3cr3t/r4", "https://s3cr3t%zz.example.org/r4",
+                                   "https://[s3cr3t]/r4", "https://fhir.example.org/r4#s3cr3t"])
+def test_a_refusal_never_carries_a_credential_to_error_output(given):
+    with pytest.raises(ValueError) as refusal:
+        naming.normalised_base_url(given)
+    assert "s3cr3t" not in str(refusal.value)
+
+
 def test_a_code_joins_its_stem_as_encode_for_uri_writes_it():
     codes = ["NM_000249.4:c.2042C>T", "NM_000249.4:c.(116+1_117-1)_(380+1_381-1)del", "E11.65", "08", "Ñ \U0001F95C~"]
     [solution] = Store().query("SELECT " + " ".join(f'(ENCODE_FOR_URI("{c}") AS ?c{n})' for n, c in enumerate(codes))
