@@ -100,9 +100,12 @@ def normalised_base_url(url):
     """RFC 3986 §6.2.2 and §6.2.3: scheme and host in lower case, percent-encodings in upper case and unreserved
     characters decoded, dot segments removed, the scheme's default port dropped; then every trailing / removed. Refused
     with ValueError: userinfo, since a credential is never a name input; a control character or space, which a URL
-    parser would otherwise drop; no scheme or no host; a port that is not digits."""
+    parser would otherwise drop; a query or a fragment, even an empty one, since a server's base has neither and a
+    credential must never be a name input; no scheme or no host; a port that is not digits."""
     if re.search(r"[\x00-\x20\x7f]", url):
         raise ValueError(f"a base URL holding a control character or space names nothing: {url!r}")
+    if re.search(r"[?#]", url):
+        raise ValueError(f"a base URL carrying a query or a fragment names nothing: {url}")
     parts = urlsplit(url)
     if not parts.scheme:
         raise ValueError(f"a base URL with no scheme or no host names nothing: {url}")
@@ -118,7 +121,7 @@ def normalised_base_url(url):
     host = _percent_normalised(host, lower=True)
     netloc = host if port in ("", DEFAULT_PORTS.get(scheme)) else f"{host}:{port}"
     path = _without_dot_segments(_percent_normalised(parts.path)).rstrip("/")
-    return urlunsplit((scheme, netloc, path, parts.query, parts.fragment))
+    return urlunsplit((scheme, netloc, path, "", ""))
 
 
 def encoded_for_uri(text):
