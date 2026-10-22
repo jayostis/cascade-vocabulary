@@ -41,9 +41,9 @@ is one judgment per source-level fact, from which the per-record joins are deriv
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| server | FHIR `CapabilityStatement` | a record named by the base URL the client used; a connect is an act, and each writes a version of what the server reported: self-asserted base, login endpoint, software | ours; the self-URL is evidence, never a name input, diverging from FHIR's own statement of where a server lives |
+| server | FHIR `CapabilityStatement` | a record named by the base URL the client used; a connect is an act, and each writes a version of what the server reported: self-asserted base, login endpoint, software, and the client id it was reported to, since a pod holds connects from several apps; an address known only from a document or an export (Apple's copy carries the URL, not what the server said) has a server record with no version | ours; the self-URL is evidence, never a name input, diverging from FHIR's own statement of where a server lives |
 | organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | a record, `prov:Organization`, named by server plus `Organization/{id}` or the custodian's `id` root and extension; name, address and identifiers on versions; a document names its custodian and author by it | borrowed from PROV; FHIR's `Organization` resource treated as any record |
-| two servers are one | git remotes | a Same whose members are two servers, by a person on the app's proposal or by the machine under a guard; derivation: every record of one type and id under both is one record | ours; the derivation is `Linkage` computed rather than asserted |
+| two servers are one | git remotes | a Same whose members are two servers, by a person on the app's proposal, or by the machine when two connects made with one client id report the same self-URL, the same login endpoint and the same host (the Epic path edit: 57 of 57 kept the self-URL, 19 of 19 hosting moves changed it); with no like-for-like connect, the app proposes and the person decides; derivation: every record of one type and id under both, within one organisation, is one record | ours; the derivation is `Linkage` computed rather than asserted |
 | two organisations are one | `Patient.link`; SPHN | a Same whose members are two organisations, usually the machine's from a shared NPI or OID; derivation: the matcher's within-organisation rules run over both | ours |
 | two documents are editions | CDA `RPLC`; `relatesTo` | a judgment between two documents from one custodian, the later edition named; derivation: entries whose content matches within the pair are one record, changed entries go to the matcher within the pair, the rest are new or dropped; the verdict is open | borrowed in substance from CDA and FHIR, which the adapters read where present |
 | within-organisation rules | | inside one organisation a shared business identifier joins, and a shared code and date joins; which pairs, and what belongs to an organisation when one server serves many, is open | ours |
@@ -58,9 +58,15 @@ Hashing the server's self-asserted base instead of the client's address was meas
 survives a path edit and not a hosting move (19 of 19 old Epic hosts now report the new host as themselves), MEDITECH
 never sends it, eClinicalWorks reports one base for every practice, and Epic documents that it can differ per client
 id; as a judgment input it keeps the benefit and makes the failure retractable. An address change is a server Same,
-and ids survive (inferred, not observed), so the derivation joins by id; the app can propose it at connect time from
-the self-URL and the login endpoint, before a record is pulled, and made later it has the same effect because it was
-never baked into a name. Records pulled under the new address are still written, so a name never depends on a
+and ids survive (inferred, not observed), so the derivation joins by id; the machine makes it only from two of the
+pod's own connects under one client id, because Epic documents that the self-URL can differ by the client id asking
+and a pod holds connects from several apps, so a mismatch across apps proves nothing and is left to the person, the
+safe direction; before a record is pulled, and made later it has the same effect because it was never baked into a
+name. The common case needs no join at all: Apple's copy of a Mercy record carries the address Apple used, and where
+that is the address the app used the names already agree and the copy is one more revision; where Apple's address is
+the older one, the pod never spoke to it, so the join is the person's, or the app connects to the old address itself
+and earns like-for-like evidence while it still answers. The derivation is confined to one organisation because a
+multi-tenant server is one server, so the Same is true, and `Patient/1` under two of its practices are two people. Records pulled under the new address are still written, so a name never depends on a
 judgment in one pod. A vendor switch re-issues ids, so a server Same joins nothing; but within one organisation a
 shared identifier is certain and a shared code and date is strong, and those rules join most of the history, with
 what is left on the review page. Two summaries from one hospital are editions: their custodian is one organisation
@@ -78,6 +84,10 @@ back to labels and a person's judgment, as today.
   for every eClinicalWorks practice.
 - **Pin to the first address the pod saw for a server.** The strongest case: it would survive a hosting move too.
   The name would then depend on one pod's memory, so no other holder could recompute it.
+- **The guard on self-URL alone, whoever asked.** The strongest case: it would fire on Apple's addresses and on
+  another app's connects too. Apple's export carries no capability statement, so there is nothing to compare, and a
+  self-URL reported to another client id can differ for the same server, so the comparison would miss joins it
+  should make and could not be told from a real move.
 - **A judgment per record.** The strongest case: it is what the matcher does today and needs nothing new. A moved
   server is one fact and thousands of records; one judgment says it once and is retracted once.
 - **Organisations as blank nodes with a label.** The strongest case: nothing pointed at one, and labels collide. A
@@ -94,10 +104,10 @@ back to labels and a person's judgment, as today.
   its own, citing CDA `RPLC` and `relatesTo`, or a Same with the documents' dates giving order.
 - "Content matches" within a pair: entries that reference another record of their own document hash differently, so
   references must not count.
-- The guard under which the machine makes a server Same (same self-URL and same login endpoint is the Epic path
-  case; the self-URL read with which client id), and under which the app proposes an edition.
-- What belongs to an organisation when one server serves many (81 brands on one Epic server; every eClinicalWorks
-  practice on one base), and which code-and-date pairs are near-certain inside one organisation.
+- The guard under which the app proposes an edition.
+- Which code-and-date pairs are near-certain inside one organisation; and how a record is assigned to an
+  organisation on a server that serves many (81 brands on one Epic server; every eClinicalWorks practice on one base),
+  which the within-organisation derivation now depends on.
 - The amended `jdg:currentlySame`, and M1's triggers for the scoped runs; a sync act is one trigger, since a union
   leaves pairs no matcher saw together, and the run names the sync as its cause.
 - A matcher rule for organisations: `jdg:SameBusinessIdentifier` needs a shared code, which an organisation lacks,
