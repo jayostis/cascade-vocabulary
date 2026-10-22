@@ -1,53 +1,57 @@
 @prefix : <urn:x:> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:allergy a health:AllergyRecord .
-:allergyVersion prov:specializationOf :allergy ; health:allergen "Peanut" ; clinical:status "active" .
-:allergyRevision a rec:Revision ; rec:revisionOf :allergy ; rec:version :allergyVersion ;
+:allergy a cascade:AllergyOrIntolerance .
+:allergyVersion prov:specializationOf :allergy ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:allergyRevision a cascade:Revision ; cascade:revisionOf :allergy ; cascade:version :allergyVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:condition a health:ConditionRecord .
-:conditionVersion prov:specializationOf :condition ; health:conditionName "Asthma" ; health:status "active" ;
-    health:onsetDate "2020-05-01"^^xsd:date .
-:conditionRevision a rec:Revision ; rec:revisionOf :condition ; rec:version :conditionVersion ;
+:condition a cascade:ProblemOrDiagnosis .
+:conditionVersion prov:specializationOf :condition ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" ;
+    cascade:onsetDate "2020-05-01"^^xsd:date .
+:conditionRevision a cascade:Revision ; cascade:revisionOf :condition ; cascade:version :conditionVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:immunization a health:ImmunizationRecord .
-:immunizationVersion prov:specializationOf :immunization ; health:vaccineName "Influenza" ;
-    health:status "completed" ; health:administrationDate "2025-10-01"^^xsd:date .
-:immunizationRevision a rec:Revision ; rec:revisionOf :immunization ; rec:version :immunizationVersion ;
+:immunization a cascade:Vaccination .
+:immunizationVersion prov:specializationOf :immunization ; cascade:vaccineName "Influenza" ;
+    cascade:workflowStatus "completed" ; cascade:vaccinationOccurrenceTime "2025-10-01"^^xsd:date .
+:immunizationRevision a cascade:Revision ; cascade:revisionOf :immunization ; cascade:version :immunizationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:procedure a clinical:Procedure .
-:procedureVersion prov:specializationOf :procedure ; clinical:procedureName "Colonoscopy" ;
-    clinical:status "completed" ; clinical:procedureDate "2024-03-01"^^xsd:date .
-:procedureRevision a rec:Revision ; rec:revisionOf :procedure ; rec:version :procedureVersion ;
+:procedure a cascade:MedicalProcedure .
+:procedureVersion prov:specializationOf :procedure ; cascade:procedureName "Colonoscopy" ;
+    cascade:workflowStatus "completed" ; cascade:procedureDate "2024-03-01"^^xsd:date .
+:procedureRevision a cascade:Revision ; cascade:revisionOf :procedure ; cascade:version :procedureVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:medication a clinical:Medication .
-:medicationVersion prov:specializationOf :medication ; clinical:drugName "lisinopril 10 MG Oral Tablet" ;
-    clinical:clinicalIntent "prescribed" ; clinical:status "active" ; clinical:startDate "2023-06-15"^^xsd:date .
-:medicationRevision a rec:Revision ; rec:revisionOf :medication ; rec:version :medicationVersion ;
+:medication a cascade:PrescribedOrReportedMedication .
+:medicationVersion prov:specializationOf :medication ; cascade:drugName "lisinopril 10 MG Oral Tablet" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ; cascade:medicationUseStartDate "2023-06-15"^^xsd:date ;
+    cascade:prescriptionWrittenDate "2023-06-01"^^xsd:date .
+:medicationRevision a cascade:Revision ; cascade:revisionOf :medication ; cascade:version :medicationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:labResult a health:LabResultRecord .
-:labResultVersion prov:specializationOf :labResult ; health:testName "Potassium" ; clinical:status "final" ;
-    health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
-:labResultRevision a rec:Revision ; rec:revisionOf :labResult ; rec:version :labResultVersion ;
+:prescription a cascade:PrescribedOrReportedMedication .
+:prescriptionVersion prov:specializationOf :prescription ; cascade:drugName "amoxicillin 500 MG Oral Capsule" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:prescriptionWrittenDate "2024-02-10"^^xsd:date .
+:prescriptionRevision a cascade:Revision ; cascade:revisionOf :prescription ; cascade:version :prescriptionVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:variant a genomics:Variant .
-:variantVersion prov:specializationOf :variant ; genomics:hgvsCDot "NM_000249.4:c.2042C>T" ; clinical:status "final" .
-:variantRevision a rec:Revision ; rec:revisionOf :variant ; rec:version :variantVersion ;
+:labResult a cascade:LaboratoryTestResult .
+:labResultVersion prov:specializationOf :labResult ; cascade:testName "Potassium" ; cascade:workflowStatus "final" ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:labResultRevision a cascade:Revision ; cascade:revisionOf :labResult ; cascade:version :labResultVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:interpretation a genomics:VariantInterpretation .
-:interpretationVersion prov:specializationOf :interpretation ; genomics:acmgClassification genomics:LikelyPathogenic ;
-    genomics:interpretedDate "2024-03-12"^^xsd:date ; clinical:status "final" .
-:interpretationRevision a rec:Revision ; rec:revisionOf :interpretation ; rec:version :interpretationVersion ;
+:variant a cascade:GeneticVariantFinding .
+:variantVersion prov:specializationOf :variant ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" ; cascade:workflowStatus "final" .
+:variantRevision a cascade:Revision ; cascade:revisionOf :variant ; cascade:version :variantVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:interpretation a cascade:VariantInterpretation .
+:interpretationVersion prov:specializationOf :interpretation ; cascade:acmgClassification cascade:LikelyPathogenic ;
+    cascade:interpretedDate "2024-03-12"^^xsd:date ; cascade:workflowStatus "final" .
+:interpretationRevision a cascade:Revision ; cascade:revisionOf :interpretation ; cascade:version :interpretationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

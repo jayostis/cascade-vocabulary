@@ -1,35 +1,34 @@
 # Read from the view alone, as an app would: each entry whose status is active, with its codes, its onset, and how
 # many records it joins. Each code is its system's IRI, SNOMED CT's or ICD-10-CM's: the one the entry states, or
-# http://snomed.info/id/ or http://hl7.org/fhir/sid/icd-10-cm/ followed by the code as written, percent-encoded as
+# http://snomed.info/id/ or https://ns.cascadeprotocol.org/codes/icd10cm/ followed by the code as written, percent-encoded as
 # ENCODE_FOR_URI does (rule M4). An entry stating several codes of one system gives the first as written, in code point
 # order, so that each entry is one row.
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?condition ?snomed ?icd10 ?onset (COUNT(?record) AS ?records) ?entry ?entryLabel
 WHERE {
-  ?entry a health:ConditionRecord ; health:status "active" ;
-         health:conditionName ?condition ; cascade:mergedFrom ?record .
+  ?entry a cascade:ProblemOrDiagnosis ; cascade:clinicalStatus "active" ;
+         cascade:conditionName ?condition ; cascade:mergedFrom ?record .
   OPTIONAL {
-    ?entry health:snomedCode ?writtenSnomed .
+    ?entry cascade:snomedCode ?writtenSnomed .
     FILTER NOT EXISTS {
-      ?entry health:snomedCode ?earlierSnomed .
+      ?entry cascade:snomedCode ?earlierSnomed .
       FILTER (STR(?earlierSnomed) < STR(?writtenSnomed))
     }
     BIND (IF(isIRI(?writtenSnomed), ?writtenSnomed,
              IRI(CONCAT("http://snomed.info/id/", ENCODE_FOR_URI(STR(?writtenSnomed))))) AS ?snomed)
   }
   OPTIONAL {
-    ?entry health:icd10Code ?writtenIcd10 .
+    ?entry cascade:icd10Code ?writtenIcd10 .
     FILTER NOT EXISTS {
-      ?entry health:icd10Code ?earlierIcd10 .
+      ?entry cascade:icd10Code ?earlierIcd10 .
       FILTER (STR(?earlierIcd10) < STR(?writtenIcd10))
     }
     BIND (IF(isIRI(?writtenIcd10), ?writtenIcd10,
-             IRI(CONCAT("http://hl7.org/fhir/sid/icd-10-cm/", ENCODE_FOR_URI(STR(?writtenIcd10))))) AS ?icd10)
+             IRI(CONCAT("https://ns.cascadeprotocol.org/codes/icd10cm/", ENCODE_FOR_URI(STR(?writtenIcd10))))) AS ?icd10)
   }
-  OPTIONAL { ?entry health:onsetDate ?onset }
+  OPTIONAL { ?entry cascade:onsetDate ?onset }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
 }
 GROUP BY ?entry ?condition ?snomed ?icd10 ?onset ?entryLabel

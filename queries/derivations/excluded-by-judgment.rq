@@ -1,13 +1,12 @@
 # A record named by a counting Erroneous judgment is left out of every view, because of that judgment.
-PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
-CONSTRUCT { ?record rec:leftOutFor ?leftOut . ?leftOut rec:reason rec:JudgedErroneous ; rec:because ?e }
+CONSTRUCT { ?record cascade:leftOutFor ?leftOut . ?leftOut cascade:leftOutReason cascade:JudgedErroneous ; cascade:leftOutBecauseOf ?e }
 WHERE {
-  ?e rec:counts true ; jdg:verdict jdg:Erroneous ; prov:hadMember ?record .
+  ?e cascade:countsUnderLens true ; cascade:verdict cascade:Erroneous ; prov:hadMember ?record .
   ?record pav:hasCurrentVersion ?v .
   BIND (IRI(CONCAT("urn:cascade:left-out:",
-                   SHA256(CONCAT(STR(?record), " ", STR(rec:JudgedErroneous), " ", STR(?e))))) AS ?leftOut)
+                   SHA256(CONCAT(STR(?record), " ", STR(cascade:JudgedErroneous), " ", STR(?e))))) AS ?leftOut)
 }

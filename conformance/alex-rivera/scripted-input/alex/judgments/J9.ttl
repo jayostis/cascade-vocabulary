@@ -1,10 +1,10 @@
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix npx: <http://purl.org/nanopub/x/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<urn:uuid:645189bb-70bf-456d-ac1a-79ff66c02105> a jdg:Judgment ;
-    jdg:verdict jdg:Same ;
+<urn:uuid:645189bb-70bf-456d-ac1a-79ff66c02105> a cascade:Judgment ;
+    cascade:verdict cascade:Same ;
     prov:hadMember <urn:uuid:21420ba9-f9c4-894f-971e-809d67e56daf> ,
                    <urn:uuid:58507165-cd9a-815a-9b90-bc53e0468cc2> ;
     npx:supersedes <urn:uuid:6180bf81-2731-8f36-8568-3645a1478a14> ;
@@ -13,7 +13,7 @@
     prov:wasAttributedTo <https://pod.alex-rivera.example/profile/card.ttl#me> ;
     prov:qualifiedAttribution [ a prov:Attribution ;
         prov:agent <https://pod.alex-rivera.example/profile/card.ttl#me> ;
-        prov:hadRole jdg:patient ] ;
+        prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-12-02T19:00:00Z"^^xsd:dateTime .
 
 <https://pod.alex-rivera.example/profile/card.ttl#me> a prov:Person .

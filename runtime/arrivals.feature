@@ -115,15 +115,15 @@ Feature: Arrivals
             GRAPH ?importFile { ?import prov:used ?document }
           } }
           GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
-          GRAPH ?file { ?revision rec:revisionOf <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> ; ?predicate ?object }
+          GRAPH ?file { ?revision cascade:revisionOf <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> ; ?predicate ?object }
           BIND(IF(sameTerm(?object, ?import), <urn:cascade:step:first-export>, ?object) AS ?value)
         }
         """
       Then it answers:
         | predicate            | value                                |
-        | rdf:type             | rec:Revision                         |
-        | rec:revisionOf       | allergy "Peanut"                     |
-        | rec:version          | version 1 of allergy "Peanut"        |
+        | rdf:type             | cascade:Revision                         |
+        | cascade:revisionOf       | allergy "Peanut"                     |
+        | cascade:version          | version 1 of allergy "Peanut"        |
         | prov:generatedAtTime | "2026-01-02T10:00:00Z"^^xsd:dateTime |
         | prov:wasGeneratedBy  | <urn:cascade:step:first-export>      |
         | pav:version          | "1"                                  |
@@ -268,7 +268,7 @@ Feature: Arrivals
           GRAPH <urn:cascade:steps> { <urn:cascade:step:entry> prov:generated ?revisionFile }
           GRAPH ?sessionFile { ?session a prov:Activity ; prov:startedAtTime ?sessionStarted ; rdfs:label ?sessionLabel }
           GRAPH ?revisionFile {
-            ?revision a rec:Revision ; rec:revisionOf ?record ; rec:version ?version ; prov:generatedAtTime ?at ;
+            ?revision a cascade:Revision ; cascade:revisionOf ?record ; cascade:version ?version ; prov:generatedAtTime ?at ;
               prov:wasGeneratedBy ?session .
           }
           OPTIONAL { ?revision prov:wasRevisionOf ?previous }
@@ -279,7 +279,7 @@ Feature: Arrivals
         | allergy "Peanut"   | version 1 of allergy "Peanut"   | "2026-02-01T08:30:00Z"^^xsd:dateTime | "2026-02-01T08:30:00Z"^^xsd:dateTime | "entered in the Cascade app" |          |
         | condition "Asthma" | version 1 of condition "Asthma" | "2026-02-01T08:30:00Z"^^xsd:dateTime | "2026-02-01T08:30:00Z"^^xsd:dateTime | "entered in the Cascade app" |          |
 
-  Rule: A13. The pod's creation writes the subject as a rec:Subject
+  Rule: A13. The pod's creation writes the subject as a cascade:Subject
     With it, the owner's profile, saying only who the owner is, where the pod's root is and where the preferences file
     is, and the preferences file, saying only that it is one and where the owner's type index is. The build writes the
     type index, from the views it writes (A15).
@@ -290,7 +290,7 @@ Feature: Arrivals
         """
         SELECT ?subject WHERE {
           GRAPH <urn:cascade:steps> { <urn:cascade:step:pod> prov:generated ?file }
-          GRAPH ?file { ?subject a rec:Subject }
+          GRAPH ?file { ?subject a cascade:Subject }
         }
         """
       Then it answers:
@@ -364,7 +364,7 @@ Feature: Arrivals
 
   Rule: A15. The build writes a view once the pod holds a record of its kind, and at every build after
     Records are never removed, so nothing a build wrote goes stale. The labels file, and each view pod-layout.ttl marks
-    rec:writtenAlways, as the patient-profile view, are written at every build: a pod always has a subject. The type
+    cascade:writtenAlways, as the patient-profile view, are written at every build: a pod always has a subject. The type
     index registers only the views written. So a kind the layout adds changes no pod that holds none of it.
 
     Example: a pod of an allergy and a condition holds those two views, the patient-profile view and the labels, and no other
@@ -373,7 +373,7 @@ Feature: Arrivals
       And the query is:
         """
         SELECT ?view WHERE {
-          GRAPH ?view { ?view a rec:View }
+          GRAPH ?view { ?view a cascade:View }
         }
         """
       Then it answers:

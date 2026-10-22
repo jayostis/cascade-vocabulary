@@ -5,27 +5,27 @@
 # two places, and a hospital and an import that share a label are one. A record with two hospitals counts at each, so an
 # entry's records can add up to more than it holds; a record with no hospital and no labelled import or session is given
 # no place, and is not counted in places. Entries seen at more than one place come first.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT ?entry ?entryLabel ?place (COUNT(DISTINCT ?record) AS ?records) ?places
 WHERE {
   { SELECT ?entry (COUNT(DISTINCT ?somewhere) AS ?places)
     WHERE {
-      ?member rec:inEntry ?entry ; rec:currentRevision ?memberRevision .
+      ?member cascade:inEntry ?entry ; cascade:currentRevision ?memberRevision .
       OPTIONAL { ?memberRevision prov:wasGeneratedBy/rdfs:label ?memberImportLabel }
       OPTIONAL { ?memberRevision prov:wasDerivedFrom/prov:qualifiedAttribution ?memberAttribution .
-                 ?memberAttribution prov:hadRole rec:author ; prov:agent/rdfs:label ?memberHospital }
+                 ?memberAttribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?memberHospital }
       BIND (COALESCE(?memberHospital, ?memberImportLabel) AS ?somewhere)
     }
     GROUP BY ?entry
     HAVING (COUNT(DISTINCT ?member) > 1) }
-  ?record rec:inEntry ?entry ; rec:currentRevision ?revision .
+  ?record cascade:inEntry ?entry ; cascade:currentRevision ?revision .
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   OPTIONAL { ?revision prov:wasGeneratedBy/rdfs:label ?importLabel }
   OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
-             ?attribution prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital }
+             ?attribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?hospital }
   BIND (COALESCE(?hospital, ?importLabel) AS ?place)
 }
 GROUP BY ?entry ?entryLabel ?place ?places

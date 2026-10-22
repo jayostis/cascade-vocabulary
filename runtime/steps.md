@@ -56,21 +56,21 @@ saying why; a document an import must convert and has no saved output for is the
 
 **The matcher's reference tables** are `references/` until an open step names other tables, in Turtle:
 
-- **`references.ttl`**, the index: each `rec:ReferenceSeries` with its `rdfs:label`, the one `rec:TableKind` its
-  versions are (`rec:tableKind`), if it is a table, and the version it `rec:shipsWith`, and each version, a
+- **`references.ttl`**, the index: each `cascade:ReferenceSeries` with its `rdfs:label`, the one `cascade:TableKind` its
+  versions are (`cascade:tableKind`), if it is a table, and the version it `cascade:defaultTableVersion`, and each version, a
   `prov:Entity`, with its `prov:specializationOf` series, its `pav:version` and the version it `prov:wasRevisionOf`, if
   any. A version's description in the pod, and the file a reference step files, are what the index states about the
-  series and the version, less `rec:shipsWith`.
+  series and the version, less `cascade:defaultTableVersion`.
 - **One file per version, holding its rows,** named from the version's name by N9. Each row conforms to its kind's
-  `rec:rowShape` in `records.shapes.ttl` and holds no blank node: a mapping row is an `owl:Axiom` named by N11 with
+  `cascade:rowShape` in `records.shapes.ttl` and holds no blank node: a mapping row is an `owl:Axiom` named by N11 with
   its `owl:annotatedSource`, `owl:annotatedProperty`, `owl:annotatedTarget` and `sssom:mapping_justification` (a panel
-  member row also holds its `rec:panelSequence` and at most one `rec:observationRequiredInPanel`). A
+  member row also holds its `cascade:panelSequence` and at most one `cascade:observationRequiredInPanel`). A
   version with no rows is a file with no triples.
-- **The rule list is not a table.** Each row is a `rec:MatcherRule` giving its justification (`rec:justifiedAs`), each
-  kind of record it applies to as `rec:kind` words it (`rec:appliesTo`), its comparison query as a path under
-  `queries/` (`rec:query`), N5's name for that file's bytes (`rec:queryHash`), and the kind of table the query
-  reads, if any (`rec:tableKind`). A matcher judgment uses the rule list's version, so the one row of that version whose
-  `rec:justifiedAs` is the judgment's `jdg:justification` says which query ran, by its bytes. A tables folder an `open` step
+- **The rule list is not a table.** Each row is a `cascade:RuleListRow` giving its justification (`cascade:justifiedAs`), each
+  kind of record it applies to as `cascade:recordKind` words it (`cascade:appliesToClass`), its comparison query as a path under
+  `queries/` (`cascade:queryPath`), N5's name for that file's bytes (`cascade:queryHash`), and the kind of table the query
+  reads, if any (`cascade:tableKind`). A matcher judgment uses the rule list's version, so the one row of that version whose
+  `cascade:justifiedAs` is the judgment's `cascade:justification` says which query ran, by its bytes. A tables folder an `open` step
   names may list a version of the vocabulary's rule list (`runtime/rule-list/`) without holding its file: the rows are
   those of the file of that name there, unless the folder holds a file of its own. A person's `references/` folder holds
   every file it lists.
@@ -78,7 +78,7 @@ saying why; a document an import must convert and has no saved output for is the
 The rows of each current version of a kind a rule reads are loaded into the graph named by the version's IRI, and the
 descriptions of those versions and their series into the default graph the matcher's queries read (M13). A query reads
 rows only inside `GRAPH ?origin`. No other version's rows are loaded, and rows are never written to the pod. The rule
-list's rows are `[] a rec:MatcherRule`: no row shape and no N12 cover them.
+list's rows are `[] a cascade:RuleListRow`: no row shape and no N12 cover them.
 
 ## Parameters
 
@@ -104,20 +104,20 @@ A record is named by what a person reads in it, never by its IRI, except where a
 
 - **`<kind> <system> <code> "<name>"`**, as `allergy RxNorm 1191 "Ecotrin"`, with the code, the name or both: the
   record of that kind whose version gives them. The kinds are `allergy`, `condition`, `immunization`, `procedure`,
-  `medication`, `lab result`, `variant` and `variant interpretation`; the systems `SNOMED` (an `http://snomed.info/id/` IRI, or a `clinical:snomedCode`),
-  `RxNorm` (an `http://www.nlm.nih.gov/research/umls/rxnorm/` IRI), `NDC` (an
-  `https://ns.cascadeprotocol.org/codes/ndc11/` IRI, a medication's `rec:ndcCode`), `ICD-10-CM` (an
-  `http://hl7.org/fhir/sid/icd-10-cm/` IRI), `LOINC` (an `http://loinc.org/rdf/` IRI) and `CVX`
-  (a `health:vaccineCode`), `HGVS` (a variant's `genomics:hgvsCDot`, the expression as written, as in
-  `variant HGVS NM_000249.4:c.2042C>T`) and `ClinVar` (a variant's `genomics:clinvarVariationId`, the digits, as in
+  `medication`, `lab result`, `variant` and `variant interpretation`; the systems `SNOMED` (an `http://snomed.info/id/` IRI, or a `cascade:snomedCode`),
+  `RxNorm` (an `https://ns.cascadeprotocol.org/codes/rxnorm/` IRI), `NDC` (an
+  `https://ns.cascadeprotocol.org/codes/ndc11/` IRI, a medication's `cascade:ndcCode`), `ICD-10-CM` (an
+  `https://ns.cascadeprotocol.org/codes/icd10cm/` IRI), `LOINC` (an `http://loinc.org/rdf/` IRI) and `CVX`
+  (a `cascade:vaccineCode`), `HGVS` (a variant's `cascade:hgvsCodingDnaExpression`, the expression as written, as in
+  `variant HGVS NM_000249.4:c.2042C>T`) and `ClinVar` (a variant's `cascade:clinvarVariationId`, the digits, as in
   `variant ClinVar 90011`); the name is the version's allergen, condition, vaccine, procedure, drug or test name, or a
   variant's HGVS expression. A `variant interpretation` has neither a code nor a name, so no step names one: a step
   names the variant it interprets, and the interpretation is read by its place in the view. Each
   draft of an entry has a name of its own, so no record is named by its position.
 - **`… from <source>`**, where two imported records share code and name: `from codeine-1` is the record whose
-  `health:sourceRecordId` the export gave as `codeine-1`. A variant has no such term, so it is never named so.
+  `cascade:sourceRecordId` the export gave as `codeine-1`. A variant has no such term, so it is never named so.
 - **A handle** a kit's `expected/handles.json` gives, as `H1-ALG-PCN`: the record or profile it names by its server,
-  type and ID (`rec:sourceUrl`), by its entry's file and the draft's position, or by its download's file. A FHIR record
+  type and ID (`cascade:sourceUrl`), by its entry's file and the draft's position, or by its download's file. A FHIR record
   or profile with no `id` and a `urn:uuid:` `fullUrl` is named by that `fullUrl` alone, `{"fullUrl": "urn:uuid:…"}`, the
   input cascade-bridge-spec's `engine/sparql.md` (*Naming a record*) names it from. A C-CDA record is named by the
   inputs cascade-bridge-spec's `engine/sparql.md` names it from: its `class`, its `identifier`, `root:extension` or the
@@ -138,7 +138,7 @@ name them, and a document `the document of <record>`, the one its first revision
 `the entry of <record>`: the entry, in the views of the lens read at, that holds the record (`cascade:mergedFrom`).
 Exactly one entry must hold it, or the example is in error.
 
-The matcher is `urn:uuid:80bcb9f7-34ae-432b-bd78-ba2616a81f76`, a `prov:SoftwareAgent` labelled `Cascade matcher`.
+The matcher is `https://ns.cascadeprotocol.org/cascade#CascadeMatcher`, a `prov:SoftwareAgent` labelled `Cascade matcher`.
 
 ## Given and When
 
@@ -219,7 +219,7 @@ The step the example took last was refused.
 
 ### `the pod holds no revision`
 
-No graph holds a `rec:Revision`.
+No graph holds a `cascade:Revision`.
 
 ### `no file that {steps} wrote names {record}`
 
@@ -255,7 +255,7 @@ number of its current version; `subject`, the person whose record the lens says 
 | justification | members | at | used | inputs | name |
 |---|---|---|---|---|---|
 
-The matcher's judgments with any of those records as a member are exactly these. Each is a `jdg:Same` with that
+The matcher's judgments with any of those records as a member are exactly these. Each is a `cascade:Same` with that
 justification and exactly those members, attributed to the matcher. `at` (optional) is its `prov:generatedAtTime`;
 `used` (optional) everything it `prov:used`, in words; `inputs` (optional) the inputs N6 names it from, as the rule
 hashes them and joined by `, `: the matcher, the justification, its members sorted and what it used sorted, each the
@@ -283,11 +283,11 @@ The reference series and versions the files the step wrote describe are exactly 
 
 ### `{judgment} counts`, `{judgment} does not count`
 
-Whether the judgment has `rec:counts true` under the lens.
+Whether the judgment has `cascade:countsUnderLens true` under the lens.
 
 ### `{judgment} has lapsed`, `{judgment} has not lapsed`
 
-Whether the judgment has `rec:lapsed true` under the lens.
+Whether the judgment has `cascade:lapsed true` under the lens.
 
 ### `the {view} view holds these entries:`
 
@@ -319,7 +319,7 @@ No view holds the record, or any of the records.
 | record | reason | because |
 |---|---|---|
 
-No view holds the record, and it is left out for exactly that reason (`rec:leftOutFor`), in words, `because` of that
+No view holds the record, and it is left out for exactly that reason (`cascade:leftOutFor`), in words, `because` of that
 thing.
 
 ### `these are named:`
@@ -341,5 +341,5 @@ The step wrote one import, or one entry session, and its IRI is a version 4 `urn
 The query gives exactly these rows as a multiset, or none. A cell is a
 Turtle term (`<iri>`, a prefixed name, `"text"`, `"2026-01-02"^^xsd:date`, `true`, `22`) or a thing in words. A
 prefixed name, in a cell or in the query, may use the prefixes the query declares and, without declaring them, `rdf:`,
-`rdfs:`, `xsd:`, `prov:`, `pav:`, `npx:`, `bridge:`, `rec:`, `jdg:`, `health:`, `clinical:` and `cascade:` as the vocabulary
+`rdfs:`, `xsd:`, `prov:`, `pav:`, `npx:`, `bridge:`, `oa:` (W3C Web Annotation) and `cascade:` as the vocabulary
 declares them. This is the step for what the others do not say; an example uses it only where a plain one would be forced.

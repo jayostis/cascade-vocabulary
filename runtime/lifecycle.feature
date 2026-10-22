@@ -6,9 +6,9 @@ Feature: Medication lifecycle
   nothing matches.
 
   Rule: L1. A medication entry's status is classed active, stopped, paused, unknown or entered-in-error by the first step of this order that holds
-    The entry's status is the one of the member it takes its status from. The class is the concept of rec:MedicationLifecycle
-    the entry shows as rec:lifecycle (derived as rec:statusLifecycle), and the step that gave it as
-    rec:statusLifecycleStep. The rows each step reads, and the
+    The entry's status is the one of the member it takes its status from. The class is the concept of cascade:MedicationLifecycle
+    the entry shows as cascade:lifecycle (derived as cascade:statusLifecycle), and the step that gave it as
+    cascade:statusLifecycleStep. The rows each step reads, and the
     precedence of step 5, are in queries/derivations/medication-lifecycles.rq.
 
     1. The key is the status lower-cased, each run of other characters than a-z and 0-9 made one space, and trimmed. A
@@ -39,84 +39,84 @@ Feature: Medication lifecycle
         """
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: ON-HOLD" "status: d/c" }
-          ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
+          ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
+          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
         | medication         | lifecycle            | step |
-        | "status: ON-HOLD"  | rec:MedicationPaused  | 3    |
-        | "status: d/c"      | rec:MedicationStopped | 4    |
+        | "status: ON-HOLD"  | cascade:MedicationPaused  | 3    |
+        | "status: d/c"      | cascade:MedicationStopped | 4    |
 
     Example: step 2, an absent or a blank status is unknown
       When the query is:
         """
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: none" "status: blank" }
-          ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
+          ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
+          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
         | medication        | lifecycle             | step |
-        | "status: none"    | rec:MedicationUnknown | 2    |
-        | "status: blank"   | rec:MedicationUnknown | 2    |
+        | "status: none"    | cascade:MedicationUnknown | 2    |
+        | "status: blank"   | cascade:MedicationUnknown | 2    |
 
     Example: step 3, a FHIR status code has its own class
       When the query is:
         """
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: completed" "status: draft" }
-          ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
+          ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
+          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
         | medication           | lifecycle             | step |
-        | "status: completed"  | rec:MedicationStopped | 3    |
-        | "status: draft"      | rec:MedicationUnknown | 3    |
+        | "status: completed"  | cascade:MedicationStopped | 3    |
+        | "status: draft"      | cascade:MedicationUnknown | 3    |
 
     Example: step 4, a synonym has its code's class, as does a C-CDA status the ConceptMap maps
       When the query is:
         """
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: discontinued" "status: aborted" "status: nullified" "status: suspended" }
-          ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
+          ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
+          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
         | medication              | lifecycle                      | step |
-        | "status: discontinued"  | rec:MedicationStopped          | 4    |
-        | "status: aborted"       | rec:MedicationStopped          | 4    |
-        | "status: nullified"     | rec:MedicationEnteredInError   | 4    |
-        | "status: suspended"     | rec:MedicationPaused           | 4    |
+        | "status: discontinued"  | cascade:MedicationStopped          | 4    |
+        | "status: aborted"       | cascade:MedicationStopped          | 4    |
+        | "status: nullified"     | cascade:MedicationEnteredInError   | 4    |
+        | "status: suspended"     | cascade:MedicationPaused           | 4    |
 
     Example: step 5, a fragment gives the most conservative class, so a medication no longer taken is stopped, however its words are run together
       When the query is:
         """
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: no longer taking" "status: NotActive" "status: currently taking" }
-          ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
+          ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
+          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
         | medication                  | lifecycle             | step |
-        | "status: no longer taking"  | rec:MedicationStopped | 5    |
-        | "status: NotActive"         | rec:MedicationStopped | 5    |
-        | "status: currently taking"  | rec:MedicationActive  | 5    |
+        | "status: no longer taking"  | cascade:MedicationStopped | 5    |
+        | "status: NotActive"         | cascade:MedicationStopped | 5    |
+        | "status: currently taking"  | cascade:MedicationActive  | 5    |
 
     Example: step 6, text nothing matches is unknown and unmatched, as is a C-CDA status the ConceptMap leaves unmapped
       When the query is:
         """
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: see pharmacy" "status: new" }
-          ?record pav:hasCurrentVersion/clinical:drugName ?medication ; rec:inEntry ?entry .
-          ?entry rec:lifecycle ?lifecycle ; rec:statusLifecycleStep ?step .
+          ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
+          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
         | medication              | lifecycle             | step |
-        | "status: see pharmacy"  | rec:MedicationUnknown | 6    |
-        | "status: new"           | rec:MedicationUnknown | 6    |
+        | "status: see pharmacy"  | cascade:MedicationUnknown | 6    |
+        | "status: new"           | cascade:MedicationUnknown | 6    |

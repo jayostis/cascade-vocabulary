@@ -10,11 +10,9 @@ from contract import QUERIES, ROOT
 
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
 SHAPES = [path for path in ONTOLOGIES if path.name.endswith(".shapes.ttl")]
-COPIED = [
-    path for path in ONTOLOGIES if path.parts[-3] in ("core", "health", "clinical", "genomics")
-]
-SOURCE_COMMIT = "https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/"
-FOAF_RELEASE = "http://xmlns.com/foaf/spec/20140114.rdf"
+SPEC = "https://github.com/the-cascade-protocol/spec/"
+SOURCE_COMMIT = SPEC + "blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/"
+CC_BY = URIRef("https://creativecommons.org/licenses/by/4.0/")
 CASCADE = "https://ns.cascadeprotocol.org/"
 PROV = Namespace("http://www.w3.org/ns/prov#")
 FORMATS = {
@@ -80,21 +78,16 @@ def test_every_shapes_file_loads_as_shacl_that_shacl_accepts(path):
     assert result, report
 
 
-@pytest.mark.parametrize("path", COPIED, ids=relative)
-def test_every_copied_term_names_the_commit_it_was_copied_from(path):
+@pytest.mark.parametrize("path", ONTOLOGIES, ids=relative)
+def test_every_term_copied_from_the_spec_names_the_commit_and_carries_its_licence(path):
     graph = Graph().parse(path)
     ontology = next(graph.subjects(RDF.type, OWL.Ontology), None)
-    unsourced = [
-        term
-        for term in set(graph.subjects())
-        if isinstance(term, URIRef)
-        and term != ontology
-        and not any(
-            str(s).startswith((SOURCE_COMMIT, FOAF_RELEASE))
-            for s in graph.objects(term, DCTERMS.source)
-        )
-    ]
-    assert unsourced == []
+    copied = {term for term, source in graph.subject_objects(DCTERMS.source)
+              if str(source).startswith(SPEC) and term != ontology}
+    assert copied
+    assert sorted(term for term in copied if not all(str(source).startswith(SOURCE_COMMIT)
+                                                    for source in graph.objects(term, DCTERMS.source))) == []
+    assert sorted(term for term in copied if (term, DCTERMS.license, CC_BY) not in graph) == []
 
 
 def test_every_predicate_a_shape_constrains_is_declared_or_is_prov_o():

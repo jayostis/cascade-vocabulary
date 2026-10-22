@@ -1,11 +1,11 @@
 @prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
-:panels a rec:ReferenceSeries ; rdfs:label "Panel members" ; rec:tableKind rec:PanelMembers .
+:panels a cascade:ReferenceSeries ; rdfs:label "Panel members" ; cascade:tableKind cascade:PanelMembers .
 :panels-1 prov:specializationOf :panels ; pav:version "1" .
 
-:names a rec:ReferenceSeries ; rdfs:label "Code names" ; rec:tableKind rec:CodeNames .
+:names a cascade:ReferenceSeries ; rdfs:label "Code names" ; cascade:tableKind cascade:CodeNames .
 :names-1 prov:specializationOf :names ; pav:version "1" .

@@ -1,7 +1,7 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
 <> a mf:Manifest ;
   rdfs:label "variants-view" ;
@@ -15,12 +15,12 @@
   mf:name "the-variants-view" ;
   rdfs:comment "Each entry takes every member's gene symbol, HGVS expressions and ClinVar IDs, so the joined entry shows both transcripts and the ID, and the status of the member chosen for status." ;
   mf:action [ qt:query <the-variants-view.rq> ;
-              rec:lens <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-variants-view.srj> .
 
 <#my-genetic-variants> a mf:QueryEvaluationTest ;
   mf:name "my-genetic-variants" ;
   rdfs:comment "One row for each entry and each code it states, the expression or the ID with its gene, and one row without a code for the entry that states none." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20genetic%20variants.rq> ;
-              rec:lens <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-genetic-variants.srj> .

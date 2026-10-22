@@ -1,28 +1,25 @@
 # Each entry takes the classification and date of its latest member, the status of the member chosen for status, and the
 # entry of the variant that member interprets: its version names a variant record, and the entry is the one that record
 # is in, none when the record is in no entry.
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX genomics: <https://ns.cascadeprotocol.org/genomics/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 CONSTRUCT {
-  ?entry a genomics:VariantInterpretation ;
-    genomics:acmgClassification ?classification ;
-    genomics:interpretedDate ?date ;
-    genomics:variantInterpreted ?variantEntry ;
-    clinical:status ?status ;
-    rec:latestMember ?latest ;
-    rec:statusFrom ?statusFrom ;
+  ?entry a cascade:VariantInterpretation ;
+    cascade:acmgClassification ?classification ;
+    cascade:interpretedDate ?date ;
+    cascade:variantInterpreted ?variantEntry ;
+    cascade:workflowStatus ?status ;
+    cascade:latestMember ?latest ;
+    cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
 }
 WHERE {
-  ?record a genomics:VariantInterpretation ; rec:inEntry ?entry .
-  ?entry rec:latestMember ?latest .
-  OPTIONAL { ?latest pav:hasCurrentVersion/genomics:acmgClassification ?classification }
-  OPTIONAL { ?latest pav:hasCurrentVersion/genomics:interpretedDate ?date }
-  OPTIONAL { ?latest pav:hasCurrentVersion/genomics:variantInterpreted/rec:inEntry ?variantEntry }
-  OPTIONAL { ?entry rec:statusFrom ?statusFrom .
-             ?statusFrom pav:hasCurrentVersion/clinical:status ?status }
+  ?record a cascade:VariantInterpretation ; cascade:inEntry ?entry .
+  ?entry cascade:latestMember ?latest .
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:acmgClassification ?classification }
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:interpretedDate ?date }
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:variantInterpreted/cascade:inEntry ?variantEntry }
+  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+             ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
 }

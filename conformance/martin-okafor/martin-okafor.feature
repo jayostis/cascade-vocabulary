@@ -51,10 +51,10 @@ Feature: Martin Okafor's pod
         | SC-I2   |
       When the query is:
         """
-        PREFIX genomics: <https://ns.cascadeprotocol.org/genomics/v1#>
+        PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
         SELECT ?interpretation ?variant WHERE {
-          ?entry a genomics:VariantInterpretation ; cascade:mergedFrom ?interpretation ; genomics:variantInterpreted ?variantEntry .
-          ?variantEntry a genomics:Variant ; genomics:clinvarVariationId "90011" ; cascade:mergedFrom ?variant .
+          ?entry a cascade:VariantInterpretation ; cascade:mergedFrom ?interpretation ; cascade:variantInterpreted ?variantEntry .
+          ?variantEntry a cascade:GeneticVariantFinding ; cascade:clinvarVariationId "90011" ; cascade:mergedFrom ?variant .
         }
         """
       Then it answers:
@@ -77,10 +77,9 @@ Feature: Martin Okafor's pod
         | SC-I4   |
       When the query is:
         """
-        PREFIX genomics: <https://ns.cascadeprotocol.org/genomics/v1#>
         SELECT ?interpretation ?variant WHERE {
-          ?entry a genomics:VariantInterpretation ; cascade:mergedFrom ?interpretation ; genomics:variantInterpreted ?variantEntry .
-          ?variantEntry a genomics:Variant ; genomics:clinvarVariationId "8931" ; cascade:mergedFrom ?variant .
+          ?entry a cascade:VariantInterpretation ; cascade:mergedFrom ?interpretation ; cascade:variantInterpreted ?variantEntry .
+          ?variantEntry a cascade:GeneticVariantFinding ; cascade:clinvarVariationId "8931" ; cascade:mergedFrom ?variant .
         }
         """
       Then it answers:

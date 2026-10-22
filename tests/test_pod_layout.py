@@ -5,7 +5,7 @@ from rdflib import Graph, URIRef
 from contract import LAYOUT, ROOT
 
 SOLID = "http://www.w3.org/ns/solid/terms#"
-SHAPES = ROOT / "ontologies" / "records" / "v1-draft" / "records.shapes.ttl"
+SHAPES = ROOT / "ontologies" / "cascade.shapes.ttl"
 
 
 def entry(graph, predicate):

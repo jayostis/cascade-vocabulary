@@ -1,10 +1,8 @@
 @prefix : <#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
-@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 
-:entry a genomics:Variant ;
+:entry a cascade:GeneticVariantFinding ;
     cascade:mergedFrom :first , :second ;
-    genomics:geneSymbol "MLH1" ;
-    genomics:hgvsCDot "NM_000249.3:c.2042C>T" , "NM_000249.4:c.2042C>T" ;
-    rec:latestMember :second .
+    cascade:geneSymbol "MLH1" ;
+    cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" , "NM_000249.4:c.2042C>T" ;
+    cascade:latestMember :second .

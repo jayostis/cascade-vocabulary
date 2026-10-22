@@ -197,9 +197,9 @@ Feature: Alex Rivera's pod
         """
         SELECT (COUNT(DISTINCT ?herRecord) AS ?hers) (COUNT(DISTINCT ?otherRecord) AS ?notHers) WHERE {
           VALUES ?profile { <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> <urn:uuid:d85089a6-8c4b-8108-b3cc-2cde9217f136> <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> }
-          ?record pav:hasCurrentVersion/rec:patient ?profile .
-          BIND (IF(EXISTS { ?record rec:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?record, ?none) AS ?herRecord)
-          BIND (IF(EXISTS { ?record rec:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?none, ?record) AS ?otherRecord)
+          ?record pav:hasCurrentVersion/cascade:patient ?profile .
+          BIND (IF(EXISTS { ?record cascade:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?record, ?none) AS ?herRecord)
+          BIND (IF(EXISTS { ?record cascade:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?none, ?record) AS ?otherRecord)
         }
         """
       Then it answers:
@@ -253,7 +253,7 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT ?record ?other WHERE {
-          ?record a clinical:Procedure ; jdg:currentlySame ?other .
+          ?record a cascade:MedicalProcedure ; cascade:currentlySame ?other .
           FILTER (?record != ?other)
         }
         """
@@ -284,14 +284,14 @@ Feature: Alex Rivera's pod
           GRAPH <https://pod.alex-rivera.example/clinical/immunizations.ttl> {
             ?entry cascade:mergedFrom ?member , ?other FILTER (?member != ?other)
           }
-          ?same rec:counts true ; jdg:verdict jdg:Same ; jdg:justification ?justification ;
+          ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification ?justification ;
                 prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
         }
         """
       Then it answers:
         | justification             |
-        | jdg:SameCodeAndDate       |
-        | jdg:SameMappedCodeAndDate |
+        | cascade:SameCodeAndDate       |
+        | cascade:SameMappedCodeAndDate |
 
     Example: under export only J6's justification counts, so the flu entry is not listed
       When the pod is read as it stood after "E13", under the export lens
@@ -301,13 +301,13 @@ Feature: Alex Rivera's pod
           GRAPH <https://pod.alex-rivera.example/clinical/immunizations.ttl> {
             ?entry cascade:mergedFrom ?member , ?other FILTER (?member != ?other)
           }
-          ?same rec:counts true ; jdg:verdict jdg:Same ; jdg:justification ?justification ;
+          ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification ?justification ;
                 prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
         }
         """
       Then it answers:
         | justification       |
-        | jdg:SameCodeAndDate |
+        | cascade:SameCodeAndDate |
 
     Example: under everyday the flu entry names the vaccine group table that joined it, and no rule list or record version
       When the pod is read as it stood after "E13"
@@ -336,9 +336,9 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT ?retracted ?counts WHERE {
-          <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> a jdg:Judgment ; npx:retracts ?retracted .
+          <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> a cascade:Judgment ; npx:retracts ?retracted .
           FILTER NOT EXISTS { <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> prov:hadMember [] }
-          BIND (EXISTS { ?retracted rec:counts true } AS ?counts)
+          BIND (EXISTS { ?retracted cascade:countsUnderLens true } AS ?counts)
         }
         """
       Then it answers:
@@ -375,7 +375,7 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT DISTINCT ?judgment WHERE {
-          ?judgment rec:counts true ; jdg:verdict jdg:Same ; prov:hadMember ?record .
+          ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
           ?record pav:hasCurrentVersion ?now .
           FILTER NOT EXISTS { ?judgment prov:used ?now }
         }
@@ -389,7 +389,7 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT DISTINCT ?judgment WHERE {
-          ?judgment rec:counts true ; jdg:verdict jdg:Same ; prov:hadMember ?record .
+          ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
           ?record pav:hasCurrentVersion ?now .
           FILTER NOT EXISTS { ?judgment prov:used ?now }
         }
@@ -405,7 +405,7 @@ Feature: Alex Rivera's pod
         | APP-ALG-PEANUT | patient | Alex  |
       When the query is:
         """
-        SELECT ?member WHERE { ?about jdg:verdict jdg:About ; prov:hadMember ?member }
+        SELECT ?member WHERE { ?about cascade:verdict cascade:About ; prov:hadMember ?member }
         """
       Then it answers:
         | member  |
@@ -492,8 +492,8 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT ?record ?otherRecord WHERE {
-          ?record jdg:currentlyDifferent ?otherRecord ; rec:inEntry ?entry .
-          ?otherRecord rec:inEntry ?entry .
+          ?record cascade:currentlyDifferent ?otherRecord ; cascade:inEntry ?entry .
+          ?otherRecord cascade:inEntry ?entry .
           FILTER (STR(?record) < STR(?otherRecord))
         }
         """
@@ -513,8 +513,8 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT ?record ?otherRecord WHERE {
-          ?record jdg:currentlyDifferent ?otherRecord ; rec:inEntry ?entry .
-          ?otherRecord rec:inEntry ?entry .
+          ?record cascade:currentlyDifferent ?otherRecord ; cascade:inEntry ?entry .
+          ?otherRecord cascade:inEntry ?entry .
           FILTER (STR(?record) < STR(?otherRecord))
         }
         """
@@ -639,7 +639,7 @@ Feature: Alex Rivera's pod
             FILTER NOT EXISTS { GRAPH ?file { ?s ?p ?o } } }
           UNION
           { GRAPH ?file { ?import a prov:Activity ; prov:used ?document }
-            ?judgment a jdg:Judgment ; ?predicate ?import . }
+            ?judgment a cascade:Judgment ; ?predicate ?import . }
         }
         """
       Then it answers nothing
@@ -713,9 +713,9 @@ Feature: Alex Rivera's pod
                (COUNT(DISTINCT ?import) AS ?imports) (COUNT(DISTINCT ?session) AS ?sessions)
         WHERE {
           GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
-          { GRAPH ?file { ?record a ?kind } ?record a rec:Record }
-          UNION { GRAPH ?file { ?version prov:specializationOf ?versioned } ?versioned a rec:Record }
-          UNION { GRAPH ?file { ?revision a rec:Revision } }
+          { GRAPH ?file { ?record a ?kind } ?record a cascade:Record }
+          UNION { GRAPH ?file { ?version prov:specializationOf ?versioned } ?versioned a cascade:Record }
+          UNION { GRAPH ?file { ?revision a cascade:Revision } }
           UNION { GRAPH ?file { ?document a prov:Entity } FILTER NOT EXISTS { ?document prov:specializationOf ?series } }
           UNION { GRAPH ?file { ?import a prov:Activity ; prov:used ?used } }
           UNION { GRAPH ?file { ?session a prov:Activity } FILTER NOT EXISTS { ?session prov:used ?used } }
@@ -736,7 +736,7 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT ?record (COUNT(DISTINCT ?version) AS ?versions) (COUNT(DISTINCT ?revision) AS ?revisions) WHERE {
-          ?revision rec:revisionOf ?record ; rec:version ?version .
+          ?revision cascade:revisionOf ?record ; cascade:version ?version .
         }
         GROUP BY ?record
         """
@@ -774,7 +774,7 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT ?view ?used WHERE {
-          GRAPH ?view { ?view a rec:View ; prov:used ?used }
+          GRAPH ?view { ?view a cascade:View ; prov:used ?used }
         }
         """
       Then it answers:

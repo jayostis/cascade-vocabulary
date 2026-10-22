@@ -1,22 +1,21 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:record a health:AllergyRecord .
-:recordVersion prov:specializationOf :record ; rec:patient :subject ; health:allergen "Peanut" .
-:recordRevision a rec:Revision ; rec:revisionOf :record ; rec:version :recordVersion ;
+:record a cascade:AllergyOrIntolerance .
+:recordVersion prov:specializationOf :record ; cascade:patient :subject ; cascade:allergen "Peanut" .
+:recordRevision a cascade:Revision ; cascade:revisionOf :record ; cascade:version :recordVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:other a health:AllergyRecord .
-:otherVersion prov:specializationOf :other ; rec:patient :subject ; health:allergen "Peanut oil" .
-:otherRevision a rec:Revision ; rec:revisionOf :other ; rec:version :otherVersion ;
+:other a cascade:AllergyOrIntolerance .
+:otherVersion prov:specializationOf :other ; cascade:patient :subject ; cascade:allergen "Peanut oil" .
+:otherRevision a cascade:Revision ; cascade:revisionOf :other ; cascade:version :otherVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:rules a rec:ReferenceSeries ; rdfs:label "Rules" .
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :rules-1 prov:specializationOf :rules ; pav:version "1" .

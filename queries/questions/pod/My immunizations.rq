@@ -1,20 +1,15 @@
-# Read from the view alone, as an app would, newest first, with how many records each entry joins. The code is CVX's
-# IRI: the one the entry states, or http://hl7.org/fhir/sid/cvx/ followed by the code as written, percent-encoded as
-# ENCODE_FOR_URI does (rule M4).
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
+# Read from the view alone, as an app would, newest first, with how many records each entry joins, and each CVX code
+# the entry states, a row for each.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?given ?vaccine ?code ?status (COUNT(?record) AS ?records) ?entry ?entryLabel
 WHERE {
-  ?entry a health:ImmunizationRecord ; cascade:mergedFrom ?record .
-  OPTIONAL { ?entry health:administrationDate ?given }
-  OPTIONAL { ?entry health:vaccineName ?vaccine }
-  OPTIONAL {
-    ?entry health:vaccineCode ?written .
-    BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://hl7.org/fhir/sid/cvx/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
-  }
-  OPTIONAL { ?entry health:status ?status }
+  ?entry a cascade:Vaccination ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:vaccinationOccurrenceTime ?given }
+  OPTIONAL { ?entry cascade:vaccineName ?vaccine }
+  OPTIONAL { ?entry cascade:vaccineCode ?code }
+  OPTIONAL { ?entry cascade:workflowStatus ?status }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
 }
 GROUP BY ?entry ?given ?vaccine ?code ?status ?entryLabel

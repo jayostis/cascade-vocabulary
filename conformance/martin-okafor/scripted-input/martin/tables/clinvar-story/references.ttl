@@ -1,11 +1,11 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
-<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a rec:ReferenceSeries ;
+<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a cascade:ReferenceSeries ;
     rdfs:label "Matcher rules" ;
-    rec:shipsWith <urn:uuid:bd40f64f-b01a-4246-ae63-29f6554415fc> .
+    cascade:defaultTableVersion <urn:uuid:bd40f64f-b01a-4246-ae63-29f6554415fc> .
 
 <urn:uuid:f32ebeea-4ed7-4da7-b08c-031dc619538e> a prov:Entity ;
     prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
@@ -46,15 +46,15 @@
     pav:version "8" ;
     prov:wasRevisionOf <urn:uuid:5571ea95-c285-4fea-925f-e9fdd70f977a> .
 
-<urn:uuid:12a73f77-c27a-4c55-b418-ed5bd528e8ac> a rec:ReferenceSeries ;
+<urn:uuid:12a73f77-c27a-4c55-b418-ed5bd528e8ac> a cascade:ReferenceSeries ;
     rdfs:label "ClinVar variant classifications subset for Martin Okafor" ;
-    rec:tableKind rec:VariantClassifications ;
-    rec:shipsWith <urn:uuid:a6ad9ff5-c6b5-4772-85fa-43c9c9cb4420> .
+    cascade:tableKind cascade:VariantClassifications ;
+    cascade:defaultTableVersion <urn:uuid:a6ad9ff5-c6b5-4772-85fa-43c9c9cb4420> .
 
 <urn:uuid:a6ad9ff5-c6b5-4772-85fa-43c9c9cb4420> a prov:Entity ;
     prov:specializationOf <urn:uuid:12a73f77-c27a-4c55-b418-ed5bd528e8ac> ;
     pav:version "2026-10" ;
-    rec:coversGene "EPCAM", "MLH1", "MSH2", "MSH6", "PMS2" ;
+    cascade:coversGene "EPCAM", "MLH1", "MSH2", "MSH6", "PMS2" ;
     rdfs:comment "The published 2026-10 version's rows for the story's variants, 90011 and 8931, and no others." ;
     prov:wasDerivedFrom <ni:///sha-256;4g2HI-n2y8OLnc1DFChcgrsoq7RUOKOcGiwHJOFKUik> ,
         <https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/archive/variant_summary_2026-10.txt.gz> .

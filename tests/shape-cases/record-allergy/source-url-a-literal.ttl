@@ -1,7 +1,6 @@
 @prefix : <#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 
-:record a health:AllergyRecord ;
-    rec:sourceUrl "https://fhir.example/AllergyIntolerance/1" ;
-    health:sourceRecordId "1" .
+:record a cascade:AllergyOrIntolerance ;
+    cascade:sourceUrl "https://fhir.example/AllergyIntolerance/1" ;
+    cascade:sourceRecordId "1" .

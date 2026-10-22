@@ -1,17 +1,15 @@
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-[] a clinical:Medication ;
+[] a cascade:PrescribedOrReportedMedication ;
   cascade:mergedFrom <urn:uuid:ea44d5f5-1f7d-87ba-950c-396e0cd17dbf> ;
-  clinical:clinicalIntent "reportedUse" ;
-  clinical:drugName "Metformin 500 mg tablet" ;
-  clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/861007> ;
-  rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/99999086101> ;
-  clinical:startDate "2022-03-01"^^xsd:date ;
-  clinical:endDate "2024-04-15"^^xsd:date ;
-  clinical:status "completed" ;
-  rec:lifecycle rec:MedicationStopped ;
-  rec:latestMember <urn:uuid:ea44d5f5-1f7d-87ba-950c-396e0cd17dbf> ;
-  rec:statusFrom <urn:uuid:ea44d5f5-1f7d-87ba-950c-396e0cd17dbf> .
+  cascade:prescribedOrReported "reportedUse" ;
+  cascade:drugName "Metformin 500 mg tablet" ;
+  cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ;
+  cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/99999086101> ;
+  cascade:medicationUseStartDate "2022-03-01"^^xsd:date ;
+  cascade:medicationUseEndDate "2024-04-15"^^xsd:date ;
+  cascade:workflowStatus "completed" ;
+  cascade:lifecycle cascade:MedicationStopped ;
+  cascade:latestMember <urn:uuid:ea44d5f5-1f7d-87ba-950c-396e0cd17dbf> ;
+  cascade:statusFrom <urn:uuid:ea44d5f5-1f7d-87ba-950c-396e0cd17dbf> .

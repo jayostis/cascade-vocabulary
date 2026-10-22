@@ -1,21 +1,20 @@
 # About judgments say whose a patient profile is, and only one that counts is believed. Each row is one hospital whose
 # records name the profile, with how many of them it sent. Records naming a profile no counting About judgment claims stay
 # out of every view.
-PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT ?profile ?profileLabel ?subject ?subjectLabel ?counts ?about ?aboutLabel ?hospital ?records
 WHERE {
   { SELECT ?profile ?hospital (COUNT(DISTINCT ?record) AS ?records)
-    WHERE { ?version rec:patient ?profile ; prov:specializationOf ?record .
-            OPTIONAL { ?revision rec:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
-                       ?attribution prov:hadRole rec:author ; prov:agent/rdfs:label ?hospital } }
+    WHERE { ?version cascade:patient ?profile ; prov:specializationOf ?record .
+            OPTIONAL { ?revision cascade:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+                       ?attribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?hospital } }
     GROUP BY ?profile ?hospital
     HAVING (BOUND(?profile)) }
-  ?about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember ?profile ; jdg:subject ?subject .
-  OPTIONAL { ?about rec:counts ?counted }
+  ?about a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?subject .
+  OPTIONAL { ?about cascade:countsUnderLens ?counted }
   BIND (COALESCE(?counted, false) AS ?counts)
   OPTIONAL { ?profile rdfs:label ?profileLabel }
   OPTIONAL { ?subject rdfs:label ?subjectLabel }

@@ -2,13 +2,12 @@
 # newest first within a variant. ?report is the interpretation's entry and ?variant the variant's entry, each as the other
 # pod questions give an entry's IRI; ?classification is the genomics: IRI of the ACMG value the report states, none for a
 # report whose answer is not one of the five, and ?date the day it was issued.
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX genomics: <https://ns.cascadeprotocol.org/genomics/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 
 SELECT DISTINCT ?report ?variant ?classification ?date
 WHERE {
-  ?report genomics:variantInterpreted ?variant ; cascade:mergedFrom [] .
-  OPTIONAL { ?report genomics:acmgClassification ?classification }
-  OPTIONAL { ?report genomics:interpretedDate ?date }
+  ?report cascade:variantInterpreted ?variant ; cascade:mergedFrom [] .
+  OPTIONAL { ?report cascade:acmgClassification ?classification }
+  OPTIONAL { ?report cascade:interpretedDate ?date }
 }
 ORDER BY ?variant DESC(?date) ?report

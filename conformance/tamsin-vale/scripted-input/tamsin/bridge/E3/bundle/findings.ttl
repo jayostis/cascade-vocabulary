@@ -1,8 +1,8 @@
 @prefix fhirr4: <https://ns.cascadeprotocol.org/adapter/fhir-r4/v1-draft#> .
-@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 _:d0f165e208a8409ef5577960de3c4c86 a oa:FragmentSelector ;
 	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/0" .
@@ -14,7 +14,7 @@ _:c28ef9277ad21f4c8fbce32873391b62 a oa:Annotation ;
 	oa:hasTarget _:b5549fc1d0f280ed967932a99801ee5c .
 _:b5549fc1d0f280ed967932a99801ee5c oa:hasSource <ni:///sha-256;sJergYpzf8EdQsI-gZH51UyJ2ZozZTMcSoNFbqB8IZ4> ;
 	oa:hasSelector _:d0f165e208a8409ef5577960de3c4c86 .
-_:c28ef9277ad21f4c8fbce32873391b62 oa:hasBody bridge:pathNotAccounted ;
+_:c28ef9277ad21f4c8fbce32873391b62 oa:hasBody cascade:SourcePathNotAccounted ;
 	oa:motivatedBy oa:classifying ;
 	sh:value "/resource/identifier/system" ;
 	sh:resultSeverity sh:Info .

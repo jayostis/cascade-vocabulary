@@ -1,6 +1,6 @@
 # Two records of one kind match when their current versions share an RxNorm code that a version of a drug products table
 # lists, so the code names one drug product (SCD, SBD, GPCK or BPCK). Codings are equals: any shared product code
-# joins, and rec:selectedCode plays no part. A retired product code still joins, since RxNorm never reuses a code.
+# joins, and cascade:userSelectedCode plays no part. A retired product code still joins, since RxNorm never reuses a code.
 # Left alone: a shared ingredient, strength, dose form, brand name or salt (IN, MIN, PIN, BN, SCDC, SCDF, SCDG and
 # their branded forms); a code the held version does not know, which is every RxNorm code when no drug products table
 # is held; and a pair that shares an NDC, which the rule that joins by NDC has, so no pair is judged by both. A
@@ -13,36 +13,35 @@
 # record that carries it beside a listed component joins on the component; it goes to review instead once a held
 # version lists it. Each ordered pair is a row, with the version whose rows joined it; a graph that is not a version of a
 # drug products table is never read for rows.
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT DISTINCT ?record ?other ?origin
 WHERE {
   { SELECT ?version (SAMPLE(?held) AS ?code)
     WHERE {
-      ?anyOrigin prov:specializationOf/rec:tableKind rec:DrugProducts .
-      ?version clinical:rxNormCode ?held .
-      GRAPH ?anyOrigin { ?held rec:termType ?type }
+      ?anyOrigin prov:specializationOf/cascade:tableKind cascade:DrugProducts .
+      ?version cascade:rxNormCode ?held .
+      GRAPH ?anyOrigin { ?held cascade:termType ?type }
     }
     GROUP BY ?version
     HAVING (COUNT(DISTINCT ?held) = 1) }
   { SELECT ?otherVersion (SAMPLE(?otherHeld) AS ?code)
     WHERE {
-      ?anyOrigin prov:specializationOf/rec:tableKind rec:DrugProducts .
-      ?otherVersion clinical:rxNormCode ?otherHeld .
-      GRAPH ?anyOrigin { ?otherHeld rec:termType ?otherType }
+      ?anyOrigin prov:specializationOf/cascade:tableKind cascade:DrugProducts .
+      ?otherVersion cascade:rxNormCode ?otherHeld .
+      GRAPH ?anyOrigin { ?otherHeld cascade:termType ?otherType }
     }
     GROUP BY ?otherVersion
     HAVING (COUNT(DISTINCT ?otherHeld) = 1) }
-  ?origin prov:specializationOf/rec:tableKind rec:DrugProducts .
-  GRAPH ?origin { ?code rec:termType ?codeType }
-  ?record rec:kind ?kind ; pav:hasCurrentVersion ?version .
-  ?other rec:kind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?origin prov:specializationOf/cascade:tableKind cascade:DrugProducts .
+  GRAPH ?origin { ?code cascade:termType ?codeType }
+  ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
   FILTER (?record != ?other)
   FILTER NOT EXISTS {
-    ?version rec:ndcCode ?shared .
-    ?otherVersion rec:ndcCode ?shared
+    ?version cascade:ndcCode ?shared .
+    ?otherVersion cascade:ndcCode ?shared
   }
 }

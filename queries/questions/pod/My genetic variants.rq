@@ -2,20 +2,19 @@
 # looks a variant up by. ?variant is the entry's IRI, as the other pod questions give theirs; ?gene, ?hgvs and ?variation
 # are the literals as the entry states them, an HGVS expression or a ClinVar VariationID on a row of its own. An entry
 # that states no code has one row without either. The page turns a literal into its code system's IRI (rule M4).
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX genomics: <https://ns.cascadeprotocol.org/genomics/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 
 SELECT DISTINCT ?variant ?gene ?hgvs ?variation
 WHERE {
-  { ?variant a genomics:Variant ; cascade:mergedFrom [] ; genomics:hgvsCDot ?hgvs .
-    OPTIONAL { ?variant genomics:geneSymbol ?gene } }
+  { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:hgvsCodingDnaExpression ?hgvs .
+    OPTIONAL { ?variant cascade:geneSymbol ?gene } }
   UNION
-  { ?variant a genomics:Variant ; cascade:mergedFrom [] ; genomics:clinvarVariationId ?variation .
-    OPTIONAL { ?variant genomics:geneSymbol ?gene } }
+  { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:clinvarVariationId ?variation .
+    OPTIONAL { ?variant cascade:geneSymbol ?gene } }
   UNION
-  { ?variant a genomics:Variant ; cascade:mergedFrom [] .
-    OPTIONAL { ?variant genomics:geneSymbol ?gene }
-    FILTER NOT EXISTS { ?variant genomics:hgvsCDot [] }
-    FILTER NOT EXISTS { ?variant genomics:clinvarVariationId [] } }
+  { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] .
+    OPTIONAL { ?variant cascade:geneSymbol ?gene }
+    FILTER NOT EXISTS { ?variant cascade:hgvsCodingDnaExpression [] }
+    FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] } }
 }
 ORDER BY ?variant ?hgvs ?variation

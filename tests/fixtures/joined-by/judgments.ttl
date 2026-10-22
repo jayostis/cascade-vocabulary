@@ -1,5 +1,5 @@
 @prefix : <urn:x:> .
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -7,21 +7,21 @@
 :matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
 
 # a: a Same that used a table, the rules and the records' versions
-:sameA a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :a1 , :a2 ;
+:sameA a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :a1 , :a2 ;
     prov:used :groups1 , :rules1 , :a1Version , :a2Version ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # b: a Same that used the rules alone
-:sameB a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameCode ; prov:hadMember :b1 , :b2 ;
+:sameB a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :b1 , :b2 ;
     prov:used :rules1 , :b1Version , :b2Version ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # c: a Same that used version 1 of a table that has a version 2 since, beside the Same that used version 2
-:sameCOld a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :c1 , :c2 ;
+:sameCOld a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :c1 , :c2 ;
     prov:used :ingredients1 , :rules1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
-:sameCNew a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :c1 , :c2 ;
+:sameCNew a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :c1 , :c2 ;
     prov:used :ingredients2 , :rules1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # d: two Sames of one pair, each of a table of its own
-:sameDIngredients a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :d1 , :d2 ;
+:sameDIngredients a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :d1 , :d2 ;
     prov:used :ingredients2 , :rules1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
-:sameDGroups a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCodeAndDate ; prov:hadMember :d1 , :d2 ;
+:sameDGroups a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCodeAndDate ; prov:hadMember :d1 , :d2 ;
     prov:used :groups1 , :rules1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

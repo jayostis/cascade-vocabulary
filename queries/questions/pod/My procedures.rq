@@ -1,20 +1,19 @@
 # Read from the view alone, as an app would, newest first, with how many records each entry joins. The code is
 # SNOMED CT's IRI: the one the entry states, or http://snomed.info/id/ followed by the code as written, percent-encoded
 # as ENCODE_FOR_URI does (rule M4).
-PREFIX cascade: <https://ns.cascadeprotocol.org/core/v1#>
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?performed ?procedure ?snomed ?status (COUNT(?record) AS ?records) ?entry ?entryLabel
 WHERE {
-  ?entry a clinical:Procedure ; cascade:mergedFrom ?record .
-  OPTIONAL { ?entry clinical:procedureDate ?performed }
-  OPTIONAL { ?entry clinical:procedureName ?procedure }
+  ?entry a cascade:MedicalProcedure ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:procedureDate ?performed }
+  OPTIONAL { ?entry cascade:procedureName ?procedure }
   OPTIONAL {
-    ?entry clinical:snomedCode ?written .
+    ?entry cascade:snomedCode ?written .
     BIND (IF(isIRI(?written), ?written, IRI(CONCAT("http://snomed.info/id/", ENCODE_FOR_URI(STR(?written))))) AS ?snomed)
   }
-  OPTIONAL { ?entry clinical:status ?status }
+  OPTIONAL { ?entry cascade:workflowStatus ?status }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
 }
 GROUP BY ?entry ?performed ?procedure ?snomed ?status ?entryLabel

@@ -6,7 +6,7 @@
 # the layout places is never out of place, and the stored documents, which are not RDF, are not seen here.
 # Only the layout's own placements are read, never a type registration a pod holds.
 # Each row is a file, a thing in it, and the file or folder the layout gives that thing.
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX solid: <http://www.w3.org/ns/solid/terms#>
 
 SELECT ?file ?thing ?place
@@ -14,40 +14,40 @@ WHERE {
   { SELECT DISTINCT ?file ?thing ?place ?isFile ?fanOut
     WHERE {
       { GRAPH ?file { ?thing ?with ?value }
-        ?entry a rec:Placement ; rec:filedWith ?with .
-        OPTIONAL { ?entry rec:fanOut ?fanOut }
+        ?entry a cascade:Placement ; cascade:filedWith ?with .
+        OPTIONAL { ?entry cascade:subfolderPrefixLength ?fanOut }
         ?value a ?valueClass .
-        ?valueEntry a rec:Placement ; solid:forClass ?valueClass ; solid:instanceContainer ?place .
-        ?views a rec:Placement ; solid:forClass rec:View ; solid:instanceContainer ?viewsFolder .
+        ?valueEntry a cascade:Placement ; solid:forClass ?valueClass ; solid:instanceContainer ?place .
+        ?views a cascade:Placement ; solid:forClass cascade:View ; solid:instanceContainer ?viewsFolder .
         FILTER (isIRI(?thing) && !STRSTARTS(STR(?place), STR(?viewsFolder)))
-        FILTER NOT EXISTS { ?valueEntry rec:forSubjectsOf ?narrowing }
-        FILTER NOT EXISTS { ?file a rec:View }
+        FILTER NOT EXISTS { ?valueEntry cascade:forSubjectsOf ?narrowing }
+        FILTER NOT EXISTS { ?file a cascade:View }
         BIND (false AS ?isFile) }
       UNION
       { GRAPH ?file { ?thing a ?class ; ?narrowing ?anything }
-        ?entry a rec:Placement ; solid:forClass ?class ; rec:forSubjectsOf ?narrowing .
+        ?entry a cascade:Placement ; solid:forClass ?class ; cascade:forSubjectsOf ?narrowing .
         OPTIONAL { ?entry solid:instance ?instance }
         OPTIONAL { ?entry solid:instanceContainer ?folder }
-        OPTIONAL { ?entry rec:fanOut ?fanOut }
+        OPTIONAL { ?entry cascade:subfolderPrefixLength ?fanOut }
         BIND (COALESCE(?instance, ?folder) AS ?place)
         BIND (BOUND(?instance) AS ?isFile)
         FILTER (isIRI(?thing) && BOUND(?place))
-        FILTER NOT EXISTS { ?file a rec:View }
-        FILTER NOT EXISTS { ?filing a rec:Placement ; rec:filedWith ?with . ?thing ?with [] } }
+        FILTER NOT EXISTS { ?file a cascade:View }
+        FILTER NOT EXISTS { ?filing a cascade:Placement ; cascade:filedWith ?with . ?thing ?with [] } }
       UNION
       { GRAPH ?file { ?thing a ?class }
-        ?entry a rec:Placement ; solid:forClass ?class .
-        ?views a rec:Placement ; solid:forClass rec:View ; solid:instanceContainer ?viewsFolder .
+        ?entry a cascade:Placement ; solid:forClass ?class .
+        ?views a cascade:Placement ; solid:forClass cascade:View ; solid:instanceContainer ?viewsFolder .
         OPTIONAL { ?entry solid:instance ?instance }
         OPTIONAL { ?entry solid:instanceContainer ?folder }
-        OPTIONAL { ?entry rec:fanOut ?fanOut }
+        OPTIONAL { ?entry cascade:subfolderPrefixLength ?fanOut }
         BIND (COALESCE(?instance, ?folder) AS ?place)
         BIND (BOUND(?instance) AS ?isFile)
         FILTER (isIRI(?thing) && BOUND(?place))
-        FILTER (STRSTARTS(STR(?place), STR(?viewsFolder)) = EXISTS { ?file a rec:View })
-        FILTER NOT EXISTS { ?entry rec:forSubjectsOf ?narrowing }
-        FILTER NOT EXISTS { ?filing a rec:Placement ; rec:filedWith ?with . ?thing ?with [] }
-        FILTER NOT EXISTS { ?narrowed a rec:Placement ; solid:forClass ?class ; rec:forSubjectsOf ?stated .
+        FILTER (STRSTARTS(STR(?place), STR(?viewsFolder)) = EXISTS { ?file a cascade:View })
+        FILTER NOT EXISTS { ?entry cascade:forSubjectsOf ?narrowing }
+        FILTER NOT EXISTS { ?filing a cascade:Placement ; cascade:filedWith ?with . ?thing ?with [] }
+        FILTER NOT EXISTS { ?narrowed a cascade:Placement ; solid:forClass ?class ; cascade:forSubjectsOf ?stated .
                             ?thing ?stated [] } }
     } }
   BIND (STRAFTER(STR(?file), STR(?place)) AS ?rest)

@@ -15,7 +15,7 @@ Feature: Nothing is edited or deleted
         """
         SELECT ?step ?version ?at WHERE {
           GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
-          { GRAPH ?file { ?revision rec:revisionOf <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> ; rec:version ?version ; prov:generatedAtTime ?at } }
+          { GRAPH ?file { ?revision cascade:revisionOf <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> ; cascade:version ?version ; prov:generatedAtTime ?at } }
           UNION
           { GRAPH ?file { ?version prov:specializationOf <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> } }
         }

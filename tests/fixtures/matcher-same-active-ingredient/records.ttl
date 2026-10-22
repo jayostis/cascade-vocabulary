@@ -1,51 +1,50 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix rxnorm: <https://ns.cascadeprotocol.org/codes/rxnorm/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:brand a health:AllergyRecord .
-:brandVersion prov:specializationOf :brand ; health:allergenCode rxnorm:153010 .
-:brandRevision a rec:Revision ; rec:revisionOf :brand ; rec:version :brandVersion ;
+:brand a cascade:AllergyOrIntolerance .
+:brandVersion prov:specializationOf :brand ; cascade:allergenCode rxnorm:153010 .
+:brandRevision a cascade:Revision ; cascade:revisionOf :brand ; cascade:version :brandVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:ingredient a health:AllergyRecord .
-:ingredientVersion prov:specializationOf :ingredient ; health:allergenCode rxnorm:5640 .
-:ingredientRevision a rec:Revision ; rec:revisionOf :ingredient ; rec:version :ingredientVersion ;
+:ingredient a cascade:AllergyOrIntolerance .
+:ingredientVersion prov:specializationOf :ingredient ; cascade:allergenCode rxnorm:5640 .
+:ingredientRevision a cascade:Revision ; cascade:revisionOf :ingredient ; cascade:version :ingredientVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:combination a health:AllergyRecord .
-:combinationVersion prov:specializationOf :combination ; health:allergenCode rxnorm:151392 .
-:combinationRevision a rec:Revision ; rec:revisionOf :combination ; rec:version :combinationVersion ;
+:combination a cascade:AllergyOrIntolerance .
+:combinationVersion prov:specializationOf :combination ; cascade:allergenCode rxnorm:151392 .
+:combinationRevision a cascade:Revision ; cascade:revisionOf :combination ; cascade:version :combinationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:oneOfIt a health:AllergyRecord .
-:oneOfItVersion prov:specializationOf :oneOfIt ; health:allergenCode rxnorm:723 .
-:oneOfItRevision a rec:Revision ; rec:revisionOf :oneOfIt ; rec:version :oneOfItVersion ;
+:oneOfIt a cascade:AllergyOrIntolerance .
+:oneOfItVersion prov:specializationOf :oneOfIt ; cascade:allergenCode rxnorm:723 .
+:oneOfItRevision a cascade:Revision ; cascade:revisionOf :oneOfIt ; cascade:version :oneOfItVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:oneCodeA a health:AllergyRecord .
-:oneCodeAVersion prov:specializationOf :oneCodeA ; health:allergenCode rxnorm:7980 .
-:oneCodeARevision a rec:Revision ; rec:revisionOf :oneCodeA ; rec:version :oneCodeAVersion ;
+:oneCodeA a cascade:AllergyOrIntolerance .
+:oneCodeAVersion prov:specializationOf :oneCodeA ; cascade:allergenCode rxnorm:7980 .
+:oneCodeARevision a cascade:Revision ; cascade:revisionOf :oneCodeA ; cascade:version :oneCodeAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:oneCodeB a health:AllergyRecord .
-:oneCodeBVersion prov:specializationOf :oneCodeB ; health:allergenCode rxnorm:7980 .
-:oneCodeBRevision a rec:Revision ; rec:revisionOf :oneCodeB ; rec:version :oneCodeBVersion ;
+:oneCodeB a cascade:AllergyOrIntolerance .
+:oneCodeBVersion prov:specializationOf :oneCodeB ; cascade:allergenCode rxnorm:7980 .
+:oneCodeBRevision a cascade:Revision ; cascade:revisionOf :oneCodeB ; cascade:version :oneCodeBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strayA a health:AllergyRecord .
-:strayAVersion prov:specializationOf :strayA ; health:allergenCode rxnorm:2670 .
-:strayARevision a rec:Revision ; rec:revisionOf :strayA ; rec:version :strayAVersion ;
+:strayA a cascade:AllergyOrIntolerance .
+:strayAVersion prov:specializationOf :strayA ; cascade:allergenCode rxnorm:2670 .
+:strayARevision a cascade:Revision ; cascade:revisionOf :strayA ; cascade:version :strayAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strayB a health:AllergyRecord .
-:strayBVersion prov:specializationOf :strayB ; health:allergenCode rxnorm:1191 .
-:strayBRevision a rec:Revision ; rec:revisionOf :strayB ; rec:version :strayBVersion ;
+:strayB a cascade:AllergyOrIntolerance .
+:strayBVersion prov:specializationOf :strayB ; cascade:allergenCode rxnorm:1191 .
+:strayBRevision a cascade:Revision ; cascade:revisionOf :strayB ; cascade:version :strayBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strayBrand a health:AllergyRecord .
-:strayBrandVersion prov:specializationOf :strayBrand ; health:allergenCode rxnorm:202488 .
-:strayBrandRevision a rec:Revision ; rec:revisionOf :strayBrand ; rec:version :strayBrandVersion ;
+:strayBrand a cascade:AllergyOrIntolerance .
+:strayBrandVersion prov:specializationOf :strayBrand ; cascade:allergenCode rxnorm:202488 .
+:strayBrandRevision a cascade:Revision ; cascade:revisionOf :strayBrand ; cascade:version :strayBrandVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

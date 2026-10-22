@@ -1,9 +1,9 @@
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<urn:uuid:6f0c8d52-3b1e-4a97-9d24-e5a7c1b08f36> a jdg:Judgment ;
-    jdg:verdict jdg:Same ;
+<urn:uuid:6f0c8d52-3b1e-4a97-9d24-e5a7c1b08f36> a cascade:Judgment ;
+    cascade:verdict cascade:Same ;
     prov:hadMember <urn:uuid:13b55a1c-5c3c-87c0-bf0b-396c55cb6963> ,
                    <urn:uuid:a94928d7-d40d-8dd3-88d3-4fa07c3c4615> ;
     prov:used <ni:///sha-256;Snhj8n_Xvg9w5U0PtHqSq2BuWbWPa0ho1rcqo9WyIfA> ,
@@ -11,7 +11,7 @@
     prov:wasAttributedTo <https://pod.priya-natarajan.example/profile/card.ttl#me> ;
     prov:qualifiedAttribution [ a prov:Attribution ;
         prov:agent <https://pod.priya-natarajan.example/profile/card.ttl#me> ;
-        prov:hadRole jdg:patient ] ;
+        prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2025-05-20T19:35:00Z"^^xsd:dateTime .
 
 <https://pod.priya-natarajan.example/profile/card.ttl#me> a prov:Person .

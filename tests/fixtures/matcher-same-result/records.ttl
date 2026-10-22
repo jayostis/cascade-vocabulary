@@ -1,53 +1,52 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:utc a health:LabResultRecord .
-:utcVersion prov:specializationOf :utc ; health:testCode <http://loinc.org/rdf/2823-3> ; health:resultValue "4.1" ;
-    health:resultUnit "mmol/L" ; health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
-:utcRevision a rec:Revision ; rec:revisionOf :utc ; rec:version :utcVersion ;
+:utc a cascade:LaboratoryTestResult .
+:utcVersion prov:specializationOf :utc ; cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultValue "4.1" ;
+    cascade:resultUnit "mmol/L" ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:utcRevision a cascade:Revision ; cascade:revisionOf :utc ; cascade:version :utcVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:eastern a health:LabResultRecord .
-:easternVersion prov:specializationOf :eastern ; health:testCode <http://loinc.org/rdf/2823-3> ; health:resultValue "4.1" ;
-    health:resultUnit "mmol/l" ; health:performedDate "2025-03-27T07:00:00-05:00"^^xsd:dateTime .
-:easternRevision a rec:Revision ; rec:revisionOf :eastern ; rec:version :easternVersion ;
+:eastern a cascade:LaboratoryTestResult .
+:easternVersion prov:specializationOf :eastern ; cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultValue "4.1" ;
+    cascade:resultUnit "mmol/l" ; cascade:resultClinicallyRelevantTime "2025-03-27T07:00:00-05:00"^^xsd:dateTime .
+:easternRevision a cascade:Revision ; cascade:revisionOf :eastern ; cascade:version :easternVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:otherValue a health:LabResultRecord .
-:otherValueVersion prov:specializationOf :otherValue ; health:testCode <http://loinc.org/rdf/2823-3> ; health:resultValue "4.4" ;
-    health:resultUnit "mmol/L" ; health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
-:otherValueRevision a rec:Revision ; rec:revisionOf :otherValue ; rec:version :otherValueVersion ;
+:otherValue a cascade:LaboratoryTestResult .
+:otherValueVersion prov:specializationOf :otherValue ; cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultValue "4.4" ;
+    cascade:resultUnit "mmol/L" ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:otherValueRevision a cascade:Revision ; cascade:revisionOf :otherValue ; cascade:version :otherValueVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:otherTime a health:LabResultRecord .
-:otherTimeVersion prov:specializationOf :otherTime ; health:testCode <http://loinc.org/rdf/2823-3> ; health:resultValue "4.1" ;
-    health:resultUnit "mmol/L" ; health:performedDate "2025-04-27T12:00:00Z"^^xsd:dateTime .
-:otherTimeRevision a rec:Revision ; rec:revisionOf :otherTime ; rec:version :otherTimeVersion ;
+:otherTime a cascade:LaboratoryTestResult .
+:otherTimeVersion prov:specializationOf :otherTime ; cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultValue "4.1" ;
+    cascade:resultUnit "mmol/L" ; cascade:resultClinicallyRelevantTime "2025-04-27T12:00:00Z"^^xsd:dateTime .
+:otherTimeRevision a cascade:Revision ; cascade:revisionOf :otherTime ; cascade:version :otherTimeVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:otherCode a health:LabResultRecord .
-:otherCodeVersion prov:specializationOf :otherCode ; health:testCode <http://loinc.org/rdf/6298-4> ; health:resultValue "4.1" ;
-    health:resultUnit "mmol/L" ; health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
-:otherCodeRevision a rec:Revision ; rec:revisionOf :otherCode ; rec:version :otherCodeVersion ;
+:otherCode a cascade:LaboratoryTestResult .
+:otherCodeVersion prov:specializationOf :otherCode ; cascade:testCode <http://loinc.org/rdf/6298-4> ; cascade:resultValue "4.1" ;
+    cascade:resultUnit "mmol/L" ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:otherCodeRevision a cascade:Revision ; cascade:revisionOf :otherCode ; cascade:version :otherCodeVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:dayA a health:LabResultRecord .
-:dayAVersion prov:specializationOf :dayA ; health:testCode <http://loinc.org/rdf/2345-7> ; health:resultValue "95" ;
-    health:resultUnit "mg/dL" ; health:performedDate "2025-03-27"^^xsd:date .
-:dayARevision a rec:Revision ; rec:revisionOf :dayA ; rec:version :dayAVersion ;
+:dayA a cascade:LaboratoryTestResult .
+:dayAVersion prov:specializationOf :dayA ; cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValue "95" ;
+    cascade:resultUnit "mg/dL" ; cascade:resultClinicallyRelevantTime "2025-03-27"^^xsd:date .
+:dayARevision a cascade:Revision ; cascade:revisionOf :dayA ; cascade:version :dayAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:dayB a health:LabResultRecord .
-:dayBVersion prov:specializationOf :dayB ; health:testCode <http://loinc.org/rdf/2345-7> ; health:resultValue "95" ;
-    health:resultUnit "mg/dL" ; health:performedDate "2025-03-27"^^xsd:date .
-:dayBRevision a rec:Revision ; rec:revisionOf :dayB ; rec:version :dayBVersion ;
+:dayB a cascade:LaboratoryTestResult .
+:dayBVersion prov:specializationOf :dayB ; cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValue "95" ;
+    cascade:resultUnit "mg/dL" ; cascade:resultClinicallyRelevantTime "2025-03-27"^^xsd:date .
+:dayBRevision a cascade:Revision ; cascade:revisionOf :dayB ; cascade:version :dayBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:dayTime a health:LabResultRecord .
-:dayTimeVersion prov:specializationOf :dayTime ; health:testCode <http://loinc.org/rdf/2345-7> ; health:resultValue "95" ;
-    health:resultUnit "mg/dL" ; health:performedDate "2025-03-27T00:00:00Z"^^xsd:dateTime .
-:dayTimeRevision a rec:Revision ; rec:revisionOf :dayTime ; rec:version :dayTimeVersion ;
+:dayTime a cascade:LaboratoryTestResult .
+:dayTimeVersion prov:specializationOf :dayTime ; cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValue "95" ;
+    cascade:resultUnit "mg/dL" ; cascade:resultClinicallyRelevantTime "2025-03-27T00:00:00Z"^^xsd:dateTime .
+:dayTimeRevision a cascade:Revision ; cascade:revisionOf :dayTime ; cascade:version :dayTimeVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,26 +1,25 @@
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;wuIK4ECybN-y4M-C3LQ8LD7MkJE13V8QABPl7GamnPc> health:status "completed" ;
-	health:vaccineName "Tdap" ;
-	health:administrationDate "2026-10-30"^^xsd:date ;
-	health:vaccineCode "115" .
+<ni:///sha-256;wuIK4ECybN-y4M-C3LQ8LD7MkJE13V8QABPl7GamnPc> cascade:workflowStatus "completed" ;
+	cascade:vaccineName "Tdap" ;
+	cascade:vaccinationOccurrenceTime "2026-10-30"^^xsd:date ;
+	cascade:vaccineCode "115" .
 _:b54f150d2e5210dd2ea796677764cb2f pav:lastUpdateOn "2026-10-30T14:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
 	bridge:arrivedAs <ni:///sha-256;wuIK4ECybN-y4M-C3LQ8LD7MkJE13V8QABPl7GamnPc> .
 <ni:///sha-256;wuIK4ECybN-y4M-C3LQ8LD7MkJE13V8QABPl7GamnPc> prov:specializationOf <urn:uuid:99696d97-cd0d-8e9c-af86-e54f66df19d5> .
-<urn:uuid:99696d97-cd0d-8e9c-af86-e54f66df19d5> health:sourceRecordId "imm-tdap-2026" ;
-	a health:ImmunizationRecord .
+<urn:uuid:99696d97-cd0d-8e9c-af86-e54f66df19d5> cascade:sourceRecordId "imm-tdap-2026" ;
+	a cascade:Vaccination .
 _:b54f150d2e5210dd2ea796677764cb2f bridge:selector "" ;
 	prov:wasDerivedFrom <ni:///sha-256;lmlQ5kYnBqRHFB4DIMxNuP1nUh4xcHmY7XkQJs4Lq2s> ;
 	prov:wasGeneratedBy _:409b774a7066357a9559ad1c718784f2 .
 _:4c447741d06257dfdfd3b021fe775d1a prov:agent _:b71216f4fe76ec2987b5080e5cce2064 .
 _:b71216f4fe76ec2987b5080e5cce2064 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:4c447741d06257dfdfd3b021fe775d1a prov:hadRole rec:transmitter .
+_:4c447741d06257dfdfd3b021fe775d1a prov:hadRole cascade:TransmitterRole .
 <ni:///sha-256;lmlQ5kYnBqRHFB4DIMxNuP1nUh4xcHmY7XkQJs4Lq2s> prov:qualifiedAttribution _:4c447741d06257dfdfd3b021fe775d1a .
 _:409b774a7066357a9559ad1c718784f2 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .

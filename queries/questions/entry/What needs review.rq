@@ -16,21 +16,18 @@
 # An entry joined by an NDC (R5) and a product code (R11) alone is joined through one kind of sameness, since both are
 # exact identity; any other two justifications are two kinds, with either of these included.
 # The build never settles these itself; a person does, with a judgment.
-PREFIX clinical: <https://ns.cascadeprotocol.org/clinical/v1#>
-PREFIX health: <https://ns.cascadeprotocol.org/health/v1#>
-PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
 WHERE {
   { { SELECT ?entry
       WHERE {
-        ?member rec:inEntry ?entry ;
-                pav:hasCurrentVersion/clinical:criticality ?criticality .
+        ?member cascade:inEntry ?entry ;
+                pav:hasCurrentVersion/cascade:allergyCriticality ?criticality .
       }
       GROUP BY ?entry
       HAVING (COUNT(DISTINCT ?criticality) > 1) }
@@ -39,21 +36,21 @@ WHERE {
   UNION
   { { SELECT ?entry
       WHERE {
-        ?same rec:counts true ; jdg:verdict jdg:Same ; jdg:justification ?why ;
+        ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification ?why ;
               prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
-        ?member rec:inEntry ?entry .
+        ?member cascade:inEntry ?entry .
       }
       GROUP BY ?entry
       HAVING (COUNT(DISTINCT ?why) > 1
-              && SUM(IF(?why IN (jdg:SameMedicationCode, jdg:SameProductCode), 0, 1)) > 0) }
+              && SUM(IF(?why IN (cascade:SameMedicationCode, cascade:SameProductCode), 0, 1)) > 0) }
     BIND ("joined through two kinds of machine sameness" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel } }
   UNION
-  { ?record jdg:currentlyDifferent ?otherRecord ; rec:inEntry ?entry .
-    ?otherRecord rec:inEntry ?entry .
+  { ?record cascade:currentlyDifferent ?otherRecord ; cascade:inEntry ?entry .
+    ?otherRecord cascade:inEntry ?entry .
     FILTER (STR(?record) < STR(?otherRecord))
     BIND ("judged different, still joined" AS ?needs)
-    OPTIONAL { ?judgment rec:counts true ; jdg:verdict jdg:Different ; prov:hadMember ?record , ?otherRecord }
+    OPTIONAL { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Different ; prov:hadMember ?record , ?otherRecord }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
@@ -61,32 +58,32 @@ WHERE {
   UNION
   { { SELECT ?record ?otherRecord (MIN(STR(?lapsed)) AS ?first)
       WHERE {
-        ?lapsed rec:lapsed true ; prov:hadMember ?record , ?otherRecord .
+        ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
         FILTER (STR(?record) < STR(?otherRecord))
       }
       GROUP BY ?record ?otherRecord }
-    ?judgment rec:lapsed true ; prov:hadMember ?record , ?otherRecord .
-    ?record rec:inEntry ?entry .
-    ?otherRecord rec:inEntry ?otherEntry .
+    ?judgment cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
+    ?record cascade:inEntry ?entry .
+    ?otherRecord cascade:inEntry ?otherEntry .
     FILTER (STR(?judgment) = ?first && ?entry != ?otherEntry
-            && !EXISTS { ?record jdg:currentlyDifferent ?otherRecord })
+            && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord })
     BIND ("joined before, apart under newer tables or rules" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
   UNION
-  { VALUES ?property { health:icd10Code health:snomedCode }
-    ?record rec:kind "Condition" ; pav:hasCurrentVersion ?version ; rec:inEntry ?entry .
-    ?otherRecord rec:kind "Condition" ; pav:hasCurrentVersion ?otherVersion ; rec:inEntry ?otherEntry .
+  { VALUES ?property { cascade:icd10Code cascade:snomedCode }
+    ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version ; cascade:inEntry ?entry .
+    ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; cascade:inEntry ?otherEntry .
     ?version ?property ?code .
     ?otherVersion ?property ?code .
-    OPTIONAL { ?version rec:date ?onset }
-    OPTIONAL { ?version clinical:abatementDate ?end }
-    OPTIONAL { ?version rec:status ?status }
-    OPTIONAL { ?otherVersion rec:date ?otherOnset }
-    OPTIONAL { ?otherVersion clinical:abatementDate ?otherEnd }
-    OPTIONAL { ?otherVersion rec:status ?otherStatus }
+    OPTIONAL { ?version cascade:displayDate ?onset }
+    OPTIONAL { ?version cascade:abatementDate ?end }
+    OPTIONAL { ?version cascade:clinicalStatus ?status }
+    OPTIONAL { ?otherVersion cascade:displayDate ?otherOnset }
+    OPTIONAL { ?otherVersion cascade:abatementDate ?otherEnd }
+    OPTIONAL { ?otherVersion cascade:clinicalStatus ?otherStatus }
     BIND (SUBSTR(STR(?onset), 1, 10) AS ?from)
     BIND (SUBSTR(STR(?otherOnset), 1, 10) AS ?otherFrom)
     BIND (BOUND(?end) && isLiteral(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime)
@@ -98,7 +95,7 @@ WHERE {
     BIND (IF(?otherEndKnown, SUBSTR(STR(?otherEnd), 1, 10),
              IF(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?otherFrom)) AS ?otherTo)
     FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
-            && !EXISTS { ?record jdg:currentlyDifferent ?otherRecord }
+            && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord }
             && (!BOUND(?onset) || !BOUND(?otherOnset)
                 || (!?endKnown && !(COALESCE(?status, "") IN ("active", "recurrence", "relapse")) && ?from <= ?otherTo)
                 || (!?otherEndKnown && !(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"))
@@ -108,13 +105,13 @@ WHERE {
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
   UNION
-  { ?record rec:kind "Medication" ; pav:hasCurrentVersion ?version ; rec:inEntry ?entry .
-    ?otherRecord rec:kind "Medication" ; pav:hasCurrentVersion ?otherVersion ; rec:inEntry ?otherEntry .
-    ?version clinical:rxNormCode ?code .
-    ?otherVersion clinical:rxNormCode ?code .
+  { ?record cascade:recordKind "Medication" ; pav:hasCurrentVersion ?version ; cascade:inEntry ?entry .
+    ?otherRecord cascade:recordKind "Medication" ; pav:hasCurrentVersion ?otherVersion ; cascade:inEntry ?otherEntry .
+    ?version cascade:rxNormCode ?code .
+    ?otherVersion cascade:rxNormCode ?code .
     FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
-            && !EXISTS { ?record jdg:currentlyDifferent ?otherRecord }
-            && !EXISTS { ?lapsed rec:lapsed true ; prov:hadMember ?record , ?otherRecord })
+            && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord }
+            && !EXISTS { ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord })
     BIND ("possibly the same medication" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }

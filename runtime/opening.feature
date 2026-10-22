@@ -34,7 +34,7 @@ Feature: Opening a pod
     An open that finds nothing new writes nothing, so opening again is always safe.
 
     A Same the open does not file again stays in the pod. Once a version it used has a newer current one it has
-    lapsed (rec:lapsed, derived, nothing written for it), unless something retracts it or a judgment not itself
+    lapsed (cascade:lapsed, derived, nothing written for it), unless something retracts it or a judgment not itself
     retracted supersedes it, and "What needs review" lists its pair, if now in two entries, until a person judges it.
 
     Background:
@@ -163,9 +163,9 @@ Feature: Opening a pod
         | same converted code | condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" | 2026-07-05 at 09:00 | Matcher rules version 5, CDC ICD-10-CM code conversions version 2, version 1 of condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", version 1 of condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" |
       And the query is:
         """
-        PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
+        PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
         SELECT ?rules WHERE {
-          ?judgment rec:counts true ; jdg:justification jdg:SameConvertedCode ; prov:used ?rules .
+          ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameConvertedCode ; prov:used ?rules .
           ?rules prov:specializationOf/rdfs:label "Matcher rules" .
         }
         """
@@ -227,9 +227,8 @@ Feature: Opening a pod
       When the pod is opened with the tables "app" on 2026-07-03 at 09:00
       And the query is:
         """
-        PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
         SELECT ?rules WHERE {
-          ?judgment rec:counts true ; jdg:justification jdg:SameMappedCodeAndDate ; prov:used ?rules .
+          ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameMappedCodeAndDate ; prov:used ?rules .
           ?rules prov:specializationOf/rdfs:label ?label .
           FILTER (?label IN ("Cascade matcher rules", "Matcher rules"))
         }
@@ -266,13 +265,13 @@ Feature: Opening a pod
         """
         PREFIX owl: <http://www.w3.org/2002/07/owl#>
         SELECT ?version ?group WHERE {
-          ?version prov:specializationOf/rec:tableKind rec:VaccineGroups .
-          GRAPH ?version { ?row owl:annotatedSource <http://hl7.org/fhir/sid/cvx/141> ; owl:annotatedTarget ?group }
+          ?version prov:specializationOf/cascade:tableKind cascade:VaccineGroups .
+          GRAPH ?version { ?row owl:annotatedSource <https://ns.cascadeprotocol.org/codes/cvx/141> ; owl:annotatedTarget ?group }
         }
         """
       Then it answers:
         | version                          | group                          |
-        | CDC CVX vaccine groups version 1 | <http://hl7.org/fhir/sid/cvx/88> |
+        | CDC CVX vaccine groups version 1 | <https://ns.cascadeprotocol.org/codes/cvx/88> |
 
     Example: before the open, the story's references/ answer instead
       When the pod is read as it stood after "pod"
@@ -280,13 +279,13 @@ Feature: Opening a pod
         """
         PREFIX owl: <http://www.w3.org/2002/07/owl#>
         SELECT ?version ?group WHERE {
-          ?version prov:specializationOf/rec:tableKind rec:VaccineGroups .
-          GRAPH ?version { ?row owl:annotatedSource <http://hl7.org/fhir/sid/cvx/141> ; owl:annotatedTarget ?group }
+          ?version prov:specializationOf/cascade:tableKind cascade:VaccineGroups .
+          GRAPH ?version { ?row owl:annotatedSource <https://ns.cascadeprotocol.org/codes/cvx/141> ; owl:annotatedTarget ?group }
         }
         """
       Then it answers:
         | version                           | group                          |
-        | CVX vaccine group table version 1 | <http://hl7.org/fhir/sid/cvx/88> |
+        | CVX vaccine group table version 1 | <https://ns.cascadeprotocol.org/codes/cvx/88> |
 
     Example: after an open with tables that lack a series, its rows answer nothing
       When the query is:
@@ -294,7 +293,7 @@ Feature: Opening a pod
         PREFIX owl: <http://www.w3.org/2002/07/owl#>
         SELECT ?row WHERE {
           ?version prov:specializationOf/rdfs:label "CVX vaccine group table" .
-          GRAPH ?version { ?row owl:annotatedSource <http://hl7.org/fhir/sid/cvx/141> }
+          GRAPH ?version { ?row owl:annotatedSource <https://ns.cascadeprotocol.org/codes/cvx/141> }
         }
         """
       Then it answers nothing
@@ -303,6 +302,6 @@ Feature: Opening a pod
       When the query is:
         """
         PREFIX owl: <http://www.w3.org/2002/07/owl#>
-        SELECT ?row WHERE { ?row owl:annotatedSource <http://hl7.org/fhir/sid/cvx/141> }
+        SELECT ?row WHERE { ?row owl:annotatedSource <https://ns.cascadeprotocol.org/codes/cvx/141> }
         """
       Then it answers nothing

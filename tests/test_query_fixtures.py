@@ -60,11 +60,11 @@ def test_the_derived_state_is_not_empty_and_shares_no_triple_with_the_fixtures_f
 
 
 SHOWN_AND_LEFT_OUT_ALIKE = """
-    PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+    PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
     SELECT ?record WHERE {
-      ?record a rec:Record .
-      BIND (EXISTS { ?record rec:inEntry [] } AS ?shown)
-      BIND (EXISTS { ?record rec:leftOutFor [] } AS ?leftOut)
+      ?record a cascade:Record .
+      BIND (EXISTS { ?record cascade:inEntry [] } AS ?shown)
+      BIND (EXISTS { ?record cascade:leftOutFor [] } AS ?leftOut)
       FILTER (?shown = ?leftOut)
     }"""
 

@@ -11,39 +11,38 @@
 # the five ACMG values and not the report's; else "as ClinVar writes it", for a row that holds none of the five. A report
 # with no ACMG value has no verdict, and neither has one whose variant finds no row or two or more. Sub-tiers such as low
 # penetrance and VUS-high are not among the five.
-PREFIX genomics: <https://ns.cascadeprotocol.org/genomics/v1#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
 
 SELECT ?report ?row ?origin
-  (IF(SUM(IF(BOUND(?held) && ?held IN (rec:ClinVarConflicting, rec:ClinVarConflictingData), 1, 0)) > 0, "labs disagree",
+  (IF(SUM(IF(BOUND(?held) && ?held IN (cascade:ClinVarConflicting, cascade:ClinVarConflictingData), 1, 0)) > 0, "labs disagree",
       IF(SUM(IF(BOUND(?held) && ?held = ?acmg, 1, 0)) > 0, "agrees",
-         IF(SUM(IF(BOUND(?held) && ?held IN (genomics:Pathogenic, genomics:LikelyPathogenic, genomics:VUS,
-                                              genomics:LikelyBenign, genomics:Benign), 1, 0)) > 0,
+         IF(SUM(IF(BOUND(?held) && ?held IN (cascade:Pathogenic, cascade:LikelyPathogenic, cascade:UncertainSignificance,
+                                              cascade:LikelyBenign, cascade:Benign), 1, 0)) > 0,
             "differs", "as ClinVar writes it"))) AS ?verdict)
 WHERE {
   { SELECT ?variant (SAMPLE(?found) AS ?row) (SAMPLE(?lookup) AS ?key)
     WHERE {
-      { ?variant genomics:clinvarVariationId ?id
-        BIND (IRI(CONCAT("http://www.ncbi.nlm.nih.gov/clinvar/", ENCODE_FOR_URI(STR(?id)))) AS ?found)
+      { ?variant cascade:clinvarVariationId ?id
+        BIND (IRI(CONCAT("https://identifiers.org/clinvar:", ENCODE_FOR_URI(STR(?id)))) AS ?found)
         BIND (?found AS ?lookup)
-        ?anyOrigin prov:specializationOf/rec:tableKind rec:VariantClassifications .
+        ?anyOrigin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
         GRAPH ?anyOrigin { ?found ?any [] } }
       UNION
-      { ?variant genomics:hgvsCDot ?hgvs
-        FILTER NOT EXISTS { ?variant genomics:clinvarVariationId [] }
-        BIND (IRI(CONCAT("http://varnomen.hgvs.org/", ENCODE_FOR_URI(STR(?hgvs)))) AS ?lookup)
-        ?anyOrigin prov:specializationOf/rec:tableKind rec:VariantClassifications .
-        GRAPH ?anyOrigin { ?found rec:hgvsExpression ?lookup } }
+      { ?variant cascade:hgvsCodingDnaExpression ?hgvs
+        FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] }
+        BIND (IRI(CONCAT("https://ns.cascadeprotocol.org/codes/hgvs/", ENCODE_FOR_URI(STR(?hgvs)))) AS ?lookup)
+        ?anyOrigin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
+        GRAPH ?anyOrigin { ?found cascade:hgvsExpression ?lookup } }
     }
     GROUP BY ?variant
     HAVING (COUNT(DISTINCT ?found) = 1) }
-  ?report genomics:variantInterpreted ?variant ; genomics:acmgClassification ?acmg .
-  ?origin prov:specializationOf/rec:tableKind rec:VariantClassifications .
+  ?report cascade:variantInterpreted ?variant ; cascade:acmgClassification ?acmg .
+  ?origin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
   GRAPH ?origin {
     ?row ?present [] .
-    ?key ^rec:hgvsExpression? ?row
-    OPTIONAL { ?row rec:clinvarClassification ?held }
+    ?key ^cascade:hgvsExpression? ?row
+    OPTIONAL { ?row cascade:clinvarClassification ?held }
   }
 }
 GROUP BY ?report ?variant ?origin ?row ?acmg

@@ -77,7 +77,7 @@ Feature: Priya Natarajan's pod
         """
         SELECT ?intent WHERE {
           ?record pav:hasCurrentVersion ?version .
-          ?version clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ; clinical:clinicalIntent ?intent .
+          ?version cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ; cascade:prescribedOrReported ?intent .
         }
         """
       Then it answers:
@@ -105,7 +105,7 @@ Feature: Priya Natarajan's pod
         """
         SELECT ?unit WHERE {
           ?record pav:hasCurrentVersion ?version .
-          ?version health:testCode <http://loinc.org/rdf/2823-3> ; health:resultUnit ?unit .
+          ?version cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultUnit ?unit .
         }
         """
       Then it answers:
@@ -228,8 +228,8 @@ Feature: Priya Natarajan's pod
         """
         SELECT ?drug ?start WHERE {
           ?record pav:hasCurrentVersion ?version .
-          ?version clinical:drugName ?drug .
-          OPTIONAL { ?version clinical:startDate ?start }
+          ?version cascade:drugName ?drug .
+          OPTIONAL { ?version cascade:medicationUseStartDate ?start }
           FILTER (?drug IN ("Claritin 10 MG Oral Tablet", "fluticasone propionate 50 MCG/ACTUAT Nasal Spray"))
         }
         """
@@ -261,7 +261,7 @@ Feature: Priya Natarajan's pod
         SELECT (COUNT(DISTINCT ?revision) AS ?revisions) (COUNT(DISTINCT ?document) AS ?documents) WHERE {
           GRAPH <urn:cascade:steps> { <urn:cascade:step:E4> prov:generated ?file }
           GRAPH ?file {
-            { ?revision a rec:Revision }
+            { ?revision a cascade:Revision }
             UNION
             { ?document a prov:Entity }
           }
@@ -328,8 +328,8 @@ Feature: Priya Natarajan's pod
         """
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
         SELECT ?record ?name ?version WHERE {
-          ?record pav:hasCurrentVersion/health:testCode ?code .
-          ?version prov:specializationOf/rec:tableKind rec:CodeNames .
+          ?record pav:hasCurrentVersion/cascade:testCode ?code .
+          ?version prov:specializationOf/cascade:tableKind cascade:CodeNames .
           GRAPH ?version { ?code skos:prefLabel ?name }
         }
         """
@@ -344,13 +344,13 @@ Feature: Priya Natarajan's pod
       And the query "tables/medication-classes.rq" is asked
       Then it answers:
         | entry                           | medication                     | class                                                    | relation                          | origin                                                              | through                                               | stated |
-        | the entry of KHF-MED-LISINOPRIL | "lisinopril 10 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000175562> | rec:establishedPharmacologicClass | VA MED-RT drug classes subset for Priya Natarajan version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/1546022" | false  |
-        | the entry of KHF-MED-LISINOPRIL | "lisinopril 10 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000181> | rec:mechanismOfAction             | VA MED-RT drug classes subset for Priya Natarajan version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/1546022" | false  |
+        | the entry of KHF-MED-LISINOPRIL | "lisinopril 10 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000175562> | cascade:establishedPharmacologicClass | VA MED-RT drug classes subset for Priya Natarajan version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/1546022" | false  |
+        | the entry of KHF-MED-LISINOPRIL | "lisinopril 10 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000181> | cascade:mechanismOfActionClass             | VA MED-RT drug classes subset for Priya Natarajan version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/1546022" | false  |
       When the query is:
         """
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
         SELECT ?class ?name WHERE {
-          ?version prov:specializationOf/rec:tableKind rec:CodeNames .
+          ?version prov:specializationOf/cascade:tableKind cascade:CodeNames .
           GRAPH ?version { ?class skos:prefLabel ?name }
           FILTER (?class IN (<https://ns.cascadeprotocol.org/codes/medrt/N0000175562>, <https://ns.cascadeprotocol.org/codes/medrt/N0000000181>))
         }
@@ -398,6 +398,6 @@ Feature: Priya Natarajan's pod
       When the query "tables/medication-classes-through-precise-ingredients.rq" is asked
       Then it answers:
         | entry                                                         | medication                   | class                                                    | relation                          | origin                                                                         | through                                            | stated |
-        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000175825> | rec:establishedPharmacologicClass | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/4083" | false  |
-        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000100> | rec:mechanismOfAction             | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/4083" | false  |
-        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <http://id.nlm.nih.gov/mesh/M0447348>                    | rec:chemicalStructure             | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "http://www.nlm.nih.gov/research/umls/rxnorm/4083" | false  |
+        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000175825> | cascade:establishedPharmacologicClass | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/4083" | false  |
+        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000100> | cascade:mechanismOfActionClass             | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/4083" | false  |
+        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <http://id.nlm.nih.gov/mesh/M0447348>                    | cascade:chemicalStructureClass             | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/4083" | false  |

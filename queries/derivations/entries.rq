@@ -1,16 +1,15 @@
 # Records of one kind, not left out, that are currently the same, directly or through each other, make one entry. It is
 # named from its smallest member, so the same records always make the same entry.
-PREFIX jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#>
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 
-CONSTRUCT { ?record rec:inEntry ?entry }
+CONSTRUCT { ?record cascade:inEntry ?entry }
 WHERE {
   { SELECT ?record (IRI(CONCAT("urn:cascade:entry:", SHA256(MIN(STR(?m))))) AS ?entry)
     WHERE {
-      ?record rec:kind ?kind ; jdg:currentlySame* ?m .
-      ?m rec:kind ?kind .
-      FILTER NOT EXISTS { ?record rec:leftOutFor [] }
-      FILTER NOT EXISTS { ?m rec:leftOutFor [] }
+      ?record cascade:recordKind ?kind ; cascade:currentlySame* ?m .
+      ?m cascade:recordKind ?kind .
+      FILTER NOT EXISTS { ?record cascade:leftOutFor [] }
+      FILTER NOT EXISTS { ?m cascade:leftOutFor [] }
     }
     GROUP BY ?record }
 }

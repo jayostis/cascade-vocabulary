@@ -9,16 +9,15 @@ from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH
 
-from contract import KITS, REC, ROOT
+from contract import KITS, CASCADE, ROOT
 from manifests import MF, path
 from pods import FIXTURES
 
 SHT = Namespace("http://www.w3.org/ns/shacl-test#")
-HEALTH = Namespace("https://ns.cascadeprotocol.org/health/v1#")
 CASES = ROOT / "tests" / "shape-cases"
 TARGETS = (SH.targetClass, SH.targetSubjectsOf, SH.targetObjectsOf, SH.targetNode)
-BROKEN_ELSEWHERE = {REC.PlacementShape: "test_pod_layout.py breaks the layout's entries"}
-UNDECLARED_ON_PURPOSE = {HEALTH.NoSuchRecord: "Finn's type-filed-nowhere export files a record of a type no folder holds"}
+BROKEN_ELSEWHERE = {CASCADE.PlacementShape: "test_pod_layout.py breaks the layout's entries"}
+UNDECLARED_ON_PURPOSE = {CASCADE.NoSuchRecord: "Finn's type-filed-nowhere export files a record of a type no folder holds"}
 
 
 @cache
@@ -29,7 +28,7 @@ def parsed(file):
 @cache
 def shapes():
     graph = Graph()
-    for file in sorted(ROOT.glob("ontologies/*/*/*.shapes.ttl")):
+    for file in sorted(ROOT.glob("ontologies/*.shapes.ttl")):
         graph += parsed(file)
     return graph
 
@@ -37,7 +36,7 @@ def shapes():
 @cache
 def ontology():
     graph = Graph()
-    for file in sorted(ROOT.glob("ontologies/*/*/*.ttl")):
+    for file in sorted(ROOT.glob("ontologies/*.ttl")):
         if not file.name.endswith(".shapes.ttl"):
             graph += parsed(file)
     return graph

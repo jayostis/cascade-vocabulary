@@ -1,170 +1,169 @@
 @prefix : <urn:x:> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:productA a clinical:Medication .
-:productAVersion prov:specializationOf :productA ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "metformin 500 MG Oral Tablet" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/861007> .
-:productARevision a rec:Revision ; rec:revisionOf :productA ; rec:version :productAVersion ;
+:productA a cascade:PrescribedOrReportedMedication .
+:productAVersion prov:specializationOf :productA ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "metformin 500 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> .
+:productARevision a cascade:Revision ; cascade:revisionOf :productA ; cascade:version :productAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:productB a clinical:Medication .
-:productBVersion prov:specializationOf :productB ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Metformin 500 mg, refill" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/861007> ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/29046> .
-:productBRevision a rec:Revision ; rec:revisionOf :productB ; rec:version :productBVersion ;
+:productB a cascade:PrescribedOrReportedMedication .
+:productBVersion prov:specializationOf :productB ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Metformin 500 mg, refill" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/29046> .
+:productBRevision a cascade:Revision ; cascade:revisionOf :productB ; cascade:version :productBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strengthA a clinical:Medication .
-:strengthAVersion prov:specializationOf :strengthA ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "amlodipine 5 MG Oral Tablet" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/370573> .
-:strengthARevision a rec:Revision ; rec:revisionOf :strengthA ; rec:version :strengthAVersion ;
+:strengthA a cascade:PrescribedOrReportedMedication .
+:strengthAVersion prov:specializationOf :strengthA ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "amlodipine 5 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/197361> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/370573> .
+:strengthARevision a cascade:Revision ; cascade:revisionOf :strengthA ; cascade:version :strengthAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strengthB a clinical:Medication .
-:strengthBVersion prov:specializationOf :strengthB ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "amlodipine 10 MG Oral Tablet" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/308135> ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/370573> .
-:strengthBRevision a rec:Revision ; rec:revisionOf :strengthB ; rec:version :strengthBVersion ;
+:strengthB a cascade:PrescribedOrReportedMedication .
+:strengthBVersion prov:specializationOf :strengthB ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "amlodipine 10 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/308135> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/370573> .
+:strengthBRevision a cascade:Revision ; cascade:revisionOf :strengthB ; cascade:version :strengthBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:combination a clinical:Medication .
-:combinationVersion prov:specializationOf :combination ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "amlodipine 2.5 MG / benazepril hydrochloride 10 MG Oral Capsule" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/898350> ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/104416> .
-:combinationRevision a rec:Revision ; rec:revisionOf :combination ; rec:version :combinationVersion ;
+:combination a cascade:PrescribedOrReportedMedication .
+:combinationVersion prov:specializationOf :combination ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "amlodipine 2.5 MG / benazepril hydrochloride 10 MG Oral Capsule" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/898350> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/104416> .
+:combinationRevision a cascade:Revision ; cascade:revisionOf :combination ; cascade:version :combinationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:single a clinical:Medication .
-:singleVersion prov:specializationOf :single ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "amlodipine 2.5 MG Oral Tablet" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/308136> ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/104416> .
-:singleRevision a rec:Revision ; rec:revisionOf :single ; rec:version :singleVersion ;
+:single a cascade:PrescribedOrReportedMedication .
+:singleVersion prov:specializationOf :single ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "amlodipine 2.5 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/308136> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/104416> .
+:singleRevision a cascade:Revision ; cascade:revisionOf :single ; cascade:version :singleVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:brandFive a clinical:Medication .
-:brandFiveVersion prov:specializationOf :brandFive ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Norvasc 5 MG Oral Tablet" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/212549> ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/58927> .
-:brandFiveRevision a rec:Revision ; rec:revisionOf :brandFive ; rec:version :brandFiveVersion ;
+:brandFive a cascade:PrescribedOrReportedMedication .
+:brandFiveVersion prov:specializationOf :brandFive ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Norvasc 5 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/212549> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/58927> .
+:brandFiveRevision a cascade:Revision ; cascade:revisionOf :brandFive ; cascade:version :brandFiveVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:brandTen a clinical:Medication .
-:brandTenVersion prov:specializationOf :brandTen ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Norvasc 10 MG Oral Tablet" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/212575> ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/58927> .
-:brandTenRevision a rec:Revision ; rec:revisionOf :brandTen ; rec:version :brandTenVersion ;
+:brandTen a cascade:PrescribedOrReportedMedication .
+:brandTenVersion prov:specializationOf :brandTen ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Norvasc 10 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/212575> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/58927> .
+:brandTenRevision a cascade:Revision ; cascade:revisionOf :brandTen ; cascade:version :brandTenVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:ingredientA a clinical:Medication .
-:ingredientAVersion prov:specializationOf :ingredientA ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Lisinopril" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/29046> .
-:ingredientARevision a rec:Revision ; rec:revisionOf :ingredientA ; rec:version :ingredientAVersion ;
+:ingredientA a cascade:PrescribedOrReportedMedication .
+:ingredientAVersion prov:specializationOf :ingredientA ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Lisinopril" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/29046> .
+:ingredientARevision a cascade:Revision ; cascade:revisionOf :ingredientA ; cascade:version :ingredientAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:ingredientB a clinical:Medication .
-:ingredientBVersion prov:specializationOf :ingredientB ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Lisinopril tablets" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/29046> .
-:ingredientBRevision a rec:Revision ; rec:revisionOf :ingredientB ; rec:version :ingredientBVersion ;
+:ingredientB a cascade:PrescribedOrReportedMedication .
+:ingredientBVersion prov:specializationOf :ingredientB ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Lisinopril tablets" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/29046> .
+:ingredientBRevision a cascade:Revision ; cascade:revisionOf :ingredientB ; cascade:version :ingredientBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:fillA a clinical:Medication .
-:fillAVersion prov:specializationOf :fillA ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Lisinopril 10 mg, March" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ;
-    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
-:fillARevision a rec:Revision ; rec:revisionOf :fillA ; rec:version :fillAVersion ;
+:fillA a cascade:PrescribedOrReportedMedication .
+:fillAVersion prov:specializationOf :fillA ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Lisinopril 10 mg, March" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
+:fillARevision a cascade:Revision ; cascade:revisionOf :fillA ; cascade:version :fillAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:fillB a clinical:Medication .
-:fillBVersion prov:specializationOf :fillB ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Lisinopril 10 mg, April" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ;
-    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
-:fillBRevision a rec:Revision ; rec:revisionOf :fillB ; rec:version :fillBVersion ;
+:fillB a cascade:PrescribedOrReportedMedication .
+:fillBVersion prov:specializationOf :fillB ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Lisinopril 10 mg, April" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
+:fillBRevision a cascade:Revision ; cascade:revisionOf :fillB ; cascade:version :fillBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:bridgeA a clinical:Medication .
-:bridgeAVersion prov:specializationOf :bridgeA ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Product X" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000001> .
-:bridgeARevision a rec:Revision ; rec:revisionOf :bridgeA ; rec:version :bridgeAVersion ;
+:bridgeA a cascade:PrescribedOrReportedMedication .
+:bridgeAVersion prov:specializationOf :bridgeA ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Product X" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000001> .
+:bridgeARevision a cascade:Revision ; cascade:revisionOf :bridgeA ; cascade:version :bridgeAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:bridgeB a clinical:Medication .
-:bridgeBVersion prov:specializationOf :bridgeB ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Products X and Y" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000001> ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000002> .
-:bridgeBRevision a rec:Revision ; rec:revisionOf :bridgeB ; rec:version :bridgeBVersion ;
+:bridgeB a cascade:PrescribedOrReportedMedication .
+:bridgeBVersion prov:specializationOf :bridgeB ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Products X and Y" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000001> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000002> .
+:bridgeBRevision a cascade:Revision ; cascade:revisionOf :bridgeB ; cascade:version :bridgeBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:bridgeC a clinical:Medication .
-:bridgeCVersion prov:specializationOf :bridgeC ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Product Y" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000002> .
-:bridgeCRevision a rec:Revision ; rec:revisionOf :bridgeC ; rec:version :bridgeCVersion ;
+:bridgeC a cascade:PrescribedOrReportedMedication .
+:bridgeCVersion prov:specializationOf :bridgeC ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Product Y" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000002> .
+:bridgeCRevision a cascade:Revision ; cascade:revisionOf :bridgeC ; cascade:version :bridgeCVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strayA a clinical:Medication .
-:strayAVersion prov:specializationOf :strayA ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Stray, pod file" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000003> .
-:strayARevision a rec:Revision ; rec:revisionOf :strayA ; rec:version :strayAVersion ;
+:strayA a cascade:PrescribedOrReportedMedication .
+:strayAVersion prov:specializationOf :strayA ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Stray, pod file" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000003> .
+:strayARevision a cascade:Revision ; cascade:revisionOf :strayA ; cascade:version :strayAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strayB a clinical:Medication .
-:strayBVersion prov:specializationOf :strayB ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Stray, pod file again" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000003> .
-:strayBRevision a rec:Revision ; rec:revisionOf :strayB ; rec:version :strayBVersion ;
+:strayB a cascade:PrescribedOrReportedMedication .
+:strayBVersion prov:specializationOf :strayB ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Stray, pod file again" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000003> .
+:strayBRevision a cascade:Revision ; cascade:revisionOf :strayB ; cascade:version :strayBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:otherKindA a clinical:Medication .
-:otherKindAVersion prov:specializationOf :otherKindA ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Other kind" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000004> .
-:otherKindARevision a rec:Revision ; rec:revisionOf :otherKindA ; rec:version :otherKindAVersion ;
+:otherKindA a cascade:PrescribedOrReportedMedication .
+:otherKindAVersion prov:specializationOf :otherKindA ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Other kind" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000004> .
+:otherKindARevision a cascade:Revision ; cascade:revisionOf :otherKindA ; cascade:version :otherKindAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:otherKindB a clinical:Medication .
-:otherKindBVersion prov:specializationOf :otherKindB ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Other kind again" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000004> .
-:otherKindBRevision a rec:Revision ; rec:revisionOf :otherKindB ; rec:version :otherKindBVersion ;
+:otherKindB a cascade:PrescribedOrReportedMedication .
+:otherKindBVersion prov:specializationOf :otherKindB ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Other kind again" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000004> .
+:otherKindBRevision a cascade:Revision ; cascade:revisionOf :otherKindB ; cascade:version :otherKindBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:partialA a clinical:Medication .
-:partialAVersion prov:specializationOf :partialA ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Product P" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000005> .
-:partialARevision a rec:Revision ; rec:revisionOf :partialA ; rec:version :partialAVersion ;
+:partialA a cascade:PrescribedOrReportedMedication .
+:partialAVersion prov:specializationOf :partialA ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Product P" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000005> .
+:partialARevision a cascade:Revision ; cascade:revisionOf :partialA ; cascade:version :partialAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:partialB a clinical:Medication .
-:partialBVersion prov:specializationOf :partialB ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Products P and Q" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000005> ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000006> .
-:partialBRevision a rec:Revision ; rec:revisionOf :partialB ; rec:version :partialBVersion ;
+:partialB a cascade:PrescribedOrReportedMedication .
+:partialBVersion prov:specializationOf :partialB ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Products P and Q" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000005> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000006> .
+:partialBRevision a cascade:Revision ; cascade:revisionOf :partialB ; cascade:version :partialBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:partialC a clinical:Medication .
-:partialCVersion prov:specializationOf :partialC ; clinical:clinicalIntent "prescribed" ;
-    clinical:drugName "Product Q" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1000006> .
-:partialCRevision a rec:Revision ; rec:revisionOf :partialC ; rec:version :partialCVersion ;
+:partialC a cascade:PrescribedOrReportedMedication .
+:partialCVersion prov:specializationOf :partialC ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Product Q" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000006> .
+:partialCRevision a cascade:Revision ; cascade:revisionOf :partialC ; cascade:version :partialCVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

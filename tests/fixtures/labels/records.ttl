@@ -1,28 +1,26 @@
 @prefix : <urn:x:> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:fromDocument a health:AllergyRecord .
-:fromDocumentVersion prov:specializationOf :fromDocument ; rec:patient :profile ; health:allergen "Peanut" ;
-    clinical:status "active" .
-:fromDocumentRevision a rec:Revision ; rec:revisionOf :fromDocument ; rec:version :fromDocumentVersion ;
+:fromDocument a cascade:AllergyOrIntolerance .
+:fromDocumentVersion prov:specializationOf :fromDocument ; cascade:patient :profile ; cascade:allergen "Peanut" ;
+    cascade:clinicalStatus "active" .
+:fromDocumentRevision a cascade:Revision ; cascade:revisionOf :fromDocument ; cascade:version :fromDocumentVersion ;
     prov:wasDerivedFrom :document ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :document pav:retrievedFrom <https://north.example/fhir/AllergyIntolerance/peanut> ;
     pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole rec:author ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
 
-:entered a health:AllergyRecord .
-:enteredVersion prov:specializationOf :entered ; rec:patient :subject ; health:allergen "Peanut" ;
-    clinical:status "active" .
-:enteredRevision a rec:Revision ; rec:revisionOf :entered ; rec:version :enteredVersion ;
+:entered a cascade:AllergyOrIntolerance .
+:enteredVersion prov:specializationOf :entered ; cascade:patient :subject ; cascade:allergen "Peanut" ;
+    cascade:clinicalStatus "active" .
+:enteredRevision a cascade:Revision ; cascade:revisionOf :entered ; cascade:version :enteredVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:table a rec:ReferenceSeries ; rdfs:label "Rules" .
+:table a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :table-1 prov:specializationOf :table ; pav:version "1" .

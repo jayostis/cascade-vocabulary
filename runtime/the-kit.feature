@@ -39,7 +39,7 @@ Feature: The conformance kit
 
   Rule: Check 3. Every RDF file of the pod conforms to the vocabulary's shapes
     Each read with the files that describe what it names, less clinical/labels.ttl. That file gives a label, for people
-    to read, to things other files describe, the subject among them, and rec:SubjectShape is closed: read with the rest,
+    to read, to things other files describe, the subject among them, and cascade:SubjectShape is closed: read with the rest,
     it would refuse the subject's rdfs:label.
 
     No example states this check: SPARQL cannot run SHACL.

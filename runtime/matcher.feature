@@ -40,7 +40,7 @@ Feature: The matcher's procedure
         | same code        | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" |
 
   Rule: M2. The matcher takes only the subject's records
-    Those queries/derivations/subjects.rq gives the pod's rec:Subject, under the everyday lens.
+    Those queries/derivations/subjects.rq gives the pod's cascade:Subject, under the everyday lens.
 
     Example: a record whose patient no About claims, or which names no patient, is never taken nor compared
       Given a new pod for Cleo on 2026-03-01 at 09:00
@@ -81,75 +81,75 @@ Feature: The matcher's procedure
 
   Rule: M4. Each row of the rule list runs its comparison query
     For each row of the current rule list, the matcher runs the query the row names, over the pod, its derived state
-    under the everyday lens, and, for a row naming a table kind (rec:tableKind), the rows of the current version of
+    under the everyday lens, and, for a row naming a table kind (cascade:tableKind), the rows of the current version of
     every series of that kind (M13). A row (record, other) of its answer, with the version whose rows joined it as
     ?origin when the rule reads a table, is a match when the record's kind is one the row applies to.
 
-    A query reads a table's rows only inside GRAPH ?origin, guarded by ?origin prov:specializationOf/rec:tableKind
-    and its kind. A record's code joins a row by the code's IRI, one form per code system (rec:CodeSystem in
-    records.ttl): a code written as a literal, as health:vaccineCode "141", is its system's void:uriSpace followed
+    A query reads a table's rows only inside GRAPH ?origin, guarded by ?origin prov:specializationOf/cascade:tableKind
+    and its kind. A record's code joins a row by the code's IRI, one form per code system (cascade:CodeSystem in
+    records.ttl): a code written as a literal, as cascade:vaccineCode "141", is its system's void:uriSpace followed
     by the literal percent-encoded as SPARQL's ENCODE_FOR_URI does (every character but A-Z a-z 0-9 - _ . ~ as % and
-    two upper-case hexadecimal digits of its UTF-8), <http://hl7.org/fhir/sid/cvx/141>; and an HGVS expression, which
-    holds reserved characters, as genomics:hgvsCDot "NM_000249.4:c.2042C>T" is
-    <http://varnomen.hgvs.org/NM_000249.4%3Ac.2042C%3ET>. The comparison same-mapped-code-and-date.rq, whose bytes
+    two upper-case hexadecimal digits of its UTF-8), <https://ns.cascadeprotocol.org/codes/cvx/141>; and an HGVS expression, which
+    holds reserved characters, as cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" is
+    <https://ns.cascadeprotocol.org/codes/hgvs/NM_000249.4%3Ac.2042C%3ET>. The comparison same-mapped-code-and-date.rq, whose bytes
     every rule list version from 1 to 8 pins, and its successor same-vaccine-group-and-date.rq, whose bytes version 9
     pins, join the unencoded literal, and they read CVX rows only, whose codes are digits, which the encoding leaves as
     they are. The rationale is decisions/code-iris.md.
 
-    - R1, jdg:SameCode: queries/matcher/same-code.rq.
-    - R2, jdg:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
-    - R3, jdg:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
-      rec:SubstanceIngredients, a kind only the stories fill; in the vocabulary's list from its version 2,
-      queries/matcher/same-ingredient.rq, with rec:ProductIngredients, for allergies only. A justification is
+    - R1, cascade:SameCode: queries/matcher/same-code.rq.
+    - R2, cascade:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
+    - R3, cascade:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
+      cascade:SubstanceIngredients, a kind only the stories fill; in the vocabulary's list from its version 2,
+      queries/matcher/same-ingredient.rq, with cascade:ProductIngredients, for allergies only. A justification is
       one row of a list's version, so a judgment still says which query ran.
-    - R4, jdg:SameMappedCodeAndDate: queries/matcher/same-mapped-code-and-date.rq, with rec:VaccineGroups.
+    - R4, cascade:SameMappedCodeAndDate: queries/matcher/same-mapped-code-and-date.rq, with cascade:VaccineGroups.
 
     Version 2 of the rule list adds two rows, whose examples are under M12:
 
-    - R5, jdg:SameMedicationCode: queries/matcher/same-medication-code.rq.
-    - R6, jdg:SameResult: queries/matcher/same-result.rq.
+    - R5, cascade:SameMedicationCode: queries/matcher/same-medication-code.rq.
+    - R6, cascade:SameResult: queries/matcher/same-result.rq.
 
     Version 3 of the vocabulary's list adds one row, whose examples are under O1:
 
-    - R7, jdg:SameConvertedCode: queries/matcher/same-converted-code.rq, with rec:CodeConversions, for
+    - R7, cascade:SameConvertedCode: queries/matcher/same-converted-code.rq, with cascade:CodeConversions, for
       conditions only. A record coded with a retired code is the same as one coded with the one code it converts to;
       a code split into several has no row, since one judgment holds a record and all it matched.
 
     Version 4 of the vocabulary's list adds one row, whose examples are under M14 and O1, and takes conditions out of R1:
 
-    - R8, jdg:SameCodeAndPeriod: queries/matcher/same-code-and-period.rq, for conditions only. Two conditions
+    - R8, cascade:SameCodeAndPeriod: queries/matcher/same-code-and-period.rq, for conditions only. Two conditions
       of one ICD-10-CM or SNOMED CT code are the same when their periods overlap.
 
     Version 5 of the vocabulary's list changes R7's query, whose example is under O1:
 
-    - R7, jdg:SameConvertedCode: queries/matcher/same-one-to-one-conversion.rq, with rec:CodeConversions. A
+    - R7, cascade:SameConvertedCode: queries/matcher/same-one-to-one-conversion.rq, with cascade:CodeConversions. A
       retired code and its replacement are joined only by a dct:isReplacedBy row whose cardinality is 1:1. A split
       (1:n), a merge (n:1) and an n:n row join nothing, and neither does a row of the earlier form, skos:exactMatch
       with no cardinality, which same-converted-code.rq in versions 3 and 4 reads.
 
     Version 6 of the vocabulary's list changes R5's query and adds a row, whose examples are under M15:
 
-    - R5, jdg:SameMedicationCode: queries/matcher/same-drug-code.rq. Two medications are the same when they
-      share an NDC code or the same chosen RxNorm code: the one their source selected (rec:selectedCode), else their
+    - R5, cascade:SameMedicationCode: queries/matcher/same-drug-code.rq. Two medications are the same when they
+      share an NDC code or the same chosen RxNorm code: the one their source selected (cascade:userSelectedCode), else their
       only one. It reads no table, and does not check that a shared RxNorm code is a product: that is carried from
       version 5 until jayostis/cascade-vocabulary#121.
-    - R10, jdg:SameBrandGeneric: queries/matcher/same-brand-generic.rq, with rec:BrandGenerics, for
+    - R10, cascade:SameBrandGeneric: queries/matcher/same-brand-generic.rq, with cascade:BrandGenerics, for
       medications only. A branded product and its generic, or two brands of one generic, when the records share no code.
 
     Version 7 of the vocabulary's list changes R5's query and adds a row, whose examples are under M16:
 
-    - R5, jdg:SameMedicationCode: queries/matcher/same-ndc-code.rq. Two medications that share an NDC code.
+    - R5, cascade:SameMedicationCode: queries/matcher/same-ndc-code.rq. Two medications that share an NDC code.
       It reads no table.
-    - R11, jdg:SameProductCode: queries/matcher/same-product-code.rq, with rec:DrugProducts, for medications
+    - R11, cascade:SameProductCode: queries/matcher/same-product-code.rq, with cascade:DrugProducts, for medications
       only. Two medications that share an RxNorm code which the held version of a drug products table says names one
       product. A pair that shares an NDC is left to R5.
 
     Version 8 of the vocabulary's list adds two rows, whose examples are under M17:
 
-    - R12, jdg:SameVariation: queries/matcher/same-variation.rq, for variants only. Two variants whose
+    - R12, cascade:SameVariation: queries/matcher/same-variation.rq, for variants only. Two variants whose
       current versions carry one ClinVar VariationID.
-    - R13, jdg:SameVariationThroughTable: queries/matcher/same-variation-through-table.rq, with
-      rec:VariantClassifications, for variants only. Two variants whose current versions find one row of one version
+    - R13, cascade:SameVariationThroughTable: queries/matcher/same-variation-through-table.rq, with
+      cascade:VariantClassifications, for variants only. Two variants whose current versions find one row of one version
       of a variant classifications table.
 
     Version 9 of the vocabulary's list changes R3's and R4's queries to read the rows of the product ingredients and
@@ -158,10 +158,10 @@ Feature: The matcher's procedure
     skos:broadMatch, and a rule list's version names the bytes it pinned, so those files are not edited; version 9 pins
     two new ones, and no query of version 9 reads skos:broadMatch:
 
-    - R3, jdg:SameMappedCode: queries/matcher/same-active-ingredient.rq, with rec:ProductIngredients, for
+    - R3, cascade:SameMappedCode: queries/matcher/same-active-ingredient.rq, with cascade:ProductIngredients, for
       allergies only. As same-ingredient.rq, reading obo:RO_0002248 rows; a row written with skos:broadMatch joins
       nothing.
-    - R4, jdg:SameMappedCodeAndDate: queries/matcher/same-vaccine-group-and-date.rq, with rec:VaccineGroups.
+    - R4, cascade:SameMappedCodeAndDate: queries/matcher/same-vaccine-group-and-date.rq, with cascade:VaccineGroups.
       As same-mapped-code-and-date.rq, reading obo:RO_0002350 rows; a row written with skos:broadMatch joins nothing.
 
     The tables that were read under skos:broadMatch are republished with the new relations.
@@ -217,7 +217,7 @@ Feature: The matcher's procedure
 
   Rule: M5. It writes one judgment per record per rule, and per table version, that matched anything
     The judgment's members are the record and everything that version's rows matched it with, or everything the rule
-    matched it with when the rule reads no table. It is jdg:Same with the rule's justification. It uses the rule
+    matched it with when the rule reads no table. It is cascade:Same with the rule's justification. It uses the rule
     list's version, the table version whose rows joined it, if any, and each member's current version. It is
     attributed to the matcher, at the run's time.
 
@@ -365,7 +365,7 @@ Feature: The matcher's procedure
         | same mapped code | allergy RxNorm 7980 "Bicillin", allergy SNOMED 373270004     | 2026-03-03 at 08:01 |
 
   Rule: M10. A table's current version is the one the pod names, and otherwise its series' default
-    In a story, the default is the version the story's tables ship with (rec:shipsWith). In an app, it is
+    In a story, the default is the version the story's tables ship with (cascade:defaultTableVersion). In an app, it is
     the newest version of the series the app holds: the end of its line of prov:wasRevisionOf. An app never adopts a
     version that does not descend from the one it holds. The examples run on stories, so none shows an app's default.
 
@@ -381,9 +381,9 @@ Feature: The matcher's procedure
         | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:304a776c-8a50-8a56-bdcf-a7b3d0ea70ac |
         | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:1f95363a-b4f6-8f10-99e7-847fb5031b44 |
 
-  Rule: M11. A rule list whose row names a query that does not hash to the row's rec:queryHash refuses the run
+  Rule: M11. A rule list whose row names a query that does not hash to the row's cascade:queryHash refuses the run
     It writes nothing. So does a rule list with a row naming a file outside queries/matcher/, a row without
-    exactly one rec:justifiedAs, rec:query and rec:queryHash, or two rows with one justification. A rule list's rows are
+    exactly one cascade:justifiedAs, cascade:queryPath and cascade:queryHash, or two rows with one justification. A rule list's rows are
     never edited: a changed query is a new version of the rule list, revising the old. The stories' rule lists are
     fixtures, and move with the vocabulary's queries; a rule list an app has used never changes.
 
@@ -467,8 +467,8 @@ Feature: The matcher's procedure
       Then the matcher has no judgment holding condition ICD-10-CM R10.9 "Abdominal pain, no onset" and condition ICD-10-CM R10.9 "Abdominal pain, 2022"
 
   Rule: M15. A medication is compared by every RxNorm and NDC code it carries, and through the brand generics table
-    A medication version may carry any number of RxNorm codes and NDC codes (rec:ndcCode), and name the one its
-    source chose (rec:selectedCode). R5 reads no table: it joins two medications that share an NDC, or whose chosen
+    A medication version may carry any number of RxNorm codes and NDC codes (cascade:ndcCode), and name the one its
+    source chose (cascade:userSelectedCode). R5 reads no table: it joins two medications that share an NDC, or whose chosen
     RxNorm codes are the same. The chosen RxNorm code is the selected one when that is an RxNorm code, else the only
     one, so a record that selected its NDC still joins another by its only RxNorm code; a record with several RxNorm
     codes and none selected chooses none. R5 does not check that a shared RxNorm code is a product: that is carried

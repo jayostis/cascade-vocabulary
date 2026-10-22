@@ -1,7 +1,7 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-variation-through-table" ;
@@ -14,5 +14,5 @@
   mf:name "same-variation-through-table" ;
   rdfs:comment "Two records match with each version that holds the row both find, either way round: through the expression on both transcripts of 90011, through an ID and an expression of 90012 in both series, and through an expression and an ID of 90013. None matches by an ID that is on no row, by two different IDs, by a shared ID, by an expression on two rows, by no row, or by rows of another kind or a pod file." ;
   mf:action [ qt:query <../../../queries/matcher/same-variation-through-table.rq> ;
-              rec:lens <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <same-variation-through-table.srj> .
