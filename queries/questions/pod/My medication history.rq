@@ -1,11 +1,12 @@
 # Read from the view alone, as an app would: each medication entry whatever its status, with its RxNorm code, its status,
-# the lifecycle class of that status (rule L1), when it started, when it ended, and how many records it joins. A source
-# that states no stop gives no end date: none is inferred from a medication's last appearance. The code is the one
-# `pod/My active medications` gives, and the entries whose lifecycle is cascade:MedicationActive are the ones it lists.
+# the lifecycle class of that status (rule L1), when it started, the day its prescription was written, when it ended, and
+# how many records it joins. A source that states no stop gives no end date: none is inferred from a medication's last
+# appearance. The code is the one `pod/My active medications` gives, and the entries whose lifecycle is
+# cascade:MedicationActive are the ones it lists.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?medication ?code ?status ?lifecycle ?started ?ended (COUNT(?record) AS ?records) ?entry ?entryLabel
+SELECT ?medication ?code ?status ?lifecycle ?started ?written ?ended (COUNT(?record) AS ?records) ?entry ?entryLabel
 WHERE {
   {
     SELECT ?entry (COUNT(DISTINCT ?candidate) AS ?candidates) (SAMPLE(?candidate) AS ?only)
@@ -23,10 +24,11 @@ WHERE {
   OPTIONAL { ?entry cascade:workflowStatus ?status }
   OPTIONAL { ?entry cascade:lifecycle ?lifecycle }
   OPTIONAL { ?entry cascade:medicationUseStartDate ?started }
+  OPTIONAL { ?entry cascade:prescriptionWrittenDate ?written }
   OPTIONAL { ?entry cascade:medicationUseEndDate ?ended }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   BIND (COALESCE(IF(STRSTARTS(STR(?chosen), "https://ns.cascadeprotocol.org/codes/rxnorm/"), ?chosen, ?nothing),
                  IF(?candidates = 1, ?only, ?nothing)) AS ?code)
 }
-GROUP BY ?entry ?medication ?code ?status ?lifecycle ?started ?ended ?entryLabel
+GROUP BY ?entry ?medication ?code ?status ?lifecycle ?started ?written ?ended ?entryLabel
 ORDER BY ?medication ?entry
