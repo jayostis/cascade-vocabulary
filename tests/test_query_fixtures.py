@@ -45,7 +45,7 @@ def lenses_that_differ(fixture):
 
 @every_fixture
 def test_oxigraph_and_rdflib_agree_on_the_derived_state_and_the_files_built_from_it(fixture):
-    for lens in LENSES:
+    for lens in lenses_that_differ(fixture):
         one, other = (built_once(fixture, engine, lens) for engine in sorted(ENGINES))
         assert one.added_by_step == other.added_by_step, lens
         assert one.files == other.files, lens
