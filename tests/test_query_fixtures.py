@@ -6,7 +6,7 @@ from rdflib import URIRef
 
 from contract import QUERIES, built, derivations, named, query, questions
 from engines import ENGINES
-from manifests import entries, failure, lens_name
+from manifests import Entry, entries, failure, lens_name
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
 LENSES = sorted(named("lenses"))
@@ -98,3 +98,20 @@ def test_each_engine_loads_the_default_graph_of_a_trig_file_into_its_default_gra
         loaded[name] = (store.triples(), store.triples(ADDRESS + "g"))
     assert {name: [len(graph) for graph in graphs] for name, graphs in loaded.items()} == {name: [1, 1] for name in ENGINES}
     assert loaded["oxigraph"] == loaded["rdflib"]
+
+
+@pytest.mark.parametrize("fixture", [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES
+                                     if fixture.folder.name == "conditions-whose-dates-cannot-tell"])
+def test_my_active_conditions_lists_the_conditions_by_name_then_entry(fixture):
+    lens = lenses_that_differ(fixture)[0]
+    rows = answers(fixture, lens)["pod/My active conditions"]
+    keys = [(str(row["condition"]), str(row["entry"])) for row in rows]
+    assert len(keys) > 1 and keys == sorted(keys)
+
+
+def test_an_entry_fails_when_its_query_returns_other_variables_than_its_result_names(tmp_path):
+    query, result = tmp_path / "q.rq", tmp_path / "r.srj"
+    query.write_text("SELECT ?a WHERE { ?a ?b ?c }", encoding="utf-8")
+    result.write_text('{"head": {"vars": ["z"]}, "results": {"bindings": []}}', encoding="utf-8")
+    entry = Entry(iri="urn:x:e", name="e", types=frozenset(), lens=None, query=query, result=result)
+    assert "variables" in (failure(entry, ENGINES["oxigraph"]()) or "")
