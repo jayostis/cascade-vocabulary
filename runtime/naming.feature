@@ -240,8 +240,12 @@ Feature: Naming
 
   Rule: N13. A view entry is named relative to its view
     decisions/naming.md, row "view entry". cascade:ViewEntryNamingRule: the view's path as pod-layout.ttl places it, #,
-    and the lower-case hexadecimal SHA-256 of the IRI of its least member in code point order, written in the view file
-    as that relative reference, never resolved against the pod's address, when the runtime writes or shares the view.
+    and the lower-case hexadecimal SHA-256 of the IRI of its least member in code point order. SPARQL cannot mint a
+    relative IRI, so queries/derivations/entries.rq names each entry by a placeholder, urn:cascade:entry: and that hex,
+    as urn:cascade:this-version stands for a version until it is named. When the runtime writes or shares a view, it
+    writes each entry in the view file as <#hex>, the relative reference from the view's own path, never resolved
+    against the pod's address, and no placeholder remains.
 
-    No example shows this rule, because a query reads an entry's IRI resolved against the view's address. The kit's
+    No example shows this rule, because a query reads an entry's IRI resolved against the view's address, and the
+    derived state, which examples query, holds the placeholder. The kit's
     check 6 holds every view a replay writes to it, and tests/vectors/naming/ names an entry.

@@ -32,8 +32,9 @@ Feature: The conformance kit
 
   Rule: Check 2. Each final view equals expected/
     Take the view graph the replay builds at the last step under everyday (the graph <address>clinical/<view>.ttl),
-    keep each subject that has cascade:mergedFrom with its triples, and replace each urn:cascade:entry: IRI with a blank
-    node. The result is the expected file's graph, up to its blank nodes.
+    keep each subject that has cascade:mergedFrom with its triples, and replace each entry, which the file writes as
+    <#hex> (N13) and the graph holds resolved against the view's address, with a blank node. The result is the expected
+    file's graph, up to its blank nodes.
 
     No example states this check: SPARQL cannot compare two graphs up to their blank nodes.
 
@@ -57,7 +58,8 @@ Feature: The conformance kit
     No example states this check: SPARQL cannot read a stored document's bytes.
 
   Rule: Check 6. No view the runtime wrote, nor any view it shares, holds the pod's address
-    decisions/naming.md, row "view entry". A view entry is named relative to its view (N13), and no IRI a view file
-    holds, as its bytes write it, begins with the pod's address: a view says nothing of where the pod lives.
+    decisions/naming.md, row "view entry". A view entry is written in the view file as <#hex>, relative to its view
+    (N13), never as the derivations' placeholder urn:cascade:entry:<hex>, and no IRI a view file holds, as its bytes
+    write it, begins with the pod's address: a view says nothing of where the pod lives.
 
     No example states this check: SPARQL reads a file's IRIs resolved against its address, never as its bytes write them.
