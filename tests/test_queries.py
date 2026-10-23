@@ -80,13 +80,13 @@ def test_every_subquery_comes_first_in_its_group(relative):
             assert not any(is_subquery(part) for part in parts[first_other:]), relative
 
 
-ENTRY_PLACEHOLDER = '"urn:cascade:entry:", SHA256(MIN(STR('
+ENTRY_PLACEHOLDER = 'CONCAT("urn:cascade:entry:", SHA256(MIN(STR('
 
 
 @pytest.mark.parametrize("relative", every_query())
 def test_every_entry_placeholder_is_n13s_hash_of_the_least_member(relative):
     text = contract.query(relative)
-    assert text.count('"urn:cascade:entry:"') == text.count(ENTRY_PLACEHOLDER), relative
+    assert text.count('CONCAT("urn:cascade:entry:"') == text.count(ENTRY_PLACEHOLDER), relative
 
 
 @pytest.mark.parametrize("relative", sorted(contract.named("views").values()))

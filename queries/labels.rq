@@ -1,5 +1,7 @@
 # A name for every record, version, revision, document, judgment, reference version, entry and patient profile, made from
 # what each says: its kind, its name, where it came from and when. Names only help people read; nothing depends on them.
+# An entry is labelled as the derivations name it, urn:cascade:entry:, which a runtime renames when it writes the view
+# (N13); an entry a written view names is not labelled again.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX pav: <http://purl.org/pav/>
@@ -101,6 +103,7 @@ WHERE {
     WHERE {
       ?thing cascade:latestMember ?latest .
       ?latest cascade:recordKind ?kind .
+      FILTER (STRSTARTS(STR(?thing), "urn:cascade:entry:"))
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       OPTIONAL { ?latest pav:hasCurrentVersion/cascade:displayName ?name }
       OPTIONAL { ?thing cascade:dateFrom/pav:hasCurrentVersion/cascade:displayDate ?date }
@@ -111,6 +114,7 @@ WHERE {
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
       ?thing a cascade:PatientProfile ; cascade:mergedFrom [] .
+      FILTER (STRSTARTS(STR(?thing), "urn:cascade:entry:"))
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       BIND ("Patient entry" AS ?l)
     }
