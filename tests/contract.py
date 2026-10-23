@@ -37,10 +37,12 @@ def prose(text):
     return " ".join(line.lstrip("#").strip() for line in lines)
 
 
+@cache
 def named(folder):
     return {path.stem: path.relative_to(QUERIES).as_posix() for path in sorted((QUERIES / folder).glob("*.rq"))}
 
 
+@cache
 def questions():
     """Each question's path under QUERIES, by its path under questions/ without the suffix."""
     folder = QUERIES / "questions"
