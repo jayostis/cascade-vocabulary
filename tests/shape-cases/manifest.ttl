@@ -29,6 +29,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:sourceRecordId ] ] .
 
+<#record-condition/with-its-subject> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/with-its-subject.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-condition/snomed-code-a-literal> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/snomed-code-a-literal.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:snomedCode ] ] .
+
 <#record-immunization/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-immunization/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
@@ -46,6 +55,11 @@
   mf:action [ sht:dataGraph <record-procedure/two-source-record-ids.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:sourceRecordId ] ] .
+
+<#record-procedure/snomed-code-a-literal> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/snomed-code-a-literal.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:snomedCode ] ] .
 
 <#version/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <version/valid.ttl> ] ;
@@ -233,6 +247,11 @@
   mf:action [ sht:dataGraph <record-medication/two-selected-codes.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:PrescribedOrReportedMedicationShape ; sh:resultPath cascade:userSelectedCode ] ] .
+
+<#record-medication/written-date-a-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/written-date-a-string.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PrescribedOrReportedMedicationShape ; sh:resultPath cascade:prescriptionWrittenDate ] ] .
 
 <#record-lab-result/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-lab-result/valid.ttl> ] ;

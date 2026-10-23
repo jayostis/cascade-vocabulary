@@ -1,0 +1,12 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:record a cascade:PrescribedOrReportedMedication ;
+    cascade:sourceUrl <https://fhir.example/MedicationRequest/1> .
+
+:version prov:specializationOf :record ;
+    cascade:patient :patient ;
+    cascade:prescribedOrReported "prescribed" ;
+    cascade:prescriptionWrittenDate "2024-02-10" .
