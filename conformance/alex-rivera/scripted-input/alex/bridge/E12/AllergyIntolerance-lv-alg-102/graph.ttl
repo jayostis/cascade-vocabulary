@@ -1,43 +1,49 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;Ezx0i6WU0Dl6GNJc9X316VT2yNR0P6QEi-dsatQKFNY> cascade:allergyCategory "medication" ;
-	cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/10180> ;
-	cascade:verificationStatus "confirmed" ;
-	cascade:allergyCriticality "high" ;
+<ni:///sha-256;dEKD4fMcEtI7hvaLmOGsmFThPkA2VLdl2SkucN-Vjfw> cascade:reactionManifestationText "Hives" ;
 	cascade:allergyType "allergy" ;
+	cascade:allergyCriticality "high" ;
+	cascade:clinicalStatus "active" ;
 	cascade:allergen "Sulfamethoxazole" ;
-	cascade:reactionManifestationText "Hives" ;
-	cascade:clinicalStatus "active" .
-_:8dba401d2bb8ee1f8c73abf9abdc9bab pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
+	cascade:verificationStatus "confirmed" ;
+	cascade:allergyCategory "medication" ;
+	cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/10180> .
+_:1134fa5a6e115e10c2962c62c2993635 pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;Ezx0i6WU0Dl6GNJc9X316VT2yNR0P6QEi-dsatQKFNY> .
-<ni:///sha-256;Ezx0i6WU0Dl6GNJc9X316VT2yNR0P6QEi-dsatQKFNY> cascade:patient <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> ;
-	prov:specializationOf <urn:uuid:1906d767-ea1f-8dcf-be21-b592aed48e95> .
-<urn:uuid:1906d767-ea1f-8dcf-be21-b592aed48e95> cascade:sourceRecordId "lv-alg-102" ;
+	bridge:arrivedAs <ni:///sha-256;dEKD4fMcEtI7hvaLmOGsmFThPkA2VLdl2SkucN-Vjfw> .
+<ni:///sha-256;dEKD4fMcEtI7hvaLmOGsmFThPkA2VLdl2SkucN-Vjfw> cascade:patient <urn:uuid:d461e692-842c-8a30-a8ba-940a908c8cab> ;
+	prov:specializationOf <urn:uuid:828f3452-da1d-83e7-9fd4-23f49d355848> .
+<urn:uuid:828f3452-da1d-83e7-9fd4-23f49d355848> cascade:sourceRecordId "lv-alg-102" ;
 	cascade:sourceUrl <https://fhir.larkspur.example/r4/AllergyIntolerance/lv-alg-102> ;
 	a cascade:AllergyOrIntolerance .
-_:8dba401d2bb8ee1f8c73abf9abdc9bab bridge:selector "" ;
+_:1134fa5a6e115e10c2962c62c2993635 oa:hasSelector _:89a6445edb80aa854342d9f016afbe9f ;
+	oa:hasSource <ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> ;
 	prov:wasDerivedFrom <ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> ;
 	prov:wasGeneratedBy _:532ff3c4921bce998fc60774c84c6821 .
-<ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> pav:retrievedFrom <https://fhir.larkspur.example/r4/AllergyIntolerance/lv-alg-102> ;
-	pav:retrievedOn "2027-03-18T12:00:00Z"^^xsd:dateTime .
+_:89a6445edb80aa854342d9f016afbe9f a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
+_:532ff3c4921bce998fc60774c84c6821 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2027-03-18T12:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> prov:qualifiedAttribution _:1d69b727a82d7b7c9c54c68ae895af8b .
 _:1d69b727a82d7b7c9c54c68ae895af8b prov:agent _:187c32b767d7abc52f302217c21bb8cd .
 _:187c32b767d7abc52f302217c21bb8cd <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:1d69b727a82d7b7c9c54c68ae895af8b prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> prov:qualifiedAttribution _:1d69b727a82d7b7c9c54c68ae895af8b .
+<ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> prov:qualifiedAttribution _:580628d3cf8a8cbe83662c906de361f6 .
 _:580628d3cf8a8cbe83662c906de361f6 prov:agent _:370741db3386230a531744076be51f81 .
 _:370741db3386230a531744076be51f81 <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
 _:580628d3cf8a8cbe83662c906de361f6 prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> prov:qualifiedAttribution _:580628d3cf8a8cbe83662c906de361f6 ;
-	cascade:serverBaseUrl "https://fhir.larkspur.example/r4" ;
-	cascade:sourceFormatVersion "4.0.1" .
-_:532ff3c4921bce998fc60774c84c6821 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2027-03-18T12:00:04Z"^^xsd:dateTime .
-<ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> a prov:Entity .
+<ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> cascade:serverBaseUrl "https://fhir.larkspur.example/r4" ;
+	pav:retrievedFrom <https://fhir.larkspur.example/r4/AllergyIntolerance/lv-alg-102> ;
+	pav:retrievedOn "2027-03-18T12:00:00Z"^^xsd:dateTime ;
+	cascade:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:532ff3c4921bce998fc60774c84c6821 a prov:Activity ;
 	prov:used <ni:///sha-256;4In_oVrmJrT2srA1AoevBN_tcXIim5nfwyGNV_erII8> ;
 	prov:qualifiedAssociation _:538f5c56bad5d0fc5746dd810081591a .

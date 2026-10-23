@@ -1,29 +1,51 @@
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
-@prefix pav: <http://purl.org/pav/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-
-<ni:///sha-256;8qo8fe6OnUJqZNl-GiTa32q_3TlMFl9NXcw9WqT4wAE> a prov:Entity ;
-  pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/shellfish> ;
-  pav:retrievedOn "2026-01-07T12:00:00Z"^^xsd:dateTime ;
-  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Apple Health" ] ; prov:hadRole cascade:TransmitterRole ] ,
-    [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole cascade:AuthorRole ] ;
-  cascade:serverBaseUrl "https://fhir.example.org/r4" ;
-  cascade:sourceFormatVersion "4.0.1" .
-_:import a prov:Activity ; rdfs:label "Apple Health export" ;
-  prov:startedAtTime "2026-01-07T12:00:00Z"^^xsd:dateTime ;
-  prov:used <ni:///sha-256;8qo8fe6OnUJqZNl-GiTa32q_3TlMFl9NXcw9WqT4wAE> ;
-  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "fhir-r4" ; pav:version "0.1.0" ] ;
-    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
-<urn:uuid:eae9b463-3109-8ca4-ba91-6d18290855ea> a <https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance> ; cascade:sourceRecordId "shellfish" ; cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/shellfish> .
-<ni:///sha-256;rkerV0zUernj1IKwuaYl5IT7TUUyQ8Ytp8fLmMHOwo8> prov:specializationOf <urn:uuid:eae9b463-3109-8ca4-ba91-6d18290855ea> ;
-  <https://ns.cascadeprotocol.org/cascade#allergen> "Shellfish" ;
-  <https://ns.cascadeprotocol.org/cascade#clinicalStatus> "inactive" ;
-  cascade:patient <urn:uuid:eb313649-c6ff-8ffa-93e2-2898fe91b570> .
-_:arrival bridge:arrivedAs <ni:///sha-256;rkerV0zUernj1IKwuaYl5IT7TUUyQ8Ytp8fLmMHOwo8> ; prov:wasGeneratedBy _:import ;
-  bridge:selector "" ; prov:wasDerivedFrom <ni:///sha-256;8qo8fe6OnUJqZNl-GiTa32q_3TlMFl9NXcw9WqT4wAE> ;
-  pav:lastUpdateOn "2026-01-07T11:00:00Z"^^xsd:dateTime .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;BGfOOQ-QLSnpuBs1e7EFc_m4gvrdKGknHY4W8ZLyntE> cascade:clinicalStatus "inactive" ;
+	cascade:allergen "Shellfish" .
+_:7f28dcd2b90cf6a3c919bce62439c94f pav:lastUpdateOn "2026-01-07T11:00:00Z"^^xsd:dateTime ;
+	pav:version "3" ;
+	bridge:arrivedAs <ni:///sha-256;BGfOOQ-QLSnpuBs1e7EFc_m4gvrdKGknHY4W8ZLyntE> .
+<ni:///sha-256;BGfOOQ-QLSnpuBs1e7EFc_m4gvrdKGknHY4W8ZLyntE> cascade:patient <urn:uuid:dccb6776-d640-88e5-a7b3-7e2e1b860abe> ;
+	prov:specializationOf <urn:uuid:fcdf6ee4-d11a-8ca6-8c7e-748d87af62e2> .
+<urn:uuid:fcdf6ee4-d11a-8ca6-8c7e-748d87af62e2> cascade:sourceRecordId "shellfish" ;
+	cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/shellfish> ;
+	a cascade:AllergyOrIntolerance .
+_:7f28dcd2b90cf6a3c919bce62439c94f oa:hasSelector _:17c35cc571ff4bf8d88c07e7f1f7186b ;
+	oa:hasSource <ni:///sha-256;8qo8fe6OnUJqZNl-GiTa32q_3TlMFl9NXcw9WqT4wAE> ;
+	prov:wasDerivedFrom <ni:///sha-256;8qo8fe6OnUJqZNl-GiTa32q_3TlMFl9NXcw9WqT4wAE> ;
+	prov:wasGeneratedBy _:a1837283828cda17c15d6af2ecc3fa8f .
+_:17c35cc571ff4bf8d88c07e7f1f7186b a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
+_:a1837283828cda17c15d6af2ecc3fa8f <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-01-07T12:00:00Z"^^xsd:dateTime .
+<ni:///sha-256;8qo8fe6OnUJqZNl-GiTa32q_3TlMFl9NXcw9WqT4wAE> prov:qualifiedAttribution _:ce74bcf0cb860da256bb5c716ad39195 .
+_:ce74bcf0cb860da256bb5c716ad39195 prov:agent _:5ede8b1c4e3928b482dced4a105db62a .
+_:5ede8b1c4e3928b482dced4a105db62a <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:ce74bcf0cb860da256bb5c716ad39195 prov:hadRole cascade:TransmitterRole .
+<ni:///sha-256;8qo8fe6OnUJqZNl-GiTa32q_3TlMFl9NXcw9WqT4wAE> prov:qualifiedAttribution _:b296be2f37a477ca8f3ab237bbff3c23 .
+_:b296be2f37a477ca8f3ab237bbff3c23 prov:agent _:a35d6d9ae1b9ac0460037a5a03a3f8fb .
+_:a35d6d9ae1b9ac0460037a5a03a3f8fb <http://www.w3.org/2000/01/rdf-schema#label> "Example Hospital" .
+_:b296be2f37a477ca8f3ab237bbff3c23 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;8qo8fe6OnUJqZNl-GiTa32q_3TlMFl9NXcw9WqT4wAE> cascade:serverBaseUrl "https://fhir.example.org/r4" ;
+	pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/shellfish> ;
+	pav:retrievedOn "2026-01-07T12:00:00Z"^^xsd:dateTime ;
+	cascade:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
+_:a1837283828cda17c15d6af2ecc3fa8f a prov:Activity ;
+	prov:used <ni:///sha-256;8qo8fe6OnUJqZNl-GiTa32q_3TlMFl9NXcw9WqT4wAE> ;
+	prov:qualifiedAssociation _:d2e9ba8682201cd68f313c8714eabd90 .
+_:d2e9ba8682201cd68f313c8714eabd90 prov:hadPlan _:b656788ce345daa59afa0eef4010fd32 .
+_:b656788ce345daa59afa0eef4010fd32 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:d2e9ba8682201cd68f313c8714eabd90 prov:agent _:bcc9b1695a4151408c9f81af3516e484 .
+_:bcc9b1695a4151408c9f81af3516e484 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

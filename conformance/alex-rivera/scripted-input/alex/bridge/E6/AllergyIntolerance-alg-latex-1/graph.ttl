@@ -1,28 +1,34 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;cMogBcQcKEDJlII03V0wyoP94m-HZC2GeQyJ2uaQzbA> cascade:allergenCode <http://snomed.info/id/111088007> ;
-	cascade:clinicalStatus "active" ;
-	cascade:reactionManifestationText "Contact dermatitis" ;
+<ni:///sha-256;dPaw15OycJADqzStg34XmIPfD5rmt3iDRpgFeQd7Zlw> cascade:reactionManifestationText "Contact dermatitis" ;
 	cascade:allergyType "allergy" ;
+	cascade:allergyCriticality "low" ;
+	cascade:clinicalStatus "active" ;
 	cascade:allergen "Latex" ;
-	cascade:allergyCategory "environment" ;
+	cascade:allergenCode <http://snomed.info/id/111088007> ;
 	cascade:verificationStatus "confirmed" ;
-	cascade:allergyCriticality "low" .
-_:942334d74fce927b93ab8f8fd59b96d7 pav:lastUpdateOn "2026-11-18T09:40:00Z"^^xsd:dateTime ;
+	cascade:allergyCategory "environment" .
+_:a5bc438485a3bc8dcdc1f77dcce06a0a pav:lastUpdateOn "2026-11-18T09:40:00Z"^^xsd:dateTime ;
 	pav:version "2" ;
-	bridge:arrivedAs <ni:///sha-256;cMogBcQcKEDJlII03V0wyoP94m-HZC2GeQyJ2uaQzbA> .
-<ni:///sha-256;cMogBcQcKEDJlII03V0wyoP94m-HZC2GeQyJ2uaQzbA> cascade:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
-	prov:specializationOf <urn:uuid:6477b340-8fb7-8d62-a24a-b8520e30f0d5> .
-<urn:uuid:6477b340-8fb7-8d62-a24a-b8520e30f0d5> cascade:sourceRecordId "alg-latex-1" ;
+	bridge:arrivedAs <ni:///sha-256;dPaw15OycJADqzStg34XmIPfD5rmt3iDRpgFeQd7Zlw> .
+<ni:///sha-256;dPaw15OycJADqzStg34XmIPfD5rmt3iDRpgFeQd7Zlw> cascade:patient <urn:uuid:7883c5a4-6c61-837c-9bf7-dbe1b37d89ff> ;
+	prov:specializationOf <urn:uuid:b28ee795-dd4b-8fae-95cb-fe95c9a908cd> .
+<urn:uuid:b28ee795-dd4b-8fae-95cb-fe95c9a908cd> cascade:sourceRecordId "alg-latex-1" ;
 	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/AllergyIntolerance/alg-latex-1> ;
 	a cascade:AllergyOrIntolerance .
-_:942334d74fce927b93ab8f8fd59b96d7 bridge:selector "" ;
+_:a5bc438485a3bc8dcdc1f77dcce06a0a oa:hasSelector _:7fc22b449cc29a7ebd48185c6ee2e1cd ;
+	oa:hasSource <ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> ;
 	prov:wasDerivedFrom <ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> ;
 	prov:wasGeneratedBy _:2f32deab676a3cf4e9cc51caccdd6771 .
+_:7fc22b449cc29a7ebd48185c6ee2e1cd a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:2f32deab676a3cf4e9cc51caccdd6771 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .
 <ni:///sha-256;KhxSx-TIKeJLC0RLZBluu78zuUIk67LG7SRAjvIL3Bc> prov:qualifiedAttribution _:cf7e33dbc4acf4bd4bc04dc015db325e .

@@ -1,31 +1,51 @@
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
-@prefix pav: <http://purl.org/pav/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-
-<ni:///sha-256;u676ubNp9Jq2uv-WKOrOUM3MiHUFTAR82YsWQItXlPw> a prov:Entity ;
-  pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/penicillin> ;
-  pav:retrievedOn "2026-03-02T10:00:00Z"^^xsd:dateTime ;
-  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Apple Health" ] ; prov:hadRole cascade:TransmitterRole ] ,
-    [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole cascade:AuthorRole ] ;
-  cascade:serverBaseUrl "https://fhir.example.org/r4" ;
-  cascade:sourceFormatVersion "4.0.1" .
-_:import a prov:Activity ; rdfs:label "Apple Health export" ;
-  prov:startedAtTime "2026-03-02T10:00:00Z"^^xsd:dateTime ;
-  prov:used <ni:///sha-256;u676ubNp9Jq2uv-WKOrOUM3MiHUFTAR82YsWQItXlPw> ;
-  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "fhir-r4" ; pav:version "0.1.0" ] ;
-    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
-<urn:uuid:9bdbd37a-ca86-8f27-8c42-24aea4f563f0> a <https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance> ; cascade:sourceRecordId "penicillin" ; cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/penicillin> .
-<ni:///sha-256;x5NiNcUlPsrGs98PWqpmYX_TUqF7gDQG65jLpvQbw3Q> prov:specializationOf <urn:uuid:9bdbd37a-ca86-8f27-8c42-24aea4f563f0> ;
-  <https://ns.cascadeprotocol.org/cascade#allergen> "Penicillin" ;
-  <https://ns.cascadeprotocol.org/cascade#clinicalStatus> "active" ;
-  <https://ns.cascadeprotocol.org/cascade#allergenCode> <http://snomed.info/id/373270004> ;
-  cascade:patient <urn:uuid:eb313649-c6ff-8ffa-93e2-2898fe91b570> .
-_:arrival bridge:arrivedAs <ni:///sha-256;x5NiNcUlPsrGs98PWqpmYX_TUqF7gDQG65jLpvQbw3Q> ; prov:wasGeneratedBy _:import ;
-  bridge:selector "" ; prov:wasDerivedFrom <ni:///sha-256;u676ubNp9Jq2uv-WKOrOUM3MiHUFTAR82YsWQItXlPw> ;
-  pav:version "1" ;
-  pav:lastUpdateOn "2026-03-01T00:00:00Z"^^xsd:dateTime .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;lARcS53FpgRVQiAul1t1EZCCEtwvkoCK1H9KdZPP1Gg> cascade:clinicalStatus "active" ;
+	cascade:allergen "Penicillin" .
+_:64d444a5a72121afc0119c18a78ed33 pav:lastUpdateOn "2026-03-01T00:00:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;lARcS53FpgRVQiAul1t1EZCCEtwvkoCK1H9KdZPP1Gg> .
+<ni:///sha-256;lARcS53FpgRVQiAul1t1EZCCEtwvkoCK1H9KdZPP1Gg> cascade:patient <urn:uuid:dccb6776-d640-88e5-a7b3-7e2e1b860abe> ;
+	prov:specializationOf <urn:uuid:5beb7e98-192f-87a2-9ab7-1233499be250> .
+<urn:uuid:5beb7e98-192f-87a2-9ab7-1233499be250> cascade:sourceRecordId "penicillin" ;
+	cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/penicillin> ;
+	a cascade:AllergyOrIntolerance .
+_:64d444a5a72121afc0119c18a78ed33 oa:hasSelector _:cf1d15e806cb3a5373250198476af004 ;
+	oa:hasSource <ni:///sha-256;u676ubNp9Jq2uv-WKOrOUM3MiHUFTAR82YsWQItXlPw> ;
+	prov:wasDerivedFrom <ni:///sha-256;u676ubNp9Jq2uv-WKOrOUM3MiHUFTAR82YsWQItXlPw> ;
+	prov:wasGeneratedBy _:f53a97aafe80ca9910fd6bf5dafc5456 .
+_:cf1d15e806cb3a5373250198476af004 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
+_:f53a97aafe80ca9910fd6bf5dafc5456 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-03-02T10:00:00Z"^^xsd:dateTime .
+<ni:///sha-256;u676ubNp9Jq2uv-WKOrOUM3MiHUFTAR82YsWQItXlPw> prov:qualifiedAttribution _:aaa79dd86d3b51cc50fd76478da59a72 .
+_:aaa79dd86d3b51cc50fd76478da59a72 prov:agent _:12d749652d077c1791e2d51afae77953 .
+_:12d749652d077c1791e2d51afae77953 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:aaa79dd86d3b51cc50fd76478da59a72 prov:hadRole cascade:TransmitterRole .
+<ni:///sha-256;u676ubNp9Jq2uv-WKOrOUM3MiHUFTAR82YsWQItXlPw> prov:qualifiedAttribution _:e89a63a07c2d7df232af08745598144 .
+_:e89a63a07c2d7df232af08745598144 prov:agent _:d49342c39f38dc1ee2771fb2072e718b .
+_:d49342c39f38dc1ee2771fb2072e718b <http://www.w3.org/2000/01/rdf-schema#label> "Example Hospital" .
+_:e89a63a07c2d7df232af08745598144 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;u676ubNp9Jq2uv-WKOrOUM3MiHUFTAR82YsWQItXlPw> cascade:serverBaseUrl "https://fhir.example.org/r4" ;
+	pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/penicillin> ;
+	pav:retrievedOn "2026-03-02T10:00:00Z"^^xsd:dateTime ;
+	cascade:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
+_:f53a97aafe80ca9910fd6bf5dafc5456 a prov:Activity ;
+	prov:used <ni:///sha-256;u676ubNp9Jq2uv-WKOrOUM3MiHUFTAR82YsWQItXlPw> ;
+	prov:qualifiedAssociation _:a0dd8ff2425757fa176386b99079a3b9 .
+_:a0dd8ff2425757fa176386b99079a3b9 prov:hadPlan _:e4b68578b2db9e817dcdcb2b0ce30c86 .
+_:e4b68578b2db9e817dcdcb2b0ce30c86 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:a0dd8ff2425757fa176386b99079a3b9 prov:agent _:9a24e91c799f4fddbd043feeaf704abf .
+_:9a24e91c799f4fddbd043feeaf704abf a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

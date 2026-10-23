@@ -1,25 +1,31 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;Ps4h8yJLv7GOaJFkouZmZ4xMG90c3pWgEvldtA9ZNPI> cascade:onsetDate "2008-09-01"^^xsd:date ;
+<ni:///sha-256;byKuK28Y5vaUHOvcqWZ4ItQJBbokJjhJgAFHQgP1vUA> cascade:conditionName "Asthma" ;
+	cascade:onsetDate "2008-09-01"^^xsd:date ;
 	cascade:clinicalStatus "active" ;
-	cascade:verificationStatus "confirmed" ;
-	cascade:conditionName "Asthma" ;
-	cascade:snomedCode <http://snomed.info/id/195967001> .
-_:576c104ff22ba08e66cc66e2d6d4fe7f pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
+	cascade:snomedCode <http://snomed.info/id/195967001> ;
+	cascade:verificationStatus "confirmed" .
+_:705d5fc98600c2be6d59cdaf6e280b64 pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;Ps4h8yJLv7GOaJFkouZmZ4xMG90c3pWgEvldtA9ZNPI> .
-<ni:///sha-256;Ps4h8yJLv7GOaJFkouZmZ4xMG90c3pWgEvldtA9ZNPI> cascade:patient <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> ;
-	prov:specializationOf <urn:uuid:46d9ff3d-1c41-8687-8ac8-1bca2c8d988e> .
-<urn:uuid:46d9ff3d-1c41-8687-8ac8-1bca2c8d988e> cascade:sourceRecordId "lv-cond-202" ;
+	bridge:arrivedAs <ni:///sha-256;byKuK28Y5vaUHOvcqWZ4ItQJBbokJjhJgAFHQgP1vUA> .
+<ni:///sha-256;byKuK28Y5vaUHOvcqWZ4ItQJBbokJjhJgAFHQgP1vUA> cascade:patient <urn:uuid:d461e692-842c-8a30-a8ba-940a908c8cab> ;
+	prov:specializationOf <urn:uuid:fdf1589d-bc02-8c0f-8874-4d377574cc8d> .
+<urn:uuid:fdf1589d-bc02-8c0f-8874-4d377574cc8d> cascade:sourceRecordId "lv-cond-202" ;
 	cascade:sourceUrl <https://fhir.larkspur.example/r4/Condition/lv-cond-202> ;
 	a cascade:ProblemOrDiagnosis .
-_:576c104ff22ba08e66cc66e2d6d4fe7f bridge:selector "" ;
+_:705d5fc98600c2be6d59cdaf6e280b64 oa:hasSelector _:70e1928bba2bd577671b3e6b5b9b7d7a ;
+	oa:hasSource <ni:///sha-256;5kn5zMwKLefLlu2hz3EIBOHJv9XyGZvXlkp1ZH0pi5I> ;
 	prov:wasDerivedFrom <ni:///sha-256;5kn5zMwKLefLlu2hz3EIBOHJv9XyGZvXlkp1ZH0pi5I> ;
 	prov:wasGeneratedBy _:356e747cde1216b6507ddc38fb37d8aa .
+_:70e1928bba2bd577671b3e6b5b9b7d7a a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:356e747cde1216b6507ddc38fb37d8aa <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2027-03-18T12:00:04Z"^^xsd:dateTime .
 <ni:///sha-256;5kn5zMwKLefLlu2hz3EIBOHJv9XyGZvXlkp1ZH0pi5I> prov:qualifiedAttribution _:4833965737128baa30a0c6fbb2ac3015 .

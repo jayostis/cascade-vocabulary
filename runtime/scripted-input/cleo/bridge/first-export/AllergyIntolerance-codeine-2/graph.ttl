@@ -1,31 +1,51 @@
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
-@prefix pav: <http://purl.org/pav/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-
-<ni:///sha-256;xdL3_4SO2TfBn3gbErYtwdAIyjdHlzNdz9Qg5WmWhUE> a prov:Entity ;
-  pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/codeine-2> ;
-  pav:retrievedOn "2026-03-02T10:00:00Z"^^xsd:dateTime ;
-  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Apple Health" ] ; prov:hadRole cascade:TransmitterRole ] ,
-    [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole cascade:AuthorRole ] ;
-  cascade:serverBaseUrl "https://fhir.example.org/r4" ;
-  cascade:sourceFormatVersion "4.0.1" .
-_:import a prov:Activity ; rdfs:label "Apple Health export" ;
-  prov:startedAtTime "2026-03-02T10:00:00Z"^^xsd:dateTime ;
-  prov:used <ni:///sha-256;xdL3_4SO2TfBn3gbErYtwdAIyjdHlzNdz9Qg5WmWhUE> ;
-  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "fhir-r4" ; pav:version "0.1.0" ] ;
-    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
-<urn:uuid:a43d5357-3187-87c5-b7fa-542dc99e8b70> a <https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance> ; cascade:sourceRecordId "codeine-2" ; cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/codeine-2> .
-<ni:///sha-256;Qub5WCecp7BAzh3iSnwWX3RzwNQwT7QTDG6OCYiiUHU> prov:specializationOf <urn:uuid:a43d5357-3187-87c5-b7fa-542dc99e8b70> ;
-  <https://ns.cascadeprotocol.org/cascade#allergen> "Codeine" ;
-  <https://ns.cascadeprotocol.org/cascade#clinicalStatus> "active" ;
-  <https://ns.cascadeprotocol.org/cascade#allergenCode> <https://ns.cascadeprotocol.org/codes/rxnorm/2670> ;
-  cascade:patient <urn:uuid:eb313649-c6ff-8ffa-93e2-2898fe91b570> .
-_:arrival bridge:arrivedAs <ni:///sha-256;Qub5WCecp7BAzh3iSnwWX3RzwNQwT7QTDG6OCYiiUHU> ; prov:wasGeneratedBy _:import ;
-  bridge:selector "" ; prov:wasDerivedFrom <ni:///sha-256;xdL3_4SO2TfBn3gbErYtwdAIyjdHlzNdz9Qg5WmWhUE> ;
-  pav:version "1" ;
-  pav:lastUpdateOn "2026-03-01T00:00:00Z"^^xsd:dateTime .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;1youmZV6FEiMm-Z1E6njPm_YRi9UIu6RUJmTkNbhATI> cascade:clinicalStatus "active" ;
+	cascade:allergen "Codeine" .
+_:b97a6669330141ec14665a200064d727 pav:lastUpdateOn "2026-03-01T00:00:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;1youmZV6FEiMm-Z1E6njPm_YRi9UIu6RUJmTkNbhATI> .
+<ni:///sha-256;1youmZV6FEiMm-Z1E6njPm_YRi9UIu6RUJmTkNbhATI> cascade:patient <urn:uuid:dccb6776-d640-88e5-a7b3-7e2e1b860abe> ;
+	prov:specializationOf <urn:uuid:de5fef39-300f-8fc0-aae0-89d9299ec849> .
+<urn:uuid:de5fef39-300f-8fc0-aae0-89d9299ec849> cascade:sourceRecordId "codeine-2" ;
+	cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/codeine-2> ;
+	a cascade:AllergyOrIntolerance .
+_:b97a6669330141ec14665a200064d727 oa:hasSelector _:4072906adff30d3e4ecfb79ff1093de1 ;
+	oa:hasSource <ni:///sha-256;xdL3_4SO2TfBn3gbErYtwdAIyjdHlzNdz9Qg5WmWhUE> ;
+	prov:wasDerivedFrom <ni:///sha-256;xdL3_4SO2TfBn3gbErYtwdAIyjdHlzNdz9Qg5WmWhUE> ;
+	prov:wasGeneratedBy _:867516c5a002383c6706f3c57578964d .
+_:4072906adff30d3e4ecfb79ff1093de1 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
+_:867516c5a002383c6706f3c57578964d <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-03-02T10:00:00Z"^^xsd:dateTime .
+<ni:///sha-256;xdL3_4SO2TfBn3gbErYtwdAIyjdHlzNdz9Qg5WmWhUE> prov:qualifiedAttribution _:9a80bbd52bb44fdab1e31e4043b48f80 .
+_:9a80bbd52bb44fdab1e31e4043b48f80 prov:agent _:5c77fddecf6e4912c11f8363fc60d462 .
+_:5c77fddecf6e4912c11f8363fc60d462 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:9a80bbd52bb44fdab1e31e4043b48f80 prov:hadRole cascade:TransmitterRole .
+<ni:///sha-256;xdL3_4SO2TfBn3gbErYtwdAIyjdHlzNdz9Qg5WmWhUE> prov:qualifiedAttribution _:fc1fb881dd8edfb877bc78f62091d497 .
+_:fc1fb881dd8edfb877bc78f62091d497 prov:agent _:7cf2a0a1c56b227c8fb5e6a890497b6b .
+_:7cf2a0a1c56b227c8fb5e6a890497b6b <http://www.w3.org/2000/01/rdf-schema#label> "Example Hospital" .
+_:fc1fb881dd8edfb877bc78f62091d497 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;xdL3_4SO2TfBn3gbErYtwdAIyjdHlzNdz9Qg5WmWhUE> cascade:serverBaseUrl "https://fhir.example.org/r4" ;
+	pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/codeine-2> ;
+	pav:retrievedOn "2026-03-02T10:00:00Z"^^xsd:dateTime ;
+	cascade:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
+_:867516c5a002383c6706f3c57578964d a prov:Activity ;
+	prov:used <ni:///sha-256;xdL3_4SO2TfBn3gbErYtwdAIyjdHlzNdz9Qg5WmWhUE> ;
+	prov:qualifiedAssociation _:6b8105f3aa4a6aded0cc15af8020c4b9 .
+_:6b8105f3aa4a6aded0cc15af8020c4b9 prov:hadPlan _:624e8cc2536984c30ea666f1c46c6167 .
+_:624e8cc2536984c30ea666f1c46c6167 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:6b8105f3aa4a6aded0cc15af8020c4b9 prov:agent _:14d7f0c4b2de56f21e6858f2bf7e0bb2 .
+_:14d7f0c4b2de56f21e6858f2bf7e0bb2 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

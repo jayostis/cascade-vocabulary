@@ -1,39 +1,45 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;g8zBE1g2wqXx4-VUL3aXsJMqZFwa92A3WqUIiYaOZ8o> cascade:procedureName "Colonoscopy" ;
+<ni:///sha-256;64bGI_0TUecCmvxUndh-_bjWj3_1cI8czxosiFZka3Q> cascade:procedureDate "2026-08-19"^^xsd:date ;
 	cascade:workflowStatus "completed" ;
-	cascade:procedureDate "2026-08-19"^^xsd:date ;
-	cascade:snomedCode "73761001" .
-_:ec399165a318891b59937b26f8b10f02 pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
+	cascade:snomedCode <http://snomed.info/id/73761001> ;
+	cascade:procedureName "Colonoscopy" .
+_:91ebdfd57b5a6eb8ad87451943070691 pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;g8zBE1g2wqXx4-VUL3aXsJMqZFwa92A3WqUIiYaOZ8o> .
-<ni:///sha-256;g8zBE1g2wqXx4-VUL3aXsJMqZFwa92A3WqUIiYaOZ8o> cascade:patient <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> ;
-	prov:specializationOf <urn:uuid:97603337-f245-85bb-a4c3-f76520eee79a> .
-<urn:uuid:97603337-f245-85bb-a4c3-f76520eee79a> cascade:sourceRecordId "lv-proc-401" ;
+	bridge:arrivedAs <ni:///sha-256;64bGI_0TUecCmvxUndh-_bjWj3_1cI8czxosiFZka3Q> .
+<ni:///sha-256;64bGI_0TUecCmvxUndh-_bjWj3_1cI8czxosiFZka3Q> cascade:patient <urn:uuid:d461e692-842c-8a30-a8ba-940a908c8cab> ;
+	prov:specializationOf <urn:uuid:cfe67786-af77-8fb0-8c99-3d9faedcf182> .
+<urn:uuid:cfe67786-af77-8fb0-8c99-3d9faedcf182> cascade:sourceRecordId "lv-proc-401" ;
 	cascade:sourceUrl <https://fhir.larkspur.example/r4/Procedure/lv-proc-401> ;
 	a cascade:MedicalProcedure .
-_:ec399165a318891b59937b26f8b10f02 bridge:selector "" ;
+_:91ebdfd57b5a6eb8ad87451943070691 oa:hasSelector _:1fedc4a023028f270cfe0213deb087d1 ;
+	oa:hasSource <ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> ;
 	prov:wasDerivedFrom <ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> ;
 	prov:wasGeneratedBy _:95b6412b69a07a7e0190f4db99ae0de7 .
-<ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> pav:retrievedFrom <https://fhir.larkspur.example/r4/Procedure/lv-proc-401> ;
-	pav:retrievedOn "2027-03-18T12:00:00Z"^^xsd:dateTime .
+_:1fedc4a023028f270cfe0213deb087d1 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
+_:95b6412b69a07a7e0190f4db99ae0de7 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2027-03-18T12:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> prov:qualifiedAttribution _:8f595ffba57c3ecbe4e47ef58975b4a0 .
 _:8f595ffba57c3ecbe4e47ef58975b4a0 prov:agent _:e3001c2311629165ae0ba1fc8f021804 .
 _:e3001c2311629165ae0ba1fc8f021804 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:8f595ffba57c3ecbe4e47ef58975b4a0 prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> prov:qualifiedAttribution _:8f595ffba57c3ecbe4e47ef58975b4a0 .
+<ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> prov:qualifiedAttribution _:2a14f87578ca7f4a462584515dfeb908 .
 _:2a14f87578ca7f4a462584515dfeb908 prov:agent _:440f88048a60b6922bff9ab26387ef6a .
 _:440f88048a60b6922bff9ab26387ef6a <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
 _:2a14f87578ca7f4a462584515dfeb908 prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> prov:qualifiedAttribution _:2a14f87578ca7f4a462584515dfeb908 ;
-	cascade:serverBaseUrl "https://fhir.larkspur.example/r4" ;
-	cascade:sourceFormatVersion "4.0.1" .
-_:95b6412b69a07a7e0190f4db99ae0de7 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2027-03-18T12:00:04Z"^^xsd:dateTime .
-<ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> a prov:Entity .
+<ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> cascade:serverBaseUrl "https://fhir.larkspur.example/r4" ;
+	pav:retrievedFrom <https://fhir.larkspur.example/r4/Procedure/lv-proc-401> ;
+	pav:retrievedOn "2027-03-18T12:00:00Z"^^xsd:dateTime ;
+	cascade:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:95b6412b69a07a7e0190f4db99ae0de7 a prov:Activity ;
 	prov:used <ni:///sha-256;Kl2jU5ZSxb7vZ9IYZT4E7Cs6tP8AmSBqqKD8yXCICdM> ;
 	prov:qualifiedAssociation _:321dfab4a2af34c1f83ba29d68c20d22 .

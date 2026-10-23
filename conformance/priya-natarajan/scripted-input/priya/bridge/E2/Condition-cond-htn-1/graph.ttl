@@ -1,26 +1,32 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;kBDjgT1oyisN1lmwyKs6G3Rn_S5ol9Jr1GS60dQJsyg> cascade:onsetDate "2023-06-15"^^xsd:date ;
-	cascade:clinicalStatus "active" ;
-	cascade:verificationStatus "confirmed" ;
-	cascade:conditionCategory "problem-list-item" ;
+<ni:///sha-256;ra9DjhgEUd26AbnbIm_DJHpgIMBBnEwybiMciKn1btU> cascade:conditionCategory "problem-list-item" ;
 	cascade:conditionName "Essential hypertension" ;
-	cascade:snomedCode <http://snomed.info/id/59621000> .
-_:9c64c2a266d667c0f0899438873a07e5 pav:lastUpdateOn "2025-03-27T12:40:00Z"^^xsd:dateTime ;
+	cascade:onsetDate "2023-06-15"^^xsd:date ;
+	cascade:clinicalStatus "active" ;
+	cascade:snomedCode <http://snomed.info/id/59621000> ;
+	cascade:verificationStatus "confirmed" .
+_:a88dd2651033b8961f63112ec7b9049c pav:lastUpdateOn "2025-03-27T12:40:00Z"^^xsd:dateTime ;
 	pav:version "2" ;
-	bridge:arrivedAs <ni:///sha-256;kBDjgT1oyisN1lmwyKs6G3Rn_S5ol9Jr1GS60dQJsyg> .
-<ni:///sha-256;kBDjgT1oyisN1lmwyKs6G3Rn_S5ol9Jr1GS60dQJsyg> cascade:patient <urn:uuid:8df1ef48-f8fd-8c9e-a9d3-c3de9798361f> ;
-	prov:specializationOf <urn:uuid:66b51b18-6fe4-8850-b916-bd7160154088> .
-<urn:uuid:66b51b18-6fe4-8850-b916-bd7160154088> cascade:sourceRecordId "cond-htn-1" ;
+	bridge:arrivedAs <ni:///sha-256;ra9DjhgEUd26AbnbIm_DJHpgIMBBnEwybiMciKn1btU> .
+<ni:///sha-256;ra9DjhgEUd26AbnbIm_DJHpgIMBBnEwybiMciKn1btU> cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> ;
+	prov:specializationOf <urn:uuid:908ca1db-13ad-82a9-8391-2f3f3d035453> .
+<urn:uuid:908ca1db-13ad-82a9-8391-2f3f3d035453> cascade:sourceRecordId "cond-htn-1" ;
 	cascade:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/Condition/cond-htn-1> ;
 	a cascade:ProblemOrDiagnosis .
-_:9c64c2a266d667c0f0899438873a07e5 bridge:selector "" ;
+_:a88dd2651033b8961f63112ec7b9049c oa:hasSelector _:30e6ad86b9b8adce1a293862e079a16d ;
+	oa:hasSource <ni:///sha-256;PjSmpjsg6m6RHn2fkn6Y2jtlRcq8TQbB4GAGhVWWV1Q> ;
 	prov:wasDerivedFrom <ni:///sha-256;PjSmpjsg6m6RHn2fkn6Y2jtlRcq8TQbB4GAGhVWWV1Q> ;
 	prov:wasGeneratedBy _:3c7415cf9301a6b610ddbf8061587d50 .
+_:30e6ad86b9b8adce1a293862e079a16d a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:3c7415cf9301a6b610ddbf8061587d50 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2025-03-29T18:45:04Z"^^xsd:dateTime .
 <ni:///sha-256;PjSmpjsg6m6RHn2fkn6Y2jtlRcq8TQbB4GAGhVWWV1Q> prov:qualifiedAttribution _:208d67d4e0414936efff329cdcfd1e78 .

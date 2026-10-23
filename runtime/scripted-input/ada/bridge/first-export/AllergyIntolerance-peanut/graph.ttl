@@ -1,30 +1,51 @@
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
-@prefix pav: <http://purl.org/pav/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-
-<ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> a prov:Entity ;
-  pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/peanut> ;
-  pav:retrievedOn "2026-01-02T10:00:00Z"^^xsd:dateTime ;
-  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Apple Health" ] ; prov:hadRole cascade:TransmitterRole ] ,
-    [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole cascade:AuthorRole ] ;
-  cascade:serverBaseUrl "https://fhir.example.org/r4" ;
-  cascade:sourceFormatVersion "4.0.1" .
-_:import a prov:Activity ; rdfs:label "Apple Health export" ;
-  prov:startedAtTime "2026-01-02T10:00:00Z"^^xsd:dateTime ;
-  prov:used <ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> ;
-  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "fhir-r4" ; pav:version "0.1.0" ] ;
-    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
-<urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> a <https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance> ; cascade:sourceRecordId "peanut" ; cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/peanut> .
-<ni:///sha-256;Rx15Nd4sUNwYcdZW94THU_g2iVOlOmZ0kGyYl74dDAk> prov:specializationOf <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> ;
-  <https://ns.cascadeprotocol.org/cascade#allergen> "Peanut" ;
-  <https://ns.cascadeprotocol.org/cascade#clinicalStatus> "active" ;
-  cascade:patient <urn:uuid:eb313649-c6ff-8ffa-93e2-2898fe91b570> .
-_:arrival bridge:arrivedAs <ni:///sha-256;Rx15Nd4sUNwYcdZW94THU_g2iVOlOmZ0kGyYl74dDAk> ; prov:wasGeneratedBy _:import ;
-  bridge:selector "" ; prov:wasDerivedFrom <ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> ;
-  pav:version "1" ;
-  pav:lastUpdateOn "2025-12-01T00:00:00Z"^^xsd:dateTime .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;E64aGZVmGmEPgF7RM5roCn_8WdUdfQAgE1LC9RS2V4E> cascade:clinicalStatus "active" ;
+	cascade:allergen "Peanut" .
+_:1c723894749142f816cb1596c6888ec1 pav:lastUpdateOn "2025-12-01T00:00:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;E64aGZVmGmEPgF7RM5roCn_8WdUdfQAgE1LC9RS2V4E> .
+<ni:///sha-256;E64aGZVmGmEPgF7RM5roCn_8WdUdfQAgE1LC9RS2V4E> cascade:patient <urn:uuid:dccb6776-d640-88e5-a7b3-7e2e1b860abe> ;
+	prov:specializationOf <urn:uuid:beaefb13-def8-8f7f-882d-eff4a1ee11d9> .
+<urn:uuid:beaefb13-def8-8f7f-882d-eff4a1ee11d9> cascade:sourceRecordId "peanut" ;
+	cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/peanut> ;
+	a cascade:AllergyOrIntolerance .
+_:1c723894749142f816cb1596c6888ec1 oa:hasSelector _:3ce4a449449fa37fc3ba202485ad50b6 ;
+	oa:hasSource <ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> ;
+	prov:wasDerivedFrom <ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> ;
+	prov:wasGeneratedBy _:22520f9ad6c916f436d27cda4f5eb4cc .
+_:3ce4a449449fa37fc3ba202485ad50b6 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
+_:22520f9ad6c916f436d27cda4f5eb4cc <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-01-02T10:00:00Z"^^xsd:dateTime .
+<ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> prov:qualifiedAttribution _:ae5e29bcb070f9ee735f7ab12b83046a .
+_:ae5e29bcb070f9ee735f7ab12b83046a prov:agent _:dde2363cd7f5ec804ea247624d3ce39b .
+_:dde2363cd7f5ec804ea247624d3ce39b <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:ae5e29bcb070f9ee735f7ab12b83046a prov:hadRole cascade:TransmitterRole .
+<ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> prov:qualifiedAttribution _:745e532761aedd24264d6f5666727a47 .
+_:745e532761aedd24264d6f5666727a47 prov:agent _:73a0a5b9fd88d7dd1230f6add70ed061 .
+_:73a0a5b9fd88d7dd1230f6add70ed061 <http://www.w3.org/2000/01/rdf-schema#label> "Example Hospital" .
+_:745e532761aedd24264d6f5666727a47 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> cascade:serverBaseUrl "https://fhir.example.org/r4" ;
+	pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/peanut> ;
+	pav:retrievedOn "2026-01-02T10:00:00Z"^^xsd:dateTime ;
+	cascade:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
+_:22520f9ad6c916f436d27cda4f5eb4cc a prov:Activity ;
+	prov:used <ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> ;
+	prov:qualifiedAssociation _:4c2c3f0d9db8fbd8a076d4138f67e44e .
+_:4c2c3f0d9db8fbd8a076d4138f67e44e prov:hadPlan _:cb342552c8fce3bd6c0cfc79c95cf4ac .
+_:cb342552c8fce3bd6c0cfc79c95cf4ac a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:4c2c3f0d9db8fbd8a076d4138f67e44e prov:agent _:8206cf3e44c50f2f43df0d395571abc3 .
+_:8206cf3e44c50f2f43df0d395571abc3 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

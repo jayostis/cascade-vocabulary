@@ -1,25 +1,31 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;agPQbNfBxl0DEFyIOC63B8G8ag7t3-zWRhGQKed25uI> cascade:onsetDate "2019-05-10"^^xsd:date ;
+<ni:///sha-256;3_zdX2ZlBkWOUpvfgdaG8XPIboEB-B1KFskCHZLlq_Q> cascade:conditionName "Atopic dermatitis" ;
+	cascade:onsetDate "2019-05-10"^^xsd:date ;
 	cascade:clinicalStatus "active" ;
-	cascade:verificationStatus "confirmed" ;
-	cascade:conditionName "Atopic dermatitis" ;
-	cascade:snomedCode <http://snomed.info/id/24079001> .
-_:f17c081653098877cba1e58360e5ba29 pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
+	cascade:snomedCode <http://snomed.info/id/24079001> ;
+	cascade:verificationStatus "confirmed" .
+_:5758adb5bb27a9dc9940e1e66148ced3 pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;agPQbNfBxl0DEFyIOC63B8G8ag7t3-zWRhGQKed25uI> .
-<ni:///sha-256;agPQbNfBxl0DEFyIOC63B8G8ag7t3-zWRhGQKed25uI> cascade:patient <urn:uuid:d062f803-3744-884a-b30d-2b4fb273cf5d> ;
-	prov:specializationOf <urn:uuid:730dea68-b88f-895d-9be7-dd2f19d4de6f> .
-<urn:uuid:730dea68-b88f-895d-9be7-dd2f19d4de6f> cascade:sourceRecordId "cond-eczema-2" ;
+	bridge:arrivedAs <ni:///sha-256;3_zdX2ZlBkWOUpvfgdaG8XPIboEB-B1KFskCHZLlq_Q> .
+<ni:///sha-256;3_zdX2ZlBkWOUpvfgdaG8XPIboEB-B1KFskCHZLlq_Q> cascade:patient <urn:uuid:e6ef533e-087e-8aff-8979-1e62c5e9d06a> ;
+	prov:specializationOf <urn:uuid:421858b2-99a8-8db2-8948-707b526bab90> .
+<urn:uuid:421858b2-99a8-8db2-8948-707b526bab90> cascade:sourceRecordId "cond-eczema-2" ;
 	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-eczema-2> ;
 	a cascade:ProblemOrDiagnosis .
-_:f17c081653098877cba1e58360e5ba29 bridge:selector "" ;
+_:5758adb5bb27a9dc9940e1e66148ced3 oa:hasSelector _:7160e932b662585ad0ad84b185bf232d ;
+	oa:hasSource <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> ;
 	prov:wasDerivedFrom <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> ;
 	prov:wasGeneratedBy _:48d9e978e55a5bff512d73efe4b8e97b .
+_:7160e932b662585ad0ad84b185bf232d a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:48d9e978e55a5bff512d73efe4b8e97b <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
 <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> prov:qualifiedAttribution _:90ce3f4e3c042fbf0a857ccdfd97043c .

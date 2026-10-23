@@ -1,10 +1,12 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;9dRRLIX92aI7ZqP5E5FRQ87wHIKcJZgeH9RZ2oGcbkE> cascade:workflowStatus "final" ;
+<ni:///sha-256;rWZfApe3bgV9EVxnzXbQ6tFiD5VlF0Dl5Ak5SRnPBK8> cascade:workflowStatus "final" ;
 	cascade:resultClinicallyRelevantTime "2025-06-10T13:45:00Z"^^xsd:dateTime ;
 	cascade:resultInterpretation "N" ;
 	cascade:referenceRange "3.5-5.1 mmol/L" ;
@@ -12,17 +14,21 @@
 	cascade:resultValue "4.4" ;
 	cascade:testCode <http://loinc.org/rdf/2823-3> ;
 	cascade:testName "Potassium" .
-_:23cedb314e9b99b6898fb23db32d8b89 pav:lastUpdateOn "2025-06-10T15:31:00Z"^^xsd:dateTime ;
+_:bf53cbb972be4370ae05799de5dedbc7 pav:lastUpdateOn "2025-06-10T15:31:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;9dRRLIX92aI7ZqP5E5FRQ87wHIKcJZgeH9RZ2oGcbkE> .
-<ni:///sha-256;9dRRLIX92aI7ZqP5E5FRQ87wHIKcJZgeH9RZ2oGcbkE> cascade:patient <urn:uuid:8df1ef48-f8fd-8c9e-a9d3-c3de9798361f> ;
-	prov:specializationOf <urn:uuid:9fef6d07-2c91-8e52-bfaa-35521508962d> .
-<urn:uuid:9fef6d07-2c91-8e52-bfaa-35521508962d> cascade:sourceRecordId "obs-potassium-20250610" ;
+	bridge:arrivedAs <ni:///sha-256;rWZfApe3bgV9EVxnzXbQ6tFiD5VlF0Dl5Ak5SRnPBK8> .
+<ni:///sha-256;rWZfApe3bgV9EVxnzXbQ6tFiD5VlF0Dl5Ak5SRnPBK8> cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> ;
+	prov:specializationOf <urn:uuid:89e2da27-e7d8-8643-8a3e-d4b817d3fb18> .
+<urn:uuid:89e2da27-e7d8-8643-8a3e-d4b817d3fb18> cascade:sourceRecordId "obs-potassium-20250610" ;
 	cascade:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/Observation/obs-potassium-20250610> ;
 	a cascade:LaboratoryTestResult .
-_:23cedb314e9b99b6898fb23db32d8b89 bridge:selector "" ;
+_:bf53cbb972be4370ae05799de5dedbc7 oa:hasSelector _:54677400861ebfbfe2960966c923bfe7 ;
+	oa:hasSource <ni:///sha-256;uaajzsPxTtKovhO7m0Az4GIX2nEb19Ocab3Mv5Sx-mA> ;
 	prov:wasDerivedFrom <ni:///sha-256;uaajzsPxTtKovhO7m0Az4GIX2nEb19Ocab3Mv5Sx-mA> ;
 	prov:wasGeneratedBy _:baf696ae9afd8e980fd3a77b945d4bb0 .
+_:54677400861ebfbfe2960966c923bfe7 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:baf696ae9afd8e980fd3a77b945d4bb0 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2025-06-15T08:05:04Z"^^xsd:dateTime .
 <ni:///sha-256;uaajzsPxTtKovhO7m0Az4GIX2nEb19Ocab3Mv5Sx-mA> prov:qualifiedAttribution _:d025054c2daf448ea950775b6cf725a2 .
