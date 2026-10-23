@@ -1,11 +1,11 @@
 # Two records of one kind match when their current versions share a code under one property: an allergen's code, or
-# a SNOMED CT code under either vocabulary's property. Any dates are ignored. Each ordered pair is a row.
+# a SNOMED CT code. Any dates are ignored. Each ordered pair is a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
 SELECT DISTINCT ?record ?other
 WHERE {
-  VALUES ?property { cascade:snomedCode cascade:allergenCode cascade:snomedCode }
+  VALUES ?property { cascade:snomedCode cascade:allergenCode }
   ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
   ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
   ?version ?property ?code .
