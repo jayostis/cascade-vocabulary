@@ -10,7 +10,7 @@ CONSTRUCT {
   ?version cascade:displayName ?name ; cascade:displayDate ?date .
 }
 WHERE {
-  VALUES (?type ?kind ?nameProperty ?statusOnlyFromDocuments ?dateProperty ?laterDateProperty) {
+  VALUES (?type ?kind ?nameProperty ?statusOnlyFromDocuments ?dateProperty ?fallbackDateProperty) {
     (cascade:AllergyOrIntolerance           "Allergy"      cascade:allergen                true  UNDEF UNDEF)
     (cascade:ProblemOrDiagnosis             "Condition"    cascade:conditionName           false cascade:onsetDate UNDEF)
     (cascade:Vaccination                    "Immunization" cascade:vaccineName             false cascade:vaccinationOccurrenceTime UNDEF)
@@ -24,6 +24,6 @@ WHERE {
   OPTIONAL { ?version prov:specializationOf ?record }
   OPTIONAL { ?version prov:specializationOf ?record ; ?hasName ?name FILTER (?hasName = ?nameProperty) }
   OPTIONAL { ?version prov:specializationOf ?record ; ?hasDate ?firstDate FILTER (?hasDate = ?dateProperty) }
-  OPTIONAL { ?version prov:specializationOf ?record ; ?hasLaterDate ?laterDate FILTER (?hasLaterDate = ?laterDateProperty) }
-  BIND (COALESCE(?firstDate, ?laterDate) AS ?date)
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasFallbackDate ?fallbackDate FILTER (?hasFallbackDate = ?fallbackDateProperty) }
+  BIND (COALESCE(?firstDate, ?fallbackDate) AS ?date)
 }

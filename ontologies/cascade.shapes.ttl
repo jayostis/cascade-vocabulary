@@ -273,7 +273,7 @@ cascade:VaccinationShape a sh:NodeShape ;
         sh:path cascade:vaccinationOccurrenceTime ;
         sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "Administration Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:message "A vaccination occurrence time must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -380,7 +380,7 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
         sh:path cascade:resultClinicallyRelevantTime ;
         sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "Performed Date must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+        sh:message "A result's clinically relevant time must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
     ] ;
 
     sh:property [
@@ -473,7 +473,7 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
         sh:path cascade:prescribedOrReported ;
         sh:datatype xsd:string ;
         sh:in ("prescribed" "reportedUse") ;
-        sh:message "A medication's clinical intent is \"prescribed\", from a prescription, or \"reportedUse\", from a list of what the person takes"@en
+        sh:message "A medication's prescribedOrReported is \"prescribed\", from a prescription, or \"reportedUse\", from a list of what the person takes"@en
     ] ;
 
     sh:property [
@@ -522,14 +522,14 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
         sh:path cascade:medicationUseStartDate ;
         sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "Start Date must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+        sh:message "A medication use start date must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
     ] ;
 
     sh:property [
         sh:path cascade:medicationUseEndDate ;
         sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "End Date must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+        sh:message "A medication use end date must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
     ] ;
 
     sh:property [
@@ -636,7 +636,7 @@ cascade:VariantInterpretationShape a sh:NodeShape ;
         sh:nodeKind sh:IRI ;
         sh:in ( cascade:Pathogenic cascade:LikelyPathogenic cascade:UncertainSignificance cascade:LikelyBenign cascade:Benign ) ;
         sh:maxCount 1 ;
-        sh:message "A variant interpretation states at most one ACMG classification, one of cascade:Pathogenic, LikelyPathogenic, VUS, LikelyBenign and Benign; a report whose answer is not one of the five states none"@en
+        sh:message "A variant interpretation states at most one ACMG classification, one of cascade:Pathogenic, LikelyPathogenic, UncertainSignificance, LikelyBenign and Benign; a report whose answer is not one of the five states none"@en
     ] ;
 
     sh:property [
@@ -1100,13 +1100,13 @@ cascade:CodeNameRowShape a sh:NodeShape ;
 cascade:CodeStatusRowShape a sh:NodeShape ;
     sh:node cascade:CodeShape ;
     sh:closed true ;
-    sh:message "A code status row holds only that the code is retired and what replaces it."@en ;
+    sh:message "A retired codes row holds only that the code is retired and what replaces it."@en ;
     sh:severity sh:Violation ;
     sh:property [
         sh:path owl:deprecated ;
         sh:hasValue true ;
         sh:maxCount 1 ;
-        sh:message "A code status row says its code is retired: owl:deprecated true."@en ;
+        sh:message "A retired codes row says its code is retired: owl:deprecated true."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path dct:isReplacedBy ;

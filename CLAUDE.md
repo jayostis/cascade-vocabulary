@@ -6,7 +6,8 @@ The contract a Cascade pod is built and read by; [`README.md`](README.md) names 
 
 - **An adapter names a file by its path here:** removing a term or moving a file it lists breaks it.
 - **A copied term carries its `dct:source` and `dct:license`**, and its type, label, domain, range and
-  superclasses, and nothing else. Its shape is the source's, trimmed to the terms here.
+  superclasses, and nothing else; its type and label may change on merit, as `vaccineCode`'s and `snomedCode`'s did.
+  Its shape is the source's, trimmed to the terms here.
 - **A new term goes in the one namespace, `cascade#`**, in `ontologies/cascade.ttl`. Where PROV-O or PAV has a
   term, that term is used instead.
 - **Content is on a version, not on its record.** A class's shape targets the class and the

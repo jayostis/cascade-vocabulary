@@ -1632,7 +1632,8 @@ cascade:SnapshotNamingRule a owl:NamedIndividual ;
 cascade:ServerNamingRule a owl:NamedIndividual ;
     rdfs:label "server naming rule"@en ;
     rdfs:comment "A server a client pulled from, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and the normalised base URL the client used."@en ;
-    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2> .
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2> ,
+        <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.3> .
 
 cascade:OrganizationNamingRule a owl:NamedIndividual ;
     rdfs:label "organization naming rule"@en ;
@@ -1727,7 +1728,7 @@ cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
 
 cascade:serverBaseUrl a owl:DatatypeProperty ;
     rdfs:label "server base URL"@en ;
-    rdfs:comment "Of a document, the base URL of the server the client fetched it from, as the client used it."@en ;
+    rdfs:comment "Of a document, the base URL of the server the client fetched it from, normalised as cascade:RecordFromServerNamingRule says."@en ;
     rdfs:range xsd:string .
 
 cascade:sourceFormatVersion a owl:DatatypeProperty ;
