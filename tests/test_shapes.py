@@ -4,6 +4,7 @@ as the node shape that reported it, directly or through one of its properties, a
 
 from functools import cache
 
+import pyoxigraph
 from pyshacl import validate
 from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
@@ -173,9 +174,15 @@ def written():
         yield from (kit / "expected").glob("*.ttl")
 
 
+def iris(file):
+    quads = pyoxigraph.parse(path=file, format=pyoxigraph.RdfFormat.TURTLE, base_iri=file.as_uri())
+    return {term.value for quad in quads for term in (quad.subject, quad.predicate, quad.object)
+            if isinstance(term, pyoxigraph.NamedNode)}
+
+
 def test_every_term_a_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it():
-    declared = set(ontology().subjects(RDF.type, None)) | set(UNDECLARED_ON_PURPOSE)
-    undeclared = {(str(term), file.relative_to(ROOT).as_posix()) for file in written() for triple in parsed(file)
-                  for term in triple
-                  if isinstance(term, URIRef) and str(term).startswith(namespaces()) and term not in declared}
+    declared = {str(term) for term in ontology().subjects(RDF.type, None)} | set(map(str, UNDECLARED_ON_PURPOSE))
+    ours = namespaces()
+    undeclared = {(term, file.relative_to(ROOT).as_posix()) for file in written() for term in iris(file)
+                  if term.startswith(ours) and term not in declared}
     assert sorted(undeclared) == []
