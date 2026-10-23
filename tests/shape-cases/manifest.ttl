@@ -1,6 +1,7 @@
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
@@ -89,6 +90,16 @@
   mf:action [ sht:dataGraph <revision/arrival-time-a-date.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath prov:generatedAtTime ] ] .
+
+<#revision/two-selectors> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/two-selectors.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath oa:hasSelector ] ] .
+
+<#revision/source-a-literal> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/source-a-literal.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath oa:hasSource ] ] .
 
 <#revision/two-earlier-revisions> a sht:Validate ;
   mf:action [ sht:dataGraph <revision/two-earlier-revisions.ttl> ] ;
