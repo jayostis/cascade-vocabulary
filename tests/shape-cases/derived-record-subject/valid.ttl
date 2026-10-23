@@ -1,9 +1,7 @@
 @prefix : <#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:record a cascade:ProblemOrDiagnosis ;
+:record a cascade:ProblemOrDiagnosis , cascade:Record ;
     cascade:sourceUrl <https://fhir.example/Condition/1> ;
     cascade:subject :subject .
 

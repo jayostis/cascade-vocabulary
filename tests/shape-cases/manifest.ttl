@@ -29,10 +29,6 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:sourceRecordId ] ] .
 
-<#record-condition/with-its-subject> a sht:Validate ;
-  mf:action [ sht:dataGraph <record-condition/with-its-subject.ttl> ] ;
-  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
-
 <#record-condition/snomed-code-a-literal> a sht:Validate ;
   mf:action [ sht:dataGraph <record-condition/snomed-code-a-literal.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
@@ -107,6 +103,15 @@
   mf:action [ sht:dataGraph <derived-current-revision/two-current-revisions.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:CurrentRevisionShape ; sh:resultPath cascade:currentRevision ] ] .
+
+<#derived-record-subject/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <derived-record-subject/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#derived-record-subject/subject-a-literal> a sht:Validate ;
+  mf:action [ sht:dataGraph <derived-record-subject/subject-a-literal.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RecordSubjectShape ; sh:resultPath cascade:subject ] ] .
 
 <#subject/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <subject/valid.ttl> ] ;
