@@ -14,6 +14,7 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix np: <http://www.nanopub.org/nschema#> .
 @prefix npx: <http://purl.org/nanopub/x/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
@@ -1246,6 +1247,19 @@ void:Dataset a owl:Class ;
     rdfs:isDefinedBy <http://rdfs.org/ns/void#> ;
     dct:source <https://www.w3.org/TR/2011/NOTE-void-20110303/> .
 
+oa:hasSelector a rdf:Property ;
+    rdfs:label "hasSelector"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:domain oa:ResourceSelection ;
+    rdfs:range oa:Selector ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
+oa:hasSource a rdf:Property ;
+    rdfs:label "hasSource"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:domain oa:SpecificResource ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
 owl:annotatedSource a rdf:Property ;
     rdfs:label "annotated source"@en ;
     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
@@ -1544,7 +1558,7 @@ cascade:RecordFromServerNamingRule a owl:NamedIndividual ;
 
 cascade:RecordFromDocumentNamingRule a owl:NamedIndividual ;
     rdfs:label "record from a document naming rule"@en ;
-    rdfs:comment "A record named by its document and its place in it: a record of a document with no known server, one whose id repeats in its document or that has none, one with a urn:uuid fullUrl, and any record no other rule names. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the document's ni:///sha-256; name (cascade:DocumentNamingRule); the rdf:value of the record's oa:hasSelector."@en ;
+    rdfs:comment "A record named by its document and its place in it: a record of a document with no known server, one whose id repeats in its document or that has none, one with a urn:uuid fullUrl, and any record no other rule names. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the document's ni:///sha-256; name (cascade:DocumentNamingRule); the rdf:value of the oa:hasSelector of the revision that brought it, the selector of its arrival."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.w3.org/TR/annotation-model/#selectors> .
 
 cascade:RecordFromCcdaNamingRule a owl:NamedIndividual ;

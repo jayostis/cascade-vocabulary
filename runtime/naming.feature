@@ -60,9 +60,11 @@ Feature: Naming
     its triples are: rdf:type cascade:Revision, cascade:revisionOf, cascade:version, prov:generatedAtTime (the import's
     or the session's start), prov:wasGeneratedBy (the import or the session), prov:wasRevisionOf (the record's previous
     revision, if it has one), and every other statement on the arrival except bridge:arrivedAs and prov:wasGeneratedBy,
-    its bridge:selector written as oa:hasSelector: a node of the revision, <revision>#selector, an oa:FragmentSelector
-    for a JSON document, its rdf:value the selector in RFC 6901 section 6's URI fragment form and its dcterms:conformsTo
-    https://www.rfc-editor.org/rfc/rfc6901, or an oa:XPathSelector for an XML document, its rdf:value the selector.
+    oa:hasSource the document among them, its selector written as the revision's oa:hasSelector: a node of the
+    revision, <revision>#selector, an oa:FragmentSelector for a JSON document, its rdf:value the selector in RFC 6901
+    section 6's URI fragment form and its dcterms:conformsTo https://www.rfc-editor.org/rfc/rfc6901, or an
+    oa:XPathSelector for an XML document, its rdf:value the selector. The vector revision-with-selector under
+    tests/vectors/naming/ names one.
 
     No example names a revision: its name depends on a run, through the import's or the session's ID. A9's example pins
     the triples it is named from.

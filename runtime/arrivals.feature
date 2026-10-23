@@ -130,6 +130,7 @@ Feature: Arrivals
         | pav:version          | "1"                                  |
         | pav:lastUpdateOn     | "2025-12-01T00:00:00Z"^^xsd:dateTime |
         | oa:hasSelector       | "#selector"                          |
+        | oa:hasSource         | the document of allergy "Peanut"     |
         | prov:wasDerivedFrom  | the document of allergy "Peanut"     |
 
   Rule: A10. A document is kept when it wrote a revision or the Bridge raised findings on it
