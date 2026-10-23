@@ -10,6 +10,7 @@ from manifests import entries, failure, lens_name
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
 LENSES = sorted(named("lenses"))
+JUDGMENT = "https://ns.cascadeprotocol.org/judgments/v1-draft#Judgment"
 ASKED = {**questions(), **{f"matcher/{name}": relative for name, relative in named("matcher").items()}}
 ORDERED = {(QUERIES / relative).resolve() for relative in ASKED.values() if "ORDER BY" in query(relative)}
 ENTRIES = [on_its_worker(fixture, entry, id=f"{fixture.name}-{entry.name}")
@@ -43,9 +44,18 @@ def lenses_that_differ(fixture):
     return sorted(found.values())
 
 
+def holds_a_judgment(fixture):
+    """Whether the fixture holds a judgment. A lens writes rec:counts and nothing else
+    (test_every_lens_writes_rec_counts_and_nothing_else), so lenses differ only in which judgments count: over a pod
+    with no judgment every lens adds the same triples, and every later step reads the same pod."""
+    return built_once(fixture, "oxigraph", LENSES[0]).store.ask(f"ASK {{ ?j a <{JUDGMENT}> }}")
+
+
 @every_fixture
 def test_oxigraph_and_rdflib_agree_on_the_derived_state_and_the_files_built_from_it(fixture):
-    for lens in lenses_that_differ(fixture):
+    judged = holds_a_judgment(fixture)
+    assert judged or lenses_that_differ(fixture) == LENSES[:1]
+    for lens in LENSES if judged else LENSES[:1]:
         one, other = (built_once(fixture, engine, lens) for engine in sorted(ENGINES))
         assert one.added_by_step == other.added_by_step, lens
         assert one.files == other.files, lens
