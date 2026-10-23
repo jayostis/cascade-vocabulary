@@ -260,9 +260,10 @@ number of its current version; `subject`, the person whose record the lens says 
 
 The matcher's judgments with any of those records as a member are exactly these. Each is a `cascade:Same` with that
 justification and exactly those members, attributed to the matcher. `at` (optional) is its `prov:generatedAtTime`;
-`used` (optional) everything it `prov:used`, in words; `inputs` (optional) the inputs N6 names it from, as the rule
-hashes them and joined by `, `: the matcher, the justification, its members sorted and what it used sorted, each the
-IRI the pod holds; `name` (optional) its IRI. Every column but `name` is checked first, so an input the pod does not
+`used` (optional) everything it `prov:used`, in words; `inputs` (optional) the rule first and then the inputs N6 names
+it from, joined by `, `, a list in parentheses: `cascade:ClaimNamingRule`, the maker `cascade:CascadeMatcher`, the
+matcher rule term, the justification, `(` its members `)` and `(` what it used `)`, each the IRI the pod holds (`cascade:`
+stands for the namespace); `name` (optional) its IRI. Every column but `name` is checked first, so an input the pod does not
 hold and a name the inputs do not give fail apart.
 
 ### `the matcher has no judgment holding {records}`
@@ -330,10 +331,13 @@ thing.
 | thing | inputs | name |
 |---|---|---|
 
-Each thing, in words, has exactly that IRI. An example showing how things are named uses this step, as the naming rules and P19 do. `inputs` (optional), for a
-record an entry made, are the inputs N2 names it from, joined by `, `: the pod's subject and its entry's start as the
-rule writes it, which the record's first revision must hold, and the draft's position, which reaches the pod only through
-the name.
+Each thing, in words, has exactly that IRI. An example showing how things are named uses this step, as the naming rules
+and P19 do. `inputs` (optional) are the rule that names it and then its inputs in the rule's order, joined by `, `, a
+list in parentheses and `cascade:` standing for the namespace: for a record from a server
+`cascade:RecordFromServerNamingRule`, the base URL, the resource type and the id; for a record an entry made
+`cascade:EnteredRecordNamingRule`, the entry's session IRI, which the record's first revision must hold, and the draft's
+position, which reaches the pod only through the name. `tests/test_naming.py` checks every such cell against
+`tests/naming.py`.
 
 ### `that step's import is named by a new random UUID`
 

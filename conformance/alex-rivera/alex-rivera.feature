@@ -90,11 +90,11 @@ Feature: Alex Rivera's pod
     Example: H1-ALG-LATEX and H1-ALG-SULFA, revised between E2 and E6, each get a revision after their first
       When the pod is read as it stood after "M7"
       Then the records have these revisions:
-        | record       | arrived                | version | reaction           | after                  |
-        | H1-ALG-LATEX | 2026-09-01 at 10:00:04 | 1       |                    |                        |
-        | H1-ALG-LATEX | 2026-11-20 at 09:00:04 | 2       | Contact dermatitis | 2026-09-01 at 10:00:04 |
-        | H1-ALG-SULFA | 2026-09-01 at 10:00:04 | 1       | Rash               |                        |
-        | H1-ALG-SULFA | 2026-11-20 at 09:00:04 | 2       | Itching, Rash      | 2026-09-01 at 10:00:04 |
+        | record       | arrived                | version | reaction manifestation text | after                  |
+        | H1-ALG-LATEX | 2026-09-01 at 10:00:04 | 1       |                             |                        |
+        | H1-ALG-LATEX | 2026-11-20 at 09:00:04 | 2       | Contact dermatitis          | 2026-09-01 at 10:00:04 |
+        | H1-ALG-SULFA | 2026-09-01 at 10:00:04 | 1       | Rash                        |                        |
+        | H1-ALG-SULFA | 2026-11-20 at 09:00:04 | 2       | Itching, Rash               | 2026-09-01 at 10:00:04 |
 
     Example: the second version of each is its current version
       When the pod is read as it stood after "M7"
@@ -445,10 +445,10 @@ Feature: Alex Rivera's pod
 
     Example: H1-CON-BACK has two versions, and its third revision sets the first again
       Then H1-CON-BACK has these revisions:
-        | arrived                | version | status   | after                  |
-        | 2026-09-01 at 10:00:04 | 1       | active   |                        |
-        | 2026-11-20 at 09:00:04 | 2       | resolved | 2026-09-01 at 10:00:04 |
-        | 2027-08-20 at 08:00:04 | 1       | active   | 2026-11-20 at 09:00:04 |
+        | arrived                | version | clinical status | after                  |
+        | 2026-09-01 at 10:00:04 | 1       | active          |                        |
+        | 2026-11-20 at 09:00:04 | 2       | resolved        | 2026-09-01 at 10:00:04 |
+        | 2027-08-20 at 08:00:04 | 1       | active          | 2026-11-20 at 09:00:04 |
 
     Example: H1-CON-BACK's entry shows it active, with no abatement date
       Then the entry of H1-CON-BACK shows:

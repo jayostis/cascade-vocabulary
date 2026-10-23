@@ -58,9 +58,9 @@ Feature: Arrivals
       And the export "first-export" is imported on 2026-01-02 at 10:00
       When the export "new-content" is imported on 2026-01-06 at 10:00
       Then allergy "Peanut" has these revisions:
-        | arrived             | version | status   | after               |
-        | 2026-01-02 at 10:00 | 1       | active   |                     |
-        | 2026-01-06 at 10:00 | 2       | inactive | 2026-01-02 at 10:00 |
+        | arrived             | version | clinical status | after               |
+        | 2026-01-02 at 10:00 | 1       | active          |                     |
+        | 2026-01-06 at 10:00 | 2       | inactive        | 2026-01-02 at 10:00 |
 
   Rule: A6. Arrivals with no source version are told apart by their content alone
     So, by A4, one with the content the record is at writes no revision.
@@ -71,9 +71,9 @@ Feature: Arrivals
       And the export "no-source-version" is imported on 2026-01-07 at 10:00
       When the export "no-source-version-again" is imported on 2026-01-07 at 12:00
       Then allergy "Shellfish" has these revisions:
-        | arrived             | version | status   | after               |
-        | 2026-01-02 at 10:00 | 1       | active   |                     |
-        | 2026-01-07 at 10:00 | 2       | inactive | 2026-01-02 at 10:00 |
+        | arrived             | version | clinical status | after               |
+        | 2026-01-02 at 10:00 | 1       | active          |                     |
+        | 2026-01-07 at 10:00 | 2       | inactive        | 2026-01-02 at 10:00 |
 
   Rule: A7. A change that is undone at its source reuses the earlier version
     The new revision points at it.
@@ -84,10 +84,10 @@ Feature: Arrivals
       And the export "new-content" is imported on 2026-01-06 at 10:00
       When the export "change-undone" is imported on 2026-01-08 at 10:00
       Then allergy "Peanut" has these revisions:
-        | arrived             | version | status   | after               |
-        | 2026-01-02 at 10:00 | 1       | active   |                     |
-        | 2026-01-06 at 10:00 | 2       | inactive | 2026-01-02 at 10:00 |
-        | 2026-01-08 at 10:00 | 1       | active   | 2026-01-06 at 10:00 |
+        | arrived             | version | clinical status | after               |
+        | 2026-01-02 at 10:00 | 1       | active          |                     |
+        | 2026-01-06 at 10:00 | 2       | inactive        | 2026-01-02 at 10:00 |
+        | 2026-01-08 at 10:00 | 1       | active          | 2026-01-06 at 10:00 |
 
   Rule: A8. A record that is missing from a later export gets nothing written, and nothing of it goes
 
