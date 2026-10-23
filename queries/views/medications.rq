@@ -1,12 +1,10 @@
 # Each entry takes the name, every RxNorm code, every NDC code and the code the source chose of its latest member, the
-# status and end date of the member chosen for status, and every intent a member states, so an entry joining a
-# prescription and a list entry says both. It takes the start of use from the member whose current revision arrived
-# last among those that state one, and the day the prescription was written likewise, so an entry joining a list entry
-# and a prescription shows both dates. It also says the lifecycle class of that status (cascade:lifecycle), so an app
-# reads whether the medication is still taken without reading the status.
+# status and end date of the member chosen for status, the start of use and the day the prescription was written of the
+# members chosen for each, and every intent a member states, so an entry joining a prescription and a list entry says
+# both. It also says the lifecycle class of that status (cascade:lifecycle), so an app reads whether the medication is
+# still taken without reading the status.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT {
   ?entry a cascade:PrescribedOrReportedMedication ;
@@ -16,7 +14,8 @@ CONSTRUCT {
     cascade:userSelectedCode ?selected ;
     cascade:workflowStatus ?status ;
     cascade:lifecycle ?lifecycle ;
-    ?dateProperty ?date ;
+    cascade:medicationUseStartDate ?started ;
+    cascade:prescriptionWrittenDate ?written ;
     cascade:medicationUseEndDate ?end ;
     cascade:prescribedOrReported ?intent ;
     cascade:latestMember ?latest ;
@@ -35,21 +34,6 @@ WHERE {
              ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
   OPTIONAL { ?entry cascade:statusLifecycle ?lifecycle }
   OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:medicationUseEndDate ?end }
-  OPTIONAL {
-    { SELECT ?entry ?dateProperty (IRI(MIN(STR(?r))) AS ?dateFrom)
-      WHERE {
-        { SELECT ?entry ?dateProperty (MAX(?t2) AS ?t)
-          WHERE {
-            VALUES ?dateProperty { cascade:medicationUseStartDate cascade:prescriptionWrittenDate }
-            ?r2 a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry ;
-                cascade:currentRevision/prov:generatedAtTime ?t2 ; pav:hasCurrentVersion ?v2 .
-            ?v2 ?dateProperty [] . }
-          GROUP BY ?entry ?dateProperty }
-        ?r cascade:inEntry ?entry ; cascade:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion ?v .
-        ?v ?dateProperty [] . }
-      GROUP BY ?entry ?dateProperty }
-    ?dateFrom cascade:inEntry ?entry ; pav:hasCurrentVersion ?dated .
-    ?dated ?dateProperty ?date .
-    FILTER (?dateProperty IN (cascade:medicationUseStartDate, cascade:prescriptionWrittenDate))
-  }
+  OPTIONAL { ?entry cascade:medicationUseStartDateFrom/pav:hasCurrentVersion/cascade:medicationUseStartDate ?started }
+  OPTIONAL { ?entry cascade:prescriptionWrittenDateFrom/pav:hasCurrentVersion/cascade:prescriptionWrittenDate ?written }
 }

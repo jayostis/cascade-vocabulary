@@ -1,19 +1,26 @@
-# An entry takes its date from the member whose current revision arrived last, among those that state a date.
+# An entry takes its date from the member whose current revision arrived last, among those that state a date. A
+# medication entry takes its start of use and the day its prescription was written each the same way, among the members
+# that state that date, so it shows both when no one member states both.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
-CONSTRUCT { ?entry cascade:dateFrom ?from }
+CONSTRUCT { ?entry ?pointer ?from }
 WHERE {
-  { SELECT ?entry (IRI(MIN(STR(?r))) AS ?from)
+  { SELECT ?entry ?pointer (IRI(MIN(STR(?r))) AS ?from)
     WHERE {
-      { SELECT ?entry (MAX(?t2) AS ?t)
+      { SELECT ?entry ?pointer ?dateProperty (MAX(?t2) AS ?t)
         WHERE {
-          ?r2 cascade:inEntry ?entry ;
-              cascade:currentRevision/prov:generatedAtTime ?t2 ; pav:hasCurrentVersion/cascade:displayDate [] . }
-        GROUP BY ?entry }
-      ?r cascade:inEntry ?entry ;
-         cascade:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion/cascade:displayDate [] .
+          VALUES (?dateProperty ?pointer) {
+            (cascade:displayDate             cascade:dateFrom)
+            (cascade:medicationUseStartDate  cascade:medicationUseStartDateFrom)
+            (cascade:prescriptionWrittenDate cascade:prescriptionWrittenDateFrom)
+          }
+          ?r2 cascade:inEntry ?entry ; cascade:currentRevision/prov:generatedAtTime ?t2 ; pav:hasCurrentVersion ?v2 .
+          ?v2 ?dateProperty [] . }
+        GROUP BY ?entry ?pointer ?dateProperty }
+      ?r cascade:inEntry ?entry ; cascade:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion ?v .
+      ?v ?dateProperty [] .
     }
-    GROUP BY ?entry }
+    GROUP BY ?entry ?pointer }
 }
