@@ -3,10 +3,10 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:record a cascade:PrescribedOrReportedMedication ;
-    cascade:sourceUrl <https://fhir.example/MedicationRequest/1> .
+<urn:uuid:3896d7ec-8023-8253-b0a2-40b195b7a3bc> a cascade:PrescribedOrReportedMedication ;
+    cascade:sourceUrl <https://fhir.example/MedicationRequest/record-medication-written-date-a-string> .
 
-:version prov:specializationOf :record ;
+:version prov:specializationOf <urn:uuid:3896d7ec-8023-8253-b0a2-40b195b7a3bc> ;
     cascade:patient :patient ;
     cascade:prescribedOrReported "prescribed" ;
     cascade:prescriptionWrittenDate "2024-02-10" .

@@ -3,10 +3,10 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:record a cascade:LaboratoryTestResult ;
-    cascade:sourceUrl <https://fhir.example/Observation/1> .
+<urn:uuid:9209642b-e5d6-83a9-975d-e7f2a69f33f0> a cascade:LaboratoryTestResult ;
+    cascade:sourceUrl <https://fhir.example/Observation/record-lab-result-two-values> .
 
-:version prov:specializationOf :record ;
+:version prov:specializationOf <urn:uuid:9209642b-e5d6-83a9-975d-e7f2a69f33f0> ;
     cascade:patient :patient ;
     cascade:testName "Potassium" ;
     cascade:testCode <http://loinc.org/rdf/2823-3> ;

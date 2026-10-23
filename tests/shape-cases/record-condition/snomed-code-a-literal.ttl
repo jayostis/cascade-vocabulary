@@ -3,10 +3,10 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:record a cascade:ProblemOrDiagnosis ;
-    cascade:sourceUrl <https://fhir.example/Condition/1> .
+<urn:uuid:31c508f2-b763-86a2-ba29-c7390efc6625> a cascade:ProblemOrDiagnosis ;
+    cascade:sourceUrl <https://fhir.example/Condition/record-condition-snomed-code-a-literal> .
 
-:version prov:specializationOf :record ;
+:version prov:specializationOf <urn:uuid:31c508f2-b763-86a2-ba29-c7390efc6625> ;
     cascade:patient :patient ;
     cascade:conditionName "Asthma" ;
     cascade:snomedCode "195967001" .

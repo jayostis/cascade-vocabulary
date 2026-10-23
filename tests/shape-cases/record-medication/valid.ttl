@@ -3,10 +3,10 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:record a cascade:PrescribedOrReportedMedication ;
-    cascade:sourceUrl <https://fhir.example/MedicationRequest/1> .
+<urn:uuid:dc2964d7-38fa-8951-a7bc-49718621153e> a cascade:PrescribedOrReportedMedication ;
+    cascade:sourceUrl <https://fhir.example/MedicationRequest/record-medication-valid> .
 
-:version prov:specializationOf :record ;
+:version prov:specializationOf <urn:uuid:dc2964d7-38fa-8951-a7bc-49718621153e> ;
     cascade:patient :patient ;
     cascade:drugName "lisinopril 10 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;

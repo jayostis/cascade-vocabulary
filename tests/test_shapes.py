@@ -5,6 +5,7 @@ as the node shape that reported it, directly or through one of its properties, a
 from functools import cache
 
 import pyoxigraph
+import pytest
 from pyshacl import validate
 from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
@@ -13,6 +14,7 @@ from rdflib.namespace import OWL, RDF, SH
 from contract import KITS, CASCADE, ROOT
 from manifests import MF, path
 from pods import FIXTURES
+from test_naming_rules import VECTORS, vectors
 
 SHT = Namespace("http://www.w3.org/ns/shacl-test#")
 CASES = ROOT / "tests" / "shape-cases"
@@ -185,3 +187,55 @@ def test_every_term_a_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_i
     undeclared = {(term, file.relative_to(ROOT).as_posix()) for file in written() for term in iris(file)
                   if term.startswith(ours) and term not in declared}
     assert sorted(undeclared) == []
+
+
+def name_shape_select():
+    [constraint] = shapes().objects(CASCADE.ServerRecordNameShape, SH.sparql)
+    return str(shapes().value(constraint, SH.select))
+
+
+def test_the_name_shape_embeds_the_naming_rules_query_apart_from_binding_its_inputs():
+    rule = (VECTORS / "RecordFromServerNamingRule.rq").read_text(encoding="utf-8")
+    body = rule.split(" WHERE {\n", 1)[1].rsplit("\n}", 1)[0]
+    select = name_shape_select()
+    assert body in select
+    assert select.index("AS ?input3") < select.index(body)
+
+
+def server_vectors():
+    return [vector for vector in vectors() if vector.rule == "RecordFromServerNamingRule" and "%" not in vector.inputs[0]]
+
+
+def records(pairs):
+    graph = Graph()
+    for name, vector in pairs:
+        graph.add((URIRef(name), CASCADE.sourceUrl, URIRef("/".join(vector.inputs))))
+    return graph
+
+
+def test_the_name_shape_takes_each_server_vectors_name_for_its_address_and_no_other():
+    found = server_vectors()
+    assert len(found) >= 2
+    conforms, _, _ = validate(records((vector.expected, vector) for vector in found), shacl_graph=shapes())
+    assert conforms
+    swapped = records(zip([vector.expected for vector in found[1:] + found[:1]], found))
+    _, report, _ = validate(swapped, shacl_graph=shapes())
+    assert {str(node) for node in report.objects(None, SH.focusNode)} == {vector.expected for vector in found}
+
+
+SAVED_BRIDGE_OUTPUTS_NOT_YET_RE_MINTED = {"alex-rivera", "priya-natarajan", "tamsin-vale"}
+
+
+@pytest.mark.parametrize("kit", [
+    pytest.param(kit, id=kit.name, marks=[pytest.mark.xfail(strict=True, reason="C2b re-mints the saved Bridge outputs")]
+                 if kit.name in SAVED_BRIDGE_OUTPUTS_NOT_YET_RE_MINTED else [])
+    for kit in KITS])
+def test_every_record_of_a_kit_pod_with_a_source_address_has_the_name_that_address_gives(kit):
+    pod = Graph()
+    for folder in ("scripted-input", "expected"):
+        for file in sorted((kit / folder).rglob("*.ttl")):
+            pod += parsed(file)
+    _, report, _ = validate(pod, shacl_graph=shapes())
+    named_wrong = {str(report.value(result, SH.focusNode)) for result in report.objects(None, SH.result)
+                   if report.value(result, SH.sourceShape) == CASCADE.ServerRecordNameShape}
+    assert named_wrong == set()
