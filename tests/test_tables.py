@@ -41,7 +41,6 @@ CLASSIFIED = (f"{VARIATION} cascade:hgvsExpression {EXPRESSION} ; cascade:clinva
 ROW = "a owl:Axiom ; owl:annotatedSource cvx:141 ; owl:annotatedProperty obo:RO_0002350 ; owl:annotatedTarget cvx:88"
 CURATED = "sssom:mapping_justification semapv:ManualMappingCuration"
 CHAINED = "sssom:mapping_justification semapv:MappingChaining"
-NDC = "<https://ns.cascadeprotocol.org/codes/ndc11/00069153066>"
 EARLIER = "a owl:Axiom ; owl:annotatedSource icd:C88.0 ; owl:annotatedProperty skos:exactMatch ; owl:annotatedTarget icd:C88.00"
 CARDINALITY = 'sssom:mapping_cardinality "1:1"'
 CONVERSION = EARLIER.replace("skos:exactMatch", "dct:isReplacedBy") + f" ; {CARDINALITY}"
@@ -257,11 +256,6 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (CASCADE.BrandGenerics, f"<urn:x:r> {DRUG} ; {CURATED} .", None),
     (CASCADE.BrandGenerics, f"<urn:x:r> {DRUG.replace('rxnorm:5640', '<http://snomed.info/id/387207008>')} ; {CURATED} .",
      "A brand generic row maps to an RxNorm code"),
-    (CASCADE.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC)} ; {CURATED} .", None),
-    (CASCADE.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC.replace('/000', '/00'))} ; {CURATED} .",
-     "An NDC drug row maps an NDC of 11 digits"),
-    (CASCADE.NdcDrugs, f"<urn:x:r> {DRUG.replace('rxnorm:153010', NDC).replace('broadMatch', 'closeMatch')} ; {CURATED} .",
-     "with skos:broadMatch"),
     (CASCADE.CodeConversions, f"<urn:x:r> {CONVERSION} ; {CURATED} .", None),
     (CASCADE.CodeConversions, f"<urn:x:r> {EARLIER} ; {CURATED} .", None),
     (CASCADE.CodeConversions, f"<urn:x:r> {EARLIER} ; {CARDINALITY} ; {CURATED} .", "with dct:isReplacedBy"),

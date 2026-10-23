@@ -771,7 +771,7 @@ cascade:ReferenceSeriesShape a sh:NodeShape ;
         sh:severity sh:Violation
     ], [
         sh:path cascade:tableKind ;
-        sh:in ( cascade:VaccineGroups cascade:CodeNames cascade:RetiredCodes cascade:SubstanceIngredients cascade:ProductIngredients cascade:BrandGenerics cascade:DrugProducts cascade:NdcDrugs cascade:CodeConversions cascade:VariantClassifications cascade:PanelMembers cascade:DrugClasses ) ;
+        sh:in ( cascade:VaccineGroups cascade:CodeNames cascade:RetiredCodes cascade:SubstanceIngredients cascade:ProductIngredients cascade:BrandGenerics cascade:DrugProducts cascade:CodeConversions cascade:VariantClassifications cascade:PanelMembers cascade:DrugClasses ) ;
         sh:maxCount 1 ;
         sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
         sh:severity sh:Violation
@@ -978,25 +978,6 @@ cascade:BrandGenericRowShape a sh:NodeShape ;
         sh:path owl:annotatedTarget ;
         sh:node cascade:RxNormCodeShape ;
         sh:message "A brand generic row maps to an RxNorm code."@en ;
-        sh:severity sh:Violation
-    ] .
-
-cascade:NdcDrugRowShape a sh:NodeShape ;
-    sh:node cascade:MappingRowShape ;
-    sh:property [
-        sh:path owl:annotatedSource ;
-        sh:node cascade:NdcCodeShape ;
-        sh:message "An NDC drug row maps an NDC of 11 digits."@en ;
-        sh:severity sh:Violation
-    ] , [
-        sh:path owl:annotatedProperty ;
-        sh:hasValue skos:broadMatch ;
-        sh:message "An NDC drug row puts its NDC under its drug with skos:broadMatch."@en ;
-        sh:severity sh:Violation
-    ] , [
-        sh:path owl:annotatedTarget ;
-        sh:node cascade:RxNormCodeShape ;
-        sh:message "An NDC drug row maps to an RxNorm code."@en ;
         sh:severity sh:Violation
     ] .
 

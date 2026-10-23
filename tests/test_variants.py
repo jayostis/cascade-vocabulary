@@ -181,7 +181,7 @@ def test_the_kinds_an_app_keeps_are_those_a_rule_list_names_and_those_marked_rea
     named = {kind for path in (ROOT / "runtime" / "rule-list").glob("*.ttl") if path.name != "references.ttl"
              for kind in parsed(path).objects(None, CASCADE.tableKind)}
     assert marked == {CASCADE.CodeNames, CASCADE.RetiredCodes, CASCADE.VariantClassifications, CASCADE.PanelMembers, CASCADE.DrugClasses}
-    assert declared - named - marked == {CASCADE.SubstanceIngredients, CASCADE.NdcDrugs}
+    assert declared - named - marked == {CASCADE.SubstanceIngredients}
 
 
 def joins_a_stem_to_a_literal_without_encoding(text, stems):

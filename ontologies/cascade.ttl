@@ -835,12 +835,6 @@ cascade:termType a owl:DatatypeProperty ;
     rdfs:comment "Of a code, its term type as its publisher writes it; for RxNorm, the TTY of RXNCONSO."@en ;
     rdfs:range xsd:string .
 
-cascade:NdcDrugs a cascade:TableKind ;
-    rdfs:label "NDC drugs"@en ;
-    rdfs:comment "An SSSOM mapping kind: an NDC and the RxNorm drug it is."@en ;
-    cascade:rowShape cascade:NdcDrugRowShape ;
-    cascade:foundBy owl:annotatedSource .
-
 cascade:CodeConversions a cascade:TableKind ;
     rdfs:label "code conversions"@en ;
     rdfs:comment "An SSSOM mapping kind: a retired code and each code in effect its publisher converts its data to, one dct:isReplacedBy row each, with its cardinality. The cardinality is counted along each conversion on the way, not over the table as SSSOM counts it: n:… when, at any step of the path from the retired code to the code in effect, the publisher gives the step's code anything but the step's own predecessor as a previous code, …:n when any code on the path before the end converts into more than one code, so a pure chain A to B to C is published as A to C as 1:1. A row of the earlier form, skos:exactMatch with no cardinality, is still read."@en ;
