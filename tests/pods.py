@@ -54,8 +54,13 @@ class Fixture:
             store.load_graphs(path, ADDRESS + path.name)
         added = derive(store, lens)
         files = write(store)
-        store.add(parsed(LAYOUT, ADDRESS), LAYOUT_GRAPH)
+        store.add(layout(), LAYOUT_GRAPH)
         return Build(store, added, files)
+
+
+@cache
+def layout():
+    return parsed(LAYOUT, ADDRESS)
 
 
 def derive(store, lens):
