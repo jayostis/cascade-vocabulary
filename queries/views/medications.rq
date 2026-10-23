@@ -48,7 +48,8 @@ WHERE {
         ?r cascade:inEntry ?entry ; cascade:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion ?v .
         ?v ?dateProperty [] . }
       GROUP BY ?entry ?dateProperty }
-    ?dateFrom pav:hasCurrentVersion ?dated .
+    ?dateFrom cascade:inEntry ?entry ; pav:hasCurrentVersion ?dated .
     ?dated ?dateProperty ?date .
+    FILTER (?dateProperty IN (cascade:medicationUseStartDate, cascade:prescriptionWrittenDate))
   }
 }
