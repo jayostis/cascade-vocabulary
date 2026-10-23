@@ -80,6 +80,15 @@ def test_every_subquery_comes_first_in_its_group(relative):
             assert not any(is_subquery(part) for part in parts[first_other:]), relative
 
 
+ENTRY_PLACEHOLDER = '"urn:cascade:entry:", SHA256(MIN(STR('
+
+
+@pytest.mark.parametrize("relative", every_query())
+def test_every_entry_placeholder_is_n13s_hash_of_the_least_member(relative):
+    text = contract.query(relative)
+    assert text.count('"urn:cascade:entry:"') == text.count(ENTRY_PLACEHOLDER), relative
+
+
 @pytest.mark.parametrize("relative", sorted(contract.named("views").values()))
 def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
     patterns = [t for node in nodes(prepared(contract.query(relative)).algebra["p"]) if node.name == "BGP"
