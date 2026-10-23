@@ -55,7 +55,7 @@ Feature: Opening a pod
 
       When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
       Then that step wrote these matcher judgments:
-        | justification             | members                                                                    | used                                                                                                                                                             |
+        | justification             | members                                                                   | used                                                                                                                                                           |
         | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 1, CDC CVX vaccine groups version 3, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
         | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 141 "Flublok"            | Matcher rules version 1, CDC CVX vaccine groups version 3, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 141 "Flublok"            |
       And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" has lapsed
@@ -66,14 +66,14 @@ Feature: Opening a pod
       Given Hana files the judgment "retract-fluad" on 2026-07-02 at 12:00
       When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
       Then the matcher's judgments holding immunization CVX 141 "Fluad" are:
-        | justification             | members                                                                    | at                  |
+        | justification             | members                                                                   | at                  |
         | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | 2026-07-02 at 09:05 |
       And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" has not lapsed
 
     Example: a rule list the pod names that M11 now refuses joins nothing, so the adopted rule list judges every pair
       When the pod is opened with the tables "app-new-rules" on 2026-07-03 at 09:00
       Then that step wrote these matcher judgments:
-        | justification             | members                                                                    | used                                                                                                                                                             |
+        | justification             | members                                                                   | used                                                                                                                                                           |
         | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | Matcher rules version 2, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"           |
         | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 2, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
 
@@ -89,7 +89,7 @@ Feature: Opening a pod
       And Hana enters "allergies" on 2026-07-04 at 09:00
       And the matcher runs on the records of that entry on 2026-07-04 at 09:05 (match-allergies)
       Then the matcher's judgments holding allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen", allergy RxNorm 151392 "Augmentin" and allergy RxNorm 723 "Amoxicillin" are:
-        | justification    | members                                                       | used                                                                                                                                                         |
+        | justification    | members                                                        | used                                                                                                                                                                     |
         | same mapped code | allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen" | Matcher rules version 2, NLM RxNorm Prescribable product ingredients version 1, version 1 of allergy RxNorm 153010 "Advil", version 1 of allergy RxNorm 5640 "Ibuprofen" |
 
     Example: adopting the rule list's version 2 judges the pairs its new R3 joins among records already matched
@@ -97,7 +97,7 @@ Feature: Opening a pod
       And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-allergies)
       When the pod is opened with the tables "app-rxnorm" on 2026-07-03 at 09:00
       Then the matcher's judgments holding allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen", allergy RxNorm 151392 "Augmentin" and allergy RxNorm 723 "Amoxicillin" are:
-        | justification    | members                                                       | at                  | used                                                                                                                                                         |
+        | justification    | members                                                        | at                  | used                                                                                                                                                                     |
         | same mapped code | allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen" | 2026-07-03 at 09:00 | Matcher rules version 2, NLM RxNorm Prescribable product ingredients version 1, version 1 of allergy RxNorm 153010 "Advil", version 1 of allergy RxNorm 5640 "Ibuprofen" |
       And that step wrote these reference descriptions:
         | reference                                             |
@@ -138,10 +138,10 @@ Feature: Opening a pod
       And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-episodes)
       When the pod is opened with the tables "app-periods" on 2026-07-03 at 09:00
       Then the matcher's judgments holding condition SNOMED 195662009 "Acute viral pharyngitis, 2017", condition SNOMED 195662009 "Acute viral pharyngitis, 2020", condition ICD-10-CM J18.9 "Pneumonia, first report", condition ICD-10-CM J18.9 "Pneumonia, second report", condition ICD-10-CM E11.9 "Type 2 diabetes, clinic" and condition ICD-10-CM E11.9 "Type 2 diabetes, hospital" are:
-        | justification        | members                                                                                                                 | at                  | used                                                                                                                                                                         |
-        | same code            | condition SNOMED 195662009 "Acute viral pharyngitis, 2017", condition SNOMED 195662009 "Acute viral pharyngitis, 2020" | 2026-07-02 at 10:05 | Matcher rules version 1, version 1 of condition SNOMED 195662009 "Acute viral pharyngitis, 2017", version 1 of condition SNOMED 195662009 "Acute viral pharyngitis, 2020"    |
-        | same code and period | condition ICD-10-CM J18.9 "Pneumonia, first report", condition ICD-10-CM J18.9 "Pneumonia, second report"               | 2026-07-03 at 09:00 | Matcher rules version 4, version 1 of condition ICD-10-CM J18.9 "Pneumonia, first report", version 1 of condition ICD-10-CM J18.9 "Pneumonia, second report"               |
-        | same code and period | condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"              | 2026-07-03 at 09:00 | Matcher rules version 4, version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"              |
+        | justification        | members                                                                                                                | at                  | used                                                                                                                                                                      |
+        | same code            | condition SNOMED 195662009 "Acute viral pharyngitis, 2017", condition SNOMED 195662009 "Acute viral pharyngitis, 2020" | 2026-07-02 at 10:05 | Matcher rules version 1, version 1 of condition SNOMED 195662009 "Acute viral pharyngitis, 2017", version 1 of condition SNOMED 195662009 "Acute viral pharyngitis, 2020" |
+        | same code and period | condition ICD-10-CM J18.9 "Pneumonia, first report", condition ICD-10-CM J18.9 "Pneumonia, second report"              | 2026-07-03 at 09:00 | Matcher rules version 4, version 1 of condition ICD-10-CM J18.9 "Pneumonia, first report", version 1 of condition ICD-10-CM J18.9 "Pneumonia, second report"              |
+        | same code and period | condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"             | 2026-07-03 at 09:00 | Matcher rules version 4, version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"             |
       And the matcher's same code of condition SNOMED 195662009 "Acute viral pharyngitis, 2017" and condition SNOMED 195662009 "Acute viral pharyngitis, 2020" has lapsed
       And that step wrote these reference descriptions:
         | reference               |
@@ -206,21 +206,21 @@ Feature: Opening a pod
     Example: a pod made on the vector tables, opened with an app's, is judged by the app's tables and writes nothing of the vector tables
       When the pod is opened with the tables "app" on 2026-07-03 at 09:00
       Then that step wrote these matcher judgments:
-        | justification             | members                                                                    | used                                                                                                                                                             |
+        | justification             | members                                                                   | used                                                                                                                                                           |
         | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | Matcher rules version 1, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"           |
         | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 1, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
       And that step wrote these reference descriptions:
-        | reference                       |
-        | Matcher rules                   |
-        | Matcher rules version 1         |
-        | CDC CVX vaccine groups          |
+        | reference                        |
+        | Matcher rules                    |
+        | Matcher rules version 1          |
+        | CDC CVX vaccine groups           |
         | CDC CVX vaccine groups version 1 |
 
     Example: the app's tables do not judge a pair of which a person retracted the vector tables' Same
       Given Hana files the judgment "retract-fluarix" on 2026-07-02 at 12:00
       When the pod is opened with the tables "app" on 2026-07-03 at 09:00
       Then that step wrote these matcher judgments:
-        | justification             | members                                                                    | used                                                                                                                                                             |
+        | justification             | members                                                                   | used                                                                                                                                                           |
         | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | Matcher rules version 1, CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
 
     Example: the vector tables' Same still counts beside the app's
@@ -270,7 +270,7 @@ Feature: Opening a pod
         }
         """
       Then it answers:
-        | version                          | group                          |
+        | version                          | group                                         |
         | CDC CVX vaccine groups version 1 | <https://ns.cascadeprotocol.org/codes/cvx/88> |
 
     Example: before the open, the story's references/ answer instead
@@ -284,7 +284,7 @@ Feature: Opening a pod
         }
         """
       Then it answers:
-        | version                           | group                          |
+        | version                           | group                                         |
         | CVX vaccine group table version 1 | <https://ns.cascadeprotocol.org/codes/cvx/88> |
 
     Example: after an open with tables that lack a series, its rows answer nothing

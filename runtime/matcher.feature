@@ -83,72 +83,70 @@ Feature: The matcher's procedure
     For each row of the current rule list, the matcher runs the query the row names, over the pod, its derived state
     under the everyday lens, and, for a row naming a table kind (cascade:tableKind), the rows of the current version of
     every series of that kind (M13). A row (record, other) of its answer, with the version whose rows joined it as
-    ?origin when the rule reads a table, is a match when the record's kind is one the row applies to.
+    ?origin when the rule reads a table, is a match when the record's class is one the row applies to (cascade:appliesToClass).
 
     A query reads a table's rows only inside GRAPH ?origin, guarded by ?origin prov:specializationOf/cascade:tableKind
     and its kind. A record's code joins a row by the code's IRI, one form per code system (cascade:CodeSystem in
-    records.ttl): a code written as a literal, as cascade:vaccineCode "141", is its system's void:uriSpace followed
-    by the literal percent-encoded as SPARQL's ENCODE_FOR_URI does (every character but A-Z a-z 0-9 - _ . ~ as % and
-    two upper-case hexadecimal digits of its UTF-8), <https://ns.cascadeprotocol.org/codes/cvx/141>; and an HGVS expression, which
-    holds reserved characters, as cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" is
-    <https://ns.cascadeprotocol.org/codes/hgvs/NM_000249.4%3Ac.2042C%3ET>. The comparison same-mapped-code-and-date.rq, whose bytes
-    every rule list version from 1 to 8 pins, and its successor same-vaccine-group-and-date.rq, whose bytes version 9
-    pins, join the unencoded literal, and they read CVX rows only, whose codes are digits, which the encoding leaves as
-    they are. The rationale is decisions/code-iris.md.
+    cascade.ttl): a code held as an IRI, as a vaccine code is, <https://ns.cascadeprotocol.org/codes/cvx/141>, joins as
+    it is; a code written as a literal is its system's void:uriSpace followed by the literal percent-encoded as SPARQL's
+    ENCODE_FOR_URI does (every character but A-Z a-z 0-9 - _ . ~ as % and two upper-case hexadecimal digits of its
+    UTF-8), as an HGVS expression, which holds reserved characters, cascade:hgvsCodingDnaExpression
+    "NM_000249.4:c.2042C>T", is <https://ns.cascadeprotocol.org/codes/hgvs/NM_000249.4%3Ac.2042C%3ET>. Every query that
+    joins a literal to a stem encodes it. The rationale is decisions/code-iris.md.
 
-    - R1, cascade:SameCode: queries/matcher/same-code.rq.
-    - R2, cascade:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
-    - R3, cascade:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
+    - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code.rq.
+    - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
+    - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
       cascade:SubstanceIngredients, a kind only the stories fill; in the vocabulary's list from its version 2,
       queries/matcher/same-ingredient.rq, with cascade:ProductIngredients, for allergies only. A justification is
       one row of a list's version, so a judgment still says which query ran.
-    - R4, cascade:SameMappedCodeAndDate: queries/matcher/same-mapped-code-and-date.rq, with cascade:VaccineGroups.
+    - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate: queries/matcher/same-mapped-code-and-date.rq, with cascade:VaccineGroups.
 
     Version 2 of the rule list adds two rows, whose examples are under M12:
 
-    - R5, cascade:SameMedicationCode: queries/matcher/same-medication-code.rq.
-    - R6, cascade:SameResult: queries/matcher/same-result.rq.
+    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode: queries/matcher/same-medication-code.rq.
+    - R6, cascade:SameResultRule, justified cascade:SameResult: queries/matcher/same-result.rq.
 
     Version 3 of the vocabulary's list adds one row, whose examples are under O1:
 
-    - R7, cascade:SameConvertedCode: queries/matcher/same-converted-code.rq, with cascade:CodeConversions, for
+    - R7, cascade:SameConvertedCodeRule, justified cascade:SameConvertedCode: queries/matcher/same-converted-code.rq, with cascade:CodeConversions, for
       conditions only. A record coded with a retired code is the same as one coded with the one code it converts to;
       a code split into several has no row, since one judgment holds a record and all it matched.
 
     Version 4 of the vocabulary's list adds one row, whose examples are under M14 and O1, and takes conditions out of R1:
 
-    - R8, cascade:SameCodeAndPeriod: queries/matcher/same-code-and-period.rq, for conditions only. Two conditions
+    - R8, cascade:SameCodeAndPeriodRule, justified cascade:SameCodeAndPeriod: queries/matcher/same-code-and-period.rq, for conditions only. Two conditions
       of one ICD-10-CM or SNOMED CT code are the same when their periods overlap.
 
     Version 5 of the vocabulary's list changes R7's query, whose example is under O1:
 
-    - R7, cascade:SameConvertedCode: queries/matcher/same-one-to-one-conversion.rq, with cascade:CodeConversions. A
+    - R7, cascade:SameConvertedCodeRule, justified cascade:SameConvertedCode: queries/matcher/same-one-to-one-conversion.rq, with cascade:CodeConversions. A
       retired code and its replacement are joined only by a dct:isReplacedBy row whose cardinality is 1:1. A split
       (1:n), a merge (n:1) and an n:n row join nothing, and neither does a row of the earlier form, skos:exactMatch
       with no cardinality, which same-converted-code.rq in versions 3 and 4 reads.
 
     Version 6 of the vocabulary's list changes R5's query and adds a row, whose examples are under M15:
 
-    - R5, cascade:SameMedicationCode: queries/matcher/same-drug-code.rq. Two medications are the same when they
+    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode: queries/matcher/same-drug-code.rq. Two medications are the same when they
       share an NDC code or the same chosen RxNorm code: the one their source selected (cascade:userSelectedCode), else their
       only one. It reads no table, and does not check that a shared RxNorm code is a product: that is carried from
       version 5 until jayostis/cascade-vocabulary#121.
-    - R10, cascade:SameBrandGeneric: queries/matcher/same-brand-generic.rq, with cascade:BrandGenerics, for
+    - R10, cascade:SameBrandGenericRule, justified cascade:SameBrandGeneric: queries/matcher/same-brand-generic.rq, with cascade:BrandGenerics, for
       medications only. A branded product and its generic, or two brands of one generic, when the records share no code.
 
     Version 7 of the vocabulary's list changes R5's query and adds a row, whose examples are under M16:
 
-    - R5, cascade:SameMedicationCode: queries/matcher/same-ndc-code.rq. Two medications that share an NDC code.
+    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode: queries/matcher/same-ndc-code.rq. Two medications that share an NDC code.
       It reads no table.
-    - R11, cascade:SameProductCode: queries/matcher/same-product-code.rq, with cascade:DrugProducts, for medications
+    - R11, cascade:SameProductCodeRule, justified cascade:SameProductCode: queries/matcher/same-product-code.rq, with cascade:DrugProducts, for medications
       only. Two medications that share an RxNorm code which the held version of a drug products table says names one
       product. A pair that shares an NDC is left to R5.
 
     Version 8 of the vocabulary's list adds two rows, whose examples are under M17:
 
-    - R12, cascade:SameVariation: queries/matcher/same-variation.rq, for variants only. Two variants whose
+    - R12, cascade:SameVariationRule, justified cascade:SameVariation: queries/matcher/same-variation.rq, for variants only. Two variants whose
       current versions carry one ClinVar VariationID.
-    - R13, cascade:SameVariationThroughTable: queries/matcher/same-variation-through-table.rq, with
+    - R13, cascade:SameVariationThroughTableRule, justified cascade:SameVariationThroughTable: queries/matcher/same-variation-through-table.rq, with
       cascade:VariantClassifications, for variants only. Two variants whose current versions find one row of one version
       of a variant classifications table.
 
@@ -158,10 +156,10 @@ Feature: The matcher's procedure
     skos:broadMatch, and a rule list's version names the bytes it pinned, so those files are not edited; version 9 pins
     two new ones, and no query of version 9 reads skos:broadMatch:
 
-    - R3, cascade:SameMappedCode: queries/matcher/same-active-ingredient.rq, with cascade:ProductIngredients, for
+    - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode: queries/matcher/same-active-ingredient.rq, with cascade:ProductIngredients, for
       allergies only. As same-ingredient.rq, reading obo:RO_0002248 rows; a row written with skos:broadMatch joins
       nothing.
-    - R4, cascade:SameMappedCodeAndDate: queries/matcher/same-vaccine-group-and-date.rq, with cascade:VaccineGroups.
+    - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate: queries/matcher/same-vaccine-group-and-date.rq, with cascade:VaccineGroups.
       As same-mapped-code-and-date.rq, reading obo:RO_0002350 rows; a row written with skos:broadMatch joins nothing.
 
     The tables that were read under skos:broadMatch are republished with the new relations.
@@ -275,8 +273,8 @@ Feature: The matcher's procedure
       When the matcher rechecks on 2026-05-05 at 09:00
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
         | justification    | members                                       | at                  | name                                          |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-02 at 09:05 | urn:uuid:cdb11dff-50da-83d3-9b1f-bd5d1d55951c |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-05 at 09:00 | urn:uuid:0350fbea-c18b-849b-b2dc-a8082b2ddb91 |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-02 at 09:05 | urn:uuid:3b6368e9-172b-805c-82f0-9af4caf0c606 |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | 2026-05-05 at 09:00 | urn:uuid:ddbed307-6dc5-8ac9-81db-09f43e7ccf59 |
 
     Example: a Same a person retracted is not rechecked
       Given Eve files the judgment "retract-b" on 2026-05-03 at 09:00
@@ -378,8 +376,8 @@ Feature: The matcher's procedure
       When the matcher runs on the records of that entry on 2026-04-04 at 09:05 (match-later)
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy SNOMED 91936005 are:
         | justification    | members                                                      | used                                                                                                                                                                  | name                                          |
-        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:304a776c-8a50-8a56-bdcf-a7b3d0ea70ac |
-        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:1f95363a-b4f6-8f10-99e7-847fb5031b44 |
+        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:f8afce22-9058-8bba-8108-515361f95e3e |
+        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | Cascade matcher rules version 1, SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:693b6573-6ed0-8d86-a50f-1906d6dab56c |
 
   Rule: M11. A rule list whose row names a query that does not hash to the row's cascade:queryHash refuses the run
     It writes nothing. So does a rule list with a row naming a file outside queries/matcher/, a row without
@@ -411,7 +409,7 @@ Feature: The matcher's procedure
 
     Example: two lab results of one code, one instant in two time zones and one value are the same result, and one at another time or of another value joins neither
       Then the matcher's judgments holding lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium in April" and lab result LOINC 2823-3 "Potassium repeat" are:
-        | justification | members                                                                        | used                                                                                                                                     |
+        | justification | members                                                                        | used                                                                                                                                      |
         | same result   | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium" | Cascade matcher rules version 2, version 1 of lab result LOINC 2823-3 "Potassium", version 1 of lab result LOINC 2823-3 "Serum potassium" |
 
   Rule: M13. A match comes from one table version's rows, and each version that joins a pair gives a judgment of its own
@@ -428,9 +426,9 @@ Feature: The matcher's procedure
       And Gus enters "flu-shots" on 2025-10-02 at 09:00
       When the matcher runs on the records of that entry on 2025-10-02 at 09:05
       Then the matcher's judgments holding immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" and immunization CVX 140 "Afluria" are:
-        | justification             | members                                                                                          | used                                                                                                                                                                                  |
-        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"                                  | Cascade matcher rules version 2, CVX vaccine group table version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"                         |
-        | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 150 "FluLaval" | Cascade matcher rules version 2, Clinic vaccine groups version 1, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 150 "FluLaval" |
+        | justification             | members                                                                                         | used                                                                                                                                                                                                     |
+        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"                                 | Cascade matcher rules version 2, CVX vaccine group table version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"                                            |
+        | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 150 "FluLaval"                                 | Cascade matcher rules version 2, Clinic vaccine groups version 1, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 150 "FluLaval"                                              |
         | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" | Cascade matcher rules version 2, Clinic vaccine groups version 1, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval" |
 
   Rule: M14. A condition is compared by its code and its period
@@ -452,12 +450,12 @@ Feature: The matcher's procedure
 
     Example: two conditions of one ICD-10-CM code whose periods overlap are the same by code and period, and one of a later episode joins neither
       Then the matcher's judgments holding condition ICD-10-CM J18.9 "Pneumonia, first report", condition ICD-10-CM J18.9 "Pneumonia, second report" and condition ICD-10-CM J18.9 "Pneumonia, 2024" are:
-        | justification        | members                                                                                                       | used                                                                                                                                                                                                                         |
+        | justification        | members                                                                                                   | used                                                                                                                                                         |
         | same code and period | condition ICD-10-CM J18.9 "Pneumonia, first report", condition ICD-10-CM J18.9 "Pneumonia, second report" | Matcher rules version 4, version 1 of condition ICD-10-CM J18.9 "Pneumonia, first report", version 1 of condition ICD-10-CM J18.9 "Pneumonia, second report" |
 
     Example: two conditions both active with no abatement are the same by code and period, whatever their onsets
       Then the matcher's judgments holding condition ICD-10-CM E11.9 "Type 2 diabetes, clinic" and condition ICD-10-CM E11.9 "Type 2 diabetes, hospital" are:
-        | justification        | members                                                                                       |
+        | justification        | members                                                                                                    |
         | same code and period | condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", condition ICD-10-CM E11.9 "Type 2 diabetes, hospital" |
 
     Example: two episodes of one SNOMED CT code that are each over, and apart, join nothing
@@ -489,17 +487,17 @@ Feature: The matcher's procedure
 
     Example: a brand and its generic are the same brand generic, and a fill coded by an NDC alone joins neither
       Then the matcher's judgments holding medication RxNorm 212549 "Norvasc 5 MG Oral Tablet", medication RxNorm 197361 "amlodipine 5 MG Oral Tablet" and medication NDC 00378520905 "Amlodipine 5 mg tablet, pharmacy" are:
-        | justification      | members                                                                                                      | used                                                                                                                                                                                       |
+        | justification      | members                                                                                                     | used                                                                                                                                                                                           |
         | same brand generic | medication RxNorm 212549 "Norvasc 5 MG Oral Tablet", medication RxNorm 197361 "amlodipine 5 MG Oral Tablet" | Matcher rules version 6, Brand generics table version 1, version 1 of medication RxNorm 212549 "Norvasc 5 MG Oral Tablet", version 1 of medication RxNorm 197361 "amlodipine 5 MG Oral Tablet" |
 
     Example: two records sharing their only RxNorm code are the same medication code although one selected its NDC
       Then the matcher's judgments holding medication RxNorm 861007 "metformin 500 MG Oral Tablet" and medication RxNorm 861007 "Metformin 500 mg, refill" are:
-        | justification        | members                                                                                                      | used                                                                                                                                                      |
+        | justification        | members                                                                                                      | used                                                                                                                                                            |
         | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, refill" | Matcher rules version 6, version 1 of medication RxNorm 861007 "metformin 500 MG Oral Tablet", version 1 of medication RxNorm 861007 "Metformin 500 mg, refill" |
 
     Example: two fills coded only by one NDC are the same medication code
       Then the matcher's judgments holding medication NDC 00093111310 "Lisinopril 10 mg, March" and medication NDC 00093111310 "Lisinopril 10 mg, April" are:
-        | justification        | members                                                                                                    | used                                                                                                                                                                 |
+        | justification        | members                                                                                                    | used                                                                                                                                                          |
         | same medication code | medication NDC 00093111310 "Lisinopril 10 mg, March", medication NDC 00093111310 "Lisinopril 10 mg, April" | Matcher rules version 6, version 1 of medication NDC 00093111310 "Lisinopril 10 mg, March", version 1 of medication NDC 00093111310 "Lisinopril 10 mg, April" |
 
   Rule: M16. Medications are joined by a shared NDC, or by a shared RxNorm code that the drug products table says names one product, and by no other code they share
@@ -523,7 +521,7 @@ Feature: The matcher's procedure
       And Gus enters "product-codes" on 2026-09-02 at 09:00
       When the matcher runs on the records of that entry on 2026-09-02 at 09:05
       Then the matcher's judgments holding medication RxNorm 861007 "metformin 500 MG Oral Tablet" and medication RxNorm 861007 "Metformin 500 mg, refill" are:
-        | justification     | members                                                                                                       | used                                                                                                                                                                                          |
+        | justification     | members                                                                                                      | used                                                                                                                                                                                           |
         | same product code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, refill" | Matcher rules version 7, Drug products table version 1, version 1 of medication RxNorm 861007 "metformin 500 MG Oral Tablet", version 1 of medication RxNorm 861007 "Metformin 500 mg, refill" |
 
     Example: two fills coded only by one NDC are the same medication code, with no table
@@ -532,7 +530,7 @@ Feature: The matcher's procedure
       And Gus enters "ndc-fills" on 2026-09-02 at 09:00
       When the matcher runs on the records of that entry on 2026-09-02 at 09:05
       Then the matcher's judgments holding medication NDC 00093111310 "Lisinopril 10 mg, March" and medication NDC 00093111310 "Lisinopril 10 mg, April" are:
-        | justification        | members                                                                                                    | used                                                                                                                                                                 |
+        | justification        | members                                                                                                    | used                                                                                                                                                          |
         | same medication code | medication NDC 00093111310 "Lisinopril 10 mg, March", medication NDC 00093111310 "Lisinopril 10 mg, April" | Matcher rules version 7, version 1 of medication NDC 00093111310 "Lisinopril 10 mg, March", version 1 of medication NDC 00093111310 "Lisinopril 10 mg, April" |
 
     Example: two records sharing an NDC and a product code are the same medication code and nothing else
@@ -541,7 +539,7 @@ Feature: The matcher's procedure
       And Gus enters "ndc-and-product-code" on 2026-09-02 at 09:00
       When the matcher runs on the records of that entry on 2026-09-02 at 09:05
       Then the matcher's judgments holding medication RxNorm 197361 "amlodipine 5 MG Oral Tablet" and medication RxNorm 197361 "Amlodipine 5 mg tablet, pharmacy" are:
-        | justification        | members                                                                                                             | used                                                                                                                                                                                                      |
+        | justification        | members                                                                                                             | used                                                                                                                                                                   |
         | same medication code | medication RxNorm 197361 "amlodipine 5 MG Oral Tablet", medication RxNorm 197361 "Amlodipine 5 mg tablet, pharmacy" | Matcher rules version 7, version 1 of medication RxNorm 197361 "amlodipine 5 MG Oral Tablet", version 1 of medication RxNorm 197361 "Amlodipine 5 mg tablet, pharmacy" |
 
     Example: two strengths of one dose form are no Same
@@ -579,8 +577,8 @@ Feature: The matcher's procedure
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       When the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
       Then that step wrote these matcher judgments:
-        | justification        | members                                                                                                    | used                                                                                                                                                                 |
-        | same medication code | medication NDC 00093111310 "Lisinopril 10 mg, March", medication NDC 00093111310 "Lisinopril 10 mg, April" | Matcher rules version 7, version 1 of medication NDC 00093111310 "Lisinopril 10 mg, March", version 1 of medication NDC 00093111310 "Lisinopril 10 mg, April" |
+        | justification        | members                                                                                                    | used                                                                                                                                                                                         |
+        | same medication code | medication NDC 00093111310 "Lisinopril 10 mg, March", medication NDC 00093111310 "Lisinopril 10 mg, April" | Matcher rules version 7, version 1 of medication NDC 00093111310 "Lisinopril 10 mg, March", version 1 of medication NDC 00093111310 "Lisinopril 10 mg, April"                                |
         | same product code    | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" | Matcher rules version 7, Drug products table version 1, version 1 of medication RxNorm 861007 "metformin 500 MG Oral Tablet", version 1 of medication RxNorm 861007 "Metformin 500 mg, list" |
       And the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" has lapsed
 
@@ -605,7 +603,7 @@ Feature: The matcher's procedure
       And Ivo enters "same-id" on 2026-10-02 at 09:00
       When the matcher runs on the records of that entry on 2026-10-02 at 09:05
       Then the matcher's judgments holding variant HGVS NM_000249.3:c.2042C>T, variant HGVS NM_000249.4:c.2042C>T and variant HGVS NM_000249.4:c.1990-8A>G are:
-        | justification  | members                                                                | used                                                                                                                                                                                     |
+        | justification  | members                                                                | used                                                                                                                      |
         | same variation | variant HGVS NM_000249.3:c.2042C>T, variant HGVS NM_000249.4:c.2042C>T | Matcher rules version 8, version 1 of variant HGVS NM_000249.3:c.2042C>T, version 1 of variant HGVS NM_000249.4:c.2042C>T |
 
     Example: two variants with no ID whose expressions are on one row are the same variation through the table, and one on no row joins neither
@@ -614,7 +612,7 @@ Feature: The matcher's procedure
       And Ivo enters "one-row" on 2026-10-02 at 09:00
       When the matcher runs on the records of that entry on 2026-10-02 at 09:05
       Then the matcher's judgments holding variant HGVS NM_000249.3:c.2042C>T, variant HGVS NM_000249.4:c.2042C>T and variant HGVS NM_000249.4:c.9999A>G are:
-        | justification                    | members                                                                | used                                                                                                                                                                                                                  |
+        | justification                    | members                                                                | used                                                                                                                                                                 |
         | same variation through the table | variant HGVS NM_000249.3:c.2042C>T, variant HGVS NM_000249.4:c.2042C>T | Matcher rules version 8, ClinVar variant classifications version 1, version 1 of variant HGVS NM_000249.3:c.2042C>T, version 1 of variant HGVS NM_000249.4:c.2042C>T |
 
     Example: a variant with an ID and one with only an expression on that variation's row are the same variation through the table
@@ -623,7 +621,7 @@ Feature: The matcher's procedure
       And Ivo enters "id-and-expression" on 2026-10-02 at 09:00
       When the matcher runs on the records of that entry on 2026-10-02 at 09:05
       Then the matcher's judgments holding variant ClinVar 90011 and variant HGVS NM_000249.3:c.2042C>T are:
-        | justification                    | members                                                    |
+        | justification                    | members                                                   |
         | same variation through the table | variant ClinVar 90011, variant HGVS NM_000249.3:c.2042C>T |
 
     Example: a variant whose ID is on no row finds nothing, though its expression is on a row

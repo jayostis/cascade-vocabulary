@@ -11,10 +11,10 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH, SKOS, XSD
 
-from contract import QUERIES, CASCADE, ROOT
+from contract import QUERIES, CASCADE, ROOT, file_stem
 from engines import parsed
-from naming import content, table_version_name
-from test_naming import record_name
+from naming import content, table_row_name, table_version_name
+
 
 PROV = Namespace("http://www.w3.org/ns/prov#")
 VOID = Namespace("http://rdfs.org/ns/void#")
@@ -81,7 +81,7 @@ def versions():
         for version, series in index.subject_objects(PROV.specializationOf):
             kind = index.value(series, CASCADE.tableKind)
             if kind is not None:
-                stem = str(version).removeprefix("urn:uuid:")
+                stem = file_stem(str(version))
                 yield folder, stem, kind, parsed(folder / f"{stem}.ttl")
 
 
@@ -91,7 +91,7 @@ def test_a_story_folder_leaves_the_vocabularys_rule_list_to_it_and_every_version
     for folder in sorted(set(FOLDERS) - {shared}):
         index = parsed(folder / "references.ttl")
         for version, series in index.subject_objects(PROV.specializationOf):
-            name = f"{str(version).removeprefix('urn:uuid:')}.ttl"
+            name = f"{file_stem(str(version))}.ttl"
             own = folder / name
             if own.is_file() and (shared / name).is_file() and own.read_bytes() == (shared / name).read_bytes():
                 repeated.append(own.relative_to(ROOT).as_posix())
@@ -151,7 +151,7 @@ def test_every_page_template_is_one_address_with_the_code_as_its_only_expression
 
 
 def name_inputs(rows, row):
-    """N11's inputs for a row: its source, property and target, and a panel member's sequence as written."""
+    """N11's inputs for a row: its source, property and target, and a panel member's sequence."""
     inputs = [str(rows.value(row, p)) for p in (OWL.annotatedSource, OWL.annotatedProperty, OWL.annotatedTarget)]
     sequence = rows.value(row, CASCADE.panelSequence)
     return inputs if sequence is None else [*inputs, str(sequence)]
@@ -162,7 +162,7 @@ def test_a_panel_member_listed_at_two_sequences_is_two_rows_with_two_names_and_a
     assert messages(CASCADE.PanelMembers, rows) == set()
     named = {}
     for row in rows.subjects(RDF.type, OWL.Axiom):
-        assert str(row) == record_name(name_inputs(rows, row))
+        assert str(row) == table_row_name(*name_inputs(rows, row))
         named.setdefault((rows.value(row, OWL.annotatedSource), rows.value(row, OWL.annotatedTarget)), set()).add(row)
     twice = {pair: names for pair, names in named.items() if len(names) == 2}
     assert [pair[1] for pair in twice] == [URIRef("http://loinc.org/rdf/30395-8")]
@@ -182,7 +182,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
         if (said := messages(kind, rows)) and not held_as_published:
             broken[f"{folder.relative_to(ROOT).as_posix()}/{stem}"] = said
         for row in rows.subjects(RDF.type, OWL.Axiom):
-            if str(row) != record_name(name_inputs(rows, row)):
+            if str(row) != table_row_name(*name_inputs(rows, row)):
                 misnamed.add(str(row))
     assert found == 48
     assert broken == {}

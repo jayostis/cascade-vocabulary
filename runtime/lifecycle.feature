@@ -44,9 +44,9 @@ Feature: Medication lifecycle
         }
         """
       Then it answers:
-        | medication         | lifecycle            | step |
-        | "status: ON-HOLD"  | cascade:MedicationPaused  | 3    |
-        | "status: d/c"      | cascade:MedicationStopped | 4    |
+        | medication        | lifecycle                 | step |
+        | "status: ON-HOLD" | cascade:MedicationPaused  | 3    |
+        | "status: d/c"     | cascade:MedicationStopped | 4    |
 
     Example: step 2, an absent or a blank status is unknown
       When the query is:
@@ -58,9 +58,9 @@ Feature: Medication lifecycle
         }
         """
       Then it answers:
-        | medication        | lifecycle             | step |
-        | "status: none"    | cascade:MedicationUnknown | 2    |
-        | "status: blank"   | cascade:MedicationUnknown | 2    |
+        | medication      | lifecycle                 | step |
+        | "status: none"  | cascade:MedicationUnknown | 2    |
+        | "status: blank" | cascade:MedicationUnknown | 2    |
 
     Example: step 3, a FHIR status code has its own class
       When the query is:
@@ -72,9 +72,9 @@ Feature: Medication lifecycle
         }
         """
       Then it answers:
-        | medication           | lifecycle             | step |
-        | "status: completed"  | cascade:MedicationStopped | 3    |
-        | "status: draft"      | cascade:MedicationUnknown | 3    |
+        | medication          | lifecycle                 | step |
+        | "status: completed" | cascade:MedicationStopped | 3    |
+        | "status: draft"     | cascade:MedicationUnknown | 3    |
 
     Example: step 4, a synonym has its code's class, as does a C-CDA status the ConceptMap maps
       When the query is:
@@ -86,11 +86,11 @@ Feature: Medication lifecycle
         }
         """
       Then it answers:
-        | medication              | lifecycle                      | step |
-        | "status: discontinued"  | cascade:MedicationStopped          | 4    |
-        | "status: aborted"       | cascade:MedicationStopped          | 4    |
-        | "status: nullified"     | cascade:MedicationEnteredInError   | 4    |
-        | "status: suspended"     | cascade:MedicationPaused           | 4    |
+        | medication             | lifecycle                        | step |
+        | "status: discontinued" | cascade:MedicationStopped        | 4    |
+        | "status: aborted"      | cascade:MedicationStopped        | 4    |
+        | "status: nullified"    | cascade:MedicationEnteredInError | 4    |
+        | "status: suspended"    | cascade:MedicationPaused         | 4    |
 
     Example: step 5, a fragment gives the most conservative class, so a medication no longer taken is stopped, however its words are run together
       When the query is:
@@ -102,10 +102,10 @@ Feature: Medication lifecycle
         }
         """
       Then it answers:
-        | medication                  | lifecycle             | step |
-        | "status: no longer taking"  | cascade:MedicationStopped | 5    |
-        | "status: NotActive"         | cascade:MedicationStopped | 5    |
-        | "status: currently taking"  | cascade:MedicationActive  | 5    |
+        | medication                 | lifecycle                 | step |
+        | "status: no longer taking" | cascade:MedicationStopped | 5    |
+        | "status: NotActive"        | cascade:MedicationStopped | 5    |
+        | "status: currently taking" | cascade:MedicationActive  | 5    |
 
     Example: step 6, text nothing matches is unknown and unmatched, as is a C-CDA status the ConceptMap leaves unmapped
       When the query is:
@@ -117,6 +117,6 @@ Feature: Medication lifecycle
         }
         """
       Then it answers:
-        | medication              | lifecycle             | step |
-        | "status: see pharmacy"  | cascade:MedicationUnknown | 6    |
-        | "status: new"           | cascade:MedicationUnknown | 6    |
+        | medication             | lifecycle                 | step |
+        | "status: see pharmacy" | cascade:MedicationUnknown | 6    |
+        | "status: new"          | cascade:MedicationUnknown | 6    |

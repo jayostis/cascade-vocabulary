@@ -43,12 +43,12 @@ and `scripted-input/people.ttl` gives each person's subject (`foaf:name`) and po
 | `downloads/<file>` | a file the person downloaded, as a patient portal hands it out |
 | `downloads/<pull>/` | a pull from a hospital's FHIR API, saved as two files: `bundle.json`, a FHIR R4 Bundle, and `pull.json`, a JSON object whose `fhirBase` is the hospital's FHIR base. The rest of `pull.json`, and what the import states with the Bundle, are the runtime's |
 | `bridge/<step>/<file stem>/graph.ttl`, `findings.ttl` | the Bridge's saved output for each document an import step converts, in a folder named as the step, because a conversion carries its import's start; `unaccepted.txt` instead for a document no adapter accepted |
-| `entries/<entry>.ttl` | an entry: its session `urn:cascade:this-entry` and its drafts `urn:cascade:output-N`, with their versions |
+| `entries/<entry>.ttl` | an entry: its session, the `urn:uuid:` the app minted for it once, and its drafts `urn:cascade:output-N`, with their versions |
 | `judgments/<judgment>.ttl` | one judgment a person makes, under the IRI it keeps |
 | `references/` | the matcher's reference tables, below |
 | `tables/<name>/` | the tables an open step gives the pod, laid out as `references/` |
 
-The runtime gives each import and each entry session a new random UUID on every run, and the entry's session the
+The runtime gives each import a new random UUID on every run, keeps each entry session's IRI, and gives the session the
 step's time. A step that is refused writes nothing, and the example goes on. The Bridge output saved for a rule's
 example is written by hand to set up that rule, and is not what a Bridge produces for the document; a kit's saved
 output is the Bridge's own. A document no adapter accepted is saved as `bridge/<step>/<file stem>/unaccepted.txt`,
@@ -66,8 +66,9 @@ saying why; a document an import must convert and has no saved output for is the
   its `owl:annotatedSource`, `owl:annotatedProperty`, `owl:annotatedTarget` and `sssom:mapping_justification` (a panel
   member row also holds its `cascade:panelSequence` and at most one `cascade:observationRequiredInPanel`). A
   version with no rows is a file with no triples.
-- **The rule list is not a table.** Each row is a `cascade:RuleListRow` giving its justification (`cascade:justifiedAs`), each
-  kind of record it applies to as `cascade:recordKind` words it (`cascade:appliesToClass`), its comparison query as a path under
+- **The rule list is not a table.** Each row is a `cascade:RuleListRow` giving the matcher rule it runs (`cascade:matcherRule`),
+  its justification (`cascade:justifiedAs`), each class of record it applies to (`cascade:appliesToClass`), its comparison
+  query as a path under
   `queries/` (`cascade:queryPath`), N5's name for that file's bytes (`cascade:queryHash`), and the kind of table the query
   reads, if any (`cascade:tableKind`). A matcher judgment uses the rule list's version, so the one row of that version whose
   `cascade:justifiedAs` is the judgment's `cascade:justification` says which query ran, by its bytes. A tables folder an `open` step
@@ -116,13 +117,14 @@ A record is named by what a person reads in it, never by its IRI, except where a
   draft of an entry has a name of its own, so no record is named by its position.
 - **`… from <source>`**, where two imported records share code and name: `from codeine-1` is the record whose
   `cascade:sourceRecordId` the export gave as `codeine-1`. A variant has no such term, so it is never named so.
-- **A handle** a kit's `expected/handles.json` gives, as `H1-ALG-PCN`: the record or profile it names by its server,
-  type and ID (`cascade:sourceUrl`), by its entry's file and the draft's position, or by its download's file. A FHIR record
-  or profile with no `id` and a `urn:uuid:` `fullUrl` is named by that `fullUrl` alone, `{"fullUrl": "urn:uuid:…"}`, the
-  input cascade-bridge-spec's `engine/sparql.md` (*Naming a record*) names it from. A C-CDA record is named by the
-  inputs cascade-bridge-spec's `engine/sparql.md` names it from: its `class`, its `identifier`, `root:extension` or the
-  root alone, `""` where it has none, and its `key`, a list of `field=value` strings, where its name takes the key's
-  fingerprint, or, with no identifier and no key, its `members`, a list of member strings.
+- **A handle** a kit's `expected/handles.json` gives, as `H1-ALG-PCN`: the record or profile it names by the inputs of
+  the rule that names it (`naming.feature`, N1 and N2): by its server, type and ID (`cascade:sourceUrl`); by its entry's
+  file and the draft's position; by its `document` and `selector`, the `rdf:value` of its selector, RFC 6901's fragment
+  form for a JSON document and the XPath for an XML one, for a FHIR record with no `id` or a `urn:uuid:` `fullUrl`, and
+  for a C-CDA entry whose id its document repeats with other content; a C-CDA record with an id by its `document`, whose
+  custodian and patient ids scope it, and its `identifier`, `root:extension` or the root alone; one with no id by its
+  `document`, its `class` and its `key`, a list of `field=value` strings whose fingerprint its name takes, or, with no
+  key, its `members`, a list of member strings.
 - **A person's name**, as `Alex`: the pod's subject.
 
 Each names exactly one thing in the pod, or the step fails.
@@ -332,9 +334,9 @@ record an entry made, are the inputs N2 names it from, joined by `, `: the pod's
 rule writes it, which the record's first revision must hold, and the draft's position, which reaches the pod only through
 the name.
 
-### `that step's import is named by a new random UUID`, `that step's entry session is named by a new random UUID`
+### `that step's import is named by a new random UUID`
 
-The step wrote one import, or one entry session, and its IRI is a version 4 `urn:uuid:`.
+The step wrote one import, and its IRI is a version 4 `urn:uuid:`.
 
 ### `it answers:`, `it answers nothing`
 

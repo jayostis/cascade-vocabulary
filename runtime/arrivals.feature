@@ -115,20 +115,21 @@ Feature: Arrivals
             GRAPH ?importFile { ?import prov:used ?document }
           } }
           GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
-          GRAPH ?file { ?revision cascade:revisionOf <urn:uuid:ce5ac62c-8a4a-8ee4-b7ac-c9f3172d9f82> ; ?predicate ?object }
-          BIND(IF(sameTerm(?object, ?import), <urn:cascade:step:first-export>, ?object) AS ?value)
+          GRAPH ?file { ?revision cascade:revisionOf <urn:uuid:beaefb13-def8-8f7f-882d-eff4a1ee11d9> ; ?predicate ?object }
+          BIND(IF(sameTerm(?object, ?import), <urn:cascade:step:first-export>,
+                  IF(STRSTARTS(STR(?object), CONCAT(STR(?revision), "#")), STRAFTER(STR(?object), STR(?revision)), ?object)) AS ?value)
         }
         """
       Then it answers:
         | predicate            | value                                |
-        | rdf:type             | cascade:Revision                         |
-        | cascade:revisionOf       | allergy "Peanut"                     |
-        | cascade:version          | version 1 of allergy "Peanut"        |
+        | rdf:type             | cascade:Revision                     |
+        | cascade:revisionOf   | allergy "Peanut"                     |
+        | cascade:version      | version 1 of allergy "Peanut"        |
         | prov:generatedAtTime | "2026-01-02T10:00:00Z"^^xsd:dateTime |
         | prov:wasGeneratedBy  | <urn:cascade:step:first-export>      |
         | pav:version          | "1"                                  |
         | pav:lastUpdateOn     | "2025-12-01T00:00:00Z"^^xsd:dateTime |
-        | bridge:selector      | ""                                   |
+        | oa:hasSelector       | "#selector"                          |
         | prov:wasDerivedFrom  | the document of allergy "Peanut"     |
 
   Rule: A10. A document is kept when it wrote a revision or the Bridge raised findings on it
@@ -221,12 +222,12 @@ Feature: Arrivals
         }
         """
       Then it answers:
-        | predicate                 | value                                  |
-        | rdf:type                  | prov:Activity                          |
-        | rdfs:label                | "C-CDA download"                       |
-        | prov:startedAtTime        | "2026-06-07T09:00:00Z"^^xsd:dateTime   |
-        | prov:qualifiedAssociation | "ccda"                                 |
-        | prov:used                 | the document "allergy-summary.xml"     |
+        | predicate                 | value                                |
+        | rdf:type                  | prov:Activity                        |
+        | rdfs:label                | "C-CDA download"                     |
+        | prov:startedAtTime        | "2026-06-07T09:00:00Z"^^xsd:dateTime |
+        | prov:qualifiedAssociation | "ccda"                               |
+        | prov:used                 | the document "allergy-summary.xml"   |
 
     Example: a pull's import uses its bundle.json as its one document, and its pull.json as none
       Given a new pod for Finn on 2026-06-01 at 09:00

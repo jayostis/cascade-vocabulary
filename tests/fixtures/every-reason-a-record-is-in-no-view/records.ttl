@@ -12,6 +12,30 @@
 :inErrorRevision a cascade:Revision ; cascade:revisionOf :inError ; cascade:version :inErrorVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+:immunizationInError a cascade:Vaccination .
+:immunizationInErrorVersion prov:specializationOf :immunizationInError ; cascade:patient :subject ; cascade:vaccineName "Influenza" ;
+    cascade:workflowStatus "entered-in-error" .
+:immunizationInErrorRevision a cascade:Revision ; cascade:revisionOf :immunizationInError ; cascade:version :immunizationInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:labResultInError a cascade:LaboratoryTestResult .
+:labResultInErrorVersion prov:specializationOf :labResultInError ; cascade:patient :subject ; cascade:testName "Potassium" ;
+    cascade:workflowStatus "entered-in-error" .
+:labResultInErrorRevision a cascade:Revision ; cascade:revisionOf :labResultInError ; cascade:version :labResultInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:procedureInError a cascade:MedicalProcedure .
+:procedureInErrorVersion prov:specializationOf :procedureInError ; cascade:patient :subject ; cascade:procedureName "Colonoscopy" ;
+    cascade:workflowStatus "entered-in-error" .
+:procedureInErrorRevision a cascade:Revision ; cascade:revisionOf :procedureInError ; cascade:version :procedureInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:medicationInError a cascade:PrescribedOrReportedMedication .
+:medicationInErrorVersion prov:specializationOf :medicationInError ; cascade:patient :subject ; cascade:drugName "lisinopril 10 MG Oral Tablet" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "entered-in-error" .
+:medicationInErrorRevision a cascade:Revision ; cascade:revisionOf :medicationInError ; cascade:version :medicationInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
 :refuted a cascade:AllergyOrIntolerance .
 :refutedVersion prov:specializationOf :refuted ; cascade:patient :subject ; cascade:allergen "Latex" ;
     cascade:verificationStatus "refuted" .

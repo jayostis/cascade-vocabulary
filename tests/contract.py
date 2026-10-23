@@ -1,6 +1,7 @@
 """The contract's files as the tests read them: its queries, the order the root crate runs the derivations in, and the
 files pod-layout.ttl says a query writes."""
 
+import base64
 import itertools
 import json
 from functools import cache
@@ -16,6 +17,14 @@ PROV = Namespace("http://www.w3.org/ns/prov#")
 CASCADE = Namespace("https://ns.cascadeprotocol.org/cascade#")
 SOLID = Namespace("http://www.w3.org/ns/solid/terms#")
 BASE = "https://pod.invalid/"
+
+
+def file_stem(name):
+    """N9: a file's name from the name of what it holds, a urn:uuid: name's UUID or an ni: name's hash in lower-case hex."""
+    if name.startswith("urn:uuid:"):
+        return name.removeprefix("urn:uuid:")
+    digest = name.removeprefix("ni:///sha-256;")
+    return base64.urlsafe_b64decode(digest + "=" * (-len(digest) % 4)).hex()
 
 
 def query(relative):

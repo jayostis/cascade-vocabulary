@@ -169,9 +169,9 @@ Feature: Priya Natarajan's pod
     Example: KHC-ALG-ASPIRIN gets a second version, and no other record a revision
       When the pod is read as it stood after "M4"
       Then the records have these revisions:
-        | record             | arrived                | version | allergy severity | after                  |
-        | KHC-ALG-ASPIRIN    | 2025-04-03 at 09:20:04 | 1       | mild             |                        |
-        | KHC-ALG-ASPIRIN    | 2025-05-05 at 17:45:04 | 2       | moderate         | 2025-04-03 at 09:20:04 |
+        | record          | arrived                | version | allergy severity | after                  |
+        | KHC-ALG-ASPIRIN | 2025-04-03 at 09:20:04 | 1       | mild             |                        |
+        | KHC-ALG-ASPIRIN | 2025-05-05 at 17:45:04 | 2       | moderate         | 2025-04-03 at 09:20:04 |
       And the records have these revisions:
         | record             | arrived                | version | after |
         | KHC-CON-HTN        | 2025-04-03 at 09:20:04 | 1       |       |
@@ -187,17 +187,23 @@ Feature: Priya Natarajan's pod
         | record      | arrived                | version | after |
         | FFC-IMM-FLU | 2025-05-20 at 18:50:04 | 1       |       |
 
-  Rule: P10. An entry whose id repeats in its document, downloaded twice, keeps its name
-    Fernhill writes one id for Claritin and fluticasone. Each is named from the id and a key of its fields; Claritin's
-    key is the same in both downloads.
+  Rule: P10. An entry whose id repeats in its document is named by its document and its place in it
+    decisions/naming.md, row "record from C-CDA": Fernhill writes one id for Claritin and fluticasone, so each is
+    named by its download and its place, and the adapter says the source broke its own definition. Claritin in the
+    second download, FFC-MED-CLARITIN-2, is a record of its own, and the matcher joins it to FFC-MED-CLARITIN by the same
+    medication code.
 
-    Example: Claritin is one record across the two Fernhill downloads
+    Example: the second download's Claritin is a record of its own, joined to the first
       Then the records have these revisions:
-        | record           | arrived                | version | after |
-        | FFC-MED-CLARITIN | 2025-05-20 at 18:50:04 | 1       |       |
+        | record             | arrived                | version | after |
+        | FFC-MED-CLARITIN   | 2025-05-20 at 18:50:04 | 1       |       |
+        | FFC-MED-CLARITIN-2 | 2025-08-12 at 19:05:04 | 1       |       |
+      And the matcher's judgments holding FFC-MED-CLARITIN-2 are:
+        | justification        | members                              |
+        | same medication code | FFC-MED-CLARITIN, FFC-MED-CLARITIN-2 |
 
   Rule: P11. A repeated id with its status changed is a new record, joined to the old one
-    In the second Fernhill download fluticasone's status is completed, so its key, and its name, change:
+    In the second Fernhill download fluticasone's status is completed, and, named by its download as P10 says,
     FFC-MED-FLUTICASONE-2 is a record of its own, and the matcher joins it to FFC-MED-FLUTICASONE-1.
 
     Example: the matcher joins the two fluticasone records by the same medication code
@@ -234,10 +240,11 @@ Feature: Priya Natarajan's pod
         }
         """
       Then it answers:
-        | drug                                               | start                    |
-        | "Claritin 10 MG Oral Tablet"                       |                          |
-        | "fluticasone propionate 50 MCG/ACTUAT Nasal Spray" | "2024-10-15"^^xsd:date   |
-        | "fluticasone propionate 50 MCG/ACTUAT Nasal Spray" | "2024-10-15"^^xsd:date   |
+        | drug                                               | start                  |
+        | "Claritin 10 MG Oral Tablet"                       |                        |
+        | "Claritin 10 MG Oral Tablet"                       |                        |
+        | "fluticasone propionate 50 MCG/ACTUAT Nasal Spray" | "2024-10-15"^^xsd:date |
+        | "fluticasone propionate 50 MCG/ACTUAT Nasal Spray" | "2024-10-15"^^xsd:date |
 
   Rule: P14. A section the adapter does not map is a finding
     Each C-CDA's vital signs and social history sections are findings the Bridge raises (ccda:sectionNotMapped in each
@@ -273,7 +280,8 @@ Feature: Priya Natarajan's pod
 
   Rule: P15. A person joins what the matcher does not
     Priya enters loratadine she takes, APP-MED-LORATADINE (RxNorm 311372); Fernhill lists its brand, FFC-MED-CLARITIN
-    (RxNorm 206805). The matcher finds no same code; her Same, J4, joins them.
+    (RxNorm 206805). The matcher finds no same code; her Same, J4, joins them, and the second download's Claritin joins
+    them by the matcher (P10).
 
     Example: the matcher does not join her loratadine
       When the pod is read as it stood after "M6"
@@ -281,8 +289,8 @@ Feature: Priya Natarajan's pod
 
     Example: J4 joins her loratadine and Fernhill's Claritin in one entry
       Then the medications view holds these entries:
-        | members                              |
-        | APP-MED-LORATADINE, FFC-MED-CLARITIN |
+        | members                                                  |
+        | APP-MED-LORATADINE, FFC-MED-CLARITIN, FFC-MED-CLARITIN-2 |
       And J4 counts
 
   Rule: P16. A file that is not well-formed is refused
@@ -307,8 +315,8 @@ Feature: Priya Natarajan's pod
 
     Example: the patient profile is one entry of the three profiles
       Then the patient-profile view holds these entries:
-        | members                    |
-        | KHF-PAT, KHC-PAT, FFC-PAT  |
+        | members                   |
+        | KHF-PAT, KHC-PAT, FFC-PAT |
 
   Rule: The tables an app holds name her potassium and class her lisinopril
     An app opens her pod with tables of its own (app-names-classes): the published LOINC names, RxNorm product
@@ -343,9 +351,9 @@ Feature: Priya Natarajan's pod
       When the pod is opened with the tables "app-names-classes" on 2025-08-13 at 09:00
       And the query "tables/medication-classes.rq" is asked
       Then it answers:
-        | entry                           | medication                     | class                                                    | relation                          | origin                                                              | through                                               | stated |
+        | entry                           | medication                     | class                                                    | relation                              | origin                                                               | through                                               | stated |
         | the entry of KHF-MED-LISINOPRIL | "lisinopril 10 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000175562> | cascade:establishedPharmacologicClass | VA MED-RT drug classes subset for Priya Natarajan version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/1546022" | false  |
-        | the entry of KHF-MED-LISINOPRIL | "lisinopril 10 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000181> | cascade:mechanismOfActionClass             | VA MED-RT drug classes subset for Priya Natarajan version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/1546022" | false  |
+        | the entry of KHF-MED-LISINOPRIL | "lisinopril 10 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000181> | cascade:mechanismOfActionClass        | VA MED-RT drug classes subset for Priya Natarajan version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/1546022" | false  |
       When the query is:
         """
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -397,7 +405,7 @@ Feature: Priya Natarajan's pod
       Then "app-precise" wrote 6 files
       When the query "tables/medication-classes-through-precise-ingredients.rq" is asked
       Then it answers:
-        | entry                                                         | medication                   | class                                                    | relation                          | origin                                                                         | through                                            | stated |
+        | entry                                                              | medication                   | class                                                    | relation                              | origin                                                                            | through                                            | stated |
         | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000175825> | cascade:establishedPharmacologicClass | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/4083" | false  |
-        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000100> | cascade:mechanismOfActionClass             | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/4083" | false  |
-        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <http://id.nlm.nih.gov/mesh/M0447348>                    | cascade:chemicalStructureClass             | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/4083" | false  |
+        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <https://ns.cascadeprotocol.org/codes/medrt/N0000000100> | cascade:mechanismOfActionClass        | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/4083" | false  |
+        | the entry of medication RxNorm 197658 "estradiol 1 MG Oral Tablet" | "estradiol 1 MG Oral Tablet" | <http://id.nlm.nih.gov/mesh/M0447348>                    | cascade:chemicalStructureClass        | VA MED-RT drug classes, subset for Priya Natarajan's estradiol version 2026-10-05 | "https://ns.cascadeprotocol.org/codes/rxnorm/4083" | false  |

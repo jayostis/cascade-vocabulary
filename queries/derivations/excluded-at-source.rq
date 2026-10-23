@@ -1,14 +1,20 @@
-# A record whose current version its source marks entered in error or refuted is left out of every view. The table is
-# the one place that lists those statuses, each with the reason it gives.
+# A record whose current version its source marks entered in error or refuted is left out of every view: by its
+# verification status, or, for an immunization, a lab result or a procedure, which state entered in error as their
+# status, by its workflow status. The table is the one place that lists those statuses, each with the reason it gives.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
 CONSTRUCT { ?record cascade:leftOutFor ?leftOut . ?leftOut cascade:leftOutReason ?reason }
 WHERE {
-  VALUES (?status ?reason) {
-    ("entered-in-error" cascade:EnteredInErrorAtSource)
-    ("refuted"          cascade:RefutedAtSource)
+  VALUES (?property ?status ?kind ?reason) {
+    (cascade:verificationStatus "entered-in-error" UNDEF          cascade:EnteredInErrorAtSource)
+    (cascade:verificationStatus "refuted"          UNDEF          cascade:RefutedAtSource)
+    (cascade:workflowStatus     "entered-in-error" "Immunization" cascade:EnteredInErrorAtSource)
+    (cascade:workflowStatus     "entered-in-error" "Lab result"   cascade:EnteredInErrorAtSource)
+    (cascade:workflowStatus     "entered-in-error" "Procedure"    cascade:EnteredInErrorAtSource)
   }
-  ?record pav:hasCurrentVersion/cascade:verificationStatus ?status .
+  ?record cascade:recordKind ?recordKind ; pav:hasCurrentVersion ?version .
+  ?version ?property ?status .
+  FILTER (!BOUND(?kind) || ?kind = ?recordKind)
   BIND (IRI(CONCAT("urn:cascade:left-out:", SHA256(CONCAT(STR(?record), " ", STR(?reason))))) AS ?leftOut)
 }

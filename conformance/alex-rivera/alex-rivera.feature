@@ -196,7 +196,7 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT (COUNT(DISTINCT ?herRecord) AS ?hers) (COUNT(DISTINCT ?otherRecord) AS ?notHers) WHERE {
-          VALUES ?profile { <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> <urn:uuid:d85089a6-8c4b-8108-b3cc-2cde9217f136> <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> }
+          VALUES ?profile { <urn:uuid:7883c5a4-6c61-837c-9bf7-dbe1b37d89ff> <urn:uuid:5056e058-324f-8c70-b69b-fb27a061cdc5> <urn:uuid:d461e692-842c-8a30-a8ba-940a908c8cab> }
           ?record pav:hasCurrentVersion/cascade:patient ?profile .
           BIND (IF(EXISTS { ?record cascade:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?record, ?none) AS ?herRecord)
           BIND (IF(EXISTS { ?record cascade:subject <urn:uuid:5d0c8f3e-2b71-4c9a-8e44-7a1f0b9c3d26> }, ?none, ?record) AS ?otherRecord)
@@ -289,7 +289,7 @@ Feature: Alex Rivera's pod
         }
         """
       Then it answers:
-        | justification             |
+        | justification                 |
         | cascade:SameCodeAndDate       |
         | cascade:SameMappedCodeAndDate |
 
@@ -306,7 +306,7 @@ Feature: Alex Rivera's pod
         }
         """
       Then it answers:
-        | justification       |
+        | justification           |
         | cascade:SameCodeAndDate |
 
     Example: under everyday the flu entry names the vaccine group table that joined it, and no rule list or record version
@@ -676,11 +676,11 @@ Feature: Alex Rivera's pod
     Example: E5 writes J3 to J7 as the scenario gives them, and the reference descriptions it was the first to use
       Then "E5" wrote these matcher judgments:
         | justification      | members                     | used                                                                                                                                        | name                                          |
-        | same code          | H1-ALG-SULFA, H2O-ALG-SULFA | Cascade matcher rules version 2026.1, version 1 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA                                                 | urn:uuid:6180bf81-2731-8f36-8568-3645a1478a14 |
-        | same mapped code   | H1-ALG-PCN, H2O-ALG-PCN     | Cascade matcher rules version 2026.1, SNOMED CT to RxNorm ingredient map version 2026-09, version 1 of H1-ALG-PCN, version 1 of H2O-ALG-PCN | urn:uuid:71807e41-f150-8c06-922e-27c781f5a19a |
-        | same code          | H1-CON-HTN, H2O-CON-HTN     | Cascade matcher rules version 2026.1, version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN                                                     | urn:uuid:7fe84c1b-02a5-8d85-8356-3943f2b5f5d9 |
-        | same code and date | H1-IMM-FLU25, H2O-IMM-FLU25 | Cascade matcher rules version 2026.1, version 1 of H1-IMM-FLU25, version 1 of H2O-IMM-FLU25                                                 | urn:uuid:3bce4ba5-7594-859e-97ef-44bb6e02fabe |
-        | same code          | H1-PROC-COLO, H2O-PROC-COLO | Cascade matcher rules version 2026.1, version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO                                                 | urn:uuid:79c361c4-8002-8270-8b0e-a8ed97c477d6 |
+        | same code          | H1-ALG-SULFA, H2O-ALG-SULFA | Cascade matcher rules version 2026.1, version 1 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA                                                 | urn:uuid:aec4ed5c-c7a1-8ae0-a7de-684463c1ab24 |
+        | same mapped code   | H1-ALG-PCN, H2O-ALG-PCN     | Cascade matcher rules version 2026.1, SNOMED CT to RxNorm ingredient map version 2026-09, version 1 of H1-ALG-PCN, version 1 of H2O-ALG-PCN | urn:uuid:3b33f472-46d5-853c-b954-d311d83e1a49 |
+        | same code          | H1-CON-HTN, H2O-CON-HTN     | Cascade matcher rules version 2026.1, version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN                                                     | urn:uuid:6ce7c4d2-5194-8f6c-b4b1-faa8f58ffb84 |
+        | same code and date | H1-IMM-FLU25, H2O-IMM-FLU25 | Cascade matcher rules version 2026.1, version 1 of H1-IMM-FLU25, version 1 of H2O-IMM-FLU25                                                 | urn:uuid:a36629aa-1d4d-850c-8859-eaac1991b167 |
+        | same code          | H1-PROC-COLO, H2O-PROC-COLO | Cascade matcher rules version 2026.1, version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO                                                 | urn:uuid:4b046f10-9b17-8c08-87b7-b70e14a38aa1 |
       And "E5" wrote these reference descriptions:
         | reference                                          |
         | Cascade matcher rules                              |
@@ -691,12 +691,12 @@ Feature: Alex Rivera's pod
     Example: E13 writes J13 to J18 as the scenario gives them, and the reference descriptions it was the first to use
       Then "E13" wrote these matcher judgments:
         | justification             | members                                    | used                                                                                                                                                             | name                                          |
-        | same code                 | H1-ALG-SULFA, H2O-ALG-SULFA, H2F-ALG-SULFA | Cascade matcher rules version 2026.1, version 2 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA, version 1 of H2F-ALG-SULFA                                          | urn:uuid:8a055107-e7f1-8093-b543-1c626271dc1a |
-        | same code                 | H2O-ALG-PCN, H2F-ALG-PCN                   | Cascade matcher rules version 2026.1, version 1 of H2O-ALG-PCN, version 1 of H2F-ALG-PCN                                                                         | urn:uuid:66c2c78a-17a4-8ed4-8f41-07d7befb1e00 |
-        | same code                 | H1-CON-HTN, H2O-CON-HTN, H2F-CON-HTN       | Cascade matcher rules version 2026.1, version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN, version 1 of H2F-CON-HTN                                                | urn:uuid:d03f4dc1-44c4-8cb2-b450-13c453f11008 |
-        | same code                 | H2O-CON-ASTHMA, H2F-CON-ASTHMA             | Cascade matcher rules version 2026.1, version 1 of H2O-CON-ASTHMA, version 1 of H2F-CON-ASTHMA                                                                   | urn:uuid:1c6d5d06-4b07-8d37-b9ae-e07f120b83cb |
-        | same mapped code and date | H1-IMM-FLU25, H2O-IMM-FLU25, H2F-IMM-FLU25 | Cascade matcher rules version 2026.1, CVX vaccine group table version 2026-08, version 1 of H1-IMM-FLU25, version 1 of H2O-IMM-FLU25, version 1 of H2F-IMM-FLU25 | urn:uuid:9d785db4-24fd-8a6c-a76d-cbaea82678d7 |
-        | same code                 | H1-PROC-COLO, H2O-PROC-COLO, H2F-PROC-COLO | Cascade matcher rules version 2026.1, version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO, version 1 of H2F-PROC-COLO                                          | urn:uuid:c024b6a4-fb62-8e18-882e-cb127acfcbf3 |
+        | same code                 | H1-ALG-SULFA, H2O-ALG-SULFA, H2F-ALG-SULFA | Cascade matcher rules version 2026.1, version 2 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA, version 1 of H2F-ALG-SULFA                                          | urn:uuid:f91bddcf-0ab3-88c5-967d-f7ef7f93f6a4 |
+        | same code                 | H2O-ALG-PCN, H2F-ALG-PCN                   | Cascade matcher rules version 2026.1, version 1 of H2O-ALG-PCN, version 1 of H2F-ALG-PCN                                                                         | urn:uuid:d195e391-af54-8616-bba6-57a1e13e8757 |
+        | same code                 | H1-CON-HTN, H2O-CON-HTN, H2F-CON-HTN       | Cascade matcher rules version 2026.1, version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN, version 1 of H2F-CON-HTN                                                | urn:uuid:3be4a0a3-340b-8558-8930-9c2b7e90e61c |
+        | same code                 | H2O-CON-ASTHMA, H2F-CON-ASTHMA             | Cascade matcher rules version 2026.1, version 1 of H2O-CON-ASTHMA, version 1 of H2F-CON-ASTHMA                                                                   | urn:uuid:fc729192-a90c-8f44-ac89-2125061f6534 |
+        | same mapped code and date | H1-IMM-FLU25, H2O-IMM-FLU25, H2F-IMM-FLU25 | Cascade matcher rules version 2026.1, CVX vaccine group table version 2026-08, version 1 of H1-IMM-FLU25, version 1 of H2O-IMM-FLU25, version 1 of H2F-IMM-FLU25 | urn:uuid:3499490e-e0c9-8020-9476-f308f1f05144 |
+        | same code                 | H1-PROC-COLO, H2O-PROC-COLO, H2F-PROC-COLO | Cascade matcher rules version 2026.1, version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO, version 1 of H2F-PROC-COLO                                          | urn:uuid:4e3ae1d6-5b10-8980-b9cf-0eae843957bf |
       And "E13" wrote these reference descriptions:
         | reference                               |
         | CVX vaccine group table                 |
