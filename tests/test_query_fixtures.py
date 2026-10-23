@@ -10,7 +10,7 @@ from manifests import entries, failure, lens_name
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
 LENSES = sorted(named("lenses"))
-JUDGMENT = "https://ns.cascadeprotocol.org/judgments/v1-draft#Judgment"
+JUDGMENT = "https://ns.cascadeprotocol.org/cascade#Judgment"
 ASKED = {**questions(), **{f"matcher/{name}": relative for name, relative in named("matcher").items()}}
 ORDERED = {(QUERIES / relative).resolve() for relative in ASKED.values() if "ORDER BY" in query(relative)}
 ENTRIES = [on_its_worker(fixture, entry, id=f"{fixture.name}-{entry.name}")
