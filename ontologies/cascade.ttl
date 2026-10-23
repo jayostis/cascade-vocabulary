@@ -1566,17 +1566,17 @@ cascade:RecordFromServerNamingRule a owl:NamedIndividual ;
 
 cascade:RecordFromDocumentNamingRule a owl:NamedIndividual ;
     rdfs:label "record from a document naming rule"@en ;
-    rdfs:comment "A record named by its document and its place in it: a record of a document with no known server, one whose id repeats in its document or that has none, one with a urn:uuid fullUrl, and any record no other rule names. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the document's ni:///sha-256; name (cascade:DocumentNamingRule); the rdf:value of the oa:hasSelector of the revision that brought it, the selector of its arrival."@en ;
+    rdfs:comment "A record named by its document and its place in it: a record of a document with no known server, one whose id repeats in its document or that has none, one with a urn:uuid fullUrl, every record of a C-CDA document that states no custodian id or not exactly one patient with an id, the patient's included, and any record no other rule names. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the document's ni:///sha-256; name (cascade:DocumentNamingRule); the rdf:value of the oa:hasSelector of the revision that brought it, the selector of its arrival."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.w3.org/TR/annotation-model/#selectors> .
 
 cascade:RecordFromCcdaNamingRule a owl:NamedIndividual ;
     rdfs:label "record from C-CDA naming rule"@en ;
-    rdfs:comment "A C-CDA statement with an id, or the patient with one, named inside its custodian's and its patient's scope. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the custodian id's root, its extension; the patient id's root, its extension; the entry id's root, its extension; an absent extension is the empty string. The patient is named with its own id as the patient scope and again as the entry id. Two entries of one document carrying one id with different content are named by cascade:RecordFromDocumentNamingRule instead."@en ;
+    rdfs:comment "A C-CDA statement with an id, or the patient with one, named inside its custodian's and its patient's scope. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the custodian id's root, its extension; the patient id's root, its extension; the entry id's root, its extension; an absent extension is the empty string. The patient is named with its own id as the patient scope and again as the entry id. Two entries of one document carrying one id with different content are named by cascade:RecordFromDocumentNamingRule instead. Used only in a document that states a custodian id and exactly one patient with an id."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
 cascade:RecordFromCcdaWithoutIdNamingRule a owl:NamedIndividual ;
     rdfs:label "record from C-CDA without an id naming rule"@en ;
-    rdfs:comment "A C-CDA statement with no id, named inside its custodian's and its patient's scope. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the custodian id's root, its extension; the patient id's root, its extension; the IRI of the class the entry's record is; its key fingerprint; its members fingerprint when it has no key fingerprint; the empty string for each it lacks."@en ;
+    rdfs:comment "A C-CDA statement with no id, named inside its custodian's and its patient's scope. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the custodian id's root, its extension; the patient id's root, its extension; the IRI of the class the entry's record is; its key fingerprint; its members fingerprint when it has no key fingerprint; the empty string for each it lacks. Used only in a document that states a custodian id and exactly one patient with an id, and never for the patient."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
 cascade:ContainedRecordNamingRule a owl:NamedIndividual ;
