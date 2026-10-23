@@ -30,6 +30,18 @@
 :procedureInErrorRevision a cascade:Revision ; cascade:revisionOf :procedureInError ; cascade:version :procedureInErrorVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+:variantInError a cascade:GeneticVariantFinding .
+:variantInErrorVersion prov:specializationOf :variantInError ; cascade:patient :subject ;
+    cascade:hgvsCodingDnaExpression "NM_000492.4:c.1521_1523del" ; cascade:workflowStatus "entered-in-error" .
+:variantInErrorRevision a cascade:Revision ; cascade:revisionOf :variantInError ; cascade:version :variantInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:interpretationInError a cascade:VariantInterpretation .
+:interpretationInErrorVersion prov:specializationOf :interpretationInError ; cascade:patient :subject ;
+    cascade:interpretedDate "2025-05-01"^^xsd:date ; cascade:workflowStatus "entered-in-error" .
+:interpretationInErrorRevision a cascade:Revision ; cascade:revisionOf :interpretationInError ;
+    cascade:version :interpretationInErrorVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
 :medicationInError a cascade:PrescribedOrReportedMedication .
 :medicationInErrorVersion prov:specializationOf :medicationInError ; cascade:patient :subject ; cascade:drugName "lisinopril 10 MG Oral Tablet" ; cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "entered-in-error" .
