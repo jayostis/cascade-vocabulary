@@ -48,8 +48,8 @@ NESTED = {
 }
 
 
-def nested_forms(text):
-    everything = list(nodes(parseQuery(text)))
+def nested_forms(tree):
+    everything = list(nodes(tree))
     wheres = {id(n["where"]) for n in everything if n.name in QUERY_FORMS and n.get("where") is not None}
     branches = {id(branch) for n in everything if id(n) in wheres for part in n.get("part") or []
                 if part.name == "GroupOrUnionGraphPattern" for branch in part["graph"]}
@@ -90,26 +90,26 @@ def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
 
 @pytest.mark.parametrize("relative", every_query())
 def test_every_query_is_one_flat_pattern(relative):
-    assert nested_forms(contract.query(relative)) == []
+    assert nested_forms(parsed(relative)) == []
 
 
 @pytest.mark.parametrize("form", sorted(NESTED))
 def test_the_flat_pattern_check_refuses_each_nested_form(form):
-    assert nested_forms(NESTED[form]) == [form]
+    assert nested_forms(parseQuery(NESTED[form])) == [form]
 
 
 def test_the_flat_pattern_check_accepts_a_union_whose_branches_are_each_complete():
-    assert nested_forms("""SELECT * WHERE {
+    assert nested_forms(parseQuery("""SELECT * WHERE {
       { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d } OPTIONAL { ?a ?e ?f } }
       UNION { { SELECT ?a WHERE { ?a ?b ?c } } ?a ?d ?c }
-    }""") == []
+    }""")) == []
 
 
 def test_the_flat_pattern_check_accepts_a_graph_around_a_whole_pattern():
-    assert nested_forms("""SELECT * WHERE {
+    assert nested_forms(parseQuery("""SELECT * WHERE {
       { GRAPH ?g { ?a ?b ?c OPTIONAL { ?a ?e ?f } } ?g ?h ?i }
       UNION { VALUES ?a { <urn:x:a> } GRAPH ?g { ?a ?d ?c } }
-    }""") == []
+    }""")) == []
 
 
 def iris(tree):
