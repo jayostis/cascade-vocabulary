@@ -665,6 +665,39 @@ cascade:SourceUrlShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+cascade:ServerRecordNameShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:sourceUrl ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A record's name is the one cascade:RecordFromServerNamingRule gives its source address: expected {?expected}."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this ?expected WHERE {
+  $this <https://ns.cascadeprotocol.org/cascade#sourceUrl> ?url .
+  FILTER (ISIRI(?url))
+  BIND (STR(?url) AS ?address)
+  BIND ("^([Hh][Tt][Tt][Pp][Ss]?)://([A-Za-z0-9.-]+)(:[1-9][0-9]{0,4})?((/[^/?#%]+)*)/([A-Z][A-Za-z]*)/([A-Za-z0-9.-]{1,64})$" AS ?read)
+  FILTER (REGEX(?address, ?read))
+  BIND (REPLACE(?address, ?read, "$3") AS ?port)
+  FILTER (!REGEX(REPLACE(?address, ?read, "$4"), "(^|/)[.][.]?(/|$)") && !REGEX(REPLACE(?address, ?read, "$7"), "^[.]+$"))
+  FILTER (?port = "" || <http://www.w3.org/2001/XMLSchema#integer>(SUBSTR(?port, 2)) <= 65535)
+  BIND (LCASE(REPLACE(?address, ?read, "$1")) AS ?scheme)
+  BIND (CONCAT(?scheme, "://", LCASE(REPLACE(?address, ?read, "$2")),
+               IF(?port = "" || (?scheme = "http" && ?port = ":80") || (?scheme = "https" && ?port = ":443"), "", ?port),
+               REPLACE(?address, ?read, "$4")) AS ?input1)
+  BIND (REPLACE(?address, ?read, "$6") AS ?input2)
+  BIND (REPLACE(?address, ?read, "$7") AS ?input3)
+  BIND (SHA256(CONCAT("90c60849-c5ef-4ca6-bfb8-8662bd07d2b5|https://ns.cascadeprotocol.org/cascade#RecordFromServerNamingRule",
+                       "|", REPLACE(REPLACE(?input1, "%", "%25"), "\\\\|", "%7C"),
+                       "|", REPLACE(REPLACE(?input2, "%", "%25"), "\\\\|", "%7C"),
+                       "|", REPLACE(REPLACE(?input3, "%", "%25"), "\\\\|", "%7C"))) AS ?hash)
+  BIND (REPLACE(REPLACE(REPLACE(REPLACE(SUBSTR(?hash, 17, 1), "[048c]", "8"), "[159d]", "9"), "[26ae]", "a"), "[37bf]", "b")
+        AS ?variant)
+  BIND (IRI(CONCAT("urn:uuid:", SUBSTR(?hash, 1, 8), "-", SUBSTR(?hash, 9, 4), "-8", SUBSTR(?hash, 14, 3), "-", ?variant,
+                   SUBSTR(?hash, 18, 3), "-", SUBSTR(?hash, 21, 12))) AS ?name)
+  BIND (?name AS ?expected)
+  FILTER ($this != ?expected)
+}""" ] .
+
 cascade:AnsweredAsOfShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:answeredAsOf ;
     sh:property [
