@@ -679,6 +679,7 @@ cascade:ServerRecordNameShape a sh:NodeShape ;
   FILTER (REGEX(?address, ?read))
   BIND (REPLACE(?address, ?read, "$3") AS ?port)
   FILTER (!REGEX(REPLACE(?address, ?read, "$4"), "(^|/)[.][.]?(/|$)") && !REGEX(REPLACE(?address, ?read, "$7"), "^[.]+$"))
+  FILTER (!CONTAINS(?address, "\u007F"))
   FILTER (?port = "" || <http://www.w3.org/2001/XMLSchema#integer>(SUBSTR(?port, 2)) <= 65535)
   BIND (LCASE(REPLACE(?address, ?read, "$1")) AS ?scheme)
   BIND (CONCAT(?scheme, "://", LCASE(REPLACE(?address, ?read, "$2")),
