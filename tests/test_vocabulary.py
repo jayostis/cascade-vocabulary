@@ -113,6 +113,22 @@ def test_every_package_class_a_term_names_is_declared_here():
     assert undeclared == set()
 
 
+def test_a_property_a_shape_holds_to_iris_is_an_object_property_and_one_held_to_literals_a_datatype_property():
+    vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
+    wrong = set()
+    for shape, predicate in shapes.subject_objects(SH.path):
+        if not isinstance(predicate, URIRef):
+            continue
+        node = shapes.value(shape, SH.node)
+        kind = shapes.value(shape, SH.nodeKind) or (node is not None and shapes.value(node, SH.nodeKind))
+        if kind == SH.IRI and (predicate, RDF.type, OWL.DatatypeProperty) in vocabulary:
+            wrong.add((str(predicate), "IRI"))
+        if (kind == SH.Literal or shapes.value(shape, SH.datatype) is not None) and (
+                predicate, RDF.type, OWL.ObjectProperty) in vocabulary:
+            wrong.add((str(predicate), "literal"))
+    assert sorted(wrong) == []
+
+
 def test_every_datatype_a_shape_accepts_is_in_its_predicates_range():
     vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
     outside = set()
