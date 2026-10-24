@@ -286,8 +286,8 @@ No matcher judgment has any of those records as a member.
 
 The claims the step asserted, writing an assertion of each, are exactly these, each as the step before says, whether or
 not the step wrote the claim itself (M9). Every claim the step wrote it asserted, and holds only what N6 names it from;
-every other subject in the files the step wrote is an assertion of one of these, the matcher, described as above, or a
-reference series or version.
+every other subject in the files the step wrote is an assertion of one of these, the matcher, described as above, a
+reference series or version, or, in the run's own file, the run, its snapshot or the runtime (N7, N14).
 
 ### `{step} wrote these reference descriptions:`
 
