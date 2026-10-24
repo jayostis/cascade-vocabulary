@@ -44,11 +44,16 @@ WHERE {
         ?asserted prov:specializationOf ?ruleList .
         ?ruleList pav:hasCurrentVersion ?by .
         FILTER (?by != ?asserted)
-        FILTER NOT EXISTS {
-          ?judgment cascade:matcherRule ?rule .
-          ?anyAssertion cascade:assertedClaim ?judgment ; cascade:assertedUnderRuleListVersion ?anyVersion .
-          ?anyRow cascade:rowOfRuleListVersion ?anyVersion ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
-          ?currentRow cascade:rowOfRuleListVersion ?by ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
+        MINUS {
+          SELECT DISTINCT ?judgment ?by
+          WHERE {
+            { SELECT DISTINCT ?by ?rule ?hash
+              WHERE { ?pinning pav:hasCurrentVersion ?by .
+                      ?currentRow cascade:rowOfRuleListVersion ?by ; cascade:matcherRule ?rule ; cascade:queryHash ?hash } }
+            ?anyRow cascade:matcherRule ?rule ; cascade:queryHash ?hash ; cascade:rowOfRuleListVersion ?anyVersion .
+            ?anyAssertion cascade:assertedUnderRuleListVersion ?anyVersion ; cascade:assertedClaim ?judgment .
+            ?judgment cascade:matcherRule ?rule .
+          }
         }
       } }
     BIND ("its rule runs another query since" AS ?happened)

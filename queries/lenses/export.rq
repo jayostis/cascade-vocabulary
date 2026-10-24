@@ -17,7 +17,16 @@ WHERE {
     }
     FILTER NOT EXISTS { ?retracting npx:retracts ?j } }
   UNION
-  { ?j a cascade:Judgment ; prov:wasAttributedTo cascade:CascadeMatcher ; cascade:justification ?why .
+  { { SELECT DISTINCT ?j
+          WHERE {
+            { SELECT DISTINCT ?rule ?hash
+              WHERE { ?ruleList pav:hasCurrentVersion ?current .
+                      ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash } }
+            ?assertedRow cascade:matcherRule ?rule ; cascade:queryHash ?hash ; cascade:rowOfRuleListVersion ?asserted .
+            ?assertion cascade:assertedUnderRuleListVersion ?asserted ; cascade:assertedClaim ?j .
+            ?j cascade:matcherRule ?rule .
+          } }
+    ?j a cascade:Judgment ; prov:wasAttributedTo cascade:CascadeMatcher ; cascade:justification ?why .
     FILTER (?why IN (cascade:SameCode, cascade:SameCodeAndDate, cascade:SameCodeAndPeriod))
     FILTER NOT EXISTS {
       ?superseding npx:supersedes ?j
@@ -25,13 +34,6 @@ WHERE {
       FILTER (!BOUND(?undoing))
     }
     FILTER NOT EXISTS { ?retracting npx:retracts ?j }
-    FILTER EXISTS {
-      ?j cascade:matcherRule ?rule .
-      ?assertion cascade:assertedClaim ?j ; cascade:assertedUnderRuleListVersion ?asserted .
-      ?assertedRow cascade:rowOfRuleListVersion ?asserted ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
-      ?ruleList pav:hasCurrentVersion ?current .
-      ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
-    }
     FILTER NOT EXISTS {
       ?j prov:used ?input .
       ?input prov:specializationOf ?series .

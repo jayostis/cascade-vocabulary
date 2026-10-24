@@ -217,7 +217,8 @@ Feature: The matcher's procedure
   Rule: M5. It writes one claim per record per rule, and per table version, that matched anything, and asserts it under the rule list's version
     decisions/naming.md, rows "machine judgment" and "assertion". The claim's members are the record and, of each
     entry among the records that version's rows matched it with, or the rule matched it with when the rule reads no
-    table, the least of those, in code point order of their names: a star, so a record matched with every earlier copy
+    table, the least of those it is not judged different from, or the least of them all when it is judged different
+    from each, in code point order of their names: a star, so a record matched with every earlier copy
     of one fact names one of them, and the entries are those every pair of them would give (queries/derivations/
     same-pairs.rq). The entries are those the counting Sames make, as same-pairs.rq derives them, with the claims the
     run has filed before, and without any Same that holds the record or a record that arrived after it (M3), so a run
@@ -344,16 +345,17 @@ Feature: The matcher's procedure
 
   Rule: M7. A recheck re-runs the rule of each matcher Same that used a reference version the tables revise, or whose rule now runs another query, or whose star a Different has split
     Unless the Same was retracted, or superseded by a judgment not itself retracted: a retracted judgment supersedes
-    nothing. A Same's rule runs another query when the current rule list's row for it carries a cascade:queryHash that
-    no row for the rule carries in a version the Same is asserted under (M5). A Different has split a Same's star when
-    two of the records the Same's latest-arriving member matches by its rule are currently different: the rule is run
-    again for that record over the entries as they now are (M5), and the claim that gives is filed beside the Same,
-    which keeps counting, since every pair it joins its new claim joins too. It runs on the members that are still the subject's, under the current version of
-    the series whose version the Same used, and files their claim (M5, M9) if at least two still match: a new claim
-    when that version is new, and otherwise the claim's assertion under the current rule list alone. A version is
-    revised when a version of the tables revises it, whether or not the pod describes that one, so an open that writes
-    the descriptions last (W1) still rechecks. A Same whose rule now reads a table, and which used no version of
-    that table's kind, is not filed again. A Same whose rule the current rule list lacks is not filed again.
+    nothing. A Same's rule runs another query when the current rule list's row for it carries a cascade:queryHash
+    that no row for the rule carries in a version the Same is asserted under (M5). A Different has split a Same's
+    star when the Same's latest-arriving member matches by its rule a record it is not judged different from that
+    the entries keep apart from it: the rule is run again for that record over the entries as they now are (M5), and
+    the claim that gives is filed beside the Same, which keeps counting, since every pair it joins its new claim
+    joins too. It runs on the members that are still the subject's, under the current version of the series whose
+    version the Same used, and files their claim (M5, M9) if at least two still match: a new claim when that version
+    is new, and otherwise the claim's assertion under the current rule list alone. A version is revised when a
+    version of the tables revises it, whether or not the pod describes that one, so an open that writes the
+    descriptions last (W1) still rechecks. A Same whose rule now reads a table, and which used no version of that
+    table's kind, is not filed again. A Same whose rule the current rule list lacks is not filed again.
 
     Background:
       Given a new pod for Eve on 2026-05-01 at 09:00

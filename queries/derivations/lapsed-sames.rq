@@ -30,11 +30,13 @@ WHERE {
       FILTER (!BOUND(?undoing))
     }
     FILTER NOT EXISTS { ?retracting npx:retracts ?j }
-    FILTER NOT EXISTS {
-      ?j cascade:matcherRule ?rule .
-      ?assertion cascade:assertedClaim ?j ; cascade:assertedUnderRuleListVersion ?asserted .
-      ?assertedRow cascade:rowOfRuleListVersion ?asserted ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
-      ?ruleList pav:hasCurrentVersion ?current .
-      ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
-    } }
+    MINUS { SELECT DISTINCT ?j
+          WHERE {
+            { SELECT DISTINCT ?rule ?hash
+              WHERE { ?ruleList pav:hasCurrentVersion ?current .
+                      ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash } }
+            ?assertedRow cascade:matcherRule ?rule ; cascade:queryHash ?hash ; cascade:rowOfRuleListVersion ?asserted .
+            ?assertion cascade:assertedUnderRuleListVersion ?asserted ; cascade:assertedClaim ?j .
+            ?j cascade:matcherRule ?rule .
+          } } }
 }
