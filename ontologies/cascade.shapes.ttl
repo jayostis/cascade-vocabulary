@@ -761,10 +761,8 @@ cascade:ServerNameShape a sh:NodeShape ;
     sh:targetClass cascade:Server ;
     sh:property [
         sh:path cascade:serverBaseUrl ;
-        sh:datatype xsd:string ;
         sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:message "A server's record states one base URL, the string it is named by."@en
+        sh:message "A server's record states the base URL it is named by."@en
     ] ;
     sh:sparql [
         a sh:SPARQLConstraint ;
@@ -817,6 +815,16 @@ cascade:OrganizationShape a sh:NodeShape ;
         sh:path cascade:patient ;
         sh:maxCount 0 ;
         sh:message "An organization's record names no patient: it is never the subject's."@en
+    ] .
+
+cascade:ServerBaseUrlShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:serverBaseUrl ;
+    sh:property [
+        sh:path cascade:serverBaseUrl ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:message "A server's record or a document states at most one base URL, a string."@en ;
+        sh:severity sh:Violation
     ] .
 
 cascade:AnsweredAsOfShape a sh:NodeShape ;
@@ -1434,8 +1442,8 @@ cascade:JudgmentShape a sh:NodeShape ;
     ] , [
         sh:path cascade:justification ;
         sh:maxCount 1 ;
-        sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable ) ;
-        sh:message "A judgment gives at most one justification: cascade:SameCode, cascade:SameCodeAndDate, cascade:SameMappedCode, cascade:SameMappedCodeAndDate, cascade:SameMedicationCode, cascade:SameProductCode, cascade:SameResult, cascade:SameConvertedCode, cascade:SameCodeAndPeriod, cascade:SameBrandGeneric, cascade:SameVariation or cascade:SameVariationThroughTable."@en ;
+        sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost ) ;
+        sh:message "A judgment gives at most one justification: cascade:SameCode, cascade:SameCodeAndDate, cascade:SameMappedCode, cascade:SameMappedCodeAndDate, cascade:SameMedicationCode, cascade:SameProductCode, cascade:SameResult, cascade:SameConvertedCode, cascade:SameCodeAndPeriod, cascade:SameBrandGeneric, cascade:SameVariation, cascade:SameVariationThroughTable or cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost."@en ;
         sh:severity sh:Violation
     ] .
 
