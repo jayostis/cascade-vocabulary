@@ -224,6 +224,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MatcherRunShape ; sh:resultPath prov:wasInformedBy ] ] .
 
+<#sync/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <sync/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#sync/names-no-act> a sht:Validate ;
+  mf:action [ sht:dataGraph <sync/names-no-act.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:SyncFromAnotherWriterShape ; sh:resultPath prov:wasInformedBy ] ] .
+
 <#snapshot/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <snapshot/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
