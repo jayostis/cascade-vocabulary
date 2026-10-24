@@ -1,26 +1,32 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;lIlo7vZ7HaVSRVVEEA-qfoU8qCPgrxhqOnRdbekIf3g> cascade:onsetDate "2026-06-01"^^xsd:date ;
-	cascade:clinicalStatus "resolved" ;
-	cascade:verificationStatus "confirmed" ;
-	cascade:abatementDate "2026-11-10"^^xsd:date ;
+<ni:///sha-256;yMCvFRtbNrHXVxUBe8PkHOKeRJK-ohcpt6LF2NktcP8> cascade:abatementDate "2026-11-10"^^xsd:date ;
 	cascade:conditionName "Low back pain" ;
-	cascade:snomedCode <http://snomed.info/id/279039007> .
-_:a0f5e743c91e26341ffbd04509c19383 pav:lastUpdateOn "2026-11-10T16:00:00Z"^^xsd:dateTime ;
+	cascade:onsetDate "2026-06-01"^^xsd:date ;
+	cascade:clinicalStatus "resolved" ;
+	cascade:snomedCode <http://snomed.info/id/279039007> ;
+	cascade:verificationStatus "confirmed" .
+_:88caee4c706b69a6b4fd394efd922c1c pav:lastUpdateOn "2026-11-10T16:00:00Z"^^xsd:dateTime ;
 	pav:version "2" ;
-	bridge:arrivedAs <ni:///sha-256;lIlo7vZ7HaVSRVVEEA-qfoU8qCPgrxhqOnRdbekIf3g> .
-<ni:///sha-256;lIlo7vZ7HaVSRVVEEA-qfoU8qCPgrxhqOnRdbekIf3g> cascade:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
-	prov:specializationOf <urn:uuid:32577616-8317-8671-9b05-b50ac9714136> .
-<urn:uuid:32577616-8317-8671-9b05-b50ac9714136> cascade:sourceRecordId "cond-back-1" ;
+	bridge:arrivedAs <ni:///sha-256;yMCvFRtbNrHXVxUBe8PkHOKeRJK-ohcpt6LF2NktcP8> .
+<ni:///sha-256;yMCvFRtbNrHXVxUBe8PkHOKeRJK-ohcpt6LF2NktcP8> cascade:patient <urn:uuid:7883c5a4-6c61-837c-9bf7-dbe1b37d89ff> ;
+	prov:specializationOf <urn:uuid:fc149b2f-bf16-816b-8beb-04ccaff3eade> .
+<urn:uuid:fc149b2f-bf16-816b-8beb-04ccaff3eade> cascade:sourceRecordId "cond-back-1" ;
 	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-back-1> ;
 	a cascade:ProblemOrDiagnosis .
-_:a0f5e743c91e26341ffbd04509c19383 bridge:selector "" ;
+_:88caee4c706b69a6b4fd394efd922c1c oa:hasSelector _:6a37afd576eae2faf1aee67599cbc001 ;
+	oa:hasSource <ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> ;
 	prov:wasDerivedFrom <ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> ;
 	prov:wasGeneratedBy _:d46eea8a080857d6bd4458909e547b65 .
+_:6a37afd576eae2faf1aee67599cbc001 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:d46eea8a080857d6bd4458909e547b65 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .
 <ni:///sha-256;-Sl0Ft5faQ87tUuZmPjJd7fMXy1avivf2MnsY-GtPhk> prov:qualifiedAttribution _:346a062a4d222aad95962a06a5800e82 .

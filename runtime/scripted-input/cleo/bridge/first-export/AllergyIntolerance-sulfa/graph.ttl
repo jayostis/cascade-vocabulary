@@ -1,31 +1,52 @@
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
-@prefix pav: <http://purl.org/pav/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-
-<ni:///sha-256;Yfo53J7dei_n-DLpf8eGQt9DJFlNQG4Io46A-G9cqtc> a prov:Entity ;
-  pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/sulfa> ;
-  pav:retrievedOn "2026-03-02T10:00:00Z"^^xsd:dateTime ;
-  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Apple Health" ] ; prov:hadRole cascade:TransmitterRole ] ,
-    [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole cascade:AuthorRole ] ;
-  cascade:serverBaseUrl "https://fhir.example.org/r4" ;
-  cascade:sourceFormatVersion "4.0.1" .
-_:import a prov:Activity ; rdfs:label "Apple Health export" ;
-  prov:startedAtTime "2026-03-02T10:00:00Z"^^xsd:dateTime ;
-  prov:used <ni:///sha-256;Yfo53J7dei_n-DLpf8eGQt9DJFlNQG4Io46A-G9cqtc> ;
-  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "fhir-r4" ; pav:version "0.1.0" ] ;
-    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
-<urn:uuid:5a7d7c32-97a1-81d1-b676-24ab757808d2> a <https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance> ; cascade:sourceRecordId "sulfa" ; cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/sulfa> .
-<ni:///sha-256;7UF52nyQz5_3t_7QQn6dXsLuxB5n3HfJcDLlONA8eN4> prov:specializationOf <urn:uuid:5a7d7c32-97a1-81d1-b676-24ab757808d2> ;
-  <https://ns.cascadeprotocol.org/cascade#allergen> "Sulfamethoxazole" ;
-  <https://ns.cascadeprotocol.org/cascade#clinicalStatus> "active" ;
-  <https://ns.cascadeprotocol.org/cascade#allergenCode> <https://ns.cascadeprotocol.org/codes/rxnorm/10180> ;
-  cascade:patient <urn:uuid:eb313649-c6ff-8ffa-93e2-2898fe91b570> .
-_:arrival bridge:arrivedAs <ni:///sha-256;7UF52nyQz5_3t_7QQn6dXsLuxB5n3HfJcDLlONA8eN4> ; prov:wasGeneratedBy _:import ;
-  bridge:selector "" ; prov:wasDerivedFrom <ni:///sha-256;Yfo53J7dei_n-DLpf8eGQt9DJFlNQG4Io46A-G9cqtc> ;
-  pav:version "1" ;
-  pav:lastUpdateOn "2026-03-01T00:00:00Z"^^xsd:dateTime .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;nj6IrY-r5Fd8i0onPzOBBKySle8swtflY42GAs5SxGA> cascade:clinicalStatus "active" ;
+	cascade:allergen "Sulfamethoxazole" ;
+	cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/10180> .
+_:9d25868b236e2b473a151ad32283b8d5 pav:lastUpdateOn "2026-03-01T00:00:00Z"^^xsd:dateTime ;
+	pav:version "1" ;
+	bridge:arrivedAs <ni:///sha-256;nj6IrY-r5Fd8i0onPzOBBKySle8swtflY42GAs5SxGA> .
+<ni:///sha-256;nj6IrY-r5Fd8i0onPzOBBKySle8swtflY42GAs5SxGA> cascade:patient <urn:uuid:dccb6776-d640-88e5-a7b3-7e2e1b860abe> ;
+	prov:specializationOf <urn:uuid:13d721fb-b987-8c99-8a35-996a41bb164e> .
+<urn:uuid:13d721fb-b987-8c99-8a35-996a41bb164e> cascade:sourceRecordId "sulfa" ;
+	cascade:sourceUrl <https://fhir.example.org/r4/AllergyIntolerance/sulfa> ;
+	a cascade:AllergyOrIntolerance .
+_:9d25868b236e2b473a151ad32283b8d5 oa:hasSelector _:26b5c6f3a8970a5592bec618501c1d04 ;
+	oa:hasSource <ni:///sha-256;ia0W-ov4DzjbXqU9rRMLYEtbJpVewYVtL83fNzhesBE> ;
+	prov:wasDerivedFrom <ni:///sha-256;ia0W-ov4DzjbXqU9rRMLYEtbJpVewYVtL83fNzhesBE> ;
+	prov:wasGeneratedBy _:abc129c4d4454a5e3e137c9cec061a41 .
+_:26b5c6f3a8970a5592bec618501c1d04 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
+_:abc129c4d4454a5e3e137c9cec061a41 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-03-02T10:00:00Z"^^xsd:dateTime .
+<ni:///sha-256;ia0W-ov4DzjbXqU9rRMLYEtbJpVewYVtL83fNzhesBE> prov:qualifiedAttribution _:e3a162afb3a54f9cdf970aa7e66e6ded .
+_:e3a162afb3a54f9cdf970aa7e66e6ded prov:agent _:2d3db743cda41048c1abf2e9b28fd2e1 .
+_:2d3db743cda41048c1abf2e9b28fd2e1 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:e3a162afb3a54f9cdf970aa7e66e6ded prov:hadRole cascade:TransmitterRole .
+<ni:///sha-256;ia0W-ov4DzjbXqU9rRMLYEtbJpVewYVtL83fNzhesBE> prov:qualifiedAttribution _:cdd7a5dd23fdb866d792cfde88c0e190 .
+_:cdd7a5dd23fdb866d792cfde88c0e190 prov:agent _:191c5d6bc221534ad3d1efc8e83db765 .
+_:191c5d6bc221534ad3d1efc8e83db765 <http://www.w3.org/2000/01/rdf-schema#label> "Example Hospital" .
+_:cdd7a5dd23fdb866d792cfde88c0e190 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;ia0W-ov4DzjbXqU9rRMLYEtbJpVewYVtL83fNzhesBE> cascade:serverBaseUrl "https://fhir.example.org/r4" ;
+	pav:retrievedFrom <https://fhir.example.org/r4/AllergyIntolerance/sulfa> ;
+	pav:retrievedOn "2026-03-02T10:00:00Z"^^xsd:dateTime ;
+	cascade:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
+_:abc129c4d4454a5e3e137c9cec061a41 a prov:Activity ;
+	prov:used <ni:///sha-256;ia0W-ov4DzjbXqU9rRMLYEtbJpVewYVtL83fNzhesBE> ;
+	prov:qualifiedAssociation _:b8f1b0748169cf2514fbf393de093e6 .
+_:b8f1b0748169cf2514fbf393de093e6 prov:hadPlan _:4f6a0d630efc76e46f65f02fe75ec390 .
+_:4f6a0d630efc76e46f65f02fe75ec390 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:b8f1b0748169cf2514fbf393de093e6 prov:agent _:f5140ba79f394ebb95149a30922cccd4 .
+_:f5140ba79f394ebb95149a30922cccd4 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

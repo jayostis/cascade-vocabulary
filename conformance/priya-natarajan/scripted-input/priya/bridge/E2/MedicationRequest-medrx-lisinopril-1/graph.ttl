@@ -1,26 +1,32 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;OoF1Q8r99Bbf0yTaU5kvtLmQWFacMyb9694be8yvf4Q> cascade:dosage "Take 1 tablet by mouth once daily." ;
-	cascade:medicationUseStartDate "2023-06-15"^^xsd:date ;
-	cascade:workflowStatus "active" ;
-	cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;
+<ni:///sha-256;MOYBJVu_4ReOSpDPT1i8b_qpFU7HO2eiXbimBOGLyY4> cascade:prescribedOrReported "prescribed" ;
 	cascade:drugName "lisinopril 10 MG Oral Tablet" ;
-	cascade:prescribedOrReported "prescribed" .
-_:5e0085fea9f3523145d8a41b467b5af6 pav:lastUpdateOn "2023-06-15T17:05:00Z"^^xsd:dateTime ;
+	cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;
+	cascade:workflowStatus "active" ;
+	cascade:prescriptionWrittenDate "2023-06-15"^^xsd:date ;
+	cascade:dosage "Take 1 tablet by mouth once daily." .
+_:a017772845e8bc37e484109131c4de9d pav:lastUpdateOn "2023-06-15T17:05:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;OoF1Q8r99Bbf0yTaU5kvtLmQWFacMyb9694be8yvf4Q> .
-<ni:///sha-256;OoF1Q8r99Bbf0yTaU5kvtLmQWFacMyb9694be8yvf4Q> cascade:patient <urn:uuid:8df1ef48-f8fd-8c9e-a9d3-c3de9798361f> ;
-	prov:specializationOf <urn:uuid:97eaa82a-a849-80ff-9904-3a41699016d9> .
-<urn:uuid:97eaa82a-a849-80ff-9904-3a41699016d9> cascade:sourceRecordId "medrx-lisinopril-1" ;
+	bridge:arrivedAs <ni:///sha-256;MOYBJVu_4ReOSpDPT1i8b_qpFU7HO2eiXbimBOGLyY4> .
+<ni:///sha-256;MOYBJVu_4ReOSpDPT1i8b_qpFU7HO2eiXbimBOGLyY4> cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> ;
+	prov:specializationOf <urn:uuid:62afa632-0672-8e62-b160-02d3a96f6c5b> .
+<urn:uuid:62afa632-0672-8e62-b160-02d3a96f6c5b> cascade:sourceRecordId "medrx-lisinopril-1" ;
 	cascade:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-lisinopril-1> ;
 	a cascade:PrescribedOrReportedMedication .
-_:5e0085fea9f3523145d8a41b467b5af6 bridge:selector "" ;
+_:a017772845e8bc37e484109131c4de9d oa:hasSelector _:5934b78e554ff5eac3fa29fa592ccb4c ;
+	oa:hasSource <ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> ;
 	prov:wasDerivedFrom <ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> ;
 	prov:wasGeneratedBy _:b10aaa5662122a23188393c8fb5d422d .
+_:5934b78e554ff5eac3fa29fa592ccb4c a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:b10aaa5662122a23188393c8fb5d422d <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2025-03-29T18:45:04Z"^^xsd:dateTime .
 <ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> prov:qualifiedAttribution _:78f5382b711da9b3fea15b52a7f1a043 .

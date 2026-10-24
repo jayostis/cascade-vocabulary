@@ -1,25 +1,31 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;5FrJLKZo7cOxOclA9GDB-vr6KPyEIL_YcNbrVr2Q9C4> cascade:onsetDate "2021-04-02"^^xsd:date ;
+<ni:///sha-256;j97ngvo7WT-CiAia7n6KWkX--o96LsoL9fVN9toTTgE> cascade:conditionName "Essential hypertension" ;
+	cascade:onsetDate "2021-04-02"^^xsd:date ;
 	cascade:clinicalStatus "active" ;
-	cascade:verificationStatus "confirmed" ;
-	cascade:conditionName "Essential hypertension" ;
-	cascade:snomedCode <http://snomed.info/id/38341003> .
-_:d8a69086736ef95fbf4f782c16c5a8fb pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
+	cascade:snomedCode <http://snomed.info/id/38341003> ;
+	cascade:verificationStatus "confirmed" .
+_:d23c520ada21939bfc08c79dcf9e68dc pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;5FrJLKZo7cOxOclA9GDB-vr6KPyEIL_YcNbrVr2Q9C4> .
-<ni:///sha-256;5FrJLKZo7cOxOclA9GDB-vr6KPyEIL_YcNbrVr2Q9C4> cascade:patient <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> ;
-	prov:specializationOf <urn:uuid:2d163d89-13a2-8719-8535-876bd794003a> .
-<urn:uuid:2d163d89-13a2-8719-8535-876bd794003a> cascade:sourceRecordId "lv-cond-201" ;
+	bridge:arrivedAs <ni:///sha-256;j97ngvo7WT-CiAia7n6KWkX--o96LsoL9fVN9toTTgE> .
+<ni:///sha-256;j97ngvo7WT-CiAia7n6KWkX--o96LsoL9fVN9toTTgE> cascade:patient <urn:uuid:d461e692-842c-8a30-a8ba-940a908c8cab> ;
+	prov:specializationOf <urn:uuid:173c9663-2406-8025-843b-5f9b19c1b9f3> .
+<urn:uuid:173c9663-2406-8025-843b-5f9b19c1b9f3> cascade:sourceRecordId "lv-cond-201" ;
 	cascade:sourceUrl <https://fhir.larkspur.example/r4/Condition/lv-cond-201> ;
 	a cascade:ProblemOrDiagnosis .
-_:d8a69086736ef95fbf4f782c16c5a8fb bridge:selector "" ;
+_:d23c520ada21939bfc08c79dcf9e68dc oa:hasSelector _:8a77885262d131000cec73faca14c073 ;
+	oa:hasSource <ni:///sha-256;qryk4MG3hAJwf6mUdbw9UDLh84cFcozYJ3uA8qJmdKU> ;
 	prov:wasDerivedFrom <ni:///sha-256;qryk4MG3hAJwf6mUdbw9UDLh84cFcozYJ3uA8qJmdKU> ;
 	prov:wasGeneratedBy _:331f267d2d38e02b6eadd8f8204594a8 .
+_:8a77885262d131000cec73faca14c073 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:331f267d2d38e02b6eadd8f8204594a8 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2027-03-18T12:00:04Z"^^xsd:dateTime .
 <ni:///sha-256;qryk4MG3hAJwf6mUdbw9UDLh84cFcozYJ3uA8qJmdKU> prov:qualifiedAttribution _:ff2caa5423cdce66e2b850b53de9800d .

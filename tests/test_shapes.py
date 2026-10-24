@@ -241,13 +241,7 @@ def name_shape_only():
     return graph
 
 
-SAVED_BRIDGE_OUTPUTS_NOT_YET_RE_MINTED = {"alex-rivera", "priya-natarajan", "tamsin-vale"}
-
-
-@pytest.mark.parametrize("kit", [
-    pytest.param(kit, id=kit.name, marks=[pytest.mark.xfail(strict=True, raises=AssertionError, reason="C2b re-mints the saved Bridge outputs")]
-                 if kit.name in SAVED_BRIDGE_OUTPUTS_NOT_YET_RE_MINTED else [])
-    for kit in KITS])
+@pytest.mark.parametrize("kit", KITS, ids=lambda kit: kit.name)
 def test_every_record_of_a_kit_pod_with_a_source_address_has_the_name_that_address_gives(kit):
     pod = Graph()
     for folder in ("scripted-input", "expected"):

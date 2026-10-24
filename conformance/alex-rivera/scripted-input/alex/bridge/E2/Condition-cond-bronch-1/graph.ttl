@@ -1,25 +1,31 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;0hS76FdafiEmRpTUiHKxUwFlyi9gST2rQUGmssjZrS0> cascade:onsetDate "2026-08-12"^^xsd:date ;
+<ni:///sha-256;imzL3oSIHhqrvvR7ZlFelpPmEFNQ5EgeEf9pCnbpdBQ> cascade:conditionName "Acute bronchitis" ;
+	cascade:onsetDate "2026-08-12"^^xsd:date ;
 	cascade:clinicalStatus "active" ;
-	cascade:verificationStatus "confirmed" ;
-	cascade:conditionName "Acute bronchitis" ;
-	cascade:snomedCode <http://snomed.info/id/10509002> .
-_:d5b8bc338d4acd5af36e7ec00706ba2a pav:lastUpdateOn "2026-08-12T15:00:00Z"^^xsd:dateTime ;
+	cascade:snomedCode <http://snomed.info/id/10509002> ;
+	cascade:verificationStatus "confirmed" .
+_:154cb8da3ee05fdc0314646e8b6fdc61 pav:lastUpdateOn "2026-08-12T15:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;0hS76FdafiEmRpTUiHKxUwFlyi9gST2rQUGmssjZrS0> .
-<ni:///sha-256;0hS76FdafiEmRpTUiHKxUwFlyi9gST2rQUGmssjZrS0> cascade:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
-	prov:specializationOf <urn:uuid:5a83c536-5519-8617-a0df-83c82ffb51e5> .
-<urn:uuid:5a83c536-5519-8617-a0df-83c82ffb51e5> cascade:sourceRecordId "cond-bronch-1" ;
+	bridge:arrivedAs <ni:///sha-256;imzL3oSIHhqrvvR7ZlFelpPmEFNQ5EgeEf9pCnbpdBQ> .
+<ni:///sha-256;imzL3oSIHhqrvvR7ZlFelpPmEFNQ5EgeEf9pCnbpdBQ> cascade:patient <urn:uuid:7883c5a4-6c61-837c-9bf7-dbe1b37d89ff> ;
+	prov:specializationOf <urn:uuid:427f6a98-faf9-8e37-bd5d-6dca2a812580> .
+<urn:uuid:427f6a98-faf9-8e37-bd5d-6dca2a812580> cascade:sourceRecordId "cond-bronch-1" ;
 	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-bronch-1> ;
 	a cascade:ProblemOrDiagnosis .
-_:d5b8bc338d4acd5af36e7ec00706ba2a bridge:selector "" ;
+_:154cb8da3ee05fdc0314646e8b6fdc61 oa:hasSelector _:6f4f23bdb34f0b65cf7604a4c456caee ;
+	oa:hasSource <ni:///sha-256;-wZFceFrAbEakZxGnlyJ_LgP0ffFrj6Pqgdw6VpGGK4> ;
 	prov:wasDerivedFrom <ni:///sha-256;-wZFceFrAbEakZxGnlyJ_LgP0ffFrj6Pqgdw6VpGGK4> ;
 	prov:wasGeneratedBy _:c69ddf18fc5a35a757ddfb8876f21512 .
+_:6f4f23bdb34f0b65cf7604a4c456caee a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:c69ddf18fc5a35a757ddfb8876f21512 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-09-01T10:00:04Z"^^xsd:dateTime .
 <ni:///sha-256;-wZFceFrAbEakZxGnlyJ_LgP0ffFrj6Pqgdw6VpGGK4> prov:qualifiedAttribution _:9eae1bda1ed1b511a710eb19328dbf22 .

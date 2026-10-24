@@ -1,27 +1,33 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;B4qVKDOtlLA2M0sn7qY4IwbsEp0zq74ZB95zucLijd0> cascade:allergenCode <http://snomed.info/id/373270004> ;
-	cascade:clinicalStatus "active" ;
-	cascade:reactionManifestationText "Hives" ;
+<ni:///sha-256;OKljwfapnJ4ZbYIQ-Bw4WfSvxBZ0X5dtHzp6VDZY5Ew> cascade:reactionManifestationText "Hives" ;
 	cascade:allergyType "allergy" ;
+	cascade:clinicalStatus "active" ;
 	cascade:allergen "Penicillin" ;
-	cascade:allergyCategory "medication" ;
-	cascade:verificationStatus "confirmed" .
-_:8a4ae4485143e0687b2823c409176ae5 pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
+	cascade:allergenCode <http://snomed.info/id/373270004> ;
+	cascade:verificationStatus "confirmed" ;
+	cascade:allergyCategory "medication" .
+_:699a5bc8a2f24947072a71d02a2e9ef3 pav:lastUpdateOn "2027-03-01T00:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;B4qVKDOtlLA2M0sn7qY4IwbsEp0zq74ZB95zucLijd0> .
-<ni:///sha-256;B4qVKDOtlLA2M0sn7qY4IwbsEp0zq74ZB95zucLijd0> cascade:patient <urn:uuid:b4993adf-3ec6-8abc-8c80-be366f0c59a8> ;
-	prov:specializationOf <urn:uuid:68e6a49e-2908-89ab-ba61-19385e7a8268> .
-<urn:uuid:68e6a49e-2908-89ab-ba61-19385e7a8268> cascade:sourceRecordId "lv-alg-101" ;
+	bridge:arrivedAs <ni:///sha-256;OKljwfapnJ4ZbYIQ-Bw4WfSvxBZ0X5dtHzp6VDZY5Ew> .
+<ni:///sha-256;OKljwfapnJ4ZbYIQ-Bw4WfSvxBZ0X5dtHzp6VDZY5Ew> cascade:patient <urn:uuid:d461e692-842c-8a30-a8ba-940a908c8cab> ;
+	prov:specializationOf <urn:uuid:58e34d36-550a-882e-b43a-9225dbdce037> .
+<urn:uuid:58e34d36-550a-882e-b43a-9225dbdce037> cascade:sourceRecordId "lv-alg-101" ;
 	cascade:sourceUrl <https://fhir.larkspur.example/r4/AllergyIntolerance/lv-alg-101> ;
 	a cascade:AllergyOrIntolerance .
-_:8a4ae4485143e0687b2823c409176ae5 bridge:selector "" ;
+_:699a5bc8a2f24947072a71d02a2e9ef3 oa:hasSelector _:6961f38f81c775aff195fe5d8d09dc72 ;
+	oa:hasSource <ni:///sha-256;PHGfdoVLMSugnCba9doA7_kfDyJ32abX9loelLpSZDQ> ;
 	prov:wasDerivedFrom <ni:///sha-256;PHGfdoVLMSugnCba9doA7_kfDyJ32abX9loelLpSZDQ> ;
 	prov:wasGeneratedBy _:a1b09782d05d9da97c726ab1fb31997 .
+_:6961f38f81c775aff195fe5d8d09dc72 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:a1b09782d05d9da97c726ab1fb31997 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2027-03-18T12:00:04Z"^^xsd:dateTime .
 <ni:///sha-256;PHGfdoVLMSugnCba9doA7_kfDyJ32abX9loelLpSZDQ> prov:qualifiedAttribution _:3ec56c244207a02e121ae89d2751df9f .

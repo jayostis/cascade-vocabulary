@@ -1,25 +1,31 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;iC0fUYrbAYlF_L7eeiN843vS9s3rVYyWyiR_hblOUfI> cascade:onsetDate "2027-01-28"^^xsd:date ;
+<ni:///sha-256;bS4o1s8t1dkw6Kn1pzNWqu-9wFKXVecR8Ks39qeeLXg> cascade:conditionName "Otitis media" ;
+	cascade:onsetDate "2027-01-28"^^xsd:date ;
 	cascade:clinicalStatus "active" ;
-	cascade:verificationStatus "confirmed" ;
-	cascade:conditionName "Otitis media" ;
-	cascade:snomedCode <http://snomed.info/id/65363002> .
-_:7321e2a705fc681326841abf25eeb4ff pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
+	cascade:snomedCode <http://snomed.info/id/65363002> ;
+	cascade:verificationStatus "confirmed" .
+_:673142e175c6845fe518997af2754319 pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;iC0fUYrbAYlF_L7eeiN843vS9s3rVYyWyiR_hblOUfI> .
-<ni:///sha-256;iC0fUYrbAYlF_L7eeiN843vS9s3rVYyWyiR_hblOUfI> cascade:patient <urn:uuid:d062f803-3744-884a-b30d-2b4fb273cf5d> ;
-	prov:specializationOf <urn:uuid:34a774e3-f83d-8275-89e2-3785085558e6> .
-<urn:uuid:34a774e3-f83d-8275-89e2-3785085558e6> cascade:sourceRecordId "cond-otitis-2" ;
+	bridge:arrivedAs <ni:///sha-256;bS4o1s8t1dkw6Kn1pzNWqu-9wFKXVecR8Ks39qeeLXg> .
+<ni:///sha-256;bS4o1s8t1dkw6Kn1pzNWqu-9wFKXVecR8Ks39qeeLXg> cascade:patient <urn:uuid:e6ef533e-087e-8aff-8979-1e62c5e9d06a> ;
+	prov:specializationOf <urn:uuid:197d0ff0-7748-8314-a5e3-c481442d70b4> .
+<urn:uuid:197d0ff0-7748-8314-a5e3-c481442d70b4> cascade:sourceRecordId "cond-otitis-2" ;
 	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-otitis-2> ;
 	a cascade:ProblemOrDiagnosis .
-_:7321e2a705fc681326841abf25eeb4ff bridge:selector "" ;
+_:673142e175c6845fe518997af2754319 oa:hasSelector _:e5788ddb81a0711947cc45d8f480550d ;
+	oa:hasSource <ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> ;
 	prov:wasDerivedFrom <ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> ;
 	prov:wasGeneratedBy _:119901cababd03241b5425113e6c90fc .
+_:e5788ddb81a0711947cc45d8f480550d a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:119901cababd03241b5425113e6c90fc <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
 <ni:///sha-256;e0naon_FBsfwxQ9quu6M4CYY_Dn-XoT0JO3MuSpJLUk> prov:qualifiedAttribution _:32a51cb040ce45a15a13d6ea6d859102 .

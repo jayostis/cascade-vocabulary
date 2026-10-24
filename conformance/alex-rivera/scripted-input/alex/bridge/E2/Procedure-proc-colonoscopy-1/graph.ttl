@@ -1,39 +1,45 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;Pi1M8qD-OrppWcObZv9gC1rGYLJnJZZJgkOAZSdJSuk> cascade:procedureName "Colonoscopy" ;
+<ni:///sha-256;wleAN-6BqXT0JTbiiQUUQhHyF1Q7FROa5Dpp7CcYlRc> cascade:procedureDate "2025-02-18"^^xsd:date ;
 	cascade:workflowStatus "completed" ;
-	cascade:procedureDate "2025-02-18"^^xsd:date ;
-	cascade:snomedCode "73761001" .
-_:88ba07151b0abba7cbdff28ba5878e39 pav:lastUpdateOn "2025-02-18T19:00:00Z"^^xsd:dateTime ;
+	cascade:snomedCode <http://snomed.info/id/73761001> ;
+	cascade:procedureName "Colonoscopy" .
+_:3b0702e9bbe4b9515487b24c9a4e835f pav:lastUpdateOn "2025-02-18T19:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;Pi1M8qD-OrppWcObZv9gC1rGYLJnJZZJgkOAZSdJSuk> .
-<ni:///sha-256;Pi1M8qD-OrppWcObZv9gC1rGYLJnJZZJgkOAZSdJSuk> cascade:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
-	prov:specializationOf <urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> .
-<urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> cascade:sourceRecordId "proc-colonoscopy-1" ;
+	bridge:arrivedAs <ni:///sha-256;wleAN-6BqXT0JTbiiQUUQhHyF1Q7FROa5Dpp7CcYlRc> .
+<ni:///sha-256;wleAN-6BqXT0JTbiiQUUQhHyF1Q7FROa5Dpp7CcYlRc> cascade:patient <urn:uuid:7883c5a4-6c61-837c-9bf7-dbe1b37d89ff> ;
+	prov:specializationOf <urn:uuid:c6f34248-0b58-8e8a-8e52-f426d1a8be5c> .
+<urn:uuid:c6f34248-0b58-8e8a-8e52-f426d1a8be5c> cascade:sourceRecordId "proc-colonoscopy-1" ;
 	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Procedure/proc-colonoscopy-1> ;
 	a cascade:MedicalProcedure .
-_:88ba07151b0abba7cbdff28ba5878e39 bridge:selector "" ;
+_:3b0702e9bbe4b9515487b24c9a4e835f oa:hasSelector _:12f5d8ac99ba23448bc999a413ab367f ;
+	oa:hasSource <ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> ;
 	prov:wasDerivedFrom <ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> ;
 	prov:wasGeneratedBy _:9dd7ae6f9549ce3c013381438a714bd .
-<ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Procedure/proc-colonoscopy-1> ;
-	pav:retrievedOn "2026-09-01T10:00:00Z"^^xsd:dateTime .
+_:12f5d8ac99ba23448bc999a413ab367f a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
+_:9dd7ae6f9549ce3c013381438a714bd <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
+	prov:startedAtTime "2026-09-01T10:00:04Z"^^xsd:dateTime .
+<ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> prov:qualifiedAttribution _:86aa6a10dafea8d8a3c18bf4d30cf804 .
 _:86aa6a10dafea8d8a3c18bf4d30cf804 prov:agent _:e5c7bd66f9c9b7ef94b607defa560f6e .
 _:e5c7bd66f9c9b7ef94b607defa560f6e <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
 _:86aa6a10dafea8d8a3c18bf4d30cf804 prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> prov:qualifiedAttribution _:86aa6a10dafea8d8a3c18bf4d30cf804 .
+<ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> prov:qualifiedAttribution _:f319b0e62a02e3bfbe61bf743901d25a .
 _:f319b0e62a02e3bfbe61bf743901d25a prov:agent _:ebeb0250750c75b5934b3cec918804fb .
 _:ebeb0250750c75b5934b3cec918804fb <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
 _:f319b0e62a02e3bfbe61bf743901d25a prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> prov:qualifiedAttribution _:f319b0e62a02e3bfbe61bf743901d25a ;
-	cascade:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
-	cascade:sourceFormatVersion "4.0.1" .
-_:9dd7ae6f9549ce3c013381438a714bd <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
-	prov:startedAtTime "2026-09-01T10:00:04Z"^^xsd:dateTime .
-<ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> a prov:Entity .
+<ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> cascade:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Procedure/proc-colonoscopy-1> ;
+	pav:retrievedOn "2026-09-01T10:00:00Z"^^xsd:dateTime ;
+	cascade:sourceFormatVersion "4.0.1" ;
+	a prov:Entity .
 _:9dd7ae6f9549ce3c013381438a714bd a prov:Activity ;
 	prov:used <ni:///sha-256;SPGEJSdaOinAgDgw_i4ycahIFdhqFfdqb9G_YFrU6RA> ;
 	prov:qualifiedAssociation _:d88630b510608c83ebe56babd2a8263e .

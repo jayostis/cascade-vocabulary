@@ -1,155 +1,193 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;j7bgvAvEqP-r3uVY5CiFpgFKJuSrRfCQwF06NezZsNk> foaf:familyName "Okafor" ;
+<ni:///sha-256;wbsWen1j2oqYpQhdge7tuBsbSoNtvgW9uAlInMoc1A8> foaf:familyName "Okafor" ;
 	foaf:givenName "Martin" ;
 	cascade:dateOfBirth "1979-02-08"^^xsd:date .
-<urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> a cascade:PatientProfile ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91001> .
-<ni:///sha-256;j7bgvAvEqP-r3uVY5CiFpgFKJuSrRfCQwF06NezZsNk> prov:specializationOf <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:5c004a1639376001ee038df163f6e3e9 bridge:arrivedAs <ni:///sha-256;j7bgvAvEqP-r3uVY5CiFpgFKJuSrRfCQwF06NezZsNk> ;
-	bridge:selector "/entry/0" ;
+_:e090e9a9db49ed4c9a3833d3913d1944 bridge:arrivedAs <ni:///sha-256;wbsWen1j2oqYpQhdge7tuBsbSoNtvgW9uAlInMoc1A8> .
+<ni:///sha-256;wbsWen1j2oqYpQhdge7tuBsbSoNtvgW9uAlInMoc1A8> prov:specializationOf <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> .
+<urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> a cascade:PatientProfile .
+_:e090e9a9db49ed4c9a3833d3913d1944 oa:hasSelector _:7ca656d2072037c4f1264563fa8a16da ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<urn:uuid:b34b6ff4-61b0-8e45-b9ad-150fbfe8801f> a cascade:GeneticVariantFinding ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91011> .
-<ni:///sha-256;3fCJA2KX9DWO8Y9pMcfFzpkIHf3SeflBtK_Y80cmT80> prov:specializationOf <urn:uuid:b34b6ff4-61b0-8e45-b9ad-150fbfe8801f> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:fe95bea8b65ee28eb7d625711f305ba9 bridge:arrivedAs <ni:///sha-256;3fCJA2KX9DWO8Y9pMcfFzpkIHf3SeflBtK_Y80cmT80> .
-<ni:///sha-256;3fCJA2KX9DWO8Y9pMcfFzpkIHf3SeflBtK_Y80cmT80> cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" ;
+_:7ca656d2072037c4f1264563fa8a16da a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/0" .
+_:f732bc48a38702e1e4d24786727bdc89 bridge:arrivedAs <ni:///sha-256;EUd3zfiWaLJ0gRxEzb_i3LsBPd-aj2hGcZv_nC9Rxek> .
+<ni:///sha-256;EUd3zfiWaLJ0gRxEzb_i3LsBPd-aj2hGcZv_nC9Rxek> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:0b5d00ed-48d9-86eb-a38a-4229eb87f18b> .
+<urn:uuid:0b5d00ed-48d9-86eb-a38a-4229eb87f18b> a cascade:GeneticVariantFinding .
+<ni:///sha-256;EUd3zfiWaLJ0gRxEzb_i3LsBPd-aj2hGcZv_nC9Rxek> cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" ;
 	cascade:clinvarVariationId "90011" ;
 	cascade:geneSymbol "MLH1" ;
 	cascade:workflowStatus "final" .
-_:fe95bea8b65ee28eb7d625711f305ba9 bridge:selector "/entry/2" ;
+_:f732bc48a38702e1e4d24786727bdc89 oa:hasSelector _:27f6718968b3d6e0b86b96e37bbcd58a ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<urn:uuid:cb86a7f1-b01c-82a0-adeb-7108ad09798f> a cascade:VariantInterpretation ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91022> .
-<ni:///sha-256;LEOIHI_vOXHBOloV5qP0YLUNjwtwj27SUr4H28y67jw> prov:specializationOf <urn:uuid:cb86a7f1-b01c-82a0-adeb-7108ad09798f> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:1aaa4a38379cfdfdfe9a1d483efe2dff bridge:arrivedAs <ni:///sha-256;LEOIHI_vOXHBOloV5qP0YLUNjwtwj27SUr4H28y67jw> .
-<ni:///sha-256;LEOIHI_vOXHBOloV5qP0YLUNjwtwj27SUr4H28y67jw> cascade:acmgClassification cascade:LikelyPathogenic ;
-	cascade:variantInterpreted <urn:uuid:b34b6ff4-61b0-8e45-b9ad-150fbfe8801f> ;
+_:27f6718968b3d6e0b86b96e37bbcd58a a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/2" .
+_:39e2c9875879f8e3680bcf35f13a0e03 bridge:arrivedAs <ni:///sha-256;47elcgmjhA8J3EdAVdNj09jBoTPN-1AueQ5bPTFpkmA> .
+<ni:///sha-256;47elcgmjhA8J3EdAVdNj09jBoTPN-1AueQ5bPTFpkmA> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:bcf27cf9-56e0-8e1d-b2bb-b991841f3ea6> .
+<urn:uuid:bcf27cf9-56e0-8e1d-b2bb-b991841f3ea6> a cascade:VariantInterpretation .
+<ni:///sha-256;47elcgmjhA8J3EdAVdNj09jBoTPN-1AueQ5bPTFpkmA> cascade:acmgClassification cascade:LikelyPathogenic ;
+	cascade:variantInterpreted <urn:uuid:0b5d00ed-48d9-86eb-a38a-4229eb87f18b> ;
 	cascade:interpretedDate "2024-03-21"^^xsd:date ;
 	cascade:workflowStatus "final" .
-_:1aaa4a38379cfdfdfe9a1d483efe2dff bridge:selector "/entry/3" ;
+_:39e2c9875879f8e3680bcf35f13a0e03 oa:hasSelector _:d26dd7b240015d74af569f929a5aee6f ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<urn:uuid:b6ae8e93-2577-8642-97e5-ea9f44298708> a cascade:GeneticVariantFinding ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91012> .
-<ni:///sha-256;rzgg_JWHOMKXHbkasqjK1HqrVqpGJhcJVB6V4NPZEXU> prov:specializationOf <urn:uuid:b6ae8e93-2577-8642-97e5-ea9f44298708> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:df19e3a723af849f1c23d71e6ee112ad bridge:arrivedAs <ni:///sha-256;rzgg_JWHOMKXHbkasqjK1HqrVqpGJhcJVB6V4NPZEXU> .
-<ni:///sha-256;rzgg_JWHOMKXHbkasqjK1HqrVqpGJhcJVB6V4NPZEXU> cascade:hgvsCodingDnaExpression "NM_000179.3:c.2633T>C" ;
+_:d26dd7b240015d74af569f929a5aee6f a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/3" .
+_:ccf8b77bc45842aab922957afd69770c bridge:arrivedAs <ni:///sha-256;MmCKOopQAyYfTVX4S7726AzBxuWNUcVI4yv4nJAn1C0> .
+<ni:///sha-256;MmCKOopQAyYfTVX4S7726AzBxuWNUcVI4yv4nJAn1C0> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:3c579975-bd1e-8eb1-a5c4-44e7023e3fe5> .
+<urn:uuid:3c579975-bd1e-8eb1-a5c4-44e7023e3fe5> a cascade:GeneticVariantFinding .
+<ni:///sha-256;MmCKOopQAyYfTVX4S7726AzBxuWNUcVI4yv4nJAn1C0> cascade:hgvsCodingDnaExpression "NM_000179.3:c.2633T>C" ;
 	cascade:clinvarVariationId "8931" ;
 	cascade:geneSymbol "MSH6" ;
 	cascade:workflowStatus "final" .
-_:df19e3a723af849f1c23d71e6ee112ad bridge:selector "/entry/4" ;
+_:ccf8b77bc45842aab922957afd69770c oa:hasSelector _:7225382a8da44a1fc1aed0d15999c591 ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<urn:uuid:ee69a23d-e55b-8545-ae6c-92c9d94575bc> a cascade:VariantInterpretation ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91024> .
-<ni:///sha-256;dAUq_JqQobAbkrU1nxWSFWlmwYISTuqQkaBct79YYzg> prov:specializationOf <urn:uuid:ee69a23d-e55b-8545-ae6c-92c9d94575bc> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:28f4a0db53657776cef2af0e23d6776d bridge:arrivedAs <ni:///sha-256;dAUq_JqQobAbkrU1nxWSFWlmwYISTuqQkaBct79YYzg> .
-<ni:///sha-256;dAUq_JqQobAbkrU1nxWSFWlmwYISTuqQkaBct79YYzg> cascade:acmgClassification cascade:Benign ;
-	cascade:variantInterpreted <urn:uuid:b6ae8e93-2577-8642-97e5-ea9f44298708> ;
+_:7225382a8da44a1fc1aed0d15999c591 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/4" .
+_:b28cd93e2f495fd10e4a47b4b85bf429 bridge:arrivedAs <ni:///sha-256;VXyz406LmyjW-U6N5QPzv2nzc35zuEw-0M_p8May5ik> .
+<ni:///sha-256;VXyz406LmyjW-U6N5QPzv2nzc35zuEw-0M_p8May5ik> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:e8b0f20d-d564-8c8f-97c3-28838c70c82c> .
+<urn:uuid:e8b0f20d-d564-8c8f-97c3-28838c70c82c> a cascade:VariantInterpretation .
+<ni:///sha-256;VXyz406LmyjW-U6N5QPzv2nzc35zuEw-0M_p8May5ik> cascade:acmgClassification cascade:Benign ;
+	cascade:variantInterpreted <urn:uuid:3c579975-bd1e-8eb1-a5c4-44e7023e3fe5> ;
 	cascade:interpretedDate "2024-03-21"^^xsd:date ;
 	cascade:workflowStatus "final" .
-_:28f4a0db53657776cef2af0e23d6776d bridge:selector "/entry/5" ;
+_:b28cd93e2f495fd10e4a47b4b85bf429 oa:hasSelector _:e6e7ffee2e0e911e35bf8de0ddaadef8 ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<urn:uuid:f50b6bec-b4a9-8312-9028-3dfd2849145a> a cascade:GeneticVariantFinding ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91014> .
-<ni:///sha-256;bqOdVnGZk4csvrB2TSu-AqhhZ9q9utM_M6O9c-fN1GU> prov:specializationOf <urn:uuid:f50b6bec-b4a9-8312-9028-3dfd2849145a> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:7ae33b2e61a237eeed454a074580236f bridge:arrivedAs <ni:///sha-256;bqOdVnGZk4csvrB2TSu-AqhhZ9q9utM_M6O9c-fN1GU> .
-<ni:///sha-256;bqOdVnGZk4csvrB2TSu-AqhhZ9q9utM_M6O9c-fN1GU> cascade:hgvsCodingDnaExpression "NM_000059.4:c.7865A>G" ;
+_:e6e7ffee2e0e911e35bf8de0ddaadef8 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/5" .
+_:8c03fecd487570b4389da0e3ad30873d bridge:arrivedAs <ni:///sha-256;yHFknDlHBwG2pN4h0Hc6NVPDY5lZ6ZIFMKfpY2KqIis> .
+<ni:///sha-256;yHFknDlHBwG2pN4h0Hc6NVPDY5lZ6ZIFMKfpY2KqIis> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:557c4894-e999-82c3-9974-7a0e006c6f97> .
+<urn:uuid:557c4894-e999-82c3-9974-7a0e006c6f97> a cascade:GeneticVariantFinding .
+<ni:///sha-256;yHFknDlHBwG2pN4h0Hc6NVPDY5lZ6ZIFMKfpY2KqIis> cascade:hgvsCodingDnaExpression "NM_000059.4:c.7865A>G" ;
 	cascade:geneSymbol "BRCA2" ;
 	cascade:workflowStatus "final" .
-_:7ae33b2e61a237eeed454a074580236f bridge:selector "/entry/6" ;
+_:8c03fecd487570b4389da0e3ad30873d oa:hasSelector _:297f07a38baf39df40310e1e30cf3b38 ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<urn:uuid:2b7f5b87-9103-8f0c-b599-de9f5ff86324> a cascade:VariantInterpretation ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91025> .
-<ni:///sha-256;Vm05pOwQwn4Ckirp2LwtZNneoPKpBESfx6tO219DvAc> prov:specializationOf <urn:uuid:2b7f5b87-9103-8f0c-b599-de9f5ff86324> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:6978f43b0083676ecb6f2da0f1a26a32 bridge:arrivedAs <ni:///sha-256;Vm05pOwQwn4Ckirp2LwtZNneoPKpBESfx6tO219DvAc> .
-<ni:///sha-256;Vm05pOwQwn4Ckirp2LwtZNneoPKpBESfx6tO219DvAc> cascade:acmgClassification cascade:UncertainSignificance ;
-	cascade:variantInterpreted <urn:uuid:f50b6bec-b4a9-8312-9028-3dfd2849145a> ;
+_:297f07a38baf39df40310e1e30cf3b38 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/6" .
+_:a84c0a455ef4e72fc07a4e2ce92dfc3e bridge:arrivedAs <ni:///sha-256;0wPPxIlUunyEGXYhZmBuTMayYoPLTawdnIjuDB7XlcU> .
+<ni:///sha-256;0wPPxIlUunyEGXYhZmBuTMayYoPLTawdnIjuDB7XlcU> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:ee43acd1-1bcc-8e8e-bd29-c0f5c99a06a4> .
+<urn:uuid:ee43acd1-1bcc-8e8e-bd29-c0f5c99a06a4> a cascade:VariantInterpretation .
+<ni:///sha-256;0wPPxIlUunyEGXYhZmBuTMayYoPLTawdnIjuDB7XlcU> cascade:acmgClassification cascade:UncertainSignificance ;
+	cascade:variantInterpreted <urn:uuid:557c4894-e999-82c3-9974-7a0e006c6f97> ;
 	cascade:interpretedDate "2024-03-21"^^xsd:date ;
 	cascade:workflowStatus "final" .
-_:6978f43b0083676ecb6f2da0f1a26a32 bridge:selector "/entry/7" ;
+_:a84c0a455ef4e72fc07a4e2ce92dfc3e oa:hasSelector _:8c1ab42279dbb2f6a256a5b446e69ac4 ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<ni:///sha-256;R4-tGLtLBfmwcdAU58jwXquwA9Ffb4feWwWzrtab9lI> cascade:conditionName "Essential hypertension" ;
-	cascade:snomedCode <http://snomed.info/id/38341003> ;
+_:8c1ab42279dbb2f6a256a5b446e69ac4 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/7" .
+<ni:///sha-256;BwuB_SQPi10jTCkKqZUI7h_UOFcAJoba5On4AXdlQ2k> cascade:conditionName "Essential hypertension" ;
+	cascade:onsetDate "2019-05-14"^^xsd:date ;
 	cascade:clinicalStatus "active" ;
-	cascade:onsetDate "2019-05-14"^^xsd:date .
-<urn:uuid:449717ce-549a-87af-8c35-19bdd92118c5> a cascade:ProblemOrDiagnosis ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91031> .
-<ni:///sha-256;R4-tGLtLBfmwcdAU58jwXquwA9Ffb4feWwWzrtab9lI> prov:specializationOf <urn:uuid:449717ce-549a-87af-8c35-19bdd92118c5> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:2377af3792bd75ffa8aa6aa4b23a6446 bridge:arrivedAs <ni:///sha-256;R4-tGLtLBfmwcdAU58jwXquwA9Ffb4feWwWzrtab9lI> ;
-	bridge:selector "/entry/8" ;
+	cascade:snomedCode <http://snomed.info/id/38341003> .
+_:f4a4c1cb00f29263601d540a0448167 bridge:arrivedAs <ni:///sha-256;BwuB_SQPi10jTCkKqZUI7h_UOFcAJoba5On4AXdlQ2k> .
+<ni:///sha-256;BwuB_SQPi10jTCkKqZUI7h_UOFcAJoba5On4AXdlQ2k> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:1f414809-0ec1-8f57-8b51-4eb8b2722e2e> .
+<urn:uuid:1f414809-0ec1-8f57-8b51-4eb8b2722e2e> a cascade:ProblemOrDiagnosis .
+_:f4a4c1cb00f29263601d540a0448167 oa:hasSelector _:a5044636e293a1b82e40213f53652d46 ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<ni:///sha-256;ZzhLSBQBDdToZe5wNy434Uy_udxO80qWD36xAqD4q7M> cascade:conditionName "Hyperlipidemia" ;
-	cascade:snomedCode <http://snomed.info/id/55822004> ;
+_:a5044636e293a1b82e40213f53652d46 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/8" .
+<ni:///sha-256;t-FMEjx1zf_ybSREKQy9V4I4DOsWWFwkm6gdJwzFudA> cascade:conditionName "Hyperlipidemia" ;
+	cascade:onsetDate "2021-09-30"^^xsd:date ;
 	cascade:clinicalStatus "active" ;
-	cascade:onsetDate "2021-09-30"^^xsd:date .
-<urn:uuid:33bd0a30-f562-82a4-bf96-06cc1814eb20> a cascade:ProblemOrDiagnosis ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91032> .
-<ni:///sha-256;ZzhLSBQBDdToZe5wNy434Uy_udxO80qWD36xAqD4q7M> prov:specializationOf <urn:uuid:33bd0a30-f562-82a4-bf96-06cc1814eb20> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:8f7562d33e6ec2e0232ec34ac139ef3f bridge:arrivedAs <ni:///sha-256;ZzhLSBQBDdToZe5wNy434Uy_udxO80qWD36xAqD4q7M> ;
-	bridge:selector "/entry/9" ;
+	cascade:snomedCode <http://snomed.info/id/55822004> .
+_:19bc82876da83fa0cf4ade9a9e7b1808 bridge:arrivedAs <ni:///sha-256;t-FMEjx1zf_ybSREKQy9V4I4DOsWWFwkm6gdJwzFudA> .
+<ni:///sha-256;t-FMEjx1zf_ybSREKQy9V4I4DOsWWFwkm6gdJwzFudA> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:6f49b7cf-d1e1-83b5-8fa9-83734a52fcb6> .
+<urn:uuid:6f49b7cf-d1e1-83b5-8fa9-83734a52fcb6> a cascade:ProblemOrDiagnosis .
+_:19bc82876da83fa0cf4ade9a9e7b1808 oa:hasSelector _:f447609475ff59d8cbc92f64e05a967 ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<ni:///sha-256;Dn_p65d2ViKJwr7hCUQHCJy0cf6V2uklw1JTUeBXFrA> cascade:prescribedOrReported "prescribed" ;
+_:f447609475ff59d8cbc92f64e05a967 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/9" .
+<ni:///sha-256;OQj8g45sv6iCqua8OM1ap2w8CUr3Mbg3UxEVrk9qcrg> cascade:prescribedOrReported "prescribed" ;
 	cascade:drugName "Atorvastatin 10 mg tablet" ;
 	cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/617312> ;
 	cascade:workflowStatus "active" ;
-	cascade:medicationUseStartDate "2024-01-09"^^xsd:date ;
+	cascade:prescriptionWrittenDate "2024-01-09"^^xsd:date ;
 	cascade:dosage "Take 1 tablet by mouth at bedtime." .
-<urn:uuid:bef5622d-fe9a-8d8f-b815-7f7e1ea0d8c2> a cascade:PrescribedOrReportedMedication ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91041> .
-<ni:///sha-256;Dn_p65d2ViKJwr7hCUQHCJy0cf6V2uklw1JTUeBXFrA> prov:specializationOf <urn:uuid:bef5622d-fe9a-8d8f-b815-7f7e1ea0d8c2> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:f3434aa807c20f30fc65754692f947fb bridge:arrivedAs <ni:///sha-256;Dn_p65d2ViKJwr7hCUQHCJy0cf6V2uklw1JTUeBXFrA> ;
-	bridge:selector "/entry/10" ;
+_:a63c6a9c8c144eabf28c75701fa262a0 bridge:arrivedAs <ni:///sha-256;OQj8g45sv6iCqua8OM1ap2w8CUr3Mbg3UxEVrk9qcrg> .
+<ni:///sha-256;OQj8g45sv6iCqua8OM1ap2w8CUr3Mbg3UxEVrk9qcrg> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:17ab3768-f505-8501-8572-4012cfae70bc> .
+<urn:uuid:17ab3768-f505-8501-8572-4012cfae70bc> a cascade:PrescribedOrReportedMedication .
+_:a63c6a9c8c144eabf28c75701fa262a0 oa:hasSelector _:69f8c6093b8b166099b7e8c6f0ba1a8a ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<ni:///sha-256;6uv5w_DS97Dh-buxlbF1u6b0glW_HU8VujEc-A7Za4Q> cascade:prescribedOrReported "prescribed" ;
+_:69f8c6093b8b166099b7e8c6f0ba1a8a a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/10" .
+<ni:///sha-256;i_7nvN2k1aip91ineT-DNXPruj4TiTD9q1G0UBV3Vwg> cascade:prescribedOrReported "prescribed" ;
 	cascade:drugName "Amlodipine 5 mg tablet" ;
 	cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/197361> ;
 	cascade:workflowStatus "active" ;
-	cascade:medicationUseStartDate "2023-02-20"^^xsd:date ;
+	cascade:prescriptionWrittenDate "2023-02-20"^^xsd:date ;
 	cascade:dosage "Take 1 tablet by mouth once daily." .
-<urn:uuid:57617083-d357-8075-aeb8-fb72bf99ab9f> a cascade:PrescribedOrReportedMedication ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91042> .
-<ni:///sha-256;6uv5w_DS97Dh-buxlbF1u6b0glW_HU8VujEc-A7Za4Q> prov:specializationOf <urn:uuid:57617083-d357-8075-aeb8-fb72bf99ab9f> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:976c1376badd4f4938a36f78d8110a2a bridge:arrivedAs <ni:///sha-256;6uv5w_DS97Dh-buxlbF1u6b0glW_HU8VujEc-A7Za4Q> ;
-	bridge:selector "/entry/11" ;
+_:d0a4c8ab60ed4563c5f1587287f42869 bridge:arrivedAs <ni:///sha-256;i_7nvN2k1aip91ineT-DNXPruj4TiTD9q1G0UBV3Vwg> .
+<ni:///sha-256;i_7nvN2k1aip91ineT-DNXPruj4TiTD9q1G0UBV3Vwg> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:e46556fc-c494-82ca-a82c-6f5ed9cb6ad5> .
+<urn:uuid:e46556fc-c494-82ca-a82c-6f5ed9cb6ad5> a cascade:PrescribedOrReportedMedication .
+_:d0a4c8ab60ed4563c5f1587287f42869 oa:hasSelector _:402bf028261ceb921decb15987434d9a ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
-<ni:///sha-256;YT8AHc8xBYiJmNTOEOPE5UCTMxpT8fJFfL3gdQFSbGE> cascade:procedureName "Colonoscopy" ;
-	cascade:snomedCode "73761001" ;
-	cascade:procedureDate "2023-11-08"^^xsd:date ;
-	cascade:workflowStatus "completed" .
-<urn:uuid:3085c77c-9fd1-8ade-97b8-a339619d0e49> a cascade:MedicalProcedure ;
-	cascade:sourceUrl <urn:uuid:e41b7d52-93a0-4c68-b2f1-6a8d03c91051> .
-<ni:///sha-256;YT8AHc8xBYiJmNTOEOPE5UCTMxpT8fJFfL3gdQFSbGE> prov:specializationOf <urn:uuid:3085c77c-9fd1-8ade-97b8-a339619d0e49> ;
-	cascade:patient <urn:uuid:a207436b-e170-8b1f-90cc-6af7f019b1f9> .
-_:68eb773719d77114035423cdb39c66c0 bridge:arrivedAs <ni:///sha-256;YT8AHc8xBYiJmNTOEOPE5UCTMxpT8fJFfL3gdQFSbGE> ;
-	bridge:selector "/entry/12" ;
+_:402bf028261ceb921decb15987434d9a a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/11" .
+<ni:///sha-256;eRjr4FOWlguauJpkRhqhchQMjn7lA_NdcHShwajpZRo> cascade:procedureDate "2023-11-08"^^xsd:date ;
+	cascade:workflowStatus "completed" ;
+	cascade:snomedCode <http://snomed.info/id/73761001> ;
+	cascade:procedureName "Colonoscopy" .
+_:9f01f3e60f0b4966f674740a8830b83c bridge:arrivedAs <ni:///sha-256;eRjr4FOWlguauJpkRhqhchQMjn7lA_NdcHShwajpZRo> .
+<ni:///sha-256;eRjr4FOWlguauJpkRhqhchQMjn7lA_NdcHShwajpZRo> cascade:patient <urn:uuid:4a80c91f-8a6c-80d5-b6ff-4c4f897dcee3> ;
+	prov:specializationOf <urn:uuid:2a9dcf87-a80d-897c-80cb-a112a7e74d95> .
+<urn:uuid:2a9dcf87-a80d-897c-80cb-a112a7e74d95> a cascade:MedicalProcedure .
+_:9f01f3e60f0b4966f674740a8830b83c oa:hasSelector _:ca33b839b0135ffd40710728d4ab0192 ;
+	oa:hasSource <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasDerivedFrom <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> ;
 	prov:wasGeneratedBy _:60af66d6ec178a76d0f7867475dde103 .
+_:ca33b839b0135ffd40710728d4ab0192 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/12" .
 _:60af66d6ec178a76d0f7867475dde103 <http://www.w3.org/2000/01/rdf-schema#label> "FHIR pull" ;
 	prov:startedAtTime "2026-10-13T09:20:04Z"^^xsd:dateTime .
 <ni:///sha-256;aPT3QyXcC3bY12mE-4oug-GwW41Er_pKwlKFgArb-kA> cascade:serverBaseUrl "https://fhir.st-columbas-hospital.example/r4" ;

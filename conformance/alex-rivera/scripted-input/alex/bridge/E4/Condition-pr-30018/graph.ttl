@@ -1,25 +1,31 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;6bFzCPhwlCTJbVGxjShPMDzRedps_69pIaIMtVApAGs> cascade:onsetDate "2008-09-01"^^xsd:date ;
+<ni:///sha-256;bVAklNd4_58dtgRWoKZtiibmdTg21Nj9D_wZvQBiRO4> cascade:conditionName "Asthma" ;
+	cascade:onsetDate "2008-09-01"^^xsd:date ;
 	cascade:clinicalStatus "active" ;
-	cascade:verificationStatus "confirmed" ;
-	cascade:conditionName "Asthma" ;
-	cascade:snomedCode <http://snomed.info/id/195967001> .
-_:6b80f6535fb1de6ef39307bd6400973 pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
+	cascade:snomedCode <http://snomed.info/id/195967001> ;
+	cascade:verificationStatus "confirmed" .
+_:39e68922f95486c1a3baa63572eaadc9 pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;6bFzCPhwlCTJbVGxjShPMDzRedps_69pIaIMtVApAGs> .
-<ni:///sha-256;6bFzCPhwlCTJbVGxjShPMDzRedps_69pIaIMtVApAGs> cascade:patient <urn:uuid:d85089a6-8c4b-8108-b3cc-2cde9217f136> ;
-	prov:specializationOf <urn:uuid:693e3b10-09df-8117-b7b4-c2d39f725f07> .
-<urn:uuid:693e3b10-09df-8117-b7b4-c2d39f725f07> cascade:sourceRecordId "pr-30018" ;
+	bridge:arrivedAs <ni:///sha-256;bVAklNd4_58dtgRWoKZtiibmdTg21Nj9D_wZvQBiRO4> .
+<ni:///sha-256;bVAklNd4_58dtgRWoKZtiibmdTg21Nj9D_wZvQBiRO4> cascade:patient <urn:uuid:5056e058-324f-8c70-b69b-fb27a061cdc5> ;
+	prov:specializationOf <urn:uuid:3719cb66-c5be-8fac-a0bf-a6db7573fe71> .
+<urn:uuid:3719cb66-c5be-8fac-a0bf-a6db7573fe71> cascade:sourceRecordId "pr-30018" ;
 	cascade:sourceUrl <https://ehr.larkspur.example/fhir/R4/Condition/pr-30018> ;
 	a cascade:ProblemOrDiagnosis .
-_:6b80f6535fb1de6ef39307bd6400973 bridge:selector "" ;
+_:39e68922f95486c1a3baa63572eaadc9 oa:hasSelector _:ef268be0ad012485df9b6449ff5129bc ;
+	oa:hasSource <ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> ;
 	prov:wasDerivedFrom <ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> ;
 	prov:wasGeneratedBy _:8e5c95de2846455b8d2906fe05f07ea3 .
+_:ef268be0ad012485df9b6449ff5129bc a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:8e5c95de2846455b8d2906fe05f07ea3 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-10-14T15:42:00Z"^^xsd:dateTime .
 <ni:///sha-256;JrahuZoHwbTA6XHjL2ULjX9vetTQjTNZFxr4LLytgqg> prov:qualifiedAttribution _:8b53b7b873c1f4e92e04bc23f2ad730c .
