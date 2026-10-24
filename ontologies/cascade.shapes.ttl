@@ -666,6 +666,13 @@ cascade:VariantInterpretationShape a sh:NodeShape ;
         sh:datatype xsd:date ;
         sh:maxCount 1 ;
         sh:message "An interpretation date is one xsd:date, the day the interpretation was issued, with no time"@en
+    ] ;
+
+    sh:property [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A variant interpretation's version is attributed to at most one lab, named by the IRI of its cascade:Organization record"@en
     ] .
 
 # Records
