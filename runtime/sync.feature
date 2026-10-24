@@ -59,9 +59,10 @@ Feature: Syncs
       And Cleo files the judgment "about-p" on 2026-03-01 at 09:05
       And a second writer of the pod
       And the export "first-export" is imported on 2026-03-02 at 10:00
-      And Cleo enters "entry" on 2026-03-03 at 08:00
       And the steps that follow are the second writer's
-      And the export "first-export" is imported on 2026-03-03 at 08:30 (second-import)
+      And the export "first-export" is imported on 2026-03-02 at 10:00 (second-import)
+      And the steps that follow are the first writer's
+      And Cleo enters "entry" on 2026-03-03 at 08:00
       And the second writer receives the files of the first writer on 2026-03-03 at 09:00
       When the matcher runs on the records of that step on 2026-03-03 at 09:05
       Then that step wrote these matcher judgments:
