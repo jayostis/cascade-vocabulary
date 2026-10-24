@@ -407,6 +407,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:VariantInterpretationShape ; sh:resultPath cascade:objectCondition ] ] .
 
+<#record-variant-interpretation/two-labs> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant-interpretation/two-labs.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:VariantInterpretationShape ; sh:resultPath prov:wasAttributedTo ] ] .
+
 <#record-server/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-server/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

@@ -286,9 +286,10 @@ Feature: The matcher's procedure
 
     Its assertion, a cascade:ClaimAssertion named by N6, asserts it (cascade:assertedClaim) under the rule list's
     version (cascade:assertedUnderRuleListVersion). The everyday lens counts the claim while every version it used is
-    current and the current version of a rule list has a row for the claim's rule with the cascade:queryHash of that
-    rule's row in a version the claim is asserted under (M8, queries/lenses/everyday.rq). A claim carries no run: the run is an act
-    (N7), and which run wrote a claim or an assertion is read from the run's snapshot, which names every file it wrote (N14).
+    current, or has a current version whose rows join its members (M7), and the current version of a rule list has a
+    row for the claim's rule with the cascade:queryHash of that rule's row in a version the claim is asserted under (M8,
+    queries/lenses/everyday.rq). A claim carries no run: the run is an act (N7), and which run wrote a claim or an
+    assertion is read from the run's snapshot, which names every file it wrote (N14).
 
     Background:
       Given a new pod for Cleo on 2026-03-01 at 09:00
@@ -399,7 +400,7 @@ Feature: The matcher's procedure
         | same code     | allergy RxNorm 10180 from sulfa, allergy RxNorm 10180 "Gantanol"                                                |
         | same code     | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" |
 
-  Rule: M7. A recheck re-runs the rule of each matcher Same that used a reference version the tables revise, or whose rule now runs another query, or whose star a Different has split
+  Rule: M7. A recheck re-runs the rule of each matcher Same that used a reference version the tables revise and whose current version does not join its members, or whose rule now runs another query, or whose star a Different has split
     Unless the Same was retracted, or replaced by a judgment not itself retracted: a retracted judgment replaces
     nothing. A Same's rule runs another query when the current rule list's row for it carries a cascade:queryHash
     that no row for the rule carries in a version the Same is asserted under by an assertion no retraction invalidates
@@ -407,12 +408,28 @@ Feature: The matcher's procedure
     star when the Same's latest-arriving member matches by its rule a record it is not judged different from that
     the entries keep apart from it: the rule is run again for that record over the entries as they now are (M5), and
     the claim that gives is filed beside the Same, which keeps counting, since every pair it joins its new claim
-    joins too. It runs on the members that are still the subject's, under the current version of the series whose
-    version the Same used, and files their claim (M5, M9) if at least two still match: a new claim when that version
-    is new, and otherwise the claim's assertion under the current rule list alone. A version is revised when a
-    version of the tables revises it, whether or not the pod describes that one, so an open that writes the
-    descriptions last (W1) still rechecks. A Same whose rule now reads a table, and which used no version of that
-    table's kind, is not filed again. A Same whose rule the current rule list lacks is not filed again.
+    joins too.
+
+    The current version of a series whose older version a Same used joins its members when the query the current rule
+    list's row for its rule names, evaluated with ?record bound to the Same's members over the pod, its derived state
+    and that version's rows (M4, M13), gives a row (record, other, that version) with one member as the record and
+    each other member as the other. A version that changed only rows the members' codes do not reach so joins them,
+    and the Same is left as it was: it is not run again, nothing is written for it, and the everyday lens counts it
+    on. A runtime derives, just before the lens, cascade:membersJoinedByCurrentTableVersion from each such Same to
+    that version, from the current rule list and versions the pod names and the rows its tables hold of them; the
+    lens reads it (queries/lenses/everyday.rq). Filing a new claim for every table-reading claim at each adopted
+    version would be about 960k claims in ten years (decisions/naming.md). The cost of asking the rule rather than
+    naming the rows in the claim is that the answer depends on the tables a device holds: where the pod's current
+    version of the series is one its tables do not hold, nothing joins and the Same does not count there, so a read
+    names that version as unheld, as an open does (O2), rather than differ silently from a device that holds it.
+
+    Otherwise the rule runs on the members that are still the subject's, under the current version of the series
+    whose version the Same used, and files their claim (M5, M9) if at least two still match: a new claim when that
+    version is new, and otherwise the claim's assertion under the current rule list alone. A Same whose rule now runs
+    another query is run so even when the current version joins its members. A version is revised when a version of
+    the tables revises it, whether or not the pod describes that one, so an open that writes the descriptions last
+    (W1) still rechecks. A Same whose rule now reads a table, and which used no version of that table's kind, is not
+    filed again. A Same whose rule the current rule list lacks is not filed again.
 
     Background:
       Given a new pod for Eve on 2026-05-01 at 09:00
@@ -420,13 +437,16 @@ Feature: The matcher's procedure
       And Eve enters "allergies" on 2026-05-02 at 09:00
       And the matcher runs on the records of that entry on 2026-05-02 at 09:05
 
-    Example: a Same whose members still match under the revised table is judged again
+    Example: a Same whose members the revised table still joins is not filed again, and counts on
+      Version 2 drops only amoxicillin's row, which penicillin's records do not reach.
+
       Given version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
       When the matcher rechecks on 2026-05-05 at 09:00
-      Then the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
+      Then that step wrote no file
+      And the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
         | justification    | members                                       | used                                                                                                                  | name                                          |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:c02e8faa-6c7a-8b8a-96a0-d23a30f6d8a7 |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:b62823c7-1ee8-8279-9c9a-dea0394d0e4c |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:229f494f-26fa-8d9c-a2c9-badd04fd0356 |
+      And the matcher's same mapped code of allergy SNOMED 373270004 and allergy RxNorm 7980 counts
 
     Example: a Same a person retracted is not rechecked
       Given Eve files the judgment "retract-b" on 2026-05-03 at 09:00
@@ -444,7 +464,7 @@ Feature: The matcher's procedure
         | justification    | members                                       |
         | same mapped code | allergy SNOMED 294505008, allergy RxNorm 2670 |
 
-    Example: a Same whose replacing judgment a person retracted is rechecked
+    Example: a Same whose replacing judgment a person retracted counts on under the revised table that still joins it
       Given Eve files the judgment "supersede-c" on 2026-05-03 at 09:05
       And Eve files the judgment "retract-supersede-c" on 2026-05-03 at 09:15
       And version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
@@ -452,7 +472,7 @@ Feature: The matcher's procedure
       Then the matcher's judgments holding allergy SNOMED 294505008 and allergy RxNorm 2670 are:
         | justification    | members                                       | used                                                                                                                  |
         | same mapped code | allergy SNOMED 294505008, allergy RxNorm 2670 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 294505008, version 1 of allergy RxNorm 2670 |
-        | same mapped code | allergy SNOMED 294505008, allergy RxNorm 2670 | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy SNOMED 294505008, version 1 of allergy RxNorm 2670 |
+      And the matcher's same mapped code of allergy SNOMED 294505008 and allergy RxNorm 2670 counts
 
     Example: once the About naming their profile is retracted, fewer than two members are the subject's and nothing is written
       Given Eve files the judgment "retract-about-d" on 2026-05-03 at 09:10
@@ -462,12 +482,30 @@ Feature: The matcher's procedure
         | justification    | members                                       |
         | same mapped code | allergy SNOMED 387207008, allergy RxNorm 1191 |
 
-    Example: a recheck writes nothing when fewer than two members still match under the current table
+    Example: a recheck writes nothing when fewer than two members still match under the current table, and the Same lapses
+      Version 2 drops the row that joined amoxicillin's two records.
+
       Given version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
       When the matcher rechecks on 2026-05-05 at 09:00
       Then the matcher's judgments holding allergy SNOMED 372687004 and allergy RxNorm 723 are:
         | justification    | members                                      |
         | same mapped code | allergy SNOMED 372687004, allergy RxNorm 723 |
+      And the matcher's same mapped code of allergy SNOMED 372687004 and allergy RxNorm 723 has lapsed
+
+    Example: a Same of three whose current version joins only two of them is filed again for those two, and lapses
+      The erythromycin entry's record joins both SNOMED records, which no row joins to each other, so its Same has
+      three members. Version 2 drops SNOMED 91931000's row and keeps SNOMED 372694001's: no member is joined to each
+      other one, so the Same is run again on version 2, which joins two.
+
+      Given Eve enters "erythromycin" on 2026-05-03 at 09:00
+      And the matcher runs on the records of that entry on 2026-05-03 at 09:05 (erythromycin-matched)
+      And version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
+      When the matcher rechecks on 2026-05-05 at 09:00
+      Then that step wrote these matcher judgments:
+        | justification    | members                                       | used                                                                                                                  |
+        | same mapped code | allergy SNOMED 372694001, allergy RxNorm 4053 | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy SNOMED 372694001, version 1 of allergy RxNorm 4053 |
+      And the matcher's same mapped code of allergy SNOMED 372694001, allergy SNOMED 91931000 and allergy RxNorm 4053 has lapsed
+      And the matcher's same mapped code of allergy SNOMED 372694001 and allergy RxNorm 4053 counts
 
   Rule: M8. A reference version's description is written only if the pod lacks it
     A rule list version's description also describes each of its rows, named <version>#<the local name of its rule

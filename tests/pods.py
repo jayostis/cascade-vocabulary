@@ -11,12 +11,14 @@ import pytest
 from rdflib import URIRef
 from rdflib.namespace import RDF
 
-from contract import LAYOUT, PROV, CASCADE, ROOT, derivations, query, questions, written
+from contract import LAYOUT, PROV, CASCADE, QUERIES, ROOT, derivations, named, query, questions, written
 from engines import ENGINES, Store, parsed
+from naming import ni_name
 
 ADDRESS = "https://pod.example/"
 DERIVED = "urn:cascade:derived:"
 ENTRY = "urn:cascade:entry:"
+KEPT = "membersJoinedByCurrentTableVersion"
 LAYOUT_GRAPH = "urn:cascade:pod-layout"
 
 
@@ -65,15 +67,59 @@ def layout():
 
 
 def derive(store, lens):
-    """Runs each derivation and the lens in turn, adding its triples to the store and then all of them as the lens's
-    graph, and returns the triples each added by its path."""
+    """Runs each derivation and the lens in turn, the claims M7 keeps across table versions just before the lens, adding
+    its triples to the store and then all of them as the lens's graph, and returns the triples each added by its path."""
     held, added = store.triples(), {}
     for relative in derivations(lens):
+        if relative == named("lenses")[lens]:
+            added[KEPT] = kept(store) - held
+            store.add(added[KEPT])
+            held |= added[KEPT]
         added[relative] = store.construct(query(relative)) - held
         store.add(added[relative])
         held |= added[relative]
     store.add(set().union(*added.values()), DERIVED + lens)
     return added
+
+
+STALE_CLAIMS = """
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+SELECT DISTINCT ?claim ?now ?hash ?member WHERE {
+  ?claim prov:wasAttributedTo cascade:CascadeMatcher ; cascade:verdict cascade:Same ; cascade:matcherRule ?rule ;
+         prov:used ?input ; prov:hadMember ?member .
+  ?assertion cascade:assertedClaim ?claim .
+  FILTER NOT EXISTS { ?retraction prov:invalidated ?assertion }
+  ?input prov:specializationOf ?series .
+  ?series a cascade:ReferenceSeries ; pav:hasCurrentVersion ?now .
+  FILTER (?now != ?input)
+  ?ruleList pav:hasCurrentVersion ?current .
+  ?row cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
+}"""
+
+
+@cache
+def comparisons():
+    return {ni_name(path.read_bytes()): path.read_text(encoding="utf-8")
+            for path in sorted((QUERIES / "matcher").glob("*.rq"))}
+
+
+def kept(store):
+    """M7: each matcher claim with an assertion no retraction invalidates that used a version of a series whose current
+    version is another, and whose rule's query in the current rule list, over that current version's rows, joins one of
+    its members to each of the others."""
+    claims = {}
+    for row in store.select(STALE_CLAIMS):
+        claims.setdefault((row["claim"], row["now"], str(row["hash"])), set()).add(row["member"])
+    joined = {}
+    for _, _, hash in claims:
+        if hash not in joined:
+            text = comparisons().get(hash)
+            joined[hash] = set() if text is None else {
+                (row["record"], row["other"], row.get("origin")) for row in store.select(text)}
+    return {(claim, CASCADE.membersJoinedByCurrentTableVersion, now) for (claim, now, hash), members in claims.items()
+            if any(all((one, other, now) in joined[hash] for other in members - {one}) for one in members)}
 
 
 def write(store):
