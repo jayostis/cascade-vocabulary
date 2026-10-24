@@ -543,8 +543,10 @@ Feature: The matcher's procedure
   Rule: M13. A match comes from one table version's rows, and each version that joins a pair gives a judgment of its own
     A rule naming a table kind reads the rows of the current version of every series of that kind, each in the graph
     named by the version's IRI, and the descriptions of those versions and their series, as references.ttl states
-    them, beside the pod. A comparison reads rows only inside GRAPH ?origin, so it joins rows of one version only, and
-    the judgment uses that version. Rows never reach the pod.
+    them, beside the pod, and no other version's: the pod's own descriptions of reference versions are left out, so a
+    version the pod describes and the tables do not load revises none of those read. A comparison reads rows only
+    inside GRAPH ?origin, so it joins rows of one version only, and the judgment uses that version. Rows never reach
+    the pod.
 
     Gus's references hold a second vaccine group series, "Clinic vaccine groups", that also puts CVX 140 in the
     influenza group. M3 takes his three shots in the order 140, 141, 150, so FluLaval's claim by the clinic's groups

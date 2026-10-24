@@ -100,8 +100,10 @@ def binds_record_outermost(tree):
 
 
 @pytest.mark.parametrize("relative", sorted(contract.named("matcher").values()))
-def test_every_comparison_binds_record_in_a_triple_of_its_outermost_group(relative):
+def test_every_comparison_binds_record_in_a_triple_of_its_outermost_group_whose_brace_is_its_first(relative):
     assert binds_record_outermost(parsed(relative)), relative
+    head, where, _ = contract.query(relative).partition("\nWHERE {")
+    assert where and "{" not in head, relative
 
 
 @pytest.mark.parametrize("form", [
