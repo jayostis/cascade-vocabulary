@@ -391,23 +391,24 @@ Feature: Naming
       And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" does not count
       And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" has not lapsed
 
-    Example: a pod that already holds a release's retractions, from another writer, adopts the release and writes no migration
-      There is no sync step yet: the other writer's two retraction files arrive as Hana's judgment steps file them, as
-      they are (N10).
-
+    Example: a writer that received another writer's retractions adopts the release and writes no migration of its own
       Given a new pod for Hana on 2026-07-01 at 09:00
       And the pod is opened with the tables "app" on 2026-07-01 at 09:01
       And Hana enters "flu-shots" on 2026-07-02 at 09:00
       And the matcher runs on the records of that entry on 2026-07-02 at 09:05
-      And Hana files the judgment "fluarix-retracted-by-1b" on 2026-07-02 at 12:00
-      And Hana files the judgment "fluad-retracted-by-1b" on 2026-07-02 at 12:01
-      When the pod is opened with the tables "app-wrong-rule" on 2026-07-03 at 09:00
+      And a second writer of the pod
+      And the pod is opened with the tables "app-wrong-rule" on 2026-07-03 at 09:00
+      And the steps that follow are the second writer's
+      And the second writer receives the files of the first writer on 2026-07-03 at 10:00
+      When the pod is opened with the tables "app-wrong-rule" on 2026-07-03 at 11:00 (second-open)
       Then that step wrote these retractions:
         | justification | members | inputs | name |
       And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" does not count
       And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" has not lapsed
       When the query is:
         """
-        SELECT ?migration WHERE { ?migration a cascade:RuleListVersionMigration }
+        SELECT (COUNT(?migration) AS ?migrations) WHERE { ?migration a cascade:RuleListVersionMigration }
         """
-      Then it answers nothing
+      Then it answers:
+        | migrations |
+        | 1          |
