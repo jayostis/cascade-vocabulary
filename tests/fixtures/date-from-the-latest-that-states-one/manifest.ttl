@@ -8,6 +8,7 @@
   rdfs:comment "A condition entry whose latest member states no date." ;
   mf:entries (
     <#where-the-entry-takes-its-date-from>
+    <#what-it-shows>
   ) .
 
 <#where-the-entry-takes-its-date-from> a mf:QueryEvaluationTest ;
@@ -16,3 +17,10 @@
   mf:action [ qt:query <where-the-entry-takes-its-date-from.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <where-the-entry-takes-its-date-from.srj> .
+
+<#what-it-shows> a mf:QueryEvaluationTest ;
+  mf:name "what-it-shows" ;
+  rdfs:comment "The entry shows the onset of the member chosen for its date, which the view names by no term of its own, and the name both chosen members state." ;
+  mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-it-shows.srj> .

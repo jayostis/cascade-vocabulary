@@ -4,15 +4,15 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <> a mf:Manifest ;
-  rdfs:label "labels-only-derived-entries" ;
-  rdfs:comment "An allergy, and a view file as a runtime writes it, naming the allergy's entry relative to its view." ;
+  rdfs:label "labels-entries-as-their-views-name-them" ;
+  rdfs:comment "A condition with an onset: its entry is a placeholder in the derived state and, in the conditions view's graph, resolved against the view's address." ;
   mf:entries (
     <#the-entries-labelled>
   ) .
 
 <#the-entries-labelled> a mf:QueryEvaluationTest ;
   mf:name "the-entries-labelled" ;
-  rdfs:comment "Only the derived entry is labelled: the runtime renames it when it writes the view, so a written entry is never labelled again." ;
+  rdfs:comment "The entry the view names is labelled, with the date of the member its date is taken from; the placeholder, which no view holds, is not." ;
   mf:action [ qt:query <the-entries-labelled.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-entries-labelled.srj> .

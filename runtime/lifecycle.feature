@@ -40,7 +40,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: ON-HOLD" "status: d/c" }
           ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
-          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
+          ?entry cascade:statusLifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -54,7 +54,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: none" "status: blank" }
           ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
-          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
+          ?entry cascade:statusLifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -68,7 +68,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: completed" "status: draft" }
           ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
-          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
+          ?entry cascade:statusLifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -82,7 +82,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: discontinued" "status: aborted" "status: nullified" "status: suspended" }
           ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
-          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
+          ?entry cascade:statusLifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -98,7 +98,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: no longer taking" "status: NotActive" "status: currently taking" }
           ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
-          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
+          ?entry cascade:statusLifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
@@ -113,7 +113,7 @@ Feature: Medication lifecycle
         SELECT ?medication ?lifecycle ?step WHERE {
           VALUES ?medication { "status: see pharmacy" "status: new" }
           ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
-          ?entry cascade:lifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
+          ?entry cascade:statusLifecycle ?lifecycle ; cascade:statusLifecycleStep ?step .
         }
         """
       Then it answers:
