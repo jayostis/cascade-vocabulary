@@ -58,8 +58,8 @@ Feature: Naming
   Rule: N4. A revision is named the same way, from its own triples
     decisions/naming.md, row "revision". cascade:RevisionNamingRule. Its placeholder is urn:cascade:this-revision, and
     its triples are: rdf:type cascade:Revision, cascade:revisionOf, cascade:version, prov:generatedAtTime (the import's
-    or the session's start), prov:wasGeneratedBy (the import or the session), prov:wasRevisionOf (the record's previous
-    revision, if it has one), and every other statement on the arrival except bridge:arrivedAs and prov:wasGeneratedBy,
+    or the session's start), prov:wasGeneratedBy (the import or the session), prov:wasRevisionOf (each of the record's
+    heads, if it has any), and every other statement on the arrival except bridge:arrivedAs and prov:wasGeneratedBy,
     oa:hasSource the document among them, its selector written as the revision's oa:hasSelector: a node of the
     revision, <revision>#selector, an oa:FragmentSelector for a JSON document, its rdf:value the selector in RFC 6901
     section 6's URI fragment form and its dcterms:conformsTo https://www.rfc-editor.org/rfc/rfc6901, or an
@@ -127,6 +127,7 @@ Feature: Naming
     https://github.com/jayostis/cascade-runtime-js#unidentified for one whose commit it cannot read. A matcher run is a
     cascade:MatcherRun and a prov:Activity, prov:wasInformedBy the import or entry session whose records it takes, and is
     written only when it writes something else. The kit's check 4 holds each of a replay's acts to it.
+    A sync is a new random UUID too, a cascade:SyncFromAnotherWriter and a prov:Activity, whose examples are sync.feature's.
 
     Example: an import is named by a new random UUID, which no input gives
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -281,14 +282,17 @@ Feature: Naming
 
   Rule: N14. Every act leaves one snapshot, chained to the writer's previous one
     decisions/naming.md, row "snapshot". A node in the act's own file, a cascade:Snapshot, prov:wasGeneratedBy the act
-    and named by cascade:SnapshotNamingRule. Its cascade:firstParentSnapshot is the writer's previous snapshot, which the
-    writer keeps outside the pod as git keeps HEAD; a writer's first snapshot has none, and a writer that lost its last
-    one is a new writer: a writer handed a head the pod does not hold as a snapshot is one too. Its
-    cascade:mergedParentSnapshot values are the heads it merges: on a writer's first, every snapshot the pod holds that
-    no snapshot names as a parent. Its cascade:setHash is the set hash of the set the writer holds once the act's other
-    files are written, its own file left out, and its name binds the act's description. Its cascade:fileAddedToSet
-    values are the paths of the files of the set the act wrote, its own file among them, and of no other; the set and
-    the hash are cascade:Snapshot's and cascade:setHash's. A step that is no act, a new pod's creation, a reference
+    and named by cascade:SnapshotNamingRule. Its cascade:firstParentSnapshot is the writer's last snapshot, its
+    previous one or the head it took as git fast-forwards (S4), which the writer keeps outside the pod as git keeps
+    HEAD; a writer's first snapshot has none, and a writer that lost its last one is a new writer: a writer handed a
+    head the pod does not hold as a snapshot is one too. Its cascade:mergedParentSnapshot values are the heads it
+    merges: on a writer's first, every snapshot the pod holds that no snapshot names as a parent, and on a sync, every
+    such snapshot but the first parent (S3). Its cascade:setHash is the set hash of the set the writer holds once the
+    act's other files are written, its own file left out, and its name binds the act's description. Its
+    cascade:fileAddedToSet values are the paths of the files of the set the act wrote, its own file among them, and of
+    no other; a sync's names none, since its file is in the syncs' folder, outside the set, and the files that arrived
+    are named by the snapshots of the acts that wrote them (S3). The set and the hash are cascade:Snapshot's and
+    cascade:setHash's. A step that is no act, a new pod's creation, a reference
     version's arrival or a person's judgment, leaves no snapshot, and the files it writes are in the next snapshot's set
     but named by none. An act that writes nothing leaves no snapshot. tests/vectors/snapshot/ holds the vectors every
     implementation reproduces.
