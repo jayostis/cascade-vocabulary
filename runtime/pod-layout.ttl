@@ -3,6 +3,7 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix pim: <http://www.w3.org/ns/pim/space#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix solid: <http://www.w3.org/ns/solid/terms#> .
 
 [] a cascade:Placement ; solid:forClass cascade:Subject ; solid:instanceContainer <subject/> ; cascade:subfolderPrefixLength 2 .
@@ -23,6 +24,8 @@
 
 [] a cascade:Placement ; solid:forClass prov:Activity ; solid:instanceContainer <provenance/activities/> ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass prov:Activity ; cascade:forSubjectsOf prov:used ; solid:instanceContainer <provenance/imports/> ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:SyncFromAnotherWriter ; solid:instanceContainer <provenance/syncs/> ; cascade:subfolderPrefixLength 2 .
+cascade:SyncFromAnotherWriter rdfs:subClassOf prov:Activity .
 [] a cascade:Placement ; solid:forClass prov:Entity ; solid:instanceContainer <provenance/documents/> ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; cascade:storesBytes true ; solid:instanceContainer <attachments/sha-256/> .
 
