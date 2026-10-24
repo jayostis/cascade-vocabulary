@@ -9,9 +9,11 @@
 :table2 prov:specializationOf :table ; pav:version "2" ; prov:wasRevisionOf :table1 .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
-:rules1 prov:specializationOf :rules ; pav:version "1" ;
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameMappedCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeRule ;
     cascade:queryHash :sameMappedCodeQueryBefore .
-:rules4 prov:specializationOf :rules ; pav:version "4" ; prov:wasRevisionOf :rules1 ;
+:rules4 prov:specializationOf :rules ; pav:version "4" ; prov:wasRevisionOf :rules1 .
+:rules4SameMappedCodeRule cascade:rowOfRuleListVersion :rules4 ; cascade:matcherRule cascade:SameMappedCodeRule ;
     cascade:queryHash :sameMappedCodeQuery .
 
 :solo a cascade:ReferenceSeries ; rdfs:label "Kit table" .

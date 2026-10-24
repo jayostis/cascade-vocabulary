@@ -12,5 +12,10 @@
 :groups1 prov:specializationOf :groups ; pav:version "1" .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
-:rules1 prov:specializationOf :rules ; pav:version "1" ;
-    cascade:queryHash :sameCodeQuery , :sameMappedCodeAndDateQuery , :sameMappedCodeQuery .
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
+:rules1SameMappedCodeAndDateRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeAndDateRule ;
+    cascade:queryHash :sameMappedCodeAndDateQuery .
+:rules1SameMappedCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:queryHash :sameMappedCodeQuery .

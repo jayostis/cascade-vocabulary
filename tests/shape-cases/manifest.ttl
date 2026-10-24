@@ -196,6 +196,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MachineSameShape ] ] .
 
+<#rule-list-row/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <rule-list-row/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#rule-list-row/two-hashes> a sht:Validate ;
+  mf:action [ sht:dataGraph <rule-list-row/two-hashes.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RuleListVersionRowShape ; sh:resultPath cascade:queryHash ] ] .
+
 <#claim-assertion/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <claim-assertion/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

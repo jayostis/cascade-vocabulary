@@ -12,14 +12,14 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :changedRuleUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :changedRule ;
-    cascade:assertedUnderRuleListVersion :rules1 ; cascade:assertedWithQueryHash :sameMappedCodeQuery .
+    cascade:assertedUnderRuleListVersion :rules1 .
 
 :assertedAgain a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ;
     prov:hadMember :n1 , :n2 ; prov:used :n1Version , :n2Version ;
     cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :assertedAgainUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :assertedAgain ;
-    cascade:assertedUnderRuleListVersion :rules1 ; cascade:assertedWithQueryHash :sameMappedCodeQuery .
+    cascade:assertedUnderRuleListVersion :rules1 .
 
 :assertedAgainUnderRules2 a cascade:ClaimAssertion ; cascade:assertedClaim :assertedAgain ;
-    cascade:assertedUnderRuleListVersion :rules2 ; cascade:assertedWithQueryHash :sameMappedCodeQueryChanged .
+    cascade:assertedUnderRuleListVersion :rules2 .

@@ -267,6 +267,43 @@ Feature: The matcher's procedure
         | members                                                                                                     |
         | allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex", allergy RxNorm 8591 "Natural rubber latex" |
 
+    Example: a Different filed before a record is matched splits its star, so it names both records the Different keeps apart
+      Cleo judges the two latex allergies different before the third entry's is matched, so they are two entries
+      when it is, and its claim holds both, through which the three are one entry (decisions/judgments.md: a
+      Different wins only for its pair).
+
+      Given Cleo files the judgment "about-r" on 2026-03-04 at 07:00
+      And Cleo enters "second-entry" on 2026-03-04 at 08:00
+      And the matcher runs on the records of that entry on 2026-03-04 at 08:01 (match-second-entry)
+      And Cleo files the judgment "latex-different" on 2026-03-05 at 12:00
+      And Cleo enters "third-entry" on 2026-03-06 at 08:00
+      When the matcher runs on the records of that entry on 2026-03-06 at 08:01 (match-third-entry)
+      Then that step wrote these matcher judgments:
+        | justification | members                                                                                                     |
+        | same code     | allergy RxNorm 8591 "Natural rubber latex", allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex" |
+      And the allergies view holds these entries:
+        | members                                                                                                     |
+        | allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex", allergy RxNorm 8591 "Natural rubber latex" |
+
+    Example: a Different filed after a record is matched gives the same entries, once a recheck files its star again
+      Here Cleo judges the two latex allergies different after the third entry's claim named only the least of them;
+      the next recheck re-runs that claim's rule over the entries the Different split (M7) and files the claim the
+      other order gave, so the entries are the same in both orders.
+
+      Given Cleo files the judgment "about-r" on 2026-03-04 at 07:00
+      And Cleo enters "second-entry" on 2026-03-04 at 08:00
+      And the matcher runs on the records of that entry on 2026-03-04 at 08:01 (match-second-entry)
+      And Cleo enters "third-entry" on 2026-03-05 at 08:00
+      And the matcher runs on the records of that entry on 2026-03-05 at 08:01 (match-third-entry)
+      And Cleo files the judgment "latex-different" on 2026-03-05 at 12:00
+      When the matcher rechecks on 2026-03-05 at 13:00
+      Then that step wrote these matcher judgments:
+        | justification | members                                                                                                     |
+        | same code     | allergy RxNorm 8591 "Natural rubber latex", allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex" |
+      And the allergies view holds these entries:
+        | members                                                                                                     |
+        | allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex", allergy RxNorm 8591 "Natural rubber latex" |
+
   Rule: M6. The matcher reads no person's Same or Different
 
     Example: the matcher joins the pair a person called different, and not the pair a person called the same

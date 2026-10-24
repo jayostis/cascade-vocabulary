@@ -17,8 +17,9 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:matcherRule cascade:SameCodeAndPeriodRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :byCodeAndPeriodUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byCodeAndPeriod ;
-    cascade:assertedUnderRuleListVersion :rules1 ; cascade:assertedWithQueryHash :sameCodeAndPeriodQuery .
+    cascade:assertedUnderRuleListVersion :rules1 .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
-:rules1 prov:specializationOf :rules ; pav:version "1" ;
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeAndPeriodRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeAndPeriodRule ;
     cascade:queryHash :sameCodeAndPeriodQuery .

@@ -16,10 +16,12 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :threeMembersUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :threeMembers ;
-    cascade:assertedUnderRuleListVersion :rules1 ; cascade:assertedWithQueryHash :sameCodeQuery .
+    cascade:assertedUnderRuleListVersion :rules1 .
 
 :twoMembersUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :twoMembers ;
-    cascade:assertedUnderRuleListVersion :rules1 ; cascade:assertedWithQueryHash :sameCodeQuery .
+    cascade:assertedUnderRuleListVersion :rules1 .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
-:rules1 prov:specializationOf :rules ; pav:version "1" ; cascade:queryHash :sameCodeQuery .
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .

@@ -18,6 +18,13 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
-:rules1 prov:specializationOf :rules ; pav:version "1" ; cascade:queryHash :sameCodeQuery , :sameMappedCodeQuery .
-:rules2 prov:specializationOf :rules ; pav:version "2" ; prov:wasRevisionOf :rules1 ;
-    cascade:queryHash :sameCodeQuery , :sameMappedCodeQueryChanged .
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
+:rules1SameMappedCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:queryHash :sameMappedCodeQuery .
+:rules2 prov:specializationOf :rules ; pav:version "2" ; prov:wasRevisionOf :rules1 .
+:rules2SameCodeRule cascade:rowOfRuleListVersion :rules2 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
+:rules2SameMappedCodeRule cascade:rowOfRuleListVersion :rules2 ; cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:queryHash :sameMappedCodeQueryChanged .
