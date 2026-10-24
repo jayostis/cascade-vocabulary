@@ -223,13 +223,31 @@ def test_the_name_shape_takes_each_server_vectors_name_for_its_address_and_no_ot
     assert {str(node) for node in report.objects(None, SH.focusNode)} == {vector.expected for vector in found}
 
 
+def test_the_name_shape_leaves_an_address_holding_a_delete_character_alone():
+    pod = Graph()
+    pod.add((URIRef("urn:uuid:11111111-1111-8111-8111-111111111106"), CASCADE.sourceUrl,
+             URIRef("https://fhir.example/r4/Observation/obs-9")))
+    conforms, _, _ = validate(pod, shacl_graph=shapes())
+    assert conforms
+
+
+def name_shape_only():
+    graph = Graph()
+    for triple in shapes().triples((CASCADE.ServerRecordNameShape, None, None)):
+        graph.add(triple)
+    for constraint in shapes().objects(CASCADE.ServerRecordNameShape, SH.sparql):
+        for triple in shapes().triples((constraint, None, None)):
+            graph.add(triple)
+    return graph
+
+
 @pytest.mark.parametrize("kit", KITS, ids=lambda kit: kit.name)
 def test_every_record_of_a_kit_pod_with_a_source_address_has_the_name_that_address_gives(kit):
     pod = Graph()
     for folder in ("scripted-input", "expected"):
         for file in sorted((kit / folder).rglob("*.ttl")):
             pod += parsed(file)
-    _, report, _ = validate(pod, shacl_graph=shapes())
+    _, report, _ = validate(pod, shacl_graph=name_shape_only())
     named_wrong = {str(report.value(result, SH.focusNode)) for result in report.objects(None, SH.result)
                    if report.value(result, SH.sourceShape) == CASCADE.ServerRecordNameShape}
     assert named_wrong == set()
