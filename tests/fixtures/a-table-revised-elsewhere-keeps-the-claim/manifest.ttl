@@ -8,6 +8,7 @@
   rdfs:comment "A product ingredient table whose version 2 revises version 1 and changes only the row of a code no record holds, and the matcher's claim joining a brand allergy and its ingredient's by version 1's rows, asserted under a rule list version whose same mapped code row runs same-active-ingredient.rq." ;
   mf:entries (
     <#claims-that-count>
+    <#whether-it-counts>
   ) .
 
 <#claims-that-count> a mf:QueryEvaluationTest ;
@@ -16,3 +17,10 @@
   mf:action [ qt:query <claims-that-count.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <claims-that-count.srj> .
+
+<#whether-it-counts> a mf:QueryEvaluationTest ;
+  mf:name "whether-it-counts" ;
+  rdfs:comment "The claim's one row says it counts, and none says it was made under a version since replaced: the current version joins its members." ;
+  mf:action [ qt:query <../../../queries/questions/judgment/Whether%20it%20counts.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <whether-it-counts.srj> .

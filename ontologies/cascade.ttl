@@ -587,7 +587,8 @@ cascade:countsUnderLens a owl:DatatypeProperty ;
 cascade:membersJoinedByCurrentTableVersion a owl:ObjectProperty ;
     rdfs:label "members joined by current table version"@en ;
     rdfs:comment "Derived: the current version of a series the matcher's claim used another version of, whose rows the query the current rule list runs for the claim's rule joins its members by, one of them to each of the others (M7)."@en ;
-    rdfs:domain cascade:Judgment .
+    rdfs:domain cascade:Judgment ;
+    rdfs:range prov:Entity .
 
 cascade:lapsed a owl:DatatypeProperty ;
     rdfs:label "lapsed"@en ;

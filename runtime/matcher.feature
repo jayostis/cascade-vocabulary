@@ -384,7 +384,10 @@ Feature: The matcher's procedure
     on. A runtime derives, just before the lens, cascade:membersJoinedByCurrentTableVersion from each such Same to
     that version, from the current rule list and versions the pod names and the rows its tables hold of them; the
     lens reads it (queries/lenses/everyday.rq). Filing a new claim for every table-reading claim at each adopted
-    version would be about 960k claims in ten years (decisions/naming.md).
+    version would be about 960k claims in ten years (decisions/naming.md). The cost of asking the rule rather than
+    naming the rows in the claim is that the answer depends on the tables a device holds: where the pod's current
+    version of the series is one its tables do not hold, nothing joins and the Same does not count there, so a read
+    names that version as unheld, as an open does (O2), rather than differ silently from a device that holds it.
 
     Otherwise the rule runs on the members that are still the subject's, under the current version of the series
     whose version the Same used, and files their claim (M5, M9) if at least two still match: a new claim when that
@@ -408,7 +411,7 @@ Feature: The matcher's procedure
       Then that step wrote no file
       And the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
         | justification    | members                                       | used                                                                                                                  | name                                          |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:c02e8faa-6c7a-8b8a-96a0-d23a30f6d8a7 |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:3ef73b7b-1c3a-8361-ae71-5ca6e809c68f |
       And the matcher's same mapped code of allergy SNOMED 373270004 and allergy RxNorm 7980 counts
 
     Example: a Same a person retracted is not rechecked
@@ -454,6 +457,21 @@ Feature: The matcher's procedure
         | justification    | members                                      |
         | same mapped code | allergy SNOMED 372687004, allergy RxNorm 723 |
       And the matcher's same mapped code of allergy SNOMED 372687004 and allergy RxNorm 723 has lapsed
+
+    Example: a Same of three whose current version joins only two of them is filed again for those two, and lapses
+      The erythromycin entry's record joins both SNOMED records, which no row joins to each other, so its Same has
+      three members. Version 2 drops SNOMED 96034006's row and keeps SNOMED 372694001's: no member is joined to each
+      other one, so the Same is run again on version 2, which joins two.
+
+      Given Eve enters "erythromycin" on 2026-05-03 at 09:00
+      And the matcher runs on the records of that entry on 2026-05-03 at 09:05 (erythromycin-matched)
+      And version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
+      When the matcher rechecks on 2026-05-05 at 09:00
+      Then that step wrote these matcher judgments:
+        | justification    | members                                       | used                                                                                                                  |
+        | same mapped code | allergy SNOMED 372694001, allergy RxNorm 4053 | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy SNOMED 372694001, version 1 of allergy RxNorm 4053 |
+      And the matcher's same mapped code of allergy SNOMED 372694001, allergy SNOMED 96034006 and allergy RxNorm 4053 has lapsed
+      And the matcher's same mapped code of allergy SNOMED 372694001 and allergy RxNorm 4053 counts
 
   Rule: M8. A reference version's description is written only if the pod lacks it
     A rule list version's description also describes each of its rows, named <version>#<the local name of its rule
