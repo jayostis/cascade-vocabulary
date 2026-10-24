@@ -69,9 +69,10 @@ def said(data):
     ('<urn:x:i> cascade:variantInterpreted <urn:uuid:5b1f2c3e-7a4d-4e8b-9c60-1d2e3f4a5b6c> .', None),
     ('<urn:x:i> cascade:variantInterpreted "a variant" .', "named by the variant record's IRI"),
     ('<urn:x:i> cascade:variantInterpreted <urn:x:a>, <urn:x:b> .', "named by the variant record's IRI"),
-    ('<urn:x:i> cascade:acmgEvidenceCode "PVS1", "BP7" .', None),
-    ('<urn:x:i> cascade:acmgEvidenceCode "PM7" .', "28 criteria"),
-    ('<urn:x:i> cascade:statementObject "a condition" .', "at most one object"),
+    ('<urn:x:i> cascade:acmgEvidenceCode "PM2_supporting", "PS3_not_met", "no_criteria_met" .', None),
+    ('<urn:x:i> cascade:acmgEvidenceCode "PM2_moderate" .', "evidence outcome"),
+    ('<urn:x:i> cascade:objectCondition "a condition" .', "at most one object"),
+    ('<urn:x:i> cascade:objectCondition <urn:x:a>, <urn:x:b> .', "at most one object"),
 ])
 def test_the_genomics_shapes_accept_each_normal_form_and_refuse_each_break_with_its_message(data, message):
     found = said(data)
@@ -155,9 +156,8 @@ ACMG_FIVE = {"Pathogenic", "LikelyPathogenic", "UncertainSignificance", "LikelyB
 
 
 def test_the_five_acmg_values_are_matched_by_the_labels_clinvar_spells_them_with():
-    spelled = {str(concept).rpartition("#")[2]: str(kinds().value(concept, SKOS.prefLabel))
-               for concept in members(CASCADE.ClinVarClassifications)
-               if str(concept).rpartition("#")[2] in ACMG_FIVE}
+    spelled = {name: str(kinds().value(CASCADE[name], SKOS.prefLabel)) for name in ACMG_FIVE}
+    assert {name for name in ACMG_FIVE if (CASCADE[name], SKOS.inScheme, CASCADE.ClinVarClassifications) in kinds()} == ACMG_FIVE
     assert spelled == {"Pathogenic": "Pathogenic", "LikelyPathogenic": "Likely pathogenic",
                        "UncertainSignificance": "Uncertain significance", "LikelyBenign": "Likely benign", "Benign": "Benign"}
 

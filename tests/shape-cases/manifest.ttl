@@ -365,7 +365,7 @@
   mf:action [ sht:dataGraph <record-variant-interpretation/object-and-evidence-codes.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
-<#record-variant-interpretation/object-of-a-wrong-kind> a sht:Validate ;
-  mf:action [ sht:dataGraph <record-variant-interpretation/object-of-a-wrong-kind.ttl> ] ;
+<#record-variant-interpretation/two-objects> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant-interpretation/two-objects.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:VariantInterpretationShape ; sh:resultPath cascade:statementObject ] ] .
+              sh:result [ sh:sourceShape cascade:VariantInterpretationShape ; sh:resultPath cascade:objectCondition ] ] .

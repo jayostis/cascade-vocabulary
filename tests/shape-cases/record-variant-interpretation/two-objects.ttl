@@ -3,15 +3,14 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<urn:uuid:6bc08305-7365-8294-ba8b-683d21e294cd> a cascade:VariantInterpretation ;
-    cascade:sourceUrl <https://fhir.example/Observation/record-variant-interpretation-valid> .
+<urn:uuid:9efb08cd-81c8-8a00-bcb3-b1d23ca529c2> a cascade:VariantInterpretation ;
+    cascade:sourceUrl <https://fhir.example/Observation/record-variant-interpretation-two-objects> .
 
-:version prov:specializationOf <urn:uuid:6bc08305-7365-8294-ba8b-683d21e294cd> ;
+:version prov:specializationOf <urn:uuid:9efb08cd-81c8-8a00-bcb3-b1d23ca529c2> ;
     cascade:patient :patient ;
     cascade:variantInterpreted <urn:uuid:5b1f2c3e-7a4d-4e8b-9c60-1d2e3f4a5b6c> ;
     cascade:acmgClassification cascade:LikelyPathogenic ;
     cascade:interpretedDate "2024-03-12"^^xsd:date ;
-    cascade:statementObject <urn:uuid:9e2f4b71-5c8a-4d36-b0e1-7a3c6d8f1b24> ;
+    cascade:objectCondition <urn:uuid:9e2f4b71-5c8a-4d36-b0e1-7a3c6d8f1b24> , <urn:uuid:3a8e5d17-2c94-4b60-9f1a-6d7e0b4c8a25> ;
     cascade:workflowStatus "final" .
 
-<urn:uuid:9e2f4b71-5c8a-4d36-b0e1-7a3c6d8f1b24> a cascade:GeneticVariantFinding .
