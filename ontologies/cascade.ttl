@@ -1664,13 +1664,18 @@ cascade:setHash a owl:DatatypeProperty ;
 
 cascade:fileAddedToSet a owl:DatatypeProperty ;
     rdfs:label "file added to set"@en ;
-    rdfs:comment "Of a snapshot, the path relative to the pod of each file of the set its act wrote, its act's own file among them, and of no other: what the run that wrote a file is known from. A file of the set that no act wrote, as a new pod's, a reference version's or a person's judgment, is named by none."@en ;
+    rdfs:comment "Of a snapshot, the path relative to the pod of each file of the set its act wrote, its act's own file among them unless a sync's, and of no other, so a sync's names none: what the run that wrote a file is known from. A file of the set that no act wrote, as a new pod's, a reference version's or a person's judgment, is named by none."@en ;
     rdfs:domain cascade:Snapshot ;
     rdfs:range xsd:string .
 
 cascade:MatcherRun a owl:Class ;
     rdfs:label "matcher run"@en ;
     rdfs:comment "An act of the matcher over the records an import, an entry session or a sync brought, or over the pod at an open or a recheck; prov:wasInformedBy the act whose records it takes."@en ;
+    rdfs:subClassOf prov:Activity .
+
+cascade:SyncFromAnotherWriter a owl:Class ;
+    rdfs:label "sync from another writer"@en ;
+    rdfs:comment "An act of the receiving writer, written when a file of the set arrived from another writer that it lacked: prov:wasInformedBy each act whose file arrived, its snapshot a merge of the heads that arrived. Its file is outside the set."@en ;
     rdfs:subClassOf prov:Activity .
 
 # The matcher and its rules

@@ -11,10 +11,14 @@ An example's `Given` and `When` steps happen in order, its `Background`'s first,
 creates. Its `Then` steps read the pod as it stood after the last of them, under the `everyday` lens, unless a step
 reads it at another point.
 
+**Writers.** The pod has one writer, the first, until `a second writer of the pod` starts another. Each `Given` and
+`When` step is taken by one writer: the first until a step names another, and then the writer the last such step
+named. A `Then` reads the pod as the writer that took the step read at holds it.
+
 A `Given` or `When` step may end with a label in parentheses, `(E13)`, which names it. Otherwise a step is named by the
 name it quotes: an import by its export's, its download's or its pull's, a download's extension kept, an entry or a
 judgment by its file's, an open by its tables folder's. The pod's creation, a reference version's arrival, a matcher run and a recheck are named `pod`,
-`reference`, `matcher` and `recheck`. Two steps of one example never share a name: where they would, the later is
+`reference`, `matcher` and `recheck`, a second writer's start `writer` and a writer's receiving of files `sync`. Two steps of one example never share a name: where they would, the later is
 labelled. A name is letters, digits, `-`, `_` and `.`, so that `urn:cascade:step:NAME` below is an IRI.
 
 **The dataset a `Then` reads** is the one each step has always been read against. Each file of the pod is a named
@@ -23,7 +27,8 @@ and the files built from that state, the views, the labels, the type index and `
 pod's layout, [`pod-layout.ttl`](pod-layout.ttl) read with the pod's address as its base, is the graph
 `urn:cascade:pod-layout`. The default graph is the union of all of these. One more graph, `urn:cascade:steps`, outside
 the default graph, lists what each step wrote, up to the one read at: `<urn:cascade:step:NAME> prov:generated <file>`,
-each file new to the pod, `attachments/` included.
+each file new to the pod, `attachments/` included. A file that arrived from another writer is listed under the step
+that wrote it there, never under the step that received it.
 
 The dataset also holds the story's tables. At a read point, the version of each series current then (the tables of the
 last `open` step that was not refused, from that step on, else `references/`: its shipped versions and those that have
@@ -101,6 +106,7 @@ list's rows are `[] a cascade:RuleListRow`: no row shape and no N12 cover them.
 | `{view}` | `allergies\|conditions\|immunizations\|procedures\|medications\|lab-results\|patient-profile\|variants\|variant-interpretations` | `allergies` | a view |
 | `{lens}` | `[a-z]+` | `export` | a lens under `queries/lenses/` |
 | `{count}` | `no file\|1 file\|\d+ files` | `no file`, `1 file`, `3 files` | how many files |
+| `{writer}` | `the first writer\|the second writer` | `the second writer` | a writer of the pod: the first, which created it, or the second |
 
 A parameter matches the regular expression beside it, each `\|` written so in the table being an alternation. A time in
 a table is written the same way, with or without its `at`.
@@ -191,7 +197,8 @@ A reference version arrives: the version so numbered of the series so labelled, 
 
 ### `the matcher runs on the records of {step} on {time}`
 
-The matcher runs, taking the records whose first revision came from that step's import or entry session.
+The matcher runs, taking the records whose first revision came from that step's import or entry session, or, for a
+step that received files, from an act its sync names (M1).
 
 ### `the matcher rechecks on {time}`
 
@@ -200,6 +207,21 @@ The matcher runs with no step's records: a recheck.
 ### `the pod is opened with the tables {name} on {time}`
 
 An app opens the pod with the tables in `tables/<name>/` (O1, O2). They are the story's tables from this step on.
+
+### `a second writer of the pod`
+
+A second writer of the pod starts, holding a copy of every file the pod holds as it stands and no snapshot of its own:
+a new writer (N14). It writes nothing, and the steps after it are still taken by the writer that took the step before.
+
+### `the steps that follow are {writer}'s`
+
+The steps after this one are taken by that writer. It changes nothing.
+
+### `{writer} receives the files of {writer} on {time}`
+
+The first writer named is given every file the second holds in a folder the layout gives by `solid:instanceContainer`,
+the views' folder aside, writes each it lacks, and writes a sync if `sync.feature` says it does. The steps after it are
+the receiving writer's.
 
 ### `the pod is read as it stood after {step}`, `the pod is read as it stood after {step}, under the {lens} lens`
 

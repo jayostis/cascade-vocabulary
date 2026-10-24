@@ -127,6 +127,7 @@ Feature: Naming
     https://github.com/jayostis/cascade-runtime-js#unidentified for one whose commit it cannot read. A matcher run is a
     cascade:MatcherRun and a prov:Activity, prov:wasInformedBy the import or entry session whose records it takes, and is
     written only when it writes something else. The kit's check 4 holds each of a replay's acts to it.
+    A sync is a new random UUID too, a cascade:SyncFromAnotherWriter and a prov:Activity, whose examples are sync.feature's.
 
     Example: an import is named by a new random UUID, which no input gives
       Given a new pod for Ada on 2026-01-01 at 09:00
