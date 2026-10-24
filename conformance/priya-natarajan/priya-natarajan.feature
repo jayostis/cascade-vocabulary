@@ -326,12 +326,13 @@ Feature: Priya Natarajan's pod
     class row: it maps to lisinopril (29046), and FDA classes lisinopril anhydrous (1546022), which maps to lisinopril
     too, as an angiotensin converting enzyme inhibitor (N0000175562) acting by that mechanism (N0000000181).
 
-    Opening writes six files, by O1: her pod names no version of the vocabulary's rule list, so version 9 judges every
-    pair it joins, four Sames, and the open describes that list and its version.
+    Opening writes seven files, by O1: her pod names no version of the vocabulary's rule list, so version 9 judges every
+    pair it joins, four Sames, the open describes that list and its version, and the run's act holds its snapshot (N7,
+    N14).
 
     Example: her potassium's code joins the names version the app holds
       When the pod is opened with the tables "app-names-classes" on 2025-08-13 at 09:00
-      Then "app-names-classes" wrote 6 files
+      Then "app-names-classes" wrote 7 files
       When the query is:
         """
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -375,11 +376,11 @@ Feature: Priya Natarajan's pod
     alternatives (R-a), and the anion gap (33037-3) as optional. Her two potassium entries are in it, and she has no
     sodium and no chloride: the panel is hers to pick, and nothing says her potassium was drawn in it.
 
-    Opening writes six files, by O1, as it does for app-names-classes: the same rule list judges the same pairs.
+    Opening writes seven files, by O1, as it does for app-names-classes: the same rule list judges the same pairs.
 
     Example: her potassium is in the electrolytes panel, which misses her sodium and chloride
       When the pod is opened with the tables "app-panels" on 2025-08-13 at 09:00
-      Then "app-panels" wrote 6 files
+      Then "app-panels" wrote 7 files
       When the query "tables/panel-results.rq" is asked
       Then it answers:
         | panel                          | member                        | sequence | required | via                            | origin                                                                  | entry                       |
@@ -402,7 +403,7 @@ Feature: Priya Natarajan's pod
     Example: her estradiol is an estrogen through estradiol
       Given Priya enters "estradiol" on 2025-08-13 at 08:00
       When the pod is opened with the tables "app-precise" on 2025-08-13 at 09:00
-      Then "app-precise" wrote 6 files
+      Then "app-precise" wrote 7 files
       When the query "tables/medication-classes-through-precise-ingredients.rq" is asked
       Then it answers:
         | entry                                                              | medication                   | class                                                    | relation                              | origin                                                                            | through                                            | stated |

@@ -720,7 +720,8 @@ Feature: Alex Rivera's pod
           UNION { GRAPH ?file { ?revision a cascade:Revision } }
           UNION { GRAPH ?file { ?document a prov:Entity } FILTER NOT EXISTS { ?document prov:specializationOf ?series } }
           UNION { GRAPH ?file { ?import a prov:Activity ; prov:used ?used } }
-          UNION { GRAPH ?file { ?session a prov:Activity } FILTER NOT EXISTS { ?session prov:used ?used } }
+          UNION { GRAPH ?file { ?session a prov:Activity } FILTER NOT EXISTS { ?session prov:used ?used }
+                  FILTER NOT EXISTS { ?session a cascade:MatcherRun } }
         }
         GROUP BY ?step
         """

@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "imports" ;
-  rdfs:comment "Two imports: the first brings one record's first revision, the second revises it and brings another record." ;
+  rdfs:comment "Two imports: the first brings one record's first revision, the second revises it and brings another record; then a matcher run, an act that brings no revision." ;
   mf:entries (
     <#what-each-import-brought-in>
   ) .
 
 <#what-each-import-brought-in> a mf:QueryEvaluationTest ;
   mf:name "what-each-import-brought-in" ;
-  rdfs:comment "Every revision each import added, with its record and version, in the order the imports started." ;
+  rdfs:comment "Every revision each import added, with its record and version, in the order the imports started; the matcher run brought none, so it has no row." ;
   mf:action [ qt:query <../../../queries/questions/pod/What%20each%20import%20brought%20in.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-each-import-brought-in.srj> .

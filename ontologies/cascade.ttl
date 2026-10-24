@@ -1607,8 +1607,8 @@ cascade:ViewEntryNamingRule a owl:NamedIndividual ;
 
 cascade:SnapshotNamingRule a owl:NamedIndividual ;
     rdfs:label "snapshot naming rule"@en ;
-    rdfs:comment "The snapshot of an act. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the act's IRI; its cascade:firstParentSnapshot as a list of none or one; its cascade:mergedParentSnapshot values as a list; its cascade:setHash as written. A list is its count, then its distinct items in code point order."@en ;
-    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+    rdfs:comment "The snapshot of an act. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the act's IRI; the act's description, every triple of the act's file but those whose subject is the snapshot, named as cascade:VersionNamingRule names a version but with its blank nodes labelled by RDFC-1.0; its cascade:firstParentSnapshot as a list of none or one; its cascade:mergedParentSnapshot values as a list; its cascade:setHash as written. A list is its count, then its distinct items in code point order."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.w3.org/TR/rdf-canon/> .
 
 cascade:ServerNamingRule a owl:NamedIndividual ;
     rdfs:label "server naming rule"@en ;
@@ -1638,18 +1638,40 @@ cascade:RetractionNamingRule a owl:NamedIndividual ;
 
 # Snapshots
 
+cascade:Snapshot a owl:Class ;
+    rdfs:label "snapshot"@en ;
+    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file named as N9 names a file in a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder and a sync's act file: a file the layout gives by solid:instance changes in place, and is outside it, and so is any other file in those folders."@en ;
+    rdfs:subClassOf prov:Entity .
+
 cascade:firstParentSnapshot a owl:ObjectProperty ;
     rdfs:label "first parent snapshot"@en ;
-    rdfs:comment "Of a snapshot, the writer's own previous one; a writer's first snapshot has none. Its name takes it."@en .
+    rdfs:comment "Of a snapshot, the writer's own previous one; a writer's first snapshot has none. Its name takes it."@en ;
+    rdfs:domain cascade:Snapshot ;
+    rdfs:range cascade:Snapshot .
 
 cascade:mergedParentSnapshot a owl:ObjectProperty ;
     rdfs:label "merged parent snapshot"@en ;
-    rdfs:comment "Of a sync's snapshot, each head among the snapshots that arrived: an arrived snapshot no held snapshot names as a parent. Its name takes them."@en .
+    rdfs:comment "Of a snapshot, each head it merges: an arrived snapshot no held snapshot names as a parent, for a sync's; every head the writer holds, for a writer's first. Its name takes them."@en ;
+    rdfs:domain cascade:Snapshot ;
+    rdfs:range cascade:Snapshot .
 
 cascade:setHash a owl:DatatypeProperty ;
     rdfs:label "set hash"@en ;
-    rdfs:comment "Of a snapshot, the order-free hash of the set of files it covers. Two writers whose latest snapshots carry equal set hashes hold one set."@en ;
+    rdfs:comment "Of a snapshot, the order-free hash of the set of files the writer held when its act ended, every file of it but the act's own file, which the snapshot's name binds instead: Bitcoin Core's MuHash3072 over one member per file, the file's path relative to the pod in UTF-8, a 0x00 byte and the SHA-256 of its bytes, written as the 64 lower-case hexadecimal digits of its SHA-256 digest in byte order, where Bitcoin Core writes them reversed. Two writers hold one set when the set hashes of what each holds agree."@en ;
+    rdfs:domain cascade:Snapshot ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://github.com/bitcoin/bitcoin/blob/a773e1e33b349dc819b5a0edc1c7a4839dc73b48/src/crypto/muhash.cpp> , <https://cseweb.ucsd.edu/~mihir/papers/inchash.pdf> .
+
+cascade:fileAddedToSet a owl:DatatypeProperty ;
+    rdfs:label "file added to set"@en ;
+    rdfs:comment "Of a snapshot, the path relative to the pod of each file of the set its act wrote, its act's own file among them, and of no other: what the run that wrote a file is known from. A file of the set that no act wrote, as a new pod's, a reference version's or a person's judgment, is named by none."@en ;
+    rdfs:domain cascade:Snapshot ;
     rdfs:range xsd:string .
+
+cascade:MatcherRun a owl:Class ;
+    rdfs:label "matcher run"@en ;
+    rdfs:comment "An act of the matcher over the records an import, an entry session or a sync brought, or over the pod at an open or a recheck; prov:wasInformedBy the act whose records it takes."@en ;
+    rdfs:subClassOf prov:Activity .
 
 # The matcher and its rules
 

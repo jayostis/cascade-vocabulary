@@ -168,7 +168,8 @@ Feature: Arrivals
       And the pod neither names nor stores the document "known-source-version/apple_health_export/clinical-records/AllergyIntolerance-latex.json"
 
   Rule: A11. An import that kept any document writes its description once
-    That description is the label, the start and the association the Bridge gave, and prov:used for each kept document.
+    That description is the label, the start and the association the Bridge gave, the runtime that performed the import
+    (N7), and prov:used for each kept document. The import's snapshot (N14) is in its file.
     An import that kept nothing writes nothing, not even itself.
 
     Example: an import writes its label, its start, its association and each document it kept
@@ -194,6 +195,7 @@ Feature: Arrivals
         | rdfs:label                | "Apple Health export"                |
         | prov:startedAtTime        | "2026-01-02T10:00:00Z"^^xsd:dateTime |
         | prov:qualifiedAssociation | "fhir-r4"                            |
+        | prov:wasAssociatedWith    | the runtime                          |
         | prov:used                 | the document of allergy "Peanut"     |
         | prov:used                 | the document of allergy "Latex"      |
         | prov:used                 | the document of allergy "Shellfish"  |
@@ -228,6 +230,7 @@ Feature: Arrivals
         | rdfs:label                | "C-CDA download"                     |
         | prov:startedAtTime        | "2026-06-07T09:00:00Z"^^xsd:dateTime |
         | prov:qualifiedAssociation | "ccda"                               |
+        | prov:wasAssociatedWith    | the runtime                          |
         | prov:used                 | the document "allergy-summary.xml"   |
 
     Example: a pull's import uses its bundle.json as its one document, and its pull.json as none
@@ -253,6 +256,7 @@ Feature: Arrivals
         | rdfs:label                | "FHIR pull"                             |
         | prov:startedAtTime        | "2026-06-08T09:00:00Z"^^xsd:dateTime    |
         | prov:qualifiedAssociation | "fhir-r4"                               |
+        | prov:wasAssociatedWith    | the runtime                             |
         | prov:used                 | the document "allergy-pull/bundle.json" |
       And the pod neither names nor stores the document "allergy-pull/pull.json"
 

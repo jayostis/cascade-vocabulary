@@ -5,8 +5,9 @@ import base64
 import hashlib
 import ipaddress
 import re
+import struct
 
-from pyoxigraph import BlankNode, NamedNode, RdfFormat, Triple, parse
+from pyoxigraph import BlankNode, CanonicalizationAlgorithm, Dataset, NamedNode, Quad, RdfFormat, Triple, parse
 
 CASCADE = "https://ns.cascadeprotocol.org/cascade#"
 NAMESPACE = "90c60849-c5ef-4ca6-bfb8-8662bd07d2b5"
@@ -234,9 +235,62 @@ def table_row_name(source, predicate, target, panel_sequence=None):
     return v8_name("TableRowNamingRule", [source, predicate, target, *extra])
 
 
-def snapshot_name(act, first_parent, merged_parents, set_hash):
-    """The snapshot of one act; first_parent is None on a writer's first snapshot."""
-    return v8_name("SnapshotNamingRule", [act, *counted([] if first_parent is None else [first_parent]),
+MUHASH_MODULUS = 2 ** 3072 - 1103717
+CHACHA20_CONSTANTS = (0x61707865, 0x3320646E, 0x79622D32, 0x6B206574)
+
+
+def _chacha20_block(key, counter):
+    """RFC 8439 §2.3, its nonce zero: a block of the keystream Bitcoin Core's ChaCha20Aligned gives."""
+    state = [*CHACHA20_CONSTANTS, *struct.unpack("<8I", key), counter, 0, 0, 0]
+    x = state[:]
+
+    def quarter(a, b, c, d):
+        for p, q, r, shift in ((a, b, d, 16), (c, d, b, 12), (a, b, d, 8), (c, d, b, 7)):
+            x[p] = (x[p] + x[q]) & 0xFFFFFFFF
+            x[r] ^= x[p]
+            x[r] = ((x[r] << shift) | (x[r] >> (32 - shift))) & 0xFFFFFFFF
+
+    for _ in range(10):
+        quarter(0, 4, 8, 12), quarter(1, 5, 9, 13), quarter(2, 6, 10, 14), quarter(3, 7, 11, 15)
+        quarter(0, 5, 10, 15), quarter(1, 6, 11, 12), quarter(2, 7, 8, 13), quarter(3, 4, 9, 14)
+    return struct.pack("<16I", *((a + b) & 0xFFFFFFFF for a, b in zip(x, state)))
+
+
+def _num3072(member):
+    """Bitcoin Core's MuHash3072::ToNum3072: the ChaCha20 keystream under the member's SHA-256, 384 bytes read
+    little-endian."""
+    key = hashlib.sha256(member).digest()
+    return int.from_bytes(b"".join(_chacha20_block(key, counter) for counter in range(6)), "little")
+
+
+def muhash3072(members):
+    """Bitcoin Core's MuHash3072 over the byte strings, each inserted once: the SHA-256 of the product of their
+    numbers modulo 2^3072 - 1103717, as 384 bytes little-endian. Bitcoin Core writes the digest byte-reversed."""
+    product = 1
+    for member in members:
+        product = product * _num3072(member) % MUHASH_MODULUS
+    return hashlib.sha256(product.to_bytes(384, "little")).digest()
+
+
+def set_hash(files):
+    """cascade:setHash: MuHash3072 over one member per file, its path relative to the pod in UTF-8, a 0x00 byte and
+    the SHA-256 of its bytes, written as 64 lower-case hex digits. files: each path and the SHA-256 of its bytes."""
+    return muhash3072(path.encode("utf-8") + b"\x00" + digest for path, digest in dict(files).items()).hex()
+
+
+def act_description_name(triples):
+    """The act's description, every triple of its file but the snapshot's, named as cascade:VersionNamingRule names a
+    version but with its blank nodes labelled by RDFC-1.0."""
+    dataset = Dataset(Quad(t.subject, t.predicate, t.object) for t in triples)
+    dataset.canonicalize(CanonicalizationAlgorithm.RDFC_1_0)
+    term = lambda t: f"_:{t.value}" if isinstance(t, BlankNode) else canonical(t)  # noqa: E731
+    return ni_name("".join(sorted({f"{term(q.subject)} {term(q.predicate)} {term(q.object)} .\n"
+                                   for q in dataset})).encode("utf-8"))
+
+
+def snapshot_name(act, description, first_parent, merged_parents, set_hash):
+    """The snapshot of one act; description is act_description_name's; first_parent is None on a writer's first."""
+    return v8_name("SnapshotNamingRule", [act, description, *counted([] if first_parent is None else [first_parent]),
                                           *counted(merged_parents), set_hash])
 
 
@@ -264,7 +318,7 @@ def named(rule, inputs):
         "AssertionNamingRule": lambda: assertion_name(*inputs),
         "RetractionNamingRule": lambda: retraction_name(*inputs),
         "TableRowNamingRule": lambda: table_row_name(*inputs),
-        "SnapshotNamingRule": lambda: snapshot_name(inputs[0], *(inputs[1] or [None]), inputs[2], inputs[3]),
+        "SnapshotNamingRule": lambda: snapshot_name(inputs[0], inputs[1], *(inputs[2] or [None]), inputs[3], inputs[4]),
         "ViewEntryNamingRule": lambda: view_entry_name(*inputs),
     }
     return one_of[rule]()
