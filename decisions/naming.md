@@ -99,7 +99,7 @@ appears here only as evidence for a judgment.
 | record from a document | FHIR documents | named by the document and a selector; an id the generator minted is the document's, never the hospital's; a `urn:uuid` fullUrl is never identity across documents | borrowed from FHIR's promise, uniqueness within one bundle only |
 | record from C-CDA | CDA `id` roots; Sequoia Data Usability "same ID for unchanged data" | custodian and patient scopes, then the entry's CDA `id` root and extension, so the same statement in two documents from one system is one record; two entries of one document with one `id` and different content fall back to document-and-selector names and a finding says the source broke its own definition | borrowed from the networks' SHALL; diverges from the document row because CDA ids are measured stable where generator UUIDs are not |
 | record from an entry | | hash of the session's IRI and the draft's position | ours |
-| server, organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | records: a server by the base URL the client used; an organisation by server plus `Organization/{id}` from a server, and from a document by its business identifier, a C-CDA custodian's `id` root and extension or a FHIR document's `Organization.identifier`; what they report sits on versions | borrowed from PROV for the class; a versioned record typed as an Agent, which PROV allows |
+| server, organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | records: a server by the base URL the client used; an organisation by server plus `Organization/{id}` from a server, and from a document by its business identifier, a C-CDA `id` or a FHIR `Organization.identifier` as the paragraph below the table maps and picks it; what they report sits on versions | borrowed from PROV for the class; a versioned record typed as an Agent, which PROV allows |
 | version | git blob; RFC 6920; RDFC-1.0 | `ni:` hash of RDFC-1.0 canonical N-Quads of exactly its triples (a sort, since no blank node is allowed), business identifiers nested and sorted | borrowed; diverges from FHIR's and openEHR's per-system version ids |
 | source's own version | openEHR `creating_system_id`; FHIR `versionId` | a nested node on the revision, never in a name | diverges: not visible in a name |
 | revision | git commit; trusty URIs | self-hashed over its own triples, carrying its act's id, `rec:asOf`, `prov:generatedAtTime`, and the record's heads it saw as `prov:wasRevisionOf` | borrowed; `ni:` form rather than trusty URI syntax; `prov:wasRevisionOf` used for the pod's own observation DAG |
@@ -118,10 +118,17 @@ appears here only as evidence for a judgment.
 
 An organization version's identifier is W3C ORG's `org:identifier`, a `skos:notation`, whose literal datatype names
 the identifier system: `"1234567893"^^<http://hl7.org/fhir/sid/us-npi>`; an identifier with no system is a plain string.
-A C-CDA `id` follows HL7's CDA-to-FHIR identifier mapping: root and extension give the extension as the value with datatype
-`urn:oid:<root>` (`urn:uuid:<root>` for a UUID root); a root alone gives `urn:oid:<root>` (or `urn:uuid:<root>`) as the value
-with datatype `urn:ietf:rfc:3986`. An organization a document names is named by that literal's datatype IRI and lexical
-form, so its name and its version state one identifier byte for byte. A name is `foaf:name`; an address is
+A C-CDA `id` follows HL7's CDA-to-FHIR identifier mapping (https://hl7.org/fhir/us/ccda/en/mappingGuidance.html, "CDA id →
+FHIR Identifier"): a root that is a known identifier system becomes its URI, and root and extension give the extension as
+the value with that URI as datatype, else `urn:oid:<root>` (`urn:uuid:<root>` for a UUID root); a root alone gives
+`urn:oid:<root>` (or `urn:uuid:<root>`) as the value with datatype `urn:ietf:rfc:3986`, and a known system's root alone is
+no identifier. A FHIR system `urn:oid:<root>` of a known system is that URI too. The known systems are those of FHIR's
+identifier registry (https://hl7.org/fhir/R4/identifier-registry.html) that an organization in a source here carries: the
+NPI, `2.16.840.1.113883.4.6`, as `http://hl7.org/fhir/sid/us-npi`. So one NPI names one organization record in either
+format. An organization a document names is named by the literal of one identifier its version carries, its datatype IRI
+and lexical form, so its name and its version state one identifier byte for byte: of the identifiers that are an NPI or a
+system rooted at an OID or a UUID, the NPI, else the least by code point of datatype IRI, then lexical form, whatever
+order the document lists them in. A name is `foaf:name`; an address is
 `cascade:organizationAddress`, one string per address. A document names its custodian and its author organization by
 their records, in `cascade:CustodianRole` and `cascade:AuthorRole` (#212).
 
