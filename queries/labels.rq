@@ -1,11 +1,10 @@
-# A name for every record, version, revision, document, judgment, reference version, entry and patient profile, made from
-# what each says: its kind, its name, where it came from and when; a machine's claim, which gives no time, by the start
-# of its name instead. Names only help people read; nothing depends on them.
+# A name for every record, version, revision, document, judgment, retraction, reference version, entry and patient
+# profile, made from what each says: its kind, its name, where it came from and when; a machine's claim, which gives no
+# time, by the start of its name instead. Names only help people read; nothing depends on them.
 # An entry is labelled as the view holding it names it: a view is built before this file, and its graph holds each entry
 # resolved against the view's address (N13), so the placeholder only the derived state holds is never labelled.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -84,14 +83,28 @@ WHERE {
       OPTIONAL { ?who rdfs:label ?machine }
       OPTIONAL { ?thing prov:qualifiedAttribution/prov:hadRole ?role }
       OPTIONAL { ?thing prov:hadMember/^prov:specializationOf/cascade:displayName ?about }
-      OPTIONAL { ?thing npx:retracts/cascade:verdict ?retracted }
-      OPTIONAL { ?thing npx:retracts/prov:hadMember/^prov:specializationOf/cascade:displayName ?retractedAbout }
-      BIND (CONCAT(COALESCE(REPLACE(STR(?verdict), "^.*#", ""), "Retraction"), " · ",
+      BIND (CONCAT(REPLACE(STR(?verdict), "^.*#", ""), " · ",
                    COALESCE(?machine, IF(?role = cascade:PatientRole, "the patient", "a person")), " · ",
                    IF(BOUND(?t), SUBSTR(STR(?t), 1, 10), SUBSTR(REPLACE(STR(?thing), "^.*[:/#]", ""), 1, 8)), " · ",
-                   IF(BOUND(?verdict), COALESCE(?about, "a patient profile"),
-                      CONCAT("of ", COALESCE(REPLACE(STR(?retracted), "^.*#", ""), "a judgment"), " · ",
-                             COALESCE(?retractedAbout, "a patient profile")))) AS ?l)
+                   COALESCE(?about, "a patient profile")) AS ?l)
+    }
+    GROUP BY ?thing }
+  UNION
+  { SELECT ?thing (MIN(?l) AS ?label)
+    WHERE {
+      ?thing a prov:Activity ; prov:invalidated ?retracted .
+      FILTER NOT EXISTS { ?thing rdfs:label [] }
+      OPTIONAL { ?thing prov:wasAssociatedWith ?who }
+      OPTIONAL { ?thing prov:startedAtTime ?t }
+      OPTIONAL { ?who rdfs:label ?named }
+      OPTIONAL { ?thing prov:qualifiedAssociation/prov:hadRole ?role }
+      OPTIONAL { ?retracted cascade:assertedClaim?/cascade:verdict ?retractedVerdict }
+      OPTIONAL { ?retracted cascade:assertedClaim?/prov:hadMember/^prov:specializationOf/cascade:displayName ?retractedAbout }
+      BIND (CONCAT("Retraction · ",
+                   COALESCE(?named, IF(BOUND(?who), IF(?role = cascade:PatientRole, "the patient", "a person"), "a release")), " · ",
+                   IF(BOUND(?t), SUBSTR(STR(?t), 1, 10), SUBSTR(REPLACE(STR(?thing), "^.*[:/#]", ""), 1, 8)), " · of ",
+                   COALESCE(REPLACE(STR(?retractedVerdict), "^.*#", ""), "a judgment"), " · ",
+                   COALESCE(?retractedAbout, "a patient profile")) AS ?l)
     }
     GROUP BY ?thing }
   UNION

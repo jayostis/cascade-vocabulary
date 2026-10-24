@@ -1,13 +1,19 @@
-# Read from the view alone, as an app would: one row for each interpretation entry that names the variant it interprets,
+# Read from the view as an app would: one row for each interpretation entry that names the variant it interprets,
 # newest first within a variant. ?report is the interpretation's entry and ?variant the variant's entry, each as the other
-# pod questions give an entry's IRI; ?classification is the genomics: IRI of the ACMG value the report states, none for a
-# report whose answer is not one of the five, and ?date the day it was issued.
+# pod questions give an entry's IRI; ?classification is the cascade: IRI of the ACMG value the report states, none for a
+# report whose answer is not one of the five, and ?date the day it was issued. ?lab is the organization record the view
+# attributes the report to, none for a report that names no lab, and ?labName that record's current name.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 
-SELECT DISTINCT ?report ?variant ?classification ?date
+SELECT DISTINCT ?report ?variant ?classification ?date ?lab ?labName
 WHERE {
   ?report cascade:variantInterpreted ?variant ; cascade:mergedFrom [] .
   OPTIONAL { ?report cascade:acmgClassification ?classification }
   OPTIONAL { ?report cascade:interpretedDate ?date }
+  OPTIONAL { ?report prov:wasAttributedTo ?lab .
+             OPTIONAL { ?lab pav:hasCurrentVersion/foaf:name ?labName } }
 }
 ORDER BY ?variant DESC(?date) ?report

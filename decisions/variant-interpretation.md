@@ -1,8 +1,8 @@
 # The variant interpretation
 
-Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the review on #202. Terms:
-`genomics:VariantInterpretation`, `acmgClassification`, `variantInterpreted`, `interpretedDate`, `objectCondition`,
-`acmgEvidenceCode`, and the concepts `Pathogenic`, `LikelyPathogenic`, `UncertainSignificance`, `LikelyBenign`,
+Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the review on #202; the lab applied on
+2026-10-24 (#219). Terms: `genomics:VariantInterpretation`, `acmgClassification`, `variantInterpreted`,
+`interpretedDate`, `objectCondition`, `acmgEvidenceCode`, `prov:wasAttributedTo` on its version, and the concepts `Pathogenic`, `LikelyPathogenic`, `UncertainSignificance`, `LikelyBenign`,
 `Benign`. Replaces this note's own "it is unnamed" and "the record may be outside the document it came from", which
 yield to `naming.md`: the interpretation is named like any record, and `naming.md` never lets a `urn:uuid` be identity
 across documents; how a variant held from another document is reached is open. Applied in `genomics.shapes.ttl:83`,
@@ -71,7 +71,7 @@ verified). Research: #107's body (https://github.com/jayostis/cascade-vocabulary
 | which revision is current | `currency.md` | `currency.md`'s ladder; `interpretedDate` is content, not a rung | borrowed from `currency.md` |
 | condition | FHIR predicted phenotype 81259-4; VA-spec proposition's `objectCondition`; ClinVar RCV | `objectCondition`, at most one, the IRI of a `cascade:ProblemOrDiagnosis` record in the same document; none when the report states none | borrowed: VA-spec's name; the therapy objects wait (Why) |
 | evidence | FHIR evidence level 93044-6; VA-spec ACMG 2015 profile evidence outcomes; SEPIO | `acmgEvidenceCode`, any number of strings, each written as VA-spec's ACMG 2015 profile writes an evidence outcome (`PM2`, `PS3_moderate`, `PS3_not_met`, `no_criteria_met`) | borrowed: VA-spec's string form, copied as a pattern |
-| who called it | VA-spec contributions; ClinVar SCV submitter; `republishing-sources.md` organisation | not linked | diverged; open |
+| who called it | FHIR `Observation.performer`; VA-spec contributions; ClinVar SCV submitter; PROV-O `wasAttributedTo`; `republishing-sources.md` organisation | the version is `prov:wasAttributedTo` the lab's `cascade:Organization` record, at most one, named by `OrganizationNamingRule`; from FHIR, the one organisation record a Diagnostic Implication's `performer` names; none where it names none, or more than one, which the adapter reports | borrowed from PROV-O, the property judgments use; FHIR's performer as its source |
 | status | FHIR `Observation.status` | `clinical:status` | borrowed |
 | reclassification | ClinVar SCV versions | a new version, or a new report | ours |
 
@@ -95,6 +95,14 @@ state one, a panel's uncertain-significance call none (#107), so it is optional 
 `conditionQualifier` are left out: no source carries a therapy statement yet, and this is where to extend. VA-spec 1.1
 renamed the property `object`; we keep the 1.0 name, which says what the object is.
 
+
+**Why the version is attributed to the lab.** Which lab called a variant is what makes two calls of it two statements
+rather than one changed value, and the lab is an organisation record (`republishing-sources.md`). PROV-O's
+`wasAttributedTo` is the property a judgment names its author by, so "who said what" lists alike over a lab's call and a
+person's belief. It is on the version, since a version is what the lab stated, and at most one, since a report that
+names two labs does not say which made the call. The story (#138) shows no lab on the page, so no feature rule states
+it; the shape case `record-variant-interpretation/two-labs` and the fixture of "What each report says of a variant"
+test it (#219).
 
 **Why evidence codes as strings.** A report's ACMG evidence is the criteria it applied, with a strength and whether met,
 and VA-spec's ACMG 2015 profile writes each as one string; we copy its pattern so one string says all three. Its
@@ -131,16 +139,16 @@ found hard to compare (#107: "written as a code IRI, not a string").
   lab's organisation record, the property judgments use, so "who said what" lists alike over both. The five values are
   `skos:Concept`s of `cascade:ClinVarClassifications`, each `skos:exactMatch` its LOINC answer code; the class that typed
   them a second time is dropped, and the label clash ("Likely Pathogenic" against "Likely pathogenic") fixed, one IRI
-  per class. Applied in #219 part (a); the lab link is part (b).
+  per class. Applied in #219.
 - Cases neither the record nor a judgment frame handles, for that build: a somatic variant (AMP/ASCO/CAP tiers, not
   ACMG classes; a pharmacogenomic implication names a drug and a phenotype, not a pathogenicity); a VUS later resolved
   by a reissued report with a new id, which leaves both calls current unless the source declares the replacement.
 - Which revision is current follows `currency.md`'s ladder, not `interpretedDate`: the view
-  (`views/variant-interpretations.rq`) takes its classification and date from `cascade:leadMember` over
+  (`views/variant-interpretations.rq`) takes its classification, date and lab from `cascade:leadMember` over
   `pav:hasCurrentVersion`, both derived by the ladder (`runtime/currency.feature`, C2 and C6).
-- The lab is an organisation record (`republishing-sources.md`), and the interpretation rests on knowing which lab called
-  what; it does not link to it. Lean: the version points to the lab's organisation record, from the Diagnostic
-  Implication's `Observation.performer`; the property, and whether the variant links too, is open.
+- Whom a ClinVar interpretation is attributed to, the SCV's submitter or ClinVar, is left out of #219: the ClinVar
+  adapter attributes none. Lean: the submitter, as an organisation record named by its ClinVar organisation id.
+  Whether the variant record names its lab too is `variant-record.md`'s.
 - How a report reaches a variant it does not restate, held from another document: by a variant record in its own
   document that R12 or R13 joins, or by a term of its own. Lean: the first, since every case in the story points within
   its document.

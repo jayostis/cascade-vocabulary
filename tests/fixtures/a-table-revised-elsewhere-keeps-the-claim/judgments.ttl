@@ -1,0 +1,13 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+
+:byIngredient a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ;
+    prov:hadMember :brand , :ingredient ; prov:used :ingredients-1 , :brandVersion , :ingredientVersion ;
+    cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:byIngredientUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byIngredient ;
+    cascade:assertedUnderRuleListVersion :rules1 .

@@ -1,9 +1,14 @@
 @prefix : <urn:x:> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :subject a cascade:Subject .
+
+:lab a cascade:Organization .
+:labVersion prov:specializationOf :lab ; foaf:name "Harbourline Genetics" .
+:labRevision a cascade:Revision ; cascade:revisionOf :lab ; cascade:version :labVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :panel a cascade:GeneticVariantFinding .
 :panelVersion prov:specializationOf :panel ; cascade:patient :subject ; cascade:geneSymbol "MLH1" ; cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" .
@@ -20,7 +25,8 @@
 
 :panelReport a cascade:VariantInterpretation .
 :panelReportVersion prov:specializationOf :panelReport ; cascade:patient :subject ; cascade:variantInterpreted :panel ;
-    cascade:acmgClassification cascade:UncertainSignificance ; cascade:interpretedDate "2022-06-15"^^xsd:date ; cascade:workflowStatus "final" .
+    cascade:acmgClassification cascade:UncertainSignificance ; cascade:interpretedDate "2022-06-15"^^xsd:date ; cascade:workflowStatus "final" ;
+    prov:wasAttributedTo :lab .
 :panelReportRevision a cascade:Revision ; cascade:revisionOf :panelReport ; cascade:version :panelReportVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :exomeReport a cascade:VariantInterpretation .

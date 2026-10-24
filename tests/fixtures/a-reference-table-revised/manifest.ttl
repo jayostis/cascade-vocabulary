@@ -5,10 +5,11 @@
 
 <> a mf:Manifest ;
   rdfs:label "a-reference-table-revised" ;
-  rdfs:comment "One reference series whose second version revises its first." ;
+  rdfs:comment "One reference series, a product ingredient table, whose second version revises its first and changes the row that joined a brand allergy to its ingredient's, and the matcher's claim joining the two by the first version's rows, asserted under a rule list version whose same mapped code row runs same-active-ingredient.rq." ;
   mf:entries (
     <#the-current-reference-version>
     <#which-reference-versions-are-current>
+    <#claims-that-count>
   ) .
 
 <#the-current-reference-version> a mf:QueryEvaluationTest ;
@@ -24,3 +25,10 @@
   mf:action [ qt:query <../../../queries/questions/pod/Which%20reference%20versions%20are%20current.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <which-reference-versions-are-current.srj> .
+
+<#claims-that-count> a mf:QueryEvaluationTest ;
+  mf:name "claims-that-count" ;
+  rdfs:comment "The claim no longer counts, and has lapsed: the second version's rows do not join its members." ;
+  mf:action [ qt:query <claims-that-count.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <claims-that-count.srj> .

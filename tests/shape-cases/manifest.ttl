@@ -166,7 +166,7 @@
 <#judgment-erroneous/no-verdict> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-erroneous/no-verdict.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:VerdictOrRetractionShape ] ] .
+              sh:result [ sh:sourceShape cascade:JudgmentShape ; sh:resultPath cascade:verdict ] ] .
 
 <#judgment-erroneous/no-member> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-erroneous/no-member.ttl> ] ;
@@ -273,6 +273,15 @@
   mf:action [ sht:dataGraph <judgment-retraction/a-member.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:RetractionShape ; sh:resultPath prov:hadMember ] ] .
+
+<#judgment-retraction/by-a-release> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-retraction/by-a-release.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-retraction/neither-person-nor-release> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-retraction/neither-person-nor-release.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RetractionByPersonOrReleaseShape ] ] .
 
 <#view-allergies/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <view-allergies/valid.ttl> ] ;
@@ -398,6 +407,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:VariantInterpretationShape ; sh:resultPath cascade:objectCondition ] ] .
 
+<#record-variant-interpretation/two-labs> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant-interpretation/two-labs.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:VariantInterpretationShape ; sh:resultPath prov:wasAttributedTo ] ] .
+
 <#record-server/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-server/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
@@ -406,6 +420,21 @@
   mf:action [ sht:dataGraph <record-server/connect-client-id-twice.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ServerShape ; sh:resultPath cascade:connectClientId ] ] .
+
+<#record-server/named-by-another-base> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-server/named-by-another-base.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ServerNameShape ] ] .
+
+<#record-server/base-not-normalised> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-server/base-not-normalised.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ServerNameShape ] ] .
+
+<#record-server/base-unreadable> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-server/base-unreadable.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ServerNameShape ] ] .
 
 <#record-organization/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-organization/valid.ttl> ] ;
@@ -434,3 +463,7 @@
   mf:action [ sht:dataGraph <judgment-before/earlier-member-of-a-same.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:EarlierMemberShape ; sh:resultPath cascade:verdict ] ] .
+<#record-organization/names-a-patient> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-organization/names-a-patient.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath cascade:patient ] ] .

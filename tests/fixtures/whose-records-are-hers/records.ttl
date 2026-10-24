@@ -1,5 +1,6 @@
 @prefix : <urn:x:> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -31,4 +32,9 @@
 :ownRecord a cascade:AllergyOrIntolerance .
 :ownVersion prov:specializationOf :ownRecord ; cascade:allergen "Sesame" ; cascade:patient :subject .
 :ownRevision a cascade:Revision ; cascade:revisionOf :ownRecord ; cascade:version :ownVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:hospital a cascade:Organization .
+:hospitalVersion prov:specializationOf :hospital ; foaf:name "North Hospital" .
+:hospitalRevision a cascade:Revision ; cascade:revisionOf :hospital ; cascade:version :hospitalVersion ;
     prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
