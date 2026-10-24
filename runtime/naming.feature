@@ -57,17 +57,17 @@ Feature: Naming
 
   Rule: N4. A revision is named the same way, from its own triples
     decisions/naming.md, row "revision". cascade:RevisionNamingRule. Its placeholder is urn:cascade:this-revision, and
-    its triples are: rdf:type cascade:Revision, cascade:revisionOf, cascade:version, prov:generatedAtTime (the import's
-    or the session's start), prov:wasGeneratedBy (the import or the session), prov:wasRevisionOf (each of the record's
-    heads, if it has any), and every other statement on the arrival except bridge:arrivedAs and prov:wasGeneratedBy,
-    oa:hasSource the document among them, its selector written as the revision's oa:hasSelector: a node of the
-    revision, <revision>#selector, an oa:FragmentSelector for a JSON document, its rdf:value the selector in RFC 6901
-    section 6's URI fragment form and its dcterms:conformsTo https://www.rfc-editor.org/rfc/rfc6901, or an
-    oa:XPathSelector for an XML document, its rdf:value the selector. The vector revision-with-selector under
-    tests/vectors/naming/ names one.
+    its triples are: rdf:type cascade:Revision, cascade:revisionOf, cascade:version, prov:generatedAtTime (the start of
+    the import, the session or the connect), prov:wasGeneratedBy (the import, the session or the connect),
+    prov:wasRevisionOf (each of the record's heads, if it has any), and every other statement on the arrival except
+    bridge:arrivedAs and prov:wasGeneratedBy, oa:hasSource the document among them, its selector written as the
+    revision's oa:hasSelector: a node of the revision, <revision>#selector, an oa:FragmentSelector for a JSON document,
+    its rdf:value the selector in RFC 6901 section 6's URI fragment form and its dcterms:conformsTo
+    https://www.rfc-editor.org/rfc/rfc6901, or an oa:XPathSelector for an XML document, its rdf:value the selector. The
+    vector revision-with-selector under tests/vectors/naming/ names one.
 
-    No example names a revision: its name depends on a run, through the import's or the session's ID. A9's example pins
-    the triples it is named from.
+    No example names a revision: its name depends on a run, through the ID of the import, the session or the connect.
+    A9's example pins the triples it is named from.
 
   Rule: N5. A document is named by its bytes
     decisions/naming.md, row "document, finding". cascade:DocumentNamingRule: ni:///sha-256; followed by the unpadded
@@ -129,7 +129,8 @@ Feature: Naming
     written only when it writes something else. A rule list version migration is a new random UUID too, a
     cascade:RuleListVersionMigration and a prov:Activity, written only when it writes a retraction (N15). The kit's
     check 4 holds each of a replay's acts to it.
-    A sync is a new random UUID too, a cascade:SyncFromAnotherWriter and a prov:Activity, whose examples are sync.feature's.
+    A connect (A16) is named as an import is: a urn:uuid:, version 4, new on every connect. A sync is a new random UUID
+    too, a cascade:SyncFromAnotherWriter and a prov:Activity, whose examples are sync.feature's.
 
     Example: an import is named by a new random UUID, which no input gives
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -202,7 +203,7 @@ Feature: Naming
           GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
           FILTER NOT EXISTS { GRAPH ?file { ?revision a cascade:Revision } }
           FILTER NOT EXISTS { GRAPH ?file { ?import prov:used ?document } }
-          OPTIONAL { GRAPH ?file { ?thing a ?type FILTER (?type IN (cascade:AllergyOrIntolerance, prov:Entity)) } }
+          OPTIONAL { GRAPH ?file { ?thing a ?type FILTER (?type IN (cascade:AllergyOrIntolerance, cascade:Server, prov:Entity)) } }
           OPTIONAL { GRAPH ?file { ?thing prov:specializationOf ?record } }
           BIND(REPLACE(STR(?file), "^.*/", "") AS ?fileName)
         }
@@ -213,6 +214,7 @@ Feature: Naming
         | <urn:uuid:19bf6db0-83b8-8973-a79a-6b36138cb69b>             | "19bf6db0-83b8-8973-a79a-6b36138cb69b.ttl"                             |
         | <urn:uuid:fcdf6ee4-d11a-8ca6-8c7e-748d87af62e2>             | "fcdf6ee4-d11a-8ca6-8c7e-748d87af62e2.ttl"                             |
         | <urn:uuid:df9490a2-ae95-87ef-a856-b899697aaf11>             | "df9490a2-ae95-87ef-a856-b899697aaf11.ttl"                             |
+        | <urn:uuid:c3c2e8d8-6bc9-80ac-a26d-dc02b72065bf>             | "c3c2e8d8-6bc9-80ac-a26d-dc02b72065bf.ttl"                             |
         | <ni:///sha-256;E64aGZVmGmEPgF7RM5roCn_8WdUdfQAgE1LC9RS2V4E> | "13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl" |
         | <ni:///sha-256;8fNT3HoCWsm3G8msEdsnmRrSMiceLQPpXFV4a606pMo> | "f1f353dc7a025ac9b71bc9ac11db27991ad232271e2d03e95c55786bad3aa4ca.ttl" |
         | <ni:///sha-256;49M-53sf1aFpJGzpGpsKgRERjOpKg4VWYaHCBFi7Gqc> | "e3d33ee77b1fd5a169246ce91a9b0a8111118cea4a83855661a1c20458bb1aa7.ttl" |
