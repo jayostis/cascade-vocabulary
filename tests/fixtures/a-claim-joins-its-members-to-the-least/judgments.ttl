@@ -1,0 +1,25 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+
+:threeMembers a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
+    prov:hadMember :a3 , :a1 , :a2 ; prov:used :a1Version , :a2Version , :a3Version ;
+    cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:twoMembers a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
+    prov:hadMember :b2 , :b1 ; prov:used :b1Version , :b2Version ;
+    cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:threeMembersUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :threeMembers ;
+    cascade:assertedUnderRuleListVersion :rules1 ; cascade:assertedWithQueryHash :sameCodeQuery .
+
+:twoMembersUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :twoMembers ;
+    cascade:assertedUnderRuleListVersion :rules1 ; cascade:assertedWithQueryHash :sameCodeQuery .
+
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
+:rules1 prov:specializationOf :rules ; pav:version "1" ; cascade:queryHash :sameCodeQuery .
