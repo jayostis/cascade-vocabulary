@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "counts-under-a-version-that-keeps-its-query-hash" ;
+  rdfs:comment "A rule list whose version 2 revises version 1 and changes the same mapped code query only, and the matcher's same code claim, asserted under version 1 alone." ;
+  mf:entries (
+    <#everyday-counts>
+  ) .
+
+<#everyday-counts> a mf:QueryEvaluationTest ;
+  mf:name "everyday-counts" ;
+  rdfs:comment "The claim counts though no assertion is under the current version 2: version 2 runs the same code query it was asserted with." ;
+  mf:action [ qt:query <everyday-counts.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <everyday-counts.srj> .

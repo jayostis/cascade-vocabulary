@@ -746,8 +746,8 @@ cascade:appliesToClass a owl:ObjectProperty ;
 
 cascade:matcherRule a owl:ObjectProperty ;
     rdfs:label "matcher rule"@en ;
-    rdfs:comment "The matcher rule a row of a rule list runs: one of the rule terms R1 to R13 of runtime/matcher.feature. A claim's name takes it."@en ;
-    rdfs:domain cascade:RuleListRow .
+    rdfs:comment "The matcher rule a row of a rule list runs, or that a machine claim was made by: one of the rule terms R1 to R13 of runtime/matcher.feature. A claim's name takes it."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:RuleListRow cascade:Judgment ) ] .
 
 cascade:queryPath a owl:DatatypeProperty ;
     rdfs:label "query path"@en ;
@@ -759,6 +759,12 @@ cascade:queryHash a owl:ObjectProperty ;
     rdfs:label "query hash"@en ;
     rdfs:comment "The ni:///sha-256; name of the bytes of the rule's query file; a run whose file does not hash to it is refused."@en ;
     rdfs:domain cascade:RuleListRow .
+
+cascade:rowOfRuleListVersion a owl:ObjectProperty ;
+    rdfs:label "row of rule list version"@en ;
+    rdfs:comment "The rule list version a row belongs to, as a pod describes it: a version's description names each row <version>#<the rule term's local name>, with its cascade:matcherRule and cascade:queryHash, so a lens can compare the row for a claim's rule in two versions."@en ;
+    rdfs:domain cascade:RuleListRow ;
+    rdfs:range prov:Entity .
 
 # Table kinds, their rows and the codes rows name
 
@@ -1412,7 +1418,7 @@ cascade:MedicationEnteredInError a skos:Concept ;
 
 cascade:Judgment a owl:Class ;
     rdfs:label "judgment"@en ;
-    rdfs:comment "A conclusion about records, made by someone at a time; its members are prov:hadMember."@en ;
+    rdfs:comment "A conclusion about records, made by a person at a time or claimed by a machine, which gives no time; its members are prov:hadMember."@en ;
     rdfs:subClassOf prov:Collection .
 
 cascade:verdict a owl:ObjectProperty ;
@@ -1669,6 +1675,23 @@ cascade:setHash a owl:DatatypeProperty ;
 cascade:CascadeMatcher a prov:SoftwareAgent ;
     rdfs:label "Cascade matcher"@en ;
     rdfs:comment "Any runtime that follows runtime/matcher.feature and the Cascade rule list, as the maker of the judgments it writes; unversioned, since the runtime that ran is on the act."@en .
+
+cascade:ClaimAssertion a owl:Class ;
+    rdfs:label "claim assertion"@en ;
+    rdfs:comment "A machine claim asserted under a version of the rule list, named by cascade:AssertionNamingRule. A claim is asserted once for each query its rule has run with: a version whose row for the claim's rule carries the cascade:queryHash of that rule's row in a version the claim is already asserted under asserts nothing. It carries no time and names no run."@en ;
+    rdfs:subClassOf prov:Entity .
+
+cascade:assertedClaim a owl:ObjectProperty ;
+    rdfs:label "asserted claim"@en ;
+    rdfs:comment "The machine claim an assertion asserts."@en ;
+    rdfs:domain cascade:ClaimAssertion ;
+    rdfs:range cascade:Judgment .
+
+cascade:assertedUnderRuleListVersion a owl:ObjectProperty ;
+    rdfs:label "asserted under rule list version"@en ;
+    rdfs:comment "The version of the rule list an assertion asserts its claim under."@en ;
+    rdfs:domain cascade:ClaimAssertion ;
+    rdfs:range prov:Entity .
 
 cascade:SameCodeRule a owl:NamedIndividual ;
     rdfs:label "R1, same code"@en ;

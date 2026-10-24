@@ -52,7 +52,8 @@ def test_every_name_written_beside_its_inputs_follows_its_rule():
 
 
 def claims_written_with_what_they_used():
-    """Each kit claim a feature writes with its justification, members, what it used and its name, with its kit."""
+    """Each kit claim a feature writes with its justification, members, the rule list versions it is asserted under,
+    what it used and its name, with its kit."""
     for path, _, pickles in documents():
         kit = path.parent
         if kit.parent != ROOT / "conformance":
@@ -61,9 +62,9 @@ def claims_written_with_what_they_used():
             for step in pickle["steps"]:
                 header, *rows = [[cell["value"] for cell in row["cells"]]
                                  for row in step.get("argument", {}).get("dataTable", {}).get("rows", [])] or [[]]
-                if {"justification", "members", "used", "name"} <= set(header):
-                    yield from ((kit, *(row[header.index(column)] for column in ("justification", "members", "used",
-                                                                                "name"))) for row in rows)
+                columns = ("justification", "members", "asserted under", "used", "name")
+                if set(columns) <= set(header):
+                    yield from ((kit, *(row[header.index(column)] for column in columns)) for row in rows)
 
 
 def resolver(kit):
@@ -106,11 +107,12 @@ def test_every_claim_a_kit_writes_with_what_it_used_is_named_by_the_claim_rule_o
     claims = list(claims_written_with_what_they_used())
     assert len(claims) >= 11
     wrong = []
-    for kit, justified, members, used_labels, name in claims:
+    for kit, justified, members, asserted_under, used_labels, name in claims:
         record, used, justification, matcher_rule = resolver(kit)
         justified_as = justification(justified)
         uses = [used(label.strip()) for label in used_labels.split(",")]
-        rule = next(filter(None, (matcher_rule(u, justified_as) for u in uses if u.startswith("urn:uuid:"))))
+        rule = next(filter(None, (matcher_rule(used(label.strip()), justified_as)
+                                  for label in asserted_under.split(","))))
         computed = claim_name(CASCADE + "CascadeMatcher", rule, justified_as,
                               [record(m.strip()) for m in members.split(",")], uses)
         if computed != name:

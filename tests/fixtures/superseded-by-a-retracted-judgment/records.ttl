@@ -19,3 +19,5 @@
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :rules-1 prov:specializationOf :rules ; pav:version "1" .
+:rules-1SameCodeRule cascade:rowOfRuleListVersion :rules-1 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .

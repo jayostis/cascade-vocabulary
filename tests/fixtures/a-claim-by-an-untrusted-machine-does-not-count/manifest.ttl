@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-claim-by-an-untrusted-machine-does-not-count" ;
+  rdfs:comment "Two claims of one pair alike in every part but their maker, each asserted under the current rule list version: one by cascade:CascadeMatcher, one by another software agent." ;
+  mf:entries (
+    <#everyday-counts>
+  ) .
+
+<#everyday-counts> a mf:QueryEvaluationTest ;
+  mf:name "everyday-counts" ;
+  rdfs:comment "Everyday trusts persons and cascade:CascadeMatcher alone, so the other machine's claim does not count." ;
+  mf:action [ qt:query <everyday-counts.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <everyday-counts.srj> .
