@@ -1,17 +1,16 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:judged a health:AllergyRecord .
-:judgedVersion prov:specializationOf :judged ; rec:patient :subject .
-:judgedRevision a rec:Revision ; rec:revisionOf :judged ; rec:version :judgedVersion ;
+:judged a cascade:AllergyOrIntolerance .
+:judgedVersion prov:specializationOf :judged ; cascade:patient :subject .
+:judgedRevision a cascade:Revision ; cascade:revisionOf :judged ; cascade:version :judgedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:stillShown a health:AllergyRecord .
-:stillShownVersion prov:specializationOf :stillShown ; rec:patient :subject .
-:stillShownRevision a rec:Revision ; rec:revisionOf :stillShown ; rec:version :stillShownVersion ;
+:stillShown a cascade:AllergyOrIntolerance .
+:stillShownVersion prov:specializationOf :stillShown ; cascade:patient :subject .
+:stillShownRevision a cascade:Revision ; cascade:revisionOf :stillShown ; cascade:version :stillShownVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

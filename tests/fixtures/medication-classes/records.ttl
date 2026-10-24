@@ -1,56 +1,55 @@
 @prefix : <urn:x:> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix rxnorm: <http://www.nlm.nih.gov/research/umls/rxnorm/> .
+@prefix rxnorm: <https://ns.cascadeprotocol.org/codes/rxnorm/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:tablet a clinical:Medication .
-:tabletVersion prov:specializationOf :tablet ; rec:patient :subject ; clinical:drugName "Lisinopril 10 MG Oral Tablet" ;
-    clinical:rxNormCode rxnorm:314076 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
-:tabletRevision a rec:Revision ; rec:revisionOf :tablet ; rec:version :tabletVersion ;
+:tablet a cascade:PrescribedOrReportedMedication .
+:tabletVersion prov:specializationOf :tablet ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 MG Oral Tablet" ;
+    cascade:rxNormCode rxnorm:314076 ; cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" .
+:tabletRevision a cascade:Revision ; cascade:revisionOf :tablet ; cascade:version :tabletVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:written a clinical:Medication .
-:writtenVersion prov:specializationOf :written ; rec:patient :subject ; clinical:drugName "Lisinopril" ;
-    clinical:rxNormCode rxnorm:29046 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
-:writtenRevision a rec:Revision ; rec:revisionOf :written ; rec:version :writtenVersion ;
+:written a cascade:PrescribedOrReportedMedication .
+:writtenVersion prov:specializationOf :written ; cascade:patient :subject ; cascade:drugName "Lisinopril" ;
+    cascade:rxNormCode rxnorm:29046 ; cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" .
+:writtenRevision a cascade:Revision ; cascade:revisionOf :written ; cascade:version :writtenVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:combination a clinical:Medication .
-:combinationVersion prov:specializationOf :combination ; rec:patient :subject ; clinical:drugName "Hydrochlorothiazide 12.5 MG / Lisinopril 10 MG Oral Tablet" ;
-    clinical:rxNormCode rxnorm:197885 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
-:combinationRevision a rec:Revision ; rec:revisionOf :combination ; rec:version :combinationVersion ;
+:combination a cascade:PrescribedOrReportedMedication .
+:combinationVersion prov:specializationOf :combination ; cascade:patient :subject ; cascade:drugName "Hydrochlorothiazide 12.5 MG / Lisinopril 10 MG Oral Tablet" ;
+    cascade:rxNormCode rxnorm:197885 ; cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" .
+:combinationRevision a cascade:Revision ; cascade:revisionOf :combination ; cascade:version :combinationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:unmapped a clinical:Medication .
-:unmappedVersion prov:specializationOf :unmapped ; rec:patient :subject ; clinical:drugName "A drug no table maps" ;
-    clinical:rxNormCode rxnorm:9999999 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
-:unmappedRevision a rec:Revision ; rec:revisionOf :unmapped ; rec:version :unmappedVersion ;
+:unmapped a cascade:PrescribedOrReportedMedication .
+:unmappedVersion prov:specializationOf :unmapped ; cascade:patient :subject ; cascade:drugName "A drug no table maps" ;
+    cascade:rxNormCode rxnorm:9999999 ; cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" .
+:unmappedRevision a cascade:Revision ; cascade:revisionOf :unmapped ; cascade:version :unmappedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:atorvastatinTablet a clinical:Medication .
-:atorvastatinTabletVersion prov:specializationOf :atorvastatinTablet ; rec:patient :subject ; clinical:drugName "Atorvastatin 20 MG Oral Tablet" ;
-    clinical:rxNormCode rxnorm:617310 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
-:atorvastatinTabletRevision a rec:Revision ; rec:revisionOf :atorvastatinTablet ; rec:version :atorvastatinTabletVersion ;
+:atorvastatinTablet a cascade:PrescribedOrReportedMedication .
+:atorvastatinTabletVersion prov:specializationOf :atorvastatinTablet ; cascade:patient :subject ; cascade:drugName "Atorvastatin 20 MG Oral Tablet" ;
+    cascade:rxNormCode rxnorm:617310 ; cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" .
+:atorvastatinTabletRevision a cascade:Revision ; cascade:revisionOf :atorvastatinTablet ; cascade:version :atorvastatinTabletVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:stopped a clinical:Medication .
-:stoppedVersion prov:specializationOf :stopped ; rec:patient :subject ; clinical:drugName "Atorvastatin" ;
-    clinical:rxNormCode rxnorm:83367 ; clinical:clinicalIntent "prescribed" ; clinical:status "stopped" .
-:stoppedRevision a rec:Revision ; rec:revisionOf :stopped ; rec:version :stoppedVersion ;
+:stopped a cascade:PrescribedOrReportedMedication .
+:stoppedVersion prov:specializationOf :stopped ; cascade:patient :subject ; cascade:drugName "Atorvastatin" ;
+    cascade:rxNormCode rxnorm:83367 ; cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "stopped" .
+:stoppedRevision a cascade:Revision ; cascade:revisionOf :stopped ; cascade:version :stoppedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:estradiolTablet a clinical:Medication .
-:estradiolTabletVersion prov:specializationOf :estradiolTablet ; rec:patient :subject ; clinical:drugName "Estradiol 1 MG Oral Tablet" ;
-    clinical:rxNormCode rxnorm:197658 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
-:estradiolTabletRevision a rec:Revision ; rec:revisionOf :estradiolTablet ; rec:version :estradiolTabletVersion ;
+:estradiolTablet a cascade:PrescribedOrReportedMedication .
+:estradiolTabletVersion prov:specializationOf :estradiolTablet ; cascade:patient :subject ; cascade:drugName "Estradiol 1 MG Oral Tablet" ;
+    cascade:rxNormCode rxnorm:197658 ; cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" .
+:estradiolTabletRevision a cascade:Revision ; cascade:revisionOf :estradiolTablet ; cascade:version :estradiolTabletVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:fluoroestradiol a clinical:Medication .
-:fluoroestradiolVersion prov:specializationOf :fluoroestradiol ; rec:patient :subject ; clinical:drugName "Fluoroestradiol F-18" ;
-    clinical:rxNormCode rxnorm:2372221 ; clinical:clinicalIntent "prescribed" ; clinical:status "active" .
-:fluoroestradiolRevision a rec:Revision ; rec:revisionOf :fluoroestradiol ; rec:version :fluoroestradiolVersion ;
+:fluoroestradiol a cascade:PrescribedOrReportedMedication .
+:fluoroestradiolVersion prov:specializationOf :fluoroestradiol ; cascade:patient :subject ; cascade:drugName "Fluoroestradiol F-18" ;
+    cascade:rxNormCode rxnorm:2372221 ; cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" .
+:fluoroestradiolRevision a cascade:Revision ; cascade:revisionOf :fluoroestradiol ; cascade:version :fluoroestradiolVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

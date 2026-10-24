@@ -1,0 +1,30 @@
+# Two conditions match when their current versions share an ICD-10-CM or SNOMED CT code and their periods
+# overlap, bounds included. A period runs from the onset's day to the abatement's day. An abatement that is not a date
+# or falls before the onset counts as none; with none, the period runs on while the status is active, recurrence or
+# relapse, and is the onset's day alone otherwise. Days are the first ten characters as written, so a time zone never
+# moves one. A version with no onset matches nothing. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  VALUES ?property { cascade:icd10Code cascade:snomedCode }
+  ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion .
+  ?version ?property ?code ; cascade:displayDate ?onset .
+  ?otherVersion ?property ?code ; cascade:displayDate ?otherOnset .
+  OPTIONAL { ?version cascade:abatementDate ?end }
+  OPTIONAL { ?version cascade:clinicalStatus ?status }
+  OPTIONAL { ?otherVersion cascade:abatementDate ?otherEnd }
+  OPTIONAL { ?otherVersion cascade:clinicalStatus ?otherStatus }
+  BIND (SUBSTR(STR(?onset), 1, 10) AS ?from)
+  BIND (SUBSTR(STR(?otherOnset), 1, 10) AS ?otherFrom)
+  BIND (IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime) && SUBSTR(STR(?end), 1, 10) >= ?from,
+           SUBSTR(STR(?end), 1, 10),
+           IF(COALESCE(?status, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?from)) AS ?to)
+  BIND (IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime) && SUBSTR(STR(?otherEnd), 1, 10) >= ?otherFrom,
+           SUBSTR(STR(?otherEnd), 1, 10),
+           IF(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?otherFrom)) AS ?otherTo)
+  FILTER (?record != ?other && ?from <= ?otherTo && ?otherFrom <= ?to)
+}

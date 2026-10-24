@@ -1,81 +1,123 @@
 @prefix : <urn:x:> .
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix npx: <http://purl.org/nanopub/x/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :person a prov:Person .
-:matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 # a: a Same that used version 1 of its table alone
-:sameA a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :a1 , :a2 ;
-    prov:used :table1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameA a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :a1 , :a2 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-# b: a Same that used version 1 of the rules and no table
-:sameB a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :b1 , :b2 ;
-    prov:used :rules1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+# b: a Same asserted under version 1 of the rules alone, whose query version 4 changed, and no table
+:sameB a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :b1 , :b2 ;
+    prov:used :b1Version , :b2Version ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # c: filed again under version 2 of the table, beside the Same that used version 1
-:sameCOld a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :c1 , :c2 ;
-    prov:used :table1 , :rules4 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameCOld a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :c1 , :c2 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:sameCNew a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :c1 , :c2 ;
-    prov:used :table2 , :rules4 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameCNew a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :c1 , :c2 ;
+    prov:used :table2 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # d: a lapsed pair a person's Same joins
-:sameD a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :d1 , :d2 ;
-    prov:used :table1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameD a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :d1 , :d2 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personSameD a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :d1 , :d2 ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:personSameD a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :d1 , :d2 ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 # e: a lapsed pair a person's Different separates
-:sameE a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :e1 , :e2 ;
-    prov:used :table1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameE a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :e1 , :e2 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personDifferentE a jdg:Judgment ; jdg:verdict jdg:Different ; prov:hadMember :e1 , :e2 ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:personDifferentE a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :e1 , :e2 ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 # f: a lapsed Same a person retracted
-:sameF a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :f1 , :f2 ;
-    prov:used :table1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameF a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :f1 , :f2 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:retractF a jdg:Judgment ; npx:retracts :sameF ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:retractF a cascade:Judgment ; npx:retracts :sameF ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 # g: a Same of three records that used version 1, two of which a Same that used version 2 joins
-:sameGOld a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :g1 , :g2 , :g3 ;
-    prov:used :table1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameGOld a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :g1 , :g2 , :g3 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:sameGNew a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :g1 , :g2 ;
-    prov:used :table2 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameGNew a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :g1 , :g2 ;
+    prov:used :table2 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # h: a Same of a series with one version only
-:sameH a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :h1 , :h2 ;
-    prov:used :solo1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameH a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :h1 , :h2 ;
+    prov:used :solo1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # i: two Sames of one pair, each lapsed (the rules differ, the table is the same)
-:sameIRules1 a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :i1 , :i2 ;
-    prov:used :table1 , :rules1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameIRules1 a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :i1 , :i2 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:sameIRules4 a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :i1 , :i2 ;
-    prov:used :table1 , :rules4 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameIRules4 a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :i1 , :i2 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # j: a person's Same superseded the machine's, and was retracted
-:sameJ a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :j1 , :j2 ;
-    prov:used :table1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameJ a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :j1 , :j2 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personSameJ a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :j1 , :j2 ; npx:supersedes :sameJ ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:personSameJ a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :j1 , :j2 ; npx:supersedes :sameJ ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:retractPersonSameJ a jdg:Judgment ; npx:retracts :personSameJ ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:retractPersonSameJ a cascade:Judgment ; npx:retracts :personSameJ ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 
 # k: a lapsed Same a person's Different supersedes, the Different not retracted
-:sameK a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCode ; prov:hadMember :k1 , :k2 ;
-    prov:used :table1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:sameK a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :k1 , :k2 ;
+    prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personDifferentK a jdg:Judgment ; jdg:verdict jdg:Different ; prov:hadMember :k1 , :k2 ; npx:supersedes :sameK ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:personDifferentK a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :k1 , :k2 ; npx:supersedes :sameK ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:sameAUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameA ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameBUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameB ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:sameCOldUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameCOld ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameCNewUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameCNew ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameDUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameD ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameEUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameE ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameFUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameF ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameGOldUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameGOld ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameGNewUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameGNew ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameHUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameH ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameIRules1Underrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameIRules1 ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:sameIRules4Underrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameIRules4 ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameJUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameJ ;
+    cascade:assertedUnderRuleListVersion :rules4 .
+
+:sameKUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameK ;
+    cascade:assertedUnderRuleListVersion :rules4 .

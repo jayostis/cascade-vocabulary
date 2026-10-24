@@ -1,0 +1,120 @@
+# Entries a person should look at, and why: its members disagree on how severe an allergy is,
+# the matcher joined it for two different reasons, two records judged different are still joined in it, a matcher's
+# Same of two records now in two entries has lapsed (an open adopted newer tables or rules and did not file it again,
+# so the pair it joined is apart until a person judges it), or two of its conditions, in two entries, carry one code
+# and their dates cannot tell whether they are one condition: either has no
+# onset, or one has an unknown end (no abatement that is a date on or after its onset, and no status that keeps it
+# going: active, recurrence or relapse) and its onset is on or before the other's end, the other's period counted as
+# the matcher's rule R8 counts it. A condition with an unknown end that began after the other's end is apart from it:
+# the two are two episodes, not joined and not listed, as are two whose periods are both known and apart. Two
+# medications in two entries that share an RxNorm code are possibly the same medication: a pod cannot tell which shared
+# code names a product, and the matcher's rule R11 has already joined every pair that shares one the held drug products
+# table knows, so what is left is a pair sharing an ingredient, a strength, a dose form, a brand name or a salt, a pair
+# of which one carries more than one product code (R11 leaves it out, as A with X, B with X and Y, C with Y), or a
+# code no held table knows, which is every shared RxNorm code when no drug products table is held. A pair is listed once,
+# from the entry of its smaller record, unless a person judged it different or a lapsed Same of it is listed already.
+# An entry joined by an NDC (R5) and a product code (R11) alone is joined through one kind of sameness, since both are
+# exact identity; any other two justifications are two kinds, with either of these included.
+# The build never settles these itself; a person does, with a judgment.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
+WHERE {
+  { { SELECT ?entry
+      WHERE {
+        ?member ^cascade:mergedFrom ?entry ;
+                pav:hasCurrentVersion/cascade:allergyCriticality ?criticality .
+      }
+      GROUP BY ?entry
+      HAVING (COUNT(DISTINCT ?criticality) > 1) }
+    BIND ("members disagree on criticality" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel } }
+  UNION
+  { { SELECT ?entry
+      WHERE {
+        ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification ?why ;
+              prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
+        ?member ^cascade:mergedFrom ?entry .
+      }
+      GROUP BY ?entry
+      HAVING (COUNT(DISTINCT ?why) > 1
+              && SUM(IF(?why IN (cascade:SameMedicationCode, cascade:SameProductCode), 0, 1)) > 0) }
+    BIND ("joined through two kinds of machine sameness" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel } }
+  UNION
+  { ?record cascade:currentlyDifferent ?otherRecord ; ^cascade:mergedFrom ?entry .
+    ?otherRecord ^cascade:mergedFrom ?entry .
+    FILTER (STR(?record) < STR(?otherRecord))
+    BIND ("judged different, still joined" AS ?needs)
+    OPTIONAL { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Different ; prov:hadMember ?record , ?otherRecord }
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+  UNION
+  { { SELECT ?record ?otherRecord (MIN(STR(?lapsed)) AS ?first)
+      WHERE {
+        ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
+        FILTER (STR(?record) < STR(?otherRecord))
+      }
+      GROUP BY ?record ?otherRecord }
+    ?judgment cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
+    ?record ^cascade:mergedFrom ?entry .
+    ?otherRecord ^cascade:mergedFrom ?otherEntry .
+    FILTER (STR(?judgment) = ?first && ?entry != ?otherEntry
+            && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord })
+    BIND ("joined before, apart under newer tables or rules" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+  UNION
+  { VALUES ?property { cascade:icd10Code cascade:snomedCode }
+    ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
+    ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
+    ?version ?property ?code .
+    ?otherVersion ?property ?code .
+    MINUS { ?record cascade:currentlyDifferent ?otherRecord }
+    OPTIONAL { ?version cascade:displayDate ?onset }
+    OPTIONAL { ?version cascade:abatementDate ?end }
+    OPTIONAL { ?version cascade:clinicalStatus ?status }
+    OPTIONAL { ?otherVersion cascade:displayDate ?otherOnset }
+    OPTIONAL { ?otherVersion cascade:abatementDate ?otherEnd }
+    OPTIONAL { ?otherVersion cascade:clinicalStatus ?otherStatus }
+    BIND (SUBSTR(STR(?onset), 1, 10) AS ?from)
+    BIND (SUBSTR(STR(?otherOnset), 1, 10) AS ?otherFrom)
+    BIND (BOUND(?end) && isLiteral(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime)
+          && SUBSTR(STR(?end), 1, 10) >= ?from AS ?endKnown)
+    BIND (BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime)
+          && SUBSTR(STR(?otherEnd), 1, 10) >= ?otherFrom AS ?otherEndKnown)
+    BIND (IF(?endKnown, SUBSTR(STR(?end), 1, 10),
+             IF(COALESCE(?status, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?from)) AS ?to)
+    BIND (IF(?otherEndKnown, SUBSTR(STR(?otherEnd), 1, 10),
+             IF(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?otherFrom)) AS ?otherTo)
+    FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
+            && (!BOUND(?onset) || !BOUND(?otherOnset)
+                || (!?endKnown && !(COALESCE(?status, "") IN ("active", "recurrence", "relapse")) && ?from <= ?otherTo)
+                || (!?otherEndKnown && !(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"))
+                    && ?otherFrom <= ?to)))
+    BIND ("same code, dates cannot tell" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+  UNION
+  { ?record cascade:recordKind "Medication" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
+    ?otherRecord cascade:recordKind "Medication" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
+    ?version cascade:rxNormCode ?code .
+    ?otherVersion cascade:rxNormCode ?code .
+    FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry)
+    MINUS { ?record cascade:currentlyDifferent ?otherRecord }
+    MINUS { ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord }
+    BIND ("possibly the same medication" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+}
+ORDER BY ?needs ?entryLabel ?entry ?judgment ?record ?otherRecord

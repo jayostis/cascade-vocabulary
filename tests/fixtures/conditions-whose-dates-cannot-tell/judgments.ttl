@@ -1,16 +1,25 @@
 @prefix : <urn:x:> .
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :person a prov:Person .
-:matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
-:notTheSame a jdg:Judgment ; jdg:verdict jdg:Different ; prov:hadMember :differentA , :differentB ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:notTheSame a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :differentA , :differentB ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:byCodeAndPeriod a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameCodeAndPeriod ; prov:hadMember :joinedA , :joinedB ;
+:byCodeAndPeriod a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCodeAndPeriod ; prov:hadMember :joinedA , :joinedB ;
     prov:used :joinedAVersion , :joinedBVersion ;
-    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    cascade:matcherRule cascade:SameCodeAndPeriodRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:byCodeAndPeriodUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byCodeAndPeriod ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeAndPeriodRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeAndPeriodRule ;
+    cascade:queryHash :sameCodeAndPeriodQuery .

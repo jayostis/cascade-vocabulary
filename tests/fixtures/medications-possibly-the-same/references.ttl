@@ -1,9 +1,17 @@
 @prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
-:rules a rec:ReferenceSeries ; rdfs:label "Rules" .
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :rules6 prov:specializationOf :rules ; pav:version "6" .
+:rules6SameMedicationCodeRule cascade:rowOfRuleListVersion :rules6 ; cascade:matcherRule cascade:SameMedicationCodeRule ;
+    cascade:queryHash :sameMedicationCodeQueryBefore .
 :rules7 prov:specializationOf :rules ; pav:version "7" ; prov:wasRevisionOf :rules6 .
+:rules7SameBrandGenericRule cascade:rowOfRuleListVersion :rules7 ; cascade:matcherRule cascade:SameBrandGenericRule ;
+    cascade:queryHash :sameBrandGenericQuery .
+:rules7SameMedicationCodeRule cascade:rowOfRuleListVersion :rules7 ; cascade:matcherRule cascade:SameMedicationCodeRule ;
+    cascade:queryHash :sameMedicationCodeQuery .
+:rules7SameProductCodeRule cascade:rowOfRuleListVersion :rules7 ; cascade:matcherRule cascade:SameProductCodeRule ;
+    cascade:queryHash :sameProductCodeQuery .

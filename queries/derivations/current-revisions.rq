@@ -1,0 +1,21 @@
+# A record's current revision is the latest to arrive that no other revision revises, and its version is the record's
+# current version. Every later step reads a record through these.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT { ?record cascade:currentRevision ?r ; pav:hasCurrentVersion ?v }
+WHERE {
+  { SELECT ?record (MIN(STR(?h)) AS ?first)
+    WHERE {
+      { SELECT ?record (MAX(?t0) AS ?t)
+        WHERE { ?h0 cascade:revisionOf ?record ; prov:generatedAtTime ?t0 .
+                FILTER NOT EXISTS { ?n0 prov:wasRevisionOf ?h0 } }
+        GROUP BY ?record }
+      ?h cascade:revisionOf ?record ; prov:generatedAtTime ?t .
+      FILTER NOT EXISTS { ?n prov:wasRevisionOf ?h }
+    }
+    GROUP BY ?record }
+  ?r cascade:revisionOf ?record ; cascade:version ?v .
+  FILTER (STR(?r) = ?first)
+}

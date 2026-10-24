@@ -1,61 +1,60 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-@prefix icd: <http://hl7.org/fhir/sid/icd-10-cm/> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix icd: <https://ns.cascadeprotocol.org/codes/icd10cm/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:retired a health:ConditionRecord .
-:retiredVersion prov:specializationOf :retired ; health:icd10Code icd:T84.040A .
-:retiredRevision a rec:Revision ; rec:revisionOf :retired ; rec:version :retiredVersion ;
+:retired a cascade:ProblemOrDiagnosis .
+:retiredVersion prov:specializationOf :retired ; cascade:icd10Code icd:T84.040A .
+:retiredRevision a cascade:Revision ; cascade:revisionOf :retired ; cascade:version :retiredVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:converted a health:ConditionRecord .
-:convertedVersion prov:specializationOf :converted ; health:icd10Code icd:M97.01XA .
-:convertedRevision a rec:Revision ; rec:revisionOf :converted ; rec:version :convertedVersion ;
+:converted a cascade:ProblemOrDiagnosis .
+:convertedVersion prov:specializationOf :converted ; cascade:icd10Code icd:M97.01XA .
+:convertedRevision a cascade:Revision ; cascade:revisionOf :converted ; cascade:version :convertedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:mergedOne a health:ConditionRecord .
-:mergedOneVersion prov:specializationOf :mergedOne ; health:icd10Code icd:V47.01XA .
-:mergedOneRevision a rec:Revision ; rec:revisionOf :mergedOne ; rec:version :mergedOneVersion ;
+:mergedOne a cascade:ProblemOrDiagnosis .
+:mergedOneVersion prov:specializationOf :mergedOne ; cascade:icd10Code icd:V47.01XA .
+:mergedOneRevision a cascade:Revision ; cascade:revisionOf :mergedOne ; cascade:version :mergedOneVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:mergedTwo a health:ConditionRecord .
-:mergedTwoVersion prov:specializationOf :mergedTwo ; health:icd10Code icd:V47.02XA .
-:mergedTwoRevision a rec:Revision ; rec:revisionOf :mergedTwo ; rec:version :mergedTwoVersion ;
+:mergedTwo a cascade:ProblemOrDiagnosis .
+:mergedTwoVersion prov:specializationOf :mergedTwo ; cascade:icd10Code icd:V47.02XA .
+:mergedTwoRevision a cascade:Revision ; cascade:revisionOf :mergedTwo ; cascade:version :mergedTwoVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:mergedInto a health:ConditionRecord .
-:mergedIntoVersion prov:specializationOf :mergedInto ; health:icd10Code icd:V47.0XXA .
-:mergedIntoRevision a rec:Revision ; rec:revisionOf :mergedInto ; rec:version :mergedIntoVersion ;
+:mergedInto a cascade:ProblemOrDiagnosis .
+:mergedIntoVersion prov:specializationOf :mergedInto ; cascade:icd10Code icd:V47.0XXA .
+:mergedIntoRevision a cascade:Revision ; cascade:revisionOf :mergedInto ; cascade:version :mergedIntoVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:split a health:ConditionRecord .
-:splitVersion prov:specializationOf :split ; health:icd10Code icd:D69.1 .
-:splitRevision a rec:Revision ; rec:revisionOf :split ; rec:version :splitVersion ;
+:split a cascade:ProblemOrDiagnosis .
+:splitVersion prov:specializationOf :split ; cascade:icd10Code icd:D69.1 .
+:splitRevision a cascade:Revision ; cascade:revisionOf :split ; cascade:version :splitVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:part a health:ConditionRecord .
-:partVersion prov:specializationOf :part ; health:icd10Code icd:D69.11 .
-:partRevision a rec:Revision ; rec:revisionOf :part ; rec:version :partVersion ;
+:part a cascade:ProblemOrDiagnosis .
+:partVersion prov:specializationOf :part ; cascade:icd10Code icd:D69.11 .
+:partRevision a cascade:Revision ; cascade:revisionOf :part ; cascade:version :partVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:earlier a health:ConditionRecord .
-:earlierVersion prov:specializationOf :earlier ; health:icd10Code icd:C88.0 .
-:earlierRevision a rec:Revision ; rec:revisionOf :earlier ; rec:version :earlierVersion ;
+:earlier a cascade:ProblemOrDiagnosis .
+:earlierVersion prov:specializationOf :earlier ; cascade:icd10Code icd:C88.0 .
+:earlierRevision a cascade:Revision ; cascade:revisionOf :earlier ; cascade:version :earlierVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:earlierConverted a health:ConditionRecord .
-:earlierConvertedVersion prov:specializationOf :earlierConverted ; health:icd10Code icd:C88.00 .
-:earlierConvertedRevision a rec:Revision ; rec:revisionOf :earlierConverted ; rec:version :earlierConvertedVersion ;
+:earlierConverted a cascade:ProblemOrDiagnosis .
+:earlierConvertedVersion prov:specializationOf :earlierConverted ; cascade:icd10Code icd:C88.00 .
+:earlierConvertedRevision a cascade:Revision ; cascade:revisionOf :earlierConverted ; cascade:version :earlierConvertedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strayA a health:ConditionRecord .
-:strayAVersion prov:specializationOf :strayA ; health:icd10Code icd:G56.0 .
-:strayARevision a rec:Revision ; rec:revisionOf :strayA ; rec:version :strayAVersion ;
+:strayA a cascade:ProblemOrDiagnosis .
+:strayAVersion prov:specializationOf :strayA ; cascade:icd10Code icd:G56.0 .
+:strayARevision a cascade:Revision ; cascade:revisionOf :strayA ; cascade:version :strayAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strayB a health:ConditionRecord .
-:strayBVersion prov:specializationOf :strayB ; health:icd10Code icd:G56.01 .
-:strayBRevision a rec:Revision ; rec:revisionOf :strayB ; rec:version :strayBVersion ;
+:strayB a cascade:ProblemOrDiagnosis .
+:strayBVersion prov:specializationOf :strayB ; cascade:icd10Code icd:G56.01 .
+:strayBRevision a cascade:Revision ; cascade:revisionOf :strayB ; cascade:version :strayBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

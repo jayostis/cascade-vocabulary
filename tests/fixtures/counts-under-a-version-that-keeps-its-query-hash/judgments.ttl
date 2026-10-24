@@ -1,0 +1,15 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+
+:byCode a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
+    prov:hadMember :c1 , :c2 ; prov:used :c1Version , :c2Version ;
+    cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:byCodeUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byCode ;
+    cascade:assertedUnderRuleListVersion :rules1 .

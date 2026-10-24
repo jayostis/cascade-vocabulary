@@ -1,0 +1,65 @@
+# Each judgment has one row saying whether it counts under the lens the pod was built with, and one more row for each thing
+# that happened to it: a later judgment superseded it, one retracted it, the reference table it was made with has a newer
+# version, or the rule list its claim was asserted under has a current version whose rule runs another query, the version
+# naming what did it. Only judgments that count shape the views.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?judgment ?judgmentLabel ?counts ?happened ?by ?byLabel
+WHERE {
+  { ?judgment a cascade:Judgment .
+    OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
+    BIND (COALESCE(?counted, false) AS ?counts)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
+  UNION
+  { ?by npx:supersedes ?judgment .
+    BIND ("superseded" AS ?happened)
+    OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
+    BIND (COALESCE(?counted, false) AS ?counts)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+  UNION
+  { ?by npx:retracts ?judgment .
+    BIND ("retracted" AS ?happened)
+    OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
+    BIND (COALESCE(?counted, false) AS ?counts)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+  UNION
+  { ?judgment a cascade:Judgment ; prov:used ?replaced .
+    ?replaced prov:specializationOf/a cascade:ReferenceSeries .
+    ?by prov:wasRevisionOf ?replaced .
+    BIND ("made under a reference version since replaced" AS ?happened)
+    OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
+    BIND (COALESCE(?counted, false) AS ?counts)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+  UNION
+  { { SELECT DISTINCT ?judgment ?by
+      WHERE {
+        ?assertion cascade:assertedClaim ?judgment ; cascade:assertedUnderRuleListVersion ?asserted .
+        ?asserted prov:specializationOf ?ruleList .
+        ?ruleList pav:hasCurrentVersion ?by .
+        FILTER (?by != ?asserted)
+        MINUS {
+          SELECT DISTINCT ?judgment ?by
+          WHERE {
+            { SELECT DISTINCT ?by ?rule ?hash
+              WHERE { ?pinning pav:hasCurrentVersion ?by .
+                      ?currentRow cascade:rowOfRuleListVersion ?by ; cascade:matcherRule ?rule ; cascade:queryHash ?hash } }
+            ?anyRow cascade:matcherRule ?rule ; cascade:queryHash ?hash ; cascade:rowOfRuleListVersion ?anyVersion .
+            ?anyAssertion cascade:assertedUnderRuleListVersion ?anyVersion ; cascade:assertedClaim ?judgment .
+            ?judgment cascade:matcherRule ?rule .
+          }
+        }
+      } }
+    BIND ("its rule runs another query since" AS ?happened)
+    OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
+    BIND (COALESCE(?counted, false) AS ?counts)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?by rdfs:label ?byLabel } }
+}
+ORDER BY ?judgmentLabel ?judgment ?happened ?by

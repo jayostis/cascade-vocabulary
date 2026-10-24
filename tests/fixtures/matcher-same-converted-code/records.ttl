@@ -1,46 +1,45 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-@prefix icd: <http://hl7.org/fhir/sid/icd-10-cm/> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix icd: <https://ns.cascadeprotocol.org/codes/icd10cm/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:retired a health:ConditionRecord .
-:retiredVersion prov:specializationOf :retired ; health:icd10Code icd:T84.040A .
-:retiredRevision a rec:Revision ; rec:revisionOf :retired ; rec:version :retiredVersion ;
+:retired a cascade:ProblemOrDiagnosis .
+:retiredVersion prov:specializationOf :retired ; cascade:icd10Code icd:T84.040A .
+:retiredRevision a cascade:Revision ; cascade:revisionOf :retired ; cascade:version :retiredVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:converted a health:ConditionRecord .
-:convertedVersion prov:specializationOf :converted ; health:icd10Code icd:M97.01XA .
-:convertedRevision a rec:Revision ; rec:revisionOf :converted ; rec:version :convertedVersion ;
+:converted a cascade:ProblemOrDiagnosis .
+:convertedVersion prov:specializationOf :converted ; cascade:icd10Code icd:M97.01XA .
+:convertedRevision a cascade:Revision ; cascade:revisionOf :converted ; cascade:version :convertedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:split a health:ConditionRecord .
-:splitVersion prov:specializationOf :split ; health:icd10Code icd:D69.1 .
-:splitRevision a rec:Revision ; rec:revisionOf :split ; rec:version :splitVersion ;
+:split a cascade:ProblemOrDiagnosis .
+:splitVersion prov:specializationOf :split ; cascade:icd10Code icd:D69.1 .
+:splitRevision a cascade:Revision ; cascade:revisionOf :split ; cascade:version :splitVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:part a health:ConditionRecord .
-:partVersion prov:specializationOf :part ; health:icd10Code icd:D69.11 .
-:partRevision a rec:Revision ; rec:revisionOf :part ; rec:version :partVersion ;
+:part a cascade:ProblemOrDiagnosis .
+:partVersion prov:specializationOf :part ; cascade:icd10Code icd:D69.11 .
+:partRevision a cascade:Revision ; cascade:revisionOf :part ; cascade:version :partVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:oneCodeA a health:ConditionRecord .
-:oneCodeAVersion prov:specializationOf :oneCodeA ; health:icd10Code icd:E11.9 .
-:oneCodeARevision a rec:Revision ; rec:revisionOf :oneCodeA ; rec:version :oneCodeAVersion ;
+:oneCodeA a cascade:ProblemOrDiagnosis .
+:oneCodeAVersion prov:specializationOf :oneCodeA ; cascade:icd10Code icd:E11.9 .
+:oneCodeARevision a cascade:Revision ; cascade:revisionOf :oneCodeA ; cascade:version :oneCodeAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:oneCodeB a health:ConditionRecord .
-:oneCodeBVersion prov:specializationOf :oneCodeB ; health:icd10Code icd:E11.9 .
-:oneCodeBRevision a rec:Revision ; rec:revisionOf :oneCodeB ; rec:version :oneCodeBVersion ;
+:oneCodeB a cascade:ProblemOrDiagnosis .
+:oneCodeBVersion prov:specializationOf :oneCodeB ; cascade:icd10Code icd:E11.9 .
+:oneCodeBRevision a cascade:Revision ; cascade:revisionOf :oneCodeB ; cascade:version :oneCodeBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strayA a health:ConditionRecord .
-:strayAVersion prov:specializationOf :strayA ; health:icd10Code icd:G56.0 .
-:strayARevision a rec:Revision ; rec:revisionOf :strayA ; rec:version :strayAVersion ;
+:strayA a cascade:ProblemOrDiagnosis .
+:strayAVersion prov:specializationOf :strayA ; cascade:icd10Code icd:G56.0 .
+:strayARevision a cascade:Revision ; cascade:revisionOf :strayA ; cascade:version :strayAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:strayB a health:ConditionRecord .
-:strayBVersion prov:specializationOf :strayB ; health:icd10Code icd:G56.01 .
-:strayBRevision a rec:Revision ; rec:revisionOf :strayB ; rec:version :strayBVersion ;
+:strayB a cascade:ProblemOrDiagnosis .
+:strayBVersion prov:specializationOf :strayB ; cascade:icd10Code icd:G56.01 .
+:strayBRevision a cascade:Revision ; cascade:revisionOf :strayB ; cascade:version :strayBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

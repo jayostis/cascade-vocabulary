@@ -1,26 +1,26 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
-<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a rec:ReferenceSeries ;
+<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a cascade:ReferenceSeries ;
     rdfs:label "Matcher rules" ;
-    rec:shipsWith <urn:uuid:b92b58a2-4cff-40b2-8961-6f49d92ee468> .
+    cascade:defaultTableVersion <urn:uuid:b92b58a2-4cff-40b2-8961-6f49d92ee468> .
 
 <urn:uuid:b92b58a2-4cff-40b2-8961-6f49d92ee468> a prov:Entity ;
     prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
     pav:version "9" ;
     prov:wasRevisionOf <urn:uuid:bd40f64f-b01a-4246-ae63-29f6554415fc> .
 
-<urn:uuid:0dc8bed1-caf5-49e5-96a4-f28a8c61b4de> a rec:ReferenceSeries ;
+<urn:uuid:0dc8bed1-caf5-49e5-96a4-f28a8c61b4de> a cascade:ReferenceSeries ;
     rdfs:label "Regenstrief LOINC panel members subset for Priya Natarajan" ;
-    rec:tableKind rec:PanelMembers ;
-    rec:shipsWith <urn:uuid:0fc84282-956c-46e5-af5b-f35c734696e2> ;
+    cascade:tableKind cascade:PanelMembers ;
+    cascade:defaultTableVersion <ni:///sha-256;x1pl2QnBsW-VPZmm3osXhkrVFkuQyc5t-7NEzyL_2is> ;
     dct:license <https://loinc.org/license/> ;
     dct:bibliographicCitation "This material contains content from LOINC (http://loinc.org). LOINC is copyright © Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license at http://loinc.org/license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc." .
 
-<urn:uuid:0fc84282-956c-46e5-af5b-f35c734696e2> a prov:Entity ;
+<ni:///sha-256;x1pl2QnBsW-VPZmm3osXhkrVFkuQyc5t-7NEzyL_2is> a prov:Entity ;
     prov:specializationOf <urn:uuid:0dc8bed1-caf5-49e5-96a4-f28a8c61b4de> ;
     pav:version "2.83" ;
     rdfs:comment "The published 2.83 version's rows of the Electrolytes 1998 panel (24326-1), and no others." ;

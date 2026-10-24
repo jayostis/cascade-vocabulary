@@ -1,41 +1,45 @@
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;agPQbNfBxl0DEFyIOC63B8G8ag7t3-zWRhGQKed25uI> health:onsetDate "2019-05-10"^^xsd:date ;
-	health:status "active" ;
-	clinical:verificationStatus "confirmed" ;
-	health:conditionName "Atopic dermatitis" ;
-	health:snomedCode <http://snomed.info/id/24079001> .
-_:f17c081653098877cba1e58360e5ba29 pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
+<ni:///sha-256;3_zdX2ZlBkWOUpvfgdaG8XPIboEB-B1KFskCHZLlq_Q> cascade:conditionName "Atopic dermatitis" ;
+	cascade:onsetDate "2019-05-10"^^xsd:date ;
+	cascade:clinicalStatus "active" ;
+	cascade:snomedCode <http://snomed.info/id/24079001> ;
+	cascade:verificationStatus "confirmed" .
+_:5758adb5bb27a9dc9940e1e66148ced3 pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
 	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;agPQbNfBxl0DEFyIOC63B8G8ag7t3-zWRhGQKed25uI> .
-<ni:///sha-256;agPQbNfBxl0DEFyIOC63B8G8ag7t3-zWRhGQKed25uI> rec:patient <urn:uuid:d062f803-3744-884a-b30d-2b4fb273cf5d> ;
-	prov:specializationOf <urn:uuid:730dea68-b88f-895d-9be7-dd2f19d4de6f> .
-<urn:uuid:730dea68-b88f-895d-9be7-dd2f19d4de6f> health:sourceRecordId "cond-eczema-2" ;
-	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-eczema-2> ;
-	a health:ConditionRecord .
-_:f17c081653098877cba1e58360e5ba29 bridge:selector "" ;
+	bridge:arrivedAs <ni:///sha-256;3_zdX2ZlBkWOUpvfgdaG8XPIboEB-B1KFskCHZLlq_Q> .
+<ni:///sha-256;3_zdX2ZlBkWOUpvfgdaG8XPIboEB-B1KFskCHZLlq_Q> cascade:patient <urn:uuid:e6ef533e-087e-8aff-8979-1e62c5e9d06a> ;
+	prov:specializationOf <urn:uuid:421858b2-99a8-8db2-8948-707b526bab90> .
+<urn:uuid:421858b2-99a8-8db2-8948-707b526bab90> cascade:sourceRecordId "cond-eczema-2" ;
+	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-eczema-2> ;
+	a cascade:ProblemOrDiagnosis .
+_:5758adb5bb27a9dc9940e1e66148ced3 oa:hasSelector _:7160e932b662585ad0ad84b185bf232d ;
+	oa:hasSource <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> ;
 	prov:wasDerivedFrom <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> ;
 	prov:wasGeneratedBy _:48d9e978e55a5bff512d73efe4b8e97b .
+_:7160e932b662585ad0ad84b185bf232d a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:48d9e978e55a5bff512d73efe4b8e97b <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
 <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> prov:qualifiedAttribution _:90ce3f4e3c042fbf0a857ccdfd97043c .
 _:90ce3f4e3c042fbf0a857ccdfd97043c prov:agent _:252a28768ea428bb1c478ee79e4c6603 .
 _:252a28768ea428bb1c478ee79e4c6603 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:90ce3f4e3c042fbf0a857ccdfd97043c prov:hadRole rec:transmitter .
+_:90ce3f4e3c042fbf0a857ccdfd97043c prov:hadRole cascade:TransmitterRole .
 <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> prov:qualifiedAttribution _:7ea01a5e1cb2de6687f4a48a1e0a04c4 .
 _:7ea01a5e1cb2de6687f4a48a1e0a04c4 prov:agent _:493d919f1356339ddddc810dca153b2c .
 _:493d919f1356339ddddc810dca153b2c <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
-_:7ea01a5e1cb2de6687f4a48a1e0a04c4 prov:hadRole rec:author .
-<ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+_:7ea01a5e1cb2de6687f4a48a1e0a04c4 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> cascade:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
 	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-eczema-2> ;
 	pav:retrievedOn "2027-02-10T17:19:00Z"^^xsd:dateTime ;
-	bridge:sourceFormatVersion "4.0.1" ;
+	cascade:sourceFormatVersion "4.0.1" ;
 	a prov:Entity .
 _:48d9e978e55a5bff512d73efe4b8e97b a prov:Activity ;
 	prov:used <ni:///sha-256;dO7ol6L4HtqlZGDogtCBvg5jChDt_NLz1VEg8LBf19Y> ;

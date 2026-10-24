@@ -1,0 +1,11 @@
+# Each hospital knows the person by a patient profile of its own, and About judgments tie those profiles to one
+# subject, whom every record in a view is about.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?subject ?subjectLabel
+WHERE {
+  ?subject a cascade:Subject .
+  OPTIONAL { ?subject rdfs:label ?subjectLabel }
+}
+ORDER BY ?subject

@@ -1,14 +1,28 @@
 @prefix : <urn:x:> .
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
-:byCode a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameCodeAndDate ; prov:hadMember :flu1 , :flu2 ;
+:byCode a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCodeAndDate ; prov:hadMember :flu1 , :flu2 ;
     prov:used :flu1Version , :flu2Version ;
-    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
-:byMappedCode a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameMappedCodeAndDate ;
+    cascade:matcherRule cascade:SameCodeAndDateRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:byMappedCode a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCodeAndDate ;
     prov:hadMember :flu2 , :flu3 ; prov:used :flu2Version , :flu3Version ;
-    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    cascade:matcherRule cascade:SameMappedCodeAndDateRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:byCodeUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byCode ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:byMappedCodeUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byMappedCode ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeAndDateRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeAndDateRule ;
+    cascade:queryHash :sameCodeAndDateQuery .
+:rules1SameMappedCodeAndDateRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeAndDateRule ;
+    cascade:queryHash :sameMappedCodeAndDateQuery .

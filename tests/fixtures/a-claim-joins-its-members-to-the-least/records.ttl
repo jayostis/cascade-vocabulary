@@ -1,0 +1,34 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:a1 a cascade:AllergyOrIntolerance .
+:a1Version prov:specializationOf :a1 ; cascade:patient :subject ; cascade:allergen "Penicillin" .
+:a1Revision a cascade:Revision ; cascade:revisionOf :a1 ; cascade:version :a1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:a2 a cascade:AllergyOrIntolerance .
+:a2Version prov:specializationOf :a2 ; cascade:patient :subject ; cascade:allergen "Penicillin G" .
+:a2Revision a cascade:Revision ; cascade:revisionOf :a2 ; cascade:version :a2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:a3 a cascade:AllergyOrIntolerance .
+:a3Version prov:specializationOf :a3 ; cascade:patient :subject ; cascade:allergen "Bicillin" .
+:a3Revision a cascade:Revision ; cascade:revisionOf :a3 ; cascade:version :a3Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:b1 a cascade:AllergyOrIntolerance .
+:b1Version prov:specializationOf :b1 ; cascade:patient :subject ; cascade:allergen "Peanut" .
+:b1Revision a cascade:Revision ; cascade:revisionOf :b1 ; cascade:version :b1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:b2 a cascade:AllergyOrIntolerance .
+:b2Version prov:specializationOf :b2 ; cascade:patient :subject ; cascade:allergen "Peanut oil" .
+:b2Revision a cascade:Revision ; cascade:revisionOf :b2 ; cascade:version :b2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+

@@ -1,0 +1,1482 @@
+# The shapes of the Cascade vocabulary, https://ns.cascadeprotocol.org/cascade#.
+#
+# Licensed Apache-2.0 AND CC-BY-4.0. A shape carrying a dct:source in https://github.com/the-cascade-protocol/spec/ is
+# adapted from "The Cascade Protocol specification" by Cascade Agentic Labs LLC, its ontologies/ folder at commit
+# d819bc2c045266f9f79ebf9398cbbb82a6156d27
+# (https://github.com/the-cascade-protocol/spec/tree/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies), licensed
+# under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Adapted: shapes trimmed to the terms here, renamed
+# into this namespace, and merged. Every other shape is Apache-2.0.
+
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix solid: <http://www.w3.org/ns/solid/terms#> .
+@prefix sssom: <https://w3id.org/sssom/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Copied from the spec's core
+
+cascade:PatientProfileShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.shapes.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    sh:targetClass cascade:PatientProfile ;
+    sh:targetSubjectsOf cascade:dateOfBirth , foaf:givenName , foaf:familyName , foaf:name ;
+
+    sh:property [
+        sh:path cascade:dateOfBirth ;
+        sh:datatype xsd:date ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path foaf:givenName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "foaf:givenName must be a single non-empty string. The cardinality is a deliberate 1: a second given name goes in foaf:name, which carries the whole name as one string."@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path foaf:familyName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "foaf:familyName must be a single non-empty string."@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path foaf:name ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "foaf:name must be a single non-empty string: the whole name as one string, which is what IPS Patient.name.text carries."@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] .
+
+# Copied from the spec's health
+
+cascade:AllergyOrIntoleranceShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    sh:targetClass cascade:AllergyOrIntolerance ;
+    sh:targetSubjectsOf cascade:allergen , cascade:allergenCode , cascade:reactionManifestationText , cascade:reactionManifestationCode ,
+        cascade:allergySeverity , cascade:allergyCategory , cascade:allergyType , cascade:allergyCriticality ;
+
+    sh:property [
+        sh:path cascade:allergen ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "An allergy states at most one non-empty allergen"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:reactionManifestationText ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:allergySeverity ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("mild" "moderate" "severe") ;
+        sh:message "Allergy severity must be one of the FHIR R4 AllergyIntoleranceSeverity codes: mild, moderate, severe"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:allergyCategory ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("food" "medication" "environment" "biologic") ;
+        sh:message "Allergy category must be one of the FHIR R4 AllergyIntoleranceCategory codes: food, medication, environment, biologic"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:onsetDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "Onset Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:clinicalStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("active" "inactive" "resolved") ;
+        sh:message "Allergy clinical status should be one of the FHIR R4 AllergyIntolerance clinical status codes: active, inactive, resolved. A repudiated record is entered-in-error on cascade:verificationStatus, which is a different element"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:verificationStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("unconfirmed" "confirmed" "refuted" "entered-in-error") ;
+        sh:message "Allergy verification status should be one of the FHIR R4 AllergyIntolerance verification status codes: unconfirmed, confirmed, refuted, entered-in-error"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:allergenCode ;
+        sh:nodeKind sh:IRI ;
+        sh:message "Allergen code should be an IRI in the code system's own IRI space (for example http://snomed.info/id/373270004 or https://ns.cascadeprotocol.org/codes/rxnorm/7980), carrying one FHIR R4 AllergyIntolerance.code.coding per value. The IPS value set is allergies-intolerances-uv-ips"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:reactionManifestationCode ;
+        sh:nodeKind sh:IRI ;
+        sh:message "Manifestation code should be an IRI in the code system's own IRI space (for example http://snomed.info/id/247472004 for hives), carrying one FHIR R4 AllergyIntolerance.reaction.manifestation.coding per value. The IPS value set is allergy-reaction-uv-ips"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:allergyType ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("allergy" "intolerance") ;
+        sh:message "Allergy type should be one of the FHIR R4 AllergyIntoleranceType codes: allergy, intolerance"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:allergyCriticality ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("low" "high" "unable-to-assess") ;
+        sh:message "Allergy criticality should be one of the FHIR R4 AllergyIntoleranceCriticality codes: low, high, unable-to-assess. An observed reaction's severity is a different element and belongs on cascade:allergySeverity"@en ;
+        sh:severity sh:Warning
+    ] .
+
+cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ,
+        <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    sh:targetClass cascade:ProblemOrDiagnosis ;
+    sh:targetSubjectsOf cascade:conditionName , cascade:icd10Code , cascade:conditionCategory , cascade:abatementDate ;
+
+    sh:property [
+        sh:path cascade:conditionName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A condition states at most one non-empty conditionName"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:clinicalStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("active" "recurrence" "relapse" "inactive" "remission" "resolved") ;
+        sh:message "Condition status must be one of the FHIR R4 ConditionClinicalStatusCodes: active, recurrence, relapse, inactive, remission, resolved"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:verificationStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("unconfirmed" "provisional" "differential" "confirmed" "refuted" "entered-in-error") ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:onsetDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "Onset Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:abatementDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "Abatement Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:conditionCategory ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("problem-list-item" "encounter-diagnosis") ;
+        sh:message "Condition category should be one of the two FHIR R4 condition-category codes: problem-list-item, encounter-diagnosis (https://hl7.org/fhir/R4/valueset-condition-category.html). C-CDA section words such as \"diagnosis\" or \"problem\" are not members of this value set."@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:snomedCode ;
+        sh:node cascade:SnomedCtCodeShape ;
+        sh:message "A SNOMED CT code is SNOMED's own IRI, http://snomed.info/id/ and the concept id"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:VaccinationShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    sh:targetClass cascade:Vaccination ;
+    sh:targetSubjectsOf cascade:vaccineName , cascade:vaccineCode , cascade:vaccinationOccurrenceTime , cascade:lotNumber ,
+        cascade:doseQuantity , cascade:routeOfAdministration , cascade:administrationSite ;
+
+    sh:property [
+        sh:path cascade:vaccineName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "An immunization states at most one non-empty vaccineName"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:vaccinationOccurrenceTime ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A vaccination occurrence time must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:workflowStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("completed" "entered-in-error" "not-done") ;
+        sh:message "Immunization status must be one of the FHIR R4 ImmunizationStatusCodes: completed, entered-in-error, not-done"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:vaccineCode ;
+        sh:node cascade:CvxCodeShape ;
+        sh:message "A vaccine code is a CVX code's IRI, one for each CVX coding the source gives"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:lotNumber ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:message "Immunization must not carry more than one lotNumber; a lot number identifies a single administered dose"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:doseQuantity ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:routeOfAdministration ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:administrationSite ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:LaboratoryTestResultShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    sh:targetClass cascade:LaboratoryTestResult ;
+    sh:targetSubjectsOf cascade:testName , cascade:testCode , cascade:resultValue , cascade:resultUnit ,
+        cascade:referenceRange , cascade:resultInterpretation , cascade:resultClinicallyRelevantTime ;
+
+    sh:property [
+        sh:path cascade:testName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A lab result states at most one non-empty test name"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:testCode ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A test code should be a LOINC IRI, for example http://loinc.org/rdf/2823-3, one per coding the source gave"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:resultValue ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:message "Lab result must not carry more than one resultValue; two readings of the same analyte are two records"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:resultUnit ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] ;
+
+    sh:property [
+        sh:path cascade:referenceRange ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] ;
+
+    sh:property [
+        sh:path cascade:resultInterpretation ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] ;
+
+    sh:property [
+        sh:path cascade:resultClinicallyRelevantTime ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A result's clinically relevant time must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:workflowStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("registered" "preliminary" "final" "amended" "corrected" "cancelled" "entered-in-error" "unknown") ;
+        sh:message "Lab result status should be one of the ObservationStatus codes: registered, preliminary, final, amended, corrected, cancelled, entered-in-error, unknown"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] .
+
+# Copied from the spec's clinical
+
+cascade:MedicalProcedureShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    sh:targetClass cascade:MedicalProcedure ;
+    sh:targetSubjectsOf cascade:procedureName , cascade:procedureDate , cascade:cptCode ;
+
+    sh:property [
+        sh:path cascade:procedureName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "Procedure name must be a single non-empty string"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:procedureDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "Procedure Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:workflowStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("preparation" "in-progress" "not-done" "on-hold" "stopped" "completed" "entered-in-error" "unknown")
+    ] ;
+
+    sh:property [
+        sh:path cascade:cptCode ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:pattern "^[0-9]{4}[0-9FTU]$" ;
+        sh:message "CPT code must be five characters: five digits (Category I), or four digits followed by F (Category II), T (Category III) or U (Proprietary Laboratory Analyses)"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:snomedCode ;
+        sh:node cascade:SnomedCtCodeShape ;
+        sh:message "A SNOMED CT code is SNOMED's own IRI, http://snomed.info/id/ and the concept id"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] .
+
+cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    sh:targetClass cascade:PrescribedOrReportedMedication ;
+    sh:targetSubjectsOf cascade:drugName , cascade:rxNormCode , cascade:ndcCode , cascade:userSelectedCode ,
+        cascade:prescribedOrReported , cascade:dosage , cascade:medicationUseStartDate , cascade:medicationUseEndDate ,
+        cascade:prescriptionWrittenDate ;
+
+    sh:property [
+        sh:path [ sh:inversePath prov:specializationOf ] ;
+        sh:node [
+            sh:property [
+                sh:path cascade:prescribedOrReported ;
+                sh:minCount 1 ;
+                sh:maxCount 1
+            ]
+        ] ;
+        sh:message "Every version of a medication states once whether it came from a prescription or from a list of what the person takes"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:prescribedOrReported ;
+        sh:datatype xsd:string ;
+        sh:in ("prescribed" "reportedUse") ;
+        sh:message "A medication's prescribedOrReported is \"prescribed\", from a prescription, or \"reportedUse\", from a list of what the person takes"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:drugName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A medication states at most one non-empty drug name"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:rxNormCode ;
+        sh:nodeKind sh:IRI ;
+        sh:message "An RxNorm code should be an IRI in RxNorm's own IRI space, for example https://ns.cascadeprotocol.org/codes/rxnorm/314076"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:ndcCode ;
+        sh:nodeKind sh:IRI ;
+        sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/ndc11/[0-9]{11}$" ;
+        sh:message "An NDC is Cascade's 11-digit IRI, https://ns.cascadeprotocol.org/codes/ndc11/ and 11 digits; the 10-digit hyphenated form is normalised by the adapter, never kept"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:userSelectedCode ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A medication marks at most one code as the one its source chose"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:dosage ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] ;
+
+    sh:property [
+        sh:path cascade:workflowStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] ;
+
+    sh:property [
+        sh:path cascade:medicationUseStartDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A medication use start date must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:medicationUseEndDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A medication use end date must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:prescriptionWrittenDate ;
+        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A medication states at most one day its prescription was written, an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:sourceRecordId ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] .
+
+# Copied from the spec's genomics
+
+cascade:GeneticVariantFindingShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.shapes.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    sh:targetClass cascade:GeneticVariantFinding ;
+    sh:targetSubjectsOf cascade:hgvsCodingDnaExpression , cascade:clinvarVariationId , cascade:geneSymbol ;
+
+    sh:property [
+        sh:path cascade:workflowStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("registered" "preliminary" "final" "amended" "corrected" "cancelled" "entered-in-error" "unknown") ;
+        sh:message "A genetic variant finding's status should be one of the FHIR R4 ObservationStatus codes: registered, preliminary, final, amended, corrected, cancelled, entered-in-error, unknown"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path [ sh:inversePath prov:specializationOf ] ;
+        sh:node [
+            sh:property [
+                sh:path cascade:hgvsCodingDnaExpression ;
+                sh:maxCount 1
+            ]
+        ] ;
+        sh:message "Every version of a variant states at most one HGVS coding expression: only an entry of the variants view takes every member's"@en
+    ] ;
+
+    sh:property [
+        sh:path [ sh:inversePath prov:specializationOf ] ;
+        sh:node [
+            sh:property [
+                sh:path cascade:clinvarVariationId ;
+                sh:maxCount 1
+            ]
+        ] ;
+        sh:message "Every version of a variant states at most one ClinVar VariationID: only an entry of the variants view takes every member's"@en
+    ] ;
+
+    sh:property [
+        sh:path [ sh:inversePath prov:specializationOf ] ;
+        sh:node [
+            sh:property [
+                sh:path cascade:geneSymbol ;
+                sh:maxCount 1
+            ]
+        ] ;
+        sh:message "Every version of a variant states at most one gene symbol: only an entry of the variants view takes every member's"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:hgvsCodingDnaExpression ;
+        sh:datatype xsd:string ;
+        sh:pattern "^((NM|NG|XM|NC)_[0-9]+\\.[0-9]+|LRG_[0-9]+(t[0-9]+)?):c\\.\\S+$" ;
+        sh:message "An HGVS coding expression is in the normal form: a reference sequence with its version (NM_000249.3, NG_, XM_, NC_ or LRG_), a colon and c., then the change, with no gene in parentheses and no protein change"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:clinvarVariationId ;
+        sh:datatype xsd:string ;
+        sh:pattern "^[1-9][0-9]*$" ;
+        sh:message "A ClinVar VariationID is the digits alone with no leading zero (90011, not VCV000090011)"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:geneSymbol ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:message "A gene symbol is a non-empty string"@en
+    ] .
+
+cascade:VariantInterpretationShape a sh:NodeShape ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.shapes.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    sh:targetClass cascade:VariantInterpretation ;
+    sh:targetSubjectsOf cascade:acmgClassification , cascade:variantInterpreted , cascade:interpretedDate ;
+
+    sh:property [
+        sh:path cascade:workflowStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("registered" "preliminary" "final" "amended" "corrected" "cancelled" "entered-in-error" "unknown") ;
+        sh:message "A variant interpretation's status should be one of the FHIR R4 ObservationStatus codes: registered, preliminary, final, amended, corrected, cancelled, entered-in-error, unknown"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:acmgClassification ;
+        sh:nodeKind sh:IRI ;
+        sh:in ( cascade:Pathogenic cascade:LikelyPathogenic cascade:UncertainSignificance cascade:LikelyBenign cascade:Benign ) ;
+        sh:maxCount 1 ;
+        sh:message "A variant interpretation states at most one ACMG classification, one of cascade:Pathogenic, LikelyPathogenic, UncertainSignificance, LikelyBenign and Benign; a report whose answer is not one of the five states none"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:variantInterpreted ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A variant interpretation is about at most one variant, named by the variant record's IRI (its urn:uuid: record name, resolved like cascade:patient), never a version; the record is one in the same document, since a urn:uuid names a record within one document only"@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:interpretedDate ;
+        sh:datatype xsd:date ;
+        sh:maxCount 1 ;
+        sh:message "An interpretation date is one xsd:date, the day the interpretation was issued, with no time"@en
+    ] .
+
+# Records
+
+cascade:SourceUrlShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:sourceUrl ;
+    sh:property [
+        sh:path cascade:sourceUrl ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A record has one source address, an IRI."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:ServerRecordNameShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:sourceUrl ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A record's name is the one cascade:RecordFromServerNamingRule gives its source address: expected {?expected}."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this ?expected WHERE {
+  $this <https://ns.cascadeprotocol.org/cascade#sourceUrl> ?url .
+  FILTER (ISIRI(?url))
+  BIND (STR(?url) AS ?address)
+  BIND ("^([Hh][Tt][Tt][Pp][Ss]?)://([A-Za-z0-9.-]+)(:[1-9][0-9]{0,4})?((/[^/?#%]+)*)/([A-Z][A-Za-z]*)/([A-Za-z0-9.-]{1,64})$" AS ?read)
+  FILTER (REGEX(?address, ?read))
+  BIND (REPLACE(?address, ?read, "$3") AS ?port)
+  FILTER (!REGEX(REPLACE(?address, ?read, "$4"), "(^|/)[.][.]?(/|$)") && !REGEX(REPLACE(?address, ?read, "$7"), "^[.]+$"))
+  FILTER (!CONTAINS(?address, "\u007F"))
+  FILTER (?port = "" || <http://www.w3.org/2001/XMLSchema#integer>(SUBSTR(?port, 2)) <= 65535)
+  BIND (LCASE(REPLACE(?address, ?read, "$1")) AS ?scheme)
+  BIND (CONCAT(?scheme, "://", LCASE(REPLACE(?address, ?read, "$2")),
+               IF(?port = "" || (?scheme = "http" && ?port = ":80") || (?scheme = "https" && ?port = ":443"), "", ?port),
+               REPLACE(?address, ?read, "$4")) AS ?input1)
+  BIND (REPLACE(?address, ?read, "$6") AS ?input2)
+  BIND (REPLACE(?address, ?read, "$7") AS ?input3)
+  BIND (SHA256(CONCAT("90c60849-c5ef-4ca6-bfb8-8662bd07d2b5|https://ns.cascadeprotocol.org/cascade#RecordFromServerNamingRule",
+                       "|", REPLACE(REPLACE(?input1, "%", "%25"), "\\\\|", "%7C"),
+                       "|", REPLACE(REPLACE(?input2, "%", "%25"), "\\\\|", "%7C"),
+                       "|", REPLACE(REPLACE(?input3, "%", "%25"), "\\\\|", "%7C"))) AS ?hash)
+  BIND (REPLACE(REPLACE(REPLACE(REPLACE(SUBSTR(?hash, 17, 1), "[048c]", "8"), "[159d]", "9"), "[26ae]", "a"), "[37bf]", "b")
+        AS ?variant)
+  BIND (IRI(CONCAT("urn:uuid:", SUBSTR(?hash, 1, 8), "-", SUBSTR(?hash, 9, 4), "-8", SUBSTR(?hash, 14, 3), "-", ?variant,
+                   SUBSTR(?hash, 18, 3), "-", SUBSTR(?hash, 21, 12))) AS ?name)
+  BIND (?name AS ?expected)
+  FILTER ($this != ?expected)
+}""" ] .
+
+cascade:AnsweredAsOfShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:answeredAsOf ;
+    sh:property [
+        sh:path cascade:answeredAsOf ;
+        sh:datatype xsd:dateTime ;
+        sh:maxCount 1 ;
+        sh:message "A document says one instant its source answered as of, an xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:PatientShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:patient ;
+    sh:property [
+        sh:path cascade:patient ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A version is about one patient record, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:RevisionShape a sh:NodeShape ;
+    sh:targetClass cascade:Revision ;
+    sh:property [
+        sh:path cascade:revisionOf ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A revision is of exactly one record."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:version ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A revision sets exactly one version."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A revision carries its arrival time, one xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:wasRevisionOf ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A revision follows at most one earlier revision."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path oa:hasSelector ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A revision has at most one selector, its own node <revision>#selector."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path oa:hasSource ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A revision names at most one source, the document its arrival came from."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:CurrentRevisionShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:currentRevision ;
+    sh:property [
+        sh:path cascade:currentRevision ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A record has at most one current revision."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:RecordSubjectShape a sh:NodeShape ;
+    sh:targetClass cascade:Record ;
+    sh:property [
+        sh:path cascade:subject ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A record's subject is the IRI of the person it is counted as being about."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:SubjectShape a sh:NodeShape ;
+    sh:targetClass cascade:Subject ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:message "A subject holds no data: what is known about the person lives in profiles."@en ;
+    sh:severity sh:Violation .
+
+cascade:ReferenceSeriesShape a sh:NodeShape ;
+    sh:targetClass cascade:ReferenceSeries ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A reference series has one name."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path [ sh:inversePath prov:specializationOf ] ;
+        sh:minCount 1 ;
+        sh:node cascade:ReferenceVersionShape ;
+        sh:message "A reference series has at least one version, and each version names its own label and at most one version it replaces."@en ;
+        sh:severity sh:Violation
+    ], [
+        sh:path cascade:tableKind ;
+        sh:in ( cascade:VaccineGroups cascade:CodeNames cascade:RetiredCodes cascade:SubstanceIngredients cascade:ProductIngredients cascade:BrandGenerics cascade:DrugProducts cascade:CodeConversions cascade:VariantClassifications cascade:PanelMembers cascade:DrugClasses ) ;
+        sh:maxCount 1 ;
+        sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:ReferenceVersionShape a sh:NodeShape ;
+    sh:property [ sh:path pav:version ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                [ sh:path prov:wasRevisionOf ; sh:nodeKind sh:IRI ; sh:maxCount 1 ] ,
+                [ sh:path cascade:coversGene ; sh:datatype xsd:string ; sh:minLength 1 ;
+                  sh:message "A version covers genes by their symbols, each a non-empty plain string"@en ] .
+
+cascade:MappingRowShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:class owl:Axiom ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:message "A mapping row is an owl:Axiom named by an IRI, its record_id, holding only its source, property, target, justification and cardinality."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row maps one subject code, an IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row has one predicate."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row maps to one object code, an IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path sssom:mapping_justification ;
+        sh:in ( semapv:ManualMappingCuration semapv:MappingChaining ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row is justified as a publisher's curated row or a chain of the publisher's relationships."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path sssom:mapping_cardinality ;
+        sh:in ( "1:1" "1:n" "n:1" "n:n" ) ;
+        sh:maxCount 1 ;
+        sh:message "A mapping row's cardinality is one of 1:1, 1:n, n:1 or n:n, as SSSOM writes them."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:VaccineGroupRowShape a sh:NodeShape ;
+    sh:node cascade:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node cascade:CvxCodeShape ;
+        sh:message "A vaccine group row maps a CVX code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue obo:RO_0002350 ;
+        sh:message "A vaccine group row puts its code in a group with obo:RO_0002350, member of."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node cascade:CvxCodeShape ;
+        sh:message "A vaccine group is named by its own CVX code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:SubstanceIngredientRowShape a sh:NodeShape ;
+    sh:node cascade:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node cascade:SnomedCtCodeShape ;
+        sh:message "A substance ingredient row maps a SNOMED CT code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue skos:exactMatch ;
+        sh:message "A substance ingredient row pairs its codes with skos:exactMatch."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node cascade:RxNormCodeShape ;
+        sh:message "A substance ingredient row maps to an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:ProductIngredientRowShape a sh:NodeShape ;
+    sh:node cascade:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node cascade:RxNormCodeShape ;
+        sh:message "A product ingredient row maps an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:in ( obo:RO_0002248 cascade:hasPreciseIngredient ) ;
+        sh:message "A product ingredient row gives its code its ingredient with obo:RO_0002248, has active ingredient, or a precise ingredient with cascade:hasPreciseIngredient."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node cascade:RxNormCodeShape ;
+        sh:message "A product ingredient row maps to an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:PanelMemberRowShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:class owl:Axiom ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:message "A panel member row is an owl:Axiom named by an IRI, its record_id, holding only its panel, obo:RO_0002351, its member, its justification, its sequence and at most one requirement."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node cascade:LoincCodeShape ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row has one panel, a LOINC code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue obo:RO_0002351 ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row gives its panel its member with obo:RO_0002351, has member."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node cascade:LoincCodeShape ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row has one member, a LOINC code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path sssom:mapping_justification ;
+        sh:hasValue semapv:ManualMappingCuration ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row is justified as the publisher's curated row."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:panelSequence ;
+        sh:datatype xsd:integer ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row has one sequence, an xsd:integer."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:observationRequiredInPanel ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:maxCount 1 ;
+        sh:message "A panel member row has at most one requirement, a non-empty plain string as LOINC writes it."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:DrugClassRowShape a sh:NodeShape ;
+    sh:node cascade:MappingRowShape , cascade:DrugClassFormShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node cascade:RxNormCodeShape ;
+        sh:message "A drug class row maps an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:in ( cascade:establishedPharmacologicClass cascade:mechanismOfActionClass cascade:physiologicEffectClass cascade:chemicalStructureClass ) ;
+        sh:message "A drug class row gives its code its class with cascade:establishedPharmacologicClass, cascade:mechanismOfActionClass, cascade:physiologicEffectClass or cascade:chemicalStructureClass."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path sssom:mapping_justification ;
+        sh:hasValue semapv:ManualMappingCuration ;
+        sh:message "A drug class row is justified as the publisher's curated row."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:DrugClassFormShape a sh:NodeShape ;
+    sh:or (
+        [ sh:property [ sh:path owl:annotatedTarget ; sh:node cascade:MedrtCodeShape ] ]
+        [ sh:property [ sh:path owl:annotatedProperty ; sh:hasValue cascade:chemicalStructureClass ] ,
+                      [ sh:path owl:annotatedTarget ; sh:node cascade:MeshCodeShape ] ]
+    ) ;
+    sh:message "A drug class row maps to a MED-RT code, or, with cascade:chemicalStructureClass, to a MeSH code."@en ;
+    sh:severity sh:Violation .
+
+cascade:BrandGenericRowShape a sh:NodeShape ;
+    sh:node cascade:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node cascade:RxNormCodeShape ;
+        sh:message "A brand generic row maps an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue skos:broadMatch ;
+        sh:message "A brand generic row puts its brand under its generic with skos:broadMatch."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node cascade:RxNormCodeShape ;
+        sh:message "A brand generic row maps to an RxNorm code."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:CodeConversionRowShape a sh:NodeShape ;
+    sh:node cascade:MappingRowShape , cascade:CodeConversionFormShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node cascade:CodeShape ;
+        sh:message "A code conversion row maps a code, an IRI of a code system's form."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:node cascade:CodeShape ;
+        sh:message "A code conversion row maps to a code, an IRI of a code system's form."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:CodeConversionFormShape a sh:NodeShape ;
+    sh:or (
+        [ sh:property [ sh:path owl:annotatedProperty ; sh:hasValue dct:isReplacedBy ] ,
+                      [ sh:path sssom:mapping_cardinality ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path owl:annotatedProperty ; sh:hasValue skos:exactMatch ] ,
+                      [ sh:path sssom:mapping_cardinality ; sh:maxCount 0 ] ]
+    ) ;
+    sh:message "A code conversion row says its code is replaced by the code it converts to, with dct:isReplacedBy, and gives its cardinality; a row of the earlier form pairs them with skos:exactMatch and gives none."@en ;
+    sh:severity sh:Violation .
+
+cascade:CodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:or ( cascade:CvxCodeShape cascade:NdcCodeShape cascade:IcdTenCmCodeShape cascade:RxNormCodeShape cascade:SnomedCtCodeShape cascade:LoincCodeShape cascade:ClinVarCodeShape cascade:MedrtCodeShape cascade:MeshCodeShape ) ;
+    sh:message "A code is an IRI of one of the code systems' forms."@en ;
+    sh:severity sh:Violation .
+
+cascade:CvxCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cvx/(0[1-9]|[1-9][0-9]{1,2})$" .
+
+cascade:NdcCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/ndc11/[0-9]{11}$" .
+
+cascade:IcdTenCmCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/icd10cm/[A-Z][0-9A-Z]{2}(\\.[0-9A-Z]{1,4})?$" .
+
+cascade:RxNormCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/rxnorm/[0-9]+$" .
+
+cascade:SnomedCtCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://snomed\\.info/id/[0-9]+$" .
+
+cascade:LoincCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://loinc\\.org/rdf/[A-Za-z0-9]+-[0-9]$" .
+
+cascade:ClinVarCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https://identifiers\\.org/clinvar:[1-9][0-9]*$" .
+
+cascade:MedrtCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/medrt/N[0-9]{10}$" .
+
+cascade:MeshCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^http://id\\.nlm\\.nih\\.gov/mesh/[CDMQ][0-9]+$" .
+
+cascade:HgvsCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/hgvs/NM_[0-9]+\\.[0-9]+%3Ac\\.([A-Za-z0-9._~-]|%[0-9A-F]{2})+$" .
+
+cascade:CodeNameRowShape a sh:NodeShape ;
+    sh:node cascade:CodeShape ;
+    sh:closed true ;
+    sh:message "A code names row holds only the code's labels and notation."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path skos:prefLabel ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A code has one preferred name."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path skos:altLabel ;
+        sh:datatype xsd:string ;
+        sh:disjoint skos:prefLabel ;
+        sh:message "A code's other names are plain strings, none its preferred name."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path skos:notation ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A code has one notation, the code as its publisher writes it."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:RetiredCodeRowShape a sh:NodeShape ;
+    sh:node cascade:CodeShape ;
+    sh:closed true ;
+    sh:message "A retired codes row holds only that the code is retired and what replaces it."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path owl:deprecated ;
+        sh:hasValue true ;
+        sh:maxCount 1 ;
+        sh:message "A retired codes row says its code is retired: owl:deprecated true."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path dct:isReplacedBy ;
+        sh:node cascade:CodeShape ;
+        sh:message "A retired code is replaced by codes, each an IRI of a code system's form."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:DrugProductRowShape a sh:NodeShape ;
+    sh:node cascade:RxNormCodeShape ;
+    sh:closed true ;
+    sh:message "A drug products row holds only the code's term type."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path cascade:termType ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "SCD" "SBD" "GPCK" "BPCK" ) ;
+        sh:message "A drug product's term type is one of SCD, SBD, GPCK or BPCK."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:VariantClassificationRowShape a sh:NodeShape ;
+    sh:node cascade:ClinVarCodeShape , cascade:SubmitterCountShape ;
+    sh:closed true ;
+    sh:message "A variant classification row holds only its variation's HGVS expressions, classification concepts, review status, date last evaluated and submitter count."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path cascade:hgvsExpression ;
+        sh:node cascade:HgvsCodeShape ;
+        sh:message "A variant classification row is found by coding NM_ expressions, each the cascade:HGVS IRI with the expression percent-encoded."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path ( cascade:hgvsExpression [ sh:inversePath cascade:hgvsExpression ] ) ;
+        sh:maxCount 1 ;
+        sh:message "An expression finds one row: an expression of this row is on another row too."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:clinvarClassification ;
+        sh:in ( cascade:Pathogenic cascade:LikelyPathogenic cascade:UncertainSignificance cascade:LikelyBenign cascade:Benign
+                cascade:ClinVarConflicting cascade:ClinVarConflictingData cascade:ClinVarPathogenicLowPenetrance
+                cascade:ClinVarLikelyPathogenicLowPenetrance cascade:ClinVarVusHigh cascade:ClinVarVusMid cascade:ClinVarVusLow
+                cascade:ClinVarEstablishedRiskAllele cascade:ClinVarLikelyRiskAllele cascade:ClinVarUncertainRiskAllele
+                cascade:ClinVarDrugResponse cascade:ClinVarRiskFactor cascade:ClinVarAssociation cascade:ClinVarProtective
+                cascade:ClinVarConfersSensitivity cascade:ClinVarAffects cascade:ClinVarOther cascade:ClinVarNotProvided
+                cascade:ClinVarCombinationOnly cascade:ClinVarNoClassificationsFromUnflaggedRecords
+                cascade:ClinVarNoClassificationForTheSingleVariant ) ;
+        sh:message "A classification is a concept of cascade:ClinVarClassifications."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:clinvarReviewStatus ;
+        sh:in ( cascade:ClinVarPracticeGuideline cascade:ClinVarExpertPanel cascade:ClinVarMultipleSubmittersNoConflicts
+                cascade:ClinVarConflictingClassifications cascade:ClinVarSingleSubmitter cascade:ClinVarNoAssertionCriteria
+                cascade:ClinVarNoClassificationProvided cascade:ClinVarNoClassificationForTheSingleVariant
+                cascade:ClinVarNoClassificationsFromUnflaggedRecords ) ;
+        sh:maxCount 1 ;
+        sh:message "A row has at most one review status, a concept of cascade:ClinVarReviewStatuses."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:lastEvaluated ;
+        sh:datatype xsd:date ;
+        sh:maxCount 1 ;
+        sh:message "The day last evaluated is one xsd:date."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:contributingSubmitterCount ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxCount 1 ;
+        sh:message "The contributing submitters are counted once, a non-negative xsd:integer."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:submitterCount ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxCount 1 ;
+        sh:message "The submitters are counted once, a non-negative xsd:integer."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:SubmitterCountShape a sh:NodeShape ;
+    sh:not [ sh:property [ sh:path cascade:contributingSubmitterCount ; sh:minCount 1 ] ,
+                         [ sh:path cascade:submitterCount ; sh:minCount 1 ] ] ;
+    sh:message "A row holds the count of contributing submitters or the count of submitters, never both, so it says which it has."@en ;
+    sh:severity sh:Violation .
+
+cascade:PlacementShape a sh:NodeShape ;
+    sh:targetClass cascade:Placement ;
+    sh:xone (
+        [ sh:path solid:instance ; sh:minCount 1 ]
+        [ sh:path solid:instanceContainer ; sh:minCount 1 ]
+        [ sh:path cascade:filedWith ; sh:minCount 1 ]
+    ) ;
+    sh:message "A placement names exactly one of a file, a folder, or the property whose value's folder it files with."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path solid:instance ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path solid:instanceContainer ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path cascade:filedWith ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path solid:forClass ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path cascade:forSubjectsOf ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1
+    ] , [
+        sh:path cascade:subfolderPrefixLength ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:maxCount 1
+    ] , [
+        sh:path cascade:writtenByQueryPath ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1
+    ] , [
+        sh:path cascade:writtenAlways ;
+        sh:datatype xsd:boolean ;
+        sh:maxCount 1
+    ] , [
+        sh:path cascade:storesBytes ;
+        sh:datatype xsd:boolean ;
+        sh:maxCount 1
+    ] .
+
+# Judgments
+
+cascade:JudgmentShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:property [
+        sh:path cascade:verdict ;
+        sh:maxCount 1 ;
+        sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About ) ;
+        sh:message "A judgment gives at most one verdict: cascade:Same, cascade:Different, cascade:Erroneous or cascade:About. One that only retracts gives none."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:hadMember ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A judgment's members are records or activities, named by their IRIs."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:maxCount 1 ;
+        sh:message "A judgment carries at most one time it was made, an xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:or ( [ sh:class prov:Person ] [ sh:class prov:SoftwareAgent ] ) ;
+        sh:message "A judgment has one author, a prov:Person or a prov:SoftwareAgent, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:used ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A judgment names what it used by IRI: versions it saw, reference versions it applied."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path npx:supersedes ;
+        sh:class cascade:Judgment ;
+        sh:message "A judgment supersedes only judgments."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path npx:retracts ;
+        sh:class cascade:Judgment ;
+        sh:message "A judgment retracts only judgments."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:matcherRule ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A judgment names at most one matcher rule, by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:justification ;
+        sh:maxCount 1 ;
+        sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable ) ;
+        sh:message "A judgment gives at most one justification: cascade:SameCode, cascade:SameCodeAndDate, cascade:SameMappedCode, cascade:SameMappedCodeAndDate, cascade:SameMedicationCode, cascade:SameProductCode, cascade:SameResult, cascade:SameConvertedCode, cascade:SameCodeAndPeriod, cascade:SameBrandGeneric, cascade:SameVariation or cascade:SameVariationThroughTable."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:AboutVerdictShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path cascade:verdict ; sh:hasValue cascade:About ] ]
+        [ sh:property [ sh:path cascade:subject ; sh:minCount 1 ] ,
+                      [ sh:path cascade:basis ; sh:minCount 1 ] ,
+                      [ sh:path prov:hadMember ; sh:minCount 1 ; sh:maxCount 1 ] ]
+    ) ;
+    sh:message "An About judgment names one member, a subject and a basis."@en ;
+    sh:severity sh:Violation .
+
+cascade:AboutShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:property [ sh:path cascade:verdict ; sh:hasValue cascade:About ] ]
+        [ sh:property [ sh:path cascade:subject ; sh:maxCount 0 ] , [ sh:path cascade:basis ; sh:maxCount 0 ] ]
+    ) ;
+    sh:message "Only an About judgment names a subject or gives a basis."@en ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path cascade:subject ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:disjoint prov:wasAttributedTo ;
+        sh:message "An About judgment names exactly one subject, which is never its author."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:basis ;
+        sh:maxCount 1 ;
+        sh:in ( cascade:PortalAuthenticated cascade:RelatedPersonConnection cascade:SameDemographics cascade:OwnerStatement ) ;
+        sh:message "An About judgment gives exactly one basis: cascade:PortalAuthenticated, cascade:RelatedPersonConnection, cascade:SameDemographics or cascade:OwnerStatement."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:VerdictOrRetractionShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:xone (
+        [ sh:path cascade:verdict ; sh:minCount 1 ]
+        [ sh:path npx:retracts ; sh:minCount 1 ]
+    ) ;
+    sh:message "A judgment either gives a verdict or retracts judgments, not both and not neither."@en ;
+    sh:severity sh:Violation .
+
+cascade:RetractionShape a sh:NodeShape ;
+    sh:targetSubjectsOf npx:retracts ;
+    sh:property [
+        sh:path prov:hadMember ;
+        sh:maxCount 0 ;
+        sh:message "A retraction names only the judgments it retracts: no members, no supersession, no justification."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path npx:supersedes ;
+        sh:maxCount 0 ;
+        sh:message "A retraction names only the judgments it retracts: no members, no supersession, no justification."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:justification ;
+        sh:maxCount 0 ;
+        sh:message "A retraction names only the judgments it retracts: no members, no supersession, no justification."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:VerdictMembersShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path cascade:verdict ; sh:minCount 1 ] ]
+        [ sh:path prov:hadMember ; sh:minCount 1 ]
+    ) ;
+    sh:message "A judgment that gives a verdict judges at least one member."@en ;
+    sh:severity sh:Violation .
+
+cascade:SetVerdictShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path cascade:verdict ; sh:minCount 1 ; sh:in ( cascade:Same cascade:Different ) ] ]
+        [ sh:path prov:hadMember ; sh:minCount 2 ]
+    ) ;
+    sh:message "A Same or a Different judges a set of at least two records."@en ;
+    sh:severity sh:Violation .
+
+cascade:JustificationShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:justification ;
+    sh:property [
+        sh:path cascade:verdict ;
+        sh:hasValue cascade:Same ;
+        sh:message "Only a Same judgment gives a justification."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:MachineSameShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:and (
+            [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:SoftwareAgent ]
+            [ sh:path cascade:verdict ; sh:hasValue cascade:Same ]
+        ) ] ]
+        [ sh:property [ sh:path cascade:justification ; sh:minCount 1 ] ,
+                      [ sh:path cascade:matcherRule ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                      [ sh:path prov:used ; sh:minCount 1 ] ,
+                      [ sh:path prov:generatedAtTime ; sh:maxCount 0 ] ]
+    ) ;
+    sh:message "A machine's Same is a claim: it gives its justification and the one matcher rule that made it, names what it used, and carries no time."@en ;
+    sh:severity sh:Violation .
+
+cascade:PersonJudgmentShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:Person ] ]
+        [ sh:property [ sh:path prov:qualifiedAttribution ; sh:minCount 1 ; sh:maxCount 1 ;
+                        sh:node cascade:AttributionShape ] ,
+                      [ sh:path ( prov:qualifiedAttribution prov:agent ) ;
+                        sh:equals prov:wasAttributedTo ] ,
+                      [ sh:path prov:generatedAtTime ; sh:minCount 1 ] ]
+    ) ;
+    sh:message "A person's judgment carries the time it was made and names the role its author acted in, in one prov:qualifiedAttribution whose agent is the author."@en ;
+    sh:severity sh:Violation .
+
+cascade:ClaimAssertionShape a sh:NodeShape ;
+    sh:targetClass cascade:ClaimAssertion ;
+    sh:property [
+        sh:path cascade:assertedClaim ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "An assertion asserts one claim, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:assertedUnderRuleListVersion ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "An assertion is under one version of the rule list, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:generatedAtTime ;
+        sh:maxCount 0 ;
+        sh:message "An assertion carries no time: the run that wrote it is known from its snapshot."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:RuleListVersionRowShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:rowOfRuleListVersion ;
+    sh:property [
+        sh:path cascade:rowOfRuleListVersion ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A row described in a pod belongs to one rule list version."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:matcherRule ;
+        sh:minCount 1 ;
+        sh:message "A row described in a pod gives its matcher rule."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:queryHash ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A row described in a pod gives the one query hash of its rule."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:AttributionShape a sh:NodeShape ;
+    sh:property [ sh:path prov:agent ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                [ sh:path prov:hadRole ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( cascade:PatientRole ) ] .

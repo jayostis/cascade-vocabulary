@@ -1,0 +1,13 @@
+# Two records of one kind match when their current versions give one vaccine code and one date, each the same term.
+# A version with no date matches nothing. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version cascade:vaccineCode ?code ; cascade:displayDate ?date .
+  ?otherVersion cascade:vaccineCode ?code ; cascade:displayDate ?date .
+  FILTER (?record != ?other)
+}

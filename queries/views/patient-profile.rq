@@ -1,0 +1,16 @@
+# One entry for the person, joining every patient profile a counting About judgment ties to them, named as every entry
+# is, from its least member.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT {
+  ?entry a cascade:PatientProfile ;
+    cascade:mergedFrom ?profile .
+}
+WHERE {
+  { SELECT ?s (IRI(CONCAT("urn:cascade:entry:", SHA256(MIN(STR(?member))))) AS ?entry)
+    WHERE { ?about cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?member ;
+                   cascade:subject ?s . }
+    GROUP BY ?s }
+  ?j cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?s .
+}

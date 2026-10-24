@@ -1,0 +1,12 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:cb55b54e-aaab-8b21-8cc5-b62ef894d1d3> a cascade:MedicalProcedure ;
+    cascade:sourceUrl <https://fhir.example/Procedure/record-procedure-snomed-code-a-literal> .
+
+:version prov:specializationOf <urn:uuid:cb55b54e-aaab-8b21-8cc5-b62ef894d1d3> ;
+    cascade:patient :patient ;
+    cascade:procedureName "Colonoscopy" ;
+    cascade:snomedCode "73761001" .

@@ -1,11 +1,11 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
-<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a rec:ReferenceSeries ;
+<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a cascade:ReferenceSeries ;
     rdfs:label "Matcher rules" ;
-    rec:shipsWith <urn:uuid:5decd4e5-a731-4ef1-901e-351c30d448d6> .
+    cascade:defaultTableVersion <urn:uuid:5decd4e5-a731-4ef1-901e-351c30d448d6> .
 
 <urn:uuid:f32ebeea-4ed7-4da7-b08c-031dc619538e> a prov:Entity ;
     prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
@@ -21,20 +21,20 @@
     pav:version "3" ;
     prov:wasRevisionOf <urn:uuid:1cbf4776-02c0-4315-b992-a2037c1905fa> .
 
-<urn:uuid:910b4e9b-77e0-423c-8b8d-4f4e29fa464d> a rec:ReferenceSeries ;
+<urn:uuid:910b4e9b-77e0-423c-8b8d-4f4e29fa464d> a cascade:ReferenceSeries ;
     rdfs:label "CDC CVX vaccine groups" ;
-    rec:tableKind rec:VaccineGroups ;
-    rec:shipsWith <urn:uuid:40aa2d4f-fb10-45f8-a32c-e403f7efdd54> .
+    cascade:tableKind cascade:VaccineGroups ;
+    cascade:defaultTableVersion <ni:///sha-256;arpY4XbZRYhrxVWjs-qMHOVxw58XosRmhHdUkl83Zs8> .
 
-<urn:uuid:40aa2d4f-fb10-45f8-a32c-e403f7efdd54> a prov:Entity ;
+<ni:///sha-256;arpY4XbZRYhrxVWjs-qMHOVxw58XosRmhHdUkl83Zs8> a prov:Entity ;
     prov:specializationOf <urn:uuid:910b4e9b-77e0-423c-8b8d-4f4e29fa464d> ;
     pav:version "1" .
 
-<urn:uuid:8666d413-23ab-4d65-b5b2-ec21483bff7e> a rec:ReferenceSeries ;
+<urn:uuid:8666d413-23ab-4d65-b5b2-ec21483bff7e> a cascade:ReferenceSeries ;
     rdfs:label "CDC ICD-10-CM code conversions" ;
-    rec:tableKind rec:CodeConversions ;
-    rec:shipsWith <urn:uuid:8ce9e1ed-adcf-4ed6-b082-8c7434c834b3> .
+    cascade:tableKind cascade:CodeConversions ;
+    cascade:defaultTableVersion <ni:///sha-256;uTt86ey8NN8Yx3DL9Gr2k9r2LT8sBxmcEmhomBNPNW0> .
 
-<urn:uuid:8ce9e1ed-adcf-4ed6-b082-8c7434c834b3> a prov:Entity ;
+<ni:///sha-256;uTt86ey8NN8Yx3DL9Gr2k9r2LT8sBxmcEmhomBNPNW0> a prov:Entity ;
     prov:specializationOf <urn:uuid:8666d413-23ab-4d65-b5b2-ec21483bff7e> ;
     pav:version "1" .

@@ -1,5 +1,5 @@
 @prefix : <urn:x:> .
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix npx: <http://purl.org/nanopub/x/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -7,20 +7,23 @@
 
 :person a prov:Person .
 
-:matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
-:machineSame a jdg:Judgment ; jdg:verdict jdg:Same ; jdg:justification jdg:SameCode ; prov:hadMember :record , :other ;
-    prov:used :rules-1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:machineSame a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :record , :other ;
+    prov:used :recordVersion , :otherVersion ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personSame a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :record , :other ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:personSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :record , :other ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:superseding a jdg:Judgment ; jdg:verdict jdg:Same ; prov:hadMember :record , :other ;
+:superseding a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :record , :other ;
     npx:supersedes :machineSame , :personSame ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:retraction a jdg:Judgment ; npx:retracts :superseding ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:retraction a cascade:Judgment ; npx:retracts :superseding ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+
+:machineSameUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :machineSame ;
+    cascade:assertedUnderRuleListVersion :rules-1 .

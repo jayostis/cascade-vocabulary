@@ -1,0 +1,15 @@
+# The lens decides which judgments count, and only those shape the views. Here they are by verdict, by the reason a
+# machine gave for it, and by whether a person or a machine made them; a retraction has no verdict. Asked under each lens, the rows show which kinds
+# one lens counts and the other does not.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?verdict ?justification ?madeBy (COUNT(DISTINCT ?judgment) AS ?judgments)
+WHERE {
+  VALUES ?madeBy { prov:Person prov:SoftwareAgent }
+  ?judgment cascade:countsUnderLens true ; prov:wasAttributedTo/a ?madeBy .
+  OPTIONAL { ?judgment cascade:verdict ?verdict }
+  OPTIONAL { ?judgment cascade:justification ?justification }
+}
+GROUP BY ?verdict ?justification ?madeBy
+ORDER BY ?verdict ?justification ?madeBy

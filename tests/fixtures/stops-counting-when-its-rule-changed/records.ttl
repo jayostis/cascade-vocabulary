@@ -1,0 +1,40 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:m1 a cascade:AllergyOrIntolerance .
+:m1Version prov:specializationOf :m1 ; cascade:patient :subject ; cascade:allergen "Penicillin G" .
+:m1Revision a cascade:Revision ; cascade:revisionOf :m1 ; cascade:version :m1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:m2 a cascade:AllergyOrIntolerance .
+:m2Version prov:specializationOf :m2 ; cascade:patient :subject ; cascade:allergen "Penicillin" .
+:m2Revision a cascade:Revision ; cascade:revisionOf :m2 ; cascade:version :m2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:n1 a cascade:AllergyOrIntolerance .
+:n1Version prov:specializationOf :n1 ; cascade:patient :subject ; cascade:allergen "Amoxicillin" .
+:n1Revision a cascade:Revision ; cascade:revisionOf :n1 ; cascade:version :n1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:n2 a cascade:AllergyOrIntolerance .
+:n2Version prov:specializationOf :n2 ; cascade:patient :subject ; cascade:allergen "Amoxil" .
+:n2Revision a cascade:Revision ; cascade:revisionOf :n2 ; cascade:version :n2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
+:rules1SameMappedCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:queryHash :sameMappedCodeQuery .
+:rules2 prov:specializationOf :rules ; pav:version "2" ; prov:wasRevisionOf :rules1 .
+:rules2SameCodeRule cascade:rowOfRuleListVersion :rules2 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
+:rules2SameMappedCodeRule cascade:rowOfRuleListVersion :rules2 ; cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:queryHash :sameMappedCodeQueryChanged .

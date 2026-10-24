@@ -1,11 +1,10 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
 :northImport a prov:Activity ; rdfs:label "Northgate download" ;
     prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
@@ -15,38 +14,38 @@
     prov:startedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime .
 :session a prov:Activity ; rdfs:label "Entry session" ; prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:penicillinNorth a health:AllergyRecord .
-:penicillinNorthVersion prov:specializationOf :penicillinNorth ; rec:patient :subject ; health:allergen "Penicillin" .
-:penicillinNorthRevision a rec:Revision ; rec:revisionOf :penicillinNorth ; rec:version :penicillinNorthVersion ;
+:penicillinNorth a cascade:AllergyOrIntolerance .
+:penicillinNorthVersion prov:specializationOf :penicillinNorth ; cascade:patient :subject ; cascade:allergen "Penicillin" .
+:penicillinNorthRevision a cascade:Revision ; cascade:revisionOf :penicillinNorth ; cascade:version :penicillinNorthVersion ;
     prov:wasDerivedFrom :penicillinNorthDocument ; prov:wasGeneratedBy :northImport ;
     prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
 
-:penicillinSouth a health:AllergyRecord .
-:penicillinSouthVersion prov:specializationOf :penicillinSouth ; rec:patient :subject ; health:allergen "Penicillin" .
-:penicillinSouthRevision a rec:Revision ; rec:revisionOf :penicillinSouth ; rec:version :penicillinSouthVersion ;
+:penicillinSouth a cascade:AllergyOrIntolerance .
+:penicillinSouthVersion prov:specializationOf :penicillinSouth ; cascade:patient :subject ; cascade:allergen "Penicillin" .
+:penicillinSouthRevision a cascade:Revision ; cascade:revisionOf :penicillinSouth ; cascade:version :penicillinSouthVersion ;
     prov:wasDerivedFrom :penicillinSouthDocument ; prov:wasGeneratedBy :southImport ;
     prov:generatedAtTime "2026-01-02T00:00:05Z"^^xsd:dateTime .
 
-:penicillinEntered a health:AllergyRecord .
-:penicillinEnteredVersion prov:specializationOf :penicillinEntered ; rec:patient :subject ;
-    health:allergen "Penicillin" .
-:penicillinEnteredRevision a rec:Revision ; rec:revisionOf :penicillinEntered ; rec:version :penicillinEnteredVersion ;
+:penicillinEntered a cascade:AllergyOrIntolerance .
+:penicillinEnteredVersion prov:specializationOf :penicillinEntered ; cascade:patient :subject ;
+    cascade:allergen "Penicillin" .
+:penicillinEnteredRevision a cascade:Revision ; cascade:revisionOf :penicillinEntered ; cascade:version :penicillinEnteredVersion ;
     prov:wasGeneratedBy :session ; prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime .
 
-:asthmaFirst a health:ConditionRecord .
-:asthmaFirstVersion prov:specializationOf :asthmaFirst ; rec:patient :subject ; health:conditionName "Asthma" .
-:asthmaFirstRevision a rec:Revision ; rec:revisionOf :asthmaFirst ; rec:version :asthmaFirstVersion ;
+:asthmaFirst a cascade:ProblemOrDiagnosis .
+:asthmaFirstVersion prov:specializationOf :asthmaFirst ; cascade:patient :subject ; cascade:conditionName "Asthma" .
+:asthmaFirstRevision a cascade:Revision ; cascade:revisionOf :asthmaFirst ; cascade:version :asthmaFirstVersion ;
     prov:wasDerivedFrom :asthmaFirstDocument ; prov:wasGeneratedBy :northImport ;
     prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
 
-:asthmaSecond a health:ConditionRecord .
-:asthmaSecondVersion prov:specializationOf :asthmaSecond ; rec:patient :subject ; health:conditionName "Asthma" .
-:asthmaSecondRevision a rec:Revision ; rec:revisionOf :asthmaSecond ; rec:version :asthmaSecondVersion ;
+:asthmaSecond a cascade:ProblemOrDiagnosis .
+:asthmaSecondVersion prov:specializationOf :asthmaSecond ; cascade:patient :subject ; cascade:conditionName "Asthma" .
+:asthmaSecondRevision a cascade:Revision ; cascade:revisionOf :asthmaSecond ; cascade:version :asthmaSecondVersion ;
     prov:wasDerivedFrom :asthmaSecondDocument ; prov:wasGeneratedBy :northLaterImport ;
     prov:generatedAtTime "2026-01-03T00:00:05Z"^^xsd:dateTime .
 
-:latex a health:AllergyRecord .
-:latexVersion prov:specializationOf :latex ; rec:patient :subject ; health:allergen "Latex" .
-:latexRevision a rec:Revision ; rec:revisionOf :latex ; rec:version :latexVersion ;
+:latex a cascade:AllergyOrIntolerance .
+:latexVersion prov:specializationOf :latex ; cascade:patient :subject ; cascade:allergen "Latex" .
+:latexRevision a cascade:Revision ; cascade:revisionOf :latex ; cascade:version :latexVersion ;
     prov:wasDerivedFrom :latexDocument ; prov:wasGeneratedBy :northImport ;
     prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .

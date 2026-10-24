@@ -1,31 +1,29 @@
 @prefix : <urn:x:> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:panel a genomics:Variant .
-:panelVersion prov:specializationOf :panel ; rec:patient :subject ; genomics:geneSymbol "MLH1" ;
-    genomics:hgvsCDot "NM_000249.3:c.2042C>T" ; clinical:status "final" .
-:panelRevision a rec:Revision ; rec:revisionOf :panel ; rec:version :panelVersion ;
+:panel a cascade:GeneticVariantFinding .
+:panelVersion prov:specializationOf :panel ; cascade:patient :subject ; cascade:geneSymbol "MLH1" ;
+    cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" ; cascade:workflowStatus "final" .
+:panelRevision a cascade:Revision ; cascade:revisionOf :panel ; cascade:version :panelVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:exome a genomics:Variant .
-:exomeVersion prov:specializationOf :exome ; rec:patient :subject ; genomics:geneSymbol "MLH1" ;
-    genomics:hgvsCDot "NM_000249.4:c.2042C>T" ; genomics:clinvarVariationId "90011" .
-:exomeRevision a rec:Revision ; rec:revisionOf :exome ; rec:version :exomeVersion ;
+:exome a cascade:GeneticVariantFinding .
+:exomeVersion prov:specializationOf :exome ; cascade:patient :subject ; cascade:geneSymbol "MLH1" ;
+    cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" ; cascade:clinvarVariationId "90011" .
+:exomeRevision a cascade:Revision ; cascade:revisionOf :exome ; cascade:version :exomeVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:benign a genomics:Variant .
-:benignVersion prov:specializationOf :benign ; rec:patient :subject ; genomics:geneSymbol "MSH2" ;
-    genomics:hgvsCDot "NM_000251.3:c.1168C>T" ; genomics:clinvarVariationId "41612" .
-:benignRevision a rec:Revision ; rec:revisionOf :benign ; rec:version :benignVersion ;
+:benign a cascade:GeneticVariantFinding .
+:benignVersion prov:specializationOf :benign ; cascade:patient :subject ; cascade:geneSymbol "MSH2" ;
+    cascade:hgvsCodingDnaExpression "NM_000251.3:c.1168C>T" ; cascade:clinvarVariationId "41612" .
+:benignRevision a cascade:Revision ; cascade:revisionOf :benign ; cascade:version :benignVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:bare a genomics:Variant .
-:bareVersion prov:specializationOf :bare ; rec:patient :subject ; genomics:geneSymbol "PMS2" .
-:bareRevision a rec:Revision ; rec:revisionOf :bare ; rec:version :bareVersion ;
+:bare a cascade:GeneticVariantFinding .
+:bareVersion prov:specializationOf :bare ; cascade:patient :subject ; cascade:geneSymbol "PMS2" .
+:bareRevision a cascade:Revision ; cascade:revisionOf :bare ; cascade:version :bareVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,0 +1,16 @@
+# Two records of one kind match when their current versions share an NDC. An NDC is a package of one product, so a
+# shared one is exact identity. No table is read. RxNorm codes are not compared here: the rule that reads the drug
+# products table joins those that name one product. An NDC names a package within one listing; NDC product codes have
+# been reassigned after a product was discontinued, and dates are ignored here, so a pod spanning years may join two
+# products under one reused NDC, a known limit. Any intents are ignored. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version cascade:ndcCode ?code .
+  ?otherVersion cascade:ndcCode ?code .
+  FILTER (?record != ?other)
+}

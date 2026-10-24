@@ -1,7 +1,7 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
 <> a mf:Manifest ;
   rdfs:label "imports" ;
@@ -13,6 +13,6 @@
 <#what-each-import-brought-in> a mf:QueryEvaluationTest ;
   mf:name "what-each-import-brought-in" ;
   rdfs:comment "Every revision each import added, with its record and version, in the order the imports started." ;
-  mf:action [ qt:query <../../../queries/v1-draft/questions/pod/What%20each%20import%20brought%20in.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/questions/pod/What%20each%20import%20brought%20in.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-each-import-brought-in.srj> .

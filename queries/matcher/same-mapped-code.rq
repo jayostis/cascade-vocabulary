@@ -1,0 +1,21 @@
+# Two records of one kind match when one version of a substance ingredient map pairs an allergen code of one's current
+# version with an allergen code of the other's, either way round. The map pairs a SNOMED CT code with an RxNorm code,
+# so two codes of one system never match here. Each ordered pair is a row, with the version whose rows joined it; a
+# graph that is not a version of such a map is never read for rows.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT DISTINCT ?record ?other ?origin
+WHERE {
+  ?origin prov:specializationOf/cascade:tableKind cascade:SubstanceIngredients .
+  ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version cascade:allergenCode ?code .
+  ?otherVersion cascade:allergenCode ?otherCode .
+  FILTER (?record != ?other)
+  GRAPH ?origin {
+    ?code ^owl:annotatedSource/owl:annotatedTarget|^owl:annotatedTarget/owl:annotatedSource ?otherCode .
+  }
+}

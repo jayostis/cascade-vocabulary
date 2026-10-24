@@ -1,0 +1,14 @@
+# A record no entry joins is hidden, never deleted. Each reason the derivations left it out for is a row, with the thing
+# that reason rests on, where there is one.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?record ?recordLabel ?why ?because ?becauseLabel
+WHERE {
+  ?record a cascade:Record ; cascade:leftOutFor ?leftOut .
+  ?leftOut cascade:leftOutReason ?why .
+  OPTIONAL { ?leftOut cascade:leftOutBecauseOf ?because }
+  OPTIONAL { ?leftOut cascade:leftOutBecauseOf ?because . ?because rdfs:label ?becauseLabel }
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+}
+ORDER BY ?why ?recordLabel ?record ?because

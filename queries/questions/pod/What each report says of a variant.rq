@@ -1,0 +1,13 @@
+# Read from the view alone, as an app would: one row for each interpretation entry that names the variant it interprets,
+# newest first within a variant. ?report is the interpretation's entry and ?variant the variant's entry, each as the other
+# pod questions give an entry's IRI; ?classification is the genomics: IRI of the ACMG value the report states, none for a
+# report whose answer is not one of the five, and ?date the day it was issued.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT DISTINCT ?report ?variant ?classification ?date
+WHERE {
+  ?report cascade:variantInterpreted ?variant ; cascade:mergedFrom [] .
+  OPTIONAL { ?report cascade:acmgClassification ?classification }
+  OPTIONAL { ?report cascade:interpretedDate ?date }
+}
+ORDER BY ?variant DESC(?date) ?report

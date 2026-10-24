@@ -1,0 +1,29 @@
+# The table is the one place that says which types are records and, for each kind, the word for it, the properties
+# that hold its name and date, and whether its status comes only from documents. Every record becomes a
+# cascade:Record, and every version of one gets cascade:displayName and cascade:displayDate, so later steps read any
+# record alike. A medication's date is its start of use, else the day its prescription was written.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT {
+  ?record a cascade:Record ; cascade:recordKind ?kind ; cascade:statusOnlyFromDocuments ?statusOnlyFromDocuments .
+  ?version cascade:displayName ?name ; cascade:displayDate ?date .
+}
+WHERE {
+  VALUES (?type ?kind ?nameProperty ?statusOnlyFromDocuments ?dateProperty ?fallbackDateProperty) {
+    (cascade:AllergyOrIntolerance           "Allergy"      cascade:allergen                true  UNDEF UNDEF)
+    (cascade:ProblemOrDiagnosis             "Condition"    cascade:conditionName           false cascade:onsetDate UNDEF)
+    (cascade:Vaccination                    "Immunization" cascade:vaccineName             false cascade:vaccinationOccurrenceTime UNDEF)
+    (cascade:MedicalProcedure               "Procedure"    cascade:procedureName           false cascade:procedureDate UNDEF)
+    (cascade:PrescribedOrReportedMedication "Medication"   cascade:drugName                false cascade:medicationUseStartDate cascade:prescriptionWrittenDate)
+    (cascade:LaboratoryTestResult           "Lab result"   cascade:testName                false cascade:resultClinicallyRelevantTime UNDEF)
+    (cascade:GeneticVariantFinding          "Variant"      cascade:hgvsCodingDnaExpression false UNDEF UNDEF)
+    (cascade:VariantInterpretation "Variant interpretation" UNDEF                          false cascade:interpretedDate UNDEF)
+  }
+  ?record a ?type .
+  OPTIONAL { ?version prov:specializationOf ?record }
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasName ?name FILTER (?hasName = ?nameProperty) }
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasDate ?firstDate FILTER (?hasDate = ?dateProperty) }
+  OPTIONAL { ?version prov:specializationOf ?record ; ?hasFallbackDate ?fallbackDate FILTER (?hasFallbackDate = ?fallbackDateProperty) }
+  BIND (COALESCE(?firstDate, ?fallbackDate) AS ?date)
+}

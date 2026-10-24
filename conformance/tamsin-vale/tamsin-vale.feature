@@ -21,8 +21,8 @@ Feature: Tamsin Vale's pod
     Example: after the first pull, CN-MED-METFORMIN has one revision, active
       When the pod is read as it stood after "J1"
       Then CN-MED-METFORMIN has these revisions:
-        | arrived             | version | status | end date | after |
-        | 2024-02-01 at 09:05 | 1       | active |          |       |
+        | arrived             | version | workflow status | medication use end date | after |
+        | 2024-02-01 at 09:05 | 1       | active          |                         |       |
       And the entry of CN-MED-METFORMIN shows:
         | field  | value  |
         | status | active |
@@ -33,9 +33,9 @@ Feature: Tamsin Vale's pod
 
     Example: CN-MED-METFORMIN's second revision sets it completed, after the first
       Then CN-MED-METFORMIN has these revisions:
-        | arrived             | version | status    | end date   | after               |
-        | 2024-02-01 at 09:05 | 1       | active    |            |                     |
-        | 2025-02-01 at 09:05 | 2       | completed | 2024-04-15 | 2024-02-01 at 09:05 |
+        | arrived             | version | workflow status | medication use end date | after               |
+        | 2024-02-01 at 09:05 | 1       | active          |                         |                     |
+        | 2025-02-01 at 09:05 | 2       | completed       | 2024-04-15              | 2024-02-01 at 09:05 |
       And the entry of CN-MED-METFORMIN shows:
         | field  | value     |
         | status | completed |

@@ -1,15 +1,21 @@
 @prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
-:ingredients a rec:ReferenceSeries ; rdfs:label "Ingredients" ; rec:tableKind rec:SubstanceIngredients .
+:ingredients a cascade:ReferenceSeries ; rdfs:label "Ingredients" ; cascade:tableKind cascade:SubstanceIngredients .
 :ingredients1 prov:specializationOf :ingredients ; pav:version "1" .
 :ingredients2 prov:specializationOf :ingredients ; pav:version "2" ; prov:wasRevisionOf :ingredients1 .
 
-:groups a rec:ReferenceSeries ; rdfs:label "Groups" ; rec:tableKind rec:VaccineGroups .
+:groups a cascade:ReferenceSeries ; rdfs:label "Groups" ; cascade:tableKind cascade:VaccineGroups .
 :groups1 prov:specializationOf :groups ; pav:version "1" .
 
-:rules a rec:ReferenceSeries ; rdfs:label "Rules" .
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
+:rules1SameMappedCodeAndDateRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeAndDateRule ;
+    cascade:queryHash :sameMappedCodeAndDateQuery .
+:rules1SameMappedCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:queryHash :sameMappedCodeQuery .

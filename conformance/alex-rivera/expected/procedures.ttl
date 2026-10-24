@@ -1,22 +1,20 @@
-@prefix rec:      <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix cascade:  <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
 
-[] a clinical:Procedure ;
-  cascade:mergedFrom <urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> ;
-  clinical:procedureName "Colonoscopy" ;
-  clinical:snomedCode "73761001" ;
-  rec:latestMember <urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> ;
-  clinical:status "completed" ;
-  rec:statusFrom <urn:uuid:4ab8301b-9152-8878-8677-232edaedcd1e> ;
-  clinical:procedureDate "2025-02-18"^^xsd:date .
+[] a cascade:MedicalProcedure ;
+  cascade:mergedFrom <urn:uuid:c6f34248-0b58-8e8a-8e52-f426d1a8be5c> ;
+  cascade:procedureName "Colonoscopy" ;
+  cascade:snomedCode <http://snomed.info/id/73761001> ;
+  cascade:latestMember <urn:uuid:c6f34248-0b58-8e8a-8e52-f426d1a8be5c> ;
+  cascade:workflowStatus "completed" ;
+  cascade:statusFrom <urn:uuid:c6f34248-0b58-8e8a-8e52-f426d1a8be5c> ;
+  cascade:procedureDate "2025-02-18"^^xsd:date .
 
-[] a clinical:Procedure ;
-  cascade:mergedFrom <urn:uuid:36e76923-0050-8139-8d81-ab105e86dd0b> , <urn:uuid:97603337-f245-85bb-a4c3-f76520eee79a> ;
-  clinical:procedureName "Colonoscopy" ;
-  clinical:snomedCode "73761001" ;
-  rec:latestMember <urn:uuid:97603337-f245-85bb-a4c3-f76520eee79a> ;
-  clinical:status "completed" ;
-  rec:statusFrom <urn:uuid:97603337-f245-85bb-a4c3-f76520eee79a> ;
-  clinical:procedureDate "2026-08-19"^^xsd:date .
+[] a cascade:MedicalProcedure ;
+  cascade:mergedFrom <urn:uuid:7a11ba0d-eaa3-881d-a511-1f2ee8b8b0e9> , <urn:uuid:cfe67786-af77-8fb0-8c99-3d9faedcf182> ;
+  cascade:procedureName "Colonoscopy" ;
+  cascade:snomedCode <http://snomed.info/id/73761001> ;
+  cascade:latestMember <urn:uuid:cfe67786-af77-8fb0-8c99-3d9faedcf182> ;
+  cascade:workflowStatus "completed" ;
+  cascade:statusFrom <urn:uuid:cfe67786-af77-8fb0-8c99-3d9faedcf182> ;
+  cascade:procedureDate "2026-08-19"^^xsd:date .

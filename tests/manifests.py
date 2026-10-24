@@ -12,7 +12,7 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, XSD
 
-from contract import QUERIES, REC, named
+from contract import QUERIES, CASCADE, named
 from engines import literal
 
 MF = Namespace("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#")
@@ -46,7 +46,7 @@ def entries(manifest):
         action = graph.value(entry, MF.action)
         found.append(Entry(
             iri=str(entry), name=str(graph.value(entry, MF.name)), types=frozenset(graph.objects(entry, RDF.type)),
-            lens=path(graph.value(action, REC.lens)), query=path(graph.value(action, QT.query)),
+            lens=path(graph.value(action, CASCADE.lensQueryPath)), query=path(graph.value(action, QT.query)),
             result=path(graph.value(entry, MF.result))))
     return found
 

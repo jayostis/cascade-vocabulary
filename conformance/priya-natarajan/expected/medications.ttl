@@ -1,48 +1,47 @@
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-[] a clinical:Medication ;
-  clinical:clinicalIntent "reportedUse" ;
-  clinical:drugName "fluticasone propionate 50 MCG/ACTUAT Nasal Spray" ;
-  clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/1797907> ;
-  clinical:startDate "2024-10-15"^^xsd:date ;
-  clinical:status "completed" ;
-  rec:lifecycle rec:MedicationStopped ;
-  cascade:mergedFrom <urn:uuid:98b0e49a-860c-8c4e-b74c-c7d5dbcec24b> , <urn:uuid:da0a98c6-7b8d-830d-8220-a8aa795daaa7> ;
-  rec:latestMember <urn:uuid:98b0e49a-860c-8c4e-b74c-c7d5dbcec24b> ;
-  rec:statusFrom <urn:uuid:98b0e49a-860c-8c4e-b74c-c7d5dbcec24b> .
+[] a cascade:PrescribedOrReportedMedication ;
+  cascade:prescribedOrReported "reportedUse" ;
+  cascade:drugName "fluticasone propionate 50 MCG/ACTUAT Nasal Spray" ;
+  cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1797907> ;
+  cascade:medicationUseStartDate "2024-10-15"^^xsd:date ;
+  cascade:workflowStatus "completed" ;
+  cascade:lifecycle cascade:MedicationStopped ;
+  cascade:mergedFrom <urn:uuid:c3104d9a-e9ce-8053-9979-c8e285c4176b> , <urn:uuid:1f11d0a3-24ca-85a0-887e-ae821a28988a> ;
+  cascade:latestMember <urn:uuid:c3104d9a-e9ce-8053-9979-c8e285c4176b> ;
+  cascade:statusFrom <urn:uuid:c3104d9a-e9ce-8053-9979-c8e285c4176b> .
 
-[] a clinical:Medication ;
-  clinical:clinicalIntent "prescribed" , "reportedUse" ;
-  clinical:drugName "lisinopril 10 MG Oral Tablet" ;
-  clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ;
-  clinical:startDate "2023-06-15"^^xsd:date ;
-  clinical:status "active" ;
-  rec:lifecycle rec:MedicationActive ;
-  cascade:mergedFrom <urn:uuid:16fdf23c-e088-8954-92b3-8dfd069dff9d> , <urn:uuid:97eaa82a-a849-80ff-9904-3a41699016d9> ;
-  rec:latestMember <urn:uuid:16fdf23c-e088-8954-92b3-8dfd069dff9d> ;
-  rec:statusFrom <urn:uuid:16fdf23c-e088-8954-92b3-8dfd069dff9d> .
+[] a cascade:PrescribedOrReportedMedication ;
+  cascade:prescribedOrReported "prescribed" , "reportedUse" ;
+  cascade:drugName "lisinopril 10 MG Oral Tablet" ;
+  cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;
+  cascade:medicationUseStartDate "2023-06-15"^^xsd:date ;
+  cascade:prescriptionWrittenDate "2023-06-15"^^xsd:date ;
+  cascade:workflowStatus "active" ;
+  cascade:lifecycle cascade:MedicationActive ;
+  cascade:mergedFrom <urn:uuid:e6e48325-74c2-8cae-a26e-8e802cee03c2> , <urn:uuid:62afa632-0672-8e62-b160-02d3a96f6c5b> ;
+  cascade:latestMember <urn:uuid:e6e48325-74c2-8cae-a26e-8e802cee03c2> ;
+  cascade:statusFrom <urn:uuid:e6e48325-74c2-8cae-a26e-8e802cee03c2> .
 
-[] a clinical:Medication ;
-  clinical:clinicalIntent "prescribed" , "reportedUse" ;
-  clinical:drugName "amlodipine 5 MG Oral Tablet" ;
-  clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/197361> ;
-  clinical:startDate "2025-04-01"^^xsd:date ;
-  clinical:status "active" ;
-  rec:lifecycle rec:MedicationActive ;
-  cascade:mergedFrom <urn:uuid:aab185be-d313-8e3b-bf39-865d54bab7b5> , <urn:uuid:c42e254b-737d-8b03-baf5-c11f8c925a8b> ;
-  rec:latestMember <urn:uuid:c42e254b-737d-8b03-baf5-c11f8c925a8b> ;
-  rec:statusFrom <urn:uuid:c42e254b-737d-8b03-baf5-c11f8c925a8b> .
+[] a cascade:PrescribedOrReportedMedication ;
+  cascade:prescribedOrReported "prescribed" , "reportedUse" ;
+  cascade:drugName "amlodipine 5 MG Oral Tablet" ;
+  cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/197361> ;
+  cascade:medicationUseStartDate "2025-04-01"^^xsd:date ;
+  cascade:prescriptionWrittenDate "2025-04-01"^^xsd:date ;
+  cascade:workflowStatus "active" ;
+  cascade:lifecycle cascade:MedicationActive ;
+  cascade:mergedFrom <urn:uuid:efb91a51-2ec8-81ec-acda-44e5465a22c8> , <urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> ;
+  cascade:latestMember <urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> ;
+  cascade:statusFrom <urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> .
 
-[] a clinical:Medication ;
-  clinical:clinicalIntent "reportedUse" ;
-  clinical:drugName "loratadine 10 MG Oral Tablet" ;
-  clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/311372> ;
-  clinical:status "active" ;
-  rec:lifecycle rec:MedicationActive ;
-  cascade:mergedFrom <urn:uuid:13b55a1c-5c3c-87c0-bf0b-396c55cb6963> , <urn:uuid:a94928d7-d40d-8dd3-88d3-4fa07c3c4615> ;
-  rec:latestMember <urn:uuid:a94928d7-d40d-8dd3-88d3-4fa07c3c4615> ;
-  rec:statusFrom <urn:uuid:a94928d7-d40d-8dd3-88d3-4fa07c3c4615> .
+[] a cascade:PrescribedOrReportedMedication ;
+  cascade:prescribedOrReported "reportedUse" ;
+  cascade:drugName "Claritin 10 MG Oral Tablet" ;
+  cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/206805> ;
+  cascade:workflowStatus "active" ;
+  cascade:lifecycle cascade:MedicationActive ;
+  cascade:mergedFrom <urn:uuid:9497431c-48fd-877f-9d90-cb6b2e16cd37> , <urn:uuid:6403335b-0709-8906-8c7c-cd8dfc0d854a> , <urn:uuid:acf3f318-ce80-8c57-b247-632d6648bafc> ;
+  cascade:latestMember <urn:uuid:acf3f318-ce80-8c57-b247-632d6648bafc> ;
+  cascade:statusFrom <urn:uuid:acf3f318-ce80-8c57-b247-632d6648bafc> .

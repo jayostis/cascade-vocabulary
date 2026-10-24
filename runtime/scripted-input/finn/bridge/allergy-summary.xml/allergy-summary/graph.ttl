@@ -1,22 +1,38 @@
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-@prefix pav: <http://purl.org/pav/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-<ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> a prov:Entity ;
-  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole rec:author ] .
-_:import a prov:Activity ; rdfs:label "C-CDA download" ;
-  prov:startedAtTime "2026-06-07T09:00:00Z"^^xsd:dateTime ;
-  prov:used <ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> ;
-  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "ccda" ; pav:version "0.1.0" ] ;
-    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
-<urn:uuid:4da62af4-0169-8e75-af3f-98d57b0cc291> a health:AllergyRecord ;
-  rec:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5:alg-peanut-1> .
-<ni:///sha-256;EX6ixLN1TL10alYx5WGNtwoHVFm1Lm-_UJ4miUbku7U> prov:specializationOf <urn:uuid:4da62af4-0169-8e75-af3f-98d57b0cc291> ;
-  health:allergen "Peanut" .
-_:arrival bridge:arrivedAs <ni:///sha-256;EX6ixLN1TL10alYx5WGNtwoHVFm1Lm-_UJ4miUbku7U> ; prov:wasGeneratedBy _:import ;
-  bridge:selector "/ClinicalDocument/component[1]/structuredBody[1]/component[1]/section[1]/entry[1]/act[1]/entryRelationship[1]/observation[1]" ;
-  prov:wasDerivedFrom <ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+<ni:///sha-256;aNiDSI52AAcHbKjj8HQoUWtholxSvclOUaFt3ce6lN8> cascade:allergen "Peanut" ;
+	cascade:allergenCode <http://snomed.info/id/256349002> .
+_:a47fdd8db3facf046a2a4450cb449193 rdfs:label "Example Hospital" .
+_:e74ebbdaf13b5646bc8ca3d2412e07b2 prov:agent _:a47fdd8db3facf046a2a4450cb449193 ;
+	prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> prov:qualifiedAttribution _:e74ebbdaf13b5646bc8ca3d2412e07b2 .
+<urn:uuid:46ee17bd-5ceb-8e95-adbd-5c5b146a3e8d> a cascade:AllergyOrIntolerance ;
+	cascade:sourceRecordId "2.16.840.1.113883.19.5:alg-peanut-1" .
+<ni:///sha-256;aNiDSI52AAcHbKjj8HQoUWtholxSvclOUaFt3ce6lN8> prov:specializationOf <urn:uuid:46ee17bd-5ceb-8e95-adbd-5c5b146a3e8d> .
+_:e0449fc6346f27b2e07d09557c275335 a oa:XPathSelector ;
+	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='act' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entryRelationship' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" .
+_:e024b79fb2b6bd6671c77212ed5ea028 bridge:arrivedAs <ni:///sha-256;aNiDSI52AAcHbKjj8HQoUWtholxSvclOUaFt3ce6lN8> ;
+	oa:hasSelector _:e0449fc6346f27b2e07d09557c275335 ;
+	oa:hasSource <ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> ;
+	prov:wasDerivedFrom <ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> ;
+	prov:wasGeneratedBy _:f3abc42b46700299f6bee087d3fe1f01 .
+_:f3abc42b46700299f6bee087d3fe1f01 rdfs:label "C-CDA download" ;
+	prov:startedAtTime "2026-06-07T09:00:00Z"^^xsd:dateTime .
+<ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> cascade:sourceFormatVersion "2015-08-01" ;
+	a prov:Entity .
+_:f3abc42b46700299f6bee087d3fe1f01 a prov:Activity ;
+	prov:used <ni:///sha-256;5_ne7KLu-koIYrco_UiUHtCY6fh7jQr5EcaTo0BwsMU> ;
+	prov:qualifiedAssociation _:29a8884f2d436f1044e8beaabbb9bfab .
+_:29a8884f2d436f1044e8beaabbb9bfab prov:hadPlan _:cfe1ba57f61dee4a98e749b6cb2180fc .
+_:cfe1ba57f61dee4a98e749b6cb2180fc a prov:Plan ;
+	rdfs:label "ccda" ;
+	<http://purl.org/pav/version> "0.1.0" .
+_:29a8884f2d436f1044e8beaabbb9bfab prov:agent _:d3d80af1d1519443ad74bcf99aa11f54 .
+_:d3d80af1d1519443ad74bcf99aa11f54 a prov:SoftwareAgent ;
+	rdfs:label "Cascade Bridge for Rust" ;
+	<http://purl.org/pav/version> "0.1.0" .

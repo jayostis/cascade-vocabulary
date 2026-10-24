@@ -1,0 +1,35 @@
+# Read from the view alone, as an app would: each entry whose status is of the active lifecycle class (rule L1), so not
+# one on hold, stopped, not taken or without a status, with its RxNorm code, when it started, the day its prescription was
+# written, and how many records it joins. The code is RxNorm's IRI, or https://ns.cascadeprotocol.org/codes/rxnorm/
+# followed by the code as written, percent-encoded as ENCODE_FOR_URI does (rule M4). It is the chosen RxNorm code, as
+# the rule that joins medications by a shared code reads it: the code the source selected, when that is an RxNorm code;
+# else the entry's one RxNorm code, even when the source selected an NDC; none when it states several and the source
+# chose none. A pod holds no table, so it cannot tell a product from an ingredient among several, and no code stands in
+# for the choice.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?medication ?code ?started ?written (COUNT(?record) AS ?records) ?entry ?entryLabel
+WHERE {
+  {
+    SELECT ?entry (COUNT(DISTINCT ?candidate) AS ?candidates) (SAMPLE(?candidate) AS ?only)
+    WHERE {
+      ?entry a cascade:PrescribedOrReportedMedication .
+      OPTIONAL {
+        ?entry cascade:rxNormCode ?written .
+        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?candidate)
+      }
+    }
+    GROUP BY ?entry
+  }
+  ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
+         cascade:drugName ?medication ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:userSelectedCode ?chosen }
+  OPTIONAL { ?entry cascade:medicationUseStartDate ?started }
+  OPTIONAL { ?entry cascade:prescriptionWrittenDate ?written }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+  BIND (COALESCE(IF(STRSTARTS(STR(?chosen), "https://ns.cascadeprotocol.org/codes/rxnorm/"), ?chosen, ?nothing),
+                 IF(?candidates = 1, ?only, ?nothing)) AS ?code)
+}
+GROUP BY ?entry ?medication ?code ?started ?written ?entryLabel
+ORDER BY ?medication ?entry

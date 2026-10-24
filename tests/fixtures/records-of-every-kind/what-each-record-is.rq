@@ -1,4 +1,4 @@
-PREFIX rec: <https://ns.cascadeprotocol.org/records/v1-draft#>
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 
 SELECT ?record ?kind ?statusOnlyFromDocuments
-WHERE { ?record a rec:Record ; rec:kind ?kind ; rec:statusOnlyFromDocuments ?statusOnlyFromDocuments }
+WHERE { ?record a cascade:Record ; cascade:recordKind ?kind ; cascade:statusOnlyFromDocuments ?statusOnlyFromDocuments }

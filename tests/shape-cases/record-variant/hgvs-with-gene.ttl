@@ -1,11 +1,10 @@
 @prefix : <#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 
-:record a genomics:Variant ;
-    rec:sourceUrl <https://fhir.example/Observation/9> .
+<urn:uuid:e765d765-a677-8256-b6f7-3106e7927fe7> a cascade:GeneticVariantFinding ;
+    cascade:sourceUrl <https://fhir.example/Observation/record-variant-hgvs-with-gene> .
 
-:version prov:specializationOf :record ;
-    rec:patient :patient ;
-    genomics:hgvsCDot "NM_000249.4(MLH1):c.2042C>T" .
+:version prov:specializationOf <urn:uuid:e765d765-a677-8256-b6f7-3106e7927fe7> ;
+    cascade:patient :patient ;
+    cascade:hgvsCodingDnaExpression "NM_000249.4(MLH1):c.2042C>T" .

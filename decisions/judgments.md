@@ -127,7 +127,7 @@ domain `foaf:Agent`, making the retractor an agent and the retracted a nanopubli
 - Whether a confidence term is borrowed from SSSOM, or the justification kind remains the only grade and the review
   page's listing is the whole of the rubric's fourth test.
 - The shape of the trusted-makers list: per maker, per maker and version, and whether it is a file in the pod (so
-  it syncs) or the device's.
+  it syncs) or the writer's own, outside the pod.
 - A model's judgment: the term for its confidence, and whether a model asked twice about one pair, giving two
   answers, files two judgments or the later supersedes.
 - Whether a Before verdict is a verdict of `jdg:Judgment` or a kind of its own, now that it orders revisions of one

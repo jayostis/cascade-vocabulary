@@ -1,0 +1,7 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT DISTINCT ?started ?written
+WHERE { GRAPH <https://pod.example/clinical/medications.ttl> {
+  ?entry cascade:mergedFrom [] .
+  OPTIONAL { ?entry cascade:medicationUseStartDate ?started }
+  OPTIONAL { ?entry cascade:prescriptionWrittenDate ?written } } }

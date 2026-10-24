@@ -1,47 +1,46 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:a1 a health:AllergyRecord .
-:a1Version prov:specializationOf :a1 ; rec:patient :subject ; health:allergen "Allergen a1" .
-:a1Revision a rec:Revision ; rec:revisionOf :a1 ; rec:version :a1Version ;
+:a1 a cascade:AllergyOrIntolerance .
+:a1Version prov:specializationOf :a1 ; cascade:patient :subject ; cascade:allergen "Allergen a1" .
+:a1Revision a cascade:Revision ; cascade:revisionOf :a1 ; cascade:version :a1Version ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:a2 a health:AllergyRecord .
-:a2Version prov:specializationOf :a2 ; rec:patient :subject ; health:allergen "Allergen a2" .
-:a2Revision a rec:Revision ; rec:revisionOf :a2 ; rec:version :a2Version ;
+:a2 a cascade:AllergyOrIntolerance .
+:a2Version prov:specializationOf :a2 ; cascade:patient :subject ; cascade:allergen "Allergen a2" .
+:a2Revision a cascade:Revision ; cascade:revisionOf :a2 ; cascade:version :a2Version ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:b1 a health:AllergyRecord .
-:b1Version prov:specializationOf :b1 ; rec:patient :subject ; health:allergen "Allergen b1" .
-:b1Revision a rec:Revision ; rec:revisionOf :b1 ; rec:version :b1Version ;
+:b1 a cascade:AllergyOrIntolerance .
+:b1Version prov:specializationOf :b1 ; cascade:patient :subject ; cascade:allergen "Allergen b1" .
+:b1Revision a cascade:Revision ; cascade:revisionOf :b1 ; cascade:version :b1Version ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:b2 a health:AllergyRecord .
-:b2Version prov:specializationOf :b2 ; rec:patient :subject ; health:allergen "Allergen b2" .
-:b2Revision a rec:Revision ; rec:revisionOf :b2 ; rec:version :b2Version ;
+:b2 a cascade:AllergyOrIntolerance .
+:b2Version prov:specializationOf :b2 ; cascade:patient :subject ; cascade:allergen "Allergen b2" .
+:b2Revision a cascade:Revision ; cascade:revisionOf :b2 ; cascade:version :b2Version ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:c1 a health:AllergyRecord .
-:c1Version prov:specializationOf :c1 ; rec:patient :subject ; health:allergen "Allergen c1" .
-:c1Revision a rec:Revision ; rec:revisionOf :c1 ; rec:version :c1Version ;
+:c1 a cascade:AllergyOrIntolerance .
+:c1Version prov:specializationOf :c1 ; cascade:patient :subject ; cascade:allergen "Allergen c1" .
+:c1Revision a cascade:Revision ; cascade:revisionOf :c1 ; cascade:version :c1Version ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:c2 a health:AllergyRecord .
-:c2Version prov:specializationOf :c2 ; rec:patient :subject ; health:allergen "Allergen c2" .
-:c2Revision a rec:Revision ; rec:revisionOf :c2 ; rec:version :c2Version ;
+:c2 a cascade:AllergyOrIntolerance .
+:c2Version prov:specializationOf :c2 ; cascade:patient :subject ; cascade:allergen "Allergen c2" .
+:c2Revision a cascade:Revision ; cascade:revisionOf :c2 ; cascade:version :c2Version ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:d1 a health:AllergyRecord .
-:d1Version prov:specializationOf :d1 ; rec:patient :subject ; health:allergen "Allergen d1" .
-:d1Revision a rec:Revision ; rec:revisionOf :d1 ; rec:version :d1Version ;
+:d1 a cascade:AllergyOrIntolerance .
+:d1Version prov:specializationOf :d1 ; cascade:patient :subject ; cascade:allergen "Allergen d1" .
+:d1Revision a cascade:Revision ; cascade:revisionOf :d1 ; cascade:version :d1Version ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:d2 a health:AllergyRecord .
-:d2Version prov:specializationOf :d2 ; rec:patient :subject ; health:allergen "Allergen d2" .
-:d2Revision a rec:Revision ; rec:revisionOf :d2 ; rec:version :d2Version ;
+:d2 a cascade:AllergyOrIntolerance .
+:d2Version prov:specializationOf :d2 ; cascade:patient :subject ; cascade:allergen "Allergen d2" .
+:d2Revision a cascade:Revision ; cascade:revisionOf :d2 ; cascade:version :d2Version ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

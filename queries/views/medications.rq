@@ -1,0 +1,39 @@
+# Each entry takes the name, every RxNorm code, every NDC code and the code the source chose of its latest member, the
+# status and end date of the member chosen for status, the start of use and the day the prescription was written of the
+# members chosen for each, and every intent a member states, so an entry joining a prescription and a list entry says
+# both. It also says the lifecycle class of that status (cascade:lifecycle), so an app reads whether the medication is
+# still taken without reading the status.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+CONSTRUCT {
+  ?entry a cascade:PrescribedOrReportedMedication ;
+    cascade:drugName ?name ;
+    cascade:rxNormCode ?code ;
+    cascade:ndcCode ?ndc ;
+    cascade:userSelectedCode ?selected ;
+    cascade:workflowStatus ?status ;
+    cascade:lifecycle ?lifecycle ;
+    cascade:medicationUseStartDate ?started ;
+    cascade:prescriptionWrittenDate ?written ;
+    cascade:medicationUseEndDate ?end ;
+    cascade:prescribedOrReported ?intent ;
+    cascade:latestMember ?latest ;
+    cascade:statusFrom ?statusFrom ;
+    cascade:mergedFrom ?record .
+}
+WHERE {
+  ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry .
+  ?entry cascade:latestMember ?latest .
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:drugName ?name }
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:rxNormCode ?code }
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:ndcCode ?ndc }
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:userSelectedCode ?selected }
+  OPTIONAL { ?record pav:hasCurrentVersion/cascade:prescribedOrReported ?intent }
+  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+             ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
+  OPTIONAL { ?entry cascade:statusLifecycle ?lifecycle }
+  OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:medicationUseEndDate ?end }
+  OPTIONAL { ?entry cascade:medicationUseStartDateFrom/pav:hasCurrentVersion/cascade:medicationUseStartDate ?started }
+  OPTIONAL { ?entry cascade:prescriptionWrittenDateFrom/pav:hasCurrentVersion/cascade:prescriptionWrittenDate ?written }
+}

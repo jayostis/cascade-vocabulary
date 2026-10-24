@@ -1,20 +1,18 @@
-@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
-<urn:cascade:this-entry> a prov:Activity ;
+<urn:uuid:59977010-e56e-41e4-9658-8cfe7f34b181> a prov:Activity ;
   rdfs:label "entered in the Cascade app" ;
-  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole jdg:patient ] .
-<urn:cascade:output-0> a genomics:Variant .
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole cascade:PatientRole ] .
+<urn:cascade:output-0> a cascade:GeneticVariantFinding .
 <urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
-  genomics:geneSymbol "MLH1" ;
-  genomics:clinvarVariationId "90012" ;
-  rec:patient <urn:uuid:c1643cc9-f0c4-447e-8b47-ecc71130d83b> .
-<urn:cascade:output-1> a genomics:Variant .
+  cascade:geneSymbol "MLH1" ;
+  cascade:clinvarVariationId "90012" ;
+  cascade:patient <urn:uuid:c1643cc9-f0c4-447e-8b47-ecc71130d83b> .
+<urn:cascade:output-1> a cascade:GeneticVariantFinding .
 <urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
-  genomics:geneSymbol "MLH1" ;
-  genomics:hgvsCDot "NM_000249.4:c.1990-8A>G" ;
-  genomics:clinvarVariationId "90011" ;
-  rec:patient <urn:uuid:c1643cc9-f0c4-447e-8b47-ecc71130d83b> .
+  cascade:geneSymbol "MLH1" ;
+  cascade:hgvsCodingDnaExpression "NM_000249.4:c.1990-8A>G" ;
+  cascade:clinvarVariationId "90011" ;
+  cascade:patient <urn:uuid:c1643cc9-f0c4-447e-8b47-ecc71130d83b> .

@@ -1,6 +1,7 @@
 """The contract's files as the tests read them: its queries, the order the root crate runs the derivations in, and the
 files pod-layout.ttl says a query writes."""
 
+import base64
 import itertools
 import json
 from functools import cache
@@ -9,13 +10,21 @@ from pathlib import Path
 from rdflib import Graph, Literal, Namespace
 
 ROOT = Path(__file__).absolute().parent.parent
-QUERIES = ROOT / "queries" / "v1-draft"
+QUERIES = ROOT / "queries"
 LAYOUT = ROOT / "runtime" / "pod-layout.ttl"
 KITS = sorted(kit for kit in (ROOT / "conformance").iterdir() if (kit / f"{kit.name}.feature").is_file())
 PROV = Namespace("http://www.w3.org/ns/prov#")
-REC = Namespace("https://ns.cascadeprotocol.org/records/v1-draft#")
+CASCADE = Namespace("https://ns.cascadeprotocol.org/cascade#")
 SOLID = Namespace("http://www.w3.org/ns/solid/terms#")
 BASE = "https://pod.invalid/"
+
+
+def file_stem(name):
+    """N9: a file's name from the name of what it holds, a urn:uuid: name's UUID or an ni: name's hash in lower-case hex."""
+    if name.startswith("urn:uuid:"):
+        return name.removeprefix("urn:uuid:")
+    digest = name.removeprefix("ni:///sha-256;")
+    return base64.urlsafe_b64decode(digest + "=" * (-len(digest) % 4)).hex()
 
 
 def query(relative):
@@ -59,8 +68,8 @@ def written():
     a view or None, and whether the layout marks it written always."""
     graph = Graph().parse(LAYOUT, publicID=BASE)
     return {str(graph.value(placement, SOLID.instance))[len(BASE):]:
-            (str(by), graph.value(placement, SOLID.forClass), (placement, REC.writtenAlways, Literal(True)) in graph)
-            for placement, by in graph.subject_objects(REC.writtenBy)}
+            (str(by), graph.value(placement, SOLID.forClass), (placement, CASCADE.writtenAlways, Literal(True)) in graph)
+            for placement, by in graph.subject_objects(CASCADE.writtenByQueryPath)}
 
 
 def built():

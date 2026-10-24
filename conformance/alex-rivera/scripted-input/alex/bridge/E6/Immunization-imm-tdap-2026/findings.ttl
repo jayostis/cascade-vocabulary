@@ -2,18 +2,18 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
-_:cc47b65e732a4b94419626648b90b411 a oa:FragmentSelector ;
+_:ca931b82c128eb2b60cd09b246ca7ee1 a oa:FragmentSelector ;
 	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "" ;
-	oa:refinedBy _:ffc3505b19e75320ee376c58d285f522 .
-_:c6a6139f648340f0e2ccf18c7822dc13 oa:hasSource <../../../downloads/x-e6/apple_health_export/clinical-records/Immunization-imm-tdap-2026.json> .
-_:ffc3505b19e75320ee376c58d285f522 rdf:value "/patient/reference" ;
+	rdf:value "" .
+_:babc9083a7354101a44b036128fcf52c oa:hasSource <ni:///sha-256;lmlQ5kYnBqRHFB4DIMxNuP1nUh4xcHmY7XkQJs4Lq2s> .
+_:ca931b82c128eb2b60cd09b246ca7ee1 oa:refinedBy _:fc0a86d4fa1849a951e2834dcd0647bc .
+_:fc0a86d4fa1849a951e2834dcd0647bc a oa:FragmentSelector ;
 	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	a oa:FragmentSelector .
-_:c6a6139f648340f0e2ccf18c7822dc13 oa:hasSelector _:cc47b65e732a4b94419626648b90b411 .
-_:fc076c6460a6184d7dee274eda3abe5c oa:hasTarget _:c6a6139f648340f0e2ccf18c7822dc13 ;
+	rdf:value "/patient/reference" .
+_:babc9083a7354101a44b036128fcf52c oa:hasSelector _:ca931b82c128eb2b60cd09b246ca7ee1 .
+_:d624e385680b55cdfcfc68235a9f9c91 oa:hasTarget _:babc9083a7354101a44b036128fcf52c ;
 	sh:resultSeverity sh:Warning ;
-	sh:value "Patient/pat-conformance-1" ;
-	oa:motivatedBy oa:classifying ;
+	a oa:Annotation ;
 	oa:hasBody fhirr4:referenceWithoutServer ;
-	a oa:Annotation .
+	oa:motivatedBy oa:classifying ;
+	sh:value "Patient/pat-conformance-1" .

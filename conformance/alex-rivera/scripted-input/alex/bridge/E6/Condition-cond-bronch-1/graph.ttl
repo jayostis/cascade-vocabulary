@@ -1,42 +1,46 @@
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;-mmZdMdN4EsqNtNahwTzCjxyo_ee9UIqQQ0DzdHMy4w> health:onsetDate "2026-08-12"^^xsd:date ;
-	health:status "resolved" ;
-	clinical:verificationStatus "confirmed" ;
-	clinical:abatementDate "2026-09-20"^^xsd:date ;
-	health:conditionName "Acute bronchitis" ;
-	health:snomedCode <http://snomed.info/id/10509002> .
-_:882499cd852df671d294e942be991a24 pav:lastUpdateOn "2026-10-30T10:00:00Z"^^xsd:dateTime ;
+<ni:///sha-256;Tq3KW1SPoJYz3-I9ZTmK1IZZQ7_YVh8QNy3ocnMGUvs> cascade:abatementDate "2026-09-20"^^xsd:date ;
+	cascade:conditionName "Acute bronchitis" ;
+	cascade:onsetDate "2026-08-12"^^xsd:date ;
+	cascade:clinicalStatus "resolved" ;
+	cascade:snomedCode <http://snomed.info/id/10509002> ;
+	cascade:verificationStatus "confirmed" .
+_:169e25d3ec66ca483bbca3e3f78f098c pav:lastUpdateOn "2026-10-30T10:00:00Z"^^xsd:dateTime ;
 	pav:version "2" ;
-	bridge:arrivedAs <ni:///sha-256;-mmZdMdN4EsqNtNahwTzCjxyo_ee9UIqQQ0DzdHMy4w> .
-<ni:///sha-256;-mmZdMdN4EsqNtNahwTzCjxyo_ee9UIqQQ0DzdHMy4w> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
-	prov:specializationOf <urn:uuid:5a83c536-5519-8617-a0df-83c82ffb51e5> .
-<urn:uuid:5a83c536-5519-8617-a0df-83c82ffb51e5> health:sourceRecordId "cond-bronch-1" ;
-	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-bronch-1> ;
-	a health:ConditionRecord .
-_:882499cd852df671d294e942be991a24 bridge:selector "" ;
+	bridge:arrivedAs <ni:///sha-256;Tq3KW1SPoJYz3-I9ZTmK1IZZQ7_YVh8QNy3ocnMGUvs> .
+<ni:///sha-256;Tq3KW1SPoJYz3-I9ZTmK1IZZQ7_YVh8QNy3ocnMGUvs> cascade:patient <urn:uuid:7883c5a4-6c61-837c-9bf7-dbe1b37d89ff> ;
+	prov:specializationOf <urn:uuid:427f6a98-faf9-8e37-bd5d-6dca2a812580> .
+<urn:uuid:427f6a98-faf9-8e37-bd5d-6dca2a812580> cascade:sourceRecordId "cond-bronch-1" ;
+	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-bronch-1> ;
+	a cascade:ProblemOrDiagnosis .
+_:169e25d3ec66ca483bbca3e3f78f098c oa:hasSelector _:919b813daecb17ddcb560faead4ddc58 ;
+	oa:hasSource <ni:///sha-256;bX2lWmFFhM9GXagC-zoAMoV_w_8c4PxXI2u3y35J8aI> ;
 	prov:wasDerivedFrom <ni:///sha-256;bX2lWmFFhM9GXagC-zoAMoV_w_8c4PxXI2u3y35J8aI> ;
 	prov:wasGeneratedBy _:fbfce2d29057b939ff657ae1c320de08 .
+_:919b813daecb17ddcb560faead4ddc58 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:fbfce2d29057b939ff657ae1c320de08 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .
 <ni:///sha-256;bX2lWmFFhM9GXagC-zoAMoV_w_8c4PxXI2u3y35J8aI> prov:qualifiedAttribution _:641e448701f87bd9cb527ac607a18fec .
 _:641e448701f87bd9cb527ac607a18fec prov:agent _:6eaafc40323a11e2c8cadce1eace7c2b .
 _:6eaafc40323a11e2c8cadce1eace7c2b <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:641e448701f87bd9cb527ac607a18fec prov:hadRole rec:transmitter .
+_:641e448701f87bd9cb527ac607a18fec prov:hadRole cascade:TransmitterRole .
 <ni:///sha-256;bX2lWmFFhM9GXagC-zoAMoV_w_8c4PxXI2u3y35J8aI> prov:qualifiedAttribution _:9607aaf0bd845301f5ae1ddffa062047 .
 _:9607aaf0bd845301f5ae1ddffa062047 prov:agent _:4a9994ab97b0915ddd5fbe03c9dd39ef .
 _:4a9994ab97b0915ddd5fbe03c9dd39ef <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
-_:9607aaf0bd845301f5ae1ddffa062047 prov:hadRole rec:author .
-<ni:///sha-256;bX2lWmFFhM9GXagC-zoAMoV_w_8c4PxXI2u3y35J8aI> bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+_:9607aaf0bd845301f5ae1ddffa062047 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;bX2lWmFFhM9GXagC-zoAMoV_w_8c4PxXI2u3y35J8aI> cascade:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
 	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-bronch-1> ;
 	pav:retrievedOn "2026-11-20T09:00:00Z"^^xsd:dateTime ;
-	bridge:sourceFormatVersion "4.0.1" ;
+	cascade:sourceFormatVersion "4.0.1" ;
 	a prov:Entity .
 _:fbfce2d29057b939ff657ae1c320de08 a prov:Activity ;
 	prov:used <ni:///sha-256;bX2lWmFFhM9GXagC-zoAMoV_w_8c4PxXI2u3y35J8aI> ;

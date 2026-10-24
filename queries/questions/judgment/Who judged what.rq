@@ -1,0 +1,28 @@
+# Everything each judgment says: when a person made it, by whom and in what role, its verdict, what it names, the reason
+# given, any judgment it supersedes or retracts, and, for a machine's claim, each rule list version it is asserted under,
+# since a claim carries no time. A judgment is never edited; a later one supersedes or retracts it.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?judgment ?judgmentLabel ?made ?verdict ?author ?authorLabel ?role ?member ?memberLabel ?reason
+       ?supersedes ?supersedesLabel ?retracts ?retractsLabel ?assertedUnder
+WHERE {
+  ?judgment a cascade:Judgment ; prov:wasAttributedTo ?author .
+  OPTIONAL { ?judgment prov:generatedAtTime ?made }
+  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+  OPTIONAL { ?author rdfs:label ?authorLabel }
+  OPTIONAL { ?judgment cascade:verdict ?verdict }
+  OPTIONAL { ?judgment prov:qualifiedAttribution/prov:hadRole ?role }
+  OPTIONAL { ?judgment prov:hadMember ?member .
+             OPTIONAL { ?member rdfs:label ?memberLabel } }
+  OPTIONAL { ?judgment dct:description ?reason }
+  OPTIONAL { ?judgment npx:supersedes ?supersedes .
+             OPTIONAL { ?supersedes rdfs:label ?supersedesLabel } }
+  OPTIONAL { ?judgment npx:retracts ?retracts .
+             OPTIONAL { ?retracts rdfs:label ?retractsLabel } }
+  OPTIONAL { ?assertion cascade:assertedClaim ?judgment ; cascade:assertedUnderRuleListVersion ?assertedUnder }
+}
+ORDER BY ?made ?judgmentLabel ?judgment ?memberLabel ?member ?role ?supersedes ?retracts ?assertedUnder

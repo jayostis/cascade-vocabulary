@@ -1,53 +1,60 @@
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 
-[] a rec:MatcherRule ;
-    rec:justifiedAs jdg:SameCode ;
-    rec:appliesTo "Allergy", "Procedure" ;
-    rec:query "matcher/same-code.rq" ;
-    rec:queryHash <ni:///sha-256;l-aRkMIvfHe5mQVT7cIfzUIVAeQtlzU8045zZJ1e6CQ> .
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameCodeRule ;
+    cascade:justifiedAs cascade:SameCode ;
+    cascade:appliesToClass cascade:AllergyOrIntolerance , cascade:MedicalProcedure ;
+    cascade:queryPath "matcher/same-code.rq" ;
+    cascade:queryHash <ni:///sha-256;HYjC65ynkofjUu0UN6vFmXqw8Xp7zT_gIHGE3hC-j3A> .
 
-[] a rec:MatcherRule ;
-    rec:justifiedAs jdg:SameCodeAndDate ;
-    rec:appliesTo "Immunization" ;
-    rec:query "matcher/same-code-and-date.rq" ;
-    rec:queryHash <ni:///sha-256;Y3tTorFmXGAj9Wbhip4Xz6jWJ0soFhSy2g68JvQCyIw> .
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameCodeAndDateRule ;
+    cascade:justifiedAs cascade:SameCodeAndDate ;
+    cascade:appliesToClass cascade:Vaccination ;
+    cascade:queryPath "matcher/same-code-and-date.rq" ;
+    cascade:queryHash <ni:///sha-256;1ouqn1JB9e6O5i113ZPtU1pmmLHp5GVs1UUhZfpvDmw> .
 
-[] a rec:MatcherRule ;
-    rec:justifiedAs jdg:SameMappedCode ;
-    rec:appliesTo "Allergy" ;
-    rec:query "matcher/same-ingredient.rq" ;
-    rec:queryHash <ni:///sha-256;OgrXFFDjgMihtXo3Lgu0EnSO39LjTkwGiqKHfYJuw0s> ;
-    rec:tableKind rec:ProductIngredients .
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:justifiedAs cascade:SameMappedCode ;
+    cascade:appliesToClass cascade:AllergyOrIntolerance ;
+    cascade:queryPath "matcher/same-ingredient.rq" ;
+    cascade:queryHash <ni:///sha-256;6IK9Cn6Xo2_v5zjryYh7lp9irfRzmNQKZdLVQHHACMo> ;
+    cascade:tableKind cascade:ProductIngredients .
 
-[] a rec:MatcherRule ;
-    rec:justifiedAs jdg:SameMappedCodeAndDate ;
-    rec:appliesTo "Immunization" ;
-    rec:query "matcher/same-mapped-code-and-date.rq" ;
-    rec:queryHash <ni:///sha-256;V4_dbhWapeez7bkLi1ClKZUgsSTrXaqCaGegerdgREk> ;
-    rec:tableKind rec:VaccineGroups .
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameMappedCodeAndDateRule ;
+    cascade:justifiedAs cascade:SameMappedCodeAndDate ;
+    cascade:appliesToClass cascade:Vaccination ;
+    cascade:queryPath "matcher/same-mapped-code-and-date.rq" ;
+    cascade:queryHash <ni:///sha-256;WMCM2FKbLdnpfnC9sjYxG_aRtUTuVEeYKIB8CY-T500> ;
+    cascade:tableKind cascade:VaccineGroups .
 
-[] a rec:MatcherRule ;
-    rec:justifiedAs jdg:SameMedicationCode ;
-    rec:appliesTo "Medication" ;
-    rec:query "matcher/same-medication-code.rq" ;
-    rec:queryHash <ni:///sha-256;ZvUrYq6gfti9LmzL92HY8z7_PTFajf5ISPsiLtJBkaE> .
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameMedicationCodeRule ;
+    cascade:justifiedAs cascade:SameMedicationCode ;
+    cascade:appliesToClass cascade:PrescribedOrReportedMedication ;
+    cascade:queryPath "matcher/same-medication-code.rq" ;
+    cascade:queryHash <ni:///sha-256;bb5CX0rc-vRiZrD7jFBYLQblgiixuVmxvtK7Mdbew00> .
 
-[] a rec:MatcherRule ;
-    rec:justifiedAs jdg:SameResult ;
-    rec:appliesTo "Lab result" ;
-    rec:query "matcher/same-result.rq" ;
-    rec:queryHash <ni:///sha-256;YPr1uwnpi-rWC-hN6tlpH3ZJSyPL4KV5IPASjsiL818> .
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameResultRule ;
+    cascade:justifiedAs cascade:SameResult ;
+    cascade:appliesToClass cascade:LaboratoryTestResult ;
+    cascade:queryPath "matcher/same-result.rq" ;
+    cascade:queryHash <ni:///sha-256;4gcC4JZVxYZYwt0MlTbV9Re968eQ2sSUBs8JvrM5rpA> .
 
-[] a rec:MatcherRule ;
-    rec:justifiedAs jdg:SameConvertedCode ;
-    rec:appliesTo "Condition" ;
-    rec:query "matcher/same-converted-code.rq" ;
-    rec:queryHash <ni:///sha-256;hlHhn3tjsZkDuCXenuQw2ZsZChQULMYS7d1hvGdZBFw> ;
-    rec:tableKind rec:CodeConversions .
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameConvertedCodeRule ;
+    cascade:justifiedAs cascade:SameConvertedCode ;
+    cascade:appliesToClass cascade:ProblemOrDiagnosis ;
+    cascade:queryPath "matcher/same-converted-code.rq" ;
+    cascade:queryHash <ni:///sha-256;cVq3tQfwDY9F488kXqMIcUFnBizj3MVQd7MH6JEGyGw> ;
+    cascade:tableKind cascade:CodeConversions .
 
-[] a rec:MatcherRule ;
-    rec:justifiedAs jdg:SameCodeAndPeriod ;
-    rec:appliesTo "Condition" ;
-    rec:query "matcher/same-code-and-period.rq" ;
-    rec:queryHash <ni:///sha-256;B1fPkBdKd1QUiNZtF8mmxZ3qGnadaodYzL1aEE59bCo> .
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameCodeAndPeriodRule ;
+    cascade:justifiedAs cascade:SameCodeAndPeriod ;
+    cascade:appliesToClass cascade:ProblemOrDiagnosis ;
+    cascade:queryPath "matcher/same-code-and-period.rq" ;
+    cascade:queryHash <ni:///sha-256;9XcldXXvIIdzPBPDoD4qUFgNgEpSTmWttpwvCave2BA> .
