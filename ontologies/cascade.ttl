@@ -541,6 +541,11 @@ cascade:AuthorRole a prov:Role ;
     rdfs:comment "The part a party played in writing a document: HL7's provenance participant type author, which defines a code and no concept IRI."@en ;
     rdfs:seeAlso <http://terminology.hl7.org/CodeSystem/provenance-participant-type> .
 
+cascade:CustodianRole a prov:Role ;
+    rdfs:label "custodian role"@en ;
+    rdfs:comment "The part a party played in keeping a document, accountable for its true copy: HL7's provenance participant type custodian, which defines a code and no concept IRI, and the CDA participation type CST of HL7 v3's ParticipationType, which a C-CDA custodian carries."@en ;
+    rdfs:seeAlso <http://terminology.hl7.org/CodeSystem/provenance-participant-type> , <http://terminology.hl7.org/CodeSystem/v3-ParticipationType> .
+
 cascade:TransmitterRole a prov:Role ;
     rdfs:label "transmitter role"@en ;
     rdfs:comment "The part a party played in fetching and delivering a document: US Core's provenance agent type transmitter, which defines a code and no concept IRI."@en ;
@@ -674,6 +679,12 @@ cascade:writtenByQueryPath a owl:DatatypeProperty ;
 cascade:writtenAlways a owl:DatatypeProperty ;
     rdfs:label "written always"@en ;
     rdfs:comment "Whether the build writes the placement's view at every build, rather than once the pod holds a record of its class."@en ;
+    rdfs:domain cascade:Placement ;
+    rdfs:range xsd:boolean .
+
+cascade:holdsRecords a owl:DatatypeProperty ;
+    rdfs:label "holds records"@en ;
+    rdfs:comment "Whether the placement's folder holds the records of its class, each with its versions and revisions, which an import files and a pod's records are read from."@en ;
     rdfs:domain cascade:Placement ;
     rdfs:range xsd:boolean .
 
@@ -1618,7 +1629,7 @@ cascade:ServerNamingRule a owl:NamedIndividual ;
 
 cascade:OrganizationNamingRule a owl:NamedIndividual ;
     rdfs:label "organization naming rule"@en ;
-    rdfs:comment "An organization, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, from a server, in order: the normalised base URL, Organization, the resource's id; from a document, in order: the business identifier's system and value as the document writes them, a C-CDA custodian id's root and extension or a FHIR Organization.identifier's system and value."@en ;
+    rdfs:comment "An organization, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, from a server, in order: the normalised base URL, Organization, the resource's id; from a document, in order: the IRI of the datatype and the lexical form of the org:identifier literal its version carries, so the name and the version state the identifier alike: a FHIR Organization.identifier's system and value; a C-CDA id as HL7's CDA-to-FHIR identifier mapping makes it one, a root and extension as the root's registered URI and the extension where the FHIR identifier registry gives the root one (http://hl7.org/fhir/sid/us-npi for the NPI's 2.16.840.1.113883.4.6), else as urn:oid: and the root (urn:uuid: and the root in lower case, for a UUID root) and the extension, a root alone that registers no identifier system as urn:ietf:rfc:3986 and the root's urn:oid: or urn:uuid: IRI; a FHIR system urn:oid: and a registered root is that root's URI too, so one NPI names one organization in either format."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
 cascade:ClaimNamingRule a owl:NamedIndividual ;

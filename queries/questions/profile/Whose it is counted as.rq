@@ -2,6 +2,8 @@
 # records name the profile, with how many of them it sent. Records naming a profile no counting About judgment claims stay
 # out of every view.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -11,13 +13,15 @@ WHERE {
     WHERE {
       { { SELECT DISTINCT ?document ?hospital
           WHERE { ?document prov:qualifiedAttribution ?attribution .
-                  ?attribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?hospital } }
+                  ?attribution prov:hadRole ?hospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital
+                  FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) } }
         ?revision prov:wasDerivedFrom ?document ; cascade:version ?version .
         ?version cascade:patient ?profile ; prov:specializationOf ?record . }
       UNION
       { ?version cascade:patient ?profile ; prov:specializationOf ?record .
         MINUS { ?revision cascade:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
-                ?attribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?hospital } } }
+                ?attribution prov:hadRole ?hospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital
+                FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) } } }
     GROUP BY ?profile ?hospital
     HAVING (BOUND(?profile)) }
   ?about a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?subject .
