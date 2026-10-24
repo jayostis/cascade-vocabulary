@@ -576,7 +576,10 @@ prov:wasAttributedTo a owl:ObjectProperty ;
     rdfs:label "wasAttributedTo" ;
     rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
     rdfs:domain prov:Entity ;
-    dct:source <https://www.w3.org/ns/prov-o-20130430> .
+    rdfs:range prov:Agent ;
+    rdfs:subPropertyOf prov:wasInfluencedBy ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
 
 cascade:View a owl:Class ;
     rdfs:label "view"@en ;
