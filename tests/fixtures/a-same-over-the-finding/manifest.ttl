@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-same-over-the-finding" ;
+  rdfs:comment "A rule list whose version 2 revises version 1 and changes the same code query, two of the matcher's same code claims asserted under version 1 alone, of two records and of three, version 2's finding naming both, and a person's Same whose member is the finding." ;
+  mf:entries (
+    <#which-are-joined>
+  ) .
+
+<#which-are-joined> a mf:QueryEvaluationTest ;
+  mf:name "which-are-joined" ;
+  rdfs:comment "Neither claim counts, and the person's Same over the finding joins each one's records as a Same of them would: the claim of three records to its least, a star." ;
+  mf:action [ qt:query <which-are-joined.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <which-are-joined.srj> .

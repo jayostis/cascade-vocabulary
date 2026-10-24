@@ -1,0 +1,35 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+
+# x and z: asserted under version 1 alone, whose query version 2 changed, and named by the finding
+
+:sameX a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :x1 , :x2 ;
+    prov:used :x1Version , :x2Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:sameXUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameX ; cascade:assertedUnderRuleListVersion :rules1 .
+
+:sameZ a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :z1 , :z2 , :z3 ;
+    prov:used :z1Version , :z2Version , :z3Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:sameZUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameZ ; cascade:assertedUnderRuleListVersion :rules1 .
+
+# k: asserted again under version 2
+
+:sameK a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :k1 , :k2 ;
+    prov:used :k1Version , :k2Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:sameKUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameK ; cascade:assertedUnderRuleListVersion :rules1 .
+:sameKUnderrules2 a cascade:ClaimAssertion ; cascade:assertedClaim :sameK ; cascade:assertedUnderRuleListVersion :rules2 .
+
+# l: asserted under version 1 alone and named by no finding
+
+:sameL a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :l1 , :l2 ;
+    prov:used :l1Version , :l2Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:sameLUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameL ; cascade:assertedUnderRuleListVersion :rules1 .
+
+:finding a cascade:FindingForReview ; oa:hasBody cascade:ClaimsNoLongerReached ; oa:motivatedBy oa:classifying ; cascade:noLongerReachedUnderRuleListVersion :rules2 ;
+    oa:hasTarget :sameX , :sameZ .

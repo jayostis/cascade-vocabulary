@@ -1303,6 +1303,30 @@ oa:hasSelector a rdf:Property ;
     rdfs:range oa:Selector ;
     dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
 
+oa:hasBody a rdf:Property ;
+    rdfs:label "hasBody"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:domain oa:Annotation ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
+oa:hasTarget a rdf:Property ;
+    rdfs:label "hasTarget"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:domain oa:Annotation ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
+oa:motivatedBy a rdf:Property ;
+    rdfs:label "motivatedBy"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:domain oa:Annotation ;
+    rdfs:range oa:Motivation ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
+oa:classifying a oa:Motivation ;
+    rdfs:label "classifying"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
 oa:hasSource a rdf:Property ;
     rdfs:label "hasSource"@en ;
     rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
@@ -1472,7 +1496,7 @@ cascade:verdict a owl:ObjectProperty ;
 
 cascade:Same a owl:NamedIndividual ;
     rdfs:label "same"@en ;
-    rdfs:comment "The members are one thing: a view draws one entry on every member."@en .
+    rdfs:comment "The members are one thing: a view draws one entry on every member. A Same whose one member is a cascade:ClaimsNoLongerReached finding joins, for each claim the finding names, that claim's members, as a Same of them would."@en .
 
 cascade:Different a owl:NamedIndividual ;
     rdfs:label "different"@en ;
@@ -1491,6 +1515,10 @@ cascade:earlierMember a owl:ObjectProperty ;
     rdfs:comment "Of a Before judgment, the member it places before its other member."@en ;
     rdfs:domain cascade:Judgment ;
     rdfs:range cascade:Revision .
+
+cascade:Acknowledged a owl:NamedIndividual ;
+    rdfs:label "acknowledged"@en ;
+    rdfs:comment "The member, a cascade:FindingForReview, has been seen and needs nothing done: it leaves the review page, still stands, and changes nothing else."@en .
 
 cascade:About a owl:NamedIndividual ;
     rdfs:label "about"@en ;
@@ -1556,6 +1584,11 @@ cascade:SameVariationThroughTable a owl:NamedIndividual ;
     rdfs:comment "Both variant records find one row of a version of a variant classifications table: a version that carries a ClinVar VariationID finds the row of that variation, and one that carries none finds the row holding its HGVS expression. The classification plays no part. Rule M17 and decisions/variant-identity.md say why."@en ;
     skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
 
+cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost a owl:NamedIndividual ;
+    rdfs:label "same self-asserted base URL and authorization endpoint on one host"@en ;
+    rdfs:comment "Both server records have a version, each written by a connect made with one client id, reporting one self-asserted base URL and one authorization endpoint, and the base URLs the client used name one host. Rule M20 and decisions/republishing-sources.md, row \"two servers are one\", say why."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
 cascade:SameBrandGeneric a owl:NamedIndividual ;
     rdfs:label "same brand generic"@en ;
     rdfs:comment "One record's branded RxNorm product and the other's generic, or two brands of one generic, by a version of a brand generics table; the records share no code."@en ;
@@ -1609,11 +1642,33 @@ cascade:RuleListVersionMigration a owl:Class ;
 
 cascade:currentlySame a owl:ObjectProperty ;
     rdfs:label "currently same"@en ;
-    rdfs:comment "Derived: two records a counting Same joins and no counting Different separates."@en .
+    rdfs:comment "Derived: two records that a counting Same joins, or that are of one type and id under two servers a counting Same joins (queries/derivations/same-records-under-same-servers.rq), and that no counting Different separates."@en .
 
 cascade:currentlyDifferent a owl:ObjectProperty ;
     rdfs:label "currently different"@en ;
     rdfs:comment "Derived: two records a counting Different separates."@en .
+
+# Findings a runtime files for a person to review
+
+cascade:FindingForReview a owl:Class ;
+    rdfs:label "finding for review"@en ;
+    rdfs:comment "Something a runtime noticed about what the pod holds and filed for a person to answer, a file an act wrote and named by cascade:FindingNamingRule from its own triples, so two writers that notice one thing file one file. Its kind is its oa:hasBody, a concept of cascade:FindingForReviewKinds, its oa:motivatedBy oa:classifying, since it classifies its targets as that kind, and what it is about its oa:hasTarget. Each kind says how its body reads its targets: whether it applies to each target alone, as cascade:ClaimsNoLongerReached does, or to the targets together, as a finding of two records' differing values would. It carries no time and names no act: which act filed it is read from that act's snapshot. A person answers it with a judgment whose one member it is; an acknowledged finding still stands."@en ;
+    rdfs:subClassOf oa:Annotation .
+
+cascade:FindingForReviewKinds a skos:ConceptScheme ;
+    rdfs:label "finding for review kinds"@en ;
+    rdfs:comment "The kinds of thing a cascade:FindingForReview reports, as its oa:hasBody."@en .
+
+cascade:ClaimsNoLongerReached a skos:Concept ;
+    skos:inScheme cascade:FindingForReviewKinds ;
+    skos:prefLabel "claims no longer reached"@en ;
+    skos:definition "The matcher claims a rule list version no longer reaches (cascade:noLongerReachedUnderRuleListVersion), each an oa:hasTarget: every claim nothing withdraws that is asserted, by an assertion no retraction invalidates, under a version whose row for its rule carries the cascade:queryHash of that rule's row in any version on this one's prov:wasRevisionOf line, under none whose row carries the hash of this version's row for it, and that no finding the pod holds names, the rows read as the pod describes them; so which versions the pod's runs went through does not change which claims are named. The body applies to each target alone: each is a claim no longer reached. Filed once per rule list version, by the first run that compares the whole pod under it and leaves at least one such claim, so these claims are listed together on the review page rather than pair by pair. What a claim's tables did is no part of it: a claim kept or lapsed by a table version, and reached by this rule list version, is in no such finding."@en .
+
+cascade:noLongerReachedUnderRuleListVersion a owl:ObjectProperty ;
+    rdfs:label "no longer reached under rule list version"@en ;
+    rdfs:comment "Of a cascade:ClaimsNoLongerReached finding, the rule list version that reaches none of the claims it names, though the version it revises reached each."@en ;
+    rdfs:domain cascade:FindingForReview ;
+    rdfs:range prov:Entity .
 
 # Naming rules: each name a runtime or an adapter mints follows one, and a changed recipe is a new rule
 
@@ -1660,7 +1715,7 @@ cascade:RevisionNamingRule a owl:NamedIndividual ;
 
 cascade:FindingNamingRule a owl:NamedIndividual ;
     rdfs:label "finding naming rule"@en ;
-    rdfs:comment "A finding is named as cascade:VersionNamingRule names a version, over its own triples, its subject written urn:cascade:this-finding."@en ;
+    rdfs:comment "A cascade:FindingForReview is named as cascade:VersionNamingRule names a version, over its own triples, its subject written urn:cascade:this-finding."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
 
 cascade:TableVersionNamingRule a owl:NamedIndividual ;
@@ -1826,6 +1881,10 @@ cascade:SameVariationRule a owl:NamedIndividual ;
 cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
     rdfs:label "R13, same variation through the table"@en ;
     rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
+
+cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule a owl:NamedIndividual ;
+    rdfs:label "R14, same self-asserted base URL and authorization endpoint on one host"@en ;
+    rdfs:comment "Rule R14 of runtime/matcher.feature; its judgments are justified cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost."@en .
 
 # Servers and organizations
 

@@ -141,6 +141,8 @@ A record is named by what a person reads in it, never by its IRI, except where a
   custodian and patient ids scope it, and its `identifier`, `root:extension` or the root alone; one with no id by its
   `document`, its `class` and its `key`, a list of `field=value` strings whose fingerprint its name takes, or, with no
   key, its `members`, a list of member strings.
+- **`server <base URL>`**, as `server https://fhir.example-hospital.example/r4`: the server record whose
+  `cascade:serverBaseUrl` is that base URL.
 - **A person's name**, as `Alex`: the pod's subject.
 - **`the runtime`**: the runtime replaying the example, named as N7 says, which every act it performs is
   `prov:wasAssociatedWith`.
@@ -150,8 +152,8 @@ Each names exactly one thing in the pod, or the step fails.
 A judgment a person makes is named by its handle in a kit (`J21`) or by its file's name (`"retract-b"`). A matcher
 judgment is named `the matcher's <justification> of <records>`, the justification in words: `same code`,
 `same code and date`, `same mapped code`, `same mapped code and date`, `same medication code`, `same result`,
-`same converted code`, `same code and period`, `same brand generic`, `same product code`, `same variation` or
-`same variation through the table`. A
+`same converted code`, `same code and period`, `same brand generic`, `same product code`, `same variation`,
+`same variation through the table` or `same self-asserted base URL and authorization endpoint on one host`. A
 reference series is named by its `rdfs:label` in `references/` or any of the person's `tables/` folders, one series per label, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
 name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5. An entry of a view is
@@ -205,8 +207,8 @@ A reference version arrives: the version so numbered of the series so labelled, 
 
 ### `the matcher runs on the records of {step} on {time}`
 
-The matcher runs, taking the records with a first revision from that step's import or entry session, or, for a step
-that received files, those whose first revisions all came from acts its sync names (M1).
+The matcher runs, taking the records with a first revision from that step's import, entry session or connect and the servers
+its connect wrote any revision for, or, for a step that received files, those whose first revisions all came from acts its sync names (M1).
 
 ### `the matcher rechecks on {time}`
 
@@ -317,8 +319,8 @@ No matcher judgment has any of those records as a member.
 The claims the step asserted, writing an assertion of each, are exactly these, each as the step before says, whether or
 not the step wrote the claim itself (M9). Every claim the step wrote it asserted, and holds only what N6 names it from;
 every other subject in the files the step wrote is an assertion of one of these, the matcher, described as above, a
-reference series or version, in the run's own file, the run, its snapshot or the runtime (N7, N14), or a release's
-retraction or, in its migration's own file, the migration, its snapshot or the runtime (N15).
+reference series or version, in the run's own file, the run, its snapshot or the runtime (N7, N14), a finding the run
+filed (M18), or a release's retraction or, in its migration's own file, the migration, its snapshot or the runtime (N15).
 
 ### `{step} wrote these retractions:`
 
@@ -329,6 +331,18 @@ The retractions the step wrote are exactly these, each of an assertion of the ma
 those members, as the step before reads them; each holds only what N15 says, and `inputs` are
 cascade:RetractionNamingRule, then the release it prov:used, the assertion it prov:invalidated and the claim's
 cascade:matcherRule.
+
+### `{step} wrote these findings:`
+
+| kind | under | justification | members | name |
+|---|---|---|---|---|
+
+The findings for review the step wrote name exactly these, one row for each thing a finding names: its kind in words
+(`claims no longer reached`, the skos:prefLabel of its oa:hasBody), `under` the rule list version it names
+(cascade:noLongerReachedUnderRuleListVersion) in words, and the matcher's claim it names (oa:hasTarget) by its
+justification and members, as the matcher's judgments are read above; `name` (optional) is the finding's IRI. Each
+holds only its type, its kind, its oa:motivatedBy oa:classifying, its version and what it names, and is named by its
+triples (cascade:FindingNamingRule).
 
 ### `{step} wrote these reference descriptions:`
 

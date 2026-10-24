@@ -189,7 +189,6 @@ by union; a maximum over the set needs no walk of the line.
   acceptable, since the person is not told.
 - A source that no longer returns a record at all, as against returning an older state: nothing contradicts the
   record the pod holds, so no finding fires and the record stays current. Source deletion is a question of its own.
-- The acknowledgement that clears a finding has no verdict today; it is open in `judgments.md`.
 
 ## What would change our mind
 
