@@ -407,6 +407,21 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ServerShape ; sh:resultPath cascade:connectClientId ] ] .
 
+<#record-server/named-by-another-base> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-server/named-by-another-base.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ServerNameShape ] ] .
+
+<#record-server/base-not-normalised> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-server/base-not-normalised.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ServerNameShape ] ] .
+
+<#record-server/base-unreadable> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-server/base-unreadable.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ServerNameShape ] ] .
+
 <#record-organization/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-organization/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
@@ -415,3 +430,8 @@
   mf:action [ sht:dataGraph <record-organization/identifier-an-iri.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath org:identifier ] ] .
+
+<#record-organization/names-a-patient> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-organization/names-a-patient.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath cascade:patient ] ] .
