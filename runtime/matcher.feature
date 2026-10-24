@@ -860,9 +860,9 @@ Feature: The matcher's procedure
     and 4.1 are one, with the same comparator or none on both; two ratios of equal parts; two ranges of equal bounds;
     two coded values sharing a code. Text is never compared. Units are equal once each annotation in braces is dropped,
     a unit of annotations alone being 1, and are otherwise compared as written, case kept: mmol/L and mmol/l, one unit
-    to UCUM, go to a person until a rule converts units. R14 joins as R6 does on one day, when at least one of the two is stamped with the day alone:
-    two draws in a day are common, so the join is likely, and "What needs review" lists the entry with its Same. Two
-    instants never join, though they are on one day.
+    to UCUM, go to a person until a rule converts units. R14 joins as R6 does on one day, when at least one of the two
+    is stamped with the day alone: two draws in a day are common, so the join is likely, and "What needs review" lists
+    the entry with its Same. Two instants never join, though they are on one day.
 
     Two results of one code at one instant whose units differ are joined by neither: "What needs review" lists the pair,
     since no rule converts one unit into another. Two of one code, instant and unit whose values differ are joined by
