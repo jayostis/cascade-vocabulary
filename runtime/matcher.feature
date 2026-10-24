@@ -44,7 +44,9 @@ Feature: The matcher's procedure
         | same code        | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" |
 
   Rule: M2. The matcher takes only the subject's records
-    Those queries/derivations/subjects.rq gives the pod's cascade:Subject, under the everyday lens.
+    Those queries/derivations/subjects.rq gives the pod's cascade:Subject, under the everyday lens. A server's or an
+    organization's record names no patient, so it is never the subject's and never taken
+    (decisions/republishing-sources.md, row "organisation").
 
     Example: a record whose patient no About claims, or which names no patient, is never taken nor compared
       Given a new pod for Cleo on 2026-03-01 at 09:00
