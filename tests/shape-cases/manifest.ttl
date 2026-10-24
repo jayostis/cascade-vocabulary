@@ -449,3 +449,40 @@
   mf:action [ sht:dataGraph <record-organization/names-a-patient.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath cascade:patient ] ] .
+
+<#finding/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#finding/no-kind> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/no-kind.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:FindingForReviewShape ; sh:resultPath oa:hasBody ] ] .
+
+<#finding/not-classifying> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/not-classifying.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:FindingForReviewShape ; sh:resultPath oa:motivatedBy ] ] .
+
+<#finding/names-its-act> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/names-its-act.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:FindingForReviewShape ; sh:resultPath prov:wasGeneratedBy ] ] .
+
+<#finding/no-rule-list-version> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/no-rule-list-version.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ClaimsNoLongerReachedShape ] ] .
+
+<#judgment-about-a-finding/same> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about-a-finding/same.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-about-a-finding/acknowledged> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about-a-finding/acknowledged.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-about-a-finding/acknowledged-a-record> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about-a-finding/acknowledged-a-record.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:AcknowledgedShape ] ] .
