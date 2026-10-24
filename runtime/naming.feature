@@ -243,7 +243,9 @@ Feature: Naming
     relative IRI, so queries/derivations/entries.rq names each entry by a placeholder, urn:cascade:entry: and that hex,
     as urn:cascade:this-version stands for a version until it is named. When the runtime writes or shares a view, it
     writes each entry in the view file as <#hex>, the relative reference from the view's own path, never resolved
-    against the pod's address, and no placeholder remains.
+    against the pod's address, and no placeholder remains. An entry is named in the view that gives it members; another
+    view in the same folder cites it by the relative reference from its own path, as the variant interpretations view
+    cites a variant's entry as <variants.ttl#hex>.
 
     No example shows this rule, because a query reads an entry's IRI resolved against the view's address, and the
     derived state, which examples query, holds the placeholder. The kit's
