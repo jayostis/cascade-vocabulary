@@ -29,7 +29,7 @@
 :oldA1Version prov:specializationOf <urn:uuid:fa930b35-e0db-86a1-b23c-90fc2c6b0dba> ; cascade:patient :subject ;
     cascade:allergen "Peanut" .
 :oldA1Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:fa930b35-e0db-86a1-b23c-90fc2c6b0dba> ;
-    cascade:version :oldA1Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    cascade:version :oldA1Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
 
 <urn:uuid:ef5b6fbf-f412-872f-8bf1-129f07d79429> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a1" ;
     cascade:sourceUrl <https://fhir.hospital.example/interconnect/api/FHIR/R4/AllergyIntolerance/a1> .
@@ -37,14 +37,14 @@
     cascade:allergen "Peanut" .
 :newA1Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:ef5b6fbf-f412-872f-8bf1-129f07d79429> ;
     cascade:version :newA1Version ; prov:wasDerivedFrom :newPullOfTheHospital ;
-    prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:05Z"^^xsd:dateTime .
 
 <urn:uuid:768f6721-93b1-8ad0-aa46-e1e6c53cfde1> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a2" ;
     cascade:sourceUrl <https://fhir.hospital.example/api/FHIR/R4/AllergyIntolerance/a2> .
 :oldA2Version prov:specializationOf <urn:uuid:768f6721-93b1-8ad0-aa46-e1e6c53cfde1> ; cascade:patient :subject ;
     cascade:allergen "Latex" .
 :oldA2Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:768f6721-93b1-8ad0-aa46-e1e6c53cfde1> ;
-    cascade:version :oldA2Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    cascade:version :oldA2Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
 
 <urn:uuid:3262508e-d486-881d-9e4c-b2eb338f7c6e> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a2" ;
     cascade:sourceUrl <https://fhir.hospital.example/interconnect/api/FHIR/R4/AllergyIntolerance/a2> .
@@ -52,4 +52,4 @@
     cascade:allergen "Latex" .
 :newA2Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:3262508e-d486-881d-9e4c-b2eb338f7c6e> ;
     cascade:version :newA2Version ; prov:wasDerivedFrom :newPullOfTheClinic ;
-    prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:05Z"^^xsd:dateTime .

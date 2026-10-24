@@ -25,21 +25,21 @@
 :oldA1Version prov:specializationOf <urn:uuid:fa930b35-e0db-86a1-b23c-90fc2c6b0dba> ; cascade:patient :subject ;
     cascade:allergen "Peanut" .
 :oldA1Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:fa930b35-e0db-86a1-b23c-90fc2c6b0dba> ;
-    cascade:version :oldA1Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    cascade:version :oldA1Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
 
 <urn:uuid:ef5b6fbf-f412-872f-8bf1-129f07d79429> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a1" ;
     cascade:sourceUrl <https://fhir.hospital.example/interconnect/api/FHIR/R4/AllergyIntolerance/a1> .
 :newA1Version prov:specializationOf <urn:uuid:ef5b6fbf-f412-872f-8bf1-129f07d79429> ; cascade:patient :subject ;
     cascade:allergen "Peanut" .
 :newA1Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:ef5b6fbf-f412-872f-8bf1-129f07d79429> ;
-    cascade:version :newA1Version ; prov:wasDerivedFrom :newPull ; prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime .
+    cascade:version :newA1Version ; prov:wasDerivedFrom :newPull ; prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:05Z"^^xsd:dateTime .
 
 <urn:uuid:73ad8730-ae74-8c5a-9300-dc29b5155e02> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a3" ;
     cascade:sourceUrl <https://fhir.hospital.example/api/FHIR/R4/AllergyIntolerance/a3> .
 :oldA3Version prov:specializationOf <urn:uuid:73ad8730-ae74-8c5a-9300-dc29b5155e02> ; cascade:patient :subject ;
     cascade:allergen "Shellfish" .
 :oldA3Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:73ad8730-ae74-8c5a-9300-dc29b5155e02> ;
-    cascade:version :oldA3Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    cascade:version :oldA3Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
 
 <urn:uuid:4f5a8d95-59cd-85b6-979c-cb850441474c> a cascade:ProblemOrDiagnosis ; cascade:sourceRecordId "a1" ;
     cascade:sourceUrl <https://fhir.hospital.example/interconnect/api/FHIR/R4/Condition/a1> .
@@ -47,7 +47,7 @@
     cascade:conditionName "Asthma" .
 :newConditionRevision a cascade:Revision ; cascade:revisionOf <urn:uuid:4f5a8d95-59cd-85b6-979c-cb850441474c> ;
     cascade:version :newConditionVersion ;
-    prov:wasDerivedFrom :newPull ; prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime .
+    prov:wasDerivedFrom :newPull ; prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:05Z"^^xsd:dateTime .
 
 <urn:uuid:eeec6b1e-b538-87ac-bebb-839281f51375> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a1" ;
     cascade:sourceUrl <https://fhir.clinic.example/r4/AllergyIntolerance/a1> .
@@ -55,4 +55,4 @@
     cascade:allergen "Peanut" .
 :otherA1Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:eeec6b1e-b538-87ac-bebb-839281f51375> ;
     cascade:version :otherA1Version ;
-    prov:wasDerivedFrom :otherPull ; prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime .
+    prov:wasDerivedFrom :otherPull ; prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:05Z"^^xsd:dateTime .
