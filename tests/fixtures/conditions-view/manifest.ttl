@@ -9,7 +9,6 @@
   mf:entries (
     <#the-conditions-view>
     <#my-active-conditions>
-    <#what-it-shows>
   ) .
 
 <#the-conditions-view> a mf:QueryEvaluationTest ;
@@ -25,10 +24,3 @@
   mf:action [ qt:query <../../../queries/questions/pod/My%20active%20conditions.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-active-conditions.srj> .
-
-<#what-it-shows> a mf:QueryEvaluationTest ;
-  mf:name "what-it-shows" ;
-  rdfs:comment "Each statement of each condition entry in its view, with the member it was taken from: the onset from the member the derivations chose for the date, which the view names by no term of its own." ;
-  mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
-  mf:result <what-it-shows.srj> .

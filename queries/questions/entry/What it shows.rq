@@ -3,17 +3,20 @@
 # cascade:statusFrom, cascade:dateFrom and, for a medication, cascade:medicationUseStartDateFrom and
 # cascade:prescriptionWrittenDateFrom name them, and each of those terms links to the derivation that chose it. From is
 # the chosen member whose current version states the value; a value no single member states, such as the highest
-# criticality among them, has none.
+# criticality among them, has none. The derivations state the chosen members on the entry each member is in, so they
+# are read through the smallest member alone.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT DISTINCT ?entry ?entryLabel ?view ?field ?value ?valueLabel ?from ?fromLabel
 WHERE {
-  GRAPH ?view { ?entry cascade:mergedFrom [] ; ?field ?value }
+  GRAPH ?view { ?entry cascade:mergedFrom ?member
+                FILTER NOT EXISTS { ?entry cascade:mergedFrom ?smaller FILTER (STR(?smaller) < STR(?member)) } }
+  OPTIONAL { ?member cascade:inEntry ?chosenFor }
+  GRAPH ?view { ?entry ?field ?value }
   OPTIONAL { VALUES ?role { cascade:latestMember cascade:statusFrom cascade:dateFrom cascade:medicationUseStartDateFrom
                             cascade:prescriptionWrittenDateFrom }
-             ?entry cascade:mergedFrom/cascade:inEntry ?chosenFor .
              ?chosenFor ?role ?from .
              ?from pav:hasCurrentVersion ?version .
              ?version ?field ?value .
