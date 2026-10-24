@@ -459,6 +459,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:FindingForReviewShape ; sh:resultPath oa:hasBody ] ] .
 
+<#finding/not-classifying> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/not-classifying.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:FindingForReviewShape ; sh:resultPath oa:motivatedBy ] ] .
+
 <#finding/names-its-act> a sht:Validate ;
   mf:action [ sht:dataGraph <finding/names-its-act.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;

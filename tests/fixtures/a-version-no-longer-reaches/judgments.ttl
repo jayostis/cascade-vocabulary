@@ -31,5 +31,5 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:used :l1Version , :l2Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :sameLUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameL ; cascade:assertedUnderRuleListVersion :rules1 .
 
-:finding a cascade:FindingForReview ; oa:hasBody cascade:ClaimsNoLongerReached ; cascade:noLongerReachedUnderRuleListVersion :rules2 ;
+:finding a cascade:FindingForReview ; oa:hasBody cascade:ClaimsNoLongerReached ; oa:motivatedBy oa:classifying ; cascade:noLongerReachedUnderRuleListVersion :rules2 ;
     oa:hasTarget :sameX , :sameZ .

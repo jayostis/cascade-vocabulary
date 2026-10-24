@@ -338,7 +338,8 @@ The findings for review the step wrote name exactly these, one row for each thin
 (`claims no longer reached`, the skos:prefLabel of its oa:hasBody), `under` the rule list version it names
 (cascade:noLongerReachedUnderRuleListVersion) in words, and the matcher's claim it names (oa:hasTarget) by its
 justification and members, as the matcher's judgments are read above; `name` (optional) is the finding's IRI. Each
-holds only its type, its kind, its version and what it names, and is named by its triples (cascade:FindingNamingRule).
+holds only its type, its kind, its oa:motivatedBy oa:classifying, its version and what it names, and is named by its
+triples (cascade:FindingNamingRule).
 
 ### `{step} wrote these reference descriptions:`
 

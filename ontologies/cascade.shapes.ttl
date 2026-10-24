@@ -1541,6 +1541,8 @@ cascade:VerdictMembersShape a sh:NodeShape ;
     sh:message "A judgment that gives a verdict judges at least one member."@en ;
     sh:severity sh:Violation .
 
+# A judgment and the finding it names are filed apart, so this shape's and the next one's sh:class holds over the pod's
+# union of files, never over a judgment's file alone.
 cascade:SetVerdictShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
@@ -1631,6 +1633,13 @@ cascade:FindingForReviewShape a sh:NodeShape ;
         sh:message "A finding for review gives one kind, its oa:hasBody: cascade:ClaimsNoLongerReached."@en ;
         sh:severity sh:Violation
     ] , [
+        sh:path oa:motivatedBy ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue oa:classifying ;
+        sh:message "A finding for review is motivated by oa:classifying: it classifies its targets as its kind."@en ;
+        sh:severity sh:Violation
+    ] , [
         sh:path oa:hasTarget ;
         sh:nodeKind sh:IRI ;
         sh:minCount 1 ;
@@ -1654,6 +1663,8 @@ cascade:FindingForReviewShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+# A finding and the claims it names are filed apart, so its targets' sh:class holds over the pod's union of files, never
+# over the finding's file alone.
 cascade:ClaimsNoLongerReachedShape a sh:NodeShape ;
     sh:targetClass cascade:FindingForReview ;
     sh:or (

@@ -16,7 +16,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:used :z1Version , :z2Version , :z3Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :sameZUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameZ ; cascade:assertedUnderRuleListVersion :rules1 .
 
-:finding a cascade:FindingForReview ; oa:hasBody cascade:ClaimsNoLongerReached ; cascade:noLongerReachedUnderRuleListVersion :rules2 ;
+:finding a cascade:FindingForReview ; oa:hasBody cascade:ClaimsNoLongerReached ; oa:motivatedBy oa:classifying ; cascade:noLongerReachedUnderRuleListVersion :rules2 ;
     oa:hasTarget :sameX , :sameZ .
 
 :sameOverFinding a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :finding ; prov:wasAttributedTo :person ;

@@ -846,16 +846,19 @@ Feature: The matcher's procedure
     decisions/naming.md, its Why: a version that tightens a rule retracts nothing, and its first run files one finding
     naming the claims it no longer reaches. A run that compares the whole pod, an open (O1) or a recheck (M7), files,
     after its claims and before its reference descriptions (W1), a cascade:FindingForReview whose oa:hasBody is
-    cascade:ClaimsNoLongerReached, whose cascade:noLongerReachedUnderRuleListVersion is the current rule list version,
-    and whose oa:hasTarget is each claim of the matcher's that nothing retracts or replaces that is asserted, by an
-    assertion no retraction invalidates, under a version whose row for its rule carries the cascade:queryHash of that
-    rule's row in the version the current one revises (prov:wasRevisionOf), and under none whose row carries the hash
-    of the current version's row for it, the run's own assertions counted. It
-    files none when the current version revises none, when the pod holds a finding naming the current version, or when
-    it would name no claim: so one per version, whichever run is first, and a run bound to a step's records files none.
+    cascade:ClaimsNoLongerReached, whose oa:motivatedBy is oa:classifying, whose
+    cascade:noLongerReachedUnderRuleListVersion is the current rule list version, and whose oa:hasTarget is each claim
+    of the matcher's that nothing retracts or replaces that is asserted, by an assertion no retraction invalidates,
+    under a version whose row for its rule carries the cascade:queryHash of that rule's row in any version on the current
+    version's prov:wasRevisionOf line, and under none whose row carries the hash of the current version's row for it,
+    the run's own assertions counted, and that no finding the pod holds names, every hash read from the rows the pod
+    describes: so the claims it names do not hang on which versions the pod's runs went through. It files none when
+    the current version revises none, when the pod holds a finding naming the current version, or when it would name
+    no claim: so one per version, whichever run is first, and a run bound to a step's records files none.
 
     It carries no time and names no act, and is named by cascade:FindingNamingRule from its triples, so two writers
-    whose first runs under one version find the same claims file one file. A claim whose every assertion a release
+    whose first runs under one version find the same claims file one file; two writers whose pods differ when each
+    first runs under it, as when one has retracted a claim the other has not, may file two findings of one version. A claim whose every assertion a release
     retracted (N15) is asserted by none, and is named by no finding: a release declared its rule wrong, and the
     review page does not offer it back. What a claim's tables did is no part of it: a claim the version reaches, kept
     or lapsed by a table version (M7), is named by no finding, and lapses pair by pair (O1).
@@ -875,12 +878,18 @@ Feature: The matcher's procedure
         | claims no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
         | claims no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
 
-    Example: a run under a version whose finding the pod holds files no other
+    Example: a run under a version whose finding the pod holds files no other, though it would name another claim
+      Gus's Same replaces the matcher's claim of the Lisinopril pair, so the open's finding names the metformin claim
+      alone; once he retracts it, the Lisinopril claim is withdrawn by nothing and named by no finding, and the recheck
+      files no second finding of version 7.
+
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
       And Gus enters "version-six-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
+      And Gus files the judgment "same-instead-of-the-lisinopril-claim" on 2026-09-02 at 12:00
       And the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
+      And Gus files the judgment "retract-same-instead-of-the-lisinopril-claim" on 2026-09-04 at 08:00
       When the matcher rechecks on 2026-09-04 at 09:00
       Then that step wrote no file
 
@@ -944,7 +953,7 @@ Feature: The matcher's procedure
       When the query "questions/entry/What needs review.rq" is asked
       Then it answers:
         | entry                                                | entryLabel                              | needs                                              | finding                                                     | judgment                                                                                                               | judgmentLabel                                    | record                                       | recordLabel                                   | otherRecord                          | otherRecordLabel                      |
-        | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets" | "no longer joined under a newer rule list version" | <ni:///sha-256;CLSEf9r4YQTJl03lZSnuEJuNnrLGKsHE1gcEO-Wk2TM> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · a44d12bc · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
+        | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets" | "no longer joined under a newer rule list version" | <ni:///sha-256;2yO1P_juGetc2yqp2dXCnyv9TguArFgysnV50pT0oUk> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · a44d12bc · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
 
     Example: a Same over the finding joins the pairs of every claim it names
       When Gus files the judgment "same-over-the-version-seven-finding" on 2026-09-04 at 09:00
