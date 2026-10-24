@@ -307,6 +307,25 @@ Feature: The matcher's procedure
         | members                                                                                                     |
         | allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex", allergy RxNorm 8591 "Natural rubber latex" |
 
+    Example: a Different between a record and the least it named makes the recheck name the next record of that entry
+      Cleo judges the third entry's latex allergy different from the one its claim named; the other record of that
+      entry, which its rule also matched, is one it is not judged different from, so the recheck files that claim
+      (M7), and the three are one entry, as every pair of them but the different one would make.
+
+      Given Cleo files the judgment "about-r" on 2026-03-04 at 07:00
+      And Cleo enters "second-entry" on 2026-03-04 at 08:00
+      And the matcher runs on the records of that entry on 2026-03-04 at 08:01 (match-second-entry)
+      And Cleo enters "third-entry" on 2026-03-05 at 08:00
+      And the matcher runs on the records of that entry on 2026-03-05 at 08:01 (match-third-entry)
+      And Cleo files the judgment "rubber-latex-different" on 2026-03-05 at 12:00
+      When the matcher rechecks on 2026-03-05 at 13:00
+      Then that step wrote these matcher judgments:
+        | justification | members                                                                 |
+        | same code     | allergy RxNorm 8591 "Natural rubber latex", allergy RxNorm 8591 "Latex" |
+      And the allergies view holds these entries:
+        | members                                                                                                     |
+        | allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex", allergy RxNorm 8591 "Natural rubber latex" |
+
   Rule: M6. The matcher reads no person's Same or Different
     No judgment decides which records a rule matches; only a claim's star reads the entries the judgments make (M5).
 
