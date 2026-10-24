@@ -84,11 +84,13 @@ Feature: Currency
   Rule: C5. The review page lists every pick the source's change time did not decide
     decisions/currency.md, row "review page". queries/questions/record/What needs review.rq lists each record whose
     current revision was picked from candidates at other versions by the observation time ("observed later") or the
-    least IRI ("no basis"), beside the state shown and each state not shown, but not a pick between two imports from
-    documents reached by one path whose snapshots ancestry orders.
+    least IRI ("no basis"), beside the state shown and each state not shown, but not a pick between two live pulls of
+    one source whose snapshots ancestry orders: documents with a pav:retrievedOn and no cascade:answeredAsOf, naming
+    one transmitter agent or none. Two exports, a file and a pull, or two transmitters are two paths, which ancestry
+    never orders.
 
     No example shows this rule: every export the scripted input holds is stamped by its source, so its change time
-    decides. tests/fixtures/a-pick-ancestry-does-not-order-is-listed shows it.
+    decides. The fixtures under tests/fixtures/ named for ancestry, two writers and a tie show it.
 
   Rule: C6. An entry shows every member, its lead's first
     decisions/currency.md, row "entry on a Same group", and its lead. An entry's cascade:leadMember is a record the

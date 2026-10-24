@@ -1,0 +1,13 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:firstImport a prov:Activity ; prov:startedAtTime "2026-02-03T00:00:00Z"^^xsd:dateTime .
+:firstImportSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :firstImport ;
+    cascade:setHash "1111111111111111111111111111111111111111111111111111111111111111" ;
+    cascade:fileAddedToSet "provenance/imports/fi/first-import.ttl" .
+:laterImport a prov:Activity ; prov:startedAtTime "2026-01-15T00:00:00Z"^^xsd:dateTime .
+:laterImportSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :laterImport ; cascade:firstParentSnapshot :firstImportSnapshot ;
+    cascade:setHash "2222222222222222222222222222222222222222222222222222222222222222" ;
+    cascade:fileAddedToSet "provenance/imports/la/later-import.ttl" .

@@ -1,0 +1,22 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:pulledByMe pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:pulledByThem pav:retrievedOn "2026-01-03T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+
+:twoWriters a cascade:ProblemOrDiagnosis .
+:twoWritersFirst prov:specializationOf :twoWriters ; cascade:patient :subject ; cascade:conditionName "Rash" ; cascade:clinicalStatus "active" .
+:twoWritersSecond prov:specializationOf :twoWriters ; cascade:patient :subject ; cascade:conditionName "Rash" ; cascade:clinicalStatus "resolved" .
+:twoWritersMine a cascade:Revision ; cascade:revisionOf :twoWriters ; cascade:version :twoWritersFirst ;
+    prov:wasDerivedFrom :pulledByMe ; prov:wasGeneratedBy :myPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoWritersTheirs a cascade:Revision ; cascade:revisionOf :twoWriters ; cascade:version :twoWritersSecond ;
+    prov:wasDerivedFrom :pulledByThem ; prov:wasGeneratedBy :otherWritersPull ;
+    prov:generatedAtTime "2026-01-03T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-03T00:00:00Z"^^xsd:dateTime .

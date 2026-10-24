@@ -58,7 +58,8 @@ Each row is one thing decided; the ladder and the lead the rows refer to follow 
 2. Remove every revision a counting Before places before another revision still present. Befores that form a cycle
    (two writers, "X before Y" and "Y before X") remove nothing and the pair is listed for review.
 3. Of what remains, keep those at the latest source change time, together with those carrying none.
-4. Of those, the greatest `rec:asOf`; between two pulls of one source where one's snapshot is an ancestor of the other's, the later in that
+4. Of those, the greatest `rec:asOf`; between two live pulls of one source (a document retrieved on a date and answering as of no
+   other instant, through one transmitter or none) where one's snapshot is an ancestor of the other's, the later in that
    ancestry.
 5. Then the least IRI, which is arbitrary and said so.
 

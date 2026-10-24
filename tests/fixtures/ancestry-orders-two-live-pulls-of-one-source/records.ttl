@@ -1,0 +1,39 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:relay rdfs:label "Health Relay" .
+:pulledFirst pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:pulledAgain pav:retrievedOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:relayedFirst pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :relay ] .
+:relayedAgain pav:retrievedOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :relay ] .
+
+:direct a cascade:ProblemOrDiagnosis .
+:directFirst prov:specializationOf :direct ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "active" .
+:directSecond prov:specializationOf :direct ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "resolved" .
+:directEarlier a cascade:Revision ; cascade:revisionOf :direct ; cascade:version :directFirst ;
+    prov:wasDerivedFrom :pulledFirst ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:directLater a cascade:Revision ; cascade:revisionOf :direct ; cascade:version :directSecond ; prov:wasRevisionOf :directEarlier ;
+    prov:wasDerivedFrom :pulledAgain ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2025-12-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2025-12-20T00:00:00Z"^^xsd:dateTime .
+
+:relayed a cascade:ProblemOrDiagnosis .
+:relayedFirstVersion prov:specializationOf :relayed ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .
+:relayedSecondVersion prov:specializationOf :relayed ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "inactive" .
+:relayedEarlier a cascade:Revision ; cascade:revisionOf :relayed ; cascade:version :relayedFirstVersion ;
+    prov:wasDerivedFrom :relayedFirst ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:relayedLater a cascade:Revision ; cascade:revisionOf :relayed ; cascade:version :relayedSecondVersion ; prov:wasRevisionOf :relayedEarlier ;
+    prov:wasDerivedFrom :relayedAgain ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2025-12-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2025-12-20T00:00:00Z"^^xsd:dateTime .

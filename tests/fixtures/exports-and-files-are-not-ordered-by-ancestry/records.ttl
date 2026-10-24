@@ -1,0 +1,38 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:apple rdfs:label "Apple Health" .
+:newerExport cascade:answeredAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime ; pav:retrievedOn "2026-02-02T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] .
+:olderExport cascade:answeredAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime ; pav:retrievedOn "2026-02-09T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] .
+:pulled pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:ccdaFile prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+
+:exported a cascade:ProblemOrDiagnosis .
+:exportedCorrected prov:specializationOf :exported ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "resolved" .
+:exportedStale prov:specializationOf :exported ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "active" .
+:exportedFromNewer a cascade:Revision ; cascade:revisionOf :exported ; cascade:version :exportedCorrected ;
+    prov:wasDerivedFrom :newerExport ; prov:wasGeneratedBy :firstImport ;
+    prov:generatedAtTime "2026-02-03T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:exportedFromOlder a cascade:Revision ; cascade:revisionOf :exported ; cascade:version :exportedStale ;
+    prov:wasRevisionOf :exportedFromNewer ; prov:wasDerivedFrom :olderExport ; prov:wasGeneratedBy :laterImport ;
+    prov:generatedAtTime "2026-01-15T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:filed a cascade:ProblemOrDiagnosis .
+:filedPulled prov:specializationOf :filed ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "inactive" .
+:filedFromFile prov:specializationOf :filed ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .
+:filedFromPull a cascade:Revision ; cascade:revisionOf :filed ; cascade:version :filedPulled ;
+    prov:wasDerivedFrom :pulled ; prov:wasGeneratedBy :firstImport ;
+    prov:generatedAtTime "2026-02-03T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:filedFromCcda a cascade:Revision ; cascade:revisionOf :filed ; cascade:version :filedFromFile ;
+    prov:wasRevisionOf :filedFromPull ; prov:wasDerivedFrom :ccdaFile ; prov:wasGeneratedBy :laterImport ;
+    prov:generatedAtTime "2026-01-15T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-15T00:00:00Z"^^xsd:dateTime .

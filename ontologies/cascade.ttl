@@ -538,13 +538,13 @@ cascade:currentRevision a owl:ObjectProperty ;
 
 cascade:laterInAncestryThan a owl:ObjectProperty ;
     rdfs:label "later in ancestry than"@en ;
-    rdfs:comment "Derived: of two candidates for one record's current revision, both derived by imports from documents reached by one path, through a transmitter both name or with neither naming one, this one's act's snapshot descends from that one's."@en ;
+    rdfs:comment "Derived: of two candidates for one record's current revision, both derived from live pulls of one source, this one's act's snapshot descends from that one's. A live pull is a document with a pav:retrievedOn and no cascade:answeredAsOf; two are of one source when both name one transmitter agent, or neither names one."@en ;
     rdfs:domain cascade:Revision ;
     rdfs:range cascade:Revision .
 
 cascade:currentRevisionCandidate a owl:ObjectProperty ;
     rdfs:label "current revision candidate"@en ;
-    rdfs:comment "Derived: a revision of the record still in the running once the ladder's first three steps have removed what they remove: no Erroneous that stands names it (cascade:revisionJudgedErroneousBy); no Before that stands, outside a cycle, places it before another revision of the record no such Erroneous names; and of what is left, it carries the latest source change time, pav:lastUpdateOn, or carries none."@en ;
+    rdfs:comment "Derived: a revision of the record still in the running once the ladder's first three steps have removed what they remove: no Erroneous that stands names it (cascade:revisionJudgedErroneousBy); no Before that stands, outside a cycle among the record's revisions, places it before another revision of the record no such Erroneous names; and of what is left, it carries the latest source change time, pav:lastUpdateOn, or carries none."@en ;
     rdfs:range cascade:Revision .
 
 cascade:revisionJudgedErroneousBy a owl:ObjectProperty ;
@@ -556,6 +556,13 @@ cascade:revisionJudgedErroneousBy a owl:ObjectProperty ;
 cascade:judgedBefore a owl:ObjectProperty ;
     rdfs:label "judged before"@en ;
     rdfs:comment "Derived: a person's Before that stands places this revision before that one: no activity invalidates it, and no judgment that stands replaces it."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range cascade:Revision .
+
+cascade:judgedBeforeRevisionOfSameRecord a owl:ObjectProperty ;
+    rdfs:label "judged before revision of same record"@en ;
+    rdfs:comment "Derived: cascade:judgedBefore between two revisions of one record."@en ;
+    rdfs:subPropertyOf cascade:judgedBefore ;
     rdfs:domain cascade:Revision ;
     rdfs:range cascade:Revision .
 

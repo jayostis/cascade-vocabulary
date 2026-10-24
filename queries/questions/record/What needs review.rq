@@ -2,9 +2,9 @@
 # current is derived and never stored. A record is listed once for each other candidate it holds at another version,
 # beside its current revision (?revision, the state shown) and that candidate (?otherRevision, a state not shown): the
 # clocks fell to the observation time, and the shown one was "observed later", or to the least IRI, with "no basis". A
-# candidate a later pull of one source follows in ancestry is not listed: ancestry orders the two. A record is also
-# listed for each Before of its revisions that a cycle of Befores cancels, with the two revisions it orders. Either is
-# fixed by one Before.
+# candidate a later live pull of the same source follows in ancestry is not listed: ancestry orders the two. A record
+# is also listed for each Before of its revisions that a cycle of Befores cancels, with the two revisions it orders.
+# Either is fixed by one Before.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -20,10 +20,9 @@ WHERE {
     OPTIONAL { ?revision rdfs:label ?revisionLabel }
     OPTIONAL { ?otherRevision rdfs:label ?otherRevisionLabel } }
   UNION
-  { ?revision cascade:judgedBefore ?otherRevision ; cascade:revisionOf ?record .
-    ?otherRevision cascade:revisionOf ?record .
-    FILTER EXISTS { ?otherRevision cascade:judgedBefore+ ?revision }
-    FILTER (STR(?revision) < STR(?otherRevision) || !EXISTS { ?otherRevision cascade:judgedBefore ?revision })
+  { ?revision cascade:judgedBeforeRevisionOfSameRecord ?otherRevision ; cascade:revisionOf ?record .
+    FILTER EXISTS { ?otherRevision cascade:judgedBeforeRevisionOfSameRecord+ ?revision }
+    FILTER (STR(?revision) < STR(?otherRevision) || !EXISTS { ?otherRevision cascade:judgedBeforeRevisionOfSameRecord ?revision })
     BIND ("Befores that form a cycle" AS ?needs)
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?revision rdfs:label ?revisionLabel }

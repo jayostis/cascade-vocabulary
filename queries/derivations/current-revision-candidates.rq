@@ -1,8 +1,8 @@
 # The ladder's first three steps over a record's revisions. A revision an Erroneous that stands names is out. So is one a
 # Before that stands places before another revision of the record that no such Erroneous names, unless that other is
-# placed before it in turn, directly or through others: Befores that form a cycle remove nothing. Of what is left, the
-# revisions at the latest source change time stay, and so does every one carrying none: the first instant xsd:dateTime
-# can write stands for none, so a record none of whose revisions carries one keeps them all.
+# placed before it in turn, directly or through the record's other revisions: Befores that form a cycle remove nothing.
+# Of what is left, the revisions at the latest source change time stay, and so does every one carrying none: the first
+# instant xsd:dateTime can write stands for none, so a record none of whose revisions carries one keeps them all.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -14,10 +14,9 @@ WHERE {
       ?r0 cascade:revisionOf ?record .
       MINUS { ?r0 cascade:revisionJudgedErroneousBy ?wrong0 }
       MINUS {
-        ?r0 cascade:judgedBefore ?later0 .
-        ?later0 cascade:revisionOf ?record .
+        ?r0 cascade:judgedBeforeRevisionOfSameRecord ?later0 .
         FILTER NOT EXISTS { ?later0 cascade:revisionJudgedErroneousBy ?laterWrong0 }
-        FILTER NOT EXISTS { ?later0 cascade:judgedBefore+ ?r0 }
+        FILTER NOT EXISTS { ?later0 cascade:judgedBeforeRevisionOfSameRecord+ ?r0 }
       }
       OPTIONAL { ?r0 pav:lastUpdateOn ?changed0 }
     }
@@ -25,10 +24,9 @@ WHERE {
   ?r cascade:revisionOf ?record .
   MINUS { ?r cascade:revisionJudgedErroneousBy ?wrong }
   MINUS {
-    ?r cascade:judgedBefore ?later .
-    ?later cascade:revisionOf ?record .
+    ?r cascade:judgedBeforeRevisionOfSameRecord ?later .
     FILTER NOT EXISTS { ?later cascade:revisionJudgedErroneousBy ?laterWrong }
-    FILTER NOT EXISTS { ?later cascade:judgedBefore+ ?r }
+    FILTER NOT EXISTS { ?later cascade:judgedBeforeRevisionOfSameRecord+ ?r }
   }
   OPTIONAL { ?r pav:lastUpdateOn ?changed }
   FILTER (!BOUND(?changed) || ?changed = ?latest)

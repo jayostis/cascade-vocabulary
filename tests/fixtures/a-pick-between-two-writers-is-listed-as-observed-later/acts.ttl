@@ -1,0 +1,13 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:myPull a prov:Activity ; prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:myPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :myPull ;
+    cascade:setHash "1111111111111111111111111111111111111111111111111111111111111111" ;
+    cascade:fileAddedToSet "provenance/imports/my/my-pull.ttl" .
+:otherWritersPull a prov:Activity ; prov:startedAtTime "2026-01-03T00:00:00Z"^^xsd:dateTime .
+:otherWritersPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :otherWritersPull ;
+    cascade:setHash "4444444444444444444444444444444444444444444444444444444444444444" ;
+    cascade:fileAddedToSet "provenance/imports/ot/other-writers-pull.ttl" .
