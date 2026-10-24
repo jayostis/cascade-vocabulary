@@ -3,10 +3,10 @@
 # a day with no time is same-code-day-value-and-unit.rq's. A quantity's number is compared by value, never as a term,
 # so 6.8 and 6.80 are one number, with the same comparator or none on both. A ratio compares its numerator and its
 # denominator so, a range its low and its high bounds, each bound present on both or on neither; a coded value shares a
-# code; text is never compared. Units are compared as UCUM's case-sensitive form compares them once its annotations
-# are dropped: each annotation in braces goes, a unit that was annotations alone is 1, and case is kept, so a count
-# per minute annotated as beats is one per minute, and mmol/L is not mmol/l. A UCUM unit is compared where a quantity
-# has one, else its unit text. Each ordered pair is a row.
+# code; text is never compared. Units are compared as written once UCUM's annotations are dropped: each annotation in
+# braces goes, a unit that was annotations alone is 1, and case is kept, so a count per minute annotated as beats is
+# one per minute, and mmol/L and mmol/l differ, though UCUM reads both as one unit, until a rule converts units. A
+# UCUM unit is compared where a quantity has one, else its unit text. Each ordered pair is a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
