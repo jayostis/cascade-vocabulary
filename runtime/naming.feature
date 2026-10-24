@@ -66,8 +66,8 @@ Feature: Naming
     https://www.rfc-editor.org/rfc/rfc6901, or an oa:XPathSelector for an XML document, its rdf:value the selector. The
     vector revision-with-selector under tests/vectors/naming/ names one.
 
-    No example names a revision: its name depends on a run, through the ID of the import, the session or the connect. A9's example pins
-    the triples it is named from.
+    No example names a revision: its name depends on a run, through the ID of the import, the session or the connect.
+    A9's example pins the triples it is named from.
 
   Rule: N5. A document is named by its bytes
     decisions/naming.md, row "document, finding". cascade:DocumentNamingRule: ni:///sha-256; followed by the unpadded

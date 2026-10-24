@@ -45,8 +45,8 @@ Feature: The matcher's procedure
 
   Rule: M2. The matcher takes only the subject's records
     Those queries/derivations/subjects.rq gives the pod's cascade:Subject, under the everyday lens. A server's or an
-    organization's record names no patient, so it is never the subject's and never taken
-    (decisions/republishing-sources.md, row "organisation").
+    organization's record names no patient, as cascade:ServerShape and cascade:OrganizationShape hold, so it is never
+    the subject's and never taken (decisions/republishing-sources.md, rows "server" and "organisation").
 
     Example: a record whose patient no About claims, or which names no patient, is never taken nor compared
       Given a new pod for Cleo on 2026-03-01 at 09:00

@@ -750,6 +750,11 @@ cascade:ServerShape a sh:NodeShape ;
         sh:minLength 1 ;
         sh:maxCount 1 ;
         sh:message "A server version has at most one client id, a non-empty string."@en
+    ] ;
+    sh:property [
+        sh:path cascade:patient ;
+        sh:maxCount 0 ;
+        sh:message "A server's record names no patient: it is never the subject's."@en
     ] .
 
 cascade:ServerNameShape a sh:NodeShape ;
@@ -763,16 +768,15 @@ cascade:ServerNameShape a sh:NodeShape ;
     ] ;
     sh:sparql [
         a sh:SPARQLConstraint ;
-        sh:message "A server's name is the one cascade:ServerNamingRule gives its base URL: expected {?expected}."@en ;
+        sh:message "A server's record states its base URL normalised, and its name is the one cascade:ServerNamingRule gives that base: expected {?expected}."@en ;
         sh:severity sh:Violation ;
         sh:select """SELECT $this ?expected WHERE {
   $this <https://ns.cascadeprotocol.org/cascade#serverBaseUrl> ?address .
   BIND ("^([Hh][Tt][Tt][Pp][Ss]?)://([A-Za-z0-9.-]+)(:[1-9][0-9]{0,4})?((/[^/?#%]+)*)$" AS ?read)
-  FILTER (REGEX(?address, ?read))
   BIND (REPLACE(?address, ?read, "$3") AS ?port)
-  FILTER (!REGEX(REPLACE(?address, ?read, "$4"), "(^|/)[.][.]?(/|$)"))
-  FILTER (!CONTAINS(?address, "\u007F"))
-  FILTER (?port = "" || <http://www.w3.org/2001/XMLSchema#integer>(SUBSTR(?port, 2)) <= 65535)
+  BIND (REGEX(?address, ?read) && !REGEX(REPLACE(?address, ?read, "$4"), "(^|/)[.][.]?(/|$)")
+        && !CONTAINS(?address, "\u007F")
+        && (?port = "" || <http://www.w3.org/2001/XMLSchema#integer>(SUBSTR(?port, 2)) <= 65535) AS ?normalisable)
   BIND (LCASE(REPLACE(?address, ?read, "$1")) AS ?scheme)
   BIND (CONCAT(?scheme, "://", LCASE(REPLACE(?address, ?read, "$2")),
                IF(?port = "" || (?scheme = "http" && ?port = ":80") || (?scheme = "https" && ?port = ":443"), "", ?port),
@@ -783,8 +787,8 @@ cascade:ServerNameShape a sh:NodeShape ;
         AS ?variant)
   BIND (IRI(CONCAT("urn:uuid:", SUBSTR(?hash, 1, 8), "-", SUBSTR(?hash, 9, 4), "-8", SUBSTR(?hash, 14, 3), "-", ?variant,
                    SUBSTR(?hash, 18, 3), "-", SUBSTR(?hash, 21, 12))) AS ?name)
-  BIND (?name AS ?expected)
-  FILTER ($this != ?expected)
+  BIND (IF(?normalisable, STR(?name), "none, since the rule cannot read the base") AS ?expected)
+  FILTER (!?normalisable || ?address != ?input1 || $this != ?name)
 }""" ] .
 
 cascade:OrganizationShape a sh:NodeShape ;
@@ -808,6 +812,11 @@ cascade:OrganizationShape a sh:NodeShape ;
         sh:nodeKind sh:Literal ;
         sh:minLength 1 ;
         sh:message "An organization identifier is a non-empty literal, whose datatype names the identifier system."@en
+    ] ;
+    sh:property [
+        sh:path cascade:patient ;
+        sh:maxCount 0 ;
+        sh:message "An organization's record names no patient: it is never the subject's."@en
     ] .
 
 cascade:AnsweredAsOfShape a sh:NodeShape ;
