@@ -45,9 +45,9 @@ def lenses_that_differ(fixture):
 
 
 def holds_a_judgment(fixture):
-    """Whether the fixture holds a judgment. A lens writes rec:counts and nothing else
-    (test_every_lens_writes_rec_counts_and_nothing_else), so lenses differ only in which judgments count: over a pod
-    with no judgment every lens adds the same triples, and every later step reads the same pod."""
+    """Whether the fixture holds a judgment. A lens writes cascade:countsUnderLens and nothing else
+    (test_every_lens_writes_counts_under_lens_and_nothing_else), so lenses differ only in which judgments count: over a
+    pod with no judgment every lens adds the same triples, and every later step reads the same pod."""
     return built_once(fixture, "oxigraph", LENSES[0]).store.ask(f"ASK {{ ?j a <{JUDGMENT}> }}")
 
 

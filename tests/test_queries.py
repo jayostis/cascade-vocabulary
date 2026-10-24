@@ -154,7 +154,7 @@ def test_no_derivation_reads_a_term_a_later_derivation_writes(lens):
 
 
 @pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
-def test_every_lens_writes_rec_counts_and_nothing_else(lens):
+def test_every_lens_writes_counts_under_lens_and_nothing_else(lens):
     assert writes(contract.named("lenses")[lens]) == {URIRef(CASCADE + "countsUnderLens")}
 
 

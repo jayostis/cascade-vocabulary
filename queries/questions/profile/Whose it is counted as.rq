@@ -8,9 +8,16 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?profile ?profileLabel ?subject ?subjectLabel ?counts ?about ?aboutLabel ?hospital ?records
 WHERE {
   { SELECT ?profile ?hospital (COUNT(DISTINCT ?record) AS ?records)
-    WHERE { ?version cascade:patient ?profile ; prov:specializationOf ?record .
-            OPTIONAL { ?revision cascade:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
-                       ?attribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?hospital } }
+    WHERE {
+      { { SELECT DISTINCT ?document ?hospital
+          WHERE { ?document prov:qualifiedAttribution ?attribution .
+                  ?attribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?hospital } }
+        ?revision prov:wasDerivedFrom ?document ; cascade:version ?version .
+        ?version cascade:patient ?profile ; prov:specializationOf ?record . }
+      UNION
+      { ?version cascade:patient ?profile ; prov:specializationOf ?record .
+        MINUS { ?revision cascade:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+                ?attribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?hospital } } }
     GROUP BY ?profile ?hospital
     HAVING (BOUND(?profile)) }
   ?about a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?subject .

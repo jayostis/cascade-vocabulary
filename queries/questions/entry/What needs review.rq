@@ -78,6 +78,7 @@ WHERE {
     ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
     ?version ?property ?code .
     ?otherVersion ?property ?code .
+    MINUS { ?record cascade:currentlyDifferent ?otherRecord }
     OPTIONAL { ?version cascade:displayDate ?onset }
     OPTIONAL { ?version cascade:abatementDate ?end }
     OPTIONAL { ?version cascade:clinicalStatus ?status }
@@ -95,7 +96,6 @@ WHERE {
     BIND (IF(?otherEndKnown, SUBSTR(STR(?otherEnd), 1, 10),
              IF(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?otherFrom)) AS ?otherTo)
     FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
-            && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord }
             && (!BOUND(?onset) || !BOUND(?otherOnset)
                 || (!?endKnown && !(COALESCE(?status, "") IN ("active", "recurrence", "relapse")) && ?from <= ?otherTo)
                 || (!?otherEndKnown && !(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"))
@@ -109,9 +109,9 @@ WHERE {
     ?otherRecord cascade:recordKind "Medication" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
     ?version cascade:rxNormCode ?code .
     ?otherVersion cascade:rxNormCode ?code .
-    FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
-            && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord }
-            && !EXISTS { ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord })
+    FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry)
+    MINUS { ?record cascade:currentlyDifferent ?otherRecord }
+    MINUS { ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord }
     BIND ("possibly the same medication" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }

@@ -6,7 +6,7 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT { ?record cascade:currentRevision ?r ; pav:hasCurrentVersion ?v }
 WHERE {
-  { SELECT ?record (IRI(MIN(STR(?h))) AS ?r)
+  { SELECT ?record (MIN(STR(?h)) AS ?first)
     WHERE {
       { SELECT ?record (MAX(?t0) AS ?t)
         WHERE { ?h0 cascade:revisionOf ?record ; prov:generatedAtTime ?t0 .
@@ -16,5 +16,6 @@ WHERE {
       FILTER NOT EXISTS { ?n prov:wasRevisionOf ?h }
     }
     GROUP BY ?record }
-  ?r cascade:version ?v .
+  ?r cascade:revisionOf ?record ; cascade:version ?v .
+  FILTER (STR(?r) = ?first)
 }

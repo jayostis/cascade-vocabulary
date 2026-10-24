@@ -314,16 +314,6 @@ def version_name(triples):
     return content_name(triples)
 
 
-def revision_name(triples):
-    """triples: the revision's, its subject urn:cascade:this-revision."""
-    return content_name(triples)
-
-
-def finding_name(triples):
-    """triples: the finding's, its subject urn:cascade:this-finding."""
-    return content_name(triples)
-
-
 def document_name(octets):
     return ni_name(octets)
 

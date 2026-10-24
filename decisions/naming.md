@@ -203,8 +203,11 @@ an app by its own agent and version, and bad data from any of them is hidden by 
 **Why the rest.** Escaping closes a verified collision, `("a|b")` and `("a","b")` named one thing; a list carries its
 count so two lists back to back are unambiguous; the rule IRI makes two rules of equal arity never collide and lets a
 v8 name say which rule made it (`ni:` names take none, being content). Base URLs are normalised because `:443` and
-none are one server, and userinfo is refused because a credential must never be a name input. A contained resource is
-scoped by its container's source version because a renumbered one would otherwise become a revision of another
+none are one server, and userinfo is refused because a credential must never be a name input. The host is an ASCII
+reg-name, or a bracketed IPv6 address or IPvFuture with no zone id, and the port is empty (no port) or ASCII digits read as an integer,
+leading zeros dropped, above 65535 refused, then the scheme's default dropped, so `:0443` and none are one server too
+and a URL two parsers read apart names nothing. A contained resource is scoped by its container's source version
+because a renumbered one would otherwise become a revision of another
 record. An entry hashes a session the app minted because the subject and a timestamp collide across writers in one
 instant. Custodian and patient in a C-CDA name stop two patients' id-less statements from one clinic fusing. A
 C-CDA entry is named by its CDA `id` across documents where a FHIR document's entry is not, because the two promises

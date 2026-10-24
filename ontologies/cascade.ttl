@@ -67,12 +67,6 @@ cascade:PodManifest a owl:Class ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
-cascade:schemaVersion a owl:DatatypeProperty ;
-    rdfs:label "Schema Version"@en ;
-    rdfs:range xsd:string ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
-
 foaf:givenName a owl:DatatypeProperty ;
     rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> ;
     dct:source <http://xmlns.com/foaf/spec/20140114.rdf> .
@@ -803,7 +797,7 @@ cascade:CodeNames a cascade:TableKind ;
 cascade:RetiredCodes a cascade:TableKind ;
     rdfs:label "retired codes"@en ;
     rdfs:comment "A retired code, with each replacement its publisher gives. A code that is not retired has no row; a mapping kind keeps a retired code's rows."@en ;
-    cascade:rowShape cascade:CodeStatusRowShape ;
+    cascade:rowShape cascade:RetiredCodeRowShape ;
     cascade:foundBy cascade:RowSubject ;
     cascade:readByAppPages true .
 
@@ -1560,7 +1554,7 @@ cascade:currentlyDifferent a owl:ObjectProperty ;
 
 cascade:RecordFromServerNamingRule a owl:NamedIndividual ;
     rdfs:label "record from a server naming rule"@en ;
-    rdfs:comment "A record a client pulled from a FHIR server is named urn:uuid: and a version 8 UUID: the first 128 bits of SHA-256 over 90c60849-c5ef-4ca6-bfb8-8662bd07d2b5, this rule's IRI and the inputs, each with % written %25 and | written %7C, joined by |, with the version bits 1000 and the variant bits 10. Inputs in order: the base URL the client used, normalised by RFC 3986 sections 6.2.2 and 6.2.3 with every trailing / removed (a URL with userinfo, a query, a fragment, a control character or space, no scheme, no host or a port that is not digits names nothing); the resource type; the resource's id."@en ;
+    rdfs:comment "A record a client pulled from a FHIR server is named urn:uuid: and a version 8 UUID: the first 128 bits of SHA-256 over 90c60849-c5ef-4ca6-bfb8-8662bd07d2b5, this rule's IRI and the inputs, each with % written %25 and | written %7C, joined by |, with the version bits 1000 and the variant bits 10. Inputs in order: the base URL the client used, normalised by RFC 3986 sections 6.2.2 and 6.2.3 with every trailing / removed, its host an ASCII reg-name or a bracketed IPv6 address or IPvFuture with no zone id, its port empty (no port) or ASCII digits read as an integer with leading zeros dropped, refused above 65535, then dropped if it is the scheme's default (a URL with userinfo, a query, a fragment, a control character or space, no scheme, no host, any other host or any other port names nothing); the resource type; the resource's id."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2> ,
         <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.3> .
 
