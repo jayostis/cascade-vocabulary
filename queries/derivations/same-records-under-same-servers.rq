@@ -20,8 +20,8 @@ WHERE {
   FILTER (?one != ?two && STRAFTER(STR(?aUrl), CONCAT(?oneBase, "/")) = STRAFTER(STR(?bUrl), CONCAT(?twoBase, "/")))
   FILTER NOT EXISTS { ?a cascade:currentlyDifferent ?b }
   MINUS {
-    ?aServer a cascade:Server ; cascade:currentlySame ?bServer .
-    ?bServer a cascade:Server .
+    { SELECT ?aServer WHERE { ?aServer a cascade:Server ; cascade:currentlySame ?bServer . ?bServer a cascade:Server }
+      LIMIT 1 }
     ?a cascade:sourceRecordId ?id ; ^cascade:revisionOf/prov:wasDerivedFrom/prov:qualifiedAttribution ?aCustody .
     ?aCustody prov:hadRole cascade:CustodianRole ; prov:agent ?aOrganization .
     ?b cascade:sourceRecordId ?id ; ^cascade:revisionOf/prov:wasDerivedFrom/prov:qualifiedAttribution ?bCustody .

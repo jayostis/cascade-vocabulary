@@ -13,7 +13,6 @@
 
 :hospital a cascade:Organization .
 :clinic a cascade:Organization .
-:hospitalAfterMerger a cascade:Organization .
 
 :oldPull a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
     cascade:serverBaseUrl "https://fhir.hospital.example/api/FHIR/R4" ;
@@ -24,9 +23,6 @@
 :newPullOfTheClinic a prov:Entity ; pav:retrievedOn "2026-03-01T00:00:00Z"^^xsd:dateTime ;
     cascade:serverBaseUrl "https://fhir.hospital.example/interconnect/api/FHIR/R4" ;
     prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
-:newPullAfterTheMerger a prov:Entity ; pav:retrievedOn "2026-03-01T00:00:00Z"^^xsd:dateTime ;
-    cascade:serverBaseUrl "https://fhir.hospital.example/interconnect/api/FHIR/R4" ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospitalAfterMerger ] .
 
 <urn:uuid:fa930b35-e0db-86a1-b23c-90fc2c6b0dba> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a1" ;
     cascade:sourceUrl <https://fhir.hospital.example/api/FHIR/R4/AllergyIntolerance/a1> .
@@ -56,19 +52,4 @@
     cascade:allergen "Latex" .
 :newA2Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:3262508e-d486-881d-9e4c-b2eb338f7c6e> ;
     cascade:version :newA2Version ; prov:wasDerivedFrom :newPullOfTheClinic ;
-    prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime .
-
-<urn:uuid:73ad8730-ae74-8c5a-9300-dc29b5155e02> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a3" ;
-    cascade:sourceUrl <https://fhir.hospital.example/api/FHIR/R4/AllergyIntolerance/a3> .
-:oldA3Version prov:specializationOf <urn:uuid:73ad8730-ae74-8c5a-9300-dc29b5155e02> ; cascade:patient :subject ;
-    cascade:allergen "Shellfish" .
-:oldA3Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:73ad8730-ae74-8c5a-9300-dc29b5155e02> ;
-    cascade:version :oldA3Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
-
-<urn:uuid:02e022bf-8b94-808c-8391-6b8eefe40745> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a3" ;
-    cascade:sourceUrl <https://fhir.hospital.example/interconnect/api/FHIR/R4/AllergyIntolerance/a3> .
-:newA3Version prov:specializationOf <urn:uuid:02e022bf-8b94-808c-8391-6b8eefe40745> ; cascade:patient :subject ;
-    cascade:allergen "Shellfish" .
-:newA3Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:02e022bf-8b94-808c-8391-6b8eefe40745> ;
-    cascade:version :newA3Version ; prov:wasDerivedFrom :newPullAfterTheMerger ;
     prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime .

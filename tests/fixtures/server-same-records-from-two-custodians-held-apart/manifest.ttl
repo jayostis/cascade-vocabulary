@@ -4,15 +4,15 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <> a mf:Manifest ;
-  rdfs:label "server-same-within-one-organization" ;
-  rdfs:comment "A person's Same over a server at its old and its new address, and three allergies pulled from each, every old pull's custodian a hospital: a1 again from the hospital; a2 from a clinic on the same server; a3 from the hospital under the organization record a merger gave it, which the person judged the same as the first." ;
+  rdfs:label "server-same-records-from-two-custodians-held-apart" ;
+  rdfs:comment "A person's Same over a server at its old and its new address, and two allergies pulled from each, every old pull's custodian a hospital: a1 again from the hospital; a2 from a clinic on the same server." ;
   mf:entries (
     <#same-records>
   ) .
 
 <#same-records> a mf:QueryEvaluationTest ;
   mf:name "same-records" ;
-  rdfs:comment "a1 and a3 are each one record, both ways; a2, whose custodians are two organizations, is not." ;
+  rdfs:comment "a1 is one record, both ways; a2, whose custodians are two organizations, is not." ;
   mf:action [ qt:query <same-records.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <same-records.srj> .
