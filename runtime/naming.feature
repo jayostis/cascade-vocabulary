@@ -122,7 +122,9 @@ Feature: Naming
     urn:uuid:, version 4, new on every run. An entry's session is minted once by the app that took the entry, and the
     entry carries it, so its records' names (N2) are the same on every run. Nothing else is random. Each act says
     prov:wasAssociatedWith the runtime that performed it, a prov:SoftwareAgent named as N8 names a checkout:
-    https://github.com/jayostis/cascade-runtime-js/tree/<commit>/ for the reference runtime. A matcher run is a
+    https://github.com/jayostis/cascade-runtime-js/tree/<commit>/ for the reference runtime, written
+    https://github.com/jayostis/cascade-runtime-js/tree/<commit>/#uncommitted for a build with uncommitted changes and
+    https://github.com/jayostis/cascade-runtime-js#unidentified for one whose commit it cannot read. A matcher run is a
     cascade:MatcherRun and a prov:Activity, prov:wasInformedBy the import or entry session whose records it takes, and is
     written only when it writes something else. The kit's check 4 holds each of a replay's acts to it.
 
