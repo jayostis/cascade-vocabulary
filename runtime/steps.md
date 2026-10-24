@@ -295,9 +295,10 @@ retraction or, in its migration's own file, the migration, its snapshot or the r
 | justification | members | inputs | name |
 |---|---|---|---|
 
-The retractions the step wrote are exactly these, each of the matcher's claim of that justification and those members,
-as the step before reads them; each holds only what N15 says, and `inputs` are cascade:RetractionNamingRule, then the
-release it prov:wasInfluencedBy, the claim it prov:invalidated and the claim's cascade:matcherRule.
+The retractions the step wrote are exactly these, each of an assertion of the matcher's claim of that justification and
+those members, as the step before reads them; each holds only what N15 says, and `inputs` are
+cascade:RetractionNamingRule, then the release it prov:used, the assertion it prov:invalidated and the claim's
+cascade:matcherRule.
 
 ### `{step} wrote these reference descriptions:`
 

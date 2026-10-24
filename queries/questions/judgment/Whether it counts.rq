@@ -1,7 +1,7 @@
 # Each judgment has one row saying whether it counts under the lens the pod was built with, and one more row for each thing
-# that happened to it: a later judgment replaced it, a retraction invalidated it, the reference table it was made with has
-# a newer version, or the rule list its claim was asserted under has a current version whose rule runs another query, the
-# version naming what did it. Only judgments that count shape the views.
+# that happened to it: a later judgment replaced it, a retraction invalidated it or one of its assertions, the reference
+# table it was made with has a newer version, or the rule list its claim was asserted under has a current version whose
+# rule runs another query, the version naming what did it. Only judgments that count shape the views.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX pav: <http://purl.org/pav/>
@@ -16,13 +16,14 @@ WHERE {
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
   UNION
   { ?by dct:replaces ?judgment .
-    BIND ("superseded" AS ?happened)
+    BIND ("replaced" AS ?happened)
     OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
     BIND (COALESCE(?counted, false) AS ?counts)
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?by rdfs:label ?byLabel } }
   UNION
-  { ?by prov:invalidated ?judgment .
+  { ?by prov:invalidated|prov:invalidated/cascade:assertedClaim ?judgment .
+    ?judgment a cascade:Judgment .
     BIND ("retracted" AS ?happened)
     OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
     BIND (COALESCE(?counted, false) AS ?counts)

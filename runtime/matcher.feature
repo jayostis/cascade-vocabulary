@@ -4,7 +4,7 @@ Feature: The matcher's procedure
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Cleo
   claims her hospital profile with an About, imports five allergies, enters ten more by hand, and judges some herself.
   Dev enters pairs of allergies, procedures and flu shots for the matcher to compare, and later two more allergies.
-  Eve enters ten allergies whose codes the ingredient map pairs, and retracts or supersedes some of the matcher's
+  Eve enters ten allergies whose codes the ingredient map pairs, and retracts or replaces some of the matcher's
   Sames, and once retracts her own supersession. Finn brings exports and entries a runtime must refuse, and two
   allergies of one code. Gus enters medications and lab results, and three flu shots, under the rule list's version 2.
   Hana enters nine conditions, whose codes recur, under the rule list's version 4. Gus, with the drug tables of an
@@ -367,9 +367,10 @@ Feature: The matcher's procedure
         | same code     | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" |
 
   Rule: M7. A recheck re-runs the rule of each matcher Same that used a reference version the tables revise, or whose rule now runs another query, or whose star a Different has split
-    Unless the Same was retracted, or superseded by a judgment not itself retracted: a retracted judgment supersedes
+    Unless the Same was retracted, or replaced by a judgment not itself retracted: a retracted judgment replaces
     nothing. A Same's rule runs another query when the current rule list's row for it carries a cascade:queryHash
-    that no row for the rule carries in a version the Same is asserted under (M5). A Different has split a Same's
+    that no row for the rule carries in a version the Same is asserted under by an assertion no retraction invalidates
+    (M5, N15). A Different has split a Same's
     star when the Same's latest-arriving member matches by its rule a record it is not judged different from that
     the entries keep apart from it: the rule is run again for that record over the entries as they now are (M5), and
     the claim that gives is filed beside the Same, which keeps counting, since every pair it joins its new claim
@@ -402,7 +403,7 @@ Feature: The matcher's procedure
         | justification    | members                                     |
         | same mapped code | allergy SNOMED 91936005, allergy RxNorm 733 |
 
-    Example: a Same a person superseded is not rechecked
+    Example: a Same a person replaced is not rechecked
       Given Eve files the judgment "supersede-c" on 2026-05-03 at 09:05
       And version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
       When the matcher rechecks on 2026-05-05 at 09:00
@@ -410,7 +411,7 @@ Feature: The matcher's procedure
         | justification    | members                                       |
         | same mapped code | allergy SNOMED 294505008, allergy RxNorm 2670 |
 
-    Example: a Same whose superseding judgment a person retracted is rechecked
+    Example: a Same whose replacing judgment a person retracted is rechecked
       Given Eve files the judgment "supersede-c" on 2026-05-03 at 09:05
       And Eve files the judgment "retract-supersede-c" on 2026-05-03 at 09:15
       And version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
@@ -465,9 +466,10 @@ Feature: The matcher's procedure
     decisions/naming.md, row "assertion, retraction by a release". A claim is named once (N6) and carries no time, so
     a run that reaches a claim the pod holds never writes it again.
     It writes the claim's assertion under the rule list's version unless the claim is already asserted under a version
-    whose row for the rule carries the hash this version's row carries: at most one assertion per version per claim,
+    whose row for the rule carries the hash this version's row carries, by an assertion no retraction invalidates (N15):
+    at most one assertion per version per claim,
     and none under a version that runs the query the claim is asserted with, so a new version asserts only the claims
-    of the rules it changed. A claim that does not count because a person retracted or superseded it is neither
+    of the rules it changed. A claim that does not count because a person retracted or replaced it is neither
     asserted again nor read as joining its members.
     Only the reference descriptions it uses that the pod lacks are written (M8), so a run that stopped between its
     claims and its descriptions (W1) finishes when run again. So running again is always safe.

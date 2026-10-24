@@ -265,6 +265,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:RetractionShape ; sh:resultPath prov:hadMember ] ] .
 
+<#judgment-retraction/by-a-release> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-retraction/by-a-release.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-retraction/neither-person-nor-release> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-retraction/neither-person-nor-release.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RetractionByPersonOrReleaseShape ] ] .
+
 <#view-allergies/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <view-allergies/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

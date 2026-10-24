@@ -29,8 +29,11 @@
 :rules1SameMappedCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeRule ;
     cascade:queryHash :sameMappedCodeQuery .
 :rules2 prov:specializationOf :rules ; pav:version "2" ; prov:wasRevisionOf :rules1 ;
-    cascade:ruleDeclaredWrong cascade:SameMappedCodeRule .
+    cascade:matcherRuleDeclaredWrong cascade:SameMappedCodeRule .
 :rules2SameCodeRule cascade:rowOfRuleListVersion :rules2 ; cascade:matcherRule cascade:SameCodeRule ;
     cascade:queryHash :sameCodeQuery .
-:rules2SameMappedCodeRule cascade:rowOfRuleListVersion :rules2 ; cascade:matcherRule cascade:SameMappedCodeRule ;
-    cascade:queryHash :sameMappedCodeQuery .
+:rules3 prov:specializationOf :rules ; pav:version "3" ; prov:wasRevisionOf :rules2 .
+:rules3SameCodeRule cascade:rowOfRuleListVersion :rules3 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQueryFixed .
+:rules3SameMappedCodeRule cascade:rowOfRuleListVersion :rules3 ; cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:queryHash :sameMappedCodeQueryFixed .

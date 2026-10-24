@@ -1,7 +1,7 @@
 # A stricter lens, for records sent elsewhere: a person's judgment counts unless retracted or replaced, and a machine's
 # claim only when the Cascade matcher made it resting on the same code, or code and date, or code and period, made with
 # current reference versions, and asserted under a version whose row for its rule has the query hash of the current rule
-# list version's row for it. A retracted judgment replaces nothing.
+# list version's row for it, by an assertion no retraction invalidates. A retracted judgment replaces nothing.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX pav: <http://purl.org/pav/>
@@ -24,6 +24,7 @@ WHERE {
                       ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash } }
             ?assertedRow cascade:matcherRule ?rule ; cascade:queryHash ?hash ; cascade:rowOfRuleListVersion ?asserted .
             ?assertion cascade:assertedUnderRuleListVersion ?asserted ; cascade:assertedClaim ?j .
+            FILTER NOT EXISTS { ?assertionRetraction prov:invalidated ?assertion }
             ?j cascade:matcherRule ?rule .
           } }
     ?j a cascade:Judgment ; prov:wasAttributedTo cascade:CascadeMatcher ; cascade:justification ?why .

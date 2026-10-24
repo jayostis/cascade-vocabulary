@@ -98,8 +98,8 @@ WHERE {
       OPTIONAL { ?thing prov:startedAtTime ?t }
       OPTIONAL { ?who rdfs:label ?named }
       OPTIONAL { ?thing prov:qualifiedAssociation/prov:hadRole ?role }
-      OPTIONAL { ?retracted cascade:verdict ?retractedVerdict }
-      OPTIONAL { ?retracted prov:hadMember/^prov:specializationOf/cascade:displayName ?retractedAbout }
+      OPTIONAL { ?retracted cascade:assertedClaim?/cascade:verdict ?retractedVerdict }
+      OPTIONAL { ?retracted cascade:assertedClaim?/prov:hadMember/^prov:specializationOf/cascade:displayName ?retractedAbout }
       BIND (CONCAT("Retraction · ",
                    COALESCE(?named, IF(BOUND(?who), IF(?role = cascade:PatientRole, "the patient", "a person"), "a release")), " · ",
                    IF(BOUND(?t), SUBSTR(STR(?t), 1, 10), SUBSTR(REPLACE(STR(?thing), "^.*[:/#]", ""), 1, 8)), " · of ",

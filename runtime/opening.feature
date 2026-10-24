@@ -34,12 +34,12 @@ Feature: Opening a pod
     3. writes the reference descriptions last: those M8 writes, and each version on the line after the pod's up to the
        adopted one, oldest first.
 
-    An open that finds nothing new writes nothing, so opening again is always safe. One that adopts a rule list version
-    declaring a rule wrong performs that release's migration first (N15).
+    An open that finds nothing new writes nothing, so opening again is always safe. Before its matcher run, an open
+    whose adopted rule list version, or a version it revises, declares a matcher rule wrong performs the migration N15 says.
 
     A Same the open does not file again stays in the pod. Once a version it used has a newer current one, or no
     current rule list version runs the query it was asserted with (M5), it has lapsed (cascade:lapsed, derived,
-    nothing written for it), unless something retracts it or a judgment not itself retracted supersedes it, and "What
+    nothing written for it), unless something retracts it or a judgment not itself retracted replaces it, and "What
     needs review" lists its pair, if now in two entries, until a person judges it. A Same whose rule the adopted rule
     list runs with the query it was asserted with is reached again without anything written (M9), and counts on.
 

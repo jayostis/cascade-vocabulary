@@ -5,14 +5,22 @@
 
 <> a mf:Manifest ;
   rdfs:label "retracted-by-a-release" ;
-  rdfs:comment "A rule list whose version 2 revises version 1, runs both rules' queries unchanged and declares the same mapped code rule wrong, the matcher's same code and same mapped code claims, each asserted under version 1, and the release's retraction of the same mapped code claim." ;
+  rdfs:comment "A rule list whose version 2 revises version 1, drops the same mapped code rule and declares it wrong, and whose version 3 revises version 2 and runs both rules with fixed queries; two same mapped code claims asserted under version 1, each assertion retracted by version 2, one asserted again under version 3; and a same code claim asserted under version 1 alone." ;
   mf:entries (
-    <#everyday-counts>
+    <#which-count>
+    <#which-have-lapsed>
   ) .
 
-<#everyday-counts> a mf:QueryEvaluationTest ;
-  mf:name "everyday-counts" ;
-  rdfs:comment "The same code claim counts; the same mapped code claim does not, though version 2 runs the query it was asserted with: a release's retraction invalidated it." ;
-  mf:action [ qt:query <everyday-counts.rq> ;
+<#which-count> a mf:QueryEvaluationTest ;
+  mf:name "which-count" ;
+  rdfs:comment "A claim counts by the assertions no retraction invalidates: the one asserted again under version 3 counts; the one whose only assertion a release retracted does not." ;
+  mf:action [ qt:query <which-count.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
-  mf:result <everyday-counts.srj> .
+  mf:result <which-count.srj> .
+
+<#which-have-lapsed> a mf:QueryEvaluationTest ;
+  mf:name "which-have-lapsed" ;
+  rdfs:comment "A claim whose every assertion a release retracted does not lapse, though version 3 runs its rule with another query; the same code claim, retracted by nothing, lapses." ;
+  mf:action [ qt:query <which-have-lapsed.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <which-have-lapsed.srj> .

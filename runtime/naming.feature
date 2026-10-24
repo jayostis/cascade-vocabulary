@@ -126,8 +126,9 @@ Feature: Naming
     https://github.com/jayostis/cascade-runtime-js/tree/<commit>/#uncommitted for a build with uncommitted changes and
     https://github.com/jayostis/cascade-runtime-js#unidentified for one whose commit it cannot read. A matcher run is a
     cascade:MatcherRun and a prov:Activity, prov:wasInformedBy the import or entry session whose records it takes, and is
-    written only when it writes something else. The kit's check 4 holds each of a replay's acts to it.
-    A release's migration is a new random UUID too, a cascade:ReleaseMigration and a prov:Activity, written only when it writes a retraction (N15).
+    written only when it writes something else. A rule list version migration is a new random UUID too, a
+    cascade:RuleListVersionMigration and a prov:Activity, written only when it writes a retraction (N15). The kit's
+    check 4 holds each of a replay's acts to it.
 
     Example: an import is named by a new random UUID, which no input gives
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -229,7 +230,8 @@ Feature: Naming
     runtime files it under that IRI and gives it no other; it is neither a new random UUID nor named by a rule. So a
     judgment can name another person's judgment, and an answer can name it, on every run. A person's retraction, a
     prov:Activity that prov:invalidated a judgment (decisions/naming.md, row "retraction"), arrives with its name too and
-    is filed under it, in the folder pod-layout.ttl gives what states prov:invalidated.
+    is filed under it, in the folder pod-layout.ttl gives what states prov:invalidated, even when it also states prov:used
+    (cascade:Placement).
 
     Example: a person's About and its retraction are each filed under the IRI they arrived with, in their own step's file
       Given a new pod for Cleo on 2026-03-01 at 09:00
@@ -349,18 +351,24 @@ Feature: Naming
         | "provenance"  | true      |
         | "references"  | true      |
 
-  Rule: N15. A release's retraction is named from the release, the claim and the rule it declares wrong
+  Rule: N15. A release's retraction is named from the release, the assertion and the rule it declares wrong
     decisions/naming.md, rows "act" and "assertion, retraction by a release". A rule list version, the release, declares
-    a matcher rule wrong by cascade:ruleDeclaredWrong in its description. An open that adopts it (O1) first performs the
-    release's migration, an act (N7): for each claim of that rule asserted under a version the release revises, directly
-    or not, it writes a retraction unless the pod holds it already: a prov:Activity that prov:invalidated the claim and
-    prov:wasInfluencedBy the release, named by cascade:RetractionNamingRule over, in order, the release, the claim and the
-    rule. It carries no time and names no run, so two writers on one release write one file with one content. The open's
-    matcher run reads them: a retracted claim neither counts nor lapses, so "What needs review" never offers its pair
-    back, and no run files its pair again (O1). A claim asserted only under the release or a version after it is not
-    declared wrong. Hana's pod and the apps' tables are opening.feature's.
+    a matcher rule wrong by cascade:matcherRuleDeclaredWrong in its description. Whenever the pod's current rule list
+    version is the release or a version after it, a runtime performs the rule list version migration, an act (N7): at
+    an open, before its matcher run (O1), with the version it adopts as the current one; at a sync's arrival; and before
+    a matcher run. For each version on the line up to the current one that declares a rule wrong, oldest first, and each
+    assertion of that rule's claim under a version it revises, directly or not, that no retraction invalidates, it
+    writes a retraction: a prov:Activity that prov:invalidated the assertion and prov:used the release, named by
+    cascade:RetractionNamingRule over, in order, the release, the assertion and the rule. It carries no time and names no
+    run, so two writers on one release write one file with one content, whatever order they met the versions in, and a
+    pod that holds those retractions already, from another writer, writes nothing. A claim counts and lapses by the
+    assertions no retraction invalidates: one whose every assertion a release retracted neither counts nor lapses, so
+    "What needs review" never offers its pair back. An assertion under the release or a version after it is not
+    declared wrong: a version that ships the rule fixed, or runs it again, asserts the claim again and it can join its
+    pair again (M9). A person's retraction invalidates the judgment or claim it names, and its pair is never filed
+    again (O1). Hana's pod and the apps' tables are opening.feature's.
 
-    Example: adopting a release that declares R4 wrong retracts R4's two claims before the open's matcher runs, and neither counts nor lapses
+    Example: adopting a release that declares R4 wrong retracts the assertions of R4's two claims before the open's matcher runs, and neither claim counts nor lapses
       Opened with "app-fewer-rules" instead, the two claims lapse and "What needs review" lists their pairs (O1).
 
       Given a new pod for Hana on 2026-07-01 at 09:00
@@ -370,11 +378,32 @@ Feature: Naming
       When the pod is opened with the tables "app-wrong-rule" on 2026-07-03 at 09:00
       Then that step wrote these retractions:
         | justification             | members                                                                   | inputs                                                                                                                                                       | name                                          |
-        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | cascade:RetractionNamingRule, urn:uuid:9d4fafb7-ec93-4481-9b31-6af8ae10febd, urn:uuid:4e3cd9e3-4242-8a6a-8032-3dbe61e52579, cascade:SameMappedCodeAndDateRule | urn:uuid:a587d6e6-20b6-86d9-9ccc-4e39ff038db2 |
-        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | cascade:RetractionNamingRule, urn:uuid:9d4fafb7-ec93-4481-9b31-6af8ae10febd, urn:uuid:d9595721-33ef-81cf-bf04-2467ea724327, cascade:SameMappedCodeAndDateRule | urn:uuid:ff789458-d39b-81bd-b29a-dfe5dcb24371 |
+        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | cascade:RetractionNamingRule, urn:uuid:9d4fafb7-ec93-4481-9b31-6af8ae10febd, urn:uuid:a0f20d38-6e64-82a9-a3b4-85830391df99, cascade:SameMappedCodeAndDateRule | urn:uuid:a4910f25-fd52-8c80-948f-0c9fe897562d |
+        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | cascade:RetractionNamingRule, urn:uuid:9d4fafb7-ec93-4481-9b31-6af8ae10febd, urn:uuid:8af75a44-e449-8b0e-9d51-bff1a27d05ee, cascade:SameMappedCodeAndDateRule | urn:uuid:88e43645-a0d7-8517-8de1-4a9451f67b68 |
       And that step wrote these matcher judgments:
         | justification | members | used |
       And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" does not count
       And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" has not lapsed
       And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" does not count
       And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" has not lapsed
+
+    Example: a pod that already holds a release's retractions, from another writer, adopts the release and writes no migration
+      There is no sync step yet: the other writer's two retraction files arrive as Hana's judgment steps file them, as
+      they are (N10).
+
+      Given a new pod for Hana on 2026-07-01 at 09:00
+      And the pod is opened with the tables "app" on 2026-07-01 at 09:01
+      And Hana enters "flu-shots" on 2026-07-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-02 at 09:05
+      And Hana files the judgment "fluarix-retracted-by-1b" on 2026-07-02 at 12:00
+      And Hana files the judgment "fluad-retracted-by-1b" on 2026-07-02 at 12:01
+      When the pod is opened with the tables "app-wrong-rule" on 2026-07-03 at 09:00
+      Then that step wrote these retractions:
+        | justification | members | inputs | name |
+      And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" does not count
+      And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" has not lapsed
+      When the query is:
+        """
+        SELECT ?migration WHERE { ?migration a cascade:RuleListVersionMigration }
+        """
+      Then it answers nothing
