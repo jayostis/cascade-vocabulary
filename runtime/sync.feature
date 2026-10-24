@@ -6,7 +6,8 @@ Feature: Syncs
   gets a second writer before Dev enters anything; the first writer takes the entry "later", the second the entry
   "pairs", and each receives the other's files. Cleo's pod gets a second writer once she has claimed her hospital
   profile; both writers import her first export, the first writer also takes her entry, and the second receives the
-  first's files.
+  first's files. Ada's pod gets a second writer before anything arrives; both writers import her first export, the
+  second receives the first's files, and then imports the export that changes her peanut allergy.
 
   Rule: S1. A sync is written whenever the writer holds an act, other than a sync, whose snapshot is no ancestor of its last snapshot
     decisions/naming.md, row "sync". A writer receiving another writer's files writes each it lacks, in a folder the
@@ -184,3 +185,27 @@ Feature: Syncs
       Then it answers:
         | syncs | setHashes |
         | 2     | 1         |
+
+  Rule: S6. An arrival after a sync revises each of the record's heads
+    Two writers that each imported a record hold, once synced, two revisions of it that none revises: its heads. The
+    next arrival that changes it writes one revision, prov:wasRevisionOf each head, as a git merge names each parent
+    (A5), and one whose version a head is at writes none (A4).
+
+    Example: an import after two writers imported one export writes one revision revising both
+      Given a new pod for Ada on 2026-01-01 at 09:00
+      And a second writer of the pod
+      And the export "first-export" is imported on 2026-01-02 at 10:00
+      And the steps that follow are the second writer's
+      And the export "first-export" is imported on 2026-01-02 at 10:00 (second-import)
+      And the second writer receives the files of the first writer on 2026-01-03 at 09:00
+      When the export "new-content" is imported on 2026-01-06 at 10:00
+      When the query is:
+        """
+        SELECT (COUNT(DISTINCT ?revision) AS ?revisions) (COUNT(DISTINCT ?head) AS ?revised) WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:new-content> prov:generated ?file }
+          GRAPH ?file { ?revision a cascade:Revision ; prov:wasRevisionOf ?head }
+        }
+        """
+      Then it answers:
+        | revisions | revised |
+        | 1         | 2       |
