@@ -1,28 +1,34 @@
 # Everything each judgment says: when a person made it, by whom and in what role, its verdict, what it names, the reason
-# given, any judgment it supersedes or retracts, and, for a machine's claim, each rule list version it is asserted under,
-# since a claim carries no time. A judgment is never edited; a later one supersedes or retracts it.
+# given, any judgment it replaces, and, for a machine's claim, each rule list version it is asserted under, since a claim
+# carries no time; and each person's retraction, an activity, with the judgment it invalidated and no verdict. A judgment
+# is never edited; a later one replaces it, or a retraction takes it back.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?judgment ?judgmentLabel ?made ?verdict ?author ?authorLabel ?role ?member ?memberLabel ?reason
-       ?supersedes ?supersedesLabel ?retracts ?retractsLabel ?assertedUnder
+       ?replaces ?replacesLabel ?retracts ?retractsLabel ?assertedUnder
 WHERE {
-  ?judgment a cascade:Judgment ; prov:wasAttributedTo ?author .
-  OPTIONAL { ?judgment prov:generatedAtTime ?made }
-  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
-  OPTIONAL { ?author rdfs:label ?authorLabel }
-  OPTIONAL { ?judgment cascade:verdict ?verdict }
-  OPTIONAL { ?judgment prov:qualifiedAttribution/prov:hadRole ?role }
-  OPTIONAL { ?judgment prov:hadMember ?member .
-             OPTIONAL { ?member rdfs:label ?memberLabel } }
-  OPTIONAL { ?judgment dct:description ?reason }
-  OPTIONAL { ?judgment npx:supersedes ?supersedes .
-             OPTIONAL { ?supersedes rdfs:label ?supersedesLabel } }
-  OPTIONAL { ?judgment npx:retracts ?retracts .
-             OPTIONAL { ?retracts rdfs:label ?retractsLabel } }
-  OPTIONAL { ?assertion cascade:assertedClaim ?judgment ; cascade:assertedUnderRuleListVersion ?assertedUnder }
+  { ?judgment a cascade:Judgment ; prov:wasAttributedTo ?author .
+    OPTIONAL { ?judgment prov:generatedAtTime ?made }
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?author rdfs:label ?authorLabel }
+    OPTIONAL { ?judgment cascade:verdict ?verdict }
+    OPTIONAL { ?judgment prov:qualifiedAttribution/prov:hadRole ?role }
+    OPTIONAL { ?judgment prov:hadMember ?member .
+               OPTIONAL { ?member rdfs:label ?memberLabel } }
+    OPTIONAL { ?judgment dct:description ?reason }
+    OPTIONAL { ?judgment dct:replaces ?replaces .
+               OPTIONAL { ?replaces rdfs:label ?replacesLabel } }
+    OPTIONAL { ?assertion cascade:assertedClaim ?judgment ; cascade:assertedUnderRuleListVersion ?assertedUnder } }
+  UNION
+  { ?judgment a prov:Activity ; prov:invalidated ?retracts ; prov:wasAssociatedWith ?author .
+    OPTIONAL { ?judgment prov:startedAtTime ?made }
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?author rdfs:label ?authorLabel }
+    OPTIONAL { ?judgment prov:qualifiedAssociation/prov:hadRole ?role }
+    OPTIONAL { ?judgment dct:description ?reason }
+    OPTIONAL { ?retracts rdfs:label ?retractsLabel } }
 }
-ORDER BY ?made ?judgmentLabel ?judgment ?memberLabel ?member ?role ?supersedes ?retracts ?assertedUnder
+ORDER BY ?made ?judgmentLabel ?judgment ?memberLabel ?member ?role ?replaces ?retracts ?assertedUnder

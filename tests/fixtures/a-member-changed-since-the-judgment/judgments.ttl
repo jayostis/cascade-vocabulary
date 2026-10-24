@@ -1,6 +1,6 @@
 @prefix : <urn:x:> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -14,6 +14,6 @@
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:samePQAgain a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :p, :q ; prov:used :pSecond , :qFirst ; npx:supersedes :samePQ ;
+:samePQAgain a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :p, :q ; prov:used :pSecond , :qFirst ; dct:replaces :samePQ ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-04-01T00:00:00Z"^^xsd:dateTime .

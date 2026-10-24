@@ -15,7 +15,8 @@ Feature: Opening a pod
   also holds, and "app-periods", holding "app"'s and the rule list's versions 2 to 4, and no conversions,
   "app-conversions", holding "app-icd"'s and the rule list's versions 4 and 5, whose R7 reads version 2 of "CDC
   ICD-10-CM code conversions", which revises version 1 and which it also holds, and "app-fewer-rules", holding
-  "app"'s version 1 of "CDC CVX vaccine groups" and a rule list version "1a" that revises version 1 and lacks R4.
+  "app"'s version 1 of "CDC CVX vaccine groups" and a rule list version "1a" that revises version 1 and lacks R4, and
+  "app-wrong-rule", holding the same but a version "1b" in place of "1a" that also declares R4 wrong.
 
   Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
     The default is M10's; a version descends from another along the tables' line of prov:wasRevisionOf. A series the
@@ -33,11 +34,12 @@ Feature: Opening a pod
     3. writes the reference descriptions last: those M8 writes, and each version on the line after the pod's up to the
        adopted one, oldest first.
 
-    An open that finds nothing new writes nothing, so opening again is always safe.
+    An open that finds nothing new writes nothing, so opening again is always safe. Before its matcher run, an open
+    whose adopted rule list version, or a version it revises, declares a matcher rule wrong performs the migration N15 says.
 
     A Same the open does not file again stays in the pod. Once a version it used has a newer current one, or no
     current rule list version runs the query it was asserted with (M5), it has lapsed (cascade:lapsed, derived,
-    nothing written for it), unless something retracts it or a judgment not itself retracted supersedes it, and "What
+    nothing written for it), unless something retracts it or a judgment not itself retracted replaces it, and "What
     needs review" lists its pair, if now in two entries, until a person judges it. A Same whose rule the adopted rule
     list runs with the query it was asserted with is reached again without anything written (M9), and counts on.
 

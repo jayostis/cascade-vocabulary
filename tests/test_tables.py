@@ -183,7 +183,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
         for row in rows.subjects(RDF.type, OWL.Axiom):
             if str(row) != table_row_name(*name_inputs(rows, row)):
                 misnamed.add(str(row))
-    assert found == 48
+    assert found == 49
     assert broken == {}
     assert misnamed == set()
 
