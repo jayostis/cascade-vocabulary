@@ -34,7 +34,7 @@ WHERE {
       FILTER (!BOUND(?undoing))
     }
     FILTER NOT EXISTS { ?retracting npx:retracts ?j }
-    FILTER NOT EXISTS {
+    MINUS {
       ?j prov:used ?input .
       ?input prov:specializationOf ?series .
       ?series a cascade:ReferenceSeries ; pav:hasCurrentVersion ?now .
