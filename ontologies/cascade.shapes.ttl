@@ -699,6 +699,67 @@ cascade:ServerRecordNameShape a sh:NodeShape ;
   FILTER ($this != ?expected)
 }""" ] .
 
+cascade:ServerShape a sh:NodeShape ;
+    sh:targetClass cascade:Server ;
+    sh:targetSubjectsOf cascade:selfAssertedBaseUrl , cascade:authorizationEndpoint , cascade:serverSoftwareName ,
+        cascade:serverSoftwareVersion , cascade:clientId ;
+    sh:property [
+        sh:path cascade:selfAssertedBaseUrl ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A server version has at most one self-asserted base URL, an IRI."@en
+    ] ;
+    sh:property [
+        sh:path cascade:authorizationEndpoint ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A server version has at most one authorization endpoint, an IRI."@en
+    ] ;
+    sh:property [
+        sh:path cascade:serverSoftwareName ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:maxCount 1 ;
+        sh:message "A server version has at most one software name, a non-empty string."@en
+    ] ;
+    sh:property [
+        sh:path cascade:serverSoftwareVersion ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:maxCount 1 ;
+        sh:message "A server version has at most one software version, a non-empty string."@en
+    ] ;
+    sh:property [
+        sh:path cascade:clientId ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:maxCount 1 ;
+        sh:message "A server version has at most one client id, a non-empty string."@en
+    ] .
+
+cascade:OrganizationShape a sh:NodeShape ;
+    sh:targetClass cascade:Organization ;
+    sh:targetSubjectsOf cascade:organizationName , cascade:organizationAddress , cascade:organizationIdentifier ;
+    sh:property [
+        sh:path cascade:organizationName ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:maxCount 1 ;
+        sh:message "An organization version has at most one name, a non-empty string."@en
+    ] ;
+    sh:property [
+        sh:path cascade:organizationAddress ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:message "An organization address is a non-empty string."@en
+    ] ;
+    sh:property [
+        sh:path cascade:organizationIdentifier ;
+        sh:datatype xsd:string ;
+        sh:pattern "^[^|]*[|].+$" ;
+        sh:message "An organization identifier is its system, a vertical bar, and a non-empty value."@en
+    ] .
+
 cascade:AnsweredAsOfShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:answeredAsOf ;
     sh:property [

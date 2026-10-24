@@ -360,3 +360,21 @@
   mf:action [ sht:dataGraph <record-server-name/name-tampered.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ServerRecordNameShape ] ] .
+
+<#record-server/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-server/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-server/client-id-twice> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-server/client-id-twice.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ServerShape ; sh:resultPath cascade:clientId ] ] .
+
+<#record-organization/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-organization/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-organization/identifier-without-system> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-organization/identifier-without-system.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath cascade:organizationIdentifier ] ] .

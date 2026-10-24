@@ -1735,6 +1735,76 @@ cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
     rdfs:label "R13, same variation through the table"@en ;
     rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
 
+# Servers and organizations
+
+cascade:Server a owl:Class ;
+    rdfs:label "server"@en ;
+    rdfs:subClassOf prov:SoftwareAgent ;
+    rdfs:comment "A server a client pulled from or connected to, as a record named by cascade:ServerNamingRule. What the server reported about itself is on its versions; a server known only from a document's address has a record with none."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement.html> .
+
+cascade:selfAssertedBaseUrl a owl:ObjectProperty ;
+    rdfs:label "self-asserted base URL"@en ;
+    rdfs:comment "Of a version of a server, the base URL the server said it lives at, as the server wrote it: evidence, never a name input."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement-definitions.html#CapabilityStatement.implementation.url> .
+
+cascade:authorizationEndpoint a owl:ObjectProperty ;
+    rdfs:label "authorization endpoint"@en ;
+    rdfs:comment "Of a version of a server, the URL of its OAuth 2.0 authorization endpoint, as the server reported it."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6749#section-3.1> , <https://www.rfc-editor.org/rfc/rfc8414#section-2> ,
+        <https://hl7.org/fhir/smart-app-launch/conformance.html> .
+
+cascade:serverSoftwareName a owl:DatatypeProperty ;
+    rdfs:label "server software name"@en ;
+    rdfs:comment "Of a version of a server, the name of the software it said it runs, as the server wrote it."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement-definitions.html#CapabilityStatement.software.name> .
+
+cascade:serverSoftwareVersion a owl:DatatypeProperty ;
+    rdfs:label "server software version"@en ;
+    rdfs:comment "Of a version of a server, the release of the software it said it runs, as the server wrote it."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement-definitions.html#CapabilityStatement.software.version> .
+
+cascade:clientId a owl:DatatypeProperty ;
+    rdfs:label "client id"@en ;
+    rdfs:comment "Of a version of a server, the OAuth 2.0 client identifier the connect that wrote it used with the server, since a pod holds connects from several apps."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6749#section-2.2> .
+
+cascade:Organization a owl:Class ;
+    rdfs:label "organization"@en ;
+    rdfs:subClassOf prov:Organization ;
+    rdfs:comment "An organization as a record named by cascade:OrganizationNamingRule: a provider, a custodian, a payer. Its name, addresses and identifiers are on its versions."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/organization.html> .
+
+cascade:organizationName a owl:DatatypeProperty ;
+    rdfs:label "organization name"@en ;
+    rdfs:comment "Of a version of an organization, its name as the source wrote it."@en ;
+    rdfs:domain cascade:Organization ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/organization-definitions.html#Organization.name> .
+
+cascade:organizationAddress a owl:DatatypeProperty ;
+    rdfs:label "organization address"@en ;
+    rdfs:comment "Of a version of an organization, one postal address as the source wrote it, as one string of the address's lines in order, separated by a comma and a space."@en ;
+    rdfs:domain cascade:Organization ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/organization-definitions.html#Organization.address> .
+
+cascade:organizationIdentifier a owl:DatatypeProperty ;
+    rdfs:label "organization identifier"@en ;
+    rdfs:comment "Of a version of an organization, one business identifier as the source wrote it, in FHIR's token form: the identifier's system, a vertical bar, its value. A C-CDA custodian id's root and extension are written as urn:oid:<root>|<extension>."@en ;
+    rdfs:domain cascade:Organization ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/organization-definitions.html#Organization.identifier> ,
+        <https://hl7.org/fhir/R4/search.html#token> .
+
 # What a document's description and the Bridge's findings carry into a pod
 
 cascade:serverBaseUrl a owl:DatatypeProperty ;
