@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "variant-interpretations-view" ;
-  rdfs:comment "One variant of two members, a panel's and an exome's; a second variant. A 2022 report of uncertain significance and a 2024 report of likely pathogenic on the first, a 2024 report whose answer is not one of the five ACMG values, a benign report on the second, and a report that names no variant." ;
+  rdfs:comment "One variant of two members, a panel's and an exome's; a second variant. A 2022 report of uncertain significance, attributed to its lab's organization record, and a 2024 report of likely pathogenic on the first, a 2024 report whose answer is not one of the five ACMG values, a benign report on the second, and a report that names no variant." ;
   mf:entries (
     <#the-variant-interpretations-view>
     <#what-each-report-says-of-a-variant>
@@ -20,7 +20,7 @@
 
 <#what-each-report-says-of-a-variant> a mf:QueryEvaluationTest ;
   mf:name "what-each-report-says-of-a-variant" ;
-  rdfs:comment "One row for each report that names a variant, newest first within a variant, without a classification for the answer that is none of the five, and none for the report that names no variant." ;
+  rdfs:comment "One row for each report that names a variant, newest first within a variant, without a classification for the answer that is none of the five, the 2022 report with its lab and the lab's current name and every other report with none, and none for the report that names no variant." ;
   mf:action [ qt:query <../../../queries/questions/pod/What%20each%20report%20says%20of%20a%20variant.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-each-report-says-of-a-variant.srj> .
