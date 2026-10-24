@@ -49,9 +49,9 @@ Feature: The conformance kit
     N1 to N7, N9, N10 and N14, computed from that run's own inputs, its random import and matcher run IDs among them.
     Each saved Bridge output is in the pod less its arrivals, with its import replaced by the import its step wrote and
     the runtime that performed it left out (A9, A11), and each revision follows an earlier revision of the same record.
-    Each snapshot is named by its rule, its set hash is its first parent's plus its added files', or, on a writer's
-    first, the set the pod held after its act, and the last snapshot's set hash is the final pod's: a pod with one file
-    of the set removed fails it.
+    Each act leaves one snapshot, named by its rule, whose first parent is the snapshot before it and whose added files
+    are the files of the set its act wrote; its set hash is the set's after its step, and the last snapshot's is the set
+    hash of the files the final pod lists of that set: a pod with one file of the set removed or changed fails it.
 
     No example states this check: SPARQL cannot hash a canonical graph.
 

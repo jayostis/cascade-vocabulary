@@ -281,16 +281,18 @@ Feature: Naming
     decisions/naming.md, row "snapshot". A node in the act's own file, a cascade:Snapshot, prov:wasGeneratedBy the act
     and named by cascade:SnapshotNamingRule. Its cascade:firstParentSnapshot is the writer's previous snapshot, which the
     writer keeps outside the pod as git keeps HEAD; a writer's first snapshot has none, and a writer that lost its last
-    one is a new writer. Its cascade:mergedParentSnapshot values are the heads it merges: on a writer's first, every
-    snapshot the pod holds that no snapshot names as a parent. Its cascade:setHash is the set hash of the set the writer
-    holds once the act's files are written, and its cascade:fileAddedToSet values are the paths of the files of the set
-    the act wrote and, with a first parent, of every other file of the set the writer came to hold since it, so that
-    the set hash is the first parent's plus theirs; the set and the hash are cascade:Snapshot's and cascade:setHash's.
-    An act that writes nothing leaves no snapshot. tests/vectors/snapshot/ holds the vectors every implementation
-    reproduces.
+    one is a new writer: a writer handed a head the pod does not hold as a snapshot is one too. Its
+    cascade:mergedParentSnapshot values are the heads it merges: on a writer's first, every snapshot the pod holds that
+    no snapshot names as a parent. Its cascade:setHash is the set hash of the set the writer holds once the act's other
+    files are written, its own file left out, and its name binds the act's description. Its cascade:fileAddedToSet
+    values are the paths of the files of the set the act wrote, its own file among them, and of no other; the set and
+    the hash are cascade:Snapshot's and cascade:setHash's. A step that is no act, a new pod's creation, a reference
+    version's arrival or a person's judgment, leaves no snapshot, and the files it writes are in the next snapshot's set
+    but named by none. An act that writes nothing leaves no snapshot. tests/vectors/snapshot/ holds the vectors every
+    implementation reproduces.
 
-    No example computes a set hash or a snapshot's name: SPARQL cannot add two 256-bit numbers, and an act's name is
-    random. The kit's check 4 holds every snapshot of a replay to this rule.
+    No example computes a set hash or a snapshot's name: SPARQL cannot multiply 3072-bit numbers or canonicalise blank
+    nodes, and an act's name is random. The kit's check 4 holds every snapshot of a replay to this rule.
 
     Example: a writer's first snapshot has no first parent, and each later act's names the one before it
       Given a new pod for Cleo on 2026-03-01 at 09:00
