@@ -436,12 +436,12 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ServerNameShape ] ] .
 
-<#document/valid> a sht:Validate ;
-  mf:action [ sht:dataGraph <document/valid.ttl> ] ;
-  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
-
 <#document/two-server-base-urls> a sht:Validate ;
   mf:action [ sht:dataGraph <document/two-server-base-urls.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#document/base-url-not-a-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <document/base-url-not-a-string.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ServerBaseUrlShape ; sh:resultPath cascade:serverBaseUrl ] ] .
 
