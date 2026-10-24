@@ -1,0 +1,23 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+
+:sameX a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :x1 , :x2 ;
+    prov:used :x1Version , :x2Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:sameXUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameX ; cascade:assertedUnderRuleListVersion :rules1 .
+
+:sameZ a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :z1 , :z2 , :z3 ;
+    prov:used :z1Version , :z2Version , :z3Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:sameZUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameZ ; cascade:assertedUnderRuleListVersion :rules1 .
+
+:finding a cascade:FindingForReview ; oa:hasBody cascade:ClaimsNoLongerReached ; cascade:noLongerReachedUnderRuleListVersion :rules2 ;
+    oa:hasTarget :sameX , :sameZ .
+
+:sameOverFinding a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :finding ; prov:wasAttributedTo :person ;
+    prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

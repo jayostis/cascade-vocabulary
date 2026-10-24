@@ -40,7 +40,9 @@ Feature: Opening a pod
     A Same the open does not file again stays in the pod. Once a version it used has a newer current one, or no
     current rule list version runs the query it was asserted with (M5), it has lapsed (cascade:lapsed, derived,
     nothing written for it), unless something retracts it or a judgment not itself retracted replaces it, and "What
-    needs review" lists its pair, if now in two entries, until a person judges it. A Same whose rule the adopted rule
+    needs review" lists its pair, if now in two entries, until a person judges it: with the finding that names it,
+    when the open's run files one of the adopted rule list version's claims it no longer reaches (M18, M19), and
+    otherwise alone. A Same whose rule the adopted rule
     list runs with the query it was asserted with is reached again without anything written (M9), and counts on.
 
     Background:

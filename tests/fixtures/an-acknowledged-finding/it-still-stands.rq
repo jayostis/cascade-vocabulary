@@ -1,0 +1,10 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX oa: <http://www.w3.org/ns/oa#>
+
+SELECT ?finding ?claim ?acknowledged ?claimCounts ?joined
+WHERE {
+  ?finding a cascade:FindingForReview ; oa:hasTarget ?claim .
+  BIND (EXISTS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ; <http://www.w3.org/ns/prov#hadMember> ?finding } AS ?acknowledged)
+  BIND (EXISTS { ?claim cascade:countsUnderLens true } AS ?claimCounts)
+  BIND (EXISTS { ?record cascade:currentlySame ?other } AS ?joined)
+}

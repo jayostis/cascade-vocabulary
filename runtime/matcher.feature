@@ -803,3 +803,122 @@ Feature: The matcher's procedure
       And Ivo enters "different-ids" on 2026-10-02 at 09:00
       When the matcher runs on the records of that entry on 2026-10-02 at 09:05
       Then the matcher has no judgment holding variant ClinVar 90012 and variant ClinVar 90011
+
+  Rule: M18. A rule list version's first run over the whole pod files one finding naming the claims it no longer reaches
+    decisions/naming.md, its Why: a version that tightens a rule retracts nothing, and its first run files one finding
+    naming the claims it no longer reaches. A run that compares the whole pod, an open (O1) or a recheck (M7), files,
+    after its claims and before its reference descriptions (W1), a cascade:FindingForReview whose oa:hasBody is
+    cascade:ClaimsNoLongerReached, whose cascade:noLongerReachedUnderRuleListVersion is the current rule list version,
+    and whose oa:hasTarget is each claim of the matcher's that nothing retracts or replaces, each reference version it
+    used current, that is asserted, by an assertion no retraction invalidates, under a version whose row for its rule
+    carries the cascade:queryHash of that rule's row in the version the current one revises (prov:wasRevisionOf), and
+    under none whose row carries the hash of the current version's row for it, the run's own assertions counted. It
+    files none when the current version revises none, when the pod holds a finding naming the current version, or when
+    it would name no claim: so one per version, whichever run is first, and a run bound to a step's records files none.
+
+    It carries no time and names no act, and is named by cascade:FindingNamingRule from its triples, so two writers
+    whose first runs under one version find the same claims file one file. A claim whose every assertion a release
+    retracted (N15) is asserted by none, and is named by no finding: a release declared its rule wrong, and the
+    review page does not offer it back. A claim a version reached that used a table version since revised lapses
+    pair by pair (O1), as it did before the version.
+
+    Example: opening a pod matched under version 6 with version 7 files one finding naming the claims of the rule version 7 changed that it did not file again
+      Version 7 changes the query of R5 and R6. Its run asserts again the claim of the NDC pair, which R5 still joins,
+      and the finding names the two claims of RxNorm pairs that version 6's R6 joined, of which version 7's R11 joins
+      the product pair again by another claim.
+
+      Given a new pod for Gus on 2026-09-01 at 09:00
+      And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
+      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-09-02 at 09:05
+      When the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
+      Then that step wrote these findings:
+        | kind                     | under                   | justification        | members                                                                                                    |
+        | claims no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
+        | claims no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
+
+    Example: a run under a version whose finding the pod holds files no other
+      Given a new pod for Gus on 2026-09-01 at 09:00
+      And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
+      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-09-02 at 09:05
+      And the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
+      When the matcher rechecks on 2026-09-04 at 09:00
+      Then that step wrote no file
+
+    Example: a version that changes no query a claim was asserted with files no finding
+      Version 2 adds R3 and runs version 1's vaccine group query, which the flu shots' claims were asserted with.
+
+      Given a new pod for Hana on 2026-07-01 at 09:00
+      And the pod is opened with the tables "app" on 2026-07-01 at 09:01
+      And Hana enters "flu-shots" on 2026-07-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-02 at 09:05
+      When the pod is opened with the tables "app-rxnorm" on 2026-07-03 at 09:00
+      Then that step wrote these findings:
+        | kind | under | justification | members |
+
+    Example: a version that drops a rule names the claims of that rule
+      Version "1a" lacks R4.
+
+      Given a new pod for Hana on 2026-07-01 at 09:00
+      And the pod is opened with the tables "app" on 2026-07-01 at 09:01
+      And Hana enters "flu-shots" on 2026-07-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-02 at 09:05
+      When the pod is opened with the tables "app-fewer-rules" on 2026-07-03 at 09:00
+      Then that step wrote these findings:
+        | kind | under | justification | members |
+        | claims no longer reached | Matcher rules version 1a | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" |
+        | claims no longer reached | Matcher rules version 1a | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" |
+
+    Example: a version that drops a rule and declares it wrong names none of its claims, since its release retracts their assertions
+      Version "1b" lacks R4 and declares it wrong.
+
+      Given a new pod for Hana on 2026-07-01 at 09:00
+      And the pod is opened with the tables "app" on 2026-07-01 at 09:01
+      And Hana enters "flu-shots" on 2026-07-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-07-02 at 09:05
+      When the pod is opened with the tables "app-wrong-rule" on 2026-07-03 at 09:00
+      Then that step wrote these findings:
+        | kind | under | justification | members |
+
+  Rule: M19. A person answers a finding of claims no longer reached once, for every pair it names
+    decisions/naming.md, its Why, and decisions/judgments.md, row "judgment over a source-level thing". "What needs
+    review" lists the finding as one line, its pairs: each pair of records of a claim it names that are now in two
+    entries and not judged different, with the claim of least IRI that names it; a lapsed Same the finding names is
+    listed with it and never alone, and one no finding names is listed alone (O1). A person answers it with a judgment
+    whose one member is the finding: a Same over it joins the members of each claim it names as a Same of them would
+    (queries/derivations/same-pairs.rq), whether or not the claim counts, so every pair is joined at once, and
+    retracting it parts them at once; a person's Same already filed on a pair is untouched. An Acknowledged takes the
+    finding off the review page and changes nothing else: the finding still stands, and its pairs stay apart. Or the
+    person judges the pairs one by one. Each answer is a judgment the lens counts or not, so writers that file them in
+    any order hold one answer.
+
+    Background:
+      Given a new pod for Gus on 2026-09-01 at 09:00
+      And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
+      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-09-02 at 09:05
+      And the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
+
+    Example: the review page lists the finding as one line of the pairs it names that are now apart
+      The product pair, which R11 joins again, is in one entry and not listed.
+
+      When the query "questions/entry/What needs review.rq" is asked
+      Then it answers:
+        | entry                                                | entryLabel                              | needs                                              | finding                                                     | judgment                                                                                                               | judgmentLabel                                    | record                                       | recordLabel                                   | otherRecord                          | otherRecordLabel                      |
+        | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets" | "no longer joined under a newer rule list version" | <ni:///sha-256;CLSEf9r4YQTJl03lZSnuEJuNnrLGKsHE1gcEO-Wk2TM> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · a44d12bc · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
+
+    Example: a Same over the finding joins the pairs of every claim it names
+      When Gus files the judgment "same-over-the-version-seven-finding" on 2026-09-04 at 09:00
+      Then the medications view holds these entries:
+        | members                                                                            |
+        | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets" |
+
+    Example: an acknowledged finding leaves the review page, still stands, and leaves its pairs apart
+      When Gus files the judgment "acknowledge-the-version-seven-finding" on 2026-09-04 at 09:00
+      And the query "questions/entry/What needs review.rq" is asked
+      Then it answers nothing
+      And the medications view holds these entries:
+        | members                                      |
+        | medication RxNorm 29046 "Lisinopril"         |
+        | medication RxNorm 29046 "Lisinopril tablets" |

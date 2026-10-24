@@ -1248,6 +1248,18 @@ oa:hasSelector a rdf:Property ;
     rdfs:range oa:Selector ;
     dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
 
+oa:hasBody a rdf:Property ;
+    rdfs:label "hasBody"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:domain oa:Annotation ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
+oa:hasTarget a rdf:Property ;
+    rdfs:label "hasTarget"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:domain oa:Annotation ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
 oa:hasSource a rdf:Property ;
     rdfs:label "hasSource"@en ;
     rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
@@ -1417,7 +1429,7 @@ cascade:verdict a owl:ObjectProperty ;
 
 cascade:Same a owl:NamedIndividual ;
     rdfs:label "same"@en ;
-    rdfs:comment "The members are one thing: a view draws one entry on every member."@en .
+    rdfs:comment "The members are one thing: a view draws one entry on every member. A Same whose one member is a cascade:ClaimsNoLongerReached finding joins, for each claim the finding names, that claim's members, as a Same of them would."@en .
 
 cascade:Different a owl:NamedIndividual ;
     rdfs:label "different"@en ;
@@ -1426,6 +1438,10 @@ cascade:Different a owl:NamedIndividual ;
 cascade:Erroneous a owl:NamedIndividual ;
     rdfs:label "erroneous"@en ;
     rdfs:comment "The members, records or a whole activity, are left out of every view."@en .
+
+cascade:Acknowledged a owl:NamedIndividual ;
+    rdfs:label "acknowledged"@en ;
+    rdfs:comment "The member, a cascade:FindingForReview, has been seen and needs nothing done: it leaves the review page, still stands, and changes nothing else."@en .
 
 cascade:About a owl:NamedIndividual ;
     rdfs:label "about"@en ;
@@ -1550,6 +1566,28 @@ cascade:currentlyDifferent a owl:ObjectProperty ;
     rdfs:label "currently different"@en ;
     rdfs:comment "Derived: two records a counting Different separates."@en .
 
+# Findings a runtime files for a person to review
+
+cascade:FindingForReview a owl:Class ;
+    rdfs:label "finding for review"@en ;
+    rdfs:comment "Something a runtime noticed about what the pod holds and filed for a person to answer, a file an act wrote and named by cascade:FindingNamingRule from its own triples, so two writers that notice one thing file one file. Its kind is its oa:hasBody, a concept of cascade:FindingForReviewKinds, and what it is about its oa:hasTarget. It carries no time and names no act: which act filed it is read from that act's snapshot. A person answers it with a judgment whose one member it is; an acknowledged finding still stands."@en ;
+    rdfs:subClassOf oa:Annotation .
+
+cascade:FindingForReviewKinds a skos:ConceptScheme ;
+    rdfs:label "finding for review kinds"@en ;
+    rdfs:comment "The kinds of thing a cascade:FindingForReview reports, as its oa:hasBody."@en .
+
+cascade:ClaimsNoLongerReached a skos:Concept ;
+    skos:inScheme cascade:FindingForReviewKinds ;
+    skos:prefLabel "claims no longer reached"@en ;
+    skos:definition "The matcher claims a rule list version no longer reaches (cascade:noLongerReachedUnderRuleListVersion), each an oa:hasTarget: every claim nothing withdraws, each reference version it used current, that is asserted, by an assertion no retraction invalidates, under a version whose row for its rule carries the cascade:queryHash of that rule's row in the version this one revises, and under none whose row carries the hash of this version's row for it. Filed once per rule list version, by the first run that compares the whole pod under it and leaves at least one such claim, so these claims are listed together on the review page rather than pair by pair."@en .
+
+cascade:noLongerReachedUnderRuleListVersion a owl:ObjectProperty ;
+    rdfs:label "no longer reached under rule list version"@en ;
+    rdfs:comment "Of a cascade:ClaimsNoLongerReached finding, the rule list version that reaches none of the claims it names, though the version it revises reached each."@en ;
+    rdfs:domain cascade:FindingForReview ;
+    rdfs:range prov:Entity .
+
 # Naming rules: each name a runtime or an adapter mints follows one, and a changed recipe is a new rule
 
 cascade:RecordFromServerNamingRule a owl:NamedIndividual ;
@@ -1595,7 +1633,7 @@ cascade:RevisionNamingRule a owl:NamedIndividual ;
 
 cascade:FindingNamingRule a owl:NamedIndividual ;
     rdfs:label "finding naming rule"@en ;
-    rdfs:comment "A finding is named as cascade:VersionNamingRule names a version, over its own triples, its subject written urn:cascade:this-finding."@en ;
+    rdfs:comment "A cascade:FindingForReview is named as cascade:VersionNamingRule names a version, over its own triples, its subject written urn:cascade:this-finding."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
 
 cascade:TableVersionNamingRule a owl:NamedIndividual ;

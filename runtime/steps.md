@@ -316,8 +316,8 @@ No matcher judgment has any of those records as a member.
 The claims the step asserted, writing an assertion of each, are exactly these, each as the step before says, whether or
 not the step wrote the claim itself (M9). Every claim the step wrote it asserted, and holds only what N6 names it from;
 every other subject in the files the step wrote is an assertion of one of these, the matcher, described as above, a
-reference series or version, in the run's own file, the run, its snapshot or the runtime (N7, N14), or a release's
-retraction or, in its migration's own file, the migration, its snapshot or the runtime (N15).
+reference series or version, in the run's own file, the run, its snapshot or the runtime (N7, N14), a finding the run
+filed (M18), or a release's retraction or, in its migration's own file, the migration, its snapshot or the runtime (N15).
 
 ### `{step} wrote these retractions:`
 
@@ -328,6 +328,17 @@ The retractions the step wrote are exactly these, each of an assertion of the ma
 those members, as the step before reads them; each holds only what N15 says, and `inputs` are
 cascade:RetractionNamingRule, then the release it prov:used, the assertion it prov:invalidated and the claim's
 cascade:matcherRule.
+
+### `{step} wrote these findings:`
+
+| kind | under | justification | members | name |
+|---|---|---|---|---|
+
+The findings for review the step wrote name exactly these, one row for each thing a finding names: its kind in words
+(`claims no longer reached`, the skos:prefLabel of its oa:hasBody), `under` the rule list version it names
+(cascade:noLongerReachedUnderRuleListVersion) in words, and the matcher's claim it names (oa:hasTarget) by its
+justification and members, as the matcher's judgments are read above; `name` (optional) is the finding's IRI. Each
+holds only its type, its kind, its version and what it names, and is named by its triples (cascade:FindingNamingRule).
 
 ### `{step} wrote these reference descriptions:`
 
