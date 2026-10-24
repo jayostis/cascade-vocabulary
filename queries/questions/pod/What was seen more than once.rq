@@ -13,7 +13,7 @@ SELECT ?entry ?entryLabel ?place (COUNT(DISTINCT ?record) AS ?records) ?places
 WHERE {
   { SELECT ?entry (COUNT(DISTINCT ?somewhere) AS ?places)
     WHERE {
-      ?member ^cascade:mergedFrom ?entry ; cascade:currentRevision ?memberRevision .
+      ?member a cascade:Record ; ^cascade:mergedFrom ?entry ; cascade:currentRevision ?memberRevision .
       OPTIONAL { ?memberRevision prov:wasGeneratedBy/rdfs:label ?memberImportLabel }
       OPTIONAL { ?memberRevision prov:wasDerivedFrom/prov:qualifiedAttribution ?memberAttribution .
                  ?memberAttribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?memberHospital }

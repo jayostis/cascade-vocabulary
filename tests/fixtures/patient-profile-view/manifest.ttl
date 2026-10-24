@@ -5,10 +5,12 @@
 
 <> a mf:Manifest ;
   rdfs:label "patient-profile-view" ;
-  rdfs:comment "Two patient profiles counting About judgments tie to the subject." ;
+  rdfs:comment "Two patient profiles counting About judgments tie to the subject, each arriving by an import of its own." ;
   mf:entries (
     <#one-entry-for-the-person>
     <#whose-it-is-counted-as-with-no-record>
+    <#where-it-came-from>
+    <#no-entry-seen-more-than-once>
   ) .
 
 <#one-entry-for-the-person> a mf:QueryEvaluationTest ;
@@ -24,3 +26,17 @@
   mf:action [ qt:query <../../../queries/questions/profile/Whose%20it%20is%20counted%20as.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <whose-it-is-counted-as-with-no-record.srj> .
+
+<#where-it-came-from> a mf:QueryEvaluationTest ;
+  mf:name "where-it-came-from" ;
+  rdfs:comment "Each member of the patient entry, a profile, with when its current revision arrived and the import that brought it." ;
+  mf:action [ qt:query <../../../queries/questions/entry/Where%20it%20came%20from.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <where-it-came-from.srj> .
+
+<#no-entry-seen-more-than-once> a mf:QueryEvaluationTest ;
+  mf:name "no-entry-seen-more-than-once" ;
+  rdfs:comment "The patient entry joins two profiles from two places, but a profile is no record, so no entry holds more than one record." ;
+  mf:action [ qt:query <../../../queries/questions/pod/What%20was%20seen%20more%20than%20once.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <no-entry-seen-more-than-once.srj> .
