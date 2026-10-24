@@ -143,10 +143,9 @@ found hard to compare (#107: "written as a code IRI, not a string").
 - Cases neither the record nor a judgment frame handles, for that build: a somatic variant (AMP/ASCO/CAP tiers, not
   ACMG classes; a pharmacogenomic implication names a drug and a phenotype, not a pathogenicity); a VUS later resolved
   by a reissued report with a new id, which leaves both calls current unless the source declares the replacement.
-- Which revision is current follows `currency.md`'s ladder, not `interpretedDate`. The view
-  (`views/variant-interpretations.rq`) takes its classification, date and lab from `rec:latestMember`
-  (`derivations/latest-members.rq`, by arrival) over `pav:hasCurrentVersion` (`derivations/current-revisions.rq`), the
-  derivations `currency.md` replaces, and follows when the ladder and the lead are applied.
+- Which revision is current follows `currency.md`'s ladder, not `interpretedDate`: the view
+  (`views/variant-interpretations.rq`) takes its classification, date and lab from `cascade:leadMember` over
+  `pav:hasCurrentVersion`, both derived by the ladder (`runtime/currency.feature`, C2 and C6).
 - Whom a ClinVar interpretation is attributed to, the SCV's submitter or ClinVar, is left out of #219: the ClinVar
   adapter attributes none. Lean: the submitter, as an organisation record named by its ClinVar organisation id.
   Whether the variant record names its lab too is `variant-record.md`'s.

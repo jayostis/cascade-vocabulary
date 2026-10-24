@@ -10,11 +10,11 @@
     cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
     cascade:medicationUseStartDate "2024-01-01"^^xsd:date .
 :listedRevision a cascade:Revision ; cascade:revisionOf :listed ; cascade:version :listedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :prescribed a cascade:PrescribedOrReportedMedication .
 :prescribedVersion prov:specializationOf :prescribed ; cascade:patient :subject ; cascade:drugName "lisinopril 10 MG Oral Tablet" ;
     cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
     cascade:prescriptionWrittenDate "2024-02-10"^^xsd:date .
 :prescribedRevision a cascade:Revision ; cascade:revisionOf :prescribed ; cascade:version :prescribedVersion ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .

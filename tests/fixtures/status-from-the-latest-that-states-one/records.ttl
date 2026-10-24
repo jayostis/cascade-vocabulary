@@ -10,32 +10,32 @@
 :conditionFromDocument a cascade:ProblemOrDiagnosis .
 :conditionFromDocumentVersion prov:specializationOf :conditionFromDocument ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .
 :conditionFromDocumentRevision a cascade:Revision ; cascade:revisionOf :conditionFromDocument ; cascade:version :conditionFromDocumentVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :conditionLater a cascade:ProblemOrDiagnosis .
 :conditionLaterVersion prov:specializationOf :conditionLater ; cascade:patient :subject ; cascade:conditionName "Asthma" .
 :conditionLaterRevision a cascade:Revision ; cascade:revisionOf :conditionLater ; cascade:version :conditionLaterVersion ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :allergyFromDocument a cascade:AllergyOrIntolerance .
 :allergyFromDocumentVersion prov:specializationOf :allergyFromDocument ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
 :allergyFromDocumentRevision a cascade:Revision ; cascade:revisionOf :allergyFromDocument ; cascade:version :allergyFromDocumentVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :allergyEntered a cascade:AllergyOrIntolerance .
 :allergyEnteredVersion prov:specializationOf :allergyEntered ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "inactive" .
 :allergyEnteredRevision a cascade:Revision ; cascade:revisionOf :allergyEntered ; cascade:version :allergyEnteredVersion ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :conditionEnteredAlone a cascade:ProblemOrDiagnosis .
 :conditionEnteredAloneVersion prov:specializationOf :conditionEnteredAlone ; cascade:patient :subject ; cascade:conditionName "Eczema" ; cascade:clinicalStatus "resolved" .
 :conditionEnteredAloneRevision a cascade:Revision ; cascade:revisionOf :conditionEnteredAlone ; cascade:version :conditionEnteredAloneVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :allergyEnteredAlone a cascade:AllergyOrIntolerance .
 :allergyEnteredAloneVersion prov:specializationOf :allergyEnteredAlone ; cascade:patient :subject ; cascade:allergen "Latex" ; cascade:clinicalStatus "active" .
 :allergyEnteredAloneRevision a cascade:Revision ; cascade:revisionOf :allergyEnteredAlone ; cascade:version :allergyEnteredAloneVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :conditionFromDocumentRevision prov:wasDerivedFrom :document .
 :allergyFromDocumentRevision prov:wasDerivedFrom :document .

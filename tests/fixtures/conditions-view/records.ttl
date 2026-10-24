@@ -8,15 +8,15 @@
 :asthmaOld a cascade:ProblemOrDiagnosis .
 :asthmaOldVersion prov:specializationOf :asthmaOld ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" ; cascade:onsetDate "2019-04-01"^^xsd:date .
 :asthmaOldRevision a cascade:Revision ; cascade:revisionOf :asthmaOld ; cascade:version :asthmaOldVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :asthmaNew a cascade:ProblemOrDiagnosis .
 :asthmaNewVersion prov:specializationOf :asthmaNew ; cascade:patient :subject ; cascade:conditionName "Asthma, allergic" ; cascade:snomedCode <http://snomed.info/id/389145006>, <http://snomed.info/id/195967001> ;
     cascade:icd10Code "J45.909", <https://ns.cascadeprotocol.org/codes/icd10cm/J45.50> .
 :asthmaNewRevision a cascade:Revision ; cascade:revisionOf :asthmaNew ; cascade:version :asthmaNewVersion ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :sinusitis a cascade:ProblemOrDiagnosis .
 :sinusitisVersion prov:specializationOf :sinusitis ; cascade:patient :subject ; cascade:conditionName "Sinusitis" ; cascade:clinicalStatus "resolved" ; cascade:abatementDate "2023-01-01"^^xsd:date .
 :sinusitisRevision a cascade:Revision ; cascade:revisionOf :sinusitis ; cascade:version :sinusitisVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

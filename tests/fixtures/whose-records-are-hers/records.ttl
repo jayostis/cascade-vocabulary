@@ -7,34 +7,34 @@
 :north a cascade:AllergyOrIntolerance .
 :northVersion prov:specializationOf :north ; cascade:allergen "Peanut" ; cascade:patient :claimed .
 :northRevision a cascade:Revision ; cascade:revisionOf :north ; cascade:version :northVersion ; prov:wasDerivedFrom :northDocument ;
-    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
 
 :south1 a cascade:AllergyOrIntolerance .
 :south1Version prov:specializationOf :south1 ; cascade:allergen "Latex" ; cascade:patient :claimed .
 :south1Revision a cascade:Revision ; cascade:revisionOf :south1 ; cascade:version :south1Version ;
-    prov:wasDerivedFrom :south1Document ; prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+    prov:wasDerivedFrom :south1Document ; prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
 
 :south2 a cascade:AllergyOrIntolerance .
 :south2Version prov:specializationOf :south2 ; cascade:allergen "Penicillin" ; cascade:patient :claimed .
 :south2Revision a cascade:Revision ; cascade:revisionOf :south2 ; cascade:version :south2Version ;
-    prov:wasDerivedFrom :south2Document ; prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+    prov:wasDerivedFrom :south2Document ; prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
 
 :unclaimedRecord a cascade:AllergyOrIntolerance .
 :unclaimedVersion prov:specializationOf :unclaimedRecord ; cascade:allergen "Shellfish" ; cascade:patient :unclaimed .
 :unclaimedRevision a cascade:Revision ; cascade:revisionOf :unclaimedRecord ; cascade:version :unclaimedVersion ;
-    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
 
 :retractedRecord a cascade:AllergyOrIntolerance .
 :retractedVersion prov:specializationOf :retractedRecord ; cascade:allergen "Egg" ; cascade:patient :retracted .
 :retractedRevision a cascade:Revision ; cascade:revisionOf :retractedRecord ; cascade:version :retractedVersion ;
-    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
 
 :ownRecord a cascade:AllergyOrIntolerance .
 :ownVersion prov:specializationOf :ownRecord ; cascade:allergen "Sesame" ; cascade:patient :subject .
 :ownRevision a cascade:Revision ; cascade:revisionOf :ownRecord ; cascade:version :ownVersion ;
-    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
 
 :hospital a cascade:Organization .
 :hospitalVersion prov:specializationOf :hospital ; foaf:name "North Hospital" .
 :hospitalRevision a cascade:Revision ; cascade:revisionOf :hospital ; cascade:version :hospitalVersion ;
-    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .

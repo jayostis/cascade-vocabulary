@@ -1,0 +1,26 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-revision-judged-erroneous-is-never-current" ;
+  rdfs:comment "An allergy stamped active, then resolved, an Erroneous naming the resolved revision; and an allergy whose one revision an Erroneous names." ;
+  mf:entries (
+    <#the-current-revision>
+    <#why-it-is-in-no-view>
+  ) .
+
+<#the-current-revision> a mf:QueryEvaluationTest ;
+  mf:name "the-current-revision" ;
+  rdfs:comment "The ladder removes the revision an Erroneous names first, so the active state is current though the source stamped it earlier; the allergy with nothing left has no current revision." ;
+  mf:action [ qt:query <the-current-revision.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-current-revision.srj> .
+
+<#why-it-is-in-no-view> a mf:QueryEvaluationTest ;
+  mf:name "why-it-is-in-no-view" ;
+  rdfs:comment "The allergy with no current state is in no view, because of the judgment that named its revision, and, with no current version, it names no patient." ;
+  mf:action [ qt:query <../../../queries/questions/record/Why%20it%20is%20in%20no%20view.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <why-it-is-in-no-view.srj> .

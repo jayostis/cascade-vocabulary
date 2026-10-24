@@ -1,0 +1,32 @@
+# Records whose current revision the source's change time did not decide, for a person to look at: the confession that
+# current is derived and never stored. A record is listed once for each other candidate it holds at another version,
+# beside its current revision (?revision, the state shown) and that candidate (?otherRevision, a state not shown): the
+# clocks fell to the observation time, and the shown one was "observed later", or to the least IRI, with "no basis". A
+# candidate a later pull of one source follows in ancestry is not listed: ancestry orders the two. A record is also
+# listed for each Before of its revisions that a cycle of Befores cancels, with the two revisions it orders. Either is
+# fixed by one Before.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?record ?recordLabel ?needs ?revision ?revisionLabel ?otherRevision ?otherRevisionLabel
+WHERE {
+  { ?record cascade:currentRevision ?revision ; cascade:currentRevisionCandidate ?otherRevision .
+    ?revision cascade:version ?version ; cascade:observedAsOf ?seen .
+    ?otherRevision cascade:version ?otherVersion ; cascade:observedAsOf ?otherSeen .
+    FILTER (?otherVersion != ?version)
+    FILTER NOT EXISTS { ?later cascade:laterInAncestryThan ?otherRevision }
+    BIND (IF(?seen > ?otherSeen, "observed later", "no basis") AS ?needs)
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?revision rdfs:label ?revisionLabel }
+    OPTIONAL { ?otherRevision rdfs:label ?otherRevisionLabel } }
+  UNION
+  { ?revision cascade:judgedBefore ?otherRevision ; cascade:revisionOf ?record .
+    ?otherRevision cascade:revisionOf ?record .
+    FILTER EXISTS { ?otherRevision cascade:judgedBefore+ ?revision }
+    FILTER (STR(?revision) < STR(?otherRevision) || !EXISTS { ?otherRevision cascade:judgedBefore ?revision })
+    BIND ("Befores that form a cycle" AS ?needs)
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?revision rdfs:label ?revisionLabel }
+    OPTIONAL { ?otherRevision rdfs:label ?otherRevisionLabel } }
+}
+ORDER BY ?needs ?recordLabel ?record ?revision ?otherRevision

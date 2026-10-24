@@ -493,6 +493,12 @@ cascade:answeredAsOf a owl:DatatypeProperty ;
     rdfs:range xsd:dateTime ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc7089#section-2.1.1> .
 
+cascade:observedAsOf a owl:DatatypeProperty ;
+    rdfs:label "observed as of"@en ;
+    rdfs:comment "Of a revision, when its source was observed saying its state: the first there is of its document's cascade:answeredAsOf, the document's pav:retrievedOn, the source's own change time the revision carries as pav:lastUpdateOn, and the start of the act that generated it. For an entry, the session's start."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range xsd:dateTime .
+
 cascade:revisionOf a owl:ObjectProperty ;
     rdfs:label "revision of"@en ;
     rdfs:domain cascade:Revision .
@@ -527,7 +533,30 @@ cascade:displayDate a owl:DatatypeProperty ;
 
 cascade:currentRevision a owl:ObjectProperty ;
     rdfs:label "current revision"@en ;
-    rdfs:comment "Derived: the revision of a record no other revision follows. Never written to a pod file."@en ;
+    rdfs:comment "Derived: the revision of a record the ladder picks from its cascade:currentRevisionCandidate revisions: of those no other is cascade:laterInAncestryThan, the greatest cascade:observedAsOf, then the least IRI. Never written to a pod file."@en ;
+    rdfs:range cascade:Revision .
+
+cascade:laterInAncestryThan a owl:ObjectProperty ;
+    rdfs:label "later in ancestry than"@en ;
+    rdfs:comment "Derived: of two candidates for one record's current revision, both derived by imports from documents reached by one path, through a transmitter both name or with neither naming one, this one's act's snapshot descends from that one's."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range cascade:Revision .
+
+cascade:currentRevisionCandidate a owl:ObjectProperty ;
+    rdfs:label "current revision candidate"@en ;
+    rdfs:comment "Derived: a revision of the record still in the running once the ladder's first three steps have removed what they remove: no Erroneous that stands names it (cascade:revisionJudgedErroneousBy); no Before that stands, outside a cycle, places it before another revision of the record no such Erroneous names; and of what is left, it carries the latest source change time, pav:lastUpdateOn, or carries none."@en ;
+    rdfs:range cascade:Revision .
+
+cascade:revisionJudgedErroneousBy a owl:ObjectProperty ;
+    rdfs:label "revision judged erroneous by"@en ;
+    rdfs:comment "Derived: a person's Erroneous that stands names this revision: no activity invalidates it, and no judgment that stands replaces it."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range cascade:Judgment .
+
+cascade:judgedBefore a owl:ObjectProperty ;
+    rdfs:label "judged before"@en ;
+    rdfs:comment "Derived: a person's Before that stands places this revision before that one: no activity invalidates it, and no judgment that stands replaces it."@en ;
+    rdfs:domain cascade:Revision ;
     rdfs:range cascade:Revision .
 
 cascade:Subject a owl:Class ;
@@ -638,9 +667,13 @@ cascade:inEntry a owl:ObjectProperty ;
     rdfs:label "in entry"@en ;
     rdfs:comment "Derived: the view entry the record belongs to in this build."@en .
 
-cascade:latestMember a owl:ObjectProperty ;
-    rdfs:label "latest member"@en ;
-    rdfs:comment "Derived: the entry's most recently received member."@en .
+cascade:leadMember a owl:ObjectProperty ;
+    rdfs:label "lead member"@en ;
+    rdfs:comment "Derived: the member an entry shows first: of its cascade:leadMemberCandidate members, the one whose current revision has the greatest cascade:observedAsOf, then the least IRI."@en .
+
+cascade:leadMemberCandidate a owl:ObjectProperty ;
+    rdfs:label "lead member candidate"@en ;
+    rdfs:comment "Derived: a member of the entry still in the running for its lead. Of the members, those the person entered if there are any; less each whose current revision a Before that stands, outside a cycle, places before another such member's; and of what is left, those whose current revision carries the latest source change time, pav:lastUpdateOn, or carries none."@en .
 
 cascade:statusFrom a owl:ObjectProperty ;
     rdfs:label "status from"@en ;
@@ -1440,7 +1473,17 @@ cascade:Different a owl:NamedIndividual ;
 
 cascade:Erroneous a owl:NamedIndividual ;
     rdfs:label "erroneous"@en ;
-    rdfs:comment "The members, records or a whole activity, are left out of every view."@en .
+    rdfs:comment "The members, records or a whole activity, are left out of every view; a revision it names is never its record's current one."@en .
+
+cascade:Before a owl:NamedIndividual ;
+    rdfs:label "before"@en ;
+    rdfs:comment "A person's judgment that of its two members, revisions of one record or of two records a Same joins, the one it names as cascade:earlierMember is a state before the other: a counting Before outranks every clock. Never two versions, and never made by a machine."@en .
+
+cascade:earlierMember a owl:ObjectProperty ;
+    rdfs:label "earlier member"@en ;
+    rdfs:comment "Of a Before judgment, the member it places before its other member."@en ;
+    rdfs:domain cascade:Judgment ;
+    rdfs:range cascade:Revision .
 
 cascade:About a owl:NamedIndividual ;
     rdfs:label "about"@en ;

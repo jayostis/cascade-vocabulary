@@ -14,7 +14,7 @@
 
 <#the-medications-view> a mf:QueryEvaluationTest ;
   mf:name "the-medications-view" ;
-  rdfs:comment "Each entry takes the name and code of its latest member, the status of the member chosen for status, the start of the member chosen for the date, and every intent a member states." ;
+  rdfs:comment "Each entry takes the name and code of its lead, the status of the member chosen for status, the start of the member chosen for the date, and every intent a member states." ;
   mf:action [ qt:query <the-medications-view.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-medications-view.srj> .

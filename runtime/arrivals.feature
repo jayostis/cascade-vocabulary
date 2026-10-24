@@ -30,20 +30,35 @@ Feature: Arrivals
         | allergy "Shellfish" | 2026-01-02 at 10:00 | 1       |       |
         | allergy "Mango"     | 2026-01-02 at 10:00 | 1       |       |
 
-  Rule: A3. An arrival whose source version a revision of the record already carries writes no revision
-    The source version is the arrival's pav:version. No revision is written even if the content differs.
+  Rule: A3. An arrival whose version, source version and source change time a revision of the record holds writes no revision
+    decisions/currency.md, row "what an arrival writes". The source version is the arrival's pav:version and its change
+    time its pav:lastUpdateOn. So does an arrival that carries no source change time and whose version the record
+    holds, whatever stamp the revision holding it carries. Either holds whether or not the arrival would be current: it
+    would be only if a judgment removed the revision that holds its state, and writing it again would undo the
+    judgment. A source version alone tells nothing apart.
 
-    Example: the latex allergy arrives again under a source version it already has, with other content
+    Example: an older state the record holds arrives again after a newer one, and writes nothing
+      Given a new pod for Ada on 2026-01-01 at 09:00
+      And the export "first-export" is imported on 2026-01-02 at 10:00
+      And the export "new-content" is imported on 2026-01-06 at 10:00
+      When the export "first-export" is imported on 2026-01-09 at 10:00 (second-import)
+      Then allergy "Peanut" has these revisions:
+        | arrived             | version | clinical status | after               |
+        | 2026-01-02 at 10:00 | 1       | active          |                     |
+        | 2026-01-06 at 10:00 | 2       | inactive        | 2026-01-02 at 10:00 |
+
+    Example: the latex allergy arrives under a source version it already has, with other content, and is a revision
       Given a new pod for Ada on 2026-01-01 at 09:00
       And the export "first-export" is imported on 2026-01-02 at 10:00
       When the export "known-source-version" is imported on 2026-01-04 at 10:00
       Then allergy "Latex" has these revisions:
-        | arrived             | version | after |
-        | 2026-01-02 at 10:00 | 1       |       |
+        | arrived             | version | after               |
+        | 2026-01-02 at 10:00 | 1       |                     |
+        | 2026-01-04 at 10:00 | 2       | 2026-01-02 at 10:00 |
 
-  Rule: A4. An arrival whose version is one the record is at writes no revision
-    Even under a new source version. A record is at the version of each of its heads, its revisions that none revises:
-    one, unless two writers revised it apart (S6).
+  Rule: A4. An arrival whose version is the record's current version writes no revision
+    decisions/currency.md, row "what an arrival writes". Even under a new source version or a new source change time.
+    The record's current version is its current revision's, as the ladder picks it before the step (C2).
 
     Example: the peanut allergy arrives again unchanged under a new source version
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -67,7 +82,7 @@ Feature: Arrivals
         | 2026-01-06 at 10:00 | 2       | inactive        | 2026-01-02 at 10:00 |
 
   Rule: A6. Arrivals with no source version are told apart by their content alone
-    So, by A4, one with the content the record is at writes no revision.
+    So, by A4, one with the content the record is at now writes no revision.
 
     Example: with no source version, new content is a revision and the content the record is at is none
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -108,7 +123,7 @@ Feature: Arrivals
 
   Rule: A9. A revision holds exactly the triples listed in N4
 
-    Example: a revision holds its own five statements and its arrival's, the import that made it shown as its step
+    Example: a revision holds its own six statements and its arrival's, the import that made it shown as its step
       Given a new pod for Ada on 2026-01-01 at 09:00
       When the export "first-export" is imported on 2026-01-02 at 10:00
       When the query is:
@@ -130,6 +145,7 @@ Feature: Arrivals
         | cascade:revisionOf   | allergy "Peanut"                     |
         | cascade:version      | version 1 of allergy "Peanut"        |
         | prov:generatedAtTime | "2026-01-02T10:00:00Z"^^xsd:dateTime |
+        | cascade:observedAsOf | "2026-01-02T10:00:00Z"^^xsd:dateTime |
         | prov:wasGeneratedBy  | <urn:cascade:step:first-export>      |
         | pav:version          | "1"                                  |
         | pav:lastUpdateOn     | "2025-12-01T00:00:00Z"^^xsd:dateTime |
@@ -167,9 +183,10 @@ Feature: Arrivals
     Example: a document that wrote no revision and raised no findings is not kept
       Given a new pod for Ada on 2026-01-01 at 09:00
       And the export "first-export" is imported on 2026-01-02 at 10:00
-      When the export "known-source-version" is imported on 2026-01-04 at 10:00
+      And the export "no-source-version" is imported on 2026-01-07 at 10:00
+      When the export "no-source-version-again" is imported on 2026-01-07 at 12:00
       Then that step wrote no file
-      And the pod neither names nor stores the document "known-source-version/apple_health_export/clinical-records/AllergyIntolerance-latex.json"
+      And the pod neither names nor stores the document "no-source-version-again/apple_health_export/clinical-records/AllergyIntolerance-shellfish.json"
 
   Rule: A11. An import that kept any document writes its description once
     That description is the label, the start and the association the Bridge gave, the runtime that performed the import
@@ -208,7 +225,8 @@ Feature: Arrivals
     Example: an import that kept no document writes nothing, not even itself
       Given a new pod for Ada on 2026-01-01 at 09:00
       And the export "first-export" is imported on 2026-01-02 at 10:00
-      When the export "known-source-version" is imported on 2026-01-04 at 10:00
+      And the export "no-source-version" is imported on 2026-01-07 at 10:00
+      When the export "no-source-version-again" is imported on 2026-01-07 at 12:00
       Then that step wrote no file
 
     Example: a download's import writes its label, its start, its association and the document it kept

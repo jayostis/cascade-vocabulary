@@ -9,18 +9,18 @@
 :inErrorVersion prov:specializationOf :inError ; cascade:patient :subject ;
     cascade:verificationStatus "entered-in-error" .
 :inErrorRevision a cascade:Revision ; cascade:revisionOf :inError ; cascade:version :inErrorVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :refuted a cascade:AllergyOrIntolerance .
 :refutedVersion prov:specializationOf :refuted ; cascade:patient :subject ; cascade:verificationStatus "refuted" .
 :refutedRevision a cascade:Revision ; cascade:revisionOf :refuted ; cascade:version :refutedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :corrected a cascade:AllergyOrIntolerance .
 :correctedBefore prov:specializationOf :corrected ; cascade:patient :subject ;
     cascade:verificationStatus "entered-in-error" .
 :correctedAfter prov:specializationOf :corrected ; cascade:patient :subject ; cascade:verificationStatus "confirmed" .
 :correctedFirst a cascade:Revision ; cascade:revisionOf :corrected ; cascade:version :correctedBefore ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :correctedSecond a cascade:Revision ; cascade:revisionOf :corrected ; cascade:version :correctedAfter ;
-    prov:wasRevisionOf :correctedFirst ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:wasRevisionOf :correctedFirst ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .

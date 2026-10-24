@@ -44,7 +44,7 @@ who makes judgments.
 |---|---|---|---|
 | judgment | nanopub assertion; SSSOM row | `jdg:Judgment`, a `prov:Collection` whose `prov:hadMember` are the records; one verdict | borrowed from PROV; the verdict is ours |
 | maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` | borrowed |
-| verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`; a Before is proposed in `currency.md` | ours: a belief with a maker, not an axiom, and Different wins over Same |
+| verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`, and `cascade:Before`, of two revisions, naming the earlier as `cascade:earlierMember`, per `currency.md` | ours: a belief with a maker, not an axiom, and Different wins over Same |
 | judgment over a source-level thing | | a Same whose members are servers or organisations, a Before whose member is a rollback finding, and a Same whose member is the finding of what a rule list version no longer reaches, each with a derivation to records or pairs, per `republishing-sources.md`, `currency.md` and `naming.md` | ours: test 3 of the rubric |
 | reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, the matching kinds each `skos:broadMatch` a SEMAPV kind (`jdg:Demographics` and the About bases have none); `jdg:basis` for a person's | borrowed from SEMAPV at the kind level; the kinds are ours |
 | confidence | SSSOM `confidence` | none; the justification kind stands in for it, and the review page lists the weaker kinds | diverged; see open |
@@ -130,8 +130,6 @@ domain `foaf:Agent`, making the retractor an agent and the retracted a nanopubli
   it syncs) or the writer's own, outside the pod.
 - A model's judgment: the term for its confidence, and whether a model asked twice about one pair, giving two
   answers, files two judgments or the later supersedes.
-- Whether a Before verdict is a verdict of `jdg:Judgment` or a kind of its own, now that it orders revisions of one
-  record and, for a lead, of two records a Same joins.
 - An acknowledgement: a person's "seen, do nothing" on a finding, so a rollback finding clears from the review page
   while the later states stay. No verdict says it today; whether it is a verdict over the finding, or a mark on the
   finding outside `jdg:`.
