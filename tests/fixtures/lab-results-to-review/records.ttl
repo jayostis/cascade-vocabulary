@@ -76,3 +76,11 @@
 <urn:x:laterUnitsVersion#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.1" ; cascade:ucumUnit "meq/L" .
 :laterUnitsRevision a cascade:Revision ; cascade:revisionOf :laterUnits ; cascade:version <urn:x:laterUnitsVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:valueOther a cascade:LaboratoryTestResult .
+<urn:x:valueOtherVersion> prov:specializationOf :valueOther ; cascade:patient :subject ; cascade:testName "Potassium, repeat" ;
+    cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:valueOtherVersion#value> .
+<urn:x:valueOtherVersion#value> cascade:decimalValue "4.4"^^xsd:decimal ; cascade:writtenValue "4.4" ; cascade:ucumUnit "mmol/L" .
+:valueOtherRevision a cascade:Revision ; cascade:revisionOf :valueOther ; cascade:version <urn:x:valueOtherVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

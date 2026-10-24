@@ -859,12 +859,18 @@ cascade:defaultTableVersion a owl:ObjectProperty ;
 
 cascade:RuleListRow a owl:Class ;
     rdfs:label "rule list row"@en ;
-    rdfs:comment "One row of a version of the matcher's rule list: the matcher rule it runs, the justification it gives, the classes of record it applies to, the comparison query it runs and the hash of that query's bytes, and the kind of table the query reads, if any. A row is a blank node of its version; the rule is the term it names."@en .
+    rdfs:comment "One row of a version of the matcher's rule list: the matcher rule it runs, the justification it gives or, for a rule that files findings for review instead of judgments, the kind of finding it files, the classes of record it applies to, the comparison query it runs and the hash of that query's bytes, and the kind of table the query reads, if any. A row is a blank node of its version; the rule is the term it names."@en .
 
 cascade:justifiedAs a owl:ObjectProperty ;
     rdfs:label "justified as"@en ;
     rdfs:comment "The justification a judgment the rule writes gives."@en ;
     rdfs:domain cascade:RuleListRow .
+
+cascade:findingKind a owl:ObjectProperty ;
+    rdfs:label "finding kind"@en ;
+    rdfs:comment "Of a row whose rule files findings for review rather than judgments, the kind of cascade:FindingForReview it files for each pair its query gives, a concept of cascade:FindingForReviewKinds."@en ;
+    rdfs:domain cascade:RuleListRow ;
+    rdfs:range skos:Concept .
 
 cascade:appliesToClass a owl:ObjectProperty ;
     rdfs:label "applies to class"@en ;
@@ -874,7 +880,7 @@ cascade:appliesToClass a owl:ObjectProperty ;
 
 cascade:matcherRule a owl:ObjectProperty ;
     rdfs:label "matcher rule"@en ;
-    rdfs:comment "The matcher rule a row of a rule list runs, or that a machine claim was made by: one of the rule terms R1 to R13 of runtime/matcher.feature. A claim's name takes it."@en ;
+    rdfs:comment "The matcher rule a row of a rule list runs, or that a machine claim was made by: one of the rule terms R1 to R15 of runtime/matcher.feature. A claim's name takes it."@en ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:RuleListRow cascade:Judgment ) ] .
 
 cascade:queryPath a owl:DatatypeProperty ;
@@ -1747,6 +1753,11 @@ cascade:noLongerReachedUnderRuleListVersion a owl:ObjectProperty ;
     rdfs:domain cascade:FindingForReview ;
     rdfs:range prov:Entity .
 
+cascade:DifferentResultValuesAtOneInstant a skos:Concept ;
+    skos:inScheme cascade:FindingForReviewKinds ;
+    skos:prefLabel "different result values at one instant"@en ;
+    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant, whose values are of one kind and in one unit, their UCUM annotations aside, and differ: two numbers, a comparator on one and not the other, or coded answers sharing no code. The finding's prov:used are the two versions whose values differ. The body applies to its targets together: neither result is wrong alone, but both cannot be the one draw, and a correction should have come as a new version. The matcher never judges such a pair the same (R6); it files this finding by rule R15 instead, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
+
 # Naming rules: each name a runtime or an adapter mints follows one, and a changed recipe is a new rule
 
 cascade:RecordFromServerNamingRule a owl:NamedIndividual ;
@@ -1958,6 +1969,10 @@ cascade:SameVariationRule a owl:NamedIndividual ;
 cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
     rdfs:label "R13, same variation through the table"@en ;
     rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
+
+cascade:DifferentResultValuesRule a owl:NamedIndividual ;
+    rdfs:label "R15, different result values"@en ;
+    rdfs:comment "Rule R15 of runtime/matcher.feature; it files no judgment, but a finding for review of kind cascade:DifferentResultValuesAtOneInstant."@en .
 
 cascade:SameResultOnOneDayRule a owl:NamedIndividual ;
     rdfs:label "R14, same result on one day"@en ;

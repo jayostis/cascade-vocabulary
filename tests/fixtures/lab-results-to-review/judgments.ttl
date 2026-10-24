@@ -1,5 +1,6 @@
 @prefix : <urn:x:> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -23,3 +24,15 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :rules11 prov:specializationOf :rules ; pav:version "11" .
 :rules11SameResultOnOneDayRule cascade:rowOfRuleListVersion :rules11 ; cascade:matcherRule cascade:SameResultOnOneDayRule ;
     cascade:queryHash :sameResultOnOneDayQuery .
+
+:differentValues a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
+    oa:motivatedBy oa:classifying ; oa:hasTarget :unitsUpper , :valueOther ;
+    prov:used <urn:x:unitsUpperVersion> , <urn:x:valueOtherVersion> .
+
+:countsDiffer a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
+    oa:motivatedBy oa:classifying ; oa:hasTarget :countPlain , :countAnnotated ;
+    prov:used <urn:x:countPlainVersion> , <urn:x:countAnnotatedVersion> .
+
+:seen a cascade:Judgment ; cascade:verdict cascade:Acknowledged ; prov:hadMember :countsDiffer ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .

@@ -493,6 +493,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ClaimsNoLongerReachedShape ] ] .
 
+<#finding/different-result-values> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/different-result-values.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#finding/different-result-values-of-one-result> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/different-result-values-of-one-result.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DifferentResultValuesAtOneInstantShape ] ] .
+
 <#judgment-about-a-finding/same> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-about-a-finding/same.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

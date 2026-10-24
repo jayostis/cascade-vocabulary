@@ -4,6 +4,7 @@
       "entry",
       "entryLabel",
       "needs",
+      "finding",
       "judgment",
       "judgmentLabel",
       "record",
@@ -64,6 +65,70 @@
         "otherRecordLabel": {
           "type": "literal",
           "value": "Lab result · Potassium · own entry"
+        }
+      },
+      {
+        "entry": {
+          "type": "uri",
+          "value": "https://pod.example/clinical/lab-results.ttl#a0d86ec77cb0337db925d4a4d2c1aab8825f14c0c3a632da31adca9881ba721f"
+        },
+        "entryLabel": {
+          "type": "literal",
+          "value": "Lab result entry · Serum potassium · 2025-03-27T07:00:00-05:00"
+        },
+        "needs": {
+          "type": "literal",
+          "value": "one test at one instant, in units that differ"
+        },
+        "record": {
+          "type": "uri",
+          "value": "urn:x:unitsLower"
+        },
+        "recordLabel": {
+          "type": "literal",
+          "value": "Lab result · Serum potassium · own entry"
+        },
+        "otherRecord": {
+          "type": "uri",
+          "value": "urn:x:valueOther"
+        },
+        "otherRecordLabel": {
+          "type": "literal",
+          "value": "Lab result · Potassium, repeat · own entry"
+        }
+      },
+      {
+        "entry": {
+          "type": "uri",
+          "value": "https://pod.example/clinical/lab-results.ttl#bc2a852f0c08c8af6837d3343f6480638549734b388f3a77bf1bb9c5e41d13ad"
+        },
+        "entryLabel": {
+          "type": "literal",
+          "value": "Lab result entry · Potassium · 2025-03-27T12:00:00Z"
+        },
+        "needs": {
+          "type": "literal",
+          "value": "one test at one instant, two values"
+        },
+        "finding": {
+          "type": "uri",
+          "value": "urn:x:differentValues"
+        },
+        "record": {
+          "type": "uri",
+          "value": "urn:x:unitsUpper"
+        },
+        "recordLabel": {
+          "type": "literal",
+          "value": "Lab result · Potassium · own entry"
+        },
+        "otherRecord": {
+          "type": "uri",
+          "value": "urn:x:valueOther"
+        },
+        "otherRecordLabel": {
+          "type": "literal",
+          "value": "Lab result · Potassium, repeat · own entry"
         }
       }
     ]

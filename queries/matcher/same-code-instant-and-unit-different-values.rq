@@ -1,0 +1,73 @@
+# Two records of one kind give a finding when their current versions give one test code, one instant, and values of
+# one kind in one unit that differ: two quantities of two numbers, compared by value, or of one number with different
+# comparators; two ratios or two ranges differing in a part or a bound, or one holding a bound the other lacks; two coded
+# values sharing no code. Text is never compared, and a pair whose units differ is the review page's, not this
+# query's. Times, numbers and units are read as same-code-instant-value-and-unit.rq reads them, so the pairs this
+# query gives and the pairs that query joins never meet. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time ; cascade:resultValueKind ?valueKind .
+  ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime ;
+                cascade:resultValueKind ?valueKind .
+  FILTER (?record != ?other && ?valueKind != cascade:TextResultValue
+          && DATATYPE(?time) = xsd:dateTime && DATATYPE(?otherTime) = xsd:dateTime && ?time = ?otherTime)
+  OPTIONAL {
+    ?version cascade:resultQuantity|cascade:resultRatioNumerator|cascade:resultRangeLow ?first .
+    ?first cascade:decimalValue ?firstNumber .
+    OPTIONAL { ?first cascade:quantityComparator ?firstComparator }
+    OPTIONAL { ?first cascade:ucumUnit ?firstUcum }
+    OPTIONAL { ?first cascade:unitText ?firstText }
+  }
+  OPTIONAL {
+    ?otherVersion cascade:resultQuantity|cascade:resultRatioNumerator|cascade:resultRangeLow ?otherFirst .
+    ?otherFirst cascade:decimalValue ?otherFirstNumber .
+    OPTIONAL { ?otherFirst cascade:quantityComparator ?otherFirstComparator }
+    OPTIONAL { ?otherFirst cascade:ucumUnit ?otherFirstUcum }
+    OPTIONAL { ?otherFirst cascade:unitText ?otherFirstText }
+  }
+  OPTIONAL {
+    ?version cascade:resultRatioDenominator|cascade:resultRangeHigh ?second .
+    ?second cascade:decimalValue ?secondNumber .
+    OPTIONAL { ?second cascade:quantityComparator ?secondComparator }
+    OPTIONAL { ?second cascade:ucumUnit ?secondUcum }
+    OPTIONAL { ?second cascade:unitText ?secondText }
+  }
+  OPTIONAL {
+    ?otherVersion cascade:resultRatioDenominator|cascade:resultRangeHigh ?otherSecond .
+    ?otherSecond cascade:decimalValue ?otherSecondNumber .
+    OPTIONAL { ?otherSecond cascade:quantityComparator ?otherSecondComparator }
+    OPTIONAL { ?otherSecond cascade:ucumUnit ?otherSecondUcum }
+    OPTIONAL { ?otherSecond cascade:unitText ?otherSecondText }
+  }
+  BIND (COALESCE(?firstUcum, ?firstText, "") AS ?firstUnitWritten)
+  BIND (COALESCE(?otherFirstUcum, ?otherFirstText, "") AS ?otherFirstUnitWritten)
+  BIND (COALESCE(?secondUcum, ?secondText, "") AS ?secondUnitWritten)
+  BIND (COALESCE(?otherSecondUcum, ?otherSecondText, "") AS ?otherSecondUnitWritten)
+  BIND (REPLACE(?firstUnitWritten, "\\{[^{}]*\\}", "") AS ?firstUnitBare)
+  BIND (REPLACE(?otherFirstUnitWritten, "\\{[^{}]*\\}", "") AS ?otherFirstUnitBare)
+  BIND (REPLACE(?secondUnitWritten, "\\{[^{}]*\\}", "") AS ?secondUnitBare)
+  BIND (REPLACE(?otherSecondUnitWritten, "\\{[^{}]*\\}", "") AS ?otherSecondUnitBare)
+  BIND (IF(?firstUnitBare = "" && ?firstUnitWritten != "", "1", ?firstUnitBare) AS ?firstUnit)
+  BIND (IF(?otherFirstUnitBare = "" && ?otherFirstUnitWritten != "", "1", ?otherFirstUnitBare) AS ?otherFirstUnit)
+  BIND (IF(?secondUnitBare = "" && ?secondUnitWritten != "", "1", ?secondUnitBare) AS ?secondUnit)
+  BIND (IF(?otherSecondUnitBare = "" && ?otherSecondUnitWritten != "", "1", ?otherSecondUnitBare) AS ?otherSecondUnit)
+  FILTER (IF(?valueKind = cascade:CodedResultValue,
+             EXISTS { ?version cascade:resultCode ?anyCode } && EXISTS { ?otherVersion cascade:resultCode ?otherAnyCode }
+             && NOT EXISTS { ?version cascade:resultCode ?sharedCode . ?otherVersion cascade:resultCode ?sharedCode },
+             (BOUND(?firstNumber) || BOUND(?secondNumber)) && (BOUND(?otherFirstNumber) || BOUND(?otherSecondNumber))
+             && (!BOUND(?firstNumber) || !BOUND(?otherFirstNumber) || ?firstUnit = ?otherFirstUnit)
+             && (!BOUND(?secondNumber) || !BOUND(?otherSecondNumber) || ?secondUnit = ?otherSecondUnit)
+             && !(BOUND(?firstNumber) = BOUND(?otherFirstNumber) && BOUND(?secondNumber) = BOUND(?otherSecondNumber)
+                  && (!BOUND(?firstNumber)
+                      || (?firstNumber = ?otherFirstNumber
+                          && COALESCE(?firstComparator, "") = COALESCE(?otherFirstComparator, "")))
+                  && (!BOUND(?secondNumber)
+                      || (?secondNumber = ?otherSecondNumber
+                          && COALESCE(?secondComparator, "") = COALESCE(?otherSecondComparator, ""))))))
+}

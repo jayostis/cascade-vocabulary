@@ -221,13 +221,17 @@ Feature: The matcher's procedure
       with cascade:VariantClassifications, for variants only. As same-variation-through-table.rq, with the rows an
       expression is on counted over current versions alone.
 
-    Version 11 of the vocabulary's list changes R6's query and adds a row, whose examples are under M20; versions 2 to
-    10 pin same-result.rq:
+    Version 11 of the vocabulary's list changes R6's query and adds two rows, whose examples are under M20; versions 2
+    to 10 pin same-result.rq:
 
     - R6, cascade:SameResultRule, justified cascade:SameResult: queries/matcher/same-code-instant-value-and-unit.rq, for lab
       results only. Two results of one LOINC code at one instant whose values are of one kind and equal, in one unit.
     - R14, cascade:SameResultOnOneDayRule, justified cascade:SameResultOnOneDay: queries/matcher/same-code-day-value-and-unit.rq,
       for lab results only. As R6, on one day, at least one of the two stamped with the day alone: a likely join.
+    - R15, cascade:DifferentResultValuesRule, finding cascade:DifferentResultValuesAtOneInstant:
+      queries/matcher/same-code-instant-and-unit-different-values.rq, for lab results only. It files no judgment: each
+      pair its query gives, of the run's records with the subject's others, is a finding for review naming the two
+      records and their current versions. Its row gives cascade:findingKind where every other gives cascade:justifiedAs.
 
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
@@ -592,7 +596,8 @@ Feature: The matcher's procedure
 
   Rule: M11. A rule list whose row names a query that does not hash to the row's cascade:queryHash refuses the run
     It writes nothing. So does a rule list with a row naming a file outside queries/matcher/, a row without
-    exactly one cascade:justifiedAs, cascade:queryPath and cascade:queryHash, or two rows with one justification. A rule list's rows are
+    exactly one cascade:queryPath and cascade:queryHash, or without exactly one of cascade:justifiedAs and
+    cascade:findingKind, or two rows with one justification or one finding kind. A rule list's rows are
     never edited: a changed query is a new version of the rule list, revising the old. The stories' rule lists are
     fixtures, and move with the vocabulary's queries; a rule list an app has used never changes.
 
@@ -994,10 +999,14 @@ Feature: The matcher's procedure
 
     Two results of one code at one instant whose units differ are joined by neither: "What needs review" lists the pair,
     since no rule converts one unit into another. Two of one code, instant and unit whose values differ are joined by
-    neither: a correction should have come as a new version, and a later rule list version files a finding for a person
-    (jayostis/cascade-vocabulary#217). A shared business identifier within one organization joins no result yet: it is
-    a later rule list version's (jayostis/cascade-vocabulary#221). No step asks a question, so the vocabulary's fixtures
-    show the review page's lines.
+    neither: a correction should have come as a new version, and here it did not, so R15 files a finding for review of
+    the two (cascade:DifferentResultValuesAtOneInstant), named by its triples (cascade:FindingNamingRule) as M18's is:
+    its type, its kind, its oa:motivatedBy oa:classifying, the two records as its oa:hasTarget and their current
+    versions as its prov:used. A run files it for each pair the query gives that the pod holds no finding of, so a
+    second run files none. "What needs review" lists it while both records are still at those versions, until a person
+    acknowledges it or judges the two different. A shared business identifier within one organization joins no result
+    yet: it is a later rule list version's (jayostis/cascade-vocabulary#221). The review page's lines for R14's joins
+    and differing units are shown by the vocabulary's fixtures.
 
     Background:
       Given a new pod for Gus on 2026-10-01 at 09:00
@@ -1014,3 +1023,9 @@ Feature: The matcher's procedure
       Then the matcher's judgments holding lab result LOINC 2345-7 "Glucose" and lab result LOINC 2345-7 "Glucose, fasting" are:
         | justification          | members                                                                       | used                                                                                                    |
         | same result on one day | lab result LOINC 2345-7 "Glucose", lab result LOINC 2345-7 "Glucose, fasting" | version 1 of lab result LOINC 2345-7 "Glucose", version 1 of lab result LOINC 2345-7 "Glucose, fasting" |
+
+    Example: a potassium of another value at the same instant and unit is a finding of different result values, never a Same
+      Then that step wrote these findings:
+        | kind                                   | members                                                                               |
+        | different result values at one instant | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Potassium repeat"       |
+        | different result values at one instant | lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium repeat" |

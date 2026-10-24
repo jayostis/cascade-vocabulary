@@ -22,7 +22,9 @@
 # a day alone, and two draws in one day are common, so the join is likely, not sure. Two lab results in two entries of
 # one test code at one instant whose values' units differ once their UCUM annotations are dropped are listed too, once,
 # from the entry of the smaller record, unless a person judged them different: mmol/L and mg/dL may measure one draw,
-# and no rule converts one into the other.
+# and no rule converts one into the other. A finding of different result values at one instant (R15) is listed, as the
+# finding with its two results, while both are at the versions it compared, until a person acknowledges it or judges
+# the two different.
 # The build never settles these itself; a person does, with a judgment.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX oa: <http://www.w3.org/ns/oa#>
@@ -175,6 +177,19 @@ WHERE {
     FILTER (IF(?unitBare = "" && ?unitWritten != "", "1", ?unitBare)
             != IF(?otherUnitBare = "" && ?otherUnitWritten != "", "1", ?otherUnitBare))
     BIND ("one test at one instant, in units that differ" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+  UNION
+  { ?finding oa:hasBody cascade:DifferentResultValuesAtOneInstant ; oa:hasTarget ?record , ?otherRecord ;
+             prov:used ?version , ?otherVersion .
+    ?record pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
+    ?otherRecord pav:hasCurrentVersion ?otherVersion .
+    FILTER (STR(?record) < STR(?otherRecord)
+            && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord }
+            && !EXISTS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
+                                          prov:hadMember ?finding })
+    BIND ("one test at one instant, two values" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }

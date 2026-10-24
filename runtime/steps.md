@@ -337,9 +337,11 @@ cascade:matcherRule.
 The findings for review the step wrote name exactly these, one row for each thing a finding names: its kind in words
 (`claims no longer reached`, the skos:prefLabel of its oa:hasBody), `under` the rule list version it names
 (cascade:noLongerReachedUnderRuleListVersion) in words, and the matcher's claim it names (oa:hasTarget) by its
-justification and members, as the matcher's judgments are read above; `name` (optional) is the finding's IRI. Each
-holds only its type, its kind, its oa:motivatedBy oa:classifying, its version and what it names, and is named by its
-triples (cascade:FindingNamingRule).
+justification and members, as the matcher's judgments are read above; `name` (optional) is the finding's IRI. A
+finding of `different result values at one instant` is one row, its two records (oa:hasTarget) as its `members`, its
+`under` and `justification` left empty. Each holds only its type, its kind, its oa:motivatedBy oa:classifying, its
+version or the versions it compared (prov:used) and what it names, and is named by its triples
+(cascade:FindingNamingRule).
 
 ### `{step} wrote these reference descriptions:`
 

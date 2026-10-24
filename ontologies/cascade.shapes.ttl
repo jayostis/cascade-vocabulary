@@ -1765,8 +1765,8 @@ cascade:FindingForReviewShape a sh:NodeShape ;
         sh:path oa:hasBody ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( cascade:ClaimsNoLongerReached ) ;
-        sh:message "A finding for review gives one kind, its oa:hasBody: cascade:ClaimsNoLongerReached."@en ;
+        sh:in ( cascade:ClaimsNoLongerReached cascade:DifferentResultValuesAtOneInstant ) ;
+        sh:message "A finding for review gives one kind, its oa:hasBody: cascade:ClaimsNoLongerReached or cascade:DifferentResultValuesAtOneInstant."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path oa:motivatedBy ;
@@ -1809,6 +1809,17 @@ cascade:ClaimsNoLongerReachedShape a sh:NodeShape ;
                       [ sh:path oa:hasTarget ; sh:class cascade:Judgment ] ]
     ) ;
     sh:message "A finding of claims no longer reached names the rule list version that no longer reaches them, and its targets are the matcher's claims."@en ;
+    sh:severity sh:Violation .
+
+cascade:DifferentResultValuesAtOneInstantShape a sh:NodeShape ;
+    sh:targetClass cascade:FindingForReview ;
+    sh:or (
+        [ sh:not [ sh:path oa:hasBody ; sh:hasValue cascade:DifferentResultValuesAtOneInstant ] ]
+        [ sh:property [ sh:path oa:hasTarget ; sh:minCount 2 ; sh:maxCount 2 ; sh:class cascade:LaboratoryTestResult ] ,
+                      [ sh:path prov:used ; sh:nodeKind sh:IRI ; sh:minCount 2 ; sh:maxCount 2 ] ,
+                      [ sh:path cascade:noLongerReachedUnderRuleListVersion ; sh:maxCount 0 ] ]
+    ) ;
+    sh:message "A finding of different result values at one instant names two lab results and the two versions whose values differ, and no rule list version."@en ;
     sh:severity sh:Violation .
 
 cascade:MatcherRunShape a sh:NodeShape ;

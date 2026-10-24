@@ -9,6 +9,7 @@
   mf:entries (
     <#same-code-instant-value-and-unit>
     <#same-code-day-value-and-unit>
+    <#same-code-instant-and-unit-different-values>
   ) .
 
 <#same-code-instant-value-and-unit> a mf:QueryEvaluationTest ;
@@ -68,3 +69,31 @@
                                   <urn:x:urineRangeB> ,
                                   <urn:x:urineRangeHighOnly> ] ;
   mf:result <same-code-day-value-and-unit.srj> .
+
+<#same-code-instant-and-unit-different-values> a mf:QueryEvaluationTest ;
+  mf:name "same-code-instant-and-unit-different-values" ;
+  rdfs:comment "At one instant and in one unit: each potassium of 4.1 against the one of 4.4 and the bound below 4.1, and those two against each other; the titre 1:128 against each 1:64; the range with a high bound alone against each two-bound range; the positive against each negative. Not given: the potassium in mmol/l, whose unit differs, the potassium at another instant, the leukocyte counts, of one value, the text, and any result stamped with a day alone." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-instant-and-unit-different-values.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:glucoseDayA> ,
+                                  <urn:x:glucoseDayB> ,
+                                  <urn:x:glucoseEvening> ,
+                                  <urn:x:glucoseMorning> ,
+                                  <urn:x:glucoseOtherDay> ,
+                                  <urn:x:leukocytesAnnotated> ,
+                                  <urn:x:leukocytesPlain> ,
+                                  <urn:x:potassiumEastern> ,
+                                  <urn:x:potassiumLowerCase> ,
+                                  <urn:x:potassiumOtherInstant> ,
+                                  <urn:x:potassiumOtherValue> ,
+                                  <urn:x:potassiumUnitText> ,
+                                  <urn:x:potassiumWritten> ,
+                                  <urn:x:surfaceAntigenB> ,
+                                  <urn:x:surfaceAntigenOther> ,
+                                  <urn:x:textA> ,
+                                  <urn:x:textB> ,
+                                  <urn:x:titreB> ,
+                                  <urn:x:titreOther> ,
+                                  <urn:x:urineRangeB> ,
+                                  <urn:x:urineRangeHighOnly> ] ;
+  mf:result <same-code-instant-and-unit-different-values.srj> .
