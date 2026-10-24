@@ -544,12 +544,18 @@ cascade:laterInAncestryThan a owl:ObjectProperty ;
 
 cascade:currentRevisionCandidate a owl:ObjectProperty ;
     rdfs:label "current revision candidate"@en ;
-    rdfs:comment "Derived: a revision of the record still in the running once the ladder's first three steps have removed what they remove: no counting Erroneous names it; no counting Before outside a cycle places it before another revision of the record no counting Erroneous names; and of what is left, it carries the latest source change time, pav:lastUpdateOn, or carries none."@en ;
+    rdfs:comment "Derived: a revision of the record still in the running once the ladder's first three steps have removed what they remove: no Erroneous that stands names it (cascade:revisionJudgedErroneousBy); no Before that stands, outside a cycle, places it before another revision of the record no such Erroneous names; and of what is left, it carries the latest source change time, pav:lastUpdateOn, or carries none."@en ;
     rdfs:range cascade:Revision .
+
+cascade:revisionJudgedErroneousBy a owl:ObjectProperty ;
+    rdfs:label "revision judged erroneous by"@en ;
+    rdfs:comment "Derived: a person's Erroneous that stands names this revision: no activity invalidates it, and no judgment that stands replaces it."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range cascade:Judgment .
 
 cascade:judgedBefore a owl:ObjectProperty ;
     rdfs:label "judged before"@en ;
-    rdfs:comment "Derived: a counting Before places this revision before that one."@en ;
+    rdfs:comment "Derived: a person's Before that stands places this revision before that one: no activity invalidates it, and no judgment that stands replaces it."@en ;
     rdfs:domain cascade:Revision ;
     rdfs:range cascade:Revision .
 
@@ -667,7 +673,7 @@ cascade:leadMember a owl:ObjectProperty ;
 
 cascade:leadMemberCandidate a owl:ObjectProperty ;
     rdfs:label "lead member candidate"@en ;
-    rdfs:comment "Derived: a member of the entry still in the running for its lead. Of the members, those the person entered if there are any; less each whose current revision a counting Before outside a cycle places before another such member's; and of what is left, those whose current revision carries the latest source change time, pav:lastUpdateOn, or carries none."@en .
+    rdfs:comment "Derived: a member of the entry still in the running for its lead. Of the members, those the person entered if there are any; less each whose current revision a Before that stands, outside a cycle, places before another such member's; and of what is left, those whose current revision carries the latest source change time, pav:lastUpdateOn, or carries none."@en .
 
 cascade:statusFrom a owl:ObjectProperty ;
     rdfs:label "status from"@en ;

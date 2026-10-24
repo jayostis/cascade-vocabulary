@@ -31,7 +31,7 @@ Feature: Currency
 
   Rule: C2. A record's current revision is the ladder's pick
     decisions/currency.md, rows "current" and "heads", and its ladder. Of the record's revisions, whatever revises
-    what: remove each a counting Erroneous names; remove each a counting Before places before another still present,
+    what: remove each an Erroneous names; remove each a Before places before another still present,
     unless Befores form a cycle (C4); keep those at the latest source change time with those carrying none; of those,
     the greatest cascade:observedAsOf, but between two imports from documents reached by one path, the one whose act's
     snapshot descends from the other's; then the least IRI. queries/derivations/current-revisions.rq and the
@@ -92,7 +92,7 @@ Feature: Currency
 
   Rule: C6. An entry shows every member, its lead's first
     decisions/currency.md, row "entry on a Same group", and its lead. An entry's cascade:leadMember is a record the
-    person entered when it holds one; otherwise the member left once a counting Before outside a cycle has placed the
+    person entered when it holds one; otherwise the member left once a Before outside a cycle has placed the
     others' current revisions before it, ranked as the ladder's last three steps rank revisions. A view takes the
     entry's name and codes from its lead, and queries/questions/entry/What it shows.rq lists every value each member's
     current version states, saying which member it came from, the lead's first. No merged record is stored.
