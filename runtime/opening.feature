@@ -15,7 +15,8 @@ Feature: Opening a pod
   also holds, and "app-periods", holding "app"'s and the rule list's versions 2 to 4, and no conversions,
   "app-conversions", holding "app-icd"'s and the rule list's versions 4 and 5, whose R7 reads version 2 of "CDC
   ICD-10-CM code conversions", which revises version 1 and which it also holds, and "app-fewer-rules", holding
-  "app"'s version 1 of "CDC CVX vaccine groups" and a rule list version "1a" that revises version 1 and lacks R4.
+  "app"'s version 1 of "CDC CVX vaccine groups" and a rule list version "1a" that revises version 1 and lacks R4, and
+  "app-wrong-rule", holding the same but a version "1b" in place of "1a" that also declares R4 wrong.
 
   Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
     The default is M10's; a version descends from another along the tables' line of prov:wasRevisionOf. A series the
@@ -33,11 +34,13 @@ Feature: Opening a pod
     3. writes the reference descriptions last: those M8 writes, and each version on the line after the pod's up to the
        adopted one, oldest first.
 
-    An open that finds nothing new writes nothing, so opening again is always safe.
+    An open that finds nothing new writes nothing, so opening again is always safe. Before its matcher run, an open
+    whose adopted rule list version, or a version it revises, declares a matcher rule wrong performs the migration N15 says.
 
-    A Same the open does not file again stays in the pod. Once a version it used has a newer current one, or no
-    current rule list version runs the query it was asserted with (M5), it has lapsed (cascade:lapsed, derived,
-    nothing written for it), unless something retracts it or a judgment not itself retracted supersedes it, and "What
+    A Same the open does not file again stays in the pod. A Same whose members the adopted version joins as the
+    version it used did is left as it was and counts on (M7). Once a version it used has a newer current one that does
+    not join its members, or no current rule list version runs the query it was asserted with (M5), it has lapsed
+    (cascade:lapsed, derived, nothing written for it), unless something retracts it or a judgment not itself retracted replaces it, and "What
     needs review" lists its pair, if now in two entries, until a person judges it. A Same whose rule the adopted rule
     list runs with the query it was asserted with is reached again without anything written (M9), and counts on.
 
@@ -54,14 +57,15 @@ Feature: Opening a pod
         | CDC CVX vaccine groups version 2 |
         | CDC CVX vaccine groups version 3 |
 
-    Example: adopting files again each Same the adopted rows still join, and a Same of each pair only they join
-      Version 3 withdraws 150's row, so Fluarix and FluLaval are not joined again.
+    Example: adopting files no Same the adopted rows still join, and a Same of each pair only they join
+      Version 3 withdraws 150's row, so Fluarix and FluLaval are not joined again. It still puts 141 and 161 in one
+      group, so the Same of Fluad and Fluzone Quadrivalent by version 1 counts on, and 140 newly in it.
 
       When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
       Then that step wrote these matcher judgments:
-        | justification             | members                                                                   | used                                                                                                                                  |
-        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | CDC CVX vaccine groups version 3, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
-        | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 141 "Flublok"            | CDC CVX vaccine groups version 3, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 141 "Flublok"            |
+        | justification             | members                                                        | used                                                                                                                       |
+        | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 141 "Flublok" | CDC CVX vaccine groups version 3, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 141 "Flublok" |
+      And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" counts
       And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" has lapsed
 
     Example: a pair the replaced version joined is not judged again, so a Same a person retracted stays retracted

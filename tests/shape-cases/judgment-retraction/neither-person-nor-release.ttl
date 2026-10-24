@@ -1,0 +1,13 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+:rules1 a prov:Entity .
+
+:assertion a cascade:ClaimAssertion ;
+    cascade:assertedClaim :claim ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:retraction a prov:Activity ;
+    prov:invalidated :assertion ;
+    prov:used :rules1 .

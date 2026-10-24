@@ -22,7 +22,7 @@ TIME = re.compile(r" on (\d{4}-\d{2}-\d{2}) at (\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?
 PREFIXES = "".join(f"PREFIX {prefix}: <{base}>\n" for prefix, base in {
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "xsd": "http://www.w3.org/2001/XMLSchema#", "prov": "http://www.w3.org/ns/prov#", "pav": "http://purl.org/pav/",
-    "npx": "http://purl.org/nanopub/x/", "bridge": "https://ns.cascadeprotocol.org/bridge/v1-draft#",
+    "dct": "http://purl.org/dc/terms/", "bridge": "https://ns.cascadeprotocol.org/bridge/v1-draft#",
     "oa": "http://www.w3.org/ns/oa#", "cascade": "https://ns.cascadeprotocol.org/cascade#",
 }.items())
 
@@ -126,7 +126,7 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_gua
              for path in sorted(path for top in ("runtime", "conformance")
                                 for index in (ROOT / top).rglob("references.ttl") for path in index.parent.glob("*.ttl"))
              for rows in [parsed(path)] if (None, RDF.type, CASCADE.RuleListRow) in rows}
-    assert len(lists) == 23
+    assert len(lists) == 24
     mismatched, unguarded = set(), set()
     for path, rows in lists.items():
         for row in rows.subjects(RDF.type, CASCADE.RuleListRow):

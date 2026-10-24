@@ -332,12 +332,12 @@ Feature: Alex Rivera's pod
         | H1-CON-BRONCH                  |
         | H2O-CON-ASTHMA, H2F-CON-ASTHMA |
 
-    Example: J20 is a judgment with no member, retracting J10, which no longer counts
+    Example: J20 is a retraction, an activity with no member that invalidated J10, which no longer counts
       When the pod is read as it stood after "J24"
       When the query is:
         """
         SELECT ?retracted ?counts WHERE {
-          <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> a cascade:Judgment ; npx:retracts ?retracted .
+          <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> a prov:Activity ; prov:invalidated ?retracted .
           FILTER NOT EXISTS { <urn:uuid:6f23d33f-20f7-46e0-8d56-54bbdba2b369> prov:hadMember [] }
           BIND (EXISTS { ?retracted cascade:countsUnderLens true } AS ?counts)
         }
@@ -347,7 +347,8 @@ Feature: Alex Rivera's pod
         | J10       | false  |
 
   Rule: P14. A machine judgment stops counting under everyday when its reference table is replaced
-    J4 and E9: penicillin splits under everyday; nothing is written but the new table version; J4 stays.
+    J4 and E9: penicillin splits under everyday, since version 2027-01 holds no row joining its two records (M7);
+    nothing is written but the new table version; J4 stays.
 
     Example: E9 writes one file, the new ingredient map's description, and M2's recheck writes none
       Then "E9" wrote 1 file
@@ -721,7 +722,8 @@ Feature: Alex Rivera's pod
           UNION { GRAPH ?file { ?document a prov:Entity } FILTER NOT EXISTS { ?document prov:specializationOf ?series } }
           UNION { GRAPH ?file { ?import a prov:Activity ; prov:used ?used } }
           UNION { GRAPH ?file { ?session a prov:Activity } FILTER NOT EXISTS { ?session prov:used ?used }
-                  FILTER NOT EXISTS { ?session a cascade:MatcherRun } }
+                  FILTER NOT EXISTS { ?session a cascade:MatcherRun }
+                  FILTER NOT EXISTS { ?session prov:invalidated ?retracted } }
         }
         GROUP BY ?step
         """

@@ -1,0 +1,39 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:c1 a cascade:AllergyOrIntolerance .
+:c1Version prov:specializationOf :c1 ; cascade:patient :subject ; cascade:allergen "Sulfamethoxazole" .
+:c1Revision a cascade:Revision ; cascade:revisionOf :c1 ; cascade:version :c1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:c2 a cascade:AllergyOrIntolerance .
+:c2Version prov:specializationOf :c2 ; cascade:patient :subject ; cascade:allergen "Bactrim" .
+:c2Revision a cascade:Revision ; cascade:revisionOf :c2 ; cascade:version :c2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:c3 a cascade:AllergyOrIntolerance .
+:c3Version prov:specializationOf :c3 ; cascade:patient :subject ; cascade:allergen "Septra" .
+:c3Revision a cascade:Revision ; cascade:revisionOf :c3 ; cascade:version :c3Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
+:rules1SameMappedCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:queryHash :sameMappedCodeQuery .
+:rules2 prov:specializationOf :rules ; pav:version "2" ; prov:wasRevisionOf :rules1 ;
+    cascade:matcherRuleDeclaredWrong cascade:SameMappedCodeRule .
+:rules2SameCodeRule cascade:rowOfRuleListVersion :rules2 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
+:rules3 prov:specializationOf :rules ; pav:version "3" ; prov:wasRevisionOf :rules2 .
+:rules3SameCodeRule cascade:rowOfRuleListVersion :rules3 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQueryFixed .
+:rules3SameMappedCodeRule cascade:rowOfRuleListVersion :rules3 ; cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:queryHash :sameMappedCodeQueryFixed .

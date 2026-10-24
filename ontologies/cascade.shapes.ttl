@@ -10,7 +10,6 @@
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix npx: <http://purl.org/nanopub/x/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix org: <http://www.w3.org/ns/org#> .
@@ -666,6 +665,13 @@ cascade:VariantInterpretationShape a sh:NodeShape ;
         sh:datatype xsd:date ;
         sh:maxCount 1 ;
         sh:message "An interpretation date is one xsd:date, the day the interpretation was issued, with no time"@en
+    ] ;
+
+    sh:property [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A variant interpretation's version is attributed to at most one lab, named by the IRI of its cascade:Organization record"@en
     ] .
 
 # Records
@@ -1395,9 +1401,10 @@ cascade:JudgmentShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:property [
         sh:path cascade:verdict ;
+        sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About ) ;
-        sh:message "A judgment gives at most one verdict: cascade:Same, cascade:Different, cascade:Erroneous or cascade:About. One that only retracts gives none."@en ;
+        sh:message "A judgment gives one verdict: cascade:Same, cascade:Different, cascade:Erroneous or cascade:About. A retraction is no judgment but an activity."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:hadMember ;
@@ -1424,14 +1431,9 @@ cascade:JudgmentShape a sh:NodeShape ;
         sh:message "A judgment names what it used by IRI: versions it saw, reference versions it applied."@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path npx:supersedes ;
+        sh:path dct:replaces ;
         sh:class cascade:Judgment ;
-        sh:message "A judgment supersedes only judgments."@en ;
-        sh:severity sh:Violation
-    ] , [
-        sh:path npx:retracts ;
-        sh:class cascade:Judgment ;
-        sh:message "A judgment retracts only judgments."@en ;
+        sh:message "A judgment replaces only judgments."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:matcherRule ;
@@ -1481,31 +1483,60 @@ cascade:AboutShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
-cascade:VerdictOrRetractionShape a sh:NodeShape ;
-    sh:targetClass cascade:Judgment ;
+cascade:RetractionByPersonOrReleaseShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:invalidated ;
     sh:xone (
-        [ sh:path cascade:verdict ; sh:minCount 1 ]
-        [ sh:path npx:retracts ; sh:minCount 1 ]
+        [ sh:path prov:wasAssociatedWith ; sh:minCount 1 ]
+        [ sh:path prov:used ; sh:minCount 1 ;
+          sh:node [ sh:property [ sh:path cascade:matcherRuleDeclaredWrong ; sh:minCount 1 ] ] ]
     ) ;
-    sh:message "A judgment either gives a verdict or retracts judgments, not both and not neither."@en ;
+    sh:message "A retraction is made either by a person (prov:wasAssociatedWith) or by a release, prov:used: a rule list version that declares a matcher rule wrong; not both and not neither."@en ;
     sh:severity sh:Violation .
 
 cascade:RetractionShape a sh:NodeShape ;
-    sh:targetSubjectsOf npx:retracts ;
+    sh:targetSubjectsOf prov:invalidated ;
+    sh:class prov:Activity ;
+    sh:not [ sh:class cascade:Judgment ] ;
+    sh:message "A retraction is a prov:Activity, and no judgment."@en ;
+    sh:severity sh:Violation ;
     sh:property [
-        sh:path prov:hadMember ;
-        sh:maxCount 0 ;
-        sh:message "A retraction names only the judgments it retracts: no members, no supersession, no justification."@en ;
+        sh:path prov:invalidated ;
+        sh:nodeKind sh:IRI ;
+        sh:or ( [ sh:class cascade:Judgment ] [ sh:class cascade:ClaimAssertion ] ) ;
+        sh:message "A retraction invalidates judgments, claims or assertions, named by their IRIs."@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path npx:supersedes ;
+        sh:path prov:startedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:maxCount 1 ;
+        sh:message "A person's retraction carries at most one time it was made, an xsd:dateTime; a release's carries none."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:wasAssociatedWith ;
+        sh:nodeKind sh:IRI ;
+        sh:class prov:Person ;
+        sh:maxCount 1 ;
+        sh:message "A person's retraction names the person who made it, a prov:Person, by its IRI; a release's names none."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:hadMember ;
         sh:maxCount 0 ;
-        sh:message "A retraction names only the judgments it retracts: no members, no supersession, no justification."@en ;
+        sh:message "A retraction names only what it invalidates: no members, no replacement, no verdict, no justification."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path dct:replaces ;
+        sh:maxCount 0 ;
+        sh:message "A retraction names only what it invalidates: no members, no replacement, no verdict, no justification."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:verdict ;
+        sh:maxCount 0 ;
+        sh:message "A retraction names only what it invalidates: no members, no replacement, no verdict, no justification."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:justification ;
         sh:maxCount 0 ;
-        sh:message "A retraction names only the judgments it retracts: no members, no supersession, no justification."@en ;
+        sh:message "A retraction names only what it invalidates: no members, no replacement, no verdict, no justification."@en ;
         sh:severity sh:Violation
     ] .
 

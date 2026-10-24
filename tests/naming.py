@@ -226,8 +226,8 @@ def assertion_name(rule_list_version, claim):
     return v8_name("AssertionNamingRule", [rule_list_version, claim])
 
 
-def retraction_name(release, claim, matcher_rule):
-    return v8_name("RetractionNamingRule", [release, claim, matcher_rule])
+def retraction_name(release, assertion, matcher_rule):
+    return v8_name("RetractionNamingRule", [release, assertion, matcher_rule])
 
 
 def table_row_name(source, predicate, target, panel_sequence=None):
