@@ -4,6 +4,7 @@
 # An entry is labelled as the view holding it names it: a view is built before this file, and its graph holds each entry
 # resolved against the view's address (N13), so the placeholder only the derived state holds is never labelled.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -18,7 +19,8 @@ WHERE {
       OPTIONAL { ?r prov:wasDerivedFrom ?doc }
       OPTIONAL { ?r prov:wasDerivedFrom/pav:retrievedFrom ?from }
       OPTIONAL { ?r prov:wasDerivedFrom/prov:qualifiedAttribution ?a .
-                 ?a prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?author }
+                 ?a prov:hadRole ?authorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?author
+                 FILTER (?authorRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
       BIND (CONCAT(?kind, " · ", COALESCE(?name, "no name"), " · ",
                    COALESCE(CONCAT(?author, " · ", REPLACE(STR(?from), "^.*/", "")),
                             IF(BOUND(?doc), "unknown source", "own entry"))) AS ?l)
@@ -62,7 +64,8 @@ WHERE {
       ?revision a cascade:Revision ; prov:wasDerivedFrom ?thing .
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       OPTIONAL { ?thing prov:qualifiedAttribution ?a .
-                 ?a prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?author }
+                 ?a prov:hadRole ?authorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?author
+                 FILTER (?authorRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
       OPTIONAL { ?thing pav:retrievedFrom ?from }
       OPTIONAL { ?thing pav:retrievedOn ?on }
       BIND (CONCAT("Document · ", COALESCE(?author, "unknown source"),
@@ -140,7 +143,8 @@ WHERE {
       FILTER NOT EXISTS { ?thing a cascade:Subject }
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution ?a .
-                 ?a prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?author }
+                 ?a prov:hadRole ?authorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?author
+                 FILTER (?authorRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
       BIND (CONCAT("Patient profile · ", COALESCE(?author, "unknown source"),
                    " · first received ", SUBSTR(STR(?t), 1, 10)) AS ?l)
     }

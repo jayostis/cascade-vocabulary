@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "hospital-named-by-an-organization-record" ;
+  rdfs:comment "Asthma from a document that names Fernhill's organization record as its custodian and as its author; a later document names the record again, whose current version renames it Fernhill Family Clinic." ;
+  mf:entries (
+    <#where-it-came-from>
+  ) .
+
+<#where-it-came-from> a mf:QueryEvaluationTest ;
+  mf:name "where-it-came-from" ;
+  rdfs:comment "The asthma's document once, its hospital the organization record's current name, though the document names the record in two roles." ;
+  mf:action [ qt:query <../../../queries/questions/entry/Where%20it%20came%20from.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <where-it-came-from.srj> .

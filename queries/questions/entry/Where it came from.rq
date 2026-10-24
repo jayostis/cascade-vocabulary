@@ -1,11 +1,12 @@
 # For each member of an entry: when its current revision arrived, the import that brought it, and the document it was derived from,
-# with the hospital that wrote that document and when it was retrieved. A record the person entered has no document.
+# with each hospital that wrote or keeps that document and when it was retrieved. A record the person entered has no document.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?entry ?entryLabel ?record ?recordLabel ?arrived ?import ?importLabel ?document ?documentLabel ?hospital ?retrieved
+SELECT DISTINCT ?entry ?entryLabel ?record ?recordLabel ?arrived ?import ?importLabel ?document ?documentLabel ?hospital ?retrieved
 WHERE {
   ?record ^cascade:mergedFrom ?entry ; cascade:currentRevision ?revision .
   ?revision prov:generatedAtTime ?arrived .
@@ -17,6 +18,7 @@ WHERE {
              OPTIONAL { ?document rdfs:label ?documentLabel }
              OPTIONAL { ?document pav:retrievedOn ?retrieved }
              OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
-                        ?attribution prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?hospital } }
+                        ?attribution prov:hadRole ?hospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital
+                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) } }
 }
 ORDER BY ?entryLabel ?entry ?arrived ?recordLabel ?record ?document ?hospital ?retrieved
