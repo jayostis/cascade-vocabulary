@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "whose-records-are-hers" ;
-  rdfs:comment "Records naming a profile a counting About claims for the subject, a profile no About names, a profile whose About was retracted, and the subject directly; two hospitals name the claimed profile, one of them twice." ;
+  rdfs:comment "Records naming a profile a counting About claims for the subject, a profile no About names, a profile whose About was retracted, and the subject directly; two hospitals name the claimed profile, one of them twice; an organization, which names no patient." ;
   mf:entries (
     <#whose-records-are-the-subjects>
     <#which-records-name-it>
@@ -16,7 +16,7 @@
 
 <#whose-records-are-the-subjects> a mf:QueryEvaluationTest ;
   mf:name "whose-records-are-the-subjects" ;
-  rdfs:comment "A record is the subject's when its current version names a profile a counting About ties to them, or names the subject directly; not when no About names the profile, or the one that did was retracted." ;
+  rdfs:comment "A record is the subject's when its current version names a profile a counting About ties to them, or names the subject directly; not when no About names the profile, or the one that did was retracted, and never an organization." ;
   mf:action [ qt:query <whose-records-are-the-subjects.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <whose-records-are-the-subjects.srj> .
