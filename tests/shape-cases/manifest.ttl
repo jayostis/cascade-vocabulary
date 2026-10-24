@@ -166,7 +166,7 @@
 <#judgment-erroneous/no-verdict> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-erroneous/no-verdict.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:VerdictOrRetractionShape ] ] .
+              sh:result [ sh:sourceShape cascade:JudgmentShape ; sh:resultPath cascade:verdict ] ] .
 
 <#judgment-erroneous/no-member> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-erroneous/no-member.ttl> ] ;

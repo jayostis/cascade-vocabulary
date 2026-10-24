@@ -360,5 +360,5 @@ The step wrote one import, and its IRI is a version 4 `urn:uuid:`.
 The query gives exactly these rows as a multiset, or none. A cell is a
 Turtle term (`<iri>`, a prefixed name, `"text"`, `"2026-01-02"^^xsd:date`, `true`, `22`) or a thing in words. A
 prefixed name, in a cell or in the query, may use the prefixes the query declares and, without declaring them, `rdf:`,
-`rdfs:`, `xsd:`, `prov:`, `pav:`, `npx:`, `bridge:`, `oa:` (W3C Web Annotation) and `cascade:` as the vocabulary
+`rdfs:`, `xsd:`, `prov:`, `pav:`, `dct:`, `bridge:`, `oa:` (W3C Web Annotation) and `cascade:` as the vocabulary
 declares them. This is the step for what the others do not say; an example uses it only where a plain one would be forced.

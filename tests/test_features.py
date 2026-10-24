@@ -22,7 +22,7 @@ TIME = re.compile(r" on (\d{4}-\d{2}-\d{2}) at (\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?
 PREFIXES = "".join(f"PREFIX {prefix}: <{base}>\n" for prefix, base in {
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "xsd": "http://www.w3.org/2001/XMLSchema#", "prov": "http://www.w3.org/ns/prov#", "pav": "http://purl.org/pav/",
-    "npx": "http://purl.org/nanopub/x/", "bridge": "https://ns.cascadeprotocol.org/bridge/v1-draft#",
+    "dct": "http://purl.org/dc/terms/", "bridge": "https://ns.cascadeprotocol.org/bridge/v1-draft#",
     "oa": "http://www.w3.org/ns/oa#", "cascade": "https://ns.cascadeprotocol.org/cascade#",
 }.items())
 

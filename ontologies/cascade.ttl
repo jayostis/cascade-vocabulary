@@ -12,8 +12,6 @@
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix np: <http://www.nanopub.org/nschema#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix org: <http://www.w3.org/ns/org#> .
@@ -581,7 +579,7 @@ cascade:countsUnderLens a owl:DatatypeProperty ;
 
 cascade:lapsed a owl:DatatypeProperty ;
     rdfs:label "lapsed"@en ;
-    rdfs:comment "Derived: the judgment is a matcher's Same that does not count because a reference version it used has a newer current one, nothing retracts it, and no judgment not itself retracted supersedes it."@en ;
+    rdfs:comment "Derived: the judgment is a matcher's Same that does not count because a reference version it used has a newer current one, nothing retracts it, and no judgment not itself retracted replaces it (dct:replaces)."@en ;
     rdfs:domain cascade:Judgment ;
     rdfs:range xsd:boolean .
 
@@ -1517,17 +1515,21 @@ cascade:PatientRole a prov:Role ;
     rdfs:label "patient role"@en ;
     rdfs:comment "The person the pod is about, acting for themselves."@en .
 
-npx:supersedes a rdf:Property , owl:IrreflexiveObjectProperty ;
-    rdfs:isDefinedBy <http://purl.org/nanopub/x/> ;
-    rdfs:domain np:Nanopublication ;
-    rdfs:range np:Nanopublication ;
-    dct:source <https://github.com/peta-pico/ontologies/blob/271a83341f419de9ef3de87687b172b6790adaf2/nanopubx.ttl> .
+dct:replaces a rdf:Property , owl:ObjectProperty ;
+    rdfs:label "Replaces"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:subPropertyOf dct:relation ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> .
 
-npx:retracts a rdf:Property ;
-    rdfs:isDefinedBy <http://purl.org/nanopub/x/> ;
-    rdfs:domain foaf:Agent ;
-    rdfs:range np:Nanopublication ;
-    dct:source <https://github.com/peta-pico/ontologies/blob/271a83341f419de9ef3de87687b172b6790adaf2/nanopubx.ttl> .
+cascade:ruleDeclaredWrong a owl:ObjectProperty ;
+    rdfs:label "rule declared wrong"@en ;
+    rdfs:comment "Of a rule list version, the release, a matcher rule whose claims asserted under the versions it revises it declares wrong: the release's migration retracts each, so a known-bad join is never offered back. A claim the release's own runs assert is not declared wrong."@en ;
+    rdfs:domain prov:Entity .
+
+cascade:ReleaseMigration a owl:Class ;
+    rdfs:label "release migration"@en ;
+    rdfs:comment "An act an open performs before its matcher run when it adopts a rule list version that declares a rule wrong: it writes a retraction of each claim the release declares wrong that nothing retracts yet, each a prov:Activity that prov:invalidated the claim and prov:wasInfluencedBy the release, named by cascade:RetractionNamingRule with no time and no run, so two writers on one release write one file with one content."@en ;
+    rdfs:subClassOf prov:Activity .
 
 cascade:currentlySame a owl:ObjectProperty ;
     rdfs:label "currently same"@en ;

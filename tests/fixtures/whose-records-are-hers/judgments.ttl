@@ -1,6 +1,5 @@
 @prefix : <urn:x:> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -16,6 +15,6 @@
     cascade:basis cascade:OwnerStatement ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
-:retraction a cascade:Judgment ; npx:retracts :aboutRetracted ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
-    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+:retraction a prov:Activity ; prov:invalidated :aboutRetracted ;
+    prov:wasAssociatedWith :person ; prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:startedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .

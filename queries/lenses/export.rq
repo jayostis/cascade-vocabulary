@@ -1,9 +1,9 @@
-# A stricter lens, for records sent elsewhere: a person's judgment counts unless retracted or superseded, and a machine's
+# A stricter lens, for records sent elsewhere: a person's judgment counts unless retracted or replaced, and a machine's
 # claim only when the Cascade matcher made it resting on the same code, or code and date, or code and period, made with
 # current reference versions, and asserted under a version whose row for its rule has the query hash of the current rule
-# list version's row for it. A retracted judgment supersedes nothing.
+# list version's row for it. A retracted judgment replaces nothing.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
-PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
@@ -11,11 +11,11 @@ CONSTRUCT { ?j cascade:countsUnderLens true }
 WHERE {
   { ?j a cascade:Judgment ; prov:wasAttributedTo/a prov:Person .
     FILTER NOT EXISTS {
-      ?superseding npx:supersedes ?j
-      OPTIONAL { ?undoing npx:retracts ?superseding }
+      ?replacing dct:replaces ?j
+      OPTIONAL { ?undoing prov:invalidated ?replacing }
       FILTER (!BOUND(?undoing))
     }
-    FILTER NOT EXISTS { ?retracting npx:retracts ?j } }
+    FILTER NOT EXISTS { ?retraction prov:invalidated ?j } }
   UNION
   { { SELECT DISTINCT ?j
           WHERE {
@@ -29,11 +29,11 @@ WHERE {
     ?j a cascade:Judgment ; prov:wasAttributedTo cascade:CascadeMatcher ; cascade:justification ?why .
     FILTER (?why IN (cascade:SameCode, cascade:SameCodeAndDate, cascade:SameCodeAndPeriod))
     FILTER NOT EXISTS {
-      ?superseding npx:supersedes ?j
-      OPTIONAL { ?undoing npx:retracts ?superseding }
+      ?replacing dct:replaces ?j
+      OPTIONAL { ?undoing prov:invalidated ?replacing }
       FILTER (!BOUND(?undoing))
     }
-    FILTER NOT EXISTS { ?retracting npx:retracts ?j }
+    FILTER NOT EXISTS { ?retraction prov:invalidated ?j }
     MINUS {
       ?j prov:used ?input .
       ?input prov:specializationOf ?series .
