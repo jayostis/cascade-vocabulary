@@ -1,7 +1,8 @@
 """A fixture: a few Turtle files laid out like a pod, beside the test manifest of what queries give over it. It is built
 as runtime/rules.md says a pod is queried at a step: each file a graph named by the pod's address and its path, the
-lens's derived state, the files a query writes, and the layout. A .trig file holds table versions' rows, each in the
-graph its version names, as the matcher reads them (M13)."""
+lens's derived state, the files a query writes, and the layout. A .trig file holds graphs no file of the pod is: table
+versions' rows, each in the graph its version names, as the matcher reads them (M13), or a view's entries as a runtime's
+dataset holds them, resolved against the view's address (N13)."""
 
 from dataclasses import dataclass
 from functools import cache, cached_property

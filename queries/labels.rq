@@ -1,7 +1,7 @@
 # A name for every record, version, revision, document, judgment, reference version, entry and patient profile, made from
 # what each says: its kind, its name, where it came from and when. Names only help people read; nothing depends on them.
-# An entry is labelled as the derivations name it, urn:cascade:entry:, which a runtime renames when it writes the view
-# (N13); an entry a written view names is not labelled again.
+# An entry is labelled as the view holding it names it: a view is built before this file, and its graph holds each entry
+# resolved against the view's address (N13), so the placeholder only the derived state holds is never labelled.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX pav: <http://purl.org/pav/>
@@ -101,20 +101,18 @@ WHERE {
   UNION
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
-      ?thing cascade:latestMember ?latest .
+      GRAPH ?view { ?view a cascade:View . ?thing cascade:latestMember ?latest }
       ?latest cascade:recordKind ?kind .
-      FILTER (STRSTARTS(STR(?thing), "urn:cascade:entry:"))
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       OPTIONAL { ?latest pav:hasCurrentVersion/cascade:displayName ?name }
-      OPTIONAL { ?thing cascade:dateFrom/pav:hasCurrentVersion/cascade:displayDate ?date }
+      OPTIONAL { ?latest cascade:inEntry/cascade:dateFrom/pav:hasCurrentVersion/cascade:displayDate ?date }
       BIND (CONCAT(?kind, " entry", COALESCE(CONCAT(" · ", ?name), ""), COALESCE(CONCAT(" · ", STR(?date)), "")) AS ?l)
     }
     GROUP BY ?thing }
   UNION
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
-      ?thing a cascade:PatientProfile ; cascade:mergedFrom [] .
-      FILTER (STRSTARTS(STR(?thing), "urn:cascade:entry:"))
+      GRAPH ?view { ?view a cascade:View . ?thing a cascade:PatientProfile ; cascade:mergedFrom [] }
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       BIND ("Patient entry" AS ?l)
     }

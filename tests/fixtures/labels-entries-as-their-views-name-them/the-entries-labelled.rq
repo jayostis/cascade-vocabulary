@@ -1,6 +1,6 @@
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?entry ?label
-WHERE { ?entry cascade:latestMember [] .
+SELECT DISTINCT ?entry ?label
+WHERE { GRAPH ?view { ?entry cascade:latestMember [] }
         GRAPH <https://pod.example/clinical/labels.ttl> { ?entry rdfs:label ?label } }
