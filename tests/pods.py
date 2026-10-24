@@ -89,6 +89,8 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 SELECT DISTINCT ?claim ?now ?hash ?member WHERE {
   ?claim prov:wasAttributedTo cascade:CascadeMatcher ; cascade:verdict cascade:Same ; cascade:matcherRule ?rule ;
          prov:used ?input ; prov:hadMember ?member .
+  ?assertion cascade:assertedClaim ?claim .
+  FILTER NOT EXISTS { ?retraction prov:invalidated ?assertion }
   ?input prov:specializationOf ?series .
   ?series a cascade:ReferenceSeries ; pav:hasCurrentVersion ?now .
   FILTER (?now != ?input)
@@ -104,8 +106,9 @@ def comparisons():
 
 
 def kept(store):
-    """M7: each matcher claim that used a version of a series whose current version is another, and whose rule's query in
-    the current rule list, over that current version's rows, joins one of its members to each of the others."""
+    """M7: each matcher claim with an assertion no retraction invalidates that used a version of a series whose current
+    version is another, and whose rule's query in the current rule list, over that current version's rows, joins one of
+    its members to each of the others."""
     claims = {}
     for row in store.select(STALE_CLAIMS):
         claims.setdefault((row["claim"], row["now"], str(row["hash"])), set()).add(row["member"])
