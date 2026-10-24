@@ -17,6 +17,7 @@ WHERE {
   GRAPH ?view { ?entry ?field ?value }
   OPTIONAL { VALUES ?role { cascade:latestMember cascade:statusFrom cascade:dateFrom cascade:medicationUseStartDateFrom
                             cascade:prescriptionWrittenDateFrom }
+             FILTER (BOUND(?chosenFor))
              ?chosenFor ?role ?from .
              ?from pav:hasCurrentVersion ?version .
              ?version ?field ?value .
