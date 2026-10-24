@@ -442,7 +442,7 @@ Feature: The matcher's procedure
       Then that step wrote no file
       And the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
         | justification    | members                                       | used                                                                                                                  | name                                          |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:3ef73b7b-1c3a-8361-ae71-5ca6e809c68f |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:229f494f-26fa-8d9c-a2c9-badd04fd0356 |
       And the matcher's same mapped code of allergy SNOMED 373270004 and allergy RxNorm 7980 counts
 
     Example: a Same a person retracted is not rechecked
@@ -491,7 +491,7 @@ Feature: The matcher's procedure
 
     Example: a Same of three whose current version joins only two of them is filed again for those two, and lapses
       The erythromycin entry's record joins both SNOMED records, which no row joins to each other, so its Same has
-      three members. Version 2 drops SNOMED 96034006's row and keeps SNOMED 372694001's: no member is joined to each
+      three members. Version 2 drops SNOMED 91931000's row and keeps SNOMED 372694001's: no member is joined to each
       other one, so the Same is run again on version 2, which joins two.
 
       Given Eve enters "erythromycin" on 2026-05-03 at 09:00
@@ -501,7 +501,7 @@ Feature: The matcher's procedure
       Then that step wrote these matcher judgments:
         | justification    | members                                       | used                                                                                                                  |
         | same mapped code | allergy SNOMED 372694001, allergy RxNorm 4053 | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy SNOMED 372694001, version 1 of allergy RxNorm 4053 |
-      And the matcher's same mapped code of allergy SNOMED 372694001, allergy SNOMED 96034006 and allergy RxNorm 4053 has lapsed
+      And the matcher's same mapped code of allergy SNOMED 372694001, allergy SNOMED 91931000 and allergy RxNorm 4053 has lapsed
       And the matcher's same mapped code of allergy SNOMED 372694001 and allergy RxNorm 4053 counts
 
   Rule: M8. A reference version's description is written only if the pod lacks it
