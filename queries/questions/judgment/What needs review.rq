@@ -1,0 +1,16 @@
+# A Same judgment was made from the versions it saw. When a member has a newer version since, the judgment may no longer hold,
+# so it is listed for a person to look at again.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?judgment ?judgmentLabel ?needs
+WHERE {
+  ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
+  ?record pav:hasCurrentVersion ?now .
+  FILTER NOT EXISTS { ?judgment prov:used ?now }
+  BIND ("a member changed since it was judged" AS ?needs)
+  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+}
+ORDER BY ?judgmentLabel ?judgment

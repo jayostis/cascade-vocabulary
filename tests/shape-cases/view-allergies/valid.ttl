@@ -1,13 +1,10 @@
 @prefix : <#> .
-@prefix cascade: <https://ns.cascadeprotocol.org/core/v1#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 
-[] a health:AllergyRecord ;
+[] a cascade:AllergyOrIntolerance ;
     cascade:mergedFrom :one , :other ;
-    health:allergen "Latex" ;
-    health:allergyCategory "environment" ;
-    rec:latestMember :other ;
-    clinical:status "active" ;
-    rec:statusFrom :other .
+    cascade:allergen "Latex" ;
+    cascade:allergyCategory "environment" ;
+    cascade:latestMember :other ;
+    cascade:clinicalStatus "active" ;
+    cascade:statusFrom :other .

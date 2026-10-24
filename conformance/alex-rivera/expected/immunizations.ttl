@@ -1,13 +1,11 @@
-@prefix rec:      <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix health:   <https://ns.cascadeprotocol.org/health/v1#> .
-@prefix cascade:  <https://ns.cascadeprotocol.org/core/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
 
-[] a health:ImmunizationRecord ;
-  cascade:mergedFrom <urn:uuid:26b7ca18-b483-8b4b-9c3e-9086b13999cc> , <urn:uuid:588ad01f-9631-8f1b-bdc2-6a10acad4d9d> , <urn:uuid:4031383c-06e7-8b0a-bf7b-a16225c717bb> ;
-  health:vaccineName "Influenza, injectable, quadrivalent, preservative free" ;
-  health:vaccineCode "150" ;
-  rec:latestMember <urn:uuid:4031383c-06e7-8b0a-bf7b-a16225c717bb> ;
-  health:status "completed" ;
-  rec:statusFrom <urn:uuid:4031383c-06e7-8b0a-bf7b-a16225c717bb> ;
-  health:administrationDate "2025-10-15"^^xsd:date .
+[] a cascade:Vaccination ;
+  cascade:mergedFrom <urn:uuid:7d77d9e0-5457-86f2-8d9d-827c65c11b21> , <urn:uuid:7e3decf1-6e9a-8e95-b982-c2e7d18be3f1> , <urn:uuid:c0a85df6-e2ef-85a1-ac62-b6b454bac0c5> ;
+  cascade:vaccineName "Influenza, injectable, quadrivalent, preservative free" ;
+  cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/150> ;
+  cascade:latestMember <urn:uuid:c0a85df6-e2ef-85a1-ac62-b6b454bac0c5> ;
+  cascade:workflowStatus "completed" ;
+  cascade:statusFrom <urn:uuid:c0a85df6-e2ef-85a1-ac62-b6b454bac0c5> ;
+  cascade:vaccinationOccurrenceTime "2025-10-15"^^xsd:date .

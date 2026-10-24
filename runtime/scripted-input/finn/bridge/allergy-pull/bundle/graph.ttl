@@ -1,26 +1,44 @@
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
-@prefix pav: <http://purl.org/pav/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-<ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> a prov:Entity ;
-  bridge:serverBaseUrl "https://fhir.example-hospital.example/r4" ;
-  pav:retrievedOn "2026-06-08T08:59:30Z"^^xsd:dateTime ;
-  bridge:authenticatedPatient "Patient/p-finn-1" ;
-  prov:qualifiedAttribution [ prov:agent [ rdfs:label "Example Hospital" ] ; prov:hadRole rec:author ] .
-_:import a prov:Activity ; rdfs:label "FHIR pull" ;
-  prov:startedAtTime "2026-06-08T09:00:00Z"^^xsd:dateTime ;
-  prov:used <ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> ;
-  prov:qualifiedAssociation [ prov:hadPlan [ a prov:Plan ; rdfs:label "fhir-r4" ; pav:version "0.1.0" ] ;
-    prov:agent [ a prov:SoftwareAgent ; rdfs:label "Cascade Bridge" ; pav:version "0.1.0" ] ] .
-<urn:uuid:d4490646-a4c2-89de-87c5-a51c858fe3c3> a health:AllergyRecord ;
-  health:sourceRecordId "alg-peanut-1" ;
-  rec:sourceUrl <https://fhir.example-hospital.example/r4/AllergyIntolerance/alg-peanut-1> .
-<ni:///sha-256;EX6ixLN1TL10alYx5WGNtwoHVFm1Lm-_UJ4miUbku7U> prov:specializationOf <urn:uuid:d4490646-a4c2-89de-87c5-a51c858fe3c3> ;
-  health:allergen "Peanut" .
-_:arrival bridge:arrivedAs <ni:///sha-256;EX6ixLN1TL10alYx5WGNtwoHVFm1Lm-_UJ4miUbku7U> ; prov:wasGeneratedBy _:import ;
-  bridge:selector "/entry/0" ;
-  prov:wasDerivedFrom <ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
+<ni:///sha-256;bk95MHF8lGjTUFKgvSktQmMDJevP0cgmWCokRhBe3d8> cascade:allergen "Peanut" ;
+	cascade:allergenCode <http://snomed.info/id/91935009> .
+_:16481c37067f7c2ca9e5e2ac9700f419 bridge:arrivedAs <ni:///sha-256;bk95MHF8lGjTUFKgvSktQmMDJevP0cgmWCokRhBe3d8> .
+<ni:///sha-256;bk95MHF8lGjTUFKgvSktQmMDJevP0cgmWCokRhBe3d8> cascade:patient <urn:uuid:82ce249a-ae47-8304-ad1d-701bba5b1eca> ;
+	prov:specializationOf <urn:uuid:e3786dbc-0715-8f60-8861-52d003651eae> .
+<urn:uuid:e3786dbc-0715-8f60-8861-52d003651eae> cascade:sourceRecordId "alg-peanut-1" ;
+	cascade:sourceUrl <https://fhir.example-hospital.example/r4/AllergyIntolerance/alg-peanut-1> ;
+	a cascade:AllergyOrIntolerance .
+_:16481c37067f7c2ca9e5e2ac9700f419 oa:hasSelector _:454403a830411725cd61904ea6d19697 ;
+	oa:hasSource <ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> ;
+	prov:wasDerivedFrom <ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> ;
+	prov:wasGeneratedBy _:ad98a0728edfc1747173fda298bf5543 .
+_:454403a830411725cd61904ea6d19697 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/0" .
+_:ad98a0728edfc1747173fda298bf5543 <http://www.w3.org/2000/01/rdf-schema#label> "FHIR pull" ;
+	prov:startedAtTime "2026-06-08T09:00:00Z"^^xsd:dateTime .
+<ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> cascade:serverBaseUrl "https://fhir.example-hospital.example/r4" ;
+	pav:retrievedOn "2026-06-08T08:59:30Z"^^xsd:dateTime ;
+	cascade:authenticatedPatient "Patient/p-finn-1" ;
+	prov:qualifiedAttribution _:297c58790a84a894df0214ca09912df3 .
+_:297c58790a84a894df0214ca09912df3 prov:agent _:3c931455b3296bb3afd72f386484ddda .
+_:3c931455b3296bb3afd72f386484ddda <http://www.w3.org/2000/01/rdf-schema#label> "Example Hospital" .
+_:297c58790a84a894df0214ca09912df3 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> a prov:Entity .
+_:ad98a0728edfc1747173fda298bf5543 a prov:Activity ;
+	prov:used <ni:///sha-256;SdRk7VQZwBKJcyzvNY_0-bUuF1LpKT6Vw-khsXOthzM> ;
+	prov:qualifiedAssociation _:253f2bf71e2bfe837c66f20da719b30e .
+_:253f2bf71e2bfe837c66f20da719b30e prov:hadPlan _:935d39a95c0bd8110eef010d1d3c3676 .
+_:935d39a95c0bd8110eef010d1d3c3676 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "fhir-r4" ;
+	pav:version "0.1.0" .
+_:253f2bf71e2bfe837c66f20da719b30e prov:agent _:3d413890134eb1bcc857f22bc551c422 .
+_:3d413890134eb1bcc857f22bc551c422 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	pav:version "0.1.0" .

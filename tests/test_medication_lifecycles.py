@@ -13,8 +13,7 @@ from contract import query
 from engines import ENGINES
 
 CODE_SYSTEMS = Path(__file__).parent / "terminology" / "hl7-fhir-r4"
-CLINICAL = "https://ns.cascadeprotocol.org/clinical/v1#"
-REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
+CASCADE = "https://ns.cascadeprotocol.org/cascade#"
 PAV = "http://purl.org/pav/"
 DERIVATION = "derivations/medication-lifecycles.rq"
 
@@ -38,14 +37,14 @@ def lifecycles(engine, statuses):
     triples = set()
     for number, status in enumerate(statuses):
         record, entry, member, version = (URIRef(f"urn:x:{name}{number}") for name in ("record", "entry", "member", "version"))
-        triples |= {(record, RDF.type, URIRef(CLINICAL + "Medication")), (record, URIRef(REC + "inEntry"), entry),
-                    (entry, URIRef(REC + "statusFrom"), member), (member, URIRef(PAV + "hasCurrentVersion"), version)}
+        triples |= {(record, RDF.type, URIRef(CASCADE + "PrescribedOrReportedMedication")), (record, URIRef(CASCADE + "inEntry"), entry),
+                    (entry, URIRef(CASCADE + "statusFrom"), member), (member, URIRef(PAV + "hasCurrentVersion"), version)}
         if status is not None:
-            triples.add((version, URIRef(CLINICAL + "status"), Literal(status)))
+            triples.add((version, URIRef(CASCADE + "workflowStatus"), Literal(status)))
     store.add(triples)
     found = store.construct(query(DERIVATION))
     def of(number, name):
-        return next(o for s, p, o in found if s == URIRef(f"urn:x:entry{number}") and p == URIRef(REC + name))
+        return next(o for s, p, o in found if s == URIRef(f"urn:x:entry{number}") and p == URIRef(CASCADE + name))
 
     return {number: (of(number, "statusLifecycle"), int(of(number, "statusLifecycleStep"))) for number in range(len(statuses))}
 
@@ -54,5 +53,5 @@ def lifecycles(engine, statuses):
 def test_every_fhir_medication_status_code_is_a_row_of_its_own_and_an_absent_status_is_unknown(engine):
     found = lifecycles(engine, [*FHIR_CODES, None])
     assert {code: found[number][1] for number, code in enumerate(FHIR_CODES)} == dict.fromkeys(FHIR_CODES, 3)
-    assert found[len(FHIR_CODES)] == (URIRef(REC + "MedicationUnknown"), 2)
+    assert found[len(FHIR_CODES)] == (URIRef(CASCADE + "MedicationUnknown"), 2)
 

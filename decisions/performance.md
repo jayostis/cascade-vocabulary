@@ -10,7 +10,7 @@ or assumed (resting on one of #206's assumptions A1 to A8).
 
 A pod lives ten years: three hospitals, 50,000 records, 200,000 revisions, 5,000 acts, 40 rule list versions, two
 FHIR servers pulled daily, a background transport checking for arrivals 48 times a day. It runs on a Node server, and a
-browser demos it from the same files. Nothing is a server of record, so every device derives what it shows from the
+browser demos it from the same files. Nothing is a server of record, so every writer derives what it shows from the
 set of files it holds. What grows with what: which costs track the pod's content, which track its acts, and which
 would track the square of either?
 
@@ -47,7 +47,7 @@ fixes: [#206](https://github.com/jayostis/cascade-vocabulary/issues/206); the ru
 |---|---|---|---|
 | content names and the held-state rule | git's content-named objects | a version is named by its content and an arrival the pod already holds writes nothing (`naming.md`, `currency.md`): an unchanged daily pull costs a hash and a lookup per resource, about 73M hashes in ten years, 0.5 to 2 CPU-hours, and writes 0 files (assumed, computed) | borrowed |
 | snapshot chain | git commit parents; delta-state CRDTs | each snapshot is the previous one's hash plus the act's additions, with an order-free hash of the set (`naming.md`): 60 to 115 MB in ten years (computed) | borrowed from git's chain; diverged from git's tree, 1 to 2 GB with this layout (assumed) |
-| sync as union, with the no-hash test | CRDT union; git's index | a sync is a union of files, written only when a file arrived that the device lacked, other than a sync act or a snapshot; files that change in place are outside the set (`naming.md`): a check costs what arrived (computed) | borrowed from CRDTs; the test is ours |
+| sync as union, with the no-hash test | CRDT union; git's index | a sync is a union of files, written only when a file arrived that the writer lacked, other than a sync act or a snapshot; files that change in place are outside the set (`naming.md`): a check costs what arrived (computed) | borrowed from CRDTs; the test is ours |
 | current per act, incrementally | openEHR `CONTRIBUTION`; FHIR `_since` | an act rebuilds only the records it wrote revisions for and those its judgments reach by derivation, equal to the full rebuild; a migration, a trusted-makers change and a rule list version change rebuild everything (`currency.md`): the work is what the act touched and its groups (assumed) | ours |
 | the ladder as a maximum | CRDTs | current is a maximum over one record's revisions, about four, less its Befores and Erroneous, with no walk of history (`currency.md`; computed) | borrowed in spirit from CRDTs |
 | claims named once, asserted per query hash | nanopub assertions | a claim counts under any rule list version whose row for its rule carries the same `rec:queryHash`, so a new version asserts only the claims of the rules it changed; M7 re-mints only claims whose joining rows changed (`naming.md`, `judgments.md`, `variant-identity.md`): assertions track rule changes, not versions times claims | ours |
@@ -55,8 +55,8 @@ fixes: [#206](https://github.com/jayostis/cascade-vocabulary/issues/206); the ru
 | runs bound to arrivals, scoped within an organisation | FHIR `_since` | a run binds `?record` to the records the import, entry or sync brought, and within-organisation rules stay within one (`republishing-sources.md`): about 100k comparisons a run against 1 to 5M rows unbound (assumed) | ours |
 | derivations of a source-level Same | FHIR `Linkage`, computed | a server Same's joins are a hash join on type and id over the records under both, about 20k in milliseconds and about 10k pairs, kept with the derived state and redone when the judgment is filed or retracted, never per read (`republishing-sources.md`; assumed) | ours |
 | page-read tables, current versions only | openEHR AQL's latest version | tables are keyed row lookups, and R13 counts over current versions only, so an old version's rows may be dropped (`variant-identity.md`, `variant-classifications-table.md`): one version held, where every one was 72 GB of ClinVar (computed) | borrowed from AQL's default |
-| findings bounded | | one rollback finding per import that goes back, an acknowledged one still standing; one clock finding per device while one stands; one un-reached finding per rule list version, 40 in ten years (`currency.md`, `naming.md`; computed) | ours |
-| the review page bounded | | a pick between successive pulls of one source on one device is ordered by that device's snapshot chain and not listed; only picks the chain does not order are (`currency.md`): against about 8,000 lines by year ten (assumed) | ours |
+| findings bounded | | one rollback finding per import that goes back, an acknowledged one still standing; no second clock finding while one stands on the new act's first-parent ancestry; one un-reached finding per rule list version, 40 in ten years (`currency.md`, `naming.md`; computed) | ours |
+| the review page bounded | | a pick between two pulls of one source where one's snapshot is an ancestor of the other's is ordered by ancestry and not listed; only picks ancestry does not order are (`currency.md`): against about 8,000 lines by year ten (assumed) | ours |
 
 ## Why
 
@@ -84,7 +84,7 @@ rather than 120³/3 derived pairs.
 browser holds one ClinVar version rather than a decade of them.
 
 **What a person reads is bounded by events.** A finding is one per thing that happened, a restore or a skewed device,
-not one per act it touches; the review page lists only what the pod truly guessed, and the device's own chain is not
+not one per act it touches; the review page lists only what the pod truly guessed, and what ancestry orders is not
 a guess.
 
 **Where it runs.** A browser can demo views read from materialised files and keyed table lookups. Full matcher runs,

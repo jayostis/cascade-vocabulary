@@ -1,0 +1,15 @@
+# Read from the view alone, as an app would: each entry whose status is active, with its code, its criticality,
+# and how many records it joins.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?allergen ?code ?criticality (COUNT(?record) AS ?records) ?entry ?entryLabel
+WHERE {
+  ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" ;
+         cascade:allergen ?allergen ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:allergenCode ?code }
+  OPTIONAL { ?entry cascade:allergyCriticality ?criticality }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+}
+GROUP BY ?entry ?allergen ?code ?criticality ?entryLabel
+ORDER BY ?allergen ?entry

@@ -1,12 +1,12 @@
 @prefix : <#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-:table a rec:ReferenceSeries ;
+:table a cascade:ReferenceSeries ;
     rdfs:label "ClinVar variant classifications" ;
-    rec:tableKind rec:VariantClassifications .
+    cascade:tableKind cascade:VariantClassifications .
 :table-1 prov:specializationOf :table ;
     pav:version "1" ;
-    rec:coversGene 7127 .
+    cascade:coversGene 7127 .

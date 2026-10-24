@@ -1,0 +1,14 @@
+# A record is about the subject when its current version names a patient profile a counting About judgment ties to them,
+# or names the subject directly.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT { ?record cascade:subject ?s }
+WHERE {
+  { ?record pav:hasCurrentVersion/cascade:patient ?profile .
+    ?j cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?s . }
+  UNION
+  { ?record pav:hasCurrentVersion/cascade:patient ?s .
+    ?s a cascade:Subject . }
+}

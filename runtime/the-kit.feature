@@ -21,10 +21,10 @@ Feature: The conformance kit
   - expected/ holds each view a correct runtime builds at the last step under the everyday lens, each entry a blank
     node, and handles.json, the scenario's name inputs for each record and profile it gives a handle.
 
-  A runtime passes a kit when every rule below holds for one replay of its story. An EARL report names checks 2 to 5
+  A runtime passes a kit when every rule below holds for one replay of its story. An EARL report names checks 2 to 6
   as tests by an IRI relative to the kit's folder: check 2 is #check-2-each-final-view-equals-expected, check 3
-  is #check-3-every-file-conforms-to-the-shapes, check 4 is #check-4-every-name-follows-its-rule, and check 5
-  is #check-5-every-file-is-where-the-layout-says.
+  is #check-3-every-file-conforms-to-the-shapes, check 4 is #check-4-every-name-follows-its-rule, check 5
+  is #check-5-every-file-is-where-the-layout-says, and check 6 is #check-6-no-view-holds-the-pods-address.
 
   Rule: Check 1. Every example passes
     Every example of the kit's feature file, and every example of the rules' feature files. Check 1 is no test of its
@@ -32,20 +32,21 @@ Feature: The conformance kit
 
   Rule: Check 2. Each final view equals expected/
     Take the view graph the replay builds at the last step under everyday (the graph <address>clinical/<view>.ttl),
-    keep each subject that has cascade:mergedFrom with its triples, and replace each urn:cascade:entry: IRI with a blank
-    node. The result is the expected file's graph, up to its blank nodes.
+    keep each subject that has cascade:mergedFrom with its triples, and replace each entry, which the file writes as
+    <#hex> (N13) and the graph holds resolved against the view's address, with a blank node. The result is the expected
+    file's graph, up to its blank nodes.
 
     No example states this check: SPARQL cannot compare two graphs up to their blank nodes.
 
   Rule: Check 3. Every RDF file of the pod conforms to the vocabulary's shapes
     Each read with the files that describe what it names, less clinical/labels.ttl. That file gives a label, for people
-    to read, to things other files describe, the subject among them, and rec:SubjectShape is closed: read with the rest,
+    to read, to things other files describe, the subject among them, and cascade:SubjectShape is closed: read with the rest,
     it would refuse the subject's rdfs:label.
 
     No example states this check: SPARQL cannot run SHACL.
 
   Rule: Check 4. Every name follows its rule
-    N1 to N7, N9 and N10, computed from that run's own inputs, its random import and session IDs among them. Each saved
+    N1 to N7, N9 and N10, computed from that run's own inputs, its random import IDs among them. Each saved
     Bridge output is in the pod less its arrivals, with its import replaced by the import its step wrote (A9, A11), and
     each revision follows an earlier revision of the same record.
 
@@ -55,3 +56,10 @@ Feature: The conformance kit
     The check is open-world: the pod may also hold files another app wrote.
 
     No example states this check: SPARQL cannot read a stored document's bytes.
+
+  Rule: Check 6. No view the runtime wrote, nor any view it shares, holds the pod's address
+    decisions/naming.md, row "view entry". A view entry is written in the view file as <#hex>, relative to its view
+    (N13), never as the derivations' placeholder urn:cascade:entry:<hex>, and no IRI a view file holds, as its bytes
+    write it, begins with the pod's address: a view says nothing of where the pod lives.
+
+    No example states this check: SPARQL reads a file's IRIs resolved against its address, never as its bytes write them.

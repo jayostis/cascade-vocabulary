@@ -1,7 +1,6 @@
 @prefix : <#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 
-:record a clinical:Procedure ;
-    rec:sourceUrl <https://fhir.example/Procedure/1> ;
-    clinical:sourceRecordId "1" , "2" .
+<urn:uuid:4085cc7f-969f-85b5-b6e8-6c804ec7d6cc> a cascade:MedicalProcedure ;
+    cascade:sourceUrl <https://fhir.example/Procedure/record-procedure-two-source-record-ids> ;
+    cascade:sourceRecordId "1" , "2" .

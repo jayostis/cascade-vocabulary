@@ -1,7 +1,7 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-brand-generic" ;
@@ -13,6 +13,6 @@
 <#same-brand-generic> a mf:QueryEvaluationTest ;
   mf:name "same-brand-generic" ;
   rdfs:comment "A brand and its generic match, either way round, and so do two brands of one generic, with the brand generics table's version; a record that shares a code with either, one of an unrelated product, an NDC, or codes only another kind's version or a pod file maps, do not." ;
-  mf:action [ qt:query <../../../queries/v1-draft/matcher/same-brand-generic.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/matcher/same-brand-generic.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <same-brand-generic.srj> .

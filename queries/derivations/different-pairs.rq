@@ -1,0 +1,9 @@
+# Two records named together by a counting Different judgment are currently different.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT { ?a cascade:currentlyDifferent ?b }
+WHERE {
+  ?d cascade:countsUnderLens true ; cascade:verdict cascade:Different ; prov:hadMember ?a , ?b .
+  FILTER (?a != ?b)
+}

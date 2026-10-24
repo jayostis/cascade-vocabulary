@@ -1,14 +1,14 @@
 @prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
-:lynch a rec:ReferenceSeries ; rdfs:label "ClinVar Lynch classifications" ; rec:tableKind rec:VariantClassifications .
-:lynch-1 prov:specializationOf :lynch ; pav:version "1" ; rec:coversGene "MLH1" .
+:lynch a cascade:ReferenceSeries ; rdfs:label "ClinVar Lynch classifications" ; cascade:tableKind cascade:VariantClassifications .
+:lynch-1 prov:specializationOf :lynch ; pav:version "1" ; cascade:coversGene "MLH1" .
 
-:other a rec:ReferenceSeries ; rdfs:label "Another variant classifications series" ; rec:tableKind rec:VariantClassifications .
-:other-1 prov:specializationOf :other ; pav:version "1" ; rec:coversGene "MLH1" .
+:other a cascade:ReferenceSeries ; rdfs:label "Another variant classifications series" ; cascade:tableKind cascade:VariantClassifications .
+:other-1 prov:specializationOf :other ; pav:version "1" ; cascade:coversGene "MLH1" .
 
-:names a rec:ReferenceSeries ; rdfs:label "Variation names" ; rec:tableKind rec:CodeNames .
+:names a cascade:ReferenceSeries ; rdfs:label "Variation names" ; cascade:tableKind cascade:CodeNames .
 :names-1 prov:specializationOf :names ; pav:version "1" .

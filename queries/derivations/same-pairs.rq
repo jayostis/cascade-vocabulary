@@ -1,0 +1,11 @@
+# Two records named together by a counting Same judgment are currently the same, unless they are also currently different:
+# a Different judgment wins.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT { ?a cascade:currentlySame ?b }
+WHERE {
+  ?j cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?a , ?b .
+  FILTER (?a != ?b)
+  FILTER NOT EXISTS { ?a cascade:currentlyDifferent ?b }
+}

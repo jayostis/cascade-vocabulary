@@ -1,11 +1,11 @@
 @prefix : <urn:x:> .
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :person a prov:Person .
 
-:about a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :profile ; jdg:subject :subject ;
-    jdg:basis jdg:OwnerStatement ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:about a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :profile ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

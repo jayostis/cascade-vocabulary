@@ -1,0 +1,13 @@
+# Two records of one kind match when their current versions share an RxNorm code, whether each came from a
+# prescription or from a list of what the person takes. Any dates are ignored. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version cascade:rxNormCode ?code .
+  ?otherVersion cascade:rxNormCode ?code .
+  FILTER (?record != ?other)
+}

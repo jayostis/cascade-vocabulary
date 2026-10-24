@@ -1,35 +1,34 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:sameDayA a health:ImmunizationRecord .
-:sameDayAVersion prov:specializationOf :sameDayA ; health:vaccineCode "150" ; health:administrationDate "2025-10-01"^^xsd:date .
-:sameDayARevision a rec:Revision ; rec:revisionOf :sameDayA ; rec:version :sameDayAVersion ;
+:sameDayA a cascade:Vaccination .
+:sameDayAVersion prov:specializationOf :sameDayA ; cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/150> ; cascade:vaccinationOccurrenceTime "2025-10-01"^^xsd:date .
+:sameDayARevision a cascade:Revision ; cascade:revisionOf :sameDayA ; cascade:version :sameDayAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:sameDayB a health:ImmunizationRecord .
-:sameDayBVersion prov:specializationOf :sameDayB ; health:vaccineCode "150" ; health:administrationDate "2025-10-01"^^xsd:date .
-:sameDayBRevision a rec:Revision ; rec:revisionOf :sameDayB ; rec:version :sameDayBVersion ;
+:sameDayB a cascade:Vaccination .
+:sameDayBVersion prov:specializationOf :sameDayB ; cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/150> ; cascade:vaccinationOccurrenceTime "2025-10-01"^^xsd:date .
+:sameDayBRevision a cascade:Revision ; cascade:revisionOf :sameDayB ; cascade:version :sameDayBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:twoDaysA a health:ImmunizationRecord .
-:twoDaysAVersion prov:specializationOf :twoDaysA ; health:vaccineCode "141" ; health:administrationDate "2025-10-01"^^xsd:date .
-:twoDaysARevision a rec:Revision ; rec:revisionOf :twoDaysA ; rec:version :twoDaysAVersion ;
+:twoDaysA a cascade:Vaccination .
+:twoDaysAVersion prov:specializationOf :twoDaysA ; cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/141> ; cascade:vaccinationOccurrenceTime "2025-10-01"^^xsd:date .
+:twoDaysARevision a cascade:Revision ; cascade:revisionOf :twoDaysA ; cascade:version :twoDaysAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:twoDaysB a health:ImmunizationRecord .
-:twoDaysBVersion prov:specializationOf :twoDaysB ; health:vaccineCode "141" ; health:administrationDate "2025-10-02"^^xsd:date .
-:twoDaysBRevision a rec:Revision ; rec:revisionOf :twoDaysB ; rec:version :twoDaysBVersion ;
+:twoDaysB a cascade:Vaccination .
+:twoDaysBVersion prov:specializationOf :twoDaysB ; cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/141> ; cascade:vaccinationOccurrenceTime "2025-10-02"^^xsd:date .
+:twoDaysBRevision a cascade:Revision ; cascade:revisionOf :twoDaysB ; cascade:version :twoDaysBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:undatedA a health:ImmunizationRecord .
-:undatedAVersion prov:specializationOf :undatedA ; health:vaccineCode "88" ; health:administrationDate "2025-10-01"^^xsd:date .
-:undatedARevision a rec:Revision ; rec:revisionOf :undatedA ; rec:version :undatedAVersion ;
+:undatedA a cascade:Vaccination .
+:undatedAVersion prov:specializationOf :undatedA ; cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/88> ; cascade:vaccinationOccurrenceTime "2025-10-01"^^xsd:date .
+:undatedARevision a cascade:Revision ; cascade:revisionOf :undatedA ; cascade:version :undatedAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:undatedB a health:ImmunizationRecord .
-:undatedBVersion prov:specializationOf :undatedB ; health:vaccineCode "88" .
-:undatedBRevision a rec:Revision ; rec:revisionOf :undatedB ; rec:version :undatedBVersion ;
+:undatedB a cascade:Vaccination .
+:undatedBVersion prov:specializationOf :undatedB ; cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/88> .
+:undatedBRevision a cascade:Revision ; cascade:revisionOf :undatedB ; cascade:version :undatedBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

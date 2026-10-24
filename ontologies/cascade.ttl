@@ -1,0 +1,1754 @@
+# The Cascade vocabulary, https://ns.cascadeprotocol.org/cascade#: every term a Cascade pod file carries or a name in it
+# is computed from.
+#
+# Licensed Apache-2.0 AND CC-BY-4.0. A term carrying a dct:source in https://github.com/the-cascade-protocol/spec/ is
+# adapted from "The Cascade Protocol specification" by Cascade Agentic Labs LLC, its ontologies/ folder at commit
+# d819bc2c045266f9f79ebf9398cbbb82a6156d27
+# (https://github.com/the-cascade-protocol/spec/tree/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies), licensed
+# under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Adapted: terms trimmed to type, label, domain, range
+# and superclasses, renamed into this namespace, and merged. Every other term is Apache-2.0.
+
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix solid: <http://www.w3.org/ns/solid/terms#> .
+@prefix sssom: <https://w3id.org/sssom/> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://ns.cascadeprotocol.org/cascade#> a owl:Ontology ;
+    rdfs:label "Cascade vocabulary"@en ;
+    dct:license <https://spdx.org/licenses/Apache-2.0> , <https://spdx.org/licenses/CC-BY-4.0> ;
+    dct:source <https://github.com/the-cascade-protocol/spec/tree/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies> .
+
+# Copied from the spec's core
+
+cascade:PatientProfile a owl:Class ;
+    rdfs:label "Patient Profile"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:dateOfBirth a owl:DatatypeProperty ;
+    rdfs:label "Date of Birth"@en ;
+    rdfs:domain cascade:PatientProfile ;
+    rdfs:range xsd:date ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:sourceRecordId a owl:DatatypeProperty ;
+    rdfs:label "Source Record ID"@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> , <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> , <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:mergedFrom a owl:ObjectProperty ;
+    rdfs:label "Merged From"@en ;
+    rdfs:domain owl:Thing ;
+    rdfs:range owl:Thing ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:PodManifest a owl:Class ;
+    rdfs:label "Pod Manifest"@en ;
+    rdfs:subClassOf dcat:Dataset , prov:Entity ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:schemaVersion a owl:DatatypeProperty ;
+    rdfs:label "Schema Version"@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+foaf:givenName a owl:DatatypeProperty ;
+    rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> ;
+    dct:source <http://xmlns.com/foaf/spec/20140114.rdf> .
+
+foaf:familyName a owl:DatatypeProperty ;
+    rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> ;
+    dct:source <http://xmlns.com/foaf/spec/20140114.rdf> .
+
+foaf:name a owl:DatatypeProperty ;
+    rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> ;
+    dct:source <http://xmlns.com/foaf/spec/20140114.rdf> .
+
+# Copied from the spec's health
+
+cascade:AllergyOrIntolerance a owl:Class ;
+    rdfs:label "Allergy or Intolerance"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:ProblemOrDiagnosis a owl:Class ;
+    rdfs:label "Problem or Diagnosis"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:Vaccination a owl:Class ;
+    rdfs:label "Vaccination"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:allergen a owl:DatatypeProperty ;
+    rdfs:label "Allergen"@en ;
+    rdfs:domain cascade:AllergyOrIntolerance ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:allergenCode a owl:ObjectProperty ;
+    rdfs:label "Allergen Code"@en ;
+    rdfs:domain cascade:AllergyOrIntolerance ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:reactionManifestationText a owl:DatatypeProperty ;
+    rdfs:label "Reaction Manifestation Text"@en ;
+    rdfs:domain cascade:AllergyOrIntolerance ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:reactionManifestationCode a owl:ObjectProperty ;
+    rdfs:label "Reaction Manifestation Code"@en ;
+    rdfs:domain cascade:AllergyOrIntolerance ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:allergySeverity a owl:DatatypeProperty ;
+    rdfs:label "Allergy Severity"@en ;
+    rdfs:domain cascade:AllergyOrIntolerance ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:allergyCategory a owl:DatatypeProperty ;
+    rdfs:label "Allergy Category"@en ;
+    rdfs:domain cascade:AllergyOrIntolerance ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:onsetDate a owl:DatatypeProperty ;
+    rdfs:label "Onset Date"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:ProblemOrDiagnosis cascade:AllergyOrIntolerance ) ] ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:notes a owl:DatatypeProperty ;
+    rdfs:label "Notes"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:LaboratoryTestResult cascade:ProblemOrDiagnosis cascade:AllergyOrIntolerance cascade:Vaccination ) ] ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:conditionName a owl:DatatypeProperty ;
+    rdfs:label "Condition Name"@en ;
+    rdfs:domain cascade:ProblemOrDiagnosis ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:clinicalStatus a owl:DatatypeProperty ;
+    rdfs:label "Clinical Status"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:AllergyOrIntolerance cascade:ProblemOrDiagnosis ) ] ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> , <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:workflowStatus a owl:DatatypeProperty ;
+    rdfs:label "Workflow Status"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:Vaccination cascade:MedicalProcedure cascade:LaboratoryTestResult
+        cascade:PrescribedOrReportedMedication cascade:GeneticVariantFinding cascade:VariantInterpretation ) ] ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> , <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:icd10Code a owl:ObjectProperty ;
+    rdfs:label "ICD-10-CM Code"@en ;
+    rdfs:domain cascade:ProblemOrDiagnosis ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:snomedCode a owl:ObjectProperty ;
+    rdfs:label "SNOMED CT Code"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> , <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:vaccineName a owl:DatatypeProperty ;
+    rdfs:label "Vaccine Name"@en ;
+    rdfs:domain cascade:Vaccination ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:vaccineCode a owl:ObjectProperty ;
+    rdfs:label "Vaccine Code"@en ;
+    rdfs:domain cascade:Vaccination ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:vaccinationOccurrenceTime a owl:DatatypeProperty ;
+    rdfs:label "Vaccination Occurrence Time"@en ;
+    rdfs:domain cascade:Vaccination ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:lotNumber a owl:DatatypeProperty ;
+    rdfs:label "Lot Number"@en ;
+    rdfs:domain cascade:Vaccination ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:doseQuantity a owl:DatatypeProperty ;
+    rdfs:label "Dose Quantity"@en ;
+    rdfs:domain cascade:Vaccination ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:routeOfAdministration a owl:DatatypeProperty ;
+    rdfs:label "Route of Administration"@en ;
+    rdfs:domain cascade:Vaccination ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:administrationSite a owl:DatatypeProperty ;
+    rdfs:label "Administration Site"@en ;
+    rdfs:domain cascade:Vaccination ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:LaboratoryTestResult a owl:Class ;
+    rdfs:label "Laboratory Test Result"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:testName a owl:DatatypeProperty ;
+    rdfs:label "Test Name"@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:testCode a owl:ObjectProperty ;
+    rdfs:label "Test Code"@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:resultValue a owl:DatatypeProperty ;
+    rdfs:label "Result Value"@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:resultUnit a owl:DatatypeProperty ;
+    rdfs:label "Result Unit"@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:referenceRange a owl:DatatypeProperty ;
+    rdfs:label "Reference Range"@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:resultInterpretation a owl:DatatypeProperty ;
+    rdfs:label "Result Interpretation"@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:resultClinicallyRelevantTime a owl:DatatypeProperty ;
+    rdfs:label "Result Clinically Relevant Time"@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+# Copied from the spec's clinical
+
+cascade:MedicalProcedure a owl:Class ;
+    rdfs:label "Medical Procedure"@en ;
+    rdfs:subClassOf prov:Entity ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:procedureName a owl:DatatypeProperty ;
+    rdfs:label "Procedure Name"@en ;
+    rdfs:domain cascade:MedicalProcedure ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:procedureDate a owl:DatatypeProperty ;
+    rdfs:label "Procedure Date"@en ;
+    rdfs:domain cascade:MedicalProcedure ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:cptCode a owl:DatatypeProperty ;
+    rdfs:label "CPT Code"@en ;
+    rdfs:domain cascade:MedicalProcedure ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:verificationStatus a owl:DatatypeProperty ;
+    rdfs:label "Verification Status"@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:allergyType a owl:DatatypeProperty ;
+    rdfs:label "Allergy Type"@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:allergyCriticality a owl:DatatypeProperty ;
+    rdfs:label "Allergy Criticality"@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:conditionCategory a owl:DatatypeProperty ;
+    rdfs:label "Condition Category"@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:abatementDate a owl:DatatypeProperty ;
+    rdfs:label "Abatement Date"@en ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:PrescribedOrReportedMedication a owl:Class ;
+    rdfs:label "Prescribed or Reported Medication"@en ;
+    rdfs:subClassOf prov:Entity ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:drugName a owl:DatatypeProperty ;
+    rdfs:label "Drug Name"@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:rxNormCode a owl:ObjectProperty ;
+    rdfs:label "RxNorm Code"@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:prescribedOrReported a owl:DatatypeProperty ;
+    rdfs:label "Prescribed or Reported"@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:dosage a owl:DatatypeProperty ;
+    rdfs:label "Dosage"@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:medicationUseStartDate a owl:DatatypeProperty ;
+    rdfs:label "Medication Use Start Date"@en ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:medicationUseEndDate a owl:DatatypeProperty ;
+    rdfs:label "Medication Use End Date"@en ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+# Copied from the spec's genomics
+
+cascade:GeneticVariantFinding a owl:Class ;
+    rdfs:label "Genetic Variant Finding"@en ;
+    rdfs:subClassOf prov:Entity ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:hgvsCodingDnaExpression a owl:DatatypeProperty ;
+    rdfs:label "HGVS Coding DNA Expression"@en ;
+    rdfs:domain cascade:GeneticVariantFinding ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:clinvarVariationId a owl:DatatypeProperty ;
+    rdfs:label "ClinVar Variation ID"@en ;
+    rdfs:domain cascade:GeneticVariantFinding ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:geneSymbol a owl:DatatypeProperty ;
+    rdfs:label "Gene Symbol (HGNC Approved)"@en ;
+    rdfs:domain cascade:GeneticVariantFinding ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:VariantInterpretation a owl:Class ;
+    rdfs:label "Variant Interpretation"@en ;
+    rdfs:subClassOf prov:Entity ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:variantInterpreted a owl:ObjectProperty ;
+    rdfs:label "Variant Interpreted"@en ;
+    rdfs:domain cascade:VariantInterpretation ;
+    rdfs:range cascade:GeneticVariantFinding ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:acmgClassification a owl:ObjectProperty ;
+    rdfs:label "ACMG/AMP Classification"@en ;
+    rdfs:domain cascade:VariantInterpretation ;
+    rdfs:range cascade:AcmgClass ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:interpretedDate a owl:DatatypeProperty ;
+    rdfs:label "Interpretation Date"@en ;
+    rdfs:domain cascade:VariantInterpretation ;
+    rdfs:range xsd:date ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:AcmgClass a owl:Class ;
+    rdfs:label "ACMG Classification"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:Pathogenic a cascade:AcmgClass ;
+    rdfs:label "Pathogenic"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:LikelyPathogenic a cascade:AcmgClass ;
+    rdfs:label "Likely Pathogenic"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:UncertainSignificance a cascade:AcmgClass ;
+    rdfs:label "Uncertain Significance"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:LikelyBenign a cascade:AcmgClass ;
+    rdfs:label "Likely Benign"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+cascade:Benign a cascade:AcmgClass ;
+    rdfs:label "Benign"@en ;
+    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+# Records
+
+cascade:sourceUrl a owl:ObjectProperty ;
+    rdfs:label "source URL"@en ;
+    rdfs:comment "A record's full address at its source: for a FHIR resource, its URL on its server; for a contained resource, its container's address, #, and its local id; for a C-CDA record, its HL7 identifier, urn:hl7ii:<root>:<extension>, or its root alone as urn:oid:<root> or urn:uuid:<root>, each character an IRI does not allow percent-encoded as UTF-8. Several records may share one, since a name takes inputs a source address does not. A record named from its document and its place in it, or with no usable identifier, has none."@en .
+
+cascade:patient a owl:ObjectProperty ;
+    rdfs:label "patient"@en ;
+    rdfs:comment "Who a version is about: the source's patient record, or the subject itself when the pod's person entered it."@en .
+
+cascade:ndcCode a owl:ObjectProperty ;
+    rdfs:label "NDC code"@en ;
+    rdfs:comment "An NDC the source gave, as the cascade:NDC IRI: Cascade's 11-digit form, so an adapter normalises FHIR's 10-digit hyphenated form into it."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication .
+
+cascade:prescriptionWrittenDate a owl:DatatypeProperty ;
+    rdfs:label "prescription written date"@en ;
+    rdfs:comment "Of a version of a prescribed medication, when the prescription was written, as FHIR's MedicationRequest.authoredOn: never the start of use."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.authoredOn> .
+
+cascade:userSelectedCode a owl:ObjectProperty ;
+    rdfs:label "user selected code"@en ;
+    rdfs:comment "The one code among the version's codes that the source marked as the one it chose, as FHIR's Coding.userSelected does; absent when the source marked none."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication .
+
+cascade:Revision a owl:Class ;
+    rdfs:label "revision"@en ;
+    rdfs:comment "That, at its prov:generatedAtTime, a record came to say a version, after the revision it prov:wasRevisionOf, generated by an import and derived from a document."@en ;
+    rdfs:subClassOf prov:Entity .
+
+cascade:answeredAsOf a owl:DatatypeProperty ;
+    rdfs:label "answered as of"@en ;
+    rdfs:comment "The instant a source answered as of: its records as they stood then. Not when the document was made, nor when it arrived."@en ;
+    rdfs:range xsd:dateTime ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc7089#section-2.1.1> .
+
+cascade:revisionOf a owl:ObjectProperty ;
+    rdfs:label "revision of"@en ;
+    rdfs:domain cascade:Revision .
+
+cascade:version a owl:ObjectProperty ;
+    rdfs:label "version"@en ;
+    rdfs:domain cascade:Revision .
+
+cascade:Record a owl:Class ;
+    rdfs:label "record"@en ;
+    rdfs:comment "Derived: a thing the pod holds revisions and versions of, whatever its kind."@en .
+
+cascade:recordKind a owl:DatatypeProperty ;
+    rdfs:label "record kind"@en ;
+    rdfs:comment "Derived: the word for the record's kind, one for each type of record."@en ;
+    rdfs:domain cascade:Record ;
+    rdfs:range xsd:string .
+
+cascade:statusOnlyFromDocuments a owl:DatatypeProperty ;
+    rdfs:label "status only from documents"@en ;
+    rdfs:comment "Derived: whether the record's kind takes a status only from a member translated from a document, never from one the person entered."@en ;
+    rdfs:domain cascade:Record ;
+    rdfs:range xsd:boolean .
+
+cascade:displayName a owl:DatatypeProperty ;
+    rdfs:label "display name"@en ;
+    rdfs:comment "Derived: the version's name, copied from the property its kind names things with."@en .
+
+cascade:displayDate a owl:DatatypeProperty ;
+    rdfs:label "display date"@en ;
+    rdfs:comment "Derived: the version's date, copied from the property its kind dates things with, if it has one."@en .
+
+cascade:currentRevision a owl:ObjectProperty ;
+    rdfs:label "current revision"@en ;
+    rdfs:comment "Derived: the revision of a record no other revision follows. Never written to a pod file."@en ;
+    rdfs:range cascade:Revision .
+
+cascade:Subject a owl:Class ;
+    rdfs:label "subject"@en ;
+    rdfs:comment "The person a pod is about: only a name, never versioned, holding no data."@en .
+
+cascade:AuthorRole a prov:Role ;
+    rdfs:label "author role"@en ;
+    rdfs:comment "The part a party played in writing a document: HL7's provenance participant type author, which defines a code and no concept IRI."@en ;
+    rdfs:seeAlso <http://terminology.hl7.org/CodeSystem/provenance-participant-type> .
+
+cascade:TransmitterRole a prov:Role ;
+    rdfs:label "transmitter role"@en ;
+    rdfs:comment "The part a party played in fetching and delivering a document: US Core's provenance agent type transmitter, which defines a code and no concept IRI."@en ;
+    rdfs:seeAlso <http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type> .
+
+cascade:ReferenceSeries a owl:Class ;
+    rdfs:label "reference series"@en ;
+    rdfs:comment "A versioned reference table or rule set a machine applies; each of its versions is a prov:specializationOf it."@en .
+
+pav:version a owl:DatatypeProperty ;
+    rdfs:label "Version"@en ;
+    rdfs:isDefinedBy <http://purl.org/pav/> ;
+    rdfs:range xsd:string ;
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> .
+
+rdfs:label a rdf:Property ;
+    rdfs:label "label"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2000/01/rdf-schema#> ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Literal ;
+    dct:source <https://www.w3.org/TR/2014/REC-rdf-schema-20140225/> .
+
+pav:hasCurrentVersion a owl:ObjectProperty ;
+    rdfs:label "Has current version"@en ;
+    rdfs:isDefinedBy <http://purl.org/pav/> ;
+    rdfs:subPropertyOf pav:hasVersion ;
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> .
+
+cascade:View a owl:Class ;
+    rdfs:label "view"@en ;
+    rdfs:comment "A file the view queries build from the pod's records and judgments: deleting it loses nothing, and rerunning them rebuilds it."@en .
+
+cascade:countsUnderLens a owl:DatatypeProperty ;
+    rdfs:label "counts under lens"@en ;
+    rdfs:comment "Derived: the judgment counts under the lens the build used."@en ;
+    rdfs:domain cascade:Judgment ;
+    rdfs:range xsd:boolean .
+
+cascade:lapsed a owl:DatatypeProperty ;
+    rdfs:label "lapsed"@en ;
+    rdfs:comment "Derived: the judgment is a matcher's Same that does not count because a reference version it used has a newer current one, nothing retracts it, and no judgment not itself retracted supersedes it."@en ;
+    rdfs:domain cascade:Judgment ;
+    rdfs:range xsd:boolean .
+
+cascade:leftOutFor a owl:ObjectProperty ;
+    rdfs:label "left out for"@en ;
+    rdfs:comment "Derived: one reason no view shows the record, in this build."@en ;
+    rdfs:domain cascade:Record .
+
+cascade:leftOutReason a owl:ObjectProperty ;
+    rdfs:label "left out reason"@en ;
+    rdfs:comment "Derived: which of the reasons a record can be left out for this one is."@en .
+
+cascade:leftOutBecauseOf a owl:ObjectProperty ;
+    rdfs:label "left out because of"@en ;
+    rdfs:comment "Derived: the thing a reason for leaving a record out rests on, where it rests on one."@en .
+
+cascade:EnteredInErrorAtSource a owl:NamedIndividual ;
+    rdfs:label "entered-in-error at its source"@en .
+
+cascade:RefutedAtSource a owl:NamedIndividual ;
+    rdfs:label "refuted at its source"@en .
+
+cascade:JudgedErroneous a owl:NamedIndividual ;
+    rdfs:label "judged erroneous"@en .
+
+cascade:ImportJudgedErroneous a owl:NamedIndividual ;
+    rdfs:label "the import that brought it was judged erroneous"@en .
+
+cascade:PatientNotClaimed a owl:NamedIndividual ;
+    rdfs:label "its patient profile has no counting About"@en .
+
+cascade:NoPatient a owl:NamedIndividual ;
+    rdfs:label "it names no patient"@en .
+
+cascade:inEntry a owl:ObjectProperty ;
+    rdfs:label "in entry"@en ;
+    rdfs:comment "Derived: the view entry the record belongs to in this build."@en .
+
+cascade:latestMember a owl:ObjectProperty ;
+    rdfs:label "latest member"@en ;
+    rdfs:comment "Derived: the entry's most recently received member."@en .
+
+cascade:statusFrom a owl:ObjectProperty ;
+    rdfs:label "status from"@en ;
+    rdfs:comment "Derived: the member whose status the entry shows."@en .
+
+cascade:dateFrom a owl:ObjectProperty ;
+    rdfs:label "date from"@en ;
+    rdfs:comment "Derived: the member whose date the entry shows."@en .
+
+cascade:medicationUseStartDateFrom a owl:ObjectProperty ;
+    rdfs:label "medication use start date from"@en ;
+    rdfs:comment "Derived: the member whose start of use a medication entry shows."@en .
+
+cascade:prescriptionWrittenDateFrom a owl:ObjectProperty ;
+    rdfs:label "prescription written date from"@en ;
+    rdfs:comment "Derived: the member whose prescription's written date a medication entry shows."@en .
+
+cascade:topCriticality a owl:DatatypeProperty ;
+    rdfs:label "top criticality"@en ;
+    rdfs:comment "Derived: the most severe criticality a member states."@en ;
+    rdfs:range xsd:string .
+
+cascade:Placement a owl:Class ;
+    rdfs:label "placement"@en ;
+    rdfs:comment "One entry of a pod's layout: where a runtime files things. It names a file (solid:instance), a folder (solid:instanceContainer), or the property whose value's folder the thing goes in (cascade:filedWith). A thing is placed by cascade:filedWith first, then by an entry whose cascade:forSubjectsOf it states, then by its solid:forClass alone; a file that says it is a cascade:View is placed only by the entries at or under the views folder."@en .
+
+cascade:subfolderPrefixLength a owl:DatatypeProperty ;
+    rdfs:label "subfolder prefix length"@en ;
+    rdfs:comment "How many leading characters of a file's name make the subfolder of the placement's folder it is filed in."@en ;
+    rdfs:domain cascade:Placement ;
+    rdfs:range xsd:integer .
+
+cascade:filedWith a owl:ObjectProperty ;
+    rdfs:label "filed with"@en ;
+    rdfs:comment "The property whose value is filed in the folder the thing goes in, when the thing states it."@en ;
+    rdfs:domain cascade:Placement .
+
+cascade:forSubjectsOf a owl:ObjectProperty ;
+    rdfs:label "for subjects of"@en ;
+    rdfs:comment "Narrows the placement's class to the things that state this property."@en ;
+    rdfs:domain cascade:Placement .
+
+cascade:writtenByQueryPath a owl:DatatypeProperty ;
+    rdfs:label "written by query path"@en ;
+    rdfs:comment "The path under queries/ of the query that writes the placement's file."@en ;
+    rdfs:domain cascade:Placement ;
+    rdfs:range xsd:string .
+
+cascade:writtenAlways a owl:DatatypeProperty ;
+    rdfs:label "written always"@en ;
+    rdfs:comment "Whether the build writes the placement's view at every build, rather than once the pod holds a record of its class."@en ;
+    rdfs:domain cascade:Placement ;
+    rdfs:range xsd:boolean .
+
+cascade:storesBytes a owl:DatatypeProperty ;
+    rdfs:label "stores bytes"@en ;
+    rdfs:comment "Whether the placement's folder holds documents' own bytes, each file named by the SHA-256 of its bytes in lowercase hex, rather than RDF."@en ;
+    rdfs:domain cascade:Placement ;
+    rdfs:range xsd:boolean .
+
+solid:forClass a rdf:Property ;
+    rdfs:label "registry class"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
+    dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> .
+
+solid:instance a rdf:Property ;
+    rdfs:label "instance"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
+    dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> .
+
+solid:instanceContainer a rdf:Property ;
+    rdfs:label "instance container"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
+    dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> .
+
+# Reference tables and the matcher's rule list, as a runtime is given them; none of these is written to a pod
+
+cascade:defaultTableVersion a owl:ObjectProperty ;
+    rdfs:label "default table version"@en ;
+    rdfs:comment "The version of the series a runtime uses until the pod names another as current."@en ;
+    rdfs:domain cascade:ReferenceSeries ;
+    rdfs:range prov:Entity .
+
+cascade:RuleListRow a owl:Class ;
+    rdfs:label "rule list row"@en ;
+    rdfs:comment "One row of a version of the matcher's rule list: the matcher rule it runs, the justification it gives, the classes of record it applies to, the comparison query it runs and the hash of that query's bytes, and the kind of table the query reads, if any. A row is a blank node of its version; the rule is the term it names."@en .
+
+cascade:justifiedAs a owl:ObjectProperty ;
+    rdfs:label "justified as"@en ;
+    rdfs:comment "The justification a judgment the rule writes gives."@en ;
+    rdfs:domain cascade:RuleListRow .
+
+cascade:appliesToClass a owl:ObjectProperty ;
+    rdfs:label "applies to class"@en ;
+    rdfs:comment "A class of record the rule compares, as SHACL's sh:targetClass names a class."@en ;
+    rdfs:domain cascade:RuleListRow ;
+    rdfs:range owl:Class .
+
+cascade:matcherRule a owl:ObjectProperty ;
+    rdfs:label "matcher rule"@en ;
+    rdfs:comment "The matcher rule a row of a rule list runs: one of the rule terms R1 to R13 of runtime/matcher.feature. A claim's name takes it."@en ;
+    rdfs:domain cascade:RuleListRow .
+
+cascade:queryPath a owl:DatatypeProperty ;
+    rdfs:label "query path"@en ;
+    rdfs:comment "The path under queries/ of the comparison query the rule runs."@en ;
+    rdfs:domain cascade:RuleListRow ;
+    rdfs:range xsd:string .
+
+cascade:queryHash a owl:ObjectProperty ;
+    rdfs:label "query hash"@en ;
+    rdfs:comment "The ni:///sha-256; name of the bytes of the rule's query file; a run whose file does not hash to it is refused."@en ;
+    rdfs:domain cascade:RuleListRow .
+
+# Table kinds, their rows and the codes rows name
+
+cascade:tableKind a owl:ObjectProperty ;
+    rdfs:label "table kind"@en ;
+    rdfs:comment "Of a series, the one kind of table its versions are; of a rule of the rule list, the kind whose rows its query reads. A runtime gives the query the current version of every series of that kind, each in the graph named by the version's IRI."@en ;
+    rdfs:range cascade:TableKind .
+
+cascade:TableKind a owl:Class ;
+    rdfs:label "table kind"@en ;
+    rdfs:comment "What a table's rows say, whatever source fills it: the shape every row conforms to and the property a row is found by. A row is a subject of a version's rows with every triple it is the subject of, and holds no blank node."@en .
+
+cascade:rowShape a owl:ObjectProperty ;
+    rdfs:label "row shape"@en ;
+    rdfs:comment "The SHACL shape every subject of a version's rows conforms to."@en ;
+    rdfs:domain cascade:TableKind .
+
+cascade:foundBy a owl:ObjectProperty ;
+    rdfs:label "found by"@en ;
+    rdfs:comment "A property whose value is a code a row is found by, or cascade:RowSubject when the row is about the code itself, as its subject."@en ;
+    rdfs:domain cascade:TableKind .
+
+cascade:VaccineGroups a cascade:TableKind ;
+    rdfs:label "vaccine groups"@en ;
+    rdfs:comment "An SSSOM mapping kind: a vaccine code and a group it is a member of (obo:RO_0002350). A code in several groups has a row for each, and a group's own code is a member of itself."@en ;
+    cascade:rowShape cascade:VaccineGroupRowShape ;
+    cascade:foundBy owl:annotatedSource .
+
+cascade:CodeNames a cascade:TableKind ;
+    rdfs:label "code names"@en ;
+    rdfs:comment "A code's names in SKOS, as its publisher gives them."@en ;
+    cascade:rowShape cascade:CodeNameRowShape ;
+    cascade:foundBy cascade:RowSubject ;
+    cascade:readByAppPages true .
+
+cascade:RetiredCodes a cascade:TableKind ;
+    rdfs:label "retired codes"@en ;
+    rdfs:comment "A retired code, with each replacement its publisher gives. A code that is not retired has no row; a mapping kind keeps a retired code's rows."@en ;
+    cascade:rowShape cascade:CodeStatusRowShape ;
+    cascade:foundBy cascade:RowSubject ;
+    cascade:readByAppPages true .
+
+cascade:SubstanceIngredients a cascade:TableKind ;
+    rdfs:label "substance ingredients"@en ;
+    rdfs:comment "An SSSOM mapping kind the stories use and no open source fills: a SNOMED CT substance and its RxNorm ingredient. Read either way round."@en ;
+    cascade:rowShape cascade:SubstanceIngredientRowShape ;
+    cascade:foundBy owl:annotatedSource , owl:annotatedTarget .
+
+cascade:ProductIngredients a cascade:TableKind ;
+    rdfs:label "product ingredients"@en ;
+    rdfs:comment "An SSSOM mapping kind: an RxNorm concept and its active ingredient (obo:RO_0002248), its one ingredient or, with several, the multiple ingredient concept of exactly those. An ingredient has itself as its ingredient. A concept also has a row to each distinct precise ingredient RxNorm ties to it (cascade:hasPreciseIngredient). A version holding any precise ingredient row holds one for each concept whose RxNorm relations reach a precise ingredient, a brand name, a drug, a component and a dose form or dose form group version of one alike, so a concept such a version gives none holds its ingredient itself."@en ;
+    cascade:rowShape cascade:ProductIngredientRowShape ;
+    cascade:foundBy owl:annotatedSource .
+
+cascade:hasPreciseIngredient a owl:ObjectProperty ;
+    rdfs:label "has precise ingredient"@en ;
+    rdfs:comment "Of an RxNorm concept, a precise ingredient (PIN) RxNorm ties to it: a component's or a brand name's has_precise_ingredient, a dose form's has_boss, or a drug's, a brand's or a dose form group's by way of those. The ingredient the PIN is a form of stays the concept's active ingredient (obo:RO_0002248)."@en ;
+    dct:source <https://lhncbc.nlm.nih.gov/RxNav/APIs/api-RxNorm.getRelaTypes.html> .
+
+cascade:BrandGenerics a cascade:TableKind ;
+    rdfs:label "brand generics"@en ;
+    rdfs:comment "An SSSOM mapping kind: a branded RxNorm concept and its generic."@en ;
+    cascade:rowShape cascade:BrandGenericRowShape ;
+    cascade:foundBy owl:annotatedSource .
+
+cascade:DrugProducts a cascade:TableKind ;
+    rdfs:label "drug products"@en ;
+    rdfs:comment "A code that names one drug product, generic or branded, a clinical drug or a pack (RxNorm's SCD, SBD, GPCK and BPCK), with its term type as its publisher gives it. A code with no row is not known to name one product: an ingredient, a strength, a dose form, a brand name or a salt has none."@en ;
+    cascade:rowShape cascade:DrugProductRowShape ;
+    cascade:foundBy cascade:RowSubject .
+
+cascade:termType a owl:DatatypeProperty ;
+    rdfs:label "term type"@en ;
+    rdfs:comment "Of a code, its term type as its publisher writes it; for RxNorm, the TTY of RXNCONSO."@en ;
+    rdfs:range xsd:string .
+
+cascade:CodeConversions a cascade:TableKind ;
+    rdfs:label "code conversions"@en ;
+    rdfs:comment "An SSSOM mapping kind: a retired code and each code in effect its publisher converts its data to, one dct:isReplacedBy row each, with its cardinality. The cardinality is counted along each conversion on the way, not over the table as SSSOM counts it: n:… when, at any step of the path from the retired code to the code in effect, the publisher gives the step's code anything but the step's own predecessor as a previous code, …:n when any code on the path before the end converts into more than one code, so a pure chain A to B to C is published as A to C as 1:1. A row of the earlier form, skos:exactMatch with no cardinality, is still read."@en ;
+    cascade:rowShape cascade:CodeConversionRowShape ;
+    cascade:foundBy owl:annotatedSource , owl:annotatedTarget .
+
+cascade:VariantClassifications a cascade:TableKind ;
+    rdfs:label "variant classifications"@en ;
+    rdfs:comment "What a source such as ClinVar says of a variant: a row for each variation, found by its variation IRI and by each coding NM_ expression a submitter used or its ClinVar name holds, holding the aggregate germline classification and review status as concepts, the day it was last evaluated and how many submitters contribute. A join through these rows is identity and reads no classification. A version states the genes it covers (cascade:coversGene), so a page can tell a variant in a gene the series does not cover from a covered one the rows do not hold."@en ;
+    cascade:rowShape cascade:VariantClassificationRowShape ;
+    cascade:foundBy cascade:RowSubject , cascade:hgvsExpression ;
+    cascade:readByAppPages true .
+
+cascade:PanelMembers a cascade:TableKind ;
+    rdfs:label "panel members"@en ;
+    rdfs:comment "An SSSOM mapping kind: a LOINC panel and each member it directly has (obo:RO_0002351), both LOINC codes, with the member's place in the panel (cascade:panelSequence) and whether the panel requires it (cascade:observationRequiredInPanel) as LOINC gives them. A nested panel is a member of its parent and has its own members as rows of its own, so nesting is the rows, never a flattened tree. A member listed at two places in one panel is two rows. OMOP's relationship Panel contains is the same relation, and has no IRI. A row is found by its panel and by its member."@en ;
+    cascade:rowShape cascade:PanelMemberRowShape ;
+    cascade:foundBy owl:annotatedSource , owl:annotatedTarget ;
+    cascade:readByAppPages true .
+
+cascade:DrugClasses a cascade:TableKind ;
+    rdfs:label "drug classes"@en ;
+    rdfs:comment "An SSSOM mapping kind: an RxNorm code and a class it is in, one predicate for each relation: its established pharmacologic class (cascade:establishedPharmacologicClass), its mechanism of action (cascade:mechanismOfActionClass), its physiologic effect (cascade:physiologicEffectClass) or its chemical structure (cascade:chemicalStructureClass). The rows are FDA's (Authority FDASPL) as MED-RT indexes them, on an ingredient, a precise ingredient or a code outside the prescribable set; a class is a MED-RT code, and a chemical structure also a MeSH code."@en ;
+    cascade:rowShape cascade:DrugClassRowShape ;
+    cascade:foundBy owl:annotatedSource ;
+    cascade:readByAppPages true .
+
+cascade:panelSequence a owl:DatatypeProperty ;
+    rdfs:label "panel sequence"@en ;
+    rdfs:comment "Of a panel member row, the member's SEQUENCE in the panel, as LOINC gives it in its PanelsAndForms file."@en ;
+    rdfs:range xsd:integer .
+
+cascade:observationRequiredInPanel a owl:DatatypeProperty ;
+    rdfs:label "observation required in panel"@en ;
+    rdfs:comment "Of a panel member row, whether the panel requires the member, as LOINC writes ObservationRequiredInPanel in its PanelsAndForms file (R, O, C, R-a, Rflx, Rflx-a). A row without it is a member LOINC gives no requirement for."@en ;
+    rdfs:range xsd:string .
+
+cascade:establishedPharmacologicClass a owl:ObjectProperty ;
+    rdfs:label "established pharmacologic class"@en ;
+    rdfs:comment "Of a drug, a class FDA lists it in by its established pharmacologic class, MED-RT's has_EPC."@en ;
+    dct:source <https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html> .
+
+cascade:mechanismOfActionClass a owl:ObjectProperty ;
+    rdfs:label "mechanism of action class"@en ;
+    rdfs:comment "Of a drug, a class naming how it acts, MED-RT's has_MoA."@en ;
+    rdfs:seeAlso obo:NCIT_R124 ;
+    dct:source <https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html> .
+
+cascade:physiologicEffectClass a owl:ObjectProperty ;
+    rdfs:label "physiologic effect class"@en ;
+    rdfs:comment "Of a drug, a class naming what it does in the body, MED-RT's has_PE."@en ;
+    rdfs:seeAlso obo:NCIT_R125 ;
+    dct:source <https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html> .
+
+cascade:chemicalStructureClass a owl:ObjectProperty ;
+    rdfs:label "chemical structure class"@en ;
+    rdfs:comment "Of a drug, a class naming its chemical structure, MED-RT's has_SC: a MED-RT code or a MeSH code."@en ;
+    dct:source <https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html> .
+
+cascade:readByAppPages a owl:DatatypeProperty ;
+    rdfs:label "read by app pages"@en ;
+    rdfs:comment "True when an app keeps a series of the kind, and packs it, though no rule of its rule list reads the kind: its pages read the rows. A kind that is neither named by a rule list nor marked is skipped."@en ;
+    rdfs:domain cascade:TableKind ;
+    rdfs:range xsd:boolean .
+
+cascade:coversGene a owl:DatatypeProperty ;
+    rdfs:label "covers gene"@en ;
+    rdfs:comment "Of a version of a series of a kind that covers some genes, an HGNC approved symbol of a gene it covers, any number. A version without it covers no named gene, and a changed list of genes is a new version."@en ;
+    rdfs:range xsd:string .
+
+cascade:hgvsExpression a owl:ObjectProperty ;
+    rdfs:label "HGVS expression"@en ;
+    rdfs:comment "Of a variant classification row, a coding NM_ expression a submitter used for its variation, or the one its ClinVar name holds, as the cascade:HGVS IRI."@en .
+
+cascade:clinvarClassification a owl:ObjectProperty ;
+    rdfs:label "ClinVar classification"@en ;
+    rdfs:comment "Of a variant classification row, a concept of cascade:ClinVarClassifications its aggregate germline classification parses to."@en ;
+    rdfs:range skos:Concept .
+
+cascade:clinvarReviewStatus a owl:ObjectProperty ;
+    rdfs:label "ClinVar review status"@en ;
+    rdfs:comment "Of a variant classification row, the concept of cascade:ClinVarReviewStatuses its review status is."@en ;
+    rdfs:range skos:Concept .
+
+cascade:lastEvaluated a owl:DatatypeProperty ;
+    rdfs:label "last evaluated"@en ;
+    rdfs:comment "Of a variant classification row, the day its newest submitter evaluated the variation. It is not the day the aggregate changed."@en ;
+    rdfs:range xsd:date .
+
+cascade:contributingSubmitterCount a owl:DatatypeProperty ;
+    rdfs:label "contributing submitter count"@en ;
+    rdfs:comment "Of a variant classification row, how many submissions contribute to its aggregate classification, from a release that lists them (SCVsForAggregateGermlineClassification)."@en ;
+    rdfs:range xsd:integer .
+
+cascade:submitterCount a owl:DatatypeProperty ;
+    rdfs:label "submitter count"@en ;
+    rdfs:comment "Of a variant classification row, how many submitters it has, as an older release counts them (NumberSubmitters), which includes any whose submission does not contribute. A row holds this or cascade:contributingSubmitterCount, so it says which count it has."@en ;
+    rdfs:range xsd:integer .
+
+cascade:RowSubject a rdf:Property ;
+    rdfs:label "the row's subject"@en ;
+    rdfs:comment "Not stated by any row: as a kind's cascade:foundBy, that each row is found by its own subject, the code it is about."@en .
+
+cascade:CodeSystem a owl:Class ;
+    rdfs:label "code system"@en ;
+    rdfs:comment "A code system whose codes are IRIs of one form: its void:uriSpace, the IRI stem, followed by the code percent-encoded as SPARQL's ENCODE_FOR_URI does, every character but A-Z a-z 0-9 - _ . ~ as % and two upper-case hexadecimal digits of its UTF-8. Unlike R2RML's IRI-safe form (section 7.3), which leaves ucschar unencoded, it encodes every non-ASCII character; no code of a system here holds one, so the two agree on every code today. The stem is the owner's or a community registry's where one passes decisions/code-iris.md, and Cascade's own under https://ns.cascadeprotocol.org/codes/ otherwise; it is never the FHIR Coding.system URI, which cascade:codingSystemUri holds (https://hl7.org/fhir/R5/rdf.html#iri-stem). A stem the owner or HL7 Terminology registers later is recorded on the system beside its void:uriSpace and read as each code's skos:exactMatch; a code's IRI is never renamed. A record's code written as a literal joins a table as that IRI: the stem followed by the literal percent-encoded as ENCODE_FOR_URI does, so a literal of unreserved characters only is its own tail and NM_000249.4:c.2042C>T is https://ns.cascadeprotocol.org/codes/hgvs/NM_000249.4%3Ac.2042C%3ET."@en .
+
+cascade:codingSystemUri a owl:DatatypeProperty ;
+    rdfs:label "coding system URI"@en ;
+    rdfs:comment "The code system's URI as FHIR's Coding.system names it, HL7 Terminology's preferred one. A reader writing FHIR takes Coding.system from it and Coding.code from a code IRI's tail after the void:uriSpace, percent-decoded."@en ;
+    rdfs:domain cascade:CodeSystem ;
+    rdfs:range xsd:anyURI ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
+
+cascade:codePageUrlTemplate a owl:DatatypeProperty ;
+    rdfs:label "code page URL template"@en ;
+    rdfs:comment "The address of each code's own page at the code system's publisher, as an RFC 6570 level 1 template whose only expression is {code}. {code} is the code as written, and expanding it by RFC 6570 simple expansion percent-encodes it as ENCODE_FOR_URI does, so it yields the same tail the code's IRI has after the void:uriSpace. A code system without one publishes no page per code."@en ;
+    rdfs:domain cascade:CodeSystem ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://www.wikidata.org/wiki/Property:P1630> ;
+    dct:source <https://www.rfc-editor.org/rfc/rfc6570> .
+
+cascade:CVX a cascade:CodeSystem ;
+    rdfs:label "CVX"@en ;
+    rdfs:comment "The code as CDC writes it, leading zero kept and trailing spaces trimmed: 08, 141. A record coded 8 joins nothing."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/cvx/" ;
+    cascade:codingSystemUri "http://hl7.org/fhir/sid/cvx"^^xsd:anyURI .
+
+cascade:RxNorm a cascade:CodeSystem ;
+    rdfs:label "RxNorm"@en ;
+    rdfs:comment "The RXCUI."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/rxnorm/" ;
+    cascade:codingSystemUri "http://www.nlm.nih.gov/research/umls/rxnorm"^^xsd:anyURI .
+
+cascade:NDC a cascade:CodeSystem ;
+    rdfs:label "NDC"@en ;
+    rdfs:comment "The 11-digit HIPAA form, 5-4-2 with no hyphens, as RxNorm's RXNSAT gives it: Cascade's own space. FHIR's NDC code is the 10-digit hyphenated label code, so an NDC is normalised into this space."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/ndc11/" ;
+    cascade:codingSystemUri "http://hl7.org/fhir/sid/ndc"^^xsd:anyURI ;
+    dct:source <https://hl7.org/fhir/R4/ndc.html> .
+
+cascade:ICD10CM a cascade:CodeSystem ;
+    rdfs:label "ICD-10-CM"@en ;
+    rdfs:comment "The code as FHIR writes it."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/icd10cm/" ;
+    cascade:codingSystemUri "http://hl7.org/fhir/sid/icd-10-cm"^^xsd:anyURI .
+
+cascade:SNOMEDCT a cascade:CodeSystem ;
+    rdfs:label "SNOMED CT"@en ;
+    rdfs:comment "The concept ID. snomed.info/sct is the code system's own URI and, with a module, names its editions; it never names a concept."@en ;
+    void:uriSpace "http://snomed.info/id/" ;
+    cascade:codingSystemUri "http://snomed.info/sct"^^xsd:anyURI ;
+    dct:source <https://terminology.hl7.org/SNOMEDCT.html> .
+
+cascade:LOINC a cascade:CodeSystem ;
+    rdfs:label "LOINC"@en ;
+    rdfs:comment "The LOINC code as LOINC writes it, with its check digit: 2823-3."@en ;
+    void:uriSpace "http://loinc.org/rdf/" ;
+    cascade:codingSystemUri "http://loinc.org"^^xsd:anyURI ;
+    dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/v3/namingSystems/v3-loinc.xml> .
+
+cascade:MEDRT a cascade:CodeSystem ;
+    rdfs:label "MED-RT"@en ;
+    rdfs:comment "The NUI as MED-RT writes it: N0000175562. Cascade's own space: neither VA, HL7 Terminology nor NCI EVS publishes an IRI per code."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/medrt/" ;
+    cascade:codingSystemUri "http://va.gov/terminology/medrt"^^xsd:anyURI ;
+    dct:source <https://terminology.hl7.org/MEDRT.html> .
+
+cascade:MeSH a cascade:CodeSystem ;
+    rdfs:label "MeSH"@en ;
+    rdfs:comment "A MeSH unique ID as NLM writes it: a concept M0006414, as MED-RT gives them, or a descriptor D004095."@en ;
+    void:uriSpace "http://id.nlm.nih.gov/mesh/" ;
+    cascade:codePageUrlTemplate "https://id.nlm.nih.gov/mesh/{code}.html" ;
+    cascade:codingSystemUri "https://www.nlm.nih.gov/mesh"^^xsd:anyURI ;
+    dct:source <https://terminology.hl7.org/CodeSystem-MSH.html> .
+
+cascade:UNII a cascade:CodeSystem ;
+    rdfs:label "UNII"@en ;
+    rdfs:comment "The UNII as FDA's GSRS gives it."@en ;
+    void:uriSpace "https://identifiers.org/unii:" ;
+    cascade:codingSystemUri "http://fdasis.nlm.nih.gov"^^xsd:anyURI ;
+    dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
+
+cascade:CPT a cascade:CodeSystem ;
+    rdfs:label "CPT"@en ;
+    rdfs:comment "The CPT code."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/cpt/" ;
+    cascade:codingSystemUri "http://www.ama-assn.org/go/cpt"^^xsd:anyURI ;
+    dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
+
+cascade:ICD9CM a cascade:CodeSystem ;
+    rdfs:label "ICD-9-CM"@en ;
+    rdfs:comment "The code as FHIR writes it."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/icd9cm/" ;
+    cascade:codingSystemUri "http://hl7.org/fhir/sid/icd-9-cm"^^xsd:anyURI ;
+    dct:source <https://hl7.org/fhir/R4/terminologies-systems.html> .
+
+cascade:HGVS a cascade:CodeSystem ;
+    rdfs:label "HGVS"@en ;
+    rdfs:comment "A coding expression in its normal form: the reference sequence with its version, a colon and c., then the change, as NM_000249.4:c.2042C>T, with no gene in parentheses and no protein change. The code holds characters an IRI cannot, so it is percent-encoded: the colon is %3A and > is %3E. Only an NM_ expression is a key of a table."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/hgvs/" ;
+    cascade:codingSystemUri "http://varnomen.hgvs.org"^^xsd:anyURI ;
+    dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/v3/namingSystems/v3-hgvs.xml> .
+
+cascade:ClinVar a cascade:CodeSystem ;
+    rdfs:label "ClinVar"@en ;
+    rdfs:comment "A ClinVar variation, by its VariationID: the digits, no leading zero, as 90011. The accession VCV000090011 is that number zero-padded and an SCV or RCV accession is not a variation."@en ;
+    void:uriSpace "https://identifiers.org/clinvar:" ;
+    cascade:codePageUrlTemplate "https://www.ncbi.nlm.nih.gov/clinvar/variation/{code}/" ;
+    cascade:codingSystemUri "http://www.ncbi.nlm.nih.gov/clinvar"^^xsd:anyURI ;
+    dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/hta/namingSystems/clinVarV.xml> .
+
+cascade:ClinVarClassifications a skos:ConceptScheme ;
+    rdfs:label "ClinVar classifications"@en ;
+    rdfs:comment "The values of ClinVar's aggregate germline classification, as it spells them. ClinVar joins ACMG terms with a slash and other terms with a semicolon, so a value is parsed into concepts, never matched whole. A renamed label is an alternative label of the concept it names."@en ;
+    skos:hasTopConcept cascade:Pathogenic , cascade:LikelyPathogenic , cascade:UncertainSignificance , cascade:LikelyBenign , cascade:Benign ,
+        cascade:ClinVarConflicting , cascade:ClinVarConflictingData , cascade:ClinVarEstablishedRiskAllele , cascade:ClinVarLikelyRiskAllele ,
+        cascade:ClinVarUncertainRiskAllele , cascade:ClinVarDrugResponse , cascade:ClinVarRiskFactor , cascade:ClinVarAssociation ,
+        cascade:ClinVarProtective , cascade:ClinVarConfersSensitivity , cascade:ClinVarAffects , cascade:ClinVarOther , cascade:ClinVarNotProvided ,
+        cascade:ClinVarCombinationOnly , cascade:ClinVarNoClassificationsFromUnflaggedRecords , cascade:ClinVarNoClassificationForTheSingleVariant .
+
+cascade:ClinVarReviewStatuses a skos:ConceptScheme ;
+    rdfs:label "ClinVar review statuses"@en ;
+    rdfs:comment "The values of ClinVar's review status, as it spells them. A value holds commas and is matched whole, never split."@en ;
+    skos:hasTopConcept cascade:ClinVarPracticeGuideline , cascade:ClinVarExpertPanel , cascade:ClinVarMultipleSubmittersNoConflicts ,
+        cascade:ClinVarConflictingClassifications , cascade:ClinVarSingleSubmitter , cascade:ClinVarNoAssertionCriteria ,
+        cascade:ClinVarNoClassificationProvided , cascade:ClinVarNoClassificationForTheSingleVariant ,
+        cascade:ClinVarNoClassificationsFromUnflaggedRecords .
+
+cascade:Pathogenic a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Pathogenic" ;
+    skos:exactMatch <http://loinc.org/rdf/LA6668-3> .
+
+cascade:LikelyPathogenic a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Likely pathogenic" ;
+    skos:exactMatch <http://loinc.org/rdf/LA26332-9> .
+
+cascade:UncertainSignificance a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Uncertain significance" ;
+    skos:exactMatch <http://loinc.org/rdf/LA26333-7> .
+
+cascade:LikelyBenign a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Likely benign" ;
+    skos:exactMatch <http://loinc.org/rdf/LA26334-5> .
+
+cascade:Benign a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Benign" ;
+    skos:exactMatch <http://loinc.org/rdf/LA6675-8> .
+
+cascade:ClinVarConflicting a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Conflicting classifications of pathogenicity" ;
+    skos:altLabel "Conflicting interpretations of pathogenicity" .
+
+cascade:ClinVarConflictingData a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "conflicting data from submitters" .
+
+cascade:ClinVarPathogenicLowPenetrance a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Pathogenic, low penetrance" ;
+    skos:broader cascade:Pathogenic .
+
+cascade:ClinVarLikelyPathogenicLowPenetrance a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Likely pathogenic, low penetrance" ;
+    skos:broader cascade:LikelyPathogenic .
+
+cascade:ClinVarVusHigh a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "VUS-high" ;
+    skos:broader cascade:UncertainSignificance .
+
+cascade:ClinVarVusMid a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "VUS-mid" ;
+    skos:broader cascade:UncertainSignificance .
+
+cascade:ClinVarVusLow a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "VUS-low" ;
+    skos:broader cascade:UncertainSignificance .
+
+cascade:ClinVarEstablishedRiskAllele a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Established risk allele" .
+
+cascade:ClinVarLikelyRiskAllele a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Likely risk allele" .
+
+cascade:ClinVarUncertainRiskAllele a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Uncertain risk allele" .
+
+cascade:ClinVarDrugResponse a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "drug response" .
+
+cascade:ClinVarRiskFactor a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "risk factor" .
+
+cascade:ClinVarAssociation a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "association" .
+
+cascade:ClinVarProtective a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "protective" .
+
+cascade:ClinVarConfersSensitivity a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "confers sensitivity" .
+
+cascade:ClinVarAffects a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "Affects" .
+
+cascade:ClinVarOther a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "other" .
+
+cascade:ClinVarNotProvided a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "not provided" .
+
+cascade:ClinVarCombinationOnly a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications ;
+    skos:prefLabel "classified only as part of a combination" ;
+    skos:notation "-" ;
+    rdfs:comment "ClinVar writes a hyphen for a variation classified only in combination with another variant; the hyphen is the concept's notation and the whole value."@en .
+
+cascade:ClinVarNoClassificationsFromUnflaggedRecords a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications , cascade:ClinVarReviewStatuses ;
+    skos:prefLabel "no classifications from unflagged records" .
+
+cascade:ClinVarNoClassificationForTheSingleVariant a skos:Concept ;
+    skos:inScheme cascade:ClinVarClassifications , cascade:ClinVarReviewStatuses ;
+    skos:prefLabel "no classification for the single variant" ;
+    skos:altLabel "no interpretation for the single variant" .
+
+cascade:ClinVarPracticeGuideline a skos:Concept ;
+    skos:inScheme cascade:ClinVarReviewStatuses ;
+    skos:prefLabel "practice guideline" .
+
+cascade:ClinVarExpertPanel a skos:Concept ;
+    skos:inScheme cascade:ClinVarReviewStatuses ;
+    skos:prefLabel "reviewed by expert panel" .
+
+cascade:ClinVarMultipleSubmittersNoConflicts a skos:Concept ;
+    skos:inScheme cascade:ClinVarReviewStatuses ;
+    skos:prefLabel "criteria provided, multiple submitters, no conflicts" .
+
+cascade:ClinVarConflictingClassifications a skos:Concept ;
+    skos:inScheme cascade:ClinVarReviewStatuses ;
+    skos:prefLabel "criteria provided, conflicting classifications" ;
+    skos:altLabel "criteria provided, conflicting interpretations" .
+
+cascade:ClinVarSingleSubmitter a skos:Concept ;
+    skos:inScheme cascade:ClinVarReviewStatuses ;
+    skos:prefLabel "criteria provided, single submitter" .
+
+cascade:ClinVarNoAssertionCriteria a skos:Concept ;
+    skos:inScheme cascade:ClinVarReviewStatuses ;
+    skos:prefLabel "no assertion criteria provided" .
+
+cascade:ClinVarNoClassificationProvided a skos:Concept ;
+    skos:inScheme cascade:ClinVarReviewStatuses ;
+    skos:prefLabel "no classification provided" ;
+    skos:altLabel "no assertion provided" .
+
+skos:Concept a owl:Class ;
+    rdfs:label "Concept"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:ConceptScheme a owl:Class ;
+    rdfs:label "Concept Scheme"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:inScheme a owl:ObjectProperty ;
+    rdfs:label "is in scheme"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:hasTopConcept a owl:ObjectProperty ;
+    rdfs:label "has top concept"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:broader a owl:ObjectProperty ;
+    rdfs:label "has broader"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+void:uriSpace a owl:DatatypeProperty ;
+    rdfs:label "URI space"@en ;
+    rdfs:isDefinedBy <http://rdfs.org/ns/void#> ;
+    rdfs:domain void:Dataset ;
+    rdfs:range rdfs:Literal ;
+    dct:source <https://www.w3.org/TR/2011/NOTE-void-20110303/> .
+
+void:Dataset a owl:Class ;
+    rdfs:label "dataset"@en ;
+    rdfs:isDefinedBy <http://rdfs.org/ns/void#> ;
+    dct:source <https://www.w3.org/TR/2011/NOTE-void-20110303/> .
+
+oa:hasSelector a rdf:Property ;
+    rdfs:label "hasSelector"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:domain oa:ResourceSelection ;
+    rdfs:range oa:Selector ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
+oa:hasSource a rdf:Property ;
+    rdfs:label "hasSource"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:domain oa:SpecificResource ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> .
+
+owl:annotatedSource a rdf:Property ;
+    rdfs:label "annotated source"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Resource ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> ,
+        <https://www.w3.org/TR/2012/REC-owl2-rdf-based-semantics-20121211/> .
+
+owl:annotatedProperty a rdf:Property ;
+    rdfs:label "annotated property"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Resource ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> ,
+        <https://www.w3.org/TR/2012/REC-owl2-rdf-based-semantics-20121211/> .
+
+owl:annotatedTarget a rdf:Property ;
+    rdfs:label "annotated target"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Resource ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> ,
+        <https://www.w3.org/TR/2012/REC-owl2-rdf-based-semantics-20121211/> .
+
+owl:deprecated a owl:AnnotationProperty ;
+    rdfs:label "deprecated"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Resource ;
+    dct:source <https://www.w3.org/TR/2012/REC-owl2-mapping-to-rdf-20121211/> ,
+        <https://www.w3.org/TR/2012/REC-owl2-rdf-based-semantics-20121211/> .
+
+sssom:mapping_justification a owl:ObjectProperty ;
+    rdfs:label "mapping justification"@en ;
+    rdfs:isDefinedBy <https://w3id.org/sssom/schema/> ;
+    dct:source <https://github.com/mapping-commons/sssom/blob/667d3c579d92ad2e1a480503625eeef1e6af8e6d/src/sssom_schema/schema/sssom_schema.yaml> .
+
+sssom:mapping_cardinality a owl:DatatypeProperty ;
+    rdfs:label "mapping cardinality"@en ;
+    rdfs:isDefinedBy <https://w3id.org/sssom/schema/> ;
+    dct:source <https://github.com/mapping-commons/sssom/blob/667d3c579d92ad2e1a480503625eeef1e6af8e6d/src/sssom_schema/schema/sssom_schema.yaml> .
+
+obo:RO_0002248 a owl:ObjectProperty ;
+    rdfs:label "has active ingredient"@en ;
+    rdfs:isDefinedBy <http://purl.obolibrary.org/obo/ro.owl> ;
+    rdfs:seeAlso <http://snomed.info/id/127489000> , <https://www.wikidata.org/wiki/Property:P3781> ;
+    dct:source <http://purl.obolibrary.org/obo/ro/releases/2026-09-04/ro.owl> .
+
+obo:RO_0002350 a owl:ObjectProperty ;
+    rdfs:label "member of"@en ;
+    rdfs:isDefinedBy <http://purl.obolibrary.org/obo/ro.owl> ;
+    dct:source <http://purl.obolibrary.org/obo/ro/releases/2026-09-04/ro.owl> .
+
+obo:RO_0002351 a owl:ObjectProperty ;
+    rdfs:label "has member"@en ;
+    rdfs:isDefinedBy <http://purl.obolibrary.org/obo/ro.owl> ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.hasMember> ;
+    dct:source <http://purl.obolibrary.org/obo/ro/releases/2026-09-04/ro.owl> .
+
+skos:prefLabel a owl:AnnotationProperty ;
+    rdfs:label "preferred label"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    rdfs:subPropertyOf rdfs:label ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:altLabel a owl:AnnotationProperty ;
+    rdfs:label "alternative label"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    rdfs:subPropertyOf rdfs:label ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:notation a owl:DatatypeProperty ;
+    rdfs:label "notation"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+skos:exactMatch a owl:ObjectProperty ;
+    rdfs:label "has exact match"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> .
+
+dct:isReplacedBy a rdf:Property ;
+    rdfs:label "Is Replaced By"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:subPropertyOf dct:relation ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> .
+
+# Test terms, used with W3C's mf: test-manifest vocabulary
+
+cascade:lensQueryPath a owl:ObjectProperty ;
+    rdfs:label "lens query path"@en ;
+    rdfs:comment "The query file of the lens a query test builds its pod under."@en .
+
+# Medication lifecycle
+
+cascade:lifecycle a owl:ObjectProperty ;
+    rdfs:label "lifecycle"@en ;
+    rdfs:comment "Of a medication entry in its view, the concept of cascade:MedicationLifecycle that its status classifies to, so an app reads whether the medication is still taken without the status; cascade:MedicationUnknown where it states none."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range skos:Concept .
+
+cascade:statusLifecycle a owl:ObjectProperty ;
+    rdfs:label "status lifecycle"@en ;
+    rdfs:comment "Derived: the lifecycle class of the status the entry shows. The medications view says it as cascade:lifecycle, a name of its own because a query reading both the derived state and the view would otherwise find each triple twice."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range skos:Concept .
+
+cascade:statusLifecycleStep a owl:DatatypeProperty ;
+    rdfs:label "status lifecycle step"@en ;
+    rdfs:comment "Derived: which step of the matching order in runtime rule L1 classified the entry: 2 for an absent or blank status, 3 for a FHIR status code, 4 for a synonym, 5 for a fragment, 6 for none of them, which leaves the class unknown and unmatched."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:integer .
+
+cascade:MedicationLifecycle a skos:ConceptScheme ;
+    rdfs:label "Medication lifecycle"@en ;
+    rdfs:comment "Whether a medication is still being taken, however its source states a status. The classes are cascade-knowledge's medication-status-lifecycle, the codes of FHIR R4's MedicationRequest.status and MedicationStatement.status each in one, so an absent status is unknown rather than ended. The form follows a FHIR ConceptMap, a table of source codes to target codes published with a specification; the rows are in derivations/medication-lifecycles.rq, because they change only with this vocabulary."@en ;
+    dct:source <https://hl7.org/fhir/R4/valueset-medicationrequest-status.html> , <https://hl7.org/fhir/R4/valueset-medication-statement-status.html> ,
+        <https://hl7.org/fhir/us/ccda/ConceptMap-CF-MedicationStatus.html> ;
+    skos:hasTopConcept cascade:MedicationActive , cascade:MedicationStopped , cascade:MedicationPaused , cascade:MedicationUnknown ,
+        cascade:MedicationEnteredInError .
+
+cascade:MedicationActive a skos:Concept ;
+    skos:inScheme cascade:MedicationLifecycle ;
+    skos:prefLabel "active" ;
+    skos:definition "The source states the medication is being taken now."@en .
+
+cascade:MedicationStopped a skos:Concept ;
+    skos:inScheme cascade:MedicationLifecycle ;
+    skos:prefLabel "stopped" ;
+    skos:definition "The source states the medication is not being taken: it ended, was withdrawn before use, or was never taken."@en .
+
+cascade:MedicationPaused a skos:Concept ;
+    skos:inScheme cascade:MedicationLifecycle ;
+    skos:prefLabel "paused" ;
+    skos:definition "The source states the medication is temporarily halted and expected to continue. Not being taken today, but not ended either."@en .
+
+cascade:MedicationUnknown a skos:Concept ;
+    skos:inScheme cascade:MedicationLifecycle ;
+    skos:prefLabel "unknown" ;
+    skos:definition "The source states neither: the status is absent, unknown, or describes an order or intention that has not started. Not evidence either way."@en .
+
+cascade:MedicationEnteredInError a skos:Concept ;
+    skos:inScheme cascade:MedicationLifecycle ;
+    skos:prefLabel "entered-in-error" ;
+    skos:definition "The record itself is repudiated. Not a statement about the medication at all, so not read as stopped; \"My active medications\" leaves it out."@en .
+
+# Judgments
+
+cascade:Judgment a owl:Class ;
+    rdfs:label "judgment"@en ;
+    rdfs:comment "A conclusion about records, made by someone at a time; its members are prov:hadMember."@en ;
+    rdfs:subClassOf prov:Collection .
+
+cascade:verdict a owl:ObjectProperty ;
+    rdfs:label "verdict"@en ;
+    rdfs:domain cascade:Judgment .
+
+cascade:Same a owl:NamedIndividual ;
+    rdfs:label "same"@en ;
+    rdfs:comment "The members are one thing: a view draws one entry on every member."@en .
+
+cascade:Different a owl:NamedIndividual ;
+    rdfs:label "different"@en ;
+    rdfs:comment "The members are kept apart: a counting Different wins over any Same for that pair."@en .
+
+cascade:Erroneous a owl:NamedIndividual ;
+    rdfs:label "erroneous"@en ;
+    rdfs:comment "The members, records or a whole activity, are left out of every view."@en .
+
+cascade:About a owl:NamedIndividual ;
+    rdfs:label "about"@en ;
+    rdfs:comment "The member, a source's patient record, is about the cascade:subject: every record naming it is the subject's."@en .
+
+cascade:subject a owl:ObjectProperty ;
+    rdfs:label "subject"@en ;
+    rdfs:comment "The person a judgment is made for, or, derived, the person whose record a record is."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:Judgment cascade:Record ) ] ;
+    rdfs:range cascade:Subject .
+
+cascade:basis a owl:ObjectProperty ;
+    rdfs:label "basis"@en ;
+    rdfs:domain cascade:Judgment .
+
+cascade:justification a owl:ObjectProperty ;
+    rdfs:label "justification"@en ;
+    rdfs:comment "The rule a machine applied to conclude Same."@en ;
+    rdfs:domain cascade:Judgment .
+
+cascade:SameCode a owl:NamedIndividual ;
+    rdfs:label "same code"@en ;
+    rdfs:comment "Both records carry one code from one code system, as their sources supplied it."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+cascade:SameCodeAndDate a owl:NamedIndividual ;
+    rdfs:label "same code and date"@en ;
+    rdfs:comment "Both records carry one code from one code system and one date."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+cascade:SameCodeAndPeriod a owl:NamedIndividual ;
+    rdfs:label "same code and period"@en ;
+    rdfs:comment "Both conditions carry one code from one code system, and their periods overlap."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+cascade:SameMappedCode a owl:NamedIndividual ;
+    rdfs:label "same mapped code"@en ;
+    rdfs:comment "The records carry two different codes that a reference table pairs, or maps to one concept."@en ;
+    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
+
+cascade:SameMappedCodeAndDate a owl:NamedIndividual ;
+    rdfs:label "same mapped code and date"@en ;
+    rdfs:comment "The records carry two codes that a reference table puts in one group, and one date."@en ;
+    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
+
+cascade:SameMedicationCode a owl:NamedIndividual ;
+    rdfs:label "same medication code"@en ;
+    rdfs:comment "Both medication records share an NDC code. In the rule list's versions 2 to 6 they shared an RxNorm code as well (from version 6, the same chosen RxNorm code, the one their source selected or their only one), whether each came from a prescription or from a list of what the person takes."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+cascade:SameProductCode a owl:NamedIndividual ;
+    rdfs:label "same product code"@en ;
+    rdfs:comment "Both medication records carry one RxNorm code that a version of a drug products table says names one drug product (SCD, SBD, GPCK or BPCK); they share no NDC."@en ;
+    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
+
+cascade:SameVariation a owl:NamedIndividual ;
+    rdfs:label "same variation"@en ;
+    rdfs:comment "Both variant records carry one ClinVar VariationID. Rule M17 and decisions/variant-identity.md say why."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+cascade:SameVariationThroughTable a owl:NamedIndividual ;
+    rdfs:label "same variation through the table"@en ;
+    rdfs:comment "Both variant records find one row of a version of a variant classifications table: a version that carries a ClinVar VariationID finds the row of that variation, and one that carries none finds the row holding its HGVS expression. The classification plays no part. Rule M17 and decisions/variant-identity.md say why."@en ;
+    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
+
+cascade:SameBrandGeneric a owl:NamedIndividual ;
+    rdfs:label "same brand generic"@en ;
+    rdfs:comment "One record's branded RxNorm product and the other's generic, or two brands of one generic, by a version of a brand generics table; the records share no code."@en ;
+    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
+
+cascade:SameResult a owl:NamedIndividual ;
+    rdfs:label "same result"@en ;
+    rdfs:comment "Both lab results carry one test code, one time and one value, however each writes its unit."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+cascade:SameConvertedCode a owl:NamedIndividual ;
+    rdfs:label "same converted code"@en ;
+    rdfs:comment "One record carries a retired code and the other the one code its publisher converts it to."@en ;
+    skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
+
+cascade:PortalAuthenticated a owl:NamedIndividual ;
+    rdfs:label "portal authenticated"@en ;
+    rdfs:comment "The patient record came back from a login the person made themselves."@en .
+
+cascade:RelatedPersonConnection a owl:NamedIndividual ;
+    rdfs:label "related person connection"@en ;
+    rdfs:comment "A proxy's connection to someone else's chart, whose own RelatedPerson names the proxy."@en .
+
+cascade:SameDemographics a owl:NamedIndividual ;
+    rdfs:label "same demographics"@en ;
+    rdfs:comment "A matcher judged it from name, birth date, address or phone."@en .
+
+cascade:OwnerStatement a owl:NamedIndividual ;
+    rdfs:label "owner statement"@en ;
+    rdfs:comment "The operator said so, at import or later."@en .
+
+cascade:PatientRole a prov:Role ;
+    rdfs:label "patient role"@en ;
+    rdfs:comment "The person the pod is about, acting for themselves."@en .
+
+npx:supersedes a rdf:Property , owl:IrreflexiveObjectProperty ;
+    rdfs:isDefinedBy <http://purl.org/nanopub/x/> ;
+    rdfs:domain np:Nanopublication ;
+    rdfs:range np:Nanopublication ;
+    dct:source <https://github.com/peta-pico/ontologies/blob/271a83341f419de9ef3de87687b172b6790adaf2/nanopubx.ttl> .
+
+npx:retracts a rdf:Property ;
+    rdfs:isDefinedBy <http://purl.org/nanopub/x/> ;
+    rdfs:domain foaf:Agent ;
+    rdfs:range np:Nanopublication ;
+    dct:source <https://github.com/peta-pico/ontologies/blob/271a83341f419de9ef3de87687b172b6790adaf2/nanopubx.ttl> .
+
+cascade:currentlySame a owl:ObjectProperty ;
+    rdfs:label "currently same"@en ;
+    rdfs:comment "Derived: two records a counting Same joins and no counting Different separates."@en .
+
+cascade:currentlyDifferent a owl:ObjectProperty ;
+    rdfs:label "currently different"@en ;
+    rdfs:comment "Derived: two records a counting Different separates."@en .
+
+# Naming rules: each name a runtime or an adapter mints follows one, and a changed recipe is a new rule
+
+cascade:RecordFromServerNamingRule a owl:NamedIndividual ;
+    rdfs:label "record from a server naming rule"@en ;
+    rdfs:comment "A record a client pulled from a FHIR server is named urn:uuid: and a version 8 UUID: the first 128 bits of SHA-256 over 90c60849-c5ef-4ca6-bfb8-8662bd07d2b5, this rule's IRI and the inputs, each with % written %25 and | written %7C, joined by |, with the version bits 1000 and the variant bits 10. Inputs in order: the base URL the client used, normalised by RFC 3986 sections 6.2.2 and 6.2.3 with every trailing / removed (a URL with userinfo, a query, a fragment, a control character or space, no scheme, no host or a port that is not digits names nothing); the resource type; the resource's id."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2> ,
+        <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.3> .
+
+cascade:RecordFromDocumentNamingRule a owl:NamedIndividual ;
+    rdfs:label "record from a document naming rule"@en ;
+    rdfs:comment "A record named by its document and its place in it: a record of a document with no known server, one whose id repeats in its document or that has none, one with a urn:uuid fullUrl, every record of a C-CDA document that states no custodian id or not exactly one patient with an id, the patient's included, and any record no other rule names. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the document's ni:///sha-256; name (cascade:DocumentNamingRule); the rdf:value of the oa:hasSelector of the revision that brought it, the selector of its arrival."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.w3.org/TR/annotation-model/#selectors> .
+
+cascade:RecordFromCcdaNamingRule a owl:NamedIndividual ;
+    rdfs:label "record from C-CDA naming rule"@en ;
+    rdfs:comment "A C-CDA statement with an id, or the patient with one, named inside its custodian's and its patient's scope. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the custodian id's root, its extension; the patient id's root, its extension; the entry id's root, its extension; an absent extension is the empty string. The patient is named with its own id as the patient scope and again as the entry id. Two entries of one document carrying one id with different content are named by cascade:RecordFromDocumentNamingRule instead. Used only in a document that states a custodian id and exactly one patient with an id."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+
+cascade:RecordFromCcdaWithoutIdNamingRule a owl:NamedIndividual ;
+    rdfs:label "record from C-CDA without an id naming rule"@en ;
+    rdfs:comment "A C-CDA statement with no id, named inside its custodian's and its patient's scope. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the custodian id's root, its extension; the patient id's root, its extension; the IRI of the class the entry's record is; its key fingerprint; its members fingerprint when it has no key fingerprint; the empty string for each it lacks. Used only in a document that states a custodian id and exactly one patient with an id, and never for the patient."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+
+cascade:ContainedRecordNamingRule a owl:NamedIndividual ;
+    rdfs:label "contained record naming rule"@en ;
+    rdfs:comment "A FHIR contained resource, named inside its container's source version. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the container record's name; the container's meta.versionId, else its meta.lastUpdated as written, else the empty string; the contained resource's id."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+
+cascade:EnteredRecordNamingRule a owl:NamedIndividual ;
+    rdfs:label "entered record naming rule"@en ;
+    rdfs:comment "A record a person entered. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the entry session's IRI; the draft's position in its session, in decimal."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+
+cascade:VersionNamingRule a owl:NamedIndividual ;
+    rdfs:label "version naming rule"@en ;
+    rdfs:comment "A version is named ni:///sha-256; and the unpadded base64url SHA-256 of the RDFC-1.0 canonical N-Quads of exactly its triples, its subject written urn:cascade:this-version and its prov:specializationOf its record among them: each line once, in code point order, no blank node, a literal's lexical form as written and a language tag in lower case."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
+
+cascade:RevisionNamingRule a owl:NamedIndividual ;
+    rdfs:label "revision naming rule"@en ;
+    rdfs:comment "A revision is named as cascade:VersionNamingRule names a version, over its own triples, its subject written urn:cascade:this-revision and a node inside it urn:cascade:this-revision# and the node's own fragment."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
+
+cascade:FindingNamingRule a owl:NamedIndividual ;
+    rdfs:label "finding naming rule"@en ;
+    rdfs:comment "A finding is named as cascade:VersionNamingRule names a version, over its own triples, its subject written urn:cascade:this-finding."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
+
+cascade:TableVersionNamingRule a owl:NamedIndividual ;
+    rdfs:label "table version naming rule"@en ;
+    rdfs:comment "A version of a reference table is named as cascade:VersionNamingRule names a version, over exactly these triples: urn:cascade:this-version prov:specializationOf its series, urn:cascade:this-version prov:wasRevisionOf the version it revises when there is one, and its rows."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
+
+cascade:DocumentNamingRule a owl:NamedIndividual ;
+    rdfs:label "document naming rule"@en ;
+    rdfs:comment "A document is named ni:///sha-256; and the unpadded base64url SHA-256 of its bytes."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> .
+
+cascade:TableRowNamingRule a owl:NamedIndividual ;
+    rdfs:label "table row naming rule"@en ;
+    rdfs:comment "A mapping row, its SSSOM record_id. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the IRIs of its owl:annotatedSource, owl:annotatedProperty and owl:annotatedTarget; for a panel member row, the canonical lexical form of its cascade:panelSequence."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://mapping-commons.github.io/sssom/record_id/> .
+
+cascade:ViewEntryNamingRule a owl:NamedIndividual ;
+    rdfs:label "view entry naming rule"@en ;
+    rdfs:comment "An entry of a view is named by a relative reference: the view's path as runtime/pod-layout.ttl places it, #, and the lower-case hexadecimal SHA-256 of the IRI of its least member in code point order. It holds no pod address, and no file writes it absolutised."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc3986#section-4.2> .
+
+cascade:SnapshotNamingRule a owl:NamedIndividual ;
+    rdfs:label "snapshot naming rule"@en ;
+    rdfs:comment "The snapshot of an act. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the act's IRI; its cascade:firstParentSnapshot as a list of none or one; its cascade:mergedParentSnapshot values as a list; its cascade:setHash as written. A list is its count, then its distinct items in code point order."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+
+cascade:ServerNamingRule a owl:NamedIndividual ;
+    rdfs:label "server naming rule"@en ;
+    rdfs:comment "A server a client pulled from, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and the normalised base URL the client used."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2> ,
+        <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.3> .
+
+cascade:OrganizationNamingRule a owl:NamedIndividual ;
+    rdfs:label "organization naming rule"@en ;
+    rdfs:comment "An organization, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, from a server, in order: the normalised base URL, Organization, the resource's id; from a document, in order: the business identifier's system and value as the document writes them, a C-CDA custodian id's root and extension or a FHIR Organization.identifier's system and value."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+
+cascade:ClaimNamingRule a owl:NamedIndividual ;
+    rdfs:label "claim naming rule"@en ;
+    rdfs:comment "A machine judgment's claim. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the maker; the matcher rule term; the justification; the members as a list; what it used as a list. A list is its count, then its distinct items in code point order."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+
+cascade:AssertionNamingRule a owl:NamedIndividual ;
+    rdfs:label "assertion naming rule"@en ;
+    rdfs:comment "A claim asserted under a version of the rule list. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the rule list version; the claim."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+
+cascade:RetractionNamingRule a owl:NamedIndividual ;
+    rdfs:label "retraction naming rule"@en ;
+    rdfs:comment "A release's retraction of a claim. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the release; the claim; the matcher rule the release declares wrong."@en ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
+
+# Snapshots
+
+cascade:firstParentSnapshot a owl:ObjectProperty ;
+    rdfs:label "first parent snapshot"@en ;
+    rdfs:comment "Of a snapshot, the writer's own previous one; a writer's first snapshot has none. Its name takes it."@en .
+
+cascade:mergedParentSnapshot a owl:ObjectProperty ;
+    rdfs:label "merged parent snapshot"@en ;
+    rdfs:comment "Of a sync's snapshot, each head among the snapshots that arrived: an arrived snapshot no held snapshot names as a parent. Its name takes them."@en .
+
+cascade:setHash a owl:DatatypeProperty ;
+    rdfs:label "set hash"@en ;
+    rdfs:comment "Of a snapshot, the order-free hash of the set of files it covers. Two writers whose latest snapshots carry equal set hashes hold one set."@en ;
+    rdfs:range xsd:string .
+
+# The matcher and its rules
+
+cascade:CascadeMatcher a prov:SoftwareAgent ;
+    rdfs:label "Cascade matcher"@en ;
+    rdfs:comment "Any runtime that follows runtime/matcher.feature and the Cascade rule list, as the maker of the judgments it writes; unversioned, since the runtime that ran is on the act."@en .
+
+cascade:SameCodeRule a owl:NamedIndividual ;
+    rdfs:label "R1, same code"@en ;
+    rdfs:comment "Rule R1 of runtime/matcher.feature; its judgments are justified cascade:SameCode."@en .
+
+cascade:SameCodeAndDateRule a owl:NamedIndividual ;
+    rdfs:label "R2, same code and date"@en ;
+    rdfs:comment "Rule R2 of runtime/matcher.feature; its judgments are justified cascade:SameCodeAndDate."@en .
+
+cascade:SameMappedCodeRule a owl:NamedIndividual ;
+    rdfs:label "R3, same mapped code"@en ;
+    rdfs:comment "Rule R3 of runtime/matcher.feature; its judgments are justified cascade:SameMappedCode."@en .
+
+cascade:SameMappedCodeAndDateRule a owl:NamedIndividual ;
+    rdfs:label "R4, same mapped code and date"@en ;
+    rdfs:comment "Rule R4 of runtime/matcher.feature; its judgments are justified cascade:SameMappedCodeAndDate."@en .
+
+cascade:SameMedicationCodeRule a owl:NamedIndividual ;
+    rdfs:label "R5, same medication code"@en ;
+    rdfs:comment "Rule R5 of runtime/matcher.feature; its judgments are justified cascade:SameMedicationCode."@en .
+
+cascade:SameResultRule a owl:NamedIndividual ;
+    rdfs:label "R6, same result"@en ;
+    rdfs:comment "Rule R6 of runtime/matcher.feature; its judgments are justified cascade:SameResult."@en .
+
+cascade:SameConvertedCodeRule a owl:NamedIndividual ;
+    rdfs:label "R7, same converted code"@en ;
+    rdfs:comment "Rule R7 of runtime/matcher.feature; its judgments are justified cascade:SameConvertedCode."@en .
+
+cascade:SameCodeAndPeriodRule a owl:NamedIndividual ;
+    rdfs:label "R8, same code and period"@en ;
+    rdfs:comment "Rule R8 of runtime/matcher.feature; its judgments are justified cascade:SameCodeAndPeriod."@en .
+
+cascade:SameBrandGenericRule a owl:NamedIndividual ;
+    rdfs:label "R10, same brand generic"@en ;
+    rdfs:comment "Rule R10 of runtime/matcher.feature; its judgments are justified cascade:SameBrandGeneric."@en .
+
+cascade:SameProductCodeRule a owl:NamedIndividual ;
+    rdfs:label "R11, same product code"@en ;
+    rdfs:comment "Rule R11 of runtime/matcher.feature; its judgments are justified cascade:SameProductCode."@en .
+
+cascade:SameVariationRule a owl:NamedIndividual ;
+    rdfs:label "R12, same variation"@en ;
+    rdfs:comment "Rule R12 of runtime/matcher.feature; its judgments are justified cascade:SameVariation."@en .
+
+cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
+    rdfs:label "R13, same variation through the table"@en ;
+    rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
+
+# What a document's description and the Bridge's findings carry into a pod
+
+cascade:serverBaseUrl a owl:DatatypeProperty ;
+    rdfs:label "server base URL"@en ;
+    rdfs:comment "Of a document, the base URL of the server the client fetched it from, normalised as cascade:RecordFromServerNamingRule says."@en ;
+    rdfs:range xsd:string .
+
+cascade:sourceFormatVersion a owl:DatatypeProperty ;
+    rdfs:label "source format version"@en ;
+    rdfs:comment "Of a document, the version of the source format it is written in, as the container it arrived in states it."@en ;
+    rdfs:range xsd:string .
+
+cascade:authenticatedPatient a owl:DatatypeProperty ;
+    rdfs:label "authenticated patient"@en ;
+    rdfs:comment "Of a document, the patient the connection that fetched it authenticated as, written as a reference in the document is written."@en ;
+    rdfs:range xsd:string .
+
+cascade:authenticatedAsProxy a owl:DatatypeProperty ;
+    rdfs:label "authenticated as proxy"@en ;
+    rdfs:comment "Of a document, true where the connection that fetched it acted for the authenticated patient rather than as them."@en ;
+    rdfs:range xsd:boolean .
+
+cascade:BridgeFindingKinds a skos:ConceptScheme ;
+    rdfs:label "Bridge finding kinds"@en ;
+    rdfs:comment "The kinds of gap a Bridge finding kept with its document names as its oa:hasBody."@en .
+
+cascade:SourcePathNotAccounted a skos:Concept ;
+    skos:inScheme cascade:BridgeFindingKinds ;
+    skos:prefLabel "a path of the record the adapter's source accounting does not carry"@en .
+
+cascade:occurrenceCount a owl:DatatypeProperty ;
+    rdfs:label "occurrence count"@en ;
+    rdfs:comment "Of a Bridge finding, how many nodes of the record stand at the path it is about."@en ;
+    rdfs:range xsd:integer .

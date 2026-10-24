@@ -1,0 +1,59 @@
+# Two records of one kind match when their current versions find one row of one version of a variant classifications
+# table. A version that carries a ClinVar VariationID finds the row of that variation, <https://identifiers.org/clinvar:>
+# and the ID, through that ID alone: its HGVS expression is not read. A version that carries none finds the row that holds
+# its HGVS expression, <https://ns.cascadeprotocol.org/codes/hgvs/> and the expression percent-encoded as ENCODE_FOR_URI does. The
+# classification plays no part: the join is identity. Left alone: a pair that shares an ID, which the rule that joins by
+# ID has, so no pair is judged by both; a pair whose versions carry different IDs, whatever expressions they hold; and a
+# version whose expression is on more than one row, since it would join two variations and entries would then join
+# through it. Rows are counted as distinct row subjects over every held version of every series of the kind, so two
+# series that both hold one variation are one row. A version finds its row in an origin only when that origin holds the
+# row, and, for an expression, holds the expression on it. Each ordered pair is a row, with the version whose rows
+# joined it; a graph that is not a version of a variant classifications table is never read for rows.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT DISTINCT ?record ?other ?origin
+WHERE {
+  { SELECT ?version (SAMPLE(?found) AS ?row) (SAMPLE(?lookup) AS ?key)
+    WHERE {
+      { ?version cascade:clinvarVariationId ?id
+        BIND (IRI(CONCAT("https://identifiers.org/clinvar:", ENCODE_FOR_URI(STR(?id)))) AS ?lookup)
+        BIND (?lookup AS ?found) }
+      UNION
+      { ?version cascade:hgvsCodingDnaExpression ?hgvs
+        FILTER NOT EXISTS { ?version cascade:clinvarVariationId [] }
+        BIND (IRI(CONCAT("https://ns.cascadeprotocol.org/codes/hgvs/", ENCODE_FOR_URI(STR(?hgvs)))) AS ?lookup)
+        ?anyOrigin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
+        GRAPH ?anyOrigin { ?found cascade:hgvsExpression ?lookup } }
+    }
+    GROUP BY ?version
+    HAVING (COUNT(DISTINCT ?found) = 1 && COUNT(DISTINCT ?lookup) = 1) }
+  { SELECT ?otherVersion (SAMPLE(?otherFound) AS ?row) (SAMPLE(?otherLookup) AS ?otherKey)
+    WHERE {
+      { ?otherVersion cascade:clinvarVariationId ?otherId
+        BIND (IRI(CONCAT("https://identifiers.org/clinvar:", ENCODE_FOR_URI(STR(?otherId)))) AS ?otherLookup)
+        BIND (?otherLookup AS ?otherFound) }
+      UNION
+      { ?otherVersion cascade:hgvsCodingDnaExpression ?otherHgvs
+        FILTER NOT EXISTS { ?otherVersion cascade:clinvarVariationId [] }
+        BIND (IRI(CONCAT("https://ns.cascadeprotocol.org/codes/hgvs/", ENCODE_FOR_URI(STR(?otherHgvs)))) AS ?otherLookup)
+        ?otherAnyOrigin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
+        GRAPH ?otherAnyOrigin { ?otherFound cascade:hgvsExpression ?otherLookup } }
+    }
+    GROUP BY ?otherVersion
+    HAVING (COUNT(DISTINCT ?otherFound) = 1 && COUNT(DISTINCT ?otherLookup) = 1) }
+  ?origin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
+  GRAPH ?origin {
+    ?row ?held [] .
+    ?key ^cascade:hgvsExpression? ?row .
+    ?otherKey ^cascade:hgvsExpression? ?row .
+  }
+  ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  FILTER (?record != ?other)
+  FILTER NOT EXISTS {
+    ?version cascade:clinvarVariationId ?shared .
+    ?otherVersion cascade:clinvarVariationId ?shared
+  }
+}

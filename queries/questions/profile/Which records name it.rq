@@ -1,0 +1,13 @@
+# A record names its patient through its current version's cascade:patient. Each hospital names its own profile for the
+# person.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?profile ?profileLabel ?record ?recordLabel
+WHERE {
+  ?record pav:hasCurrentVersion/cascade:patient ?profile .
+  OPTIONAL { ?profile rdfs:label ?profileLabel }
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+}
+ORDER BY ?profileLabel ?profile ?recordLabel ?record

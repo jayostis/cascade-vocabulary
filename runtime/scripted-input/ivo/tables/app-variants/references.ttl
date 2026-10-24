@@ -1,11 +1,11 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
-<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a rec:ReferenceSeries ;
+<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a cascade:ReferenceSeries ;
     rdfs:label "Matcher rules" ;
-    rec:shipsWith <urn:uuid:bd40f64f-b01a-4246-ae63-29f6554415fc> .
+    cascade:defaultTableVersion <urn:uuid:bd40f64f-b01a-4246-ae63-29f6554415fc> .
 
 <urn:uuid:f32ebeea-4ed7-4da7-b08c-031dc619538e> a prov:Entity ;
     prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
@@ -46,12 +46,12 @@
     pav:version "8" ;
     prov:wasRevisionOf <urn:uuid:5571ea95-c285-4fea-925f-e9fdd70f977a> .
 
-<urn:uuid:c1a2320c-0a92-4bcd-8c24-524c8913b524> a rec:ReferenceSeries ;
+<urn:uuid:c1a2320c-0a92-4bcd-8c24-524c8913b524> a cascade:ReferenceSeries ;
     rdfs:label "ClinVar variant classifications" ;
-    rec:tableKind rec:VariantClassifications ;
-    rec:shipsWith <urn:uuid:57a18cdb-b597-46b1-baef-bc6476d2b26b> .
+    cascade:tableKind cascade:VariantClassifications ;
+    cascade:defaultTableVersion <ni:///sha-256;Z1lR-m7fOh5G0nI8595kH5jovJygUDKk4OAxixNs3_E> .
 
-<urn:uuid:57a18cdb-b597-46b1-baef-bc6476d2b26b> a prov:Entity ;
+<ni:///sha-256;Z1lR-m7fOh5G0nI8595kH5jovJygUDKk4OAxixNs3_E> a prov:Entity ;
     prov:specializationOf <urn:uuid:c1a2320c-0a92-4bcd-8c24-524c8913b524> ;
     pav:version "1" ;
-    rec:coversGene "MLH1" .
+    cascade:coversGene "MLH1" .

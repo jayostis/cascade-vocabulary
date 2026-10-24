@@ -13,7 +13,7 @@ from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
 
-from contract import KITS, PROV, QUERIES, REC, ROOT
+from contract import KITS, PROV, QUERIES, CASCADE, ROOT
 from engines import parsed
 from naming import ni_name
 
@@ -23,9 +23,7 @@ PREFIXES = "".join(f"PREFIX {prefix}: <{base}>\n" for prefix, base in {
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "xsd": "http://www.w3.org/2001/XMLSchema#", "prov": "http://www.w3.org/ns/prov#", "pav": "http://purl.org/pav/",
     "npx": "http://purl.org/nanopub/x/", "bridge": "https://ns.cascadeprotocol.org/bridge/v1-draft#",
-    "rec": "https://ns.cascadeprotocol.org/records/v1-draft#",
-    "jdg": "https://ns.cascadeprotocol.org/judgments/v1-draft#", "health": "https://ns.cascadeprotocol.org/health/v1#",
-    "clinical": "https://ns.cascadeprotocol.org/clinical/v1#", "cascade": "https://ns.cascadeprotocol.org/core/v1#",
+    "oa": "http://www.w3.org/ns/oa#", "cascade": "https://ns.cascadeprotocol.org/cascade#",
 }.items())
 
 
@@ -127,18 +125,18 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_gua
     lists = {path.relative_to(ROOT).as_posix(): rows
              for path in sorted(path for top in ("runtime", "conformance")
                                 for index in (ROOT / top).rglob("references.ttl") for path in index.parent.glob("*.ttl"))
-             for rows in [parsed(path)] if (None, RDF.type, REC.MatcherRule) in rows}
+             for rows in [parsed(path)] if (None, RDF.type, CASCADE.RuleListRow) in rows}
     assert len(lists) == 21
     mismatched, unguarded = set(), set()
     for path, rows in lists.items():
-        for row in rows.subjects(RDF.type, REC.MatcherRule):
-            query = str(rows.value(row, REC.query))
+        for row in rows.subjects(RDF.type, CASCADE.RuleListRow):
+            query = str(rows.value(row, CASCADE.queryPath))
             assert query.startswith("matcher/"), path
             octets = (QUERIES / query).read_bytes()
             text = octets.decode("utf-8")
-            if ni_name(octets) != str(rows.value(row, REC.queryHash)):
+            if ni_name(octets) != str(rows.value(row, CASCADE.queryHash)):
                 mismatched.add(("/".join(path.split("/")[-3:-1]), query))
-            if not guarded(frozenset(rows.objects(row, REC.tableKind)), text):
+            if not guarded(frozenset(rows.objects(row, CASCADE.tableKind)), text):
                 unguarded.add((path, query))
     assert mismatched == {("finn/references", "matcher/same-code.rq"),
                           ("tables/app-new-rules", "matcher/same-code-and-date.rq")}
@@ -148,8 +146,8 @@ def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_gua
 @cache
 def guarded(kinds, query):
     """Whether a query reads GRAPH ?origin exactly when its row names one table kind, and joins, outside any graph, the
-    one triple ?origin prov:specializationOf/rec:tableKind on that kind."""
-    origin, guard = Variable("origin"), PROV.specializationOf / REC.tableKind
+    one triple ?origin prov:specializationOf/cascade:tableKind on that kind."""
+    origin, guard = Variable("origin"), PROV.specializationOf / CASCADE.tableKind
     found, reads = set(), False
 
     def walk(node, joined):
@@ -171,19 +169,19 @@ def guarded(kinds, query):
 
 
 @pytest.mark.parametrize("kinds, query, expected", [
-    ({REC.VaccineGroups}, "SELECT * { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . "
+    ({CASCADE.VaccineGroups}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . "
                           "GRAPH ?origin { ?s ?p ?o } }", True),
-    ({REC.VaccineGroups}, "# ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups .\n"
+    ({CASCADE.VaccineGroups}, "# ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups .\n"
                           "SELECT * { GRAPH ?origin { ?s ?p ?o } }", False),
-    ({REC.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . "
+    ({CASCADE.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . "
                                  "GRAPH ?origin { ?s ?p ?o } }", False),
-    (set(), "SELECT * { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }",
+    (set(), "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }",
      False),
-    ({REC.VaccineGroups, REC.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/rec:tableKind "
-                                                    "rec:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }", False),
-    ({REC.VaccineGroups}, "SELECT * { OPTIONAL { ?origin prov:specializationOf/rec:tableKind rec:VaccineGroups . } "
+    ({CASCADE.VaccineGroups, CASCADE.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind "
+                                                    "cascade:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }", False),
+    ({CASCADE.VaccineGroups}, "SELECT * { OPTIONAL { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . } "
                           "GRAPH ?origin { ?s ?p ?o } }", False),
-    ({REC.VaccineGroups}, "SELECT * { ?origin prov:specializationOf ?v . ?v rec:tableKind rec:VaccineGroups . "
+    ({CASCADE.VaccineGroups}, "SELECT * { ?origin prov:specializationOf ?v . ?v cascade:tableKind cascade:VaccineGroups . "
                           "GRAPH ?origin { ?s ?p ?o } }", False),
 ])
 def test_a_rule_reads_a_table_graph_exactly_when_its_row_names_the_kind_one_joined_triple_guards_it_on(kinds, query,

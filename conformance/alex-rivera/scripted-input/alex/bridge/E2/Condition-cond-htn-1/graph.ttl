@@ -1,41 +1,45 @@
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;t4CGMG66aZJrzmmYnT9u2K2Hp2OuYUn8kQRTVdBtXbY> health:onsetDate "2021-04-02"^^xsd:date ;
-	health:status "active" ;
-	clinical:verificationStatus "confirmed" ;
-	health:conditionName "Essential hypertension" ;
-	health:snomedCode <http://snomed.info/id/38341003> .
-_:a9005ea69fa3e487129ee1b68f7d2b3b pav:lastUpdateOn "2026-01-02T09:00:00Z"^^xsd:dateTime ;
+<ni:///sha-256;hQBAfn3OeJzq_Z9M9lzvxF5Yt6l3kgldogP-mbVMawM> cascade:conditionName "Essential hypertension" ;
+	cascade:onsetDate "2021-04-02"^^xsd:date ;
+	cascade:clinicalStatus "active" ;
+	cascade:snomedCode <http://snomed.info/id/38341003> ;
+	cascade:verificationStatus "confirmed" .
+_:9caf389da928a37a9f78048622aad61e pav:lastUpdateOn "2026-01-02T09:00:00Z"^^xsd:dateTime ;
 	pav:version "3" ;
-	bridge:arrivedAs <ni:///sha-256;t4CGMG66aZJrzmmYnT9u2K2Hp2OuYUn8kQRTVdBtXbY> .
-<ni:///sha-256;t4CGMG66aZJrzmmYnT9u2K2Hp2OuYUn8kQRTVdBtXbY> rec:patient <urn:uuid:24c23e99-ff68-841f-a7a4-ebe3bd997ada> ;
-	prov:specializationOf <urn:uuid:17010d8c-e1a5-89e5-8db2-df06153509b9> .
-<urn:uuid:17010d8c-e1a5-89e5-8db2-df06153509b9> health:sourceRecordId "cond-htn-1" ;
-	rec:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-htn-1> ;
-	a health:ConditionRecord .
-_:a9005ea69fa3e487129ee1b68f7d2b3b bridge:selector "" ;
+	bridge:arrivedAs <ni:///sha-256;hQBAfn3OeJzq_Z9M9lzvxF5Yt6l3kgldogP-mbVMawM> .
+<ni:///sha-256;hQBAfn3OeJzq_Z9M9lzvxF5Yt6l3kgldogP-mbVMawM> cascade:patient <urn:uuid:7883c5a4-6c61-837c-9bf7-dbe1b37d89ff> ;
+	prov:specializationOf <urn:uuid:e3889c3a-faa3-8a4f-a9f6-84d1dd1d85a4> .
+<urn:uuid:e3889c3a-faa3-8a4f-a9f6-84d1dd1d85a4> cascade:sourceRecordId "cond-htn-1" ;
+	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/Condition/cond-htn-1> ;
+	a cascade:ProblemOrDiagnosis .
+_:9caf389da928a37a9f78048622aad61e oa:hasSelector _:bb00cc624ab66b6e38ea0273e472aa54 ;
+	oa:hasSource <ni:///sha-256;aRA8S5IYHGF9i7_EnT7Z741PL7GXrlEpgr-uMxFK6jY> ;
 	prov:wasDerivedFrom <ni:///sha-256;aRA8S5IYHGF9i7_EnT7Z741PL7GXrlEpgr-uMxFK6jY> ;
 	prov:wasGeneratedBy _:fe5e798c9accfdc624f768eb0d3b5387 .
+_:bb00cc624ab66b6e38ea0273e472aa54 a oa:FragmentSelector ;
+	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "" .
 _:fe5e798c9accfdc624f768eb0d3b5387 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-09-01T10:00:04Z"^^xsd:dateTime .
 <ni:///sha-256;aRA8S5IYHGF9i7_EnT7Z741PL7GXrlEpgr-uMxFK6jY> prov:qualifiedAttribution _:58189cb3240c0a593a6f93590e366c12 .
 _:58189cb3240c0a593a6f93590e366c12 prov:agent _:7945a3f8b621eab04945d2eb9081cbe3 .
 _:7945a3f8b621eab04945d2eb9081cbe3 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:58189cb3240c0a593a6f93590e366c12 prov:hadRole rec:transmitter .
+_:58189cb3240c0a593a6f93590e366c12 prov:hadRole cascade:TransmitterRole .
 <ni:///sha-256;aRA8S5IYHGF9i7_EnT7Z741PL7GXrlEpgr-uMxFK6jY> prov:qualifiedAttribution _:dce720a5279304b4aeae26b503108b8c .
 _:dce720a5279304b4aeae26b503108b8c prov:agent _:d39ee252ebf36ce6d2c613e33348ac3f .
 _:d39ee252ebf36ce6d2c613e33348ac3f <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
-_:dce720a5279304b4aeae26b503108b8c prov:hadRole rec:author .
-<ni:///sha-256;aRA8S5IYHGF9i7_EnT7Z741PL7GXrlEpgr-uMxFK6jY> bridge:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+_:dce720a5279304b4aeae26b503108b8c prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;aRA8S5IYHGF9i7_EnT7Z741PL7GXrlEpgr-uMxFK6jY> cascade:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
 	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/Condition/cond-htn-1> ;
 	pav:retrievedOn "2026-09-01T10:00:00Z"^^xsd:dateTime ;
-	bridge:sourceFormatVersion "4.0.1" ;
+	cascade:sourceFormatVersion "4.0.1" ;
 	a prov:Entity .
 _:fe5e798c9accfdc624f768eb0d3b5387 a prov:Activity ;
 	prov:used <ni:///sha-256;aRA8S5IYHGF9i7_EnT7Z741PL7GXrlEpgr-uMxFK6jY> ;

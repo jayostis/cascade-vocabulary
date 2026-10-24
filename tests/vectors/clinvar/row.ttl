@@ -1,11 +1,10 @@
-@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://www.ncbi.nlm.nih.gov/clinvar/90011>
-    rec:hgvsExpression <http://varnomen.hgvs.org/NM_000249.3%3Ac.2042C%3ET> ,
-                       <http://varnomen.hgvs.org/NM_000249.4%3Ac.2042C%3ET> ;
-    rec:clinvarClassification genomics:Pathogenic , genomics:LikelyPathogenic ;
-    rec:clinvarReviewStatus rec:ClinVarMultipleSubmittersNoConflicts ;
-    rec:lastEvaluated "2024-12-11"^^xsd:date ;
-    rec:contributingSubmitters 5 .
+<https://identifiers.org/clinvar:90011>
+    cascade:hgvsExpression <https://ns.cascadeprotocol.org/codes/hgvs/NM_000249.3%3Ac.2042C%3ET> ,
+                       <https://ns.cascadeprotocol.org/codes/hgvs/NM_000249.4%3Ac.2042C%3ET> ;
+    cascade:clinvarClassification cascade:Pathogenic , cascade:LikelyPathogenic ;
+    cascade:clinvarReviewStatus cascade:ClinVarMultipleSubmittersNoConflicts ;
+    cascade:lastEvaluated "2024-12-11"^^xsd:date ;
+    cascade:contributingSubmitterCount 5 .

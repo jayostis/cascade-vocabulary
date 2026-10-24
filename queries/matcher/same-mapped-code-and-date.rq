@@ -1,0 +1,23 @@
+# Two records of one kind match when their current versions give two different vaccine codes that one version of a
+# vaccine group table puts in one group, and one date, the same term. A record's vaccine code, a CVX code's IRI, joins
+# a row whose code is that IRI. Each ordered pair is a row, with the version whose rows joined it; a graph that is not
+# a version of a vaccine group table is never read for rows.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT DISTINCT ?record ?other ?origin
+WHERE {
+  ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups .
+  ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?version cascade:vaccineCode ?code ; cascade:displayDate ?date .
+  ?otherVersion cascade:vaccineCode ?otherCode ; cascade:displayDate ?date .
+  GRAPH ?origin {
+    ?row owl:annotatedSource ?code ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?group .
+    ?otherRow owl:annotatedSource ?otherCode ; owl:annotatedProperty skos:broadMatch ; owl:annotatedTarget ?group .
+  }
+  FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
+}

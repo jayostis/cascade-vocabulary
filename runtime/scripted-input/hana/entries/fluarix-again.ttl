@@ -1,14 +1,14 @@
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<urn:cascade:this-entry> a prov:Activity ;
+<urn:uuid:cbbea06b-7224-47b3-b864-e6760ffae21e> a prov:Activity ;
   rdfs:label "entered in the Cascade app" ;
-  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole jdg:patient ] .
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole cascade:PatientRole ] .
 
-<urn:cascade:output-0> a <https://ns.cascadeprotocol.org/health/v1#ImmunizationRecord> .
+<urn:cascade:output-0> a <https://ns.cascadeprotocol.org/cascade#Vaccination> .
 <urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
-  <https://ns.cascadeprotocol.org/health/v1#vaccineName> "Fluarix Tetra" ;
-  <https://ns.cascadeprotocol.org/health/v1#vaccineCode> "141" ;
-  <https://ns.cascadeprotocol.org/health/v1#administrationDate> "2025-10-01"^^<http://www.w3.org/2001/XMLSchema#date> ;
-  <https://ns.cascadeprotocol.org/records/v1-draft#patient> <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+  <https://ns.cascadeprotocol.org/cascade#vaccineName> "Fluarix Tetra" ;
+  <https://ns.cascadeprotocol.org/cascade#vaccineCode> <https://ns.cascadeprotocol.org/codes/cvx/141> ;
+  <https://ns.cascadeprotocol.org/cascade#vaccinationOccurrenceTime> "2025-10-01"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .

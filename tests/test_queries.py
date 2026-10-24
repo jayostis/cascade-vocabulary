@@ -15,7 +15,7 @@ import contract
 from contract import ROOT
 from engines import prepared
 
-REC = "https://ns.cascadeprotocol.org/records/v1-draft#"
+CASCADE = "https://ns.cascadeprotocol.org/cascade#"
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 
@@ -80,12 +80,21 @@ def test_every_subquery_comes_first_in_its_group(relative):
             assert not any(is_subquery(part) for part in parts[first_other:]), relative
 
 
+ENTRY_PLACEHOLDER = 'CONCAT("urn:cascade:entry:", SHA256(MIN(STR('
+
+
+@pytest.mark.parametrize("relative", every_query())
+def test_every_entry_placeholder_is_n13s_hash_of_the_least_member(relative):
+    text = contract.query(relative)
+    assert text.count('CONCAT("urn:cascade:entry:"') == text.count(ENTRY_PLACEHOLDER), relative
+
+
 @pytest.mark.parametrize("relative", sorted(contract.named("views").values()))
 def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
     patterns = [t for node in nodes(prepared(contract.query(relative)).algebra["p"]) if node.name == "BGP"
                 for t in node["triples"]]
     typed = {s for s, p, o in patterns if p == RDF.type and isinstance(o, URIRef)}
-    assert {s for s, p, o in patterns if p == URIRef(REC + "inEntry")} <= typed
+    assert {s for s, p, o in patterns if p == URIRef(CASCADE + "inEntry")} <= typed
 
 
 @pytest.mark.parametrize("relative", every_query())
@@ -146,7 +155,7 @@ def test_no_derivation_reads_a_term_a_later_derivation_writes(lens):
 
 @pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
 def test_every_lens_writes_rec_counts_and_nothing_else(lens):
-    assert writes(contract.named("lenses")[lens]) == {URIRef(REC + "counts")}
+    assert writes(contract.named("lenses")[lens]) == {URIRef(CASCADE + "countsUnderLens")}
 
 
 def test_each_derivation_has_a_position_of_its_own_and_every_lens_the_same_one():
@@ -236,15 +245,15 @@ def kinds_named_out_of_place(relative, text):
 
 
 def test_the_kind_check_refuses_a_record_type_named_by_a_query_not_about_that_one_kind():
-    allergy = URIRef("https://ns.cascadeprotocol.org/health/v1#AllergyRecord")
+    allergy = URIRef("https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance")
     query = f"SELECT ?r WHERE {{ ?r a <{allergy}> }}"
     assert kinds_named_out_of_place("derivations/entries.rq", query) == {allergy}
     assert kinds_named_out_of_place("questions/pod/My active conditions.rq", query) == {allergy}
     assert kinds_named_out_of_place("questions/pod/My active allergies.rq", query) == set()
     assert kinds_named_out_of_place("views/allergies.rq", query) == set()
-    lab = URIRef("https://ns.cascadeprotocol.org/health/v1#LabResultRecord")
+    lab = URIRef("https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult")
     assert kinds_named_out_of_place("questions/pod/My lab results.rq", f"SELECT ?r WHERE {{ ?r a <{lab}> }}") == set()
-    medication = URIRef("https://ns.cascadeprotocol.org/clinical/v1#Medication")
+    medication = URIRef("https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication")
     query = f"SELECT ?r WHERE {{ ?r a <{medication}> }}"
     assert kinds_named_out_of_place("questions/pod/My medication history.rq", query) == set()
     assert kinds_named_out_of_place("questions/pod/My procedures.rq", query) == {medication}
@@ -356,9 +365,14 @@ def short(term):
 
 
 def reasons():
-    graph = Graph().parse(ROOT / "ontologies" / "records" / "v1-draft" / "records.ttl")
-    return frozenset(s for s in graph.subjects(RDF.type, URIRef("http://www.w3.org/2002/07/owl#NamedIndividual"))
-                     if str(s).startswith(REC))
+    """The named individuals of the vocabulary the derivations that leave records out name, but for the verdicts they
+    read, which say what they are in an rdfs:comment."""
+    graph = Graph().parse(ROOT / "ontologies" / "cascade.ttl")
+    declared = {s for s in graph.subjects(RDF.type, URIRef("http://www.w3.org/2002/07/owl#NamedIndividual"))
+                if (s, URIRef("http://www.w3.org/2000/01/rdf-schema#comment"), None) not in graph}
+    named = {iri for relative in every_query() if relative.startswith("derivations/excluded-")
+             for iri in iris(prepared(contract.query(relative)).algebra)}
+    return frozenset(named & declared)
 
 
 def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no_other_query():
@@ -378,7 +392,7 @@ def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no
 
 
 PUBLISHED = json.loads((ROOT / "tests" / "published-bytes.json").read_text())
-PUBLISHED_FILES = ("runtime/rule-list/[0-9a-f]*.ttl", "queries/v1-draft/matcher/*.rq")
+PUBLISHED_FILES = ("runtime/rule-list/[0-9a-f]*.ttl", "queries/matcher/*.rq")
 
 
 def test_a_published_rule_list_and_matcher_query_keep_their_bytes_and_a_changed_rule_is_a_new_file():
@@ -390,5 +404,5 @@ def test_a_published_rule_list_and_matcher_query_keep_their_bytes_and_a_changed_
 
 
 def test_why_it_is_in_no_view_reads_only_the_recorded_reasons_and_labels():
-    terms = {URIRef(REC + term) for term in ("Record", "leftOutFor", "reason", "because")}
+    terms = {URIRef(CASCADE + term) for term in ("Record", "leftOutFor", "leftOutReason", "leftOutBecauseOf")}
     assert reads(contract.questions()["record/Why it is in no view"]) == terms | {RDF.type, URIRef(RDFS_LABEL)}

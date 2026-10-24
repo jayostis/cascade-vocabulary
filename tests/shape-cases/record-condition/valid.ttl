@@ -1,7 +1,6 @@
 @prefix : <#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 
-:record a health:ConditionRecord ;
-    rec:sourceUrl <https://fhir.example/Condition/1> ;
-    health:sourceRecordId "1" .
+<urn:uuid:25e43c78-cf6a-8865-8770-1d52eccfc764> a cascade:ProblemOrDiagnosis ;
+    cascade:sourceUrl <https://fhir.example/Condition/record-condition-valid> ;
+    cascade:sourceRecordId "1" .

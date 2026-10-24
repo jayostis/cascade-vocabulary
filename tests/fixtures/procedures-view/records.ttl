@@ -1,25 +1,24 @@
 @prefix : <urn:x:> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:coloOld a clinical:Procedure .
-:coloOldVersion prov:specializationOf :coloOld ; rec:patient :subject ; clinical:procedureName "Colonoscopy" ; clinical:status "completed" ;
-    clinical:procedureDate "2024-03-01"^^xsd:date .
-:coloOldRevision a rec:Revision ; rec:revisionOf :coloOld ; rec:version :coloOldVersion ;
+:coloOld a cascade:MedicalProcedure .
+:coloOldVersion prov:specializationOf :coloOld ; cascade:patient :subject ; cascade:procedureName "Colonoscopy" ; cascade:workflowStatus "completed" ;
+    cascade:procedureDate "2024-03-01"^^xsd:date .
+:coloOldRevision a cascade:Revision ; cascade:revisionOf :coloOld ; cascade:version :coloOldVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:coloNew a clinical:Procedure .
-:coloNewVersion prov:specializationOf :coloNew ; rec:patient :subject ; clinical:procedureName "Colonoscopy, screening" ;
-    clinical:snomedCode "73761001" .
-:coloNewRevision a rec:Revision ; rec:revisionOf :coloNew ; rec:version :coloNewVersion ;
+:coloNew a cascade:MedicalProcedure .
+:coloNewVersion prov:specializationOf :coloNew ; cascade:patient :subject ; cascade:procedureName "Colonoscopy, screening" ;
+    cascade:snomedCode <http://snomed.info/id/73761001> .
+:coloNewRevision a cascade:Revision ; cascade:revisionOf :coloNew ; cascade:version :coloNewVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:echo a clinical:Procedure .
-:echoVersion prov:specializationOf :echo ; rec:patient :subject ; clinical:procedureName "Echocardiogram" ; clinical:status "not-done" ;
-    clinical:procedureDate "2023-05-01"^^xsd:date .
-:echoRevision a rec:Revision ; rec:revisionOf :echo ; rec:version :echoVersion ;
+:echo a cascade:MedicalProcedure .
+:echoVersion prov:specializationOf :echo ; cascade:patient :subject ; cascade:procedureName "Echocardiogram" ; cascade:workflowStatus "not-done" ;
+    cascade:procedureDate "2023-05-01"^^xsd:date .
+:echoRevision a cascade:Revision ; cascade:revisionOf :echo ; cascade:version :echoVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,98 +1,97 @@
 @prefix : <urn:x:> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:active a clinical:Medication .
-:activeVersion prov:specializationOf :active ; rec:patient :subject ; clinical:drugName "status: active" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "active" .
-:activeRevision a rec:Revision ; rec:revisionOf :active ; rec:version :activeVersion ;
+:active a cascade:PrescribedOrReportedMedication .
+:activeVersion prov:specializationOf :active ; cascade:patient :subject ; cascade:drugName "status: active" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "active" .
+:activeRevision a cascade:Revision ; cascade:revisionOf :active ; cascade:version :activeVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:onHold a clinical:Medication .
-:onHoldVersion prov:specializationOf :onHold ; rec:patient :subject ; clinical:drugName "status: on-hold" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "on-hold" .
-:onHoldRevision a rec:Revision ; rec:revisionOf :onHold ; rec:version :onHoldVersion ;
+:onHold a cascade:PrescribedOrReportedMedication .
+:onHoldVersion prov:specializationOf :onHold ; cascade:patient :subject ; cascade:drugName "status: on-hold" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "on-hold" .
+:onHoldRevision a cascade:Revision ; cascade:revisionOf :onHold ; cascade:version :onHoldVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:notTaken a clinical:Medication .
-:notTakenVersion prov:specializationOf :notTaken ; rec:patient :subject ; clinical:drugName "status: not-taken" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "not-taken" .
-:notTakenRevision a rec:Revision ; rec:revisionOf :notTaken ; rec:version :notTakenVersion ;
+:notTaken a cascade:PrescribedOrReportedMedication .
+:notTakenVersion prov:specializationOf :notTaken ; cascade:patient :subject ; cascade:drugName "status: not-taken" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "not-taken" .
+:notTakenRevision a cascade:Revision ; cascade:revisionOf :notTaken ; cascade:version :notTakenVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:completed a clinical:Medication .
-:completedVersion prov:specializationOf :completed ; rec:patient :subject ; clinical:drugName "status: completed" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "completed" .
-:completedRevision a rec:Revision ; rec:revisionOf :completed ; rec:version :completedVersion ;
+:completed a cascade:PrescribedOrReportedMedication .
+:completedVersion prov:specializationOf :completed ; cascade:patient :subject ; cascade:drugName "status: completed" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "completed" .
+:completedRevision a cascade:Revision ; cascade:revisionOf :completed ; cascade:version :completedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:stopped a clinical:Medication .
-:stoppedVersion prov:specializationOf :stopped ; rec:patient :subject ; clinical:drugName "status: stopped" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "stopped" .
-:stoppedRevision a rec:Revision ; rec:revisionOf :stopped ; rec:version :stoppedVersion ;
+:stopped a cascade:PrescribedOrReportedMedication .
+:stoppedVersion prov:specializationOf :stopped ; cascade:patient :subject ; cascade:drugName "status: stopped" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "stopped" .
+:stoppedRevision a cascade:Revision ; cascade:revisionOf :stopped ; cascade:version :stoppedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:cancelled a clinical:Medication .
-:cancelledVersion prov:specializationOf :cancelled ; rec:patient :subject ; clinical:drugName "status: cancelled" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "cancelled" .
-:cancelledRevision a rec:Revision ; rec:revisionOf :cancelled ; rec:version :cancelledVersion ;
+:cancelled a cascade:PrescribedOrReportedMedication .
+:cancelledVersion prov:specializationOf :cancelled ; cascade:patient :subject ; cascade:drugName "status: cancelled" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "cancelled" .
+:cancelledRevision a cascade:Revision ; cascade:revisionOf :cancelled ; cascade:version :cancelledVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:draft a clinical:Medication .
-:draftVersion prov:specializationOf :draft ; rec:patient :subject ; clinical:drugName "status: draft" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "draft" .
-:draftRevision a rec:Revision ; rec:revisionOf :draft ; rec:version :draftVersion ;
+:draft a cascade:PrescribedOrReportedMedication .
+:draftVersion prov:specializationOf :draft ; cascade:patient :subject ; cascade:drugName "status: draft" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "draft" .
+:draftRevision a cascade:Revision ; cascade:revisionOf :draft ; cascade:version :draftVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:none a clinical:Medication .
-:noneVersion prov:specializationOf :none ; rec:patient :subject ; clinical:drugName "status: none" ; clinical:clinicalIntent "prescribed" .
-:noneRevision a rec:Revision ; rec:revisionOf :none ; rec:version :noneVersion ;
+:none a cascade:PrescribedOrReportedMedication .
+:noneVersion prov:specializationOf :none ; cascade:patient :subject ; cascade:drugName "status: none" ; cascade:prescribedOrReported "prescribed" .
+:noneRevision a cascade:Revision ; cascade:revisionOf :none ; cascade:version :noneVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:aborted a clinical:Medication .
-:abortedVersion prov:specializationOf :aborted ; rec:patient :subject ; clinical:drugName "status: aborted" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "aborted" .
-:abortedRevision a rec:Revision ; rec:revisionOf :aborted ; rec:version :abortedVersion ;
+:aborted a cascade:PrescribedOrReportedMedication .
+:abortedVersion prov:specializationOf :aborted ; cascade:patient :subject ; cascade:drugName "status: aborted" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "aborted" .
+:abortedRevision a cascade:Revision ; cascade:revisionOf :aborted ; cascade:version :abortedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:suspended a clinical:Medication .
-:suspendedVersion prov:specializationOf :suspended ; rec:patient :subject ; clinical:drugName "status: suspended" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "suspended" .
-:suspendedRevision a rec:Revision ; rec:revisionOf :suspended ; rec:version :suspendedVersion ;
+:suspended a cascade:PrescribedOrReportedMedication .
+:suspendedVersion prov:specializationOf :suspended ; cascade:patient :subject ; cascade:drugName "status: suspended" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "suspended" .
+:suspendedRevision a cascade:Revision ; cascade:revisionOf :suspended ; cascade:version :suspendedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:discontinued a clinical:Medication .
-:discontinuedVersion prov:specializationOf :discontinued ; rec:patient :subject ; clinical:drugName "status: discontinued" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "discontinued" .
-:discontinuedRevision a rec:Revision ; rec:revisionOf :discontinued ; rec:version :discontinuedVersion ;
+:discontinued a cascade:PrescribedOrReportedMedication .
+:discontinuedVersion prov:specializationOf :discontinued ; cascade:patient :subject ; cascade:drugName "status: discontinued" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "discontinued" .
+:discontinuedRevision a cascade:Revision ; cascade:revisionOf :discontinued ; cascade:version :discontinuedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:noLongerTaking a clinical:Medication .
-:noLongerTakingVersion prov:specializationOf :noLongerTaking ; rec:patient :subject ; clinical:drugName "status: no longer taking" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "no longer taking" .
-:noLongerTakingRevision a rec:Revision ; rec:revisionOf :noLongerTaking ; rec:version :noLongerTakingVersion ;
+:noLongerTaking a cascade:PrescribedOrReportedMedication .
+:noLongerTakingVersion prov:specializationOf :noLongerTaking ; cascade:patient :subject ; cascade:drugName "status: no longer taking" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "no longer taking" .
+:noLongerTakingRevision a cascade:Revision ; cascade:revisionOf :noLongerTaking ; cascade:version :noLongerTakingVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:seePharmacy a clinical:Medication .
-:seePharmacyVersion prov:specializationOf :seePharmacy ; rec:patient :subject ; clinical:drugName "status: see pharmacy" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "see pharmacy" .
-:seePharmacyRevision a rec:Revision ; rec:revisionOf :seePharmacy ; rec:version :seePharmacyVersion ;
+:seePharmacy a cascade:PrescribedOrReportedMedication .
+:seePharmacyVersion prov:specializationOf :seePharmacy ; cascade:patient :subject ; cascade:drugName "status: see pharmacy" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "see pharmacy" .
+:seePharmacyRevision a cascade:Revision ; cascade:revisionOf :seePharmacy ; cascade:version :seePharmacyVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:enteredInError a clinical:Medication .
-:enteredInErrorVersion prov:specializationOf :enteredInError ; rec:patient :subject ; clinical:drugName "status: entered-in-error" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "entered-in-error" .
-:enteredInErrorRevision a rec:Revision ; rec:revisionOf :enteredInError ; rec:version :enteredInErrorVersion ;
+:enteredInError a cascade:PrescribedOrReportedMedication .
+:enteredInErrorVersion prov:specializationOf :enteredInError ; cascade:patient :subject ; cascade:drugName "status: entered-in-error" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "entered-in-error" .
+:enteredInErrorRevision a cascade:Revision ; cascade:revisionOf :enteredInError ; cascade:version :enteredInErrorVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:nullified a clinical:Medication .
-:nullifiedVersion prov:specializationOf :nullified ; rec:patient :subject ; clinical:drugName "status: nullified" ; clinical:clinicalIntent "prescribed" ;
-    clinical:status "nullified" .
-:nullifiedRevision a rec:Revision ; rec:revisionOf :nullified ; rec:version :nullifiedVersion ;
+:nullified a cascade:PrescribedOrReportedMedication .
+:nullifiedVersion prov:specializationOf :nullified ; cascade:patient :subject ; cascade:drugName "status: nullified" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "nullified" .
+:nullifiedRevision a cascade:Revision ; cascade:revisionOf :nullified ; cascade:version :nullifiedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 

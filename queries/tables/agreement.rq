@@ -1,0 +1,49 @@
+# Each report that states an ACMG classification, the one row of a version of a variant classifications table that the
+# variant it interprets finds, and one verdict on how the report stands to the row. It reads the entries of the views, as
+# the pod questions do, and the rows inside GRAPH ?origin, as a rule's query does. ?report is the interpretation's entry,
+# as pod/What each report says of a variant gives it, ?row the row's subject, ?origin the version and ?verdict one of four
+# literals. A variant finds its row as rule R13 does: through its ClinVar VariationIDs, as the rows of those variations,
+# when it carries any, and its HGVS expression, as the row holding it, only when it carries none; never through both. It
+# finds one row when the rows found, counted as distinct row subjects over every held version, are one. A version that
+# holds the row gives a verdict of its own; for a row found by an expression, the version must hold that expression on the
+# row, as R13 reads it, so a version whose row for the same variation lacks the expression gives none. The verdict is "labs disagree" when the row holds a conflicting
+# classification; else "agrees" when the report's ACMG value is among the row's, or "differs" when the row holds one of
+# the five ACMG values and not the report's; else "as ClinVar writes it", for a row that holds none of the five. A report
+# with no ACMG value has no verdict, and neither has one whose variant finds no row or two or more. Sub-tiers such as low
+# penetrance and VUS-high are not among the five.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?report ?row ?origin
+  (IF(SUM(IF(BOUND(?held) && ?held IN (cascade:ClinVarConflicting, cascade:ClinVarConflictingData), 1, 0)) > 0, "labs disagree",
+      IF(SUM(IF(BOUND(?held) && ?held = ?acmg, 1, 0)) > 0, "agrees",
+         IF(SUM(IF(BOUND(?held) && ?held IN (cascade:Pathogenic, cascade:LikelyPathogenic, cascade:UncertainSignificance,
+                                              cascade:LikelyBenign, cascade:Benign), 1, 0)) > 0,
+            "differs", "as ClinVar writes it"))) AS ?verdict)
+WHERE {
+  { SELECT ?variant (SAMPLE(?found) AS ?row) (SAMPLE(?lookup) AS ?key)
+    WHERE {
+      { ?variant cascade:clinvarVariationId ?id
+        BIND (IRI(CONCAT("https://identifiers.org/clinvar:", ENCODE_FOR_URI(STR(?id)))) AS ?found)
+        BIND (?found AS ?lookup)
+        ?anyOrigin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
+        GRAPH ?anyOrigin { ?found ?any [] } }
+      UNION
+      { ?variant cascade:hgvsCodingDnaExpression ?hgvs
+        FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] }
+        BIND (IRI(CONCAT("https://ns.cascadeprotocol.org/codes/hgvs/", ENCODE_FOR_URI(STR(?hgvs)))) AS ?lookup)
+        ?anyOrigin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
+        GRAPH ?anyOrigin { ?found cascade:hgvsExpression ?lookup } }
+    }
+    GROUP BY ?variant
+    HAVING (COUNT(DISTINCT ?found) = 1) }
+  ?report cascade:variantInterpreted ?variant ; cascade:acmgClassification ?acmg .
+  ?origin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
+  GRAPH ?origin {
+    ?row ?present [] .
+    ?key ^cascade:hgvsExpression? ?row
+    OPTIONAL { ?row cascade:clinvarClassification ?held }
+  }
+}
+GROUP BY ?report ?variant ?origin ?row ?acmg
+ORDER BY ?report ?origin

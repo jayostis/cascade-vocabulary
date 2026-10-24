@@ -11,7 +11,7 @@ A note has these, in this order, under these headings.
 - **Status:** a line, not a heading: draft or accepted, the date, what it replaces or amends, and which other notes it
   depends on.
 - **Question:** the problem, with the constraints of a pod that make it hard: no server of record, more than one
-  device, views the person may share.
+  writer, views the person may share.
 - **What others do:** the prior art, each named, with what it actually says, quoted where the words matter. The health
   standards come first: FHIR, C-CDA and CDA, openEHR, and whichever others bear, SPHN, OMOP, DICOM, HL7 v2. Then the web
   standards the vocabulary builds on: PROV-O, SKOS, RDF and Turtle conventions, the RFCs. "Nothing" is an answer. It
@@ -65,8 +65,8 @@ brought to it on 2026-10-22 under #202:
 
 - [`naming.md`](naming.md): how everything in a pod is named, so that two runtimes give alike a name nobody can forge
   and a shared view says nothing it should not.
-- [`currency.md`](currency.md): which revision of a record is current, when its states arrive by several paths, on
-  several devices, in any order.
+- [`currency.md`](currency.md): which revision of a record is current, when its states arrive by several paths, by
+  several writers, in any order.
 - [`republishing-sources.md`](republishing-sources.md): how a moved, switched or re-issued source's records join the
   ones the pod holds, with one judgment where one will do.
 - [`judgments.md`](judgments.md): what a judgment is, who makes one, and what it borrows from the vocabularies for

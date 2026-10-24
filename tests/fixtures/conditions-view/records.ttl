@@ -1,24 +1,22 @@
 @prefix : <urn:x:> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:asthmaOld a health:ConditionRecord .
-:asthmaOldVersion prov:specializationOf :asthmaOld ; rec:patient :subject ; health:conditionName "Asthma" ; health:status "active" ; health:onsetDate "2019-04-01"^^xsd:date .
-:asthmaOldRevision a rec:Revision ; rec:revisionOf :asthmaOld ; rec:version :asthmaOldVersion ;
+:asthmaOld a cascade:ProblemOrDiagnosis .
+:asthmaOldVersion prov:specializationOf :asthmaOld ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" ; cascade:onsetDate "2019-04-01"^^xsd:date .
+:asthmaOldRevision a cascade:Revision ; cascade:revisionOf :asthmaOld ; cascade:version :asthmaOldVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:asthmaNew a health:ConditionRecord .
-:asthmaNewVersion prov:specializationOf :asthmaNew ; rec:patient :subject ; health:conditionName "Asthma, allergic" ; health:snomedCode <http://snomed.info/id/389145006>, <http://snomed.info/id/195967001> ;
-    health:icd10Code "J45.909", <http://hl7.org/fhir/sid/icd-10-cm/J45.50> .
-:asthmaNewRevision a rec:Revision ; rec:revisionOf :asthmaNew ; rec:version :asthmaNewVersion ;
+:asthmaNew a cascade:ProblemOrDiagnosis .
+:asthmaNewVersion prov:specializationOf :asthmaNew ; cascade:patient :subject ; cascade:conditionName "Asthma, allergic" ; cascade:snomedCode <http://snomed.info/id/389145006>, <http://snomed.info/id/195967001> ;
+    cascade:icd10Code "J45.909", <https://ns.cascadeprotocol.org/codes/icd10cm/J45.50> .
+:asthmaNewRevision a cascade:Revision ; cascade:revisionOf :asthmaNew ; cascade:version :asthmaNewVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:sinusitis a health:ConditionRecord .
-:sinusitisVersion prov:specializationOf :sinusitis ; rec:patient :subject ; health:conditionName "Sinusitis" ; health:status "resolved" ; clinical:abatementDate "2023-01-01"^^xsd:date .
-:sinusitisRevision a rec:Revision ; rec:revisionOf :sinusitis ; rec:version :sinusitisVersion ;
+:sinusitis a cascade:ProblemOrDiagnosis .
+:sinusitisVersion prov:specializationOf :sinusitis ; cascade:patient :subject ; cascade:conditionName "Sinusitis" ; cascade:clinicalStatus "resolved" ; cascade:abatementDate "2023-01-01"^^xsd:date .
+:sinusitisRevision a cascade:Revision ; cascade:revisionOf :sinusitis ; cascade:version :sinusitisVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,13 +1,13 @@
 @prefix : <urn:x:> .
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :person a prov:Person .
 
-:aboutNorth a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :northProfile ; jdg:subject :subject ;
-    jdg:basis jdg:OwnerStatement ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:aboutNorth a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :northProfile ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:wasAttributedTo :person ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
-:aboutSouth a jdg:Judgment ; jdg:verdict jdg:About ; prov:hadMember :southProfile ; jdg:subject :subject ;
-    jdg:basis jdg:OwnerStatement ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole jdg:patient ] ;
+:aboutSouth a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :southProfile ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:wasAttributedTo :person ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

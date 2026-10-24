@@ -1,22 +1,21 @@
 @prefix : <urn:x:> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:a a health:ConditionRecord .
-:aVersion prov:specializationOf :a ; rec:patient :subject ; health:conditionName "Asthma" .
-:aRevision a rec:Revision ; rec:revisionOf :a ; rec:version :aVersion ;
+:a a cascade:ProblemOrDiagnosis .
+:aVersion prov:specializationOf :a ; cascade:patient :subject ; cascade:conditionName "Asthma" .
+:aRevision a cascade:Revision ; cascade:revisionOf :a ; cascade:version :aVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:b a health:ConditionRecord .
-:bVersion prov:specializationOf :b ; rec:patient :subject ; health:conditionName "Asthma" .
-:bRevision a rec:Revision ; rec:revisionOf :b ; rec:version :bVersion ;
+:b a cascade:ProblemOrDiagnosis .
+:bVersion prov:specializationOf :b ; cascade:patient :subject ; cascade:conditionName "Asthma" .
+:bRevision a cascade:Revision ; cascade:revisionOf :b ; cascade:version :bVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:c a health:ConditionRecord .
-:cVersion prov:specializationOf :c ; rec:patient :subject ; health:conditionName "Asthma" .
-:cRevision a rec:Revision ; rec:revisionOf :c ; rec:version :cVersion ;
+:c a cascade:ProblemOrDiagnosis .
+:cVersion prov:specializationOf :c ; cascade:patient :subject ; cascade:conditionName "Asthma" .
+:cRevision a cascade:Revision ; cascade:revisionOf :c ; cascade:version :cVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

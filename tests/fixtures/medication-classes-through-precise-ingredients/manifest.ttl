@@ -1,7 +1,7 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 
 <> a mf:Manifest ;
   rdfs:label "medication-classes-through-precise-ingredients" ;
@@ -13,6 +13,6 @@
 <#medication-classes-through-precise-ingredients> a mf:QueryEvaluationTest ;
   mf:name "medication-classes-through-precise-ingredients" ;
   rdfs:comment "The levoketoconazole tablet and Recorlev take their precise ingredient's established pharmacologic class, not ketoconazole's, and ketoconazole's chemical structure, which levoketoconazole bears none of. The estradiol 1 MG tablet, which the version gives no precise ingredient, takes estradiol's own class, mechanism of action and chemical structure, though fluoroestradiol F-18 bears others. Fluoroestradiol F-18 keeps its own class and mechanism and takes estradiol's chemical structure. The lisinopril 10 MG tablet is given no class, for FDA classes lisinopril anhydrous, which the version does not tie to it. The cream takes no class through fluocinolone acetonide, a form of another ingredient than its own. Lutathera, whose own precise ingredient bears no class, takes none of gallium Ga-68 dotatate's, and the choline tablet, with no precise ingredient and no class on choline, takes none of choline C-11's. In the version that states no precise ingredient, the estradiol 2 MG and lisinopril 20 MG tablets are given no class. The stopped medication gives none." ;
-  mf:action [ qt:query <../../../queries/v1-draft/tables/medication-classes-through-precise-ingredients.rq> ;
-              rec:lens <../../../queries/v1-draft/lenses/everyday.rq> ] ;
+  mf:action [ qt:query <../../../queries/tables/medication-classes-through-precise-ingredients.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <medication-classes-through-precise-ingredients.srj> .

@@ -1,0 +1,28 @@
+# Each entry takes the name and codes of its latest member, the status and abatement date of the member chosen for
+# status, and the onset of the member chosen for the date.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+CONSTRUCT {
+  ?entry a cascade:ProblemOrDiagnosis ;
+    cascade:conditionName ?name ;
+    cascade:snomedCode ?snomed ;
+    cascade:icd10Code ?icd10 ;
+    cascade:clinicalStatus ?status ;
+    cascade:abatementDate ?abatement ;
+    cascade:onsetDate ?onset ;
+    cascade:latestMember ?latest ;
+    cascade:statusFrom ?statusFrom ;
+    cascade:mergedFrom ?record .
+}
+WHERE {
+  ?record a cascade:ProblemOrDiagnosis ; cascade:inEntry ?entry .
+  ?entry cascade:latestMember ?latest .
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:conditionName ?name }
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:snomedCode ?snomed }
+  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:icd10Code ?icd10 }
+  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+             ?statusFrom pav:hasCurrentVersion/cascade:clinicalStatus ?status }
+  OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:abatementDate ?abatement }
+  OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:onsetDate ?onset }
+}

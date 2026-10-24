@@ -11,7 +11,7 @@ import pytest
 from rdflib import URIRef
 from rdflib.namespace import RDF
 
-from contract import LAYOUT, PROV, REC, ROOT, derivations, query, questions, written
+from contract import LAYOUT, PROV, CASCADE, ROOT, derivations, query, questions, written
 from engines import ENGINES, Store, parsed
 
 ADDRESS = "https://pod.example/"
@@ -77,7 +77,7 @@ def derive(store, lens):
 
 def write(store):
     """Adds each file a query writes as its own graph, the views first so the others can read them, and returns their
-    triples by path. Each is marked a rec:View, built with the current reference versions. A view is written only when
+    triples by path. Each is marked a cascade:View, built with the current reference versions. A view is written only when
     the layout marks it written always or the pod holds a record of its class."""
     current = [row["version"] for row in store.select(query(questions()["pod/Which reference versions are current"]))]
     files = {}
@@ -85,7 +85,7 @@ def write(store):
         if kind is not None and not always and not store.ask(f"ASK {{ ?record a <{kind}> }}"):
             continue
         file = URIRef(ADDRESS + path)
-        triples = store.construct(query(by)) | {(file, RDF.type, REC.View)} | {(file, PROV.used, v) for v in current}
+        triples = store.construct(query(by)) | {(file, RDF.type, CASCADE.View)} | {(file, PROV.used, v) for v in current}
         store.add(triples, ADDRESS + path)
         files[path] = triples
     return files

@@ -4,22 +4,25 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
 [`ro-crate-metadata.json`](ro-crate-metadata.json) lists the package a runtime loads:
 
 - [`ontologies/`](ontologies): the terms and shapes a
-  [Cascade Bridge Adapter](https://github.com/jayostis/cascade-bridge-spec)'s output and a pod are read against.
-  `core`, `health`, `clinical` and `genomics` are copied from
-  [the-cascade-protocol/spec](https://github.com/the-cascade-protocol/spec) (CC BY 4.0), `genomics` keeping its
-  `genomics/v1#` IRIs in a `v1-draft` folder until each of its terms has a decision note;
-  `records` and `judgments` are first declared here (Apache-2.0).
+  [Cascade Bridge Adapter](https://github.com/jayostis/cascade-bridge-spec)'s output and a pod are read against, every
+  one in the namespace `https://ns.cascadeprotocol.org/cascade#`: [`cascade.ttl`](ontologies/cascade.ttl) and
+  [`cascade.shapes.ttl`](ontologies/cascade.shapes.ttl), under `Apache-2.0 AND CC-BY-4.0`. The clinical terms and
+  their shapes are adapted from "The Cascade Protocol specification" by Cascade Agentic Labs LLC,
+  [the-cascade-protocol/spec](https://github.com/the-cascade-protocol/spec/tree/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies),
+  licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): trimmed to type, label, domain, range and
+  superclasses, renamed into this namespace, and merged; each carries its `dct:source` and `dct:license`. Every other
+  term is first declared here, under Apache-2.0.
 - [`decisions/`](decisions): why a term or a rule is as it is, one note for each, with what others do, the alternatives
   that lost and what would change our mind.
-- [`queries/v1-draft/`](queries/v1-draft): the standard queries over a pod: the derivations and lenses, the views and
+- [`queries/`](queries): the standard queries over a pod: the derivations and lenses, the views and
   labels, the matcher's comparisons, and the questions.
 - [`runtime/`](runtime): what a runtime does when something arrives, as numbered rules in Gherkin feature files, each
   with the examples that show it; [`runtime/steps.md`](runtime/steps.md) lists the steps they are written in, and
   [`runtime/rules.md`](runtime/rules.md) says how a runtime runs them.
 - [`runtime/pod-layout.ttl`](runtime/pod-layout.ttl): where a pod files each kind of thing, as RDF.
 - [`runtime/rule-list/`](runtime/rule-list): the matcher's rule list an app uses, apart from every table. The table
-  kinds its rules read, each kind's row shape and the code systems' IRI forms are in `records.ttl` and
-  `records.shapes.ttl`.
+  kinds its rules read, each kind's row shape and the code systems' IRI forms are in `cascade.ttl` and
+  `cascade.shapes.ttl`.
 - [`conformance/`](conformance): the conformance kits, the scenarios every runtime must pass, each a story, its
   scripted input and its right answers: [Alex Rivera's](conformance/alex-rivera), from FHIR, and
   [Priya Natarajan's](conformance/priya-natarajan), from FHIR and C-CDA together, with medications and lab results, and

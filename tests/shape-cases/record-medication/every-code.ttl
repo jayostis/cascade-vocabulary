@@ -1,19 +1,18 @@
 @prefix : <#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:record a clinical:Medication ;
-    rec:sourceUrl <https://fhir.example/MedicationRequest/1> .
+<urn:uuid:25df73d7-9555-8209-9aef-37cfcc68ad0f> a cascade:PrescribedOrReportedMedication ;
+    cascade:sourceUrl <https://fhir.example/MedicationRequest/record-medication-every-code> .
 
-:version prov:specializationOf :record ;
-    rec:patient :patient ;
-    clinical:drugName "lisinopril 10 MG Oral Tablet" ;
-    clinical:rxNormCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ,
-        <http://www.nlm.nih.gov/research/umls/rxnorm/29046> ;
-    rec:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> ;
-    rec:selectedCode <http://www.nlm.nih.gov/research/umls/rxnorm/314076> ;
-    clinical:clinicalIntent "prescribed" ;
-    clinical:status "active" ;
-    clinical:startDate "2023-06-15"^^xsd:date .
+:version prov:specializationOf <urn:uuid:25df73d7-9555-8209-9aef-37cfcc68ad0f> ;
+    cascade:patient :patient ;
+    cascade:drugName "lisinopril 10 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ,
+        <https://ns.cascadeprotocol.org/codes/rxnorm/29046> ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> ;
+    cascade:userSelectedCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;
+    cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "active" ;
+    cascade:medicationUseStartDate "2023-06-15"^^xsd:date .

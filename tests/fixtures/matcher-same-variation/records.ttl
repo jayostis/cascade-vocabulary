@@ -1,30 +1,29 @@
 @prefix : <urn:x:> .
-@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:older a genomics:Variant .
-:olderVersion prov:specializationOf :older ; genomics:hgvsCDot "NM_000249.3:c.2042C>T" ; genomics:clinvarVariationId "90011" .
-:olderRevision a rec:Revision ; rec:revisionOf :older ; rec:version :olderVersion ;
+:older a cascade:GeneticVariantFinding .
+:olderVersion prov:specializationOf :older ; cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" ; cascade:clinvarVariationId "90011" .
+:olderRevision a cascade:Revision ; cascade:revisionOf :older ; cascade:version :olderVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:newer a genomics:Variant .
-:newerVersion prov:specializationOf :newer ; genomics:hgvsCDot "NM_000249.4:c.2042C>T" ; genomics:clinvarVariationId "90011" .
-:newerRevision a rec:Revision ; rec:revisionOf :newer ; rec:version :newerVersion ;
+:newer a cascade:GeneticVariantFinding .
+:newerVersion prov:specializationOf :newer ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" ; cascade:clinvarVariationId "90011" .
+:newerRevision a cascade:Revision ; cascade:revisionOf :newer ; cascade:version :newerVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:other a genomics:Variant .
-:otherVersion prov:specializationOf :other ; genomics:hgvsCDot "NM_000249.4:c.1990-8A>G" ; genomics:clinvarVariationId "90012" .
-:otherRevision a rec:Revision ; rec:revisionOf :other ; rec:version :otherVersion ;
+:other a cascade:GeneticVariantFinding .
+:otherVersion prov:specializationOf :other ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.1990-8A>G" ; cascade:clinvarVariationId "90012" .
+:otherRevision a cascade:Revision ; cascade:revisionOf :other ; cascade:version :otherVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:expressionOnly a genomics:Variant .
-:expressionOnlyVersion prov:specializationOf :expressionOnly ; genomics:hgvsCDot "NM_000249.3:c.2042C>T" .
-:expressionOnlyRevision a rec:Revision ; rec:revisionOf :expressionOnly ; rec:version :expressionOnlyVersion ;
+:expressionOnly a cascade:GeneticVariantFinding .
+:expressionOnlyVersion prov:specializationOf :expressionOnly ; cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" .
+:expressionOnlyRevision a cascade:Revision ; cascade:revisionOf :expressionOnly ; cascade:version :expressionOnlyVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:noCode a genomics:Variant .
-:noCodeVersion prov:specializationOf :noCode ; genomics:geneSymbol "MLH1" .
-:noCodeRevision a rec:Revision ; rec:revisionOf :noCode ; rec:version :noCodeVersion ;
+:noCode a cascade:GeneticVariantFinding .
+:noCodeVersion prov:specializationOf :noCode ; cascade:geneSymbol "MLH1" .
+:noCodeRevision a cascade:Revision ; cascade:revisionOf :noCode ; cascade:version :noCodeVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,43 +1,41 @@
 @prefix : <urn:x:> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix health: <https://ns.cascadeprotocol.org/health/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:subject a rec:Subject .
+:subject a cascade:Subject .
 
-:potassium a health:LabResultRecord .
-:potassiumVersion prov:specializationOf :potassium ; rec:patient :subject ; health:testName "Potassium" ;
-    health:testCode <http://loinc.org/rdf/2823-3> ; health:resultValue "4.1" ; health:resultUnit "mmol/L" ;
-    clinical:status "final" ; health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
-:potassiumRevision a rec:Revision ; rec:revisionOf :potassium ; rec:version :potassiumVersion ;
+:potassium a cascade:LaboratoryTestResult .
+:potassiumVersion prov:specializationOf :potassium ; cascade:patient :subject ; cascade:testName "Potassium" ;
+    cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultValue "4.1" ; cascade:resultUnit "mmol/L" ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:potassiumRevision a cascade:Revision ; cascade:revisionOf :potassium ; cascade:version :potassiumVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:sodium a health:LabResultRecord .
-:sodiumVersion prov:specializationOf :sodium ; rec:patient :subject ; health:testName "Sodium" ;
-    health:testCode <http://loinc.org/rdf/2951-2> ; health:resultValue "140" ; health:resultUnit "mmol/L" ;
-    clinical:status "final" ; health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
-:sodiumRevision a rec:Revision ; rec:revisionOf :sodium ; rec:version :sodiumVersion ;
+:sodium a cascade:LaboratoryTestResult .
+:sodiumVersion prov:specializationOf :sodium ; cascade:patient :subject ; cascade:testName "Sodium" ;
+    cascade:testCode <http://loinc.org/rdf/2951-2> ; cascade:resultValue "140" ; cascade:resultUnit "mmol/L" ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:sodiumRevision a cascade:Revision ; cascade:revisionOf :sodium ; cascade:version :sodiumVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:systolic a health:LabResultRecord .
-:systolicVersion prov:specializationOf :systolic ; rec:patient :subject ; health:testName "Systolic blood pressure" ;
-    health:testCode <http://loinc.org/rdf/8480-6> ; health:resultValue "128" ; health:resultUnit "mm[Hg]" ;
-    clinical:status "final" ; health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
-:systolicRevision a rec:Revision ; rec:revisionOf :systolic ; rec:version :systolicVersion ;
+:systolic a cascade:LaboratoryTestResult .
+:systolicVersion prov:specializationOf :systolic ; cascade:patient :subject ; cascade:testName "Systolic blood pressure" ;
+    cascade:testCode <http://loinc.org/rdf/8480-6> ; cascade:resultValue "128" ; cascade:resultUnit "mm[Hg]" ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:systolicRevision a cascade:Revision ; cascade:revisionOf :systolic ; cascade:version :systolicVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:myeloperoxidase a health:LabResultRecord .
-:myeloperoxidaseVersion prov:specializationOf :myeloperoxidase ; rec:patient :subject ; health:testName "Myeloperoxidase Ab" ;
-    health:testCode <http://loinc.org/rdf/6969-0> ; health:resultValue "2" ; health:resultUnit "[U]/mL" ;
-    clinical:status "final" ; health:performedDate "2025-03-27T12:00:00Z"^^xsd:dateTime .
-:myeloperoxidaseRevision a rec:Revision ; rec:revisionOf :myeloperoxidase ; rec:version :myeloperoxidaseVersion ;
+:myeloperoxidase a cascade:LaboratoryTestResult .
+:myeloperoxidaseVersion prov:specializationOf :myeloperoxidase ; cascade:patient :subject ; cascade:testName "Myeloperoxidase Ab" ;
+    cascade:testCode <http://loinc.org/rdf/6969-0> ; cascade:resultValue "2" ; cascade:resultUnit "[U]/mL" ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime .
+:myeloperoxidaseRevision a cascade:Revision ; cascade:revisionOf :myeloperoxidase ; cascade:version :myeloperoxidaseVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:a1c a health:LabResultRecord .
-:a1cVersion prov:specializationOf :a1c ; rec:patient :subject ; health:testName "Hemoglobin A1c" ;
-    health:testCode <http://loinc.org/rdf/4548-4> ; health:resultValue "5.6" ; health:resultUnit "%" ;
-    clinical:status "final" ; health:performedDate "2025-03-27"^^xsd:date .
-:a1cRevision a rec:Revision ; rec:revisionOf :a1c ; rec:version :a1cVersion ;
+:a1c a cascade:LaboratoryTestResult .
+:a1cVersion prov:specializationOf :a1c ; cascade:patient :subject ; cascade:testName "Hemoglobin A1c" ;
+    cascade:testCode <http://loinc.org/rdf/4548-4> ; cascade:resultValue "5.6" ; cascade:resultUnit "%" ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-03-27"^^xsd:date .
+:a1cRevision a cascade:Revision ; cascade:revisionOf :a1c ; cascade:version :a1cVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

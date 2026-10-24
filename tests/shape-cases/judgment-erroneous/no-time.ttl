@@ -1,11 +1,11 @@
 @prefix : <#> .
-@prefix jdg: <https://ns.cascadeprotocol.org/judgments/v1-draft#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 
 :alex a prov:Person .
 
-:judgment a jdg:Judgment ;
-    jdg:verdict jdg:Erroneous ;
+:judgment a cascade:Judgment ;
+    cascade:verdict cascade:Erroneous ;
     prov:hadMember :record ;
     prov:wasAttributedTo :alex ;
-    prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole jdg:patient ] .
+    prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] .

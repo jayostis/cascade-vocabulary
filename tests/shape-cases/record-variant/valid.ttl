@@ -1,15 +1,13 @@
 @prefix : <#> .
-@prefix rec: <https://ns.cascadeprotocol.org/records/v1-draft#> .
-@prefix clinical: <https://ns.cascadeprotocol.org/clinical/v1#> .
-@prefix genomics: <https://ns.cascadeprotocol.org/genomics/v1#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 
-:record a genomics:Variant ;
-    rec:sourceUrl <https://fhir.example/Observation/9> .
+<urn:uuid:a919b658-f3d2-8dd3-9771-8426c2410614> a cascade:GeneticVariantFinding ;
+    cascade:sourceUrl <https://fhir.example/Observation/record-variant-valid> .
 
-:version prov:specializationOf :record ;
-    rec:patient :patient ;
-    genomics:geneSymbol "MLH1" ;
-    genomics:hgvsCDot "NM_000249.4:c.2042C>T" ;
-    genomics:clinvarVariationId "90011" ;
-    clinical:status "final" .
+:version prov:specializationOf <urn:uuid:a919b658-f3d2-8dd3-9771-8426c2410614> ;
+    cascade:patient :patient ;
+    cascade:geneSymbol "MLH1" ;
+    cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" ;
+    cascade:clinvarVariationId "90011" ;
+    cascade:workflowStatus "final" .
