@@ -9,6 +9,7 @@ rest of its prose, with the examples that show it beneath it; a rule no example 
 |---|---|
 | Naming | [`naming.feature`](naming.feature) |
 | Arrivals | [`arrivals.feature`](arrivals.feature) |
+| Currency | [`currency.feature`](currency.feature) |
 | The matcher's procedure | [`matcher.feature`](matcher.feature) |
 | Opening a pod | [`opening.feature`](opening.feature) |
 | Medication lifecycle | [`lifecycle.feature`](lifecycle.feature) |

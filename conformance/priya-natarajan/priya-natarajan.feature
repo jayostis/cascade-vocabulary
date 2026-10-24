@@ -216,7 +216,7 @@ Feature: Priya Natarajan's pod
       And the entry of FFC-MED-FLUTICASONE-2 shows:
         | field         | value                 |
         | status        | completed             |
-        | latest member | FFC-MED-FLUTICASONE-2 |
+        | lead member   | FFC-MED-FLUTICASONE-2 |
 
   Rule: P12. A name read through an originalText reference
     Fernhill's problem is coded SNOMED 367498001 with no display name; its name is the narrative's text, Hay fever.
@@ -281,7 +281,7 @@ Feature: Priya Natarajan's pod
   Rule: P15. A person joins what the matcher does not
     Priya enters loratadine she takes, APP-MED-LORATADINE (RxNorm 311372); Fernhill lists its brand, FFC-MED-CLARITIN
     (RxNorm 206805). The matcher finds no same code; her Same, J4, joins them, and the second download's Claritin joins
-    them by the matcher (P10).
+    them by the matcher (P10). Her own record leads the entry, as a record the person entered leads any it is in (C6).
 
     Example: the matcher does not join her loratadine
       When the pod is read as it stood after "M6"
@@ -292,6 +292,11 @@ Feature: Priya Natarajan's pod
         | members                                                  |
         | APP-MED-LORATADINE, FFC-MED-CLARITIN, FFC-MED-CLARITIN-2 |
       And J4 counts
+
+    Example: her loratadine leads the entry, since she entered it
+      Then the entry of APP-MED-LORATADINE shows:
+        | field       | value              |
+        | lead member | APP-MED-LORATADINE |
 
   Rule: P16. A file that is not well-formed is refused
     kestrel-harbor-health-summary-4.xml (E11) stops inside an element, as a download cut off does.

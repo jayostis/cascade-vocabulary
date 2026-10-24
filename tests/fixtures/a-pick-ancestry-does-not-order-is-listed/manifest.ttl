@@ -1,0 +1,26 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-pick-ancestry-does-not-order-is-listed" ;
+  rdfs:comment "Four conditions whose source stamps no change time, each with two revisions at two versions: two pulls of one source, the later in ancestry on a clock that ran behind; an export through Apple Health and a later pull in ancestry, two paths; two writers' pulls, neither snapshot an ancestor of the other; and two writers' pulls observed at one instant." ;
+  mf:entries (
+    <#the-current-revisions>
+    <#what-needs-review>
+  ) .
+
+<#the-current-revisions> a mf:QueryEvaluationTest ;
+  mf:name "the-current-revisions" ;
+  rdfs:comment "Of two pulls of one source, the later in ancestry is current whatever its clock says; otherwise the later observation, and between two observed at one instant the least IRI." ;
+  mf:action [ qt:query <the-current-revisions.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-current-revisions.srj> .
+
+<#what-needs-review> a mf:QueryEvaluationTest ;
+  mf:name "what-needs-review" ;
+  rdfs:comment "Every pick but the one ancestry orders is listed, with the state shown, a state not shown and the reason: observed later, or no basis for the tie." ;
+  mf:action [ qt:query <../../../queries/questions/record/What%20needs%20review.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-needs-review.srj> .

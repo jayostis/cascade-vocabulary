@@ -8,92 +8,92 @@
 # Martin's variant: two reports of one variant, on two transcripts, one of them with the ID.
 :panel a cascade:GeneticVariantFinding .
 :panelVersion prov:specializationOf :panel ; cascade:patient :subject ; cascade:geneSymbol "MLH1" ; cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" .
-:panelRevision a cascade:Revision ; cascade:revisionOf :panel ; cascade:version :panelVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:panelRevision a cascade:Revision ; cascade:revisionOf :panel ; cascade:version :panelVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :exome a cascade:GeneticVariantFinding .
 :exomeVersion prov:specializationOf :exome ; cascade:patient :subject ; cascade:geneSymbol "MLH1" ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" ;
     cascade:clinvarVariationId "90011" .
-:exomeRevision a cascade:Revision ; cascade:revisionOf :exome ; cascade:version :exomeVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:exomeRevision a cascade:Revision ; cascade:revisionOf :exome ; cascade:version :exomeVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 # A variant found by its ID alone, one by an expression alone for each kind of row, and three that get no verdict.
 :benign a cascade:GeneticVariantFinding .
 :benignVersion prov:specializationOf :benign ; cascade:patient :subject ; cascade:geneSymbol "MSH2" ; cascade:clinvarVariationId "90012" .
-:benignRevision a cascade:Revision ; cascade:revisionOf :benign ; cascade:version :benignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:benignRevision a cascade:Revision ; cascade:revisionOf :benign ; cascade:version :benignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :conflicting a cascade:GeneticVariantFinding .
 :conflictingVersion prov:specializationOf :conflicting ; cascade:patient :subject ; cascade:geneSymbol "MSH6" ; cascade:hgvsCodingDnaExpression "NM_000179.3:c.100A>G" .
-:conflictingRevision a cascade:Revision ; cascade:revisionOf :conflicting ; cascade:version :conflictingVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:conflictingRevision a cascade:Revision ; cascade:revisionOf :conflicting ; cascade:version :conflictingVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :riskFactor a cascade:GeneticVariantFinding .
 :riskFactorVersion prov:specializationOf :riskFactor ; cascade:patient :subject ; cascade:geneSymbol "MSH6" ; cascade:hgvsCodingDnaExpression "NM_000179.3:c.200A>G" .
-:riskFactorRevision a cascade:Revision ; cascade:revisionOf :riskFactor ; cascade:version :riskFactorVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:riskFactorRevision a cascade:Revision ; cascade:revisionOf :riskFactor ; cascade:version :riskFactorVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :conflictingData a cascade:GeneticVariantFinding .
 :conflictingDataVersion prov:specializationOf :conflictingData ; cascade:patient :subject ; cascade:geneSymbol "PMS2" ; cascade:hgvsCodingDnaExpression "NM_000535.7:c.700A>G" .
-:conflictingDataRevision a cascade:Revision ; cascade:revisionOf :conflictingData ; cascade:version :conflictingDataVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:conflictingDataRevision a cascade:Revision ; cascade:revisionOf :conflictingData ; cascade:version :conflictingDataVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :noClassification a cascade:GeneticVariantFinding .
 :noClassificationVersion prov:specializationOf :noClassification ; cascade:patient :subject ; cascade:geneSymbol "PMS2" ; cascade:hgvsCodingDnaExpression "NM_000535.7:c.900A>G" .
-:noClassificationRevision a cascade:Revision ; cascade:revisionOf :noClassification ; cascade:version :noClassificationVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:noClassificationRevision a cascade:Revision ; cascade:revisionOf :noClassification ; cascade:version :noClassificationVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :twoRows a cascade:GeneticVariantFinding .
 :twoRowsVersion prov:specializationOf :twoRows ; cascade:patient :subject ; cascade:geneSymbol "EPCAM" ; cascade:clinvarVariationId "90016" .
-:twoRowsRevision a cascade:Revision ; cascade:revisionOf :twoRows ; cascade:version :twoRowsVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoRowsRevision a cascade:Revision ; cascade:revisionOf :twoRows ; cascade:version :twoRowsVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :twoRowsOther a cascade:GeneticVariantFinding .
 :twoRowsOtherVersion prov:specializationOf :twoRowsOther ; cascade:patient :subject ; cascade:geneSymbol "EPCAM" ; cascade:clinvarVariationId "90017" .
-:twoRowsOtherRevision a cascade:Revision ; cascade:revisionOf :twoRowsOther ; cascade:version :twoRowsOtherVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoRowsOtherRevision a cascade:Revision ; cascade:revisionOf :twoRowsOther ; cascade:version :twoRowsOtherVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :idOnNoRow a cascade:GeneticVariantFinding .
 :idOnNoRowVersion prov:specializationOf :idOnNoRow ; cascade:patient :subject ; cascade:geneSymbol "MSH6" ; cascade:clinvarVariationId "12345" ;
     cascade:hgvsCodingDnaExpression "NM_000179.3:c.100A>G" .
-:idOnNoRowRevision a cascade:Revision ; cascade:revisionOf :idOnNoRow ; cascade:version :idOnNoRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:idOnNoRowRevision a cascade:Revision ; cascade:revisionOf :idOnNoRow ; cascade:version :idOnNoRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :idOnNoRowVus a cascade:VariantInterpretation .
 :idOnNoRowVusVersion prov:specializationOf :idOnNoRowVus ; cascade:patient :subject ; cascade:variantInterpreted :idOnNoRow ; cascade:acmgClassification cascade:UncertainSignificance .
-:idOnNoRowVusRevision a cascade:Revision ; cascade:revisionOf :idOnNoRowVus ; cascade:version :idOnNoRowVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:idOnNoRowVusRevision a cascade:Revision ; cascade:revisionOf :idOnNoRowVus ; cascade:version :idOnNoRowVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :noRow a cascade:GeneticVariantFinding .
 :noRowVersion prov:specializationOf :noRow ; cascade:patient :subject ; cascade:geneSymbol "MLH1" ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.9999A>G" .
-:noRowRevision a cascade:Revision ; cascade:revisionOf :noRow ; cascade:version :noRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:noRowRevision a cascade:Revision ; cascade:revisionOf :noRow ; cascade:version :noRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # The reports. Each is named by the variant and the answer it gives.
 :panelVus a cascade:VariantInterpretation .
 :panelVusVersion prov:specializationOf :panelVus ; cascade:patient :subject ; cascade:variantInterpreted :panel ; cascade:acmgClassification cascade:UncertainSignificance .
-:panelVusRevision a cascade:Revision ; cascade:revisionOf :panelVus ; cascade:version :panelVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:panelVusRevision a cascade:Revision ; cascade:revisionOf :panelVus ; cascade:version :panelVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :exomeLikelyPathogenic a cascade:VariantInterpretation .
 :exomeLikelyPathogenicVersion prov:specializationOf :exomeLikelyPathogenic ; cascade:patient :subject ; cascade:variantInterpreted :exome ; cascade:acmgClassification cascade:LikelyPathogenic .
-:exomeLikelyPathogenicRevision a cascade:Revision ; cascade:revisionOf :exomeLikelyPathogenic ; cascade:version :exomeLikelyPathogenicVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:exomeLikelyPathogenicRevision a cascade:Revision ; cascade:revisionOf :exomeLikelyPathogenic ; cascade:version :exomeLikelyPathogenicVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :exomeNoAcmg a cascade:VariantInterpretation .
 :exomeNoAcmgVersion prov:specializationOf :exomeNoAcmg ; cascade:patient :subject ; cascade:variantInterpreted :exome .
-:exomeNoAcmgRevision a cascade:Revision ; cascade:revisionOf :exomeNoAcmg ; cascade:version :exomeNoAcmgVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:exomeNoAcmgRevision a cascade:Revision ; cascade:revisionOf :exomeNoAcmg ; cascade:version :exomeNoAcmgVersion ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :benignBenign a cascade:VariantInterpretation .
 :benignBenignVersion prov:specializationOf :benignBenign ; cascade:patient :subject ; cascade:variantInterpreted :benign ; cascade:acmgClassification cascade:Benign .
-:benignBenignRevision a cascade:Revision ; cascade:revisionOf :benignBenign ; cascade:version :benignBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:benignBenignRevision a cascade:Revision ; cascade:revisionOf :benignBenign ; cascade:version :benignBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :benignLikelyBenign a cascade:VariantInterpretation .
 :benignLikelyBenignVersion prov:specializationOf :benignLikelyBenign ; cascade:patient :subject ; cascade:variantInterpreted :benign ; cascade:acmgClassification cascade:LikelyBenign .
-:benignLikelyBenignRevision a cascade:Revision ; cascade:revisionOf :benignLikelyBenign ; cascade:version :benignLikelyBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:benignLikelyBenignRevision a cascade:Revision ; cascade:revisionOf :benignLikelyBenign ; cascade:version :benignLikelyBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :conflictingPathogenic a cascade:VariantInterpretation .
 :conflictingPathogenicVersion prov:specializationOf :conflictingPathogenic ; cascade:patient :subject ; cascade:variantInterpreted :conflicting ; cascade:acmgClassification cascade:Pathogenic .
-:conflictingPathogenicRevision a cascade:Revision ; cascade:revisionOf :conflictingPathogenic ; cascade:version :conflictingPathogenicVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:conflictingPathogenicRevision a cascade:Revision ; cascade:revisionOf :conflictingPathogenic ; cascade:version :conflictingPathogenicVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :riskFactorVus a cascade:VariantInterpretation .
 :riskFactorVusVersion prov:specializationOf :riskFactorVus ; cascade:patient :subject ; cascade:variantInterpreted :riskFactor ; cascade:acmgClassification cascade:UncertainSignificance .
-:riskFactorVusRevision a cascade:Revision ; cascade:revisionOf :riskFactorVus ; cascade:version :riskFactorVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:riskFactorVusRevision a cascade:Revision ; cascade:revisionOf :riskFactorVus ; cascade:version :riskFactorVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :conflictingDataBenign a cascade:VariantInterpretation .
 :conflictingDataBenignVersion prov:specializationOf :conflictingDataBenign ; cascade:patient :subject ; cascade:variantInterpreted :conflictingData ; cascade:acmgClassification cascade:Benign .
-:conflictingDataBenignRevision a cascade:Revision ; cascade:revisionOf :conflictingDataBenign ; cascade:version :conflictingDataBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:conflictingDataBenignRevision a cascade:Revision ; cascade:revisionOf :conflictingDataBenign ; cascade:version :conflictingDataBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :noClassificationVus a cascade:VariantInterpretation .
 :noClassificationVusVersion prov:specializationOf :noClassificationVus ; cascade:patient :subject ; cascade:variantInterpreted :noClassification ; cascade:acmgClassification cascade:UncertainSignificance .
-:noClassificationVusRevision a cascade:Revision ; cascade:revisionOf :noClassificationVus ; cascade:version :noClassificationVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:noClassificationVusRevision a cascade:Revision ; cascade:revisionOf :noClassificationVus ; cascade:version :noClassificationVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :twoRowsPathogenic a cascade:VariantInterpretation .
 :twoRowsPathogenicVersion prov:specializationOf :twoRowsPathogenic ; cascade:patient :subject ; cascade:variantInterpreted :twoRows ; cascade:acmgClassification cascade:Pathogenic .
-:twoRowsPathogenicRevision a cascade:Revision ; cascade:revisionOf :twoRowsPathogenic ; cascade:version :twoRowsPathogenicVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoRowsPathogenicRevision a cascade:Revision ; cascade:revisionOf :twoRowsPathogenic ; cascade:version :twoRowsPathogenicVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :noRowVus a cascade:VariantInterpretation .
 :noRowVusVersion prov:specializationOf :noRowVus ; cascade:patient :subject ; cascade:variantInterpreted :noRow ; cascade:acmgClassification cascade:UncertainSignificance .
-:noRowVusRevision a cascade:Revision ; cascade:revisionOf :noRowVus ; cascade:version :noRowVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:noRowVusRevision a cascade:Revision ; cascade:revisionOf :noRowVus ; cascade:version :noRowVusVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # A variant written only on the first transcript, held by no judgment: the second series' row 90011 does not hold that expression.
 :firstTranscript a cascade:GeneticVariantFinding .
 :firstTranscriptVersion prov:specializationOf :firstTranscript ; cascade:patient :subject ; cascade:geneSymbol "MLH1" ; cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" .
-:firstTranscriptRevision a cascade:Revision ; cascade:revisionOf :firstTranscript ; cascade:version :firstTranscriptVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:firstTranscriptRevision a cascade:Revision ; cascade:revisionOf :firstTranscript ; cascade:version :firstTranscriptVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :firstTranscriptBenign a cascade:VariantInterpretation .
 :firstTranscriptBenignVersion prov:specializationOf :firstTranscriptBenign ; cascade:patient :subject ; cascade:variantInterpreted :firstTranscript ; cascade:acmgClassification cascade:Benign .
-:firstTranscriptBenignRevision a cascade:Revision ; cascade:revisionOf :firstTranscriptBenign ; cascade:version :firstTranscriptBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:firstTranscriptBenignRevision a cascade:Revision ; cascade:revisionOf :firstTranscriptBenign ; cascade:version :firstTranscriptBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # A variant whose expression the version no longer current holds on a second row.
 :oldSecondRow a cascade:GeneticVariantFinding .
 :oldSecondRowVersion prov:specializationOf :oldSecondRow ; cascade:patient :subject ; cascade:geneSymbol "PMS2" ; cascade:hgvsCodingDnaExpression "NM_000535.7:c.950A>G" .
-:oldSecondRowRevision a cascade:Revision ; cascade:revisionOf :oldSecondRow ; cascade:version :oldSecondRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:oldSecondRowRevision a cascade:Revision ; cascade:revisionOf :oldSecondRow ; cascade:version :oldSecondRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :oldSecondRowBenign a cascade:VariantInterpretation .
 :oldSecondRowBenignVersion prov:specializationOf :oldSecondRowBenign ; cascade:patient :subject ; cascade:variantInterpreted :oldSecondRow ; cascade:acmgClassification cascade:Benign .
-:oldSecondRowBenignRevision a cascade:Revision ; cascade:revisionOf :oldSecondRowBenign ; cascade:version :oldSecondRowBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:oldSecondRowBenignRevision a cascade:Revision ; cascade:revisionOf :oldSecondRowBenign ; cascade:version :oldSecondRowBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

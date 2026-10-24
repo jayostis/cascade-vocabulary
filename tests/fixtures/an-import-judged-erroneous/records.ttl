@@ -10,13 +10,13 @@
 :brought a cascade:AllergyOrIntolerance .
 :broughtVersion prov:specializationOf :brought ; cascade:patient :subject .
 :broughtRevision a cascade:Revision ; cascade:revisionOf :brought ; cascade:version :broughtVersion ;
-    prov:wasGeneratedBy :badImport ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:wasGeneratedBy :badImport ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :revisedSince a cascade:AllergyOrIntolerance .
 :revisedSinceFirst prov:specializationOf :revisedSince ; cascade:patient :subject ; cascade:allergen "Latex" .
 :revisedSinceSecond prov:specializationOf :revisedSince ; cascade:patient :subject ; cascade:allergen "Latex rubber" .
 :revisedSinceR1 a cascade:Revision ; cascade:revisionOf :revisedSince ; cascade:version :revisedSinceFirst ;
-    prov:wasGeneratedBy :badImport ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:wasGeneratedBy :badImport ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :revisedSinceR2 a cascade:Revision ; cascade:revisionOf :revisedSince ; cascade:version :revisedSinceSecond ;
     prov:wasRevisionOf :revisedSinceR1 ; prov:wasGeneratedBy :laterImport ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .

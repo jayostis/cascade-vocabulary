@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "the-lead-member" ;
+  rdfs:comment "Three entries of two allergies each, joined by Sames: two pulled pollen allergies, the one revised since stamped earlier by its source; a pulled latex allergy and one the person entered earlier; and two pulled shellfish allergies, a Before placing the current revision of the one the clocks rank first before the other's." ;
+  mf:entries (
+    <#the-lead>
+  ) .
+
+<#the-lead> a mf:QueryEvaluationTest ;
+  mf:name "the-lead" ;
+  rdfs:comment "The pollen entry's lead is the member at the latest source change time, not the one observed last; the latex entry's is the one the person entered, whatever the clocks say; the shellfish entry's is the one the Before shows first." ;
+  mf:action [ qt:query <the-lead.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-lead.srj> .

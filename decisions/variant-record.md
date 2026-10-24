@@ -153,10 +153,9 @@ expression as written, exact.
 - Cases for that build: a somatic variant, which R12 and R13 would merge with a germline finding of the same ClinVar
   id, and whose allele fraction over time is an observation the model lacks; two findings of one variant from one lab
   on two dates, right to join when germline and wrong when somatic.
-- Which revision of a variant is current follows `currency.md`'s ladder; the queries that read a variant
-  (`views/variants.rq`, `matcher/same-variation.rq`, `matcher/same-variation-through-table.rq`) still read
-  `pav:hasCurrentVersion` from `derivations/current-revisions.rq`, the derivation `currency.md` replaces, and follow when
-  the ladder is applied.
+- Which revision of a variant is current follows `currency.md`'s ladder: the queries that read a variant
+  (`views/variants.rq`, `matcher/same-variation.rq`, `matcher/same-variation-through-table.rq`) read
+  `pav:hasCurrentVersion`, which `derivations/current-revisions.rq` derives by it (`runtime/currency.feature`, C2).
 - The lab that reported a variant is an organisation record (`republishing-sources.md`); the variant does not say which
   lab reported it, and whether it should, or only its interpretation should (`variant-interpretation.md`), is open.
 - "With no display a source writes none and records a finding": no finding term here says so. It may be the adapter's,

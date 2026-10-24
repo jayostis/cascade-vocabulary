@@ -1,0 +1,48 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:document prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] .
+
+:older a cascade:AllergyOrIntolerance .
+:olderFirst prov:specializationOf :older ; cascade:patient :subject ; cascade:allergen "Pollen" .
+:olderSecond prov:specializationOf :older ; cascade:patient :subject ; cascade:allergen "Grass pollen" .
+:olderR1 a cascade:Revision ; cascade:revisionOf :older ; cascade:version :olderFirst ; prov:wasDerivedFrom :document ;
+    pav:lastUpdateOn "2025-12-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:olderR2 a cascade:Revision ; cascade:revisionOf :older ; cascade:version :olderSecond ; prov:wasRevisionOf :olderR1 ;
+    prov:wasDerivedFrom :document ; pav:lastUpdateOn "2026-01-15T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-06-01T00:00:00Z"^^xsd:dateTime .
+
+:newer a cascade:AllergyOrIntolerance .
+:newerVersion prov:specializationOf :newer ; cascade:patient :subject ; cascade:allergen "Pollen" .
+:newerRevision a cascade:Revision ; cascade:revisionOf :newer ; cascade:version :newerVersion ; prov:wasDerivedFrom :document ;
+    pav:lastUpdateOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:00Z"^^xsd:dateTime .
+
+:pulled a cascade:AllergyOrIntolerance .
+:pulledVersion prov:specializationOf :pulled ; cascade:patient :subject ; cascade:allergen "Latex" .
+:pulledRevision a cascade:Revision ; cascade:revisionOf :pulled ; cascade:version :pulledVersion ; prov:wasDerivedFrom :document ;
+    pav:lastUpdateOn "2026-05-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-05-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-05-02T00:00:00Z"^^xsd:dateTime .
+
+:entered a cascade:AllergyOrIntolerance .
+:enteredVersion prov:specializationOf :entered ; cascade:patient :subject ; cascade:allergen "Latex allergy" .
+:enteredRevision a cascade:Revision ; cascade:revisionOf :entered ; cascade:version :enteredVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:shownFirst a cascade:AllergyOrIntolerance .
+:shownFirstVersion prov:specializationOf :shownFirst ; cascade:patient :subject ; cascade:allergen "Shellfish" .
+:shownFirstRevision a cascade:Revision ; cascade:revisionOf :shownFirst ; cascade:version :shownFirstVersion ;
+    prov:wasDerivedFrom :document ; pav:lastUpdateOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:00Z"^^xsd:dateTime .
+
+:clocksFirst a cascade:AllergyOrIntolerance .
+:clocksFirstVersion prov:specializationOf :clocksFirst ; cascade:patient :subject ; cascade:allergen "Shrimp" .
+:clocksFirstRevision a cascade:Revision ; cascade:revisionOf :clocksFirst ; cascade:version :clocksFirstVersion ;
+    prov:wasDerivedFrom :document ; pav:lastUpdateOn "2026-04-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-04-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-04-02T00:00:00Z"^^xsd:dateTime .

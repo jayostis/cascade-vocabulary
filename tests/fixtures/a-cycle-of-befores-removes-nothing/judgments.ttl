@@ -1,0 +1,16 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:alex a prov:Person .
+:sam a prov:Person .
+
+:xBeforeY a cascade:Judgment ; cascade:verdict cascade:Before ; prov:hadMember :x , :y ; cascade:earlierMember :x ;
+    prov:wasAttributedTo :alex ; prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+:yBeforeX a cascade:Judgment ; cascade:verdict cascade:Before ; prov:hadMember :y , :x ; cascade:earlierMember :y ;
+    prov:wasAttributedTo :sam ; prov:qualifiedAttribution [ prov:agent :sam ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .

@@ -819,10 +819,16 @@ cascade:RevisionShape a sh:NodeShape ;
         sh:message "A revision carries its arrival time, one xsd:dateTime."@en ;
         sh:severity sh:Violation
     ] , [
+        sh:path cascade:observedAsOf ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A revision carries when its source was observed saying its state, one xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] , [
         sh:path prov:wasRevisionOf ;
         sh:nodeKind sh:IRI ;
-        sh:maxCount 1 ;
-        sh:message "A revision follows at most one earlier revision."@en ;
+        sh:message "A revision names each earlier revision it follows, the record's heads it saw, by its IRI."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path oa:hasSelector ;
@@ -1344,13 +1350,13 @@ cascade:JudgmentShape a sh:NodeShape ;
     sh:property [
         sh:path cascade:verdict ;
         sh:maxCount 1 ;
-        sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About ) ;
-        sh:message "A judgment gives at most one verdict: cascade:Same, cascade:Different, cascade:Erroneous or cascade:About. One that only retracts gives none."@en ;
+        sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About cascade:Before ) ;
+        sh:message "A judgment gives at most one verdict: cascade:Same, cascade:Different, cascade:Erroneous, cascade:About or cascade:Before. One that only retracts gives none."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:hadMember ;
         sh:nodeKind sh:IRI ;
-        sh:message "A judgment's members are records or activities, named by their IRIs."@en ;
+        sh:message "A judgment's members are records, revisions or activities, named by their IRIs."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:generatedAtTime ;
@@ -1474,6 +1480,26 @@ cascade:SetVerdictShape a sh:NodeShape ;
     ) ;
     sh:message "A Same or a Different judges a set of at least two records."@en ;
     sh:severity sh:Violation .
+
+cascade:BeforeVerdictShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path cascade:verdict ; sh:hasValue cascade:Before ] ]
+        [ sh:property [ sh:path prov:hadMember ; sh:minCount 2 ; sh:maxCount 2 ] ,
+                      [ sh:path cascade:earlierMember ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                      [ sh:path prov:wasAttributedTo ; sh:class prov:Person ] ]
+    ) ;
+    sh:message "A Before is a person's: it judges two revisions and names the earlier of them."@en ;
+    sh:severity sh:Violation .
+
+cascade:EarlierMemberShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:earlierMember ;
+    sh:property [
+        sh:path cascade:verdict ;
+        sh:hasValue cascade:Before ;
+        sh:message "Only a Before judgment names an earlier member."@en ;
+        sh:severity sh:Violation
+    ] .
 
 cascade:JustificationShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:justification ;

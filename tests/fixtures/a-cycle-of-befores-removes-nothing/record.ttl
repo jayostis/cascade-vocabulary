@@ -1,0 +1,19 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:document prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+
+:record a cascade:ProblemOrDiagnosis .
+:first prov:specializationOf :record ; cascade:patient :subject ; cascade:conditionName "Eczema" ; cascade:clinicalStatus "active" .
+:second prov:specializationOf :record ; cascade:patient :subject ; cascade:conditionName "Eczema" ; cascade:clinicalStatus "resolved" .
+:x a cascade:Revision ; cascade:revisionOf :record ; cascade:version :first ; prov:wasDerivedFrom :document ;
+    pav:lastUpdateOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:00Z"^^xsd:dateTime .
+:y a cascade:Revision ; cascade:revisionOf :record ; cascade:version :second ; prov:wasDerivedFrom :document ; prov:wasRevisionOf :x ;
+    pav:lastUpdateOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-02T00:00:00Z"^^xsd:dateTime .

@@ -1,0 +1,36 @@
+# The ladder's first three steps over a record's revisions. A revision a counting Erroneous names is out. So is one a
+# counting Before places before another revision of the record that no counting Erroneous names, unless that other is
+# placed before it in turn, directly or through others: Befores that form a cycle remove nothing. Of what is left, the
+# revisions at the latest source change time stay, and so does every one carrying none: the first instant xsd:dateTime
+# can write stands for none, so a record none of whose revisions carries one keeps them all.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT { ?record cascade:currentRevisionCandidate ?r }
+WHERE {
+  { SELECT ?record (MAX(COALESCE(?changed0, "0001-01-01T00:00:00Z"^^xsd:dateTime)) AS ?latest)
+    WHERE {
+      ?r0 cascade:revisionOf ?record .
+      MINUS { ?wrong0 cascade:countsUnderLens true ; cascade:verdict cascade:Erroneous ; prov:hadMember ?r0 }
+      MINUS {
+        ?r0 cascade:judgedBefore ?later0 .
+        ?later0 cascade:revisionOf ?record .
+        FILTER NOT EXISTS { ?laterWrong0 cascade:countsUnderLens true ; cascade:verdict cascade:Erroneous ; prov:hadMember ?later0 }
+        FILTER NOT EXISTS { ?later0 cascade:judgedBefore+ ?r0 }
+      }
+      OPTIONAL { ?r0 pav:lastUpdateOn ?changed0 }
+    }
+    GROUP BY ?record }
+  ?r cascade:revisionOf ?record .
+  MINUS { ?wrong cascade:countsUnderLens true ; cascade:verdict cascade:Erroneous ; prov:hadMember ?r }
+  MINUS {
+    ?r cascade:judgedBefore ?later .
+    ?later cascade:revisionOf ?record .
+    FILTER NOT EXISTS { ?laterWrong cascade:countsUnderLens true ; cascade:verdict cascade:Erroneous ; prov:hadMember ?later }
+    FILTER NOT EXISTS { ?later cascade:judgedBefore+ ?r }
+  }
+  OPTIONAL { ?r pav:lastUpdateOn ?changed }
+  FILTER (!BOUND(?changed) || ?changed = ?latest)
+}

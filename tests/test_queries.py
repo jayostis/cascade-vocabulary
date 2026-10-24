@@ -180,11 +180,18 @@ def writes(relative):
     return {o if p == RDF.type else p for s, p, o in template}
 
 
+# A lens reads a reference series' pav:hasCurrentVersion, which current-reference-versions.rq writes before it; the ladder
+# writes a record's after it, since it counts judgments.
+OF_ANOTHER_KIND = {("derivations/current-revisions.rq", "http://purl.org/pav/hasCurrentVersion")}
+
+
 @pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
 def test_no_derivation_reads_a_term_a_later_derivation_writes(lens):
     steps = contract.derivations(lens)
+    lenses = set(contract.named("lenses").values())
     found = {(step, later, str(term)) for i, step in enumerate(steps) for later in steps[i + 1:]
-             for term in reads(step) & writes(later)}
+             for term in reads(step) & writes(later)
+             if not (step in lenses and (later, str(term)) in OF_ANOTHER_KIND)}
     assert found == set()
 
 

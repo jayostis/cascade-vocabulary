@@ -135,10 +135,9 @@ found hard to compare (#107: "written as a code IRI, not a string").
 - Cases neither the record nor a judgment frame handles, for that build: a somatic variant (AMP/ASCO/CAP tiers, not
   ACMG classes; a pharmacogenomic implication names a drug and a phenotype, not a pathogenicity); a VUS later resolved
   by a reissued report with a new id, which leaves both calls current unless the source declares the replacement.
-- Which revision is current follows `currency.md`'s ladder, not `interpretedDate`. The view
-  (`views/variant-interpretations.rq`) takes its classification and date from `rec:latestMember`
-  (`derivations/latest-members.rq`, by arrival) over `pav:hasCurrentVersion` (`derivations/current-revisions.rq`), the
-  derivations `currency.md` replaces, and follows when the ladder and the lead are applied.
+- Which revision is current follows `currency.md`'s ladder, not `interpretedDate`: the view
+  (`views/variant-interpretations.rq`) takes its classification and date from `cascade:leadMember` over
+  `pav:hasCurrentVersion`, both derived by the ladder (`runtime/currency.feature`, C2 and C6).
 - The lab is an organisation record (`republishing-sources.md`), and the interpretation rests on knowing which lab called
   what; it does not link to it. Lean: the version points to the lab's organisation record, from the Diagnostic
   Implication's `Observation.performer`; the property, and whether the variant links too, is open.

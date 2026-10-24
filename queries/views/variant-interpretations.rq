@@ -1,6 +1,6 @@
-# Each entry takes the classification and date of its latest member, the status of the member chosen for status, and the
-# entry of the variant that member interprets: its version names a variant record, and the entry is the one that record
-# is in, none when the record is in no entry.
+# Each entry takes the classification and date of its lead, the status of the member chosen for status,
+# and the entry of the variant the lead interprets: its version names a variant record, and the entry is the one that
+# record is in, none when the record is in no entry.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -10,16 +10,16 @@ CONSTRUCT {
     cascade:interpretedDate ?date ;
     cascade:variantInterpreted ?variantEntry ;
     cascade:workflowStatus ?status ;
-    cascade:latestMember ?latest ;
+    cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
 }
 WHERE {
   ?record a cascade:VariantInterpretation ; cascade:inEntry ?entry .
-  ?entry cascade:latestMember ?latest .
-  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:acmgClassification ?classification }
-  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:interpretedDate ?date }
-  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:variantInterpreted/cascade:inEntry ?variantEntry }
+  ?entry cascade:leadMember ?lead .
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:acmgClassification ?classification }
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:interpretedDate ?date }
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:variantInterpreted/cascade:inEntry ?variantEntry }
   OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
              ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
 }

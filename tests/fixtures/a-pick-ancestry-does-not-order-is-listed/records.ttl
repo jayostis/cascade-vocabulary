@@ -1,0 +1,50 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:pulled prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:exported prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
+    [ prov:hadRole cascade:TransmitterRole ; prov:agent [ rdfs:label "Apple Health" ] ] .
+
+:onePath a cascade:ProblemOrDiagnosis .
+:onePathFirst prov:specializationOf :onePath ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "active" .
+:onePathSecond prov:specializationOf :onePath ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "resolved" .
+:onePathEarlier a cascade:Revision ; cascade:revisionOf :onePath ; cascade:version :onePathFirst ;
+    prov:wasDerivedFrom :pulled ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:onePathLater a cascade:Revision ; cascade:revisionOf :onePath ; cascade:version :onePathSecond ; prov:wasRevisionOf :onePathEarlier ;
+    prov:wasDerivedFrom :pulled ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2025-12-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2025-12-20T00:00:00Z"^^xsd:dateTime .
+
+:twoPaths a cascade:ProblemOrDiagnosis .
+:twoPathsFirst prov:specializationOf :twoPaths ; cascade:patient :subject ; cascade:conditionName "Migraine" ; cascade:clinicalStatus "active" .
+:twoPathsSecond prov:specializationOf :twoPaths ; cascade:patient :subject ; cascade:conditionName "Migraine" ; cascade:clinicalStatus "inactive" .
+:twoPathsExported a cascade:Revision ; cascade:revisionOf :twoPaths ; cascade:version :twoPathsFirst ;
+    prov:wasDerivedFrom :exported ; prov:wasGeneratedBy :export ;
+    prov:generatedAtTime "2026-01-05T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-05T00:00:00Z"^^xsd:dateTime .
+:twoPathsPulled a cascade:Revision ; cascade:revisionOf :twoPaths ; cascade:version :twoPathsSecond ; prov:wasRevisionOf :twoPathsExported ;
+    prov:wasDerivedFrom :pulled ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2025-12-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2025-12-20T00:00:00Z"^^xsd:dateTime .
+
+:twoWriters a cascade:ProblemOrDiagnosis .
+:twoWritersFirst prov:specializationOf :twoWriters ; cascade:patient :subject ; cascade:conditionName "Rash" ; cascade:clinicalStatus "active" .
+:twoWritersSecond prov:specializationOf :twoWriters ; cascade:patient :subject ; cascade:conditionName "Rash" ; cascade:clinicalStatus "resolved" .
+:twoWritersMine a cascade:Revision ; cascade:revisionOf :twoWriters ; cascade:version :twoWritersFirst ;
+    prov:wasDerivedFrom :pulled ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoWritersTheirs a cascade:Revision ; cascade:revisionOf :twoWriters ; cascade:version :twoWritersSecond ;
+    prov:wasDerivedFrom :pulled ; prov:wasGeneratedBy :otherWritersPull ;
+    prov:generatedAtTime "2026-01-03T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-03T00:00:00Z"^^xsd:dateTime .
+
+:tie a cascade:ProblemOrDiagnosis .
+:tieFirst prov:specializationOf :tie ; cascade:patient :subject ; cascade:conditionName "Cough" ; cascade:clinicalStatus "active" .
+:tieSecond prov:specializationOf :tie ; cascade:patient :subject ; cascade:conditionName "Cough" ; cascade:clinicalStatus "resolved" .
+:tieB a cascade:Revision ; cascade:revisionOf :tie ; cascade:version :tieFirst ;
+    prov:wasDerivedFrom :pulled ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:tieA a cascade:Revision ; cascade:revisionOf :tie ; cascade:version :tieSecond ;
+    prov:wasDerivedFrom :pulled ; prov:wasGeneratedBy :otherWritersPull ;
+    prov:generatedAtTime "2026-01-03T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

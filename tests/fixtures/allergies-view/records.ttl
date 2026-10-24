@@ -15,17 +15,17 @@
     cascade:clinicalStatus "active" ; cascade:allergyCriticality "high" .
 :peanutFromDocumentRevision a cascade:Revision ; cascade:revisionOf :peanutFromDocument ;
     cascade:version :peanutFromDocumentVersion ; prov:wasDerivedFrom :peanutDocument ; prov:wasGeneratedBy :northImport ;
-    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
 
 :peanutEntered a cascade:AllergyOrIntolerance .
 :peanutEnteredVersion prov:specializationOf :peanutEntered ; cascade:patient :subject ; cascade:allergen "Peanut allergy" ;
     cascade:allergenCode <http://snomed.info/id/91935009> .
 :peanutEnteredRevision a cascade:Revision ; cascade:revisionOf :peanutEntered ; cascade:version :peanutEnteredVersion ;
-    prov:wasGeneratedBy :session ; prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime .
+    prov:wasGeneratedBy :session ; prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:05Z"^^xsd:dateTime .
 
 :latex a cascade:AllergyOrIntolerance .
 :latexVersion prov:specializationOf :latex ; cascade:patient :subject ; cascade:allergen "Latex" ;
     cascade:clinicalStatus "inactive" .
 :latexRevision a cascade:Revision ; cascade:revisionOf :latex ; cascade:version :latexVersion ;
     prov:wasDerivedFrom :latexDocument ; prov:wasGeneratedBy :northImport ;
-    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .

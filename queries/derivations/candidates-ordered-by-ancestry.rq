@@ -1,0 +1,39 @@
+# Of two candidates for a record's current revision that imports derived from documents reached by one path, through a
+# transmitter both documents name or with neither naming one, the one whose act's snapshot descends from the other's is
+# the later, whatever their clocks say.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+CONSTRUCT { ?later cascade:laterInAncestryThan ?earlier }
+WHERE {
+  { { SELECT ?earlier ?later ?earlierAct ?laterAct ?earlierDocument ?laterDocument
+      WHERE {
+        ?record cascade:currentRevisionCandidate ?earlier , ?later .
+        FILTER (?earlier != ?later)
+        ?earlier prov:wasGeneratedBy ?earlierAct ; prov:wasDerivedFrom ?earlierDocument .
+        ?later prov:wasGeneratedBy ?laterAct ; prov:wasDerivedFrom ?laterDocument .
+        FILTER (?laterAct != ?earlierAct)
+      } }
+    { SELECT ?earlierSnapshot ?earlierAct WHERE { ?earlierSnapshot a cascade:Snapshot ; prov:wasGeneratedBy ?earlierAct } }
+    { SELECT ?laterSnapshot ?laterAct WHERE { ?laterSnapshot a cascade:Snapshot ; prov:wasGeneratedBy ?laterAct } }
+    FILTER NOT EXISTS { ?earlierDocument prov:qualifiedAttribution/prov:hadRole cascade:TransmitterRole }
+    FILTER NOT EXISTS { ?laterDocument prov:qualifiedAttribution/prov:hadRole cascade:TransmitterRole }
+    FILTER EXISTS { ?laterSnapshot (cascade:firstParentSnapshot|cascade:mergedParentSnapshot)+ ?earlierSnapshot } }
+  UNION
+  { { SELECT ?earlier ?later ?earlierAct ?laterAct ?earlierDocument ?laterDocument
+      WHERE {
+        ?record cascade:currentRevisionCandidate ?earlier , ?later .
+        FILTER (?earlier != ?later)
+        ?earlier prov:wasGeneratedBy ?earlierAct ; prov:wasDerivedFrom ?earlierDocument .
+        ?later prov:wasGeneratedBy ?laterAct ; prov:wasDerivedFrom ?laterDocument .
+        FILTER (?laterAct != ?earlierAct)
+      } }
+    { SELECT ?earlierSnapshot ?earlierAct WHERE { ?earlierSnapshot a cascade:Snapshot ; prov:wasGeneratedBy ?earlierAct } }
+    { SELECT ?laterSnapshot ?laterAct WHERE { ?laterSnapshot a cascade:Snapshot ; prov:wasGeneratedBy ?laterAct } }
+    ?earlierDocument prov:qualifiedAttribution ?earlierVia .
+    ?earlierVia prov:hadRole cascade:TransmitterRole ; prov:agent/rdfs:label ?transmitter .
+    ?laterDocument prov:qualifiedAttribution ?laterVia .
+    ?laterVia prov:hadRole cascade:TransmitterRole ; prov:agent/rdfs:label ?transmitter .
+    FILTER EXISTS { ?laterSnapshot (cascade:firstParentSnapshot|cascade:mergedParentSnapshot)+ ?earlierSnapshot } }
+}

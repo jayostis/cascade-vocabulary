@@ -6,83 +6,83 @@
 # Row 90011 is in both series, with the expression on transcript 3 in both and the one on transcript 4 in the first alone.
 :v1 a cascade:GeneticVariantFinding .
 :v1Version prov:specializationOf :v1 ; cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" .
-:v1Revision a cascade:Revision ; cascade:revisionOf :v1 ; cascade:version :v1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:v1Revision a cascade:Revision ; cascade:revisionOf :v1 ; cascade:version :v1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :v2 a cascade:GeneticVariantFinding .
 :v2Version prov:specializationOf :v2 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T" .
-:v2Revision a cascade:Revision ; cascade:revisionOf :v2 ; cascade:version :v2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:v2Revision a cascade:Revision ; cascade:revisionOf :v2 ; cascade:version :v2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :v3 a cascade:GeneticVariantFinding .
 :v3Version prov:specializationOf :v3 ; cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" .
-:v3Revision a cascade:Revision ; cascade:revisionOf :v3 ; cascade:version :v3Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:v3Revision a cascade:Revision ; cascade:revisionOf :v3 ; cascade:version :v3Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # An ID on one side and an expression on the row of the other; row 90012 is in both series with its expression.
 :w1 a cascade:GeneticVariantFinding .
 :w1Version prov:specializationOf :w1 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.1990-8A>G" .
-:w1Revision a cascade:Revision ; cascade:revisionOf :w1 ; cascade:version :w1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:w1Revision a cascade:Revision ; cascade:revisionOf :w1 ; cascade:version :w1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :w2 a cascade:GeneticVariantFinding .
 :w2Version prov:specializationOf :w2 ; cascade:clinvarVariationId "90012" .
-:w2Revision a cascade:Revision ; cascade:revisionOf :w2 ; cascade:version :w2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:w2Revision a cascade:Revision ; cascade:revisionOf :w2 ; cascade:version :w2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # An ID that is on no row finds nothing, though its expression is on row 90013; the expression alone finds that row.
 :x1 a cascade:GeneticVariantFinding .
 :x1Version prov:specializationOf :x1 ; cascade:clinvarVariationId "12345" ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.100A>G" .
-:x1Revision a cascade:Revision ; cascade:revisionOf :x1 ; cascade:version :x1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:x1Revision a cascade:Revision ; cascade:revisionOf :x1 ; cascade:version :x1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :x2 a cascade:GeneticVariantFinding .
 :x2Version prov:specializationOf :x2 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.100A>G" .
-:x2Revision a cascade:Revision ; cascade:revisionOf :x2 ; cascade:version :x2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:x2Revision a cascade:Revision ; cascade:revisionOf :x2 ; cascade:version :x2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :y a cascade:GeneticVariantFinding .
 :yVersion prov:specializationOf :y ; cascade:clinvarVariationId "90013" .
-:yRevision a cascade:Revision ; cascade:revisionOf :y ; cascade:version :yVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:yRevision a cascade:Revision ; cascade:revisionOf :y ; cascade:version :yVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # Different IDs: z1 holds the expression of z2's row, which it does not read.
 :z1 a cascade:GeneticVariantFinding .
 :z1Version prov:specializationOf :z1 ; cascade:clinvarVariationId "90015" ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.800A>G" .
-:z1Revision a cascade:Revision ; cascade:revisionOf :z1 ; cascade:version :z1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:z1Revision a cascade:Revision ; cascade:revisionOf :z1 ; cascade:version :z1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :z2 a cascade:GeneticVariantFinding .
 :z2Version prov:specializationOf :z2 ; cascade:clinvarVariationId "90016" .
-:z2Revision a cascade:Revision ; cascade:revisionOf :z2 ; cascade:version :z2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:z2Revision a cascade:Revision ; cascade:revisionOf :z2 ; cascade:version :z2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # One ID on both sides is the rule that joins by ID, whatever the row holds.
 :s1 a cascade:GeneticVariantFinding .
 :s1Version prov:specializationOf :s1 ; cascade:clinvarVariationId "90017" ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.900A>G" .
-:s1Revision a cascade:Revision ; cascade:revisionOf :s1 ; cascade:version :s1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:s1Revision a cascade:Revision ; cascade:revisionOf :s1 ; cascade:version :s1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :s2 a cascade:GeneticVariantFinding .
 :s2Version prov:specializationOf :s2 ; cascade:clinvarVariationId "90017" ; cascade:hgvsCodingDnaExpression "NM_000249.3:c.900A>G" .
-:s2Revision a cascade:Revision ; cascade:revisionOf :s2 ; cascade:version :s2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:s2Revision a cascade:Revision ; cascade:revisionOf :s2 ; cascade:version :s2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # An expression on two rows, 90011 of the second series and 90014 of the first, finds two and joins nothing.
 :u1 a cascade:GeneticVariantFinding .
 :u1Version prov:specializationOf :u1 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.555del" .
-:u1Revision a cascade:Revision ; cascade:revisionOf :u1 ; cascade:version :u1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:u1Revision a cascade:Revision ; cascade:revisionOf :u1 ; cascade:version :u1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :u2 a cascade:GeneticVariantFinding .
 :u2Version prov:specializationOf :u2 ; cascade:clinvarVariationId "90014" .
-:u2Revision a cascade:Revision ; cascade:revisionOf :u2 ; cascade:version :u2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:u2Revision a cascade:Revision ; cascade:revisionOf :u2 ; cascade:version :u2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # An expression on no row, and an ID that appears only as another column's value.
 :t1 a cascade:GeneticVariantFinding .
 :t1Version prov:specializationOf :t1 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.9999A>G" .
-:t1Revision a cascade:Revision ; cascade:revisionOf :t1 ; cascade:version :t1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:t1Revision a cascade:Revision ; cascade:revisionOf :t1 ; cascade:version :t1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :t2 a cascade:GeneticVariantFinding .
 :t2Version prov:specializationOf :t2 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.9999A>G" .
-:t2Revision a cascade:Revision ; cascade:revisionOf :t2 ; cascade:version :t2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:t2Revision a cascade:Revision ; cascade:revisionOf :t2 ; cascade:version :t2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :q1 a cascade:GeneticVariantFinding .
 :q1Version prov:specializationOf :q1 ; cascade:clinvarVariationId "90018" .
-:q1Revision a cascade:Revision ; cascade:revisionOf :q1 ; cascade:version :q1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:q1Revision a cascade:Revision ; cascade:revisionOf :q1 ; cascade:version :q1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :q2 a cascade:GeneticVariantFinding .
 :q2Version prov:specializationOf :q2 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.1100A>G" .
-:q2Revision a cascade:Revision ; cascade:revisionOf :q2 ; cascade:version :q2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:q2Revision a cascade:Revision ; cascade:revisionOf :q2 ; cascade:version :q2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # Two records whose expression only a pod file holds.
 :r1 a cascade:GeneticVariantFinding .
 :r1Version prov:specializationOf :r1 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2000A>G" .
-:r1Revision a cascade:Revision ; cascade:revisionOf :r1 ; cascade:version :r1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:r1Revision a cascade:Revision ; cascade:revisionOf :r1 ; cascade:version :r1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :r2 a cascade:GeneticVariantFinding .
 :r2Version prov:specializationOf :r2 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2000A>G" .
-:r2Revision a cascade:Revision ; cascade:revisionOf :r2 ; cascade:version :r2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:r2Revision a cascade:Revision ; cascade:revisionOf :r2 ; cascade:version :r2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 # Two records of one expression, which the version no longer current holds on a second row.
 :oldRow1 a cascade:GeneticVariantFinding .
 :oldRow1Version prov:specializationOf :oldRow1 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.1200A>G" .
-:oldRow1Revision a cascade:Revision ; cascade:revisionOf :oldRow1 ; cascade:version :oldRow1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:oldRow1Revision a cascade:Revision ; cascade:revisionOf :oldRow1 ; cascade:version :oldRow1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :oldRow2 a cascade:GeneticVariantFinding .
 :oldRow2Version prov:specializationOf :oldRow2 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.1200A>G" .
-:oldRow2Revision a cascade:Revision ; cascade:revisionOf :oldRow2 ; cascade:version :oldRow2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:oldRow2Revision a cascade:Revision ; cascade:revisionOf :oldRow2 ; cascade:version :oldRow2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
