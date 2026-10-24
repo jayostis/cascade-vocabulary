@@ -1534,6 +1534,11 @@ cascade:SameVariationThroughTable a owl:NamedIndividual ;
     rdfs:comment "Both variant records find one row of a version of a variant classifications table: a version that carries a ClinVar VariationID finds the row of that variation, and one that carries none finds the row holding its HGVS expression. The classification plays no part. Rule M17 and decisions/variant-identity.md say why."@en ;
     skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
 
+cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost a owl:NamedIndividual ;
+    rdfs:label "same self-asserted base URL and authorization endpoint on one host"@en ;
+    rdfs:comment "Both server records have a version, each written by a connect made with one client id, reporting one self-asserted base URL and one authorization endpoint, and the base URLs the client used name one host. Rule M20 and decisions/republishing-sources.md, row \"two servers are one\", say why."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
 cascade:SameBrandGeneric a owl:NamedIndividual ;
     rdfs:label "same brand generic"@en ;
     rdfs:comment "One record's branded RxNorm product and the other's generic, or two brands of one generic, by a version of a brand generics table; the records share no code."@en ;
@@ -1587,7 +1592,7 @@ cascade:RuleListVersionMigration a owl:Class ;
 
 cascade:currentlySame a owl:ObjectProperty ;
     rdfs:label "currently same"@en ;
-    rdfs:comment "Derived: two records a counting Same joins and no counting Different separates."@en .
+    rdfs:comment "Derived: two records that a counting Same joins, or that are of one type and id under two servers a counting Same joins (queries/derivations/same-records-under-same-servers.rq), and that no counting Different separates."@en .
 
 cascade:currentlyDifferent a owl:ObjectProperty ;
     rdfs:label "currently different"@en ;
@@ -1826,6 +1831,10 @@ cascade:SameVariationRule a owl:NamedIndividual ;
 cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
     rdfs:label "R13, same variation through the table"@en ;
     rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
+
+cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule a owl:NamedIndividual ;
+    rdfs:label "R14, same self-asserted base URL and authorization endpoint on one host"@en ;
+    rdfs:comment "Rule R14 of runtime/matcher.feature; its judgments are justified cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost."@en .
 
 # Servers and organizations
 

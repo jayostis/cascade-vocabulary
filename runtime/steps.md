@@ -141,6 +141,8 @@ A record is named by what a person reads in it, never by its IRI, except where a
   custodian and patient ids scope it, and its `identifier`, `root:extension` or the root alone; one with no id by its
   `document`, its `class` and its `key`, a list of `field=value` strings whose fingerprint its name takes, or, with no
   key, its `members`, a list of member strings.
+- **`server <base URL>`**, as `server https://fhir.example-hospital.example/r4`: the server record whose
+  `cascade:serverBaseUrl` is that base URL.
 - **A person's name**, as `Alex`: the pod's subject.
 - **`the runtime`**: the runtime replaying the example, named as N7 says, which every act it performs is
   `prov:wasAssociatedWith`.
@@ -150,8 +152,8 @@ Each names exactly one thing in the pod, or the step fails.
 A judgment a person makes is named by its handle in a kit (`J21`) or by its file's name (`"retract-b"`). A matcher
 judgment is named `the matcher's <justification> of <records>`, the justification in words: `same code`,
 `same code and date`, `same mapped code`, `same mapped code and date`, `same medication code`, `same result`,
-`same converted code`, `same code and period`, `same brand generic`, `same product code`, `same variation` or
-`same variation through the table`. A
+`same converted code`, `same code and period`, `same brand generic`, `same product code`, `same variation`,
+`same variation through the table` or `same self-asserted base URL and authorization endpoint on one host`. A
 reference series is named by its `rdfs:label` in `references/` or any of the person's `tables/` folders, one series per label, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
 name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5. An entry of a view is
@@ -204,8 +206,8 @@ A reference version arrives: the version so numbered of the series so labelled, 
 
 ### `the matcher runs on the records of {step} on {time}`
 
-The matcher runs, taking the records with a first revision from that step's import or entry session, or, for a step
-that received files, those whose first revisions all came from acts its sync names (M1).
+The matcher runs, taking the records with a first revision from that step's import, entry session or connect and the servers
+its connect wrote any revision for, or, for a step that received files, those whose first revisions all came from acts its sync names (M1).
 
 ### `the matcher rechecks on {time}`
 
