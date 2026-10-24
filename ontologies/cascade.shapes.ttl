@@ -1589,6 +1589,16 @@ cascade:MatcherRunShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+cascade:SyncFromAnotherWriterShape a sh:NodeShape ;
+    sh:targetClass cascade:SyncFromAnotherWriter ;
+    sh:property [
+        sh:path prov:wasInformedBy ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "A sync is informed by at least one act, each act other than a sync that the writer held unmerged when it wrote it."@en ;
+        sh:severity sh:Violation
+    ] .
+
 cascade:SnapshotShape a sh:NodeShape ;
     sh:targetClass cascade:Snapshot ;
     sh:property [

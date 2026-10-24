@@ -41,8 +41,9 @@ Feature: Arrivals
         | arrived             | version | after |
         | 2026-01-02 at 10:00 | 1       |       |
 
-  Rule: A4. An arrival whose version is the one the record is at writes no revision
-    Even under a new source version.
+  Rule: A4. An arrival whose version is one the record is at writes no revision
+    Even under a new source version. A record is at the version of each of its heads, its revisions that none revises:
+    one, unless two writers revised it apart (S6).
 
     Example: the peanut allergy arrives again unchanged under a new source version
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -52,7 +53,9 @@ Feature: Arrivals
         | arrived             | version | after |
         | 2026-01-02 at 10:00 | 1       |       |
 
-  Rule: A5. Any other arrival writes a revision after the record's last one
+  Rule: A5. Any other arrival writes a revision after each of the record's heads
+    Its prov:wasRevisionOf names each head, as a git merge names each parent: one, unless two writers revised the
+    record apart (S6).
 
     Example: new content under a new source version is a revision after the last
       Given a new pod for Ada on 2026-01-01 at 09:00

@@ -14,6 +14,7 @@ rest of its prose, with the examples that show it beneath it; a rule no example 
 | Medication lifecycle | [`lifecycle.feature`](lifecycle.feature) |
 | Nothing is edited or deleted | [`nothing-is-edited.feature`](nothing-is-edited.feature) |
 | Write order | [`write-order.feature`](write-order.feature) |
+| Syncs | [`sync.feature`](sync.feature) |
 | The conformance kit | [`the-kit.feature`](the-kit.feature) |
 
 [`steps.md`](steps.md) lists every step the files use, what each means, the dataset a `Then` reads and where the
