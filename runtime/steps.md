@@ -75,8 +75,9 @@ saying why; a document an import must convert and has no saved output for is the
   its justification (`cascade:justifiedAs`), each class of record it applies to (`cascade:appliesToClass`), its comparison
   query as a path under
   `queries/` (`cascade:queryPath`), N5's name for that file's bytes (`cascade:queryHash`), and the kind of table the query
-  reads, if any (`cascade:tableKind`). A matcher judgment uses the rule list's version, so the one row of that version whose
-  `cascade:justifiedAs` is the judgment's `cascade:justification` says which query ran, by its bytes. A tables folder an `open` step
+  reads, if any (`cascade:tableKind`). A matcher claim cites its rule (`cascade:matcherRule`), and its assertion names the
+  rule list's version and the `cascade:queryHash` of that version's row for the rule, so the assertion says which query
+  ran, by its bytes. A rule list version's description in the pod also gives each of its rows' `cascade:queryHash` (M8). A tables folder an `open` step
   names may list a version of the vocabulary's rule list (`runtime/rule-list/`) without holding its file: the rows are
   those of the file of that name there, unless the folder holds a file of its own. A person's `references/` folder holds
   every file it lists.
@@ -260,12 +261,13 @@ number of its current version; `subject`, the person whose record the lens says 
 
 ### `the matcher's judgments holding {records} are:`
 
-| justification | members | at | used | inputs | name |
+| justification | members | asserted under | used | inputs | name |
 |---|---|---|---|---|---|
 
-The matcher's judgments with any of those records as a member are exactly these. Each is a `cascade:Same` with that
-justification and exactly those members, attributed to the matcher. `at` (optional) is its `prov:generatedAtTime`;
-`used` (optional) everything it `prov:used`, in words; `inputs` (optional) the rule first and then the inputs N6 names
+The matcher's judgments with any of those records as a member are exactly these. Each is a claim: a `cascade:Same` with
+that justification and exactly those members, attributed to the matcher. `asserted under` (optional) is each rule list
+version an assertion of it names (`cascade:assertedUnderRuleListVersion`), in words; `used` (optional) everything it
+`prov:used`, in words; `inputs` (optional) the rule first and then the inputs N6 names
 it from, joined by `, `, a list in parentheses: `cascade:ClaimNamingRule`, the maker `cascade:CascadeMatcher`, the
 matcher rule term, the justification, `(` its members `)` and `(` what it used `)`, each the IRI the pod holds (`cascade:`
 stands for the namespace); `name` (optional) its IRI. Every column but `name` is checked first, so an input the pod does not
@@ -277,18 +279,21 @@ No matcher judgment has any of those records as a member.
 
 ### `{step} wrote these matcher judgments:`
 
-| justification | members | used | inputs | name |
-|---|---|---|---|---|
+| justification | members | asserted under | used | inputs | name |
+|---|---|---|---|---|---|
 
-The judgments the step wrote are exactly these, each as the step before says, at the step's time. Every other subject in
-the files the step wrote is the matcher, described as above, or a reference series or version.
+The claims the step asserted, writing an assertion of each, are exactly these, each as the step before says, whether or
+not the step wrote the claim itself (M9). Every claim the step wrote it asserted, and holds only what N6 names it from;
+every other subject in the files the step wrote is an assertion of one of these, the matcher, described as above, or a
+reference series or version.
 
 ### `{step} wrote these reference descriptions:`
 
 | reference |
 |---|
 
-The reference series and versions the files the step wrote describe are exactly these, each as `references.ttl` does.
+The reference series and versions the files the step wrote describe are exactly these, each as `references.ttl` does,
+and each version of a rule list with its rows' `cascade:queryHash` as well (M8).
 
 ### `{judgment} counts`, `{judgment} does not count`
 

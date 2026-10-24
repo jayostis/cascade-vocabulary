@@ -33,8 +33,8 @@ Feature: Martin Okafor's pod
 
     Example: the matcher joins the two reports through the table, and the view holds one variant
       Then the matcher's judgments holding HG-V1 are:
-        | justification                    | members      | used                                                                                                                                      |
-        | same variation through the table | HG-V1, SC-V1 | Matcher rules version 8, ClinVar variant classifications subset for Martin Okafor version 2026-10, version 1 of HG-V1, version 1 of SC-V1 |
+        | justification                    | members      | used                                                                                                             |
+        | same variation through the table | HG-V1, SC-V1 | ClinVar variant classifications subset for Martin Okafor version 2026-10, version 1 of HG-V1, version 1 of SC-V1 |
       And the variants view holds these entries:
         | members      |
         | HG-V1, SC-V1 |
@@ -121,8 +121,8 @@ Feature: Martin Okafor's pod
 
     Example: the matcher joins them as the same variation, and uses no table version
       Then the matcher's judgments holding HG-V2 are:
-        | justification  | members      | used                                                            |
-        | same variation | HG-V2, SC-V2 | Matcher rules version 8, version 1 of HG-V2, version 1 of SC-V2 |
+        | justification  | members      | used                                   |
+        | same variation | HG-V2, SC-V2 | version 1 of HG-V2, version 1 of SC-V2 |
       And the variants view holds these entries:
         | members      |
         | HG-V2, SC-V2 |
