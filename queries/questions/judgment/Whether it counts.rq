@@ -1,7 +1,8 @@
 # Each judgment has one row saying whether it counts under the lens the pod was built with, and one more row for each thing
 # that happened to it: a later judgment replaced it, a retraction invalidated it or one of its assertions, the reference
-# table it was made with has a newer version, or the rule list its claim was asserted under has a current version whose
-# rule runs another query, the version naming what did it. Only judgments that count shape the views.
+# table it was made with has a newer version whose rows do not join its members as its rule reads them (M7), or the
+# rule list its claim was asserted under has a current version whose rule runs another query, the version naming what
+# did it. Only judgments that count shape the views.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX pav: <http://purl.org/pav/>
@@ -33,6 +34,10 @@ WHERE {
   { ?judgment a cascade:Judgment ; prov:used ?replaced .
     ?replaced prov:specializationOf/a cascade:ReferenceSeries .
     ?by prov:wasRevisionOf ?replaced .
+    FILTER NOT EXISTS {
+      ?replaced prov:specializationOf/pav:hasCurrentVersion ?now .
+      ?judgment cascade:membersJoinedByCurrentTableVersion ?now
+    }
     BIND ("made under a reference version since replaced" AS ?happened)
     OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
     BIND (COALESCE(?counted, false) AS ?counts)

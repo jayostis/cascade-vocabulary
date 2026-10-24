@@ -230,7 +230,9 @@ the claim's name because with it in, every version renamed every claim, the dupl
 member and table versions stay in, because a claim about old content is a different claim, and a new table version
 re-mints only the claims whose joining rows changed in it (M7), since rows are the content: re-minting every
 table-reading claim per adopted table version is about 960k claims in ten years (assumed monthly adoption, #206), and
-a used table version stays current for a claim while the current version's joining rows are the same. A rule list version that merely tightens a rule retracts nothing: the claims it no
+a used table version stays current for a claim while the current version's joining rows are the same. Which rows
+join is asked of the claim's rule, run over its members against the current version (M7), so a claim names no rows
+and its recipe stays as ruled. A rule list version that merely tightens a rule retracts nothing: the claims it no
 longer reaches have no assertion under it and stop counting by derivation, and its first run files one finding naming
 them, which the review page lists as one line with the three answers of `currency.md`'s rollback, a Same over the
 finding deriving a person's Same per pair, an acknowledgement, or pairs one by one; a person's Same already filed on a

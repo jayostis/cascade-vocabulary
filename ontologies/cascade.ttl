@@ -591,9 +591,15 @@ cascade:countsUnderLens a owl:DatatypeProperty ;
     rdfs:domain cascade:Judgment ;
     rdfs:range xsd:boolean .
 
+cascade:membersJoinedByCurrentTableVersion a owl:ObjectProperty ;
+    rdfs:label "members joined by current table version"@en ;
+    rdfs:comment "Derived: the current version of a series the matcher's claim used another version of, whose rows the query the current rule list runs for the claim's rule joins its members by, one of them to each of the others (M7)."@en ;
+    rdfs:domain cascade:Judgment ;
+    rdfs:range prov:Entity .
+
 cascade:lapsed a owl:DatatypeProperty ;
     rdfs:label "lapsed"@en ;
-    rdfs:comment "Derived: the judgment is a matcher's Same that does not count because a reference version it used has a newer current one, nothing retracts it, and no judgment not itself retracted replaces it (dct:replaces)."@en ;
+    rdfs:comment "Derived: the judgment is a matcher's Same that does not count because a reference version it used has a newer current one whose rows do not join its members, nothing retracts it, and no judgment not itself retracted replaces it (dct:replaces)."@en ;
     rdfs:domain cascade:Judgment ;
     rdfs:range xsd:boolean .
 
