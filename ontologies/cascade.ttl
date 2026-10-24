@@ -1640,7 +1640,7 @@ cascade:RetractionNamingRule a owl:NamedIndividual ;
 
 cascade:Snapshot a owl:Class ;
     rdfs:label "snapshot"@en ;
-    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file named as N9 names a file in a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder and a sync's act file: a file the layout gives by solid:instance changes in place, and is outside it, and so is any other file in those folders."@en ;
+    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file named as N9 names a file in a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder and the syncs' folder, the one it gives cascade:SyncFromAnotherWriter: a file the layout gives by solid:instance changes in place, and is outside it, and so is any other file in those folders."@en ;
     rdfs:subClassOf prov:Entity .
 
 cascade:firstParentSnapshot a owl:ObjectProperty ;
@@ -1675,7 +1675,7 @@ cascade:MatcherRun a owl:Class ;
 
 cascade:SyncFromAnotherWriter a owl:Class ;
     rdfs:label "sync from another writer"@en ;
-    rdfs:comment "An act of the receiving writer, written when a file of the set arrived from another writer that it lacked: prov:wasInformedBy each act whose file arrived, its snapshot a merge of the heads that arrived. Its file is outside the set."@en ;
+    rdfs:comment "An act of a writer that holds acts of another writer of the pod: written whenever it holds an act, other than a sync, whose snapshot is no ancestor of its last snapshot, and prov:wasInformedBy each such act; its snapshot merges every head it holds but its first parent. Its file is in the syncs' folder, outside the set."@en ;
     rdfs:subClassOf prov:Activity .
 
 # The matcher and its rules

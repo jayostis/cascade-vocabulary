@@ -282,14 +282,17 @@ Feature: Naming
 
   Rule: N14. Every act leaves one snapshot, chained to the writer's previous one
     decisions/naming.md, row "snapshot". A node in the act's own file, a cascade:Snapshot, prov:wasGeneratedBy the act
-    and named by cascade:SnapshotNamingRule. Its cascade:firstParentSnapshot is the writer's previous snapshot, which the
-    writer keeps outside the pod as git keeps HEAD; a writer's first snapshot has none, and a writer that lost its last
-    one is a new writer: a writer handed a head the pod does not hold as a snapshot is one too. Its
-    cascade:mergedParentSnapshot values are the heads it merges: on a writer's first, every snapshot the pod holds that
-    no snapshot names as a parent. Its cascade:setHash is the set hash of the set the writer holds once the act's other
-    files are written, its own file left out, and its name binds the act's description. Its cascade:fileAddedToSet
-    values are the paths of the files of the set the act wrote, its own file among them, and of no other; the set and
-    the hash are cascade:Snapshot's and cascade:setHash's. A step that is no act, a new pod's creation, a reference
+    and named by cascade:SnapshotNamingRule. Its cascade:firstParentSnapshot is the writer's last snapshot, its
+    previous one or the head it took as git fast-forwards (S4), which the writer keeps outside the pod as git keeps
+    HEAD; a writer's first snapshot has none, and a writer that lost its last one is a new writer: a writer handed a
+    head the pod does not hold as a snapshot is one too. Its cascade:mergedParentSnapshot values are the heads it
+    merges: on a writer's first, every snapshot the pod holds that no snapshot names as a parent, and on a sync, every
+    such snapshot but the first parent (S3). Its cascade:setHash is the set hash of the set the writer holds once the
+    act's other files are written, its own file left out, and its name binds the act's description. Its
+    cascade:fileAddedToSet values are the paths of the files of the set the act wrote, its own file among them, and of
+    no other; a sync's names none, since its file is in the syncs' folder, outside the set, and the files that arrived
+    are named by the snapshots of the acts that wrote them (S3). The set and the hash are cascade:Snapshot's and
+    cascade:setHash's. A step that is no act, a new pod's creation, a reference
     version's arrival or a person's judgment, leaves no snapshot, and the files it writes are in the next snapshot's set
     but named by none. An act that writes nothing leaves no snapshot. tests/vectors/snapshot/ holds the vectors every
     implementation reproduces.
