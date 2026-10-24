@@ -100,11 +100,15 @@ def write(store):
 
 def resolved(views):
     """Each view's triples with every entry placeholder resolved against the address of the view that gives the entry its
-    members, as a runtime's dataset holds a view it writes <#hex> (N13)."""
-    owner = {str(s): ADDRESS + path + "#" + str(s).removeprefix(ENTRY)
-             for path, triples in views.items() for s, p, _ in triples if p == CASCADE.mergedFrom and str(s).startswith(ENTRY)}
-    rename = lambda term: URIRef(owner[str(term)]) if str(term) in owner else term
-    return {path: {(rename(s), p, rename(o)) for s, p, o in triples} for path, triples in views.items()}
+    members, or of the view naming it where none does, as a runtime's dataset holds a view it writes <#hex> (N13)."""
+    owner = {str(s): ADDRESS + path for path, triples in views.items()
+             for s, p, _ in triples if p == CASCADE.mergedFrom and str(s).startswith(ENTRY)}
+
+    def rename(term, path):
+        text = str(term)
+        return URIRef(owner.get(text, ADDRESS + path) + "#" + text.removeprefix(ENTRY)) if text.startswith(ENTRY) else term
+
+    return {path: {(rename(s, path), p, rename(o, path)) for s, p, o in triples} for path, triples in views.items()}
 
 
 FIXTURES = [Fixture(manifest) for manifest in sorted((ROOT / "tests" / "fixtures").glob("*/manifest.ttl"))]
