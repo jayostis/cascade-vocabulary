@@ -19,3 +19,8 @@
 :bV1 prov:specializationOf :b ; cascade:allergen "Latex" .
 :bR1 a cascade:Revision ; cascade:revisionOf :b ; cascade:version :bV1 ; prov:wasGeneratedBy :second ;
     prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime .
+
+:run a prov:Activity, cascade:MatcherRun ; prov:startedAtTime "2026-02-01T00:01:00Z"^^xsd:dateTime ; prov:wasInformedBy :second .
+:runSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :run ;
+    cascade:setHash "b6c892b8ad9dfb567c939e906593a8400f1a6210dc8171013556c3f147b57539" ;
+    cascade:fileAddedToSet "provenance/activities/ru/run.ttl" .

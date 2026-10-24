@@ -33,8 +33,9 @@
     <#server>
     <#server-another>
     <#organization-from-server>
-    <#organization-from-ccda-custodian>
-    <#organization-from-fhir-identifier>
+    <#organization-from-ccda-root-and-extension>
+    <#organization-from-ccda-root-alone>
+    <#organization-from-npi>
     <#assertion>
     <#retraction>
     <#table-row-ndc-to-rxnorm>
@@ -316,16 +317,23 @@
   mf:action [ qt:query <OrganizationNamingRule.rq> ; bridge:nameInputs ( "https://fhir.example.org/api/FHIR/R4" "Organization" "org-1" ) ] ;
   mf:result [ bridge:expectedName <urn:uuid:801785a3-066b-86fb-84c1-2119dc670fce> ] .
 
-<#organization-from-ccda-custodian> a bridge:NamingTest ;
-  mf:name "organization-from-ccda-custodian" ;
-  rdfs:comment "An organization a C-CDA document names: its custodian's id root and extension." ;
+<#organization-from-ccda-root-and-extension> a bridge:NamingTest ;
+  mf:name "organization-from-ccda-root-and-extension" ;
+  rdfs:comment "An organization a C-CDA document names by an id with a root no identifier system registers and an extension: the identifier's datatype, urn:oid: and the root, and the extension as its value." ;
   bridge:namingRule cascade:OrganizationNamingRule ;
-  mf:action [ qt:query <OrganizationNamingRule.rq> ; bridge:nameInputs ( "2.16.840.1.113883.4.6" "1234567893" ) ] ;
-  mf:result [ bridge:expectedName <urn:uuid:f72b165e-be8b-81ab-a7f0-bc3bc6f5ed56> ] .
+  mf:action [ qt:query <OrganizationNamingRule.rq> ; bridge:nameInputs ( "urn:oid:2.16.840.1.113883.19.5.99999.5" "RCH-1" ) ] ;
+  mf:result [ bridge:expectedName <urn:uuid:c76983dc-7b63-8c11-91c0-5de6118e1a17> ] .
 
-<#organization-from-fhir-identifier> a bridge:NamingTest ;
-  mf:name "organization-from-fhir-identifier" ;
-  rdfs:comment "An organization a FHIR document names: its Organization.identifier's system and value, as the document writes them; the C-CDA custodian's NPI above names another organization record, joined by a judgment." ;
+<#organization-from-ccda-root-alone> a bridge:NamingTest ;
+  mf:name "organization-from-ccda-root-alone" ;
+  rdfs:comment "An organization a C-CDA document names by an id with a root alone: the datatype urn:ietf:rfc:3986, and the root's urn:oid: IRI as its value." ;
+  bridge:namingRule cascade:OrganizationNamingRule ;
+  mf:action [ qt:query <OrganizationNamingRule.rq> ; bridge:nameInputs ( "urn:ietf:rfc:3986" "urn:oid:2.16.840.1.113883.19.5" ) ] ;
+  mf:result [ bridge:expectedName <urn:uuid:c0e61172-3e58-8807-b15f-225d46d1a0a7> ] .
+
+<#organization-from-npi> a bridge:NamingTest ;
+  mf:name "organization-from-npi" ;
+  rdfs:comment "An organization a document names by its NPI, in either format: a FHIR Organization.identifier whose system is http://hl7.org/fhir/sid/us-npi or urn:oid:2.16.840.1.113883.4.6, or a C-CDA id whose root is 2.16.840.1.113883.4.6 and whose extension is the NPI, since HL7's identifier mapping writes a registered root as its URI; one NPI names one organization record." ;
   bridge:namingRule cascade:OrganizationNamingRule ;
   mf:action [ qt:query <OrganizationNamingRule.rq> ; bridge:nameInputs ( "http://hl7.org/fhir/sid/us-npi" "1234567893" ) ] ;
   mf:result [ bridge:expectedName <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> ] .
@@ -444,31 +452,31 @@
 
 <#snapshot-first> a bridge:NamingTest ;
   mf:name "snapshot-first" ;
-  rdfs:comment "A writer's first snapshot: the act it is the snapshot of, no first parent and no merged parent, each an empty list written as 0, then the set hash as given." ;
+  rdfs:comment "A writer's first snapshot: the act it is the snapshot of, the name of the act's description, no first parent and no merged parent, each an empty list written as 0, then the set hash as given." ;
   bridge:namingRule cascade:SnapshotNamingRule ;
-  mf:action [ bridge:nameInputs ( "urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92" () () "a1f0c3d5e7b9a2c4d6e8f0a1b3c5d7e9f1a3b5c7d9e1f3a5b7c9d1e3f5a7b9c1" ) ] ;
-  mf:result [ bridge:expectedName <urn:uuid:80f74e0e-9e93-8fa5-848a-66e1cf1bd5c3> ] .
+  mf:action [ bridge:nameInputs ( "urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92" "ni:///sha-256;3kN0Yl8vQm2xR7cT1bWzE4aF6gH9jK5pL0sU8dV2yXo" () () "a1f0c3d5e7b9a2c4d6e8f0a1b3c5d7e9f1a3b5c7d9e1f3a5b7c9d1e3f5a7b9c1" ) ] ;
+  mf:result [ bridge:expectedName <urn:uuid:081266a0-761f-88b2-86a6-5671e1b1d0f2> ] .
 
 <#snapshot-next> a bridge:NamingTest ;
   mf:name "snapshot-next" ;
   rdfs:comment "The writer's next snapshot: its act and its first parent." ;
   bridge:namingRule cascade:SnapshotNamingRule ;
-  mf:action [ bridge:nameInputs ( "urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28" ("urn:uuid:0d6c1a52-3b7e-8f41-9a2c-5e8b7d4f1c30") () "b2e1d4c6f8a0b3d5e7f9a1c2e4d6f8b0a2c4e6f8b1d3f5a7c9e1b3d5f7a9c1e3" ) ] ;
-  mf:result [ bridge:expectedName <urn:uuid:6e770e37-0a96-8bdb-a134-afc26cbd883a> ] .
+  mf:action [ bridge:nameInputs ( "urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28" "ni:///sha-256;9fB2hJ6kM1nP4qS7tV0wY3zA5cE8gI2lO6rU9xD1bF4" ("urn:uuid:0d6c1a52-3b7e-8f41-9a2c-5e8b7d4f1c30") () "b2e1d4c6f8a0b3d5e7f9a1c2e4d6f8b0a2c4e6f8b1d3f5a7c9e1b3d5f7a9c1e3" ) ] ;
+  mf:result [ bridge:expectedName <urn:uuid:3b55c033-d046-832d-996f-9c89b1fd3861> ] .
 
 <#snapshot-merge> a bridge:NamingTest ;
   mf:name "snapshot-merge" ;
   rdfs:comment "A sync's snapshot: its act, its first parent and the two heads that arrived, listed here unsorted." ;
   bridge:namingRule cascade:SnapshotNamingRule ;
-  mf:action [ bridge:nameInputs ( "urn:uuid:c5f1a8d3-2e7b-4c94-8d06-3a9e5b2f7c41" ("urn:uuid:0d6c1a52-3b7e-8f41-9a2c-5e8b7d4f1c30") ("urn:uuid:a3b8c5d2-7e1f-8946-8c0b-1f4e6d9a2c57" "urn:uuid:4e9f2b71-6c3d-8a05-b1e7-2d9c8f6a3b14") "c3f2e5d7a9b1c4e6f8a0b2d3f5e7a9c1b3d5f7e9a2c4e6b8d0f2a4c6e8b1d3f5" ) ] ;
-  mf:result [ bridge:expectedName <urn:uuid:01767588-66a0-826e-8d2a-8e35a9576899> ] .
+  mf:action [ bridge:nameInputs ( "urn:uuid:c5f1a8d3-2e7b-4c94-8d06-3a9e5b2f7c41" "ni:///sha-256;aQ7cE3gI9kM2oR5tW8yB1dF4hJ6lN0pS3uX7zC2eG5" ("urn:uuid:0d6c1a52-3b7e-8f41-9a2c-5e8b7d4f1c30") ("urn:uuid:a3b8c5d2-7e1f-8946-8c0b-1f4e6d9a2c57" "urn:uuid:4e9f2b71-6c3d-8a05-b1e7-2d9c8f6a3b14") "c3f2e5d7a9b1c4e6f8a0b2d3f5e7a9c1b3d5f7e9a2c4e6b8d0f2a4c6e8b1d3f5" ) ] ;
+  mf:result [ bridge:expectedName <urn:uuid:1a7e2576-28f5-8229-8029-1c2cc02f1707> ] .
 
 <#snapshot-merge-by-another-writer> a bridge:NamingTest ;
   mf:name "snapshot-merge-by-another-writer" ;
   rdfs:comment "Another writer's sync over the same heads reaching the same set: another act, so another snapshot." ;
   bridge:namingRule cascade:SnapshotNamingRule ;
-  mf:action [ bridge:nameInputs ( "urn:uuid:51d9e2b4-8a6c-4e37-b2f0-9c4a7e1d3b65" ("urn:uuid:0d6c1a52-3b7e-8f41-9a2c-5e8b7d4f1c30") ("urn:uuid:a3b8c5d2-7e1f-8946-8c0b-1f4e6d9a2c57" "urn:uuid:4e9f2b71-6c3d-8a05-b1e7-2d9c8f6a3b14") "c3f2e5d7a9b1c4e6f8a0b2d3f5e7a9c1b3d5f7e9a2c4e6b8d0f2a4c6e8b1d3f5" ) ] ;
-  mf:result [ bridge:expectedName <urn:uuid:9bc7e3ff-35f2-878b-981a-b03f32617c28> ] .
+  mf:action [ bridge:nameInputs ( "urn:uuid:51d9e2b4-8a6c-4e37-b2f0-9c4a7e1d3b65" "ni:///sha-256;Hx4mP8rT2vY6aD0fJ3lN7qS1uW5zB9cE2gI6kO0sV3" ("urn:uuid:0d6c1a52-3b7e-8f41-9a2c-5e8b7d4f1c30") ("urn:uuid:a3b8c5d2-7e1f-8946-8c0b-1f4e6d9a2c57" "urn:uuid:4e9f2b71-6c3d-8a05-b1e7-2d9c8f6a3b14") "c3f2e5d7a9b1c4e6f8a0b2d3f5e7a9c1b3d5f7e9a2c4e6b8d0f2a4c6e8b1d3f5" ) ] ;
+  mf:result [ bridge:expectedName <urn:uuid:1c592094-1f2c-8079-9edc-69f314d6c217> ] .
 
 <#version> a bridge:NamingTest ;
   mf:name "version" ;

@@ -1,0 +1,230 @@
+{
+  "muhash3072": [
+    {
+      "name": "bitcoin-core-two-inserted",
+      "comment": "Bitcoin Core's src/test/crypto_tests.cpp, muhash_tests: FromInt(1) * FromInt(2), each member 32 bytes whose first is 1 or 2. Its numerator is the first 384 bytes the serialisation check gives, little-endian, and the digest is their SHA-256, written in byte order.",
+      "members": [
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "0200000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "numerator": "1fa093295ea30a6a3acdc7b3f770fa538eff537528e990e2910e40bbcfd7f6696b1256901929094694b56316de342f593303dd12ac43e06dce1be1ff8301c845beb15468fff0ef002dbf80c29f26e6452bccc91b5cb9437ad410d2a67ea847887fa3c6a6553309946880fe20db2c73fe0641adbd4e86edfee0d9f8cd0ee1230898873dc13ed8ddcaf045c80faa082774279007a2253f8922ee3ef361d378a6af3ddaf180b190ac97e556888c36b3d1fb1c85aab9ccd46e3deaeb7b7cf5db067a7e9ff86b658cf3acd6662bbcce37232daa753c48b794356c020090c831a8304416e2aa7ad633c0ddb2f11be1be316a81be7f7e472071c042cb68faef549c221ebff209273638b741aba5a81675c45a5fa92fea4ca821d7a324cb1e1a2ccd3b76c4228ec8066dad2a5df6e1bd0de45c7dd5de8070bdb46db6c554cf9aefc9b7b2bbf9f75b1864d9f95005314593905c0109b71f703d49944ae94477b51dac10a816bb6d1c700bafabc8bd86fac8df24be519a2f2836b16392e18036cb13e48c5c",
+      "digest": "29829ecd6c4cc40ba01e3556694e5af4bac5428effc67e65d6471cd8152b8652"
+    }
+  ],
+  "setHashes": [
+    {
+      "name": "empty",
+      "comment": "The empty set: the SHA-256 of the number 1 as 384 bytes little-endian.",
+      "files": [],
+      "setHash": "c85525462fdcf30a2c18d6f4b92923000974355c2477f59594d2c205a1d25add"
+    },
+    {
+      "name": "one-file",
+      "comment": "One file: its member is its path, a 0x00 byte and the SHA-256 of its bytes.",
+      "files": [
+        {
+          "path": "subject/5e/5e1f0b2a-7c3d-4e8f-9a6b-1d2c3e4f5a6b.ttl",
+          "sha256": "28fe0cef738840d09293d6868abeaf7fbc47ca4fb3fa68b83a0ca9fdb51605ea"
+        }
+      ],
+      "setHash": "145663012d2b69ec379bce69ed5522809145704ddbd7a4a50f869057effdcb1c"
+    },
+    {
+      "name": "two-files",
+      "comment": "Two files: the product of their members' numbers.",
+      "files": [
+        {
+          "path": "records/allergies/be/beaefb13-def8-8f7f-882d-eff4a1ee11d9.ttl",
+          "sha256": "29ef0207719abde1d8aa4cddaa9b589fe56258dbfe6049ff7ae9e4af346ad463"
+        },
+        {
+          "path": "records/allergies/13/13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl",
+          "sha256": "6a5beaf30bfcc2f76417b1d78c95af38fea52d58e322b33d41e78eedeea0313e"
+        }
+      ],
+      "setHash": "eb105532b0259f1ae4fdb32bb19dc2d35b76f82f2dcb17145a8ef8d3d7e520bb"
+    },
+    {
+      "name": "two-files-reversed",
+      "comment": "The same two files listed the other way round: the same hash.",
+      "files": [
+        {
+          "path": "records/allergies/13/13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl",
+          "sha256": "6a5beaf30bfcc2f76417b1d78c95af38fea52d58e322b33d41e78eedeea0313e"
+        },
+        {
+          "path": "records/allergies/be/beaefb13-def8-8f7f-882d-eff4a1ee11d9.ttl",
+          "sha256": "29ef0207719abde1d8aa4cddaa9b589fe56258dbfe6049ff7ae9e4af346ad463"
+        }
+      ],
+      "setHash": "eb105532b0259f1ae4fdb32bb19dc2d35b76f82f2dcb17145a8ef8d3d7e520bb"
+    },
+    {
+      "name": "one-file-other-bytes",
+      "comment": "The file of one-file holding other bytes: another hash.",
+      "files": [
+        {
+          "path": "subject/5e/5e1f0b2a-7c3d-4e8f-9a6b-1d2c3e4f5a6b.ttl",
+          "sha256": "671bf4eed8c3b3a2f75a9c40ccbfe5f2e078e894fb85d63bfd98dc5ab232933c"
+        }
+      ],
+      "setHash": "3fc9b33d6dc1c2db0f4423ab61183ae5cb2abe7e67f5c3b567215a3dc3da5743"
+    },
+    {
+      "name": "non-ascii-path",
+      "comment": "A path is hashed as its UTF-8.",
+      "files": [
+        {
+          "path": "records/allergies/c3/café.ttl",
+          "sha256": "afb8f0c4584a2cd61153bf926cce5655fd5d6c717eb0137f8cec10965a2b60ab"
+        }
+      ],
+      "setHash": "0f1b091c32e92a7b678cf5f51a427d6c0ba7a23d771382e051d1dd0c0f6214bc"
+    }
+  ],
+  "chains": [
+    {
+      "name": "first-then-next",
+      "comment": "A writer's first snapshot, an import's, over every file of the set it holds but its act's own; then its next act's, a matcher run's, its first parent the first, over a set that holds the import's file.",
+      "snapshots": [
+        {
+          "act": "urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92",
+          "path": "provenance/imports/2b/2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92.ttl",
+          "file": "<urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Activity> .\n<urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92> <http://www.w3.org/2000/01/rdf-schema#label> \"Apple Health export\" .\n<urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92> <http://www.w3.org/ns/prov#startedAtTime> \"2026-01-02T10:00:00Z\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .\n<urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92> <http://www.w3.org/ns/prov#qualifiedAssociation> _:association .\n_:association <http://www.w3.org/ns/prov#agent> <https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/tree/1111111111111111111111111111111111111111/> .\n<urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92> <http://www.w3.org/ns/prov#used> <ni:///sha-256;K96dQ7NMCx_qaokgjdYAocBi7_dSJVtKQmYSfWR4rRc> .\n<urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92> <http://www.w3.org/ns/prov#wasAssociatedWith> <https://github.com/jayostis/cascade-runtime-js/tree/0000000000000000000000000000000000000000/> .\n<https://github.com/jayostis/cascade-runtime-js/tree/0000000000000000000000000000000000000000/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#SoftwareAgent> .\n<urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ns.cascadeprotocol.org/cascade#Snapshot> .\n<urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777> <http://www.w3.org/ns/prov#wasGeneratedBy> <urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92> .\n<urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777> <https://ns.cascadeprotocol.org/cascade#setHash> \"d2d67b5c5bed7e366ae4472c1095ac693d449bd31367d86ef11fcb7efaf5caee\" .\n<urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"records/allergies/be/beaefb13-def8-8f7f-882d-eff4a1ee11d9.ttl\" .\n<urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"records/allergies/13/13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl\" .\n<urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"attachments/sha-256/2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17\" .\n<urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"provenance/documents/2b/2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17.ttl\" .\n<urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"provenance/imports/2b/2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92.ttl\" .\n",
+          "description": "ni:///sha-256;AmkZ9AoMScdNk3hPSPmdZLq1E0S2HMuqx8r63wPlZe8",
+          "firstParent": null,
+          "mergedParents": [],
+          "set": [
+            {
+              "path": "subject/5e/5e1f0b2a-7c3d-4e8f-9a6b-1d2c3e4f5a6b.ttl",
+              "sha256": "28fe0cef738840d09293d6868abeaf7fbc47ca4fb3fa68b83a0ca9fdb51605ea"
+            },
+            {
+              "path": "records/allergies/be/beaefb13-def8-8f7f-882d-eff4a1ee11d9.ttl",
+              "sha256": "29ef0207719abde1d8aa4cddaa9b589fe56258dbfe6049ff7ae9e4af346ad463"
+            },
+            {
+              "path": "records/allergies/13/13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl",
+              "sha256": "6a5beaf30bfcc2f76417b1d78c95af38fea52d58e322b33d41e78eedeea0313e"
+            },
+            {
+              "path": "attachments/sha-256/2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17",
+              "sha256": "f84edbd92c1ee03c74b3b866b53eeffb3eeb8122e518322d9cac525f2c471c62"
+            },
+            {
+              "path": "provenance/documents/2b/2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17.ttl",
+              "sha256": "f220852dc84043a5a0521c1ec606f39da4faa9b0fa658cb1d4a5b432206d20a5"
+            }
+          ],
+          "setHash": "d2d67b5c5bed7e366ae4472c1095ac693d449bd31367d86ef11fcb7efaf5caee",
+          "name": "urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777"
+        },
+        {
+          "act": "urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28",
+          "path": "provenance/activities/8e/8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28.ttl",
+          "file": "<urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Activity> .\n<urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28> <http://www.w3.org/2000/01/rdf-schema#label> \"matcher run\" .\n<urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28> <http://www.w3.org/ns/prov#startedAtTime> \"2026-01-02T10:01:00Z\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .\n<urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ns.cascadeprotocol.org/cascade#MatcherRun> .\n<urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28> <http://www.w3.org/ns/prov#wasInformedBy> <urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92> .\n<urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28> <http://www.w3.org/ns/prov#wasAssociatedWith> <https://github.com/jayostis/cascade-runtime-js/tree/0000000000000000000000000000000000000000/> .\n<https://github.com/jayostis/cascade-runtime-js/tree/0000000000000000000000000000000000000000/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#SoftwareAgent> .\n<urn:uuid:d37b6e66-cbde-8f67-b4ce-f0a5abb77d35> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ns.cascadeprotocol.org/cascade#Snapshot> .\n<urn:uuid:d37b6e66-cbde-8f67-b4ce-f0a5abb77d35> <http://www.w3.org/ns/prov#wasGeneratedBy> <urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28> .\n<urn:uuid:d37b6e66-cbde-8f67-b4ce-f0a5abb77d35> <https://ns.cascadeprotocol.org/cascade#firstParentSnapshot> <urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777> .\n<urn:uuid:d37b6e66-cbde-8f67-b4ce-f0a5abb77d35> <https://ns.cascadeprotocol.org/cascade#setHash> \"b4f9e8f33d2d5c0ab844a868e144a0d7b4a8e8f22fa3a61615716e41e90d693d\" .\n<urn:uuid:d37b6e66-cbde-8f67-b4ce-f0a5abb77d35> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"judgments/3e/3e2987b0-dbf5-8fa3-be1d-09a8fcc46fea.ttl\" .\n<urn:uuid:d37b6e66-cbde-8f67-b4ce-f0a5abb77d35> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"judgments/assertions/7a/7a91c3e2-55d0-8b14-9e6f-2c8d4b1a0f37.ttl\" .\n<urn:uuid:d37b6e66-cbde-8f67-b4ce-f0a5abb77d35> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"provenance/activities/8e/8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28.ttl\" .\n",
+          "description": "ni:///sha-256;vU6BwaiHXSEPE_MCYWJwZVP11JAZmJU48nYzMSl6OvU",
+          "firstParent": "urn:uuid:2443f9d3-8773-826a-9f9b-be75d2c9a777",
+          "mergedParents": [],
+          "set": [
+            {
+              "path": "subject/5e/5e1f0b2a-7c3d-4e8f-9a6b-1d2c3e4f5a6b.ttl",
+              "sha256": "28fe0cef738840d09293d6868abeaf7fbc47ca4fb3fa68b83a0ca9fdb51605ea"
+            },
+            {
+              "path": "records/allergies/be/beaefb13-def8-8f7f-882d-eff4a1ee11d9.ttl",
+              "sha256": "29ef0207719abde1d8aa4cddaa9b589fe56258dbfe6049ff7ae9e4af346ad463"
+            },
+            {
+              "path": "records/allergies/13/13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl",
+              "sha256": "6a5beaf30bfcc2f76417b1d78c95af38fea52d58e322b33d41e78eedeea0313e"
+            },
+            {
+              "path": "attachments/sha-256/2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17",
+              "sha256": "f84edbd92c1ee03c74b3b866b53eeffb3eeb8122e518322d9cac525f2c471c62"
+            },
+            {
+              "path": "provenance/documents/2b/2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17.ttl",
+              "sha256": "f220852dc84043a5a0521c1ec606f39da4faa9b0fa658cb1d4a5b432206d20a5"
+            },
+            {
+              "path": "provenance/imports/2b/2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92.ttl",
+              "sha256": "639830a5467bb3fc94f40f5dd7c2c4ecb788ad64616bde5175d916ee6bf82be0"
+            },
+            {
+              "path": "judgments/3e/3e2987b0-dbf5-8fa3-be1d-09a8fcc46fea.ttl",
+              "sha256": "b3cc8ea04ac858f029007856c372f2f5d5815ded63511bce60f26cb76fd92334"
+            },
+            {
+              "path": "judgments/assertions/7a/7a91c3e2-55d0-8b14-9e6f-2c8d4b1a0f37.ttl",
+              "sha256": "ed11d7330fa490b788d6b75f9b284447e2428c93f2db0ce594f861803e0b876f"
+            }
+          ],
+          "setHash": "b4f9e8f33d2d5c0ab844a868e144a0d7b4a8e8f22fa3a61615716e41e90d693d",
+          "name": "urn:uuid:d37b6e66-cbde-8f67-b4ce-f0a5abb77d35"
+        }
+      ]
+    },
+    {
+      "name": "new-writer-merges-two-heads",
+      "comment": "A new writer's first snapshot: no first parent, and as merged parents both heads the pod holds, listed here out of code point order; its set is every file of the set the pod holds but its act's own.",
+      "snapshots": [
+        {
+          "act": "urn:uuid:5d2f8b14-7e3a-4c69-b1d5-8f0a6e2c9b37",
+          "path": "provenance/activities/5d/5d2f8b14-7e3a-4c69-b1d5-8f0a6e2c9b37.ttl",
+          "file": "<urn:uuid:5d2f8b14-7e3a-4c69-b1d5-8f0a6e2c9b37> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Activity> .\n<urn:uuid:5d2f8b14-7e3a-4c69-b1d5-8f0a6e2c9b37> <http://www.w3.org/2000/01/rdf-schema#label> \"entered in the Cascade app\" .\n<urn:uuid:5d2f8b14-7e3a-4c69-b1d5-8f0a6e2c9b37> <http://www.w3.org/ns/prov#startedAtTime> \"2026-02-01T08:30:00Z\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .\n<urn:uuid:5d2f8b14-7e3a-4c69-b1d5-8f0a6e2c9b37> <http://www.w3.org/ns/prov#wasAssociatedWith> <https://github.com/jayostis/cascade-runtime-js/tree/0000000000000000000000000000000000000000/> .\n<https://github.com/jayostis/cascade-runtime-js/tree/0000000000000000000000000000000000000000/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#SoftwareAgent> .\n<urn:uuid:16db5351-8eb1-8716-8ed7-61f1b43a3b4e> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ns.cascadeprotocol.org/cascade#Snapshot> .\n<urn:uuid:16db5351-8eb1-8716-8ed7-61f1b43a3b4e> <http://www.w3.org/ns/prov#wasGeneratedBy> <urn:uuid:5d2f8b14-7e3a-4c69-b1d5-8f0a6e2c9b37> .\n<urn:uuid:16db5351-8eb1-8716-8ed7-61f1b43a3b4e> <https://ns.cascadeprotocol.org/cascade#mergedParentSnapshot> <urn:uuid:f3a9c1d7-2b64-8e05-9c1a-7d3e5b8f2a46> .\n<urn:uuid:16db5351-8eb1-8716-8ed7-61f1b43a3b4e> <https://ns.cascadeprotocol.org/cascade#mergedParentSnapshot> <urn:uuid:0c5e8a2f-6d17-8b93-a4f0-1e9c7b3d5a28> .\n<urn:uuid:16db5351-8eb1-8716-8ed7-61f1b43a3b4e> <https://ns.cascadeprotocol.org/cascade#setHash> \"52e6ef0c61b35f28cd9c6c73830092e1467eeedee17bd35842c218d9fcaebc02\" .\n<urn:uuid:16db5351-8eb1-8716-8ed7-61f1b43a3b4e> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"records/allergies/4a/4a7c2e91-3b58-8d06-9f1e-6c2b8a5d7e03.ttl\" .\n<urn:uuid:16db5351-8eb1-8716-8ed7-61f1b43a3b4e> <https://ns.cascadeprotocol.org/cascade#fileAddedToSet> \"provenance/activities/5d/5d2f8b14-7e3a-4c69-b1d5-8f0a6e2c9b37.ttl\" .\n",
+          "description": "ni:///sha-256;AGfRHCGdmLPtsc8DNq11EgRhk4RfWlB0--wXx-fO3Bo",
+          "firstParent": null,
+          "mergedParents": [
+            "urn:uuid:f3a9c1d7-2b64-8e05-9c1a-7d3e5b8f2a46",
+            "urn:uuid:0c5e8a2f-6d17-8b93-a4f0-1e9c7b3d5a28"
+          ],
+          "set": [
+            {
+              "path": "subject/5e/5e1f0b2a-7c3d-4e8f-9a6b-1d2c3e4f5a6b.ttl",
+              "sha256": "28fe0cef738840d09293d6868abeaf7fbc47ca4fb3fa68b83a0ca9fdb51605ea"
+            },
+            {
+              "path": "records/allergies/be/beaefb13-def8-8f7f-882d-eff4a1ee11d9.ttl",
+              "sha256": "29ef0207719abde1d8aa4cddaa9b589fe56258dbfe6049ff7ae9e4af346ad463"
+            },
+            {
+              "path": "records/allergies/13/13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl",
+              "sha256": "6a5beaf30bfcc2f76417b1d78c95af38fea52d58e322b33d41e78eedeea0313e"
+            },
+            {
+              "path": "attachments/sha-256/2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17",
+              "sha256": "f84edbd92c1ee03c74b3b866b53eeffb3eeb8122e518322d9cac525f2c471c62"
+            },
+            {
+              "path": "provenance/documents/2b/2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17.ttl",
+              "sha256": "f220852dc84043a5a0521c1ec606f39da4faa9b0fa658cb1d4a5b432206d20a5"
+            },
+            {
+              "path": "provenance/imports/2b/2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92.ttl",
+              "sha256": "cb79b85b5e705b23ca72ec3dd5a4f83385def7cc39a29b79f865ef5580fc94cc"
+            },
+            {
+              "path": "judgments/3e/3e2987b0-dbf5-8fa3-be1d-09a8fcc46fea.ttl",
+              "sha256": "b3cc8ea04ac858f029007856c372f2f5d5815ded63511bce60f26cb76fd92334"
+            },
+            {
+              "path": "judgments/assertions/7a/7a91c3e2-55d0-8b14-9e6f-2c8d4b1a0f37.ttl",
+              "sha256": "ed11d7330fa490b788d6b75f9b284447e2428c93f2db0ce594f861803e0b876f"
+            },
+            {
+              "path": "provenance/activities/8e/8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28.ttl",
+              "sha256": "903867a21fba485d1abbec82e81b3bdd1d5ed61e1c3a3df2102bf5d8f160a46d"
+            },
+            {
+              "path": "records/allergies/4a/4a7c2e91-3b58-8d06-9f1e-6c2b8a5d7e03.ttl",
+              "sha256": "4257437843dc7e1d3655ea4bca9e14b80838bc87b6bd3ac811956846624e6b66"
+            }
+          ],
+          "setHash": "52e6ef0c61b35f28cd9c6c73830092e1467eeedee17bd35842c218d9fcaebc02",
+          "name": "urn:uuid:16db5351-8eb1-8716-8ed7-61f1b43a3b4e"
+        }
+      ]
+    }
+  ]
+}

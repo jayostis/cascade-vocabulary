@@ -133,6 +133,8 @@ A record is named by what a person reads in it, never by its IRI, except where a
   `document`, its `class` and its `key`, a list of `field=value` strings whose fingerprint its name takes, or, with no
   key, its `members`, a list of member strings.
 - **A person's name**, as `Alex`: the pod's subject.
+- **`the runtime`**: the runtime replaying the example, named as N7 says, which every act it performs is
+  `prov:wasAssociatedWith`.
 
 Each names exactly one thing in the pod, or the step fails.
 
@@ -284,8 +286,8 @@ No matcher judgment has any of those records as a member.
 
 The claims the step asserted, writing an assertion of each, are exactly these, each as the step before says, whether or
 not the step wrote the claim itself (M9). Every claim the step wrote it asserted, and holds only what N6 names it from;
-every other subject in the files the step wrote is an assertion of one of these, the matcher, described as above, or a
-reference series or version.
+every other subject in the files the step wrote is an assertion of one of these, the matcher, described as above, a
+reference series or version, or, in the run's own file, the run, its snapshot or the runtime (N7, N14).
 
 ### `{step} wrote these reference descriptions:`
 

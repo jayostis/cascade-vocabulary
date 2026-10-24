@@ -37,7 +37,7 @@ Each row is one thing decided; the ladder and the lead the rows refer to follow 
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| two clocks | FHIR `meta.lastUpdated`; CDA `effectiveTime`; PROV `prov:generatedAtTime` | a revision carries `prov:generatedAtTime`, when the pod wrote it, and `rec:asOf`, when the source was observed saying this state: the first of the document's `rec:answeredAsOf`, the document's `pav:retrievedOn`, the source's own change time, and the act's start; for an entry it is the session's start. The first two rungs are the exporter's clock, the third the source's, and the fourth the device's: an unstamped record from a live pull, and every entry, carry the device's clock as their observation time | borrowed from PROV for when the pod wrote it; `rec:asOf` and its rungs are ours |
+| two clocks | FHIR `meta.lastUpdated`; CDA `effectiveTime`; PROV `prov:generatedAtTime` | a revision carries `prov:generatedAtTime`, when the pod wrote it, and `rec:asOf`, when the source was observed saying this state: the first of the document's `rec:answeredAsOf`, the document's `pav:retrievedOn`, the source's own change time, and the act's start; for an entry it is the session's start. The first two rungs are the exporter's clock, the third the source's, and the fourth the writer's: an unstamped record from a live pull, and every entry, carry the writer's clock as their observation time | borrowed from PROV for when the pod wrote it; `rec:asOf` and its rungs are ours |
 | source's own version | FHIR `meta.versionId`, `meta.lastUpdated`; CDA `effectiveTime`, `versionNumber` | `meta.versionId`, `meta.lastUpdated`, or a C-CDA document's `effectiveTime` sits in a node nested in the revision, hashed with it, never on the revision itself | borrowed as the source states it; diverges in never ranking, since a version id is opaque and resets |
 | heads | git parents; openEHR version tree | a revision names the record's heads it saw as `prov:wasRevisionOf`, one or several; a sync is a union of files | borrowed from git |
 | what an arrival writes | | a first arrival writes the record, its version and a revision. An arrival whose version is the current revision's writes nothing. An arrival whose (version, source version, source time) a revision already holds writes nothing, whether or not it would become current; so does an arrival with no source time whose version the record already holds, whatever stamp the held revision carries. Otherwise a revision, with its heads | ours |
@@ -47,7 +47,7 @@ Each row is one thing decided; the ladder and the lead the rows refer to follow 
 | Before | git merge commit | a person's judgment, verdict Before, two revisions in order, of one record or of two records a Same joins (the lead below), never two versions; machines never make one; a Before outranks every clock, as Different outranks Same | ours; it stands where git has the person's merge commit |
 | a source that goes backwards | | raises a finding: an import whose source reports a state older than that same source's own earlier report files one finding on the act, naming every earlier act it contradicts and each record that went back; it writes no revision where the older state is held, and writes one where it never was, which the ladder then ranks below the later state. A copy by another path (Apple's copy of a hospital record, a document exported last year) that is older than a direct pull files nothing: it is a stale copy, not a contradiction. The current pick is unchanged either way. One finding per import that goes back: a repeat pull of the rolled-back state files nothing new while that finding stands, and an acknowledged finding still stands. A finding is something kept, so A11 stands: an import that kept nothing writes nothing | ours |
 | Before over a finding | | one judgment: its member is the finding, and the derivation places, for each named record, the revision the earlier act wrote before the revision holding the older state the source now reports, so the rollback wins, as a Same over two servers derives a join per record. Retracting it lifts every derived Before at once | ours |
-| wrong device clock | | caught after the fact and discounted by one judgment. Stamped records never use the device's clock, so a skew touches only unstamped pulls and entries, at step 4. Two checks run on each act and file a finding, "this device's clock was at least N days behind", and no second while one stands on an act in the first-parent ancestry of the new act: a revision whose `rec:asOf` precedes a head it names, and a pull returning a record the source stamped after the pull's own time. The remedy is a person's judgment whose member is the act, saying its observation times are known wrong, usually by confirming the finding; the derivation treats every revision that act generated as carrying no `rec:asOf`, so its picks fall to step 5 and the review page. Nothing is rewritten, and the judgment is retractable. It is not Erroneous over the act: the content is sound, only its clocks are not. The verdict's name is open in `judgments.md` | ours |
+| wrong writer clock | | caught after the fact and discounted by one judgment. Stamped records never use the writer's clock, so a skew touches only unstamped pulls and entries, at step 4. Two checks run on each act and file a finding, "this writer's clock was at least N days behind", and no second while one stands on an act in the first-parent ancestry of the new act: a revision whose `rec:asOf` precedes a head it names, and a pull returning a record the source stamped after the pull's own time. The remedy is a person's judgment whose member is the act, saying its observation times are known wrong, usually by confirming the finding; the derivation treats every revision that act generated as carrying no `rec:asOf`, so its picks fall to step 5 and the review page. Nothing is rewritten, and the judgment is retractable. It is not Erroneous over the act: the content is sound, only its clocks are not. The verdict's name is open in `judgments.md` | ours |
 | findings before commit | | an act's findings are known before it is committed. An act is atomic, so an app may run an import to a staging area, show the person what it found, and let them commit it, commit it with a judgment filed in the same step, or decline it. A declined act never existed: no name, no snapshot, nothing for another writer to receive. The next pull will find the same thing and ask again; a declined act leaves no finding because no act generated one. The vocabulary permits staging and does not require it | ours |
 | review page | | lists every record whose current state the source's change time did not decide, but a pick between two pulls of one source where one's snapshot is an ancestor of the other's, which ancestry orders; only picks ancestry does not order (two writers, two paths) are listed, each with the state shown, the state not shown, and the reason ("observed later", or "no basis"); the fix is one Before. It lists each rollback finding as one line, "this source reports N records at states older than it reported on that date", expanding to the records, with three answers: a Before over the finding; an acknowledgement, so the later states stay and the finding clears; or a Before per record from the expanded list | ours |
 | Erroneous | | for a state that is wrong, and hides it from every view; a stale state is not wrong and stays | ours |
@@ -85,7 +85,7 @@ ranks states of the source: a copy of an older state never beats a newer one, wh
 on it.
 
 **Why `rec:asOf` ranks observations.** `rec:asOf` ranks observations of one state, a later look at a source being
-better evidence of its current state, and a person's later session being their later edit; it is a device clock for a
+better evidence of its current state, and a person's later session being their later edit; it is a writer's clock for a
 live pull or an entry, which is acceptable because a live pull has no other clock and an entry's order is
 the person's own. Between two pulls of one source where one's snapshot is an ancestor of the other's, ancestry orders the two
 acts whatever its clock says, so that pick is not a guess and is not listed; only picks ancestry does not order, two
@@ -94,7 +94,7 @@ records a year gives about 800 lines a year and about 8,000 by year ten, each ke
 (assumed, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)).
 
 **Why neither the version id nor the write time ranks.** The source's version id never ranks: it is opaque, it
-resets, and it is a string. The device's write time ranks nothing on its own: it was a clock that happens to be right,
+resets, and it is a string. The writer's write time ranks nothing on its own: it was a clock that happens to be right,
 which is a bias, not a reason, so the last step is the least IRI, there only so two writers agree, and the note says it
 is arbitrary.
 
@@ -127,7 +127,7 @@ agrees with the source, one Before with the per-record orderings derived, where 
 the ladder already expects. The pod keeps showing the later state because a hospital that restores a backup has
 usually lost data it will re-enter. One finding per import that goes back, naming every earlier act, because a
 finding per earlier act made a 30-day restore about 30 findings; an acknowledged finding still stands, or a daily
-pull of the rolled-back state would file one again every day; and a skewed device has one clock finding while one
+pull of the rolled-back state would file one again every day; and a skewed writer has one clock finding while one
 stands, where one per act is up to 365 a year (computed, #206).
 
 **Why a view rebuilds only what an act reached.** The ladder is per record and an entry is a closure over its
@@ -150,7 +150,7 @@ by union; a maximum over the set needs no walk of the line.
   the review page says so and a Before is the person's merge.
 - **The source's version id as the rank.** The strongest case: it is the server's own ordering. It is opaque by
   definition, resets on a restore, and is a string.
-- **A device clock as a tiebreak, before the arbitrary step.** The strongest case: it is usually right. Usually right
+- **A writer's clock as a tiebreak, before the arbitrary step.** The strongest case: it is usually right. Usually right
   with no reason is a hidden guess; the arbitrary step is a visible one, and the review page shows it.
 - **Erroneous as the override.** The strongest case: it exists. It means wrong and hides the revision from every view;
   a stale state is not wrong, and an ordering composes where a mark on one revision does not.
@@ -176,7 +176,7 @@ by union; a maximum over the set needs no walk of the line.
   it by year ten (assumed, #206), most of them pulls whose snapshots ancestry already orders.
 - **A rollback finding per earlier act contradicted, and a clock finding per act.** The strongest case: each finding
   names one contradiction, and each act's own skew is on record. A 30-day restore gives about 30 findings, a skewed
-  device up to 365 a year, and without "an acknowledged finding still stands" the same rolled-back state files again
+  writer up to 365 a year, and without "an acknowledged finding still stands" the same rolled-back state files again
   every day (computed, #206).
 
 ## Still open
@@ -193,6 +193,6 @@ by union; a maximum over the set needs no walk of the line.
 
 ## What would change our mind
 
-Sources stamping no change time often enough that currency falls to device clocks would reopen the open-fork
+Sources stamping no change time often enough that currency falls to writers' clocks would reopen the open-fork
 alternative. A source that re-stamps change times on every read would make the change time no better than the
 arrival. A person filing Befores on most records would say the ladder picks wrong often enough to replace.
