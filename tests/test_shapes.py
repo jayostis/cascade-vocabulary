@@ -251,3 +251,13 @@ def test_every_record_of_a_kit_pod_with_a_source_address_has_the_name_that_addre
     named_wrong = {str(report.value(result, SH.focusNode)) for result in report.objects(None, SH.result)
                    if report.value(result, SH.sourceShape) == CASCADE.ServerRecordNameShape}
     assert named_wrong == set()
+
+
+def test_no_absolute_subject_iri_is_the_subject_of_nodes_in_two_shape_case_files():
+    """reported() merges every case into one graph and credits each node to one file, so a name two files share would
+    credit one file with the other's results."""
+    owners = {}
+    for name, (file, _) in cases().items():
+        for node in {s for s in parsed(file).subjects() if isinstance(s, URIRef) and ":" in s}:
+            owners.setdefault(node, set()).add(name)
+    assert {str(node): sorted(names) for node, names in owners.items() if len(names) > 1} == {}

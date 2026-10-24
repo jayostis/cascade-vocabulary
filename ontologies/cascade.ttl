@@ -434,7 +434,7 @@ cascade:variantInterpreted a owl:ObjectProperty ;
 cascade:acmgClassification a owl:ObjectProperty ;
     rdfs:label "ACMG/AMP Classification"@en ;
     rdfs:domain cascade:VariantInterpretation ;
-    rdfs:range cascade:AcmgClass ;
+    rdfs:range skos:Concept ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -445,35 +445,17 @@ cascade:interpretedDate a owl:DatatypeProperty ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
-cascade:AcmgClass a owl:Class ;
-    rdfs:label "ACMG Classification"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+cascade:objectCondition a owl:ObjectProperty ;
+    rdfs:label "Object Condition"@en ;
+    rdfs:domain cascade:VariantInterpretation ;
+    rdfs:range cascade:ProblemOrDiagnosis ;
+    rdfs:seeAlso <https://github.com/ga4gh/va-spec/blob/11c4a3add0e4a9d0eef7e13f8ec9cb17346e9fa0/schema/va-spec/acmg-2015/profile-source.yaml> .
 
-cascade:Pathogenic a cascade:AcmgClass ;
-    rdfs:label "Pathogenic"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
-
-cascade:LikelyPathogenic a cascade:AcmgClass ;
-    rdfs:label "Likely Pathogenic"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
-
-cascade:UncertainSignificance a cascade:AcmgClass ;
-    rdfs:label "Uncertain Significance"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
-
-cascade:LikelyBenign a cascade:AcmgClass ;
-    rdfs:label "Likely Benign"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
-
-cascade:Benign a cascade:AcmgClass ;
-    rdfs:label "Benign"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+cascade:acmgEvidenceCode a owl:DatatypeProperty ;
+    rdfs:label "ACMG Evidence Code"@en ;
+    rdfs:domain cascade:VariantInterpretation ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://github.com/ga4gh/va-spec/blob/9d60508c0a7a1ccd79a6312a45b3618ee0121aec/schema/va-spec/acmg-2015-profile-source.yaml> .
 
 # Records
 

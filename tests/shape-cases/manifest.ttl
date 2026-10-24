@@ -362,6 +362,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ServerRecordNameShape ] ] .
 
+<#record-variant-interpretation/object-and-evidence-codes> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant-interpretation/object-and-evidence-codes.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-variant-interpretation/two-objects> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-variant-interpretation/two-objects.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:VariantInterpretationShape ; sh:resultPath cascade:objectCondition ] ] .
+
 <#record-server/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-server/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
