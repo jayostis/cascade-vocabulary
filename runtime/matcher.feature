@@ -847,18 +847,18 @@ Feature: The matcher's procedure
     naming the claims it no longer reaches. A run that compares the whole pod, an open (O1) or a recheck (M7), files,
     after its claims and before its reference descriptions (W1), a cascade:FindingForReview whose oa:hasBody is
     cascade:ClaimsNoLongerReached, whose cascade:noLongerReachedUnderRuleListVersion is the current rule list version,
-    and whose oa:hasTarget is each claim of the matcher's that nothing retracts or replaces, each reference version it
-    used current, that is asserted, by an assertion no retraction invalidates, under a version whose row for its rule
-    carries the cascade:queryHash of that rule's row in the version the current one revises (prov:wasRevisionOf), and
-    under none whose row carries the hash of the current version's row for it, the run's own assertions counted. It
+    and whose oa:hasTarget is each claim of the matcher's that nothing retracts or replaces that is asserted, by an
+    assertion no retraction invalidates, under a version whose row for its rule carries the cascade:queryHash of that
+    rule's row in the version the current one revises (prov:wasRevisionOf), and under none whose row carries the hash
+    of the current version's row for it, the run's own assertions counted. It
     files none when the current version revises none, when the pod holds a finding naming the current version, or when
     it would name no claim: so one per version, whichever run is first, and a run bound to a step's records files none.
 
     It carries no time and names no act, and is named by cascade:FindingNamingRule from its triples, so two writers
     whose first runs under one version find the same claims file one file. A claim whose every assertion a release
     retracted (N15) is asserted by none, and is named by no finding: a release declared its rule wrong, and the
-    review page does not offer it back. A claim a version reached that used a table version since revised lapses
-    pair by pair (O1), as it did before the version.
+    review page does not offer it back. What a claim's tables did is no part of it: a claim the version reaches, kept
+    or lapsed by a table version (M7), is named by no finding, and lapses pair by pair (O1).
 
     Example: opening a pod matched under version 6 with version 7 files one finding naming the claims of the rule version 7 changed that it did not file again
       Version 7 changes the query of R5 and R6. Its run asserts again the claim of the NDC pair, which R5 still joins,
