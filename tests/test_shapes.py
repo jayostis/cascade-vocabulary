@@ -223,6 +223,27 @@ def test_the_name_shape_takes_each_server_vectors_name_for_its_address_and_no_ot
     assert {str(node) for node in report.objects(None, SH.focusNode)} == {vector.expected for vector in found}
 
 
+def servers(pairs):
+    graph = Graph()
+    for name, vector in pairs:
+        graph.add((URIRef(name), RDF.type, CASCADE.Server))
+        graph.add((URIRef(name), CASCADE.serverBaseUrl, Literal(vector.inputs[0])))
+    return graph
+
+
+def test_the_server_name_shape_embeds_its_rules_query_and_takes_each_server_vectors_name_and_no_other():
+    [constraint] = shapes().objects(CASCADE.ServerNameShape, SH.sparql)
+    body = (VECTORS / "ServerNamingRule.rq").read_text(encoding="utf-8").split(" WHERE {\n", 1)[1].rsplit("\n}", 1)[0]
+    assert body in str(shapes().value(constraint, SH.select))
+    found = [vector for vector in vectors() if vector.rule == "ServerNamingRule"]
+    assert len(found) >= 2
+    conforms, _, _ = validate(servers((vector.expected, vector) for vector in found), shacl_graph=shapes())
+    assert conforms
+    _, report, _ = validate(servers(zip([vector.expected for vector in found[1:] + found[:1]], found)),
+                            shacl_graph=shapes())
+    assert {str(node) for node in report.objects(None, SH.focusNode)} == {vector.expected for vector in found}
+
+
 def test_the_name_shape_leaves_an_address_holding_a_delete_character_alone():
     pod = Graph()
     pod.add((URIRef("urn:uuid:11111111-1111-8111-8111-111111111106"), CASCADE.sourceUrl,

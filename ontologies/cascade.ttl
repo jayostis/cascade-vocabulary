@@ -1629,7 +1629,7 @@ cascade:SnapshotNamingRule a owl:NamedIndividual ;
 
 cascade:ServerNamingRule a owl:NamedIndividual ;
     rdfs:label "server naming rule"@en ;
-    rdfs:comment "A server a client pulled from, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and the normalised base URL the client used."@en ;
+    rdfs:comment "A server a client pulled from or connected to, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and the normalised base URL the client used."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2> ,
         <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.3> .
 
@@ -1774,6 +1774,12 @@ cascade:Server a owl:Class ;
     rdfs:comment "A server a client pulled from or connected to, as a record named by cascade:ServerNamingRule. What the server reported about itself is on its versions; a server known only from a document's address has a record with none."@en ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement.html> .
 
+cascade:ConnectToServer a owl:Class ;
+    rdfs:label "connect to a server"@en ;
+    rdfs:comment "An act: an app signing in to a server, which writes a version of the server's record holding what the server reported about itself and the client id the app signed in with, and nothing else."@en ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:seeAlso <https://hl7.org/fhir/smart-app-launch/app-launch.html> .
+
 cascade:selfAssertedBaseUrl a owl:DatatypeProperty ;
     rdfs:label "self-asserted base URL"@en ;
     rdfs:comment "Of a version of a server, the base URL the server said it lives at, as the server wrote it: evidence, never a name input."@en ;
@@ -1835,7 +1841,7 @@ org:identifier a owl:DatatypeProperty ;
 
 cascade:serverBaseUrl a owl:DatatypeProperty ;
     rdfs:label "server base URL"@en ;
-    rdfs:comment "Of a document, the base URL of the server the client fetched it from, normalised as cascade:RecordFromServerNamingRule says."@en ;
+    rdfs:comment "The base URL of a server as the client used it, normalised as cascade:RecordFromServerNamingRule says: of a document, the server's the client fetched it from; of a server's record, its own, which cascade:ServerNamingRule names it by."@en ;
     rdfs:range xsd:string .
 
 cascade:sourceFormatVersion a owl:DatatypeProperty ;
