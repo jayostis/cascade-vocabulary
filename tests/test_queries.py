@@ -300,11 +300,11 @@ def test_a_query_names_a_record_type_only_when_it_is_about_that_one_kind(relativ
 
 
 KINDS = ("entry", "record", "judgment", "profile")
-DERIVED_ABSENCES = {URIRef("http://purl.org/nanopub/x/supersedes"), URIRef("http://purl.org/nanopub/x/retracts"),
+DERIVED_ABSENCES = {URIRef("http://purl.org/dc/terms/replaces"), URIRef("http://www.w3.org/ns/prov#invalidated"),
                     URIRef("http://www.w3.org/ns/prov#wasRevisionOf")}
 RESTATING = {
-    "not-exists": "SELECT ?j WHERE { ?j ?p ?o FILTER NOT EXISTS { ?s <http://purl.org/nanopub/x/supersedes> ?j } }",
-    "minus": "SELECT ?j WHERE { ?j ?p ?o MINUS { ?s <http://purl.org/nanopub/x/retracts> ?j } }",
+    "not-exists": "SELECT ?j WHERE { ?j ?p ?o FILTER NOT EXISTS { ?s <http://purl.org/dc/terms/replaces> ?j } }",
+    "minus": "SELECT ?j WHERE { ?j ?p ?o MINUS { ?s <http://www.w3.org/ns/prov#invalidated> ?j } }",
     "optional-bound": """SELECT ?r WHERE { ?r ?p ?o OPTIONAL { ?later <http://www.w3.org/ns/prov#wasRevisionOf> ?r }
                          FILTER (!BOUND(?later)) }""",
 }
@@ -335,7 +335,7 @@ def test_the_restating_check_refuses_each_way_of_asking_for_an_absence(form):
 
 def test_the_restating_check_accepts_a_term_the_query_only_reads():
     assert restated_absences("""SELECT ?j ?by WHERE {
-      ?j ?p ?o OPTIONAL { ?by <http://purl.org/nanopub/x/supersedes> ?j } FILTER (BOUND(?o)) }""") == []
+      ?j ?p ?o OPTIONAL { ?by <http://purl.org/dc/terms/replaces> ?j } FILTER (BOUND(?o)) }""") == []
 
 
 @pytest.mark.parametrize("relative", every_question())

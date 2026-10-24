@@ -46,7 +46,7 @@ Feature: The conformance kit
     No example states this check: SPARQL cannot run SHACL.
 
   Rule: Check 4. Every name follows its rule
-    N1 to N7, N9, N10 and N14, computed from that run's own inputs, its random import and matcher run IDs among them.
+    N1 to N7, N9, N10, N14 and N15, computed from that run's own inputs, its random import and matcher run IDs among them.
     Each saved Bridge output is in the pod less its arrivals, with its import replaced by the import its step wrote and
     the runtime that performed it left out (A9, A11), and each revision follows an earlier revision of the same record.
     Each act leaves one snapshot, named by its rule, whose first parent is the snapshot before it and whose added files
