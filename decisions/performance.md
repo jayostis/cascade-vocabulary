@@ -83,7 +83,7 @@ rather than 120³/3 derived pairs.
 **Tables are today's.** A page and R13 ask what a table says now, so only current versions are read and kept, and a
 browser holds one ClinVar version rather than a decade of them.
 
-**What a person reads is bounded by events.** A finding is one per thing that happened, a restore or a skewed device,
+**What a person reads is bounded by events.** A finding is one per thing that happened, a restore or a skewed writer,
 not one per act it touches; the review page lists only what the pod truly guessed, and what ancestry orders is not
 a guess.
 
@@ -114,7 +114,7 @@ Each is the wording a note had before 2026-10-22; the note named keeps it in ful
 - **Every pick no source change time decided on the review page** (`currency.md`). The strongest case: every guess
   shown. About 8,000 lines by year ten from one source with no change time (assumed).
 - **A rollback finding per earlier act contradicted, and a clock finding per act** (`currency.md`). The strongest
-  case: each finding one contradiction. About 30 findings per 30-day restore and up to 365 a year per skewed device
+  case: each finding one contradiction. About 30 findings per 30-day restore and up to 365 a year per skewed writer
   (computed), and a daily refile once acknowledged.
 
 ## Still open
@@ -128,7 +128,6 @@ Each is the wording a note had before 2026-10-22; the note named keeps it in ful
 - Packfiles: whether a pod's files are stored packed or deltified, as git does, is the runtime's
   (jayostis/cascade-runtime-js#209).
 - What the browser runs: which acts a browser may perform on its own, and whether a demo is read-only, is unruled.
-- The order-free hash's construction, which `runtime/naming.feature` is to name.
 
 ## What would change our mind
 

@@ -231,8 +231,8 @@ Feature: The matcher's procedure
     Its assertion, a cascade:ClaimAssertion named by N6, asserts it (cascade:assertedClaim) under the rule list's
     version (cascade:assertedUnderRuleListVersion). The everyday lens counts the claim while every version it used is
     current and the current version of a rule list has a row for the claim's rule with the cascade:queryHash of that
-    rule's row in a version the claim is asserted under (M8, queries/lenses/everyday.rq). A claim carries no run: which run
-    wrote an assertion is read from its snapshot (jayostis/cascade-vocabulary#209).
+    rule's row in a version the claim is asserted under (M8, queries/lenses/everyday.rq). A claim carries no run: the run is an act
+    (N7), and which run wrote a claim or an assertion is read from the run's snapshot, which names every file it wrote (N14).
 
     Background:
       Given a new pod for Cleo on 2026-03-01 at 09:00

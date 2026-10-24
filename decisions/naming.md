@@ -73,7 +73,8 @@ generation (https://sphn-semantic-framework.readthedocs.io/en/latest/user_guide/
 (https://ohdsi.github.io/CommonDataModel/); git objects (https://git-scm.com/book/en/v2/Git-Internals-Git-Objects);
 trusty URIs (https://trustyuri.net/); Web Annotation (https://www.w3.org/TR/annotation-model/); RFC 6920
 (https://www.rfc-editor.org/rfc/rfc6920), RFC 9562 §5.8 and §6.6 (https://www.rfc-editor.org/rfc/rfc9562), RFC 3986
-§6 (https://www.rfc-editor.org/rfc/rfc3986#section-6); RDFC-1.0 (https://www.w3.org/TR/rdf-canon/). Research 1 to 5 on
+§6 (https://www.rfc-editor.org/rfc/rfc3986#section-6); RDFC-1.0 (https://www.w3.org/TR/rdf-canon/); Clarke et al., incremental multiset
+hash functions, ASIACRYPT 2003 (https://doi.org/10.1007/978-3-540-40061-5_12). Research 1 to 5 on
 #130: base-URL churn from archived endpoint lists
 (https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6327416626), the server's self-asserted base
 probed across seven vendors (https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328100407),
@@ -112,7 +113,7 @@ appears here only as evidence for a judgment.
 | retraction | nanopub `npx:retracts` | a `prov:Activity` that `prov:invalidated`; replacement by `dcterms:replaces` | diverges: `npx:retracts` has domain `foaf:Agent`, making the retractor an agent and the retracted a nanopublication, where ours is an activity over any entity |
 | document, finding | RFC 6920; Web Annotation | bytes hashed; content hashed | borrowed |
 | view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; named in the view that gives it members and rebuilt with it; another view in the same folder cites it by a relative reference, as the variant interpretations view cites a variant's entry `<variants.ttl#hex>`; carries every member's current state, with a lead per `currency.md` | ours |
-| snapshot | git tree; git commit parents | one node per act, a chain as git's commits are: its first parent, the writer's own previous snapshot, none on a writer's first; for a sync, each head that arrived as a merged parent; and the files this act added (for a sync, the files that arrived), with an order-free hash of the set, every file but sync acts, snapshots and the sync row's files that change in place, updated from the additions; two writers are in sync when the set hashes their latest snapshots carry agree, and one holds all the other holds when the other's head is an ancestor of its own; never a list of every file | borrowed from git's chain of commits; diverged from git's tree, which with this layout rewrites a leaf folder per act |
+| snapshot | git tree; git commit parents; MSet-Add-Hash | one node per act, in the act's file, a chain as git's commits are: its first parent, the writer's own previous snapshot, kept outside the pod as git keeps HEAD, none on a writer's first; for a sync, each head that arrived as a merged parent, and on a writer's first, every head it holds; and the files this act added (for a sync, the files that arrived), with an order-free hash of the set, every file but sync acts, snapshots and the sync row's files that change in place, updated from the additions: the sum modulo 2^256 of the SHA-256 of each file's path, Clarke et al.'s MSet-Add-Hash, since XOR cancels a file added twice and is trivially forged; two writers are in sync when the set hashes their latest snapshots carry agree, and one holds all the other holds when the other's head is an ancestor of its own; never a list of every file | borrowed from git's chain of commits and the multiset hash literature; diverged from git's tree, which with this layout rewrites a leaf folder per act |
 | pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID; a judgment that leaves the pod carries it as the author, so a receiver can cite the person and reconcile their shares, and whether the author leaves at all is the share-time choice like every field; keying it hides nothing more, since it is random already, and a per-receiver id is open below | diverges from Solid, which names a pod by its URL |
 | scheme | | declared per pod at creation: source URL as IRI, opaque hash (default), or keyed hash; what has no URL (C-CDA, entries, judgments) is hashed under all three; a test key for kits | ours |
 
@@ -264,7 +265,7 @@ only the vocabulary; vectors are cross-checked because an implementation that mi
 - **The release hashed into the judgment's name.** The strongest case: nothing is ever lost. A judgment per release
   for one pair, views that dedupe, and a retraction per copy.
 - **An assertion per run.** The strongest case: a full record of every time the matcher agreed. A file per claim
-  per day; the run's act already says the matcher ran, and a snapshot equal to the last says it found nothing new.
+  per day; the run's act and its snapshot already say which run wrote each assertion, and a run that finds nothing new writes nothing.
 - **A migration retracting assertions on every rule change.** The strongest case: explicit, and PROV's own way to
   withdraw. A claim counts only under a version that keeps its rule's query hash, so the un-reached claims stop counting
   with no file written; a retraction is kept for what a release declares wrong, so the review page never offers a

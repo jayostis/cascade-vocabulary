@@ -1455,6 +1455,16 @@ cascade:ClaimAssertionShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+cascade:MatcherRunShape a sh:NodeShape ;
+    sh:targetClass cascade:MatcherRun ;
+    sh:property [
+        sh:path prov:wasInformedBy ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A matcher run is informed by at most one act, the import, entry session or sync whose records it takes."@en ;
+        sh:severity sh:Violation
+    ] .
+
 cascade:SnapshotShape a sh:NodeShape ;
     sh:targetClass cascade:Snapshot ;
     sh:property [

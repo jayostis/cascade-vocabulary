@@ -117,29 +117,53 @@ Feature: Naming
         | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" | cascade:ClaimNamingRule, cascade:CascadeMatcher, cascade:SameMappedCodeAndDateRule, cascade:SameMappedCodeAndDate, (urn:uuid:3dc7c789-629b-8c3d-bd56-1022c3b61370, urn:uuid:d9f834de-8400-8ea3-919d-9ee5c0dc81c0), (ni:///sha-256;74dShxmpQX8gLDSpc1-NCZc4pMfzOxUYrWX1iVPmNLY, ni:///sha-256;MVEOtUNQU1HYjJyOb0bkCIaR-wr8kaEPU_tDazvqXfo, ni:///sha-256;QB2fkudO_blj2MpVxMnWi-kAWCzxRbG1odWEGTSZL2I) | urn:uuid:f825e3a3-062e-8c97-9a3b-559d3aee9045 |
         | same code and date        | immunization CVX 141 "Fluarix", immunization CVX 141 "Fluad"    | cascade:ClaimNamingRule, cascade:CascadeMatcher, cascade:SameCodeAndDateRule, cascade:SameCodeAndDate, (urn:uuid:3dc7c789-629b-8c3d-bd56-1022c3b61370, urn:uuid:52a6821b-4f89-8890-9eb2-9ce535008383), (ni:///sha-256;74dShxmpQX8gLDSpc1-NCZc4pMfzOxUYrWX1iVPmNLY, ni:///sha-256;X79OAJXuXOeTdNyY-kDqKf5EAUhSTToICSZBinQYoCs)                                                                        | urn:uuid:838ce1ce-7f63-8e8b-a3b7-c8532dc02290 |
 
-  Rule: N7. An import gets a new random UUID, and an entry session keeps the IRI the app minted for it
-    decisions/naming.md, row "act". An import is a urn:uuid:, version 4, new on every run. An entry's session is minted
-    once by the app that took the entry, and the entry carries it, so its records' names (N2) are the same on every run.
-    Nothing else is random. The kit's check 4 holds each of a replay's imports to it.
+  Rule: N7. An import and a matcher run each get a new random UUID, an entry session keeps the IRI the app minted for it, and every act names the runtime that performed it
+    decisions/naming.md, row "act". An import and a matcher run, a recheck's and an open's among them, are each a
+    urn:uuid:, version 4, new on every run. An entry's session is minted once by the app that took the entry, and the
+    entry carries it, so its records' names (N2) are the same on every run. Nothing else is random. Each act says
+    prov:wasAssociatedWith the runtime that performed it, a prov:SoftwareAgent named as N8 names a checkout:
+    https://github.com/jayostis/cascade-runtime-js/tree/<commit>/ for the reference runtime. A matcher run is a
+    cascade:MatcherRun and a prov:Activity, prov:wasInformedBy the import or entry session whose records it takes, and is
+    written only when it writes something else. The kit's check 4 holds each of a replay's acts to it.
 
     Example: an import is named by a new random UUID, which no input gives
       Given a new pod for Ada on 2026-01-01 at 09:00
       When the export "first-export" is imported on 2026-01-02 at 10:00
       Then that step's import is named by a new random UUID
 
-    Example: an entry's session is named by the IRI the entry gives it
+    Example: an entry's session is named by the IRI the entry gives it, and names the runtime that performed it
       Given a new pod for Ben on 2026-02-01 at 08:00
       When Ben enters "entry" on 2026-02-01 at 08:30
       When the query is:
         """
-        SELECT ?session WHERE {
+        SELECT ?session ?runtime WHERE {
           GRAPH <urn:cascade:steps> { <urn:cascade:step:entry> prov:generated ?file }
-          GRAPH ?file { ?session a prov:Activity ; prov:startedAtTime [] }
+          GRAPH ?file { ?session a prov:Activity ; prov:startedAtTime [] ; prov:wasAssociatedWith ?runtime .
+                        ?runtime a prov:SoftwareAgent }
         }
         """
       Then it answers:
-        | session                                         |
-        | <urn:uuid:ee6c4455-4446-4a5a-b28b-dedf744f4c01> |
+        | session                                         | runtime     |
+        | <urn:uuid:ee6c4455-4446-4a5a-b28b-dedf744f4c01> | the runtime |
+
+    Example: a matcher run is named by a new random UUID, takes the entry session it was informed by, and names the runtime
+      Given a new pod for Cleo on 2026-03-01 at 09:00
+      And Cleo files the judgment "about-p" on 2026-03-01 at 09:05
+      And the export "first-export" is imported on 2026-03-02 at 10:00
+      And Cleo enters "entry" on 2026-03-03 at 08:00
+      When the matcher runs on the records of that entry on 2026-03-03 at 08:01
+      When the query is:
+        """
+        SELECT ?random ?informedBy ?runtime WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:matcher> prov:generated ?file }
+          GRAPH ?file { ?run a cascade:MatcherRun, prov:Activity ; prov:startedAtTime [] ; prov:wasInformedBy ?informedBy ;
+                          prov:wasAssociatedWith ?runtime }
+          BIND (REGEX(STR(?run), "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$") AS ?random)
+        }
+        """
+      Then it answers:
+        | random | informedBy                                      | runtime     |
+        | true   | <urn:uuid:4c555575-696f-4a0a-b4fa-228549fb872f> | the runtime |
 
   Rule: N8. What a runtime gives the Bridge
     - The adapter: <repository>/tree/<commit>/, at the commit the run reads, of the adapter the document is offered to.
@@ -252,3 +276,68 @@ Feature: Naming
     No example shows this rule, because a query reads an entry's IRI resolved against the view's address, and the
     derived state, which examples query, holds the placeholder. The kit's
     check 6 holds every view a replay writes to it, and tests/vectors/naming/ names an entry.
+
+  Rule: N14. Every act leaves one snapshot, chained to the writer's previous one
+    decisions/naming.md, row "snapshot". A node in the act's own file, a cascade:Snapshot, prov:wasGeneratedBy the act
+    and named by cascade:SnapshotNamingRule. Its cascade:firstParentSnapshot is the writer's previous snapshot, which the
+    writer keeps outside the pod as git keeps HEAD; a writer's first snapshot has none, and a writer that lost its last
+    one is a new writer. Its cascade:mergedParentSnapshot values are the heads it merges: on a writer's first, every
+    snapshot the pod holds that no snapshot names as a parent. Its cascade:setHash is the set hash of the set the writer
+    holds once the act's files are written, and its cascade:fileAddedToSet values are the paths of the files of the set
+    the act wrote and, with a first parent, of every other file of the set the writer came to hold since it, so that
+    the set hash is the first parent's plus theirs; the set and the hash are cascade:Snapshot's and cascade:setHash's.
+    An act that writes nothing leaves no snapshot. tests/vectors/snapshot/ holds the vectors every implementation
+    reproduces.
+
+    No example computes a set hash or a snapshot's name: SPARQL cannot add two 256-bit numbers, and an act's name is
+    random. The kit's check 4 holds every snapshot of a replay to this rule.
+
+    Example: a writer's first snapshot has no first parent, and each later act's names the one before it
+      Given a new pod for Cleo on 2026-03-01 at 09:00
+      And Cleo files the judgment "about-p" on 2026-03-01 at 09:05
+      And the export "first-export" is imported on 2026-03-02 at 10:00
+      And Cleo enters "entry" on 2026-03-03 at 08:00
+      When the matcher runs on the records of that entry on 2026-03-03 at 08:01
+      When the query is:
+        """
+        SELECT ?step ?firstParentStep (COUNT(?merged) AS ?mergedParents) WHERE {
+          GRAPH <urn:cascade:steps> { ?step prov:generated ?file }
+          GRAPH ?file { ?snapshot a cascade:Snapshot ; prov:wasGeneratedBy ?act . ?act a prov:Activity }
+          OPTIONAL {
+            GRAPH ?file { ?snapshot cascade:firstParentSnapshot ?parent }
+            GRAPH <urn:cascade:steps> { ?firstParentStep prov:generated ?parentFile }
+            GRAPH ?parentFile { ?parent a cascade:Snapshot }
+          }
+          OPTIONAL { GRAPH ?file { ?snapshot cascade:mergedParentSnapshot ?merged } }
+        }
+        GROUP BY ?step ?firstParentStep
+        """
+      Then it answers:
+        | step                            | firstParentStep                 | mergedParents |
+        | <urn:cascade:step:first-export> |                                 | 0             |
+        | <urn:cascade:step:entry>        | <urn:cascade:step:first-export> | 0             |
+        | <urn:cascade:step:matcher>      | <urn:cascade:step:entry>        | 0             |
+
+    Example: a snapshot names each file its act wrote, its act's own file among them
+      Given a new pod for Cleo on 2026-03-01 at 09:00
+      And Cleo files the judgment "about-p" on 2026-03-01 at 09:05
+      And the export "first-export" is imported on 2026-03-02 at 10:00
+      And Cleo enters "entry" on 2026-03-03 at 08:00
+      When the matcher runs on the records of that entry on 2026-03-03 at 08:01
+      When the query is:
+        """
+        SELECT ?folder (COUNT(DISTINCT ?file) = COUNT(DISTINCT ?path) AS ?eachNamed) WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:matcher> prov:generated ?file }
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:matcher> prov:generated ?actFile }
+          GRAPH ?actFile { ?snapshot a cascade:Snapshot }
+          BIND (STRAFTER(STR(?file), "https://pod.example/") AS ?relative)
+          OPTIONAL { GRAPH ?actFile { ?snapshot cascade:fileAddedToSet ?path } FILTER (?path = ?relative) }
+          BIND (STRBEFORE(?relative, "/") AS ?folder)
+        }
+        GROUP BY ?folder
+        """
+      Then it answers:
+        | folder        | eachNamed |
+        | "judgments"   | true      |
+        | "provenance"  | true      |
+        | "references"  | true      |

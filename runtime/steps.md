@@ -133,6 +133,8 @@ A record is named by what a person reads in it, never by its IRI, except where a
   `document`, its `class` and its `key`, a list of `field=value` strings whose fingerprint its name takes, or, with no
   key, its `members`, a list of member strings.
 - **A person's name**, as `Alex`: the pod's subject.
+- **`the runtime`**: the runtime replaying the example, named as N7 says, which every act it performs is
+  `prov:wasAssociatedWith`.
 
 Each names exactly one thing in the pod, or the step fails.
 

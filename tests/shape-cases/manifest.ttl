@@ -214,6 +214,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ClaimAssertionShape ; sh:resultPath cascade:assertedClaim ] ] .
 
+<#matcher-run/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <matcher-run/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#matcher-run/two-causes> a sht:Validate ;
+  mf:action [ sht:dataGraph <matcher-run/two-causes.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MatcherRunShape ; sh:resultPath prov:wasInformedBy ] ] .
+
 <#snapshot/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <snapshot/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
