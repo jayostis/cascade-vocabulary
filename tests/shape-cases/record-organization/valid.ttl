@@ -1,10 +1,12 @@
 @prefix : <#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix org: <http://www.w3.org/ns/org#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 
 <urn:uuid:acd386f3-5b6b-81c9-8837-ec90e9fa1c26> a cascade:Organization .
 
 :version prov:specializationOf <urn:uuid:acd386f3-5b6b-81c9-8837-ec90e9fa1c26> ;
-    cascade:organizationName "Example Clinic" ;
-    cascade:organizationAddress "1 Main Street, Springfield, IL 62701" ;
-    cascade:organizationIdentifier "http://hl7.org/fhir/sid/us-npi|1234567893" .
+    foaf:name "Example Clinic" ;
+    cascade:organizationAddress "1 Main Street\nSpringfield\nIL\n62701" ;
+    org:identifier "1234567893"^^<http://hl7.org/fhir/sid/us-npi> .

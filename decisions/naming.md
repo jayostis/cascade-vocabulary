@@ -116,6 +116,12 @@ appears here only as evidence for a judgment.
 | pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID; a judgment that leaves the pod carries it as the author, so a receiver can cite the person and reconcile their shares, and whether the author leaves at all is the share-time choice like every field; keying it hides nothing more, since it is random already, and a per-receiver id is open below | diverges from Solid, which names a pod by its URL |
 | scheme | | declared per pod at creation: source URL as IRI, opaque hash (default), or keyed hash; what has no URL (C-CDA, entries, judgments) is hashed under all three; a test key for kits | ours |
 
+An organization version's identifier is W3C ORG's `org:identifier`, a `skos:notation`, whose literal datatype names
+the identifier system: `"1234567893"^^<http://hl7.org/fhir/sid/us-npi>`; an identifier with no system is a plain string.
+A C-CDA `id` follows HL7's CDA-to-FHIR identifier mapping: root and extension give the extension as the value with datatype
+`urn:oid:<root>` (`urn:uuid:<root>` for a UUID root); a root alone gives `urn:oid:<root>` (or `urn:uuid:<root>`) as the value
+with datatype `urn:ietf:rfc:3986`. A name is `foaf:name`; an address is `cascade:organizationAddress`, one string per address.
+
 The rules are the vocabulary's: each a term with `rdfs:seeAlso` to its standard, a `.rq` where SPARQL can state it,
 vectors cross-checked against an independent library, a reference implementation, and a self-check shape (#191). One
 unversioned namespace holds every term a pod file carries or a name hashes (#193), and it lands before the rules move,

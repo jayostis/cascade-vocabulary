@@ -1,6 +1,7 @@
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix org: <http://www.w3.org/ns/org#> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -365,16 +366,16 @@
   mf:action [ sht:dataGraph <record-server/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
-<#record-server/client-id-twice> a sht:Validate ;
-  mf:action [ sht:dataGraph <record-server/client-id-twice.ttl> ] ;
+<#record-server/connect-client-id-twice> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-server/connect-client-id-twice.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:ServerShape ; sh:resultPath cascade:clientId ] ] .
+              sh:result [ sh:sourceShape cascade:ServerShape ; sh:resultPath cascade:connectClientId ] ] .
 
 <#record-organization/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-organization/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
-<#record-organization/identifier-without-system> a sht:Validate ;
-  mf:action [ sht:dataGraph <record-organization/identifier-without-system.ttl> ] ;
+<#record-organization/identifier-an-iri> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-organization/identifier-an-iri.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath cascade:organizationIdentifier ] ] .
+              sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath org:identifier ] ] .

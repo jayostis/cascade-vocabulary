@@ -13,6 +13,7 @@
 @prefix npx: <http://purl.org/nanopub/x/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix org: <http://www.w3.org/ns/org#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
@@ -702,18 +703,18 @@ cascade:ServerRecordNameShape a sh:NodeShape ;
 cascade:ServerShape a sh:NodeShape ;
     sh:targetClass cascade:Server ;
     sh:targetSubjectsOf cascade:selfAssertedBaseUrl , cascade:authorizationEndpoint , cascade:serverSoftwareName ,
-        cascade:serverSoftwareVersion , cascade:clientId ;
+        cascade:serverSoftwareVersion , cascade:connectClientId ;
     sh:property [
         sh:path cascade:selfAssertedBaseUrl ;
-        sh:nodeKind sh:IRI ;
+        sh:datatype xsd:string ;
         sh:maxCount 1 ;
-        sh:message "A server version has at most one self-asserted base URL, an IRI."@en
+        sh:message "A server version has at most one self-asserted base URL, a string."@en
     ] ;
     sh:property [
         sh:path cascade:authorizationEndpoint ;
-        sh:nodeKind sh:IRI ;
+        sh:datatype xsd:string ;
         sh:maxCount 1 ;
-        sh:message "A server version has at most one authorization endpoint, an IRI."@en
+        sh:message "A server version has at most one authorization endpoint, a string."@en
     ] ;
     sh:property [
         sh:path cascade:serverSoftwareName ;
@@ -730,7 +731,7 @@ cascade:ServerShape a sh:NodeShape ;
         sh:message "A server version has at most one software version, a non-empty string."@en
     ] ;
     sh:property [
-        sh:path cascade:clientId ;
+        sh:path cascade:connectClientId ;
         sh:datatype xsd:string ;
         sh:minLength 1 ;
         sh:maxCount 1 ;
@@ -739,9 +740,9 @@ cascade:ServerShape a sh:NodeShape ;
 
 cascade:OrganizationShape a sh:NodeShape ;
     sh:targetClass cascade:Organization ;
-    sh:targetSubjectsOf cascade:organizationName , cascade:organizationAddress , cascade:organizationIdentifier ;
+    sh:targetSubjectsOf foaf:name , cascade:organizationAddress , org:identifier ;
     sh:property [
-        sh:path cascade:organizationName ;
+        sh:path foaf:name ;
         sh:datatype xsd:string ;
         sh:minLength 1 ;
         sh:maxCount 1 ;
@@ -754,10 +755,10 @@ cascade:OrganizationShape a sh:NodeShape ;
         sh:message "An organization address is a non-empty string."@en
     ] ;
     sh:property [
-        sh:path cascade:organizationIdentifier ;
-        sh:datatype xsd:string ;
-        sh:pattern "^[^|]*[|].+$" ;
-        sh:message "An organization identifier is its system, a vertical bar, and a non-empty value."@en
+        sh:path org:identifier ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:message "An organization identifier is a non-empty literal, whose datatype names the identifier system."@en
     ] .
 
 cascade:AnsweredAsOfShape a sh:NodeShape ;
