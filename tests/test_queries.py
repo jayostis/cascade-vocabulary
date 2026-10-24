@@ -80,6 +80,41 @@ def test_every_subquery_comes_first_in_its_group(relative):
             assert not any(is_subquery(part) for part in parts[first_other:]), relative
 
 
+def leaves(tree):
+    if isinstance(tree, (CompValue, dict)):
+        for value in tree.values():
+            yield from leaves(value)
+    elif isinstance(tree, (list, tuple, ParseResults)):
+        for value in tree:
+            yield from leaves(value)
+    else:
+        yield tree
+
+
+def binds_record_outermost(tree):
+    """Whether a triple pattern of the query's outermost group, outside any sub-select, MINUS, OPTIONAL or UNION, holds
+    ?record: then a VALUES block opening that group binds it as an initial binding does (M4)."""
+    [query] = [node for node in nodes(tree) if node.name == "SelectQuery"]
+    blocks = [part for part in query["where"].get("part") or [] if part.name == "TriplesBlock"]
+    return Variable("record") in set(leaves(blocks))
+
+
+@pytest.mark.parametrize("relative", sorted(contract.named("matcher").values()))
+def test_every_comparison_binds_record_in_a_triple_of_its_outermost_group_whose_brace_is_its_first(relative):
+    assert binds_record_outermost(parsed(relative)), relative
+    head, where, _ = contract.query(relative).partition("\nWHERE {")
+    assert where and "{" not in head, relative
+
+
+@pytest.mark.parametrize("form", [
+    "SELECT ?record ?other WHERE { ?other ?p ?c { SELECT ?record ?c WHERE { ?record ?p ?c } } }",
+    "SELECT ?record ?other WHERE { ?other ?p ?c OPTIONAL { ?record ?p ?c } }",
+    "SELECT ?record ?other WHERE { ?other ?p ?c MINUS { ?record ?p ?c } }",
+])
+def test_the_outermost_binding_check_refuses_a_record_bound_only_inside_a_nested_pattern(form):
+    assert not binds_record_outermost(parseQuery(form))
+
+
 ENTRY_PLACEHOLDER = 'CONCAT("urn:cascade:entry:", SHA256(MIN(STR('
 
 

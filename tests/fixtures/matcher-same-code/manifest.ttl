@@ -14,5 +14,11 @@
   mf:name "same-code" ;
   rdfs:comment "Records of one kind whose current versions share a code match whatever their dates; records of two kinds, or sharing a code only through an earlier version, do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-code.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:allergyB> ,
+                                  <urn:x:allergyOfOneKind> ,
+                                  <urn:x:conditionOfAnother> ,
+                                  <urn:x:procedureB> ,
+                                  <urn:x:revisedAway> ,
+                                  <urn:x:stillThere> ] ;
   mf:result <same-code.srj> .

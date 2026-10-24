@@ -5,6 +5,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 :lynch a cascade:ReferenceSeries ; rdfs:label "ClinVar Lynch classifications" ; cascade:tableKind cascade:VariantClassifications .
-:lynch-1 prov:specializationOf :lynch ; pav:version "1" ; cascade:coversGene "MLH1" , "MSH2" , "MSH6" , "PMS2" , "EPCAM" .
+:lynch-0 prov:specializationOf :lynch ; pav:version "0" ; cascade:coversGene "PMS2" .
+:lynch-1 prov:specializationOf :lynch ; pav:version "1" ; prov:wasRevisionOf :lynch-0 ; cascade:coversGene "MLH1" , "MSH2" , "MSH6" , "PMS2" , "EPCAM" .
 :other a cascade:ReferenceSeries ; rdfs:label "ClinVar other classifications" ; cascade:tableKind cascade:VariantClassifications .
 :other-1 prov:specializationOf :other ; pav:version "1" .

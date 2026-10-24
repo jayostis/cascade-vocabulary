@@ -16,6 +16,7 @@
 @prefix npx: <http://purl.org/nanopub/x/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix org: <http://www.w3.org/ns/org#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
@@ -433,7 +434,7 @@ cascade:variantInterpreted a owl:ObjectProperty ;
 cascade:acmgClassification a owl:ObjectProperty ;
     rdfs:label "ACMG/AMP Classification"@en ;
     rdfs:domain cascade:VariantInterpretation ;
-    rdfs:range cascade:AcmgClass ;
+    rdfs:range skos:Concept ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -444,35 +445,17 @@ cascade:interpretedDate a owl:DatatypeProperty ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
-cascade:AcmgClass a owl:Class ;
-    rdfs:label "ACMG Classification"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+cascade:objectCondition a owl:ObjectProperty ;
+    rdfs:label "Object Condition"@en ;
+    rdfs:domain cascade:VariantInterpretation ;
+    rdfs:range cascade:ProblemOrDiagnosis ;
+    rdfs:seeAlso <https://github.com/ga4gh/va-spec/blob/11c4a3add0e4a9d0eef7e13f8ec9cb17346e9fa0/schema/va-spec/acmg-2015/profile-source.yaml> .
 
-cascade:Pathogenic a cascade:AcmgClass ;
-    rdfs:label "Pathogenic"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
-
-cascade:LikelyPathogenic a cascade:AcmgClass ;
-    rdfs:label "Likely Pathogenic"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
-
-cascade:UncertainSignificance a cascade:AcmgClass ;
-    rdfs:label "Uncertain Significance"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
-
-cascade:LikelyBenign a cascade:AcmgClass ;
-    rdfs:label "Likely Benign"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
-
-cascade:Benign a cascade:AcmgClass ;
-    rdfs:label "Benign"@en ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+cascade:acmgEvidenceCode a owl:DatatypeProperty ;
+    rdfs:label "ACMG Evidence Code"@en ;
+    rdfs:domain cascade:VariantInterpretation ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://github.com/ga4gh/va-spec/blob/9d60508c0a7a1ccd79a6312a45b3618ee0121aec/schema/va-spec/acmg-2015-profile-source.yaml> .
 
 # Records
 
@@ -1355,6 +1338,10 @@ cascade:lensQueryPath a owl:ObjectProperty ;
     rdfs:label "lens query path"@en ;
     rdfs:comment "The query file of the lens a query test builds its pod under."@en .
 
+cascade:boundRecord a owl:ObjectProperty ;
+    rdfs:label "bound record"@en ;
+    rdfs:comment "A record a matcher query test binds ?record to, as a matcher run binds it to each record it compares; the test's rows are those of every such binding."@en .
+
 # Medication lifecycle
 
 cascade:lifecycle a owl:ObjectProperty ;
@@ -1756,6 +1743,71 @@ cascade:SameVariationRule a owl:NamedIndividual ;
 cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
     rdfs:label "R13, same variation through the table"@en ;
     rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
+
+# Servers and organizations
+
+cascade:Server a owl:Class ;
+    rdfs:label "server"@en ;
+    rdfs:subClassOf prov:SoftwareAgent ;
+    rdfs:comment "A server a client pulled from or connected to, as a record named by cascade:ServerNamingRule. What the server reported about itself is on its versions; a server known only from a document's address has a record with none."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement.html> .
+
+cascade:selfAssertedBaseUrl a owl:DatatypeProperty ;
+    rdfs:label "self-asserted base URL"@en ;
+    rdfs:comment "Of a version of a server, the base URL the server said it lives at, as the server wrote it: evidence, never a name input."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement-definitions.html#CapabilityStatement.implementation.url> .
+
+cascade:authorizationEndpoint a owl:DatatypeProperty ;
+    rdfs:label "authorization endpoint"@en ;
+    rdfs:comment "Of a version of a server, the URL of its OAuth 2.0 authorization endpoint, as the server reported it."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6749#section-3.1> , <https://www.rfc-editor.org/rfc/rfc8414#section-2> ,
+        <https://hl7.org/fhir/smart-app-launch/conformance.html> .
+
+cascade:serverSoftwareName a owl:DatatypeProperty ;
+    rdfs:label "server software name"@en ;
+    rdfs:comment "Of a version of a server, the name of the software it said it runs, as the server wrote it."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement-definitions.html#CapabilityStatement.software.name> .
+
+cascade:serverSoftwareVersion a owl:DatatypeProperty ;
+    rdfs:label "server software version"@en ;
+    rdfs:comment "Of a version of a server, the release of the software it said it runs, as the server wrote it."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement-definitions.html#CapabilityStatement.software.version> .
+
+cascade:connectClientId a owl:DatatypeProperty ;
+    rdfs:label "client id of the connect"@en ;
+    rdfs:comment "Of a version of a server, the OAuth 2.0 client identifier the connect that wrote it used with the server, since a pod holds connects from several apps."@en ;
+    rdfs:domain cascade:Server ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6749#section-2.2> .
+
+cascade:Organization a owl:Class ;
+    rdfs:label "organization"@en ;
+    rdfs:subClassOf prov:Organization ;
+    rdfs:comment "An organization as a record named by cascade:OrganizationNamingRule: a provider, a custodian, a payer. Its name, addresses and identifiers are on its versions."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/organization.html> .
+
+cascade:organizationAddress a owl:DatatypeProperty ;
+    rdfs:label "organization address"@en ;
+    rdfs:comment "Of a version of an organization, one postal address as one string: FHIR Address.text when the source gives one, else the address lines, then city, state, postal code and country, each present part on its own line, separated by line feeds as a vCard label is."@en ;
+    rdfs:domain cascade:Organization ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/organization-definitions.html#Organization.address> .
+
+org:identifier a owl:DatatypeProperty ;
+    rdfs:label "identifier"@en ;
+    rdfs:domain org:Organization ;
+    rdfs:subPropertyOf skos:notation ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/org> ;
+    dct:source <https://www.w3.org/ns/org.ttl> ;
+    dct:license <http://www.opendatacommons.org/licenses/pddl/1.0/> .
 
 # What a document's description and the Bridge's findings carry into a pod
 

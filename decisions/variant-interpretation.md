@@ -1,15 +1,16 @@
 # The variant interpretation
 
 Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the review on #202. Terms:
-`genomics:VariantInterpretation`, `acmgClassification`, `variantInterpreted`, `interpretedDate` and the class `AcmgClass`
-with `Pathogenic`, `LikelyPathogenic`, `VUS`, `LikelyBenign`, `Benign`. Replaces this note's own "it is unnamed" and "the
-record may be outside the document it came from", which yield to `naming.md`: the interpretation is named like any
-record, and `naming.md` never lets a `urn:uuid` be identity across documents; how a variant held from another document
-is reached is open. Applied in `genomics.shapes.ttl:83`, whose message this pull request (#200) changed to say the
-record is one in the same document. Names are `naming.md`; which revision is current is `currency.md`; the lab is an
-organisation record in `republishing-sources.md`; the variant is `variant-record.md`; that two labs' variants are one is
-`variant-identity.md`, by R12 and R13, not a republishing join. #193 renames the `genomics/v1#` namespace into the one unversioned namespace, and #191 the rule
-terms.
+`genomics:VariantInterpretation`, `acmgClassification`, `variantInterpreted`, `interpretedDate`, `objectCondition`,
+`acmgEvidenceCode`, and the concepts `Pathogenic`, `LikelyPathogenic`, `UncertainSignificance`, `LikelyBenign`,
+`Benign`. Replaces this note's own "it is unnamed" and "the record may be outside the document it came from", which
+yield to `naming.md`: the interpretation is named like any record, and `naming.md` never lets a `urn:uuid` be identity
+across documents; how a variant held from another document is reached is open. Applied in `genomics.shapes.ttl:83`,
+whose message this pull request (#200) changed to say the record is one in the same document. Names are `naming.md`;
+which revision is current is `currency.md`; the lab is an organisation record in `republishing-sources.md`;
+the variant is `variant-record.md`; that two labs' variants are one is `variant-identity.md`, by R12 and R13,
+not a republishing join. #193 renames the `genomics/v1#` namespace into the one unversioned namespace, and #191
+the rule terms.
 
 ## Question
 
@@ -65,11 +66,11 @@ verified). Research: #107's body (https://github.com/jayostis/cascade-vocabulary
 | the interpretation | FHIR Diagnostic Implication, an Observation; VA-spec Statement; SEPIO | its own record, `genomics:VariantInterpretation`, a `prov:Entity`, separate from the variant | borrowed from FHIR in being separate; diverged from FHIR's Observation and VA-spec's Statement in form; the reason is owed (Still open) |
 | its name | `naming.md` | named as any record from its source is | borrowed from `naming.md` |
 | link to its variant | FHIR `derivedFrom`; VA-spec proposition's subject | `variantInterpreted`, at most one, the variant record's IRI, as `rec:patient` points to its profile record; within one document that is a name; a `urn:uuid` never crosses documents, and how a variant held from another document is reached is open (Still open) | borrowed from FHIR's `derivedFrom` |
-| classification | FHIR 53037-8, LOINC LL4034-6 (example); ACMG/AMP 2015; VA-spec classification | `acmgClassification`, at most one, one of the five individuals of `genomics:AcmgClass`; a report whose answer is not one of the five states none | borrowed: the five ACMG terms; diverged from LOINC's answer codes and from a SKOS concept scheme; the reason is owed (Still open) |
+| classification | FHIR 53037-8, LOINC LL4034-6 (example); ACMG/AMP 2015; VA-spec classification | `acmgClassification`, at most one, one of the five concepts of `cascade:ClinVarClassifications` named above; a report whose answer is not one of the five states none | borrowed: the five ACMG terms as `skos:Concept`s of the ClinVar scheme, each `skos:exactMatch` its LOINC answer; a coded value is what the IG writes |
 | date | FHIR `issued`, else `effective[x]` | `interpretedDate`, at most one `xsd:date` | borrowed |
 | which revision is current | `currency.md` | `currency.md`'s ladder; `interpretedDate` is content, not a rung | borrowed from `currency.md` |
-| condition | FHIR predicted phenotype 81259-4; VA-spec proposition's object; ClinVar RCV | none: the source's condition requirement is dropped | diverged (Why) |
-| evidence | FHIR evidence level 93044-6; VA-spec evidence lines; SEPIO | none | diverged: copied only what the story reads (Why) |
+| condition | FHIR predicted phenotype 81259-4; VA-spec proposition's `objectCondition`; ClinVar RCV | `objectCondition`, at most one, the IRI of a `cascade:ProblemOrDiagnosis` record in the same document; none when the report states none | borrowed: VA-spec's name; the therapy objects wait (Why) |
+| evidence | FHIR evidence level 93044-6; VA-spec ACMG 2015 profile evidence outcomes; SEPIO | `acmgEvidenceCode`, any number of strings, each written as VA-spec's ACMG 2015 profile writes an evidence outcome (`PM2`, `PS3_moderate`, `PS3_not_met`, `no_criteria_met`) | borrowed: VA-spec's string form, copied as a pattern |
 | who called it | VA-spec contributions; ClinVar SCV submitter; `republishing-sources.md` organisation | not linked | diverged; open |
 | status | FHIR `Observation.status` | `clinical:status` | borrowed |
 | reclassification | ClinVar SCV versions | a new version, or a new report | ours |
@@ -88,11 +89,16 @@ a shared view each cite a record by its name. Its pointer to its variant is a na
 document, since a `urn:uuid` is unique within one bundle only; in the story every interpretation points to a variant of
 its own report (`conformance/martin-okafor/scripted-input/martin/bridge/E3/bundle/graph.ttl`).
 
-**Why no condition.** No planted case reads a condition, and showing one beside a person's conditions would be the
-linkage #107 leaves out ("any logic linking a variant to a condition"); a panel's uncertain-significance call may state
-none (#107).
+**Why a condition, as VA-spec names it.** A pathogenicity statement's object is a condition in VA-spec, and a report may
+state one, a panel's uncertain-significance call none (#107), so it is optional and at most one. We take its name
+`objectCondition` and a range of `cascade:ProblemOrDiagnosis`. VA-spec's therapy objects (`objectTherapeutic`) and
+`conditionQualifier` are left out: no source carries a therapy statement yet, and this is where to extend. VA-spec 1.1
+renamed the property `object`; we keep the 1.0 name, which says what the object is.
 
-**Why no evidence.** #107 copies only what the story uses, and no planted case reads evidence.
+
+**Why evidence codes as strings.** A report's ACMG evidence is the criteria it applied, with a strength and whether met,
+and VA-spec's ACMG 2015 profile writes each as one string; we copy its pattern so one string says all three. Its
+evidence lines, with their own records, wait for a source that needs more than the code.
 
 **Why a coded classification.** A coded concept is what the IG writes and what ACMG/AMP names; a string is what #132
 found hard to compare (#107: "written as a code IRI, not a string").
@@ -103,6 +109,10 @@ found hard to compare (#107: "written as a code IRI, not a string").
   labs' calls of one variant two values of one property, and the record would not say who called what.
 - **A free string.** The strongest case: it holds any answer a lab writes, including ClinVar's combined and sub-tier
   terms. A coded concept is what the IG writes, and a string is what #132 found hard to compare.
+- **ClinGen's ACMG Criterion Value Set (SEPIO:0000395) for the codes.** Looked here, failed because: its values are
+  `sepio-clingen` IRIs of the 2018 ClinGen set, which has no strength or not-met values, and VA-spec 1.0 does not use it.
+- **VA-spec itself.** Looked here, failed because: it publishes JSON Schema only, no RDF; we take its names and its
+  evidence-code string form, not its classes.
 - **A condition on every interpretation.** The strongest case: the IG's pair and VA-spec's proposition are variant and
   condition, and ClinVar aggregates per condition. No planted case reads a condition, and showing one beside a person's
   conditions would be the linkage the epic leaves out.
@@ -119,9 +129,9 @@ found hard to compare (#107: "written as a code IRI, not a string").
   source defines; it takes VA-spec's Statement shape (about the variant record; an optional object, a condition or a
   therapy; the classification; optional ACMG evidence codes; a date), and its version is `prov:wasAttributedTo` the
   lab's organisation record, the property judgments use, so "who said what" lists alike over both. The five values are
-  already `skos:Concept`s in `records.ttl:588-611`, each `skos:exactMatch` its LOINC answer code; `AcmgClass` and its
-  duplicate typing are dropped, and the label clash ("Likely Pathogenic" against "Likely pathogenic") fixed, one IRI
-  per class. Applied in the genomics build; the Choice rows above read as before until then.
+  `skos:Concept`s of `cascade:ClinVarClassifications`, each `skos:exactMatch` its LOINC answer code; the class that typed
+  them a second time is dropped, and the label clash ("Likely Pathogenic" against "Likely pathogenic") fixed, one IRI
+  per class. Applied in #219 part (a); the lab link is part (b).
 - Cases neither the record nor a judgment frame handles, for that build: a somatic variant (AMP/ASCO/CAP tiers, not
   ACMG classes; a pharmacogenomic implication names a drug and a phenotype, not a pathogenicity); a VUS later resolved
   by a reissued report with a new id, which leaves both calls current unless the source declares the replacement.

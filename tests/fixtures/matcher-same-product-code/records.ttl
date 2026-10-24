@@ -167,3 +167,19 @@
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000006> .
 :partialCRevision a cascade:Revision ; cascade:revisionOf :partialC ; cascade:version :partialCVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# Two of one product, one also carrying a code only the version no longer current lists.
+:droppedA a cascade:PrescribedOrReportedMedication .
+:droppedAVersion prov:specializationOf :droppedA ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Product R, and a product the table no longer lists" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000008> ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000007> .
+:droppedARevision a cascade:Revision ; cascade:revisionOf :droppedA ; cascade:version :droppedAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:droppedB a cascade:PrescribedOrReportedMedication .
+:droppedBVersion prov:specializationOf :droppedB ; cascade:prescribedOrReported "prescribed" ;
+    cascade:drugName "Product R" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000008> .
+:droppedBRevision a cascade:Revision ; cascade:revisionOf :droppedB ; cascade:version :droppedBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

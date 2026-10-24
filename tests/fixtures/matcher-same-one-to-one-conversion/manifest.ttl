@@ -14,5 +14,15 @@
   mf:name "same-one-to-one-conversion" ;
   rdfs:comment "A retired code and its conversion match either way round on a 1:1 row, with the table's version; a merge, a split, a row of the earlier form and a row of a version of another kind do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-one-to-one-conversion.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:earlier> ,
+                                  <urn:x:earlierConverted> ,
+                                  <urn:x:mergedInto> ,
+                                  <urn:x:mergedOne> ,
+                                  <urn:x:mergedTwo> ,
+                                  <urn:x:part> ,
+                                  <urn:x:retired> ,
+                                  <urn:x:split> ,
+                                  <urn:x:strayA> ,
+                                  <urn:x:strayB> ] ;
   mf:result <same-one-to-one-conversion.srj> .

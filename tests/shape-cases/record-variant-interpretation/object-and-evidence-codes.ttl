@@ -1,0 +1,18 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:69120448-5c05-831a-9ebc-d33591eee3b6> a cascade:VariantInterpretation ;
+    cascade:sourceUrl <https://fhir.example/Observation/record-variant-interpretation-object-and-evidence-codes> .
+
+:version prov:specializationOf <urn:uuid:69120448-5c05-831a-9ebc-d33591eee3b6> ;
+    cascade:patient :patient ;
+    cascade:variantInterpreted <urn:uuid:5b1f2c3e-7a4d-4e8b-9c60-1d2e3f4a5b6c> ;
+    cascade:acmgClassification cascade:LikelyPathogenic ;
+    cascade:interpretedDate "2024-03-12"^^xsd:date ;
+    cascade:objectCondition <urn:uuid:0d7c1a52-3b6e-4f10-8a9d-2e5b7c4f6a18> ;
+    cascade:acmgEvidenceCode "PVS1", "PM2_supporting", "PS3_not_met" ;
+    cascade:workflowStatus "final" .
+
+<urn:uuid:0d7c1a52-3b6e-4f10-8a9d-2e5b7c4f6a18> a cascade:ProblemOrDiagnosis .

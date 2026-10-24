@@ -89,3 +89,11 @@
 :firstTranscriptBenign a cascade:VariantInterpretation .
 :firstTranscriptBenignVersion prov:specializationOf :firstTranscriptBenign ; cascade:patient :subject ; cascade:variantInterpreted :firstTranscript ; cascade:acmgClassification cascade:Benign .
 :firstTranscriptBenignRevision a cascade:Revision ; cascade:revisionOf :firstTranscriptBenign ; cascade:version :firstTranscriptBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# A variant whose expression the version no longer current holds on a second row.
+:oldSecondRow a cascade:GeneticVariantFinding .
+:oldSecondRowVersion prov:specializationOf :oldSecondRow ; cascade:patient :subject ; cascade:geneSymbol "PMS2" ; cascade:hgvsCodingDnaExpression "NM_000535.7:c.950A>G" .
+:oldSecondRowRevision a cascade:Revision ; cascade:revisionOf :oldSecondRow ; cascade:version :oldSecondRowVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:oldSecondRowBenign a cascade:VariantInterpretation .
+:oldSecondRowBenignVersion prov:specializationOf :oldSecondRowBenign ; cascade:patient :subject ; cascade:variantInterpreted :oldSecondRow ; cascade:acmgClassification cascade:Benign .
+:oldSecondRowBenignRevision a cascade:Revision ; cascade:revisionOf :oldSecondRowBenign ; cascade:version :oldSecondRowBenignVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

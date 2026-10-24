@@ -14,5 +14,10 @@
   mf:name "same-code-and-date" ;
   rdfs:comment "Only the pair giving one code and one date matches." ;
   mf:action [ qt:query <../../../queries/matcher/same-code-and-date.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:sameDayB> ,
+                                  <urn:x:twoDaysA> ,
+                                  <urn:x:twoDaysB> ,
+                                  <urn:x:undatedA> ,
+                                  <urn:x:undatedB> ] ;
   mf:result <same-code-and-date.srj> .

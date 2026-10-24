@@ -14,5 +14,12 @@
   mf:name "same-converted-code" ;
   rdfs:comment "A retired code and its conversion match either way round, with the table's version; a split code and one of its parts, two records of one code, or two codes no exact row of a version of a code conversion table pairs, do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-converted-code.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:oneCodeA> ,
+                                  <urn:x:oneCodeB> ,
+                                  <urn:x:part> ,
+                                  <urn:x:retired> ,
+                                  <urn:x:split> ,
+                                  <urn:x:strayA> ,
+                                  <urn:x:strayB> ] ;
   mf:result <same-converted-code.srj> .
