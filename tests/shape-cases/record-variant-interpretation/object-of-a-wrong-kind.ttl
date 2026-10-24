@@ -1,0 +1,17 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:6bc08305-7365-8294-ba8b-683d21e294cd> a cascade:VariantInterpretation ;
+    cascade:sourceUrl <https://fhir.example/Observation/record-variant-interpretation-valid> .
+
+:version prov:specializationOf <urn:uuid:6bc08305-7365-8294-ba8b-683d21e294cd> ;
+    cascade:patient :patient ;
+    cascade:variantInterpreted <urn:uuid:5b1f2c3e-7a4d-4e8b-9c60-1d2e3f4a5b6c> ;
+    cascade:acmgClassification cascade:LikelyPathogenic ;
+    cascade:interpretedDate "2024-03-12"^^xsd:date ;
+    cascade:statementObject <urn:uuid:9e2f4b71-5c8a-4d36-b0e1-7a3c6d8f1b24> ;
+    cascade:workflowStatus "final" .
+
+<urn:uuid:9e2f4b71-5c8a-4d36-b0e1-7a3c6d8f1b24> a cascade:GeneticVariantFinding .

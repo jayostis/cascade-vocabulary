@@ -1,8 +1,8 @@
 # The variant interpretation
 
 Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the review on #202. Terms:
-`genomics:VariantInterpretation`, `acmgClassification`, `variantInterpreted`, `interpretedDate` and the class `AcmgClass`
-with `Pathogenic`, `LikelyPathogenic`, `VUS`, `LikelyBenign`, `Benign`. Replaces this note's own "it is unnamed" and "the
+`genomics:VariantInterpretation`, `acmgClassification`, `variantInterpreted`, `interpretedDate`, `statementObject`,
+`acmgEvidenceCode`, and the concepts `Pathogenic`, `LikelyPathogenic`, `UncertainSignificance`, `LikelyBenign`, `Benign`. Replaces this note's own "it is unnamed" and "the
 record may be outside the document it came from", which yield to `naming.md`: the interpretation is named like any
 record, and `naming.md` never lets a `urn:uuid` be identity across documents; how a variant held from another document
 is reached is open. Applied in `genomics.shapes.ttl:83`, whose message this pull request (#200) changed to say the
@@ -65,7 +65,7 @@ verified). Research: #107's body (https://github.com/jayostis/cascade-vocabulary
 | the interpretation | FHIR Diagnostic Implication, an Observation; VA-spec Statement; SEPIO | its own record, `genomics:VariantInterpretation`, a `prov:Entity`, separate from the variant | borrowed from FHIR in being separate; diverged from FHIR's Observation and VA-spec's Statement in form; the reason is owed (Still open) |
 | its name | `naming.md` | named as any record from its source is | borrowed from `naming.md` |
 | link to its variant | FHIR `derivedFrom`; VA-spec proposition's subject | `variantInterpreted`, at most one, the variant record's IRI, as `rec:patient` points to its profile record; within one document that is a name; a `urn:uuid` never crosses documents, and how a variant held from another document is reached is open (Still open) | borrowed from FHIR's `derivedFrom` |
-| classification | FHIR 53037-8, LOINC LL4034-6 (example); ACMG/AMP 2015; VA-spec classification | `acmgClassification`, at most one, one of the five individuals of `genomics:AcmgClass`; a report whose answer is not one of the five states none | borrowed: the five ACMG terms; diverged from LOINC's answer codes and from a SKOS concept scheme; the reason is owed (Still open) |
+| classification | FHIR 53037-8, LOINC LL4034-6 (example); ACMG/AMP 2015; VA-spec classification | `acmgClassification`, at most one, one of the five concepts of `cascade:ClinVarClassifications` named above; a report whose answer is not one of the five states none | borrowed: the five ACMG terms; diverged from LOINC's answer codes and from a SKOS concept scheme; the reason is owed (Still open) |
 | date | FHIR `issued`, else `effective[x]` | `interpretedDate`, at most one `xsd:date` | borrowed |
 | which revision is current | `currency.md` | `currency.md`'s ladder; `interpretedDate` is content, not a rung | borrowed from `currency.md` |
 | condition | FHIR predicted phenotype 81259-4; VA-spec proposition's object; ClinVar RCV | none: the source's condition requirement is dropped | diverged (Why) |
@@ -119,8 +119,8 @@ found hard to compare (#107: "written as a code IRI, not a string").
   source defines; it takes VA-spec's Statement shape (about the variant record; an optional object, a condition or a
   therapy; the classification; optional ACMG evidence codes; a date), and its version is `prov:wasAttributedTo` the
   lab's organisation record, the property judgments use, so "who said what" lists alike over both. The five values are
-  already `skos:Concept`s in `records.ttl:588-611`, each `skos:exactMatch` its LOINC answer code; `AcmgClass` and its
-  duplicate typing are dropped, and the label clash ("Likely Pathogenic" against "Likely pathogenic") fixed, one IRI
+  already `skos:Concept`s in `records.ttl:588-611`, each `skos:exactMatch` its LOINC answer code; the class that typed them a
+  second time is dropped, and the label clash ("Likely Pathogenic" against "Likely pathogenic") fixed, one IRI
   per class. Applied in the genomics build; the Choice rows above read as before until then.
 - Cases neither the record nor a judgment frame handles, for that build: a somatic variant (AMP/ASCO/CAP tiers, not
   ACMG classes; a pharmacogenomic implication names a drug and a phenotype, not a pathogenicity); a VUS later resolved
