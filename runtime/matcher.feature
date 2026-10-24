@@ -32,7 +32,7 @@ Feature: The matcher's procedure
       Then that step wrote these matcher judgments:
         | justification    | members                                                                                                         |
         | same code        | allergy RxNorm 10180 from sulfa, allergy RxNorm 10180 "Gantanol"                                                |
-        | same code        | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Ecotrin"                                                    |
+        | same code        | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin"                                              |
         | same code        | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin", allergy RxNorm 1191 "Ecotrin"               |
         | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004                                                    |
         | same code        | allergy RxNorm 7980 "Penicillin G", allergy RxNorm 7980 "Bicillin"                                              |
@@ -76,7 +76,7 @@ Feature: The matcher's procedure
       When the matcher runs on the records of that entry on 2026-03-03 at 08:01
       Then the matcher's judgments holding allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin" and allergy RxNorm 1191 "Ecotrin" are:
         | justification | members                                                                                           |
-        | same code     | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Ecotrin"                                      |
+        | same code     | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin"                                |
         | same code     | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin", allergy RxNorm 1191 "Ecotrin" |
 
   Rule: M4. Each row of the rule list runs its comparison query
@@ -190,14 +190,14 @@ Feature: The matcher's procedure
         | justification      | members                                                        |
         | same code and date | immunization CVX 150 "Fluzone", immunization CVX 150 "Afluria" |
 
-    Example: two immunizations of different codes in one vaccine group on one date are the same by mapped code and date
-      A third on another date joins none, and a fourth of the first's code on its date is the same as it by code and date.
+    Example: immunizations of different codes in one vaccine group on one date are the same by mapped code and date
+      M3 takes FluLaval after the two shots of the other code on its date, so one judgment holds all three. Those two
+      are the same by code and date, and a shot of their code on another date joins none.
 
       Then the matcher's judgments holding immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval", immunization CVX 141 "Flublok" and immunization CVX 141 "Fluad" are:
-        | justification             | members                                                         |
-        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" |
-        | same mapped code and date | immunization CVX 150 "FluLaval", immunization CVX 141 "Fluad"   |
-        | same code and date        | immunization CVX 141 "Fluarix", immunization CVX 141 "Fluad"    |
+        | justification             | members                                                                                       |
+        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 141 "Fluad", immunization CVX 150 "FluLaval" |
+        | same code and date        | immunization CVX 141 "Fluarix", immunization CVX 141 "Fluad"                                  |
 
     Example: codes are mapped by the current version of the ingredient map only
       A pair the old version maps is not mapped once the new one arrives, and a pair only the new one maps is mapped only
@@ -419,7 +419,7 @@ Feature: The matcher's procedure
     the judgment uses that version. Rows never reach the pod.
 
     Gus's references hold a second vaccine group series, "Clinic vaccine groups", that also puts CVX 140 in the
-    influenza group. M3 takes his three shots in the order 140, 150, 141.
+    influenza group. M3 takes his three shots in the order 140, 141, 150.
 
     Example: two tables of one kind that both join a pair each give a judgment of it, and a pair only one joins gets one
       Given a new pod for Gus on 2025-05-01 at 09:00
@@ -428,7 +428,7 @@ Feature: The matcher's procedure
       Then the matcher's judgments holding immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" and immunization CVX 140 "Afluria" are:
         | justification             | members                                                                                         | used                                                                                                                                                                                                     |
         | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"                                 | Cascade matcher rules version 2, CVX vaccine group table version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"                                            |
-        | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 150 "FluLaval"                                 | Cascade matcher rules version 2, Clinic vaccine groups version 1, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 150 "FluLaval"                                              |
+        | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 141 "Fluarix"                                  | Cascade matcher rules version 2, Clinic vaccine groups version 1, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 141 "Fluarix"                                               |
         | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" | Cascade matcher rules version 2, Clinic vaccine groups version 1, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval" |
 
   Rule: M14. A condition is compared by its code and its period
