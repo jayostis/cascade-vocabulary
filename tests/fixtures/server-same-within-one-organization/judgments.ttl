@@ -1,0 +1,15 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+
+:serversSame a cascade:Judgment ; cascade:verdict cascade:Same ;
+    prov:hadMember <urn:uuid:302e31f3-700b-8db9-b523-9bde7ea71b66>, <urn:uuid:28797f22-3db7-830d-8cb0-0910a25446ea> ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
+
+:organizationsSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :hospital, :hospitalAfterMerger ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .

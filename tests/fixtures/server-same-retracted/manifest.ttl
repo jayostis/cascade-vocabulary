@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "server-same-retracted" ;
+  rdfs:comment "A person's Same over a hospital's server at its old and its new address, which the person retracted, and an allergy a1 pulled from each." ;
+  mf:entries (
+    <#same-records>
+  ) .
+
+<#same-records> a mf:QueryEvaluationTest ;
+  mf:name "same-records" ;
+  rdfs:comment "The retracted Same joins no record." ;
+  mf:action [ qt:query <same-records.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <same-records.srj> .

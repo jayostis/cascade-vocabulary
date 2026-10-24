@@ -1,0 +1,18 @@
+# Two servers match when a version of each, written by connects made with one client id, reports one self-asserted base
+# URL and one authorization endpoint, as the servers wrote them, and the base URLs the client used name one host, its
+# port aside. A server with no version matches nothing. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record a cascade:Server ; cascade:serverBaseUrl ?base .
+  ?version prov:specializationOf ?record ; cascade:connectClientId ?client ;
+    cascade:selfAssertedBaseUrl ?selfAsserted ; cascade:authorizationEndpoint ?authorization .
+  ?otherVersion prov:specializationOf ?other ; cascade:connectClientId ?client ;
+    cascade:selfAssertedBaseUrl ?selfAsserted ; cascade:authorizationEndpoint ?authorization .
+  ?other a cascade:Server ; cascade:serverBaseUrl ?otherBase .
+  FILTER (?record != ?other)
+  FILTER (REPLACE(STRBEFORE(CONCAT(STRAFTER(?base, "://"), "/"), "/"), ":[0-9]*$", "")
+          = REPLACE(STRBEFORE(CONCAT(STRAFTER(?otherBase, "://"), "/"), "/"), ":[0-9]*$", ""))
+}
