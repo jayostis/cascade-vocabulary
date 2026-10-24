@@ -1,8 +1,9 @@
 # The lens decides which judgments count, and is the one step of the build that can be swapped. This one counts a person's
 # judgment not retracted, nor superseded by a judgment not itself retracted. A machine's claim counts on the same terms when
-# the Cascade matcher made it, every reference version it used is current, and the current version of a rule list has a
-# row for its rule with the query hash of that rule's row in a version it is asserted under: its rule runs now the query
-# it was asserted with. A retracted judgment supersedes nothing.
+# the Cascade matcher made it, every reference version it used is current or has a current version whose rows join its
+# members as its rule reads them (M7), and the current version of a rule list has a row for its rule with the query hash
+# of that rule's row in a version it is asserted under: its rule runs now the query it was asserted with. A retracted
+# judgment supersedes nothing.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX pav: <http://purl.org/pav/>
@@ -39,5 +40,6 @@ WHERE {
       ?input prov:specializationOf ?series .
       ?series a cascade:ReferenceSeries ; pav:hasCurrentVersion ?now .
       FILTER (?now != ?input)
+      FILTER NOT EXISTS { ?j cascade:membersJoinedByCurrentTableVersion ?now }
     } }
 }

@@ -347,7 +347,8 @@ Feature: Alex Rivera's pod
         | J10       | false  |
 
   Rule: P14. A machine judgment stops counting under everyday when its reference table is replaced
-    J4 and E9: penicillin splits under everyday; nothing is written but the new table version; J4 stays.
+    J4 and E9: penicillin splits under everyday, since version 2027-01 holds no row joining its two records (M7);
+    nothing is written but the new table version; J4 stays.
 
     Example: E9 writes one file, the new ingredient map's description, and M2's recheck writes none
       Then "E9" wrote 1 file
