@@ -541,6 +541,11 @@ cascade:AuthorRole a prov:Role ;
     rdfs:comment "The part a party played in writing a document: HL7's provenance participant type author, which defines a code and no concept IRI."@en ;
     rdfs:seeAlso <http://terminology.hl7.org/CodeSystem/provenance-participant-type> .
 
+cascade:CustodianRole a prov:Role ;
+    rdfs:label "custodian role"@en ;
+    rdfs:comment "The part a party played in keeping a document, accountable for its true copy: HL7's provenance participant type custodian, which defines a code and no concept IRI."@en ;
+    rdfs:seeAlso <http://terminology.hl7.org/CodeSystem/provenance-participant-type> .
+
 cascade:TransmitterRole a prov:Role ;
     rdfs:label "transmitter role"@en ;
     rdfs:comment "The part a party played in fetching and delivering a document: US Core's provenance agent type transmitter, which defines a code and no concept IRI."@en ;
@@ -1614,7 +1619,7 @@ cascade:ServerNamingRule a owl:NamedIndividual ;
 
 cascade:OrganizationNamingRule a owl:NamedIndividual ;
     rdfs:label "organization naming rule"@en ;
-    rdfs:comment "An organization, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, from a server, in order: the normalised base URL, Organization, the resource's id; from a document, in order: the business identifier's system and value as the document writes them, a C-CDA custodian id's root and extension or a FHIR Organization.identifier's system and value."@en ;
+    rdfs:comment "An organization, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, from a server, in order: the normalised base URL, Organization, the resource's id; from a document, in order: the IRI of the datatype and the lexical form of the org:identifier literal its version carries, so the name and the version state the identifier alike: a FHIR Organization.identifier's system and value; a C-CDA id as HL7's CDA-to-FHIR identifier mapping makes it one, a root and extension as urn:oid: and the root (urn:uuid: and the root in lower case, for a UUID root) and the extension, a root alone as urn:ietf:rfc:3986 and the root's urn:oid: or urn:uuid: IRI."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
 cascade:ClaimNamingRule a owl:NamedIndividual ;

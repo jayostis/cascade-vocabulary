@@ -212,8 +212,8 @@ def organization_from_server_name(base_url, organization_id):
 
 
 def organization_from_identifier_name(system, value):
-    """A document's business identifier for the organization: a C-CDA id's root and extension, or a FHIR
-    Organization.identifier's system and value."""
+    """A document's business identifier for the organization, as its version's org:identifier literal states it:
+    system is the literal's datatype IRI and value its lexical form."""
     return v8_name("OrganizationNamingRule", [system, value])
 
 

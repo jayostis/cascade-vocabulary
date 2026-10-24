@@ -120,7 +120,10 @@ An organization version's identifier is W3C ORG's `org:identifier`, a `skos:nota
 the identifier system: `"1234567893"^^<http://hl7.org/fhir/sid/us-npi>`; an identifier with no system is a plain string.
 A C-CDA `id` follows HL7's CDA-to-FHIR identifier mapping: root and extension give the extension as the value with datatype
 `urn:oid:<root>` (`urn:uuid:<root>` for a UUID root); a root alone gives `urn:oid:<root>` (or `urn:uuid:<root>`) as the value
-with datatype `urn:ietf:rfc:3986`. A name is `foaf:name`; an address is `cascade:organizationAddress`, one string per address.
+with datatype `urn:ietf:rfc:3986`. An organization a document names is named by that literal's datatype IRI and lexical
+form, so its name and its version state one identifier byte for byte. A name is `foaf:name`; an address is
+`cascade:organizationAddress`, one string per address. A document names its custodian and its author organization by
+their records, in `cascade:CustodianRole` and `cascade:AuthorRole` (#212).
 
 The rules are the vocabulary's: each a term with `rdfs:seeAlso` to its standard, a `.rq` where SPARQL can state it,
 vectors cross-checked against an independent library, a reference implementation, and a self-check shape (#191). One
