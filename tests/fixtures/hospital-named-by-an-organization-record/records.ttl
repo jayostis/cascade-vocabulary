@@ -1,0 +1,40 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:firstImport a prov:Activity ; rdfs:label "First download" ;
+    prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:secondImport a prov:Activity ; rdfs:label "Second download" ;
+    prov:startedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime .
+
+:firstDocument a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ,
+        [ prov:hadRole cascade:AuthorRole ; prov:agent :clinic ] .
+:secondDocument a prov:Entity ; pav:retrievedOn "2026-01-02T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+
+:clinic a cascade:Organization .
+:clinicFirstVersion prov:specializationOf :clinic ; foaf:name "Fernhill Clinic" ;
+    org:identifier "urn:oid:2.16.840.1.113883.19.5.2"^^<urn:ietf:rfc:3986> .
+:clinicFirstRevision a cascade:Revision ; cascade:revisionOf :clinic ; cascade:version :clinicFirstVersion ;
+    prov:wasDerivedFrom :firstDocument ; prov:wasGeneratedBy :firstImport ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+:clinicSecondVersion prov:specializationOf :clinic ; foaf:name "Fernhill Family Clinic" ;
+    org:identifier "urn:oid:2.16.840.1.113883.19.5.2"^^<urn:ietf:rfc:3986> .
+:clinicSecondRevision a cascade:Revision ; cascade:revisionOf :clinic ; cascade:version :clinicSecondVersion ;
+    prov:wasRevisionOf :clinicFirstRevision ;
+    prov:wasDerivedFrom :secondDocument ; prov:wasGeneratedBy :secondImport ;
+    prov:generatedAtTime "2026-01-02T00:00:05Z"^^xsd:dateTime .
+
+:asthma a cascade:ProblemOrDiagnosis .
+:asthmaVersion prov:specializationOf :asthma ; cascade:patient :subject ; cascade:conditionName "Asthma" .
+:asthmaRevision a cascade:Revision ; cascade:revisionOf :asthma ; cascade:version :asthmaVersion ;
+    prov:wasDerivedFrom :firstDocument ; prov:wasGeneratedBy :firstImport ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .

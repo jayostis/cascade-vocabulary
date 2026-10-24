@@ -8,15 +8,16 @@
 
 [] a cascade:Placement ; solid:forClass cascade:Subject ; solid:instanceContainer <subject/> ; cascade:subfolderPrefixLength 2 .
 
-[] a cascade:Placement ; solid:forClass cascade:AllergyOrIntolerance ; solid:instanceContainer <records/allergies/> ; cascade:subfolderPrefixLength 2 .
-[] a cascade:Placement ; solid:forClass cascade:ProblemOrDiagnosis ; solid:instanceContainer <records/conditions/> ; cascade:subfolderPrefixLength 2 .
-[] a cascade:Placement ; solid:forClass cascade:Vaccination ; solid:instanceContainer <records/immunizations/> ; cascade:subfolderPrefixLength 2 .
-[] a cascade:Placement ; solid:forClass cascade:MedicalProcedure ; solid:instanceContainer <records/procedures/> ; cascade:subfolderPrefixLength 2 .
-[] a cascade:Placement ; solid:forClass cascade:PrescribedOrReportedMedication ; solid:instanceContainer <records/medications/> ; cascade:subfolderPrefixLength 2 .
-[] a cascade:Placement ; solid:forClass cascade:LaboratoryTestResult ; solid:instanceContainer <records/lab-results/> ; cascade:subfolderPrefixLength 2 .
-[] a cascade:Placement ; solid:forClass cascade:GeneticVariantFinding ; solid:instanceContainer <records/variants/> ; cascade:subfolderPrefixLength 2 .
-[] a cascade:Placement ; solid:forClass cascade:VariantInterpretation ; solid:instanceContainer <records/variant-interpretations/> ; cascade:subfolderPrefixLength 2 .
-[] a cascade:Placement ; solid:forClass cascade:PatientProfile ; solid:instanceContainer <records/patient-profile/> ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:AllergyOrIntolerance ; solid:instanceContainer <records/allergies/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:ProblemOrDiagnosis ; solid:instanceContainer <records/conditions/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:Vaccination ; solid:instanceContainer <records/immunizations/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:MedicalProcedure ; solid:instanceContainer <records/procedures/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:PrescribedOrReportedMedication ; solid:instanceContainer <records/medications/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:LaboratoryTestResult ; solid:instanceContainer <records/lab-results/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:GeneticVariantFinding ; solid:instanceContainer <records/variants/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:VariantInterpretation ; solid:instanceContainer <records/variant-interpretations/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:PatientProfile ; solid:instanceContainer <records/patient-profile/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:Organization ; solid:instanceContainer <records/organizations/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 
 [] a cascade:Placement ; cascade:filedWith prov:specializationOf ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; cascade:filedWith cascade:revisionOf ; cascade:subfolderPrefixLength 2 .

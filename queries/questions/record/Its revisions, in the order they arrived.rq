@@ -2,11 +2,12 @@
 # A version seen before is named again, not copied, and Current marks the revision the views read.
 # ?arrived is the pod's clock; a pull's document says the instant its source answered as of (?answeredAsOf).
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?record ?recordLabel ?arrived ?revision ?revisionLabel ?current ?previous ?previousLabel ?version ?versionLabel
+SELECT DISTINCT ?record ?recordLabel ?arrived ?revision ?revisionLabel ?current ?previous ?previousLabel ?version ?versionLabel
        ?change ?document ?documentLabel ?retrieved ?answeredAsOf ?hospital ?transmitter ?import ?importLabel ?started
 WHERE {
   { SELECT ?version (MIN(?received) AS ?first)
@@ -26,7 +27,8 @@ WHERE {
              OPTIONAL { ?document pav:retrievedOn ?retrieved }
              OPTIONAL { ?document cascade:answeredAsOf ?answeredAsOf }
              OPTIONAL { ?document prov:qualifiedAttribution ?author .
-                        ?author prov:hadRole cascade:AuthorRole ; prov:agent/rdfs:label ?hospital }
+                        ?author prov:hadRole ?hospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital
+                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
              OPTIONAL { ?document prov:qualifiedAttribution ?sender .
                         ?sender prov:hadRole cascade:TransmitterRole ; prov:agent/rdfs:label ?transmitter } }
   OPTIONAL { ?revision prov:wasGeneratedBy ?import .
