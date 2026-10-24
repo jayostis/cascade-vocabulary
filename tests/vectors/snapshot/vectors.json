@@ -1,0 +1,86 @@
+{
+  "setHashes": [
+    {
+      "name": "empty",
+      "comment": "The empty set: zero.",
+      "members": [],
+      "setHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "one-member",
+      "comment": "One file: its path's SHA-256 as 64 hex digits.",
+      "members": [
+        "subject/5e/5e1f0b2a-7c3d-4e8f-9a6b-1d2c3e4f5a6b.ttl"
+      ],
+      "setHash": "794ddaa6cbbc5ef04c770d513083b1f87adf6327bbec84e1c6126b7dc2e9b720"
+    },
+    {
+      "name": "two-members",
+      "comment": "Two files: the sum of their digests.",
+      "members": [
+        "records/allergies/be/beaefb13-def8-8f7f-882d-eff4a1ee11d9.ttl",
+        "records/allergies/13/13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl"
+      ],
+      "setHash": "a2278cce5f9c9b9c11d663c779eda1db09ccf35e20a710178d0faf9343cdced5"
+    },
+    {
+      "name": "two-members-reversed",
+      "comment": "The same two files listed the other way round: the same hash.",
+      "members": [
+        "records/allergies/13/13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl",
+        "records/allergies/be/beaefb13-def8-8f7f-882d-eff4a1ee11d9.ttl"
+      ],
+      "setHash": "a2278cce5f9c9b9c11d663c779eda1db09ccf35e20a710178d0faf9343cdced5"
+    },
+    {
+      "name": "non-ascii-path",
+      "comment": "A path is hashed as its UTF-8.",
+      "members": [
+        "records/allergies/c3/café.ttl"
+      ],
+      "setHash": "1b52b39013506f704a3825c4970948b0c2d43440ad651397f6944ae071afd86b"
+    },
+    {
+      "name": "sum-wraps",
+      "comment": "Two digests whose sum passes 2^256: the sum modulo 2^256.",
+      "members": [
+        "records/allergies/00/00000000-0000-8000-8000-000000000000.ttl",
+        "records/allergies/01/01000000-0000-8000-8000-000000000000.ttl"
+      ],
+      "setHash": "80a4d477d189defb0d27998102c50e184208a41bc3141c0aac5cef43bbb8dd2a"
+    }
+  ],
+  "chains": [
+    {
+      "name": "first-then-next",
+      "comment": "A writer's first snapshot, its set hash over every file it holds after its act, then its next act's snapshot: the first as its first parent, its set hash the first's plus the files the next added.",
+      "snapshots": [
+        {
+          "act": "urn:uuid:2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92",
+          "firstParent": null,
+          "mergedParents": [],
+          "set": [
+            "subject/5e/5e1f0b2a-7c3d-4e8f-9a6b-1d2c3e4f5a6b.ttl",
+            "records/allergies/be/beaefb13-def8-8f7f-882d-eff4a1ee11d9.ttl",
+            "records/allergies/13/13ae1a1995661a610f805ed1339ae80a7ffc59d51d7d00201352c2f514b65781.ttl",
+            "attachments/sha-256/2bde9d43b34c0b1fea6a89208dd600a1c062eff752255b4a4266127d6478ad17",
+            "provenance/imports/2b/2b7d4e61-9c3a-4f85-a1d0-6e8b3c5f7a92.ttl"
+          ],
+          "setHash": "313b5bd23028ee29d2458737afb4a0b285d90cc474078240a6c3bcce1fb86ace",
+          "name": "urn:uuid:92975f52-4ceb-8e94-a074-16b5bcefb3a9"
+        },
+        {
+          "act": "urn:uuid:8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28",
+          "firstParent": "urn:uuid:92975f52-4ceb-8e94-a074-16b5bcefb3a9",
+          "mergedParents": [],
+          "added": [
+            "judgments/3e/3e2987b0-dbf5-8fa3-be1d-09a8fcc46fea.ttl",
+            "provenance/activities/8e/8e3c5a17-4d2b-4f69-9a0e-7b1d6c3f5e28.ttl"
+          ],
+          "setHash": "b6c892b8ad9dfb567c939e906593a8400f1a6210dc8171013556c3f147b57539",
+          "name": "urn:uuid:fc0b148b-09b5-8e66-bf72-6588fb533c81"
+        }
+      ]
+    }
+  ]
+}

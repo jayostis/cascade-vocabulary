@@ -234,6 +234,18 @@ def table_row_name(source, predicate, target, panel_sequence=None):
     return v8_name("TableRowNamingRule", [source, predicate, target, *extra])
 
 
+SET_HASH_MODULUS = 2 ** 256
+
+
+def set_hash(members, before="0" * 64):
+    """MSet-Add-Hash (Clarke et al. 2003): the sum modulo 2^256 of the SHA-256 of each member, a file's path relative
+    to the pod in UTF-8, read as a big-endian unsigned integer, written as 64 lower-case hex digits. Given the set hash
+    of a set that lacks every member, `before`, it is the set hash of their union."""
+    total = int(before, 16) + sum(int.from_bytes(hashlib.sha256(member.encode("utf-8")).digest(), "big")
+                                  for member in set(members))
+    return f"{total % SET_HASH_MODULUS:064x}"
+
+
 def snapshot_name(act, first_parent, merged_parents, set_hash):
     """The snapshot of one act; first_parent is None on a writer's first snapshot."""
     return v8_name("SnapshotNamingRule", [act, *counted([] if first_parent is None else [first_parent]),

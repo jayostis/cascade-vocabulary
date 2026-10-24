@@ -214,6 +214,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ClaimAssertionShape ; sh:resultPath cascade:assertedClaim ] ] .
 
+<#snapshot/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <snapshot/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#snapshot/set-hash-in-upper-case> a sht:Validate ;
+  mf:action [ sht:dataGraph <snapshot/set-hash-in-upper-case.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:SnapshotShape ; sh:resultPath cascade:setHash ] ] .
+
 <#judgment-different/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-different/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

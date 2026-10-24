@@ -1651,18 +1651,40 @@ cascade:RetractionNamingRule a owl:NamedIndividual ;
 
 # Snapshots
 
+cascade:Snapshot a owl:Class ;
+    rdfs:label "snapshot"@en ;
+    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file under a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder and a sync's act file: a file the layout gives by solid:instance changes in place, and is outside it."@en ;
+    rdfs:subClassOf prov:Entity .
+
 cascade:firstParentSnapshot a owl:ObjectProperty ;
     rdfs:label "first parent snapshot"@en ;
-    rdfs:comment "Of a snapshot, the writer's own previous one; a writer's first snapshot has none. Its name takes it."@en .
+    rdfs:comment "Of a snapshot, the writer's own previous one; a writer's first snapshot has none. Its name takes it."@en ;
+    rdfs:domain cascade:Snapshot ;
+    rdfs:range cascade:Snapshot .
 
 cascade:mergedParentSnapshot a owl:ObjectProperty ;
     rdfs:label "merged parent snapshot"@en ;
-    rdfs:comment "Of a sync's snapshot, each head among the snapshots that arrived: an arrived snapshot no held snapshot names as a parent. Its name takes them."@en .
+    rdfs:comment "Of a snapshot, each head it merges: an arrived snapshot no held snapshot names as a parent, for a sync's; every head the writer holds, for a writer's first. Its name takes them."@en ;
+    rdfs:domain cascade:Snapshot ;
+    rdfs:range cascade:Snapshot .
 
 cascade:setHash a owl:DatatypeProperty ;
     rdfs:label "set hash"@en ;
-    rdfs:comment "Of a snapshot, the order-free hash of the set of files it covers. Two writers whose latest snapshots carry equal set hashes hold one set."@en ;
+    rdfs:comment "Of a snapshot, the order-free hash of the set of files the writer held when its act ended: MSet-Add-Hash, the sum modulo 2^256 of the SHA-256 of each file's path relative to the pod in UTF-8, read as a big-endian unsigned integer, written as 64 lower-case hexadecimal digits; the empty set's is zero. With a first parent, it is the first parent's plus each cascade:fileAddedToSet. Two writers whose latest snapshots carry equal set hashes hold one set."@en ;
+    rdfs:domain cascade:Snapshot ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://doi.org/10.1007/978-3-540-40061-5_12> .
+
+cascade:fileAddedToSet a owl:DatatypeProperty ;
+    rdfs:label "file added to set"@en ;
+    rdfs:comment "Of a snapshot, the path relative to the pod of each file of the set its act wrote, and, with a first parent, of each other file of the set the writer came to hold since that parent: what the run that wrote a file is known from."@en ;
+    rdfs:domain cascade:Snapshot ;
     rdfs:range xsd:string .
+
+cascade:MatcherRun a owl:Class ;
+    rdfs:label "matcher run"@en ;
+    rdfs:comment "An act of the matcher over the records an import, an entry session or a sync brought, or over the pod at an open or a recheck; prov:wasInformedBy the act whose records it takes."@en ;
+    rdfs:subClassOf prov:Activity .
 
 # The matcher and its rules
 
