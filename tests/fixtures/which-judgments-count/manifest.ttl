@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "which-judgments-count" ;
-  rdfs:comment "A person's Same, a superseded one and the one superseding it, a retracted one and the retraction; a machine's SameCode and SameMappedCode made with the current reference version, and a SameCode made with the one it replaced." ;
+  rdfs:comment "A person's Same, a superseded one and the one superseding it, a retracted one and the retraction; the matcher's SameCode and SameMappedCode claims asserted under the current rule list version, and a SameCode claim asserted only under the version it replaced, whose same code rule ran another query." ;
   mf:entries (
     <#everyday-counts>
     <#export-counts>
@@ -17,14 +17,14 @@
 
 <#everyday-counts> a mf:QueryEvaluationTest ;
   mf:name "everyday-counts" ;
-  rdfs:comment "Everyday counts every judgment not retracted, nor superseded by a judgment not itself retracted, unless a machine made it with a reference version since replaced." ;
+  rdfs:comment "Everyday counts every judgment not retracted, nor superseded by a judgment not itself retracted, and a matcher's claim only while every version it used is current and a current rule list version runs the query it was asserted with." ;
   mf:action [ qt:query <everyday-counts.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <everyday-counts.srj> .
 
 <#export-counts> a mf:QueryEvaluationTest ;
   mf:name "export-counts" ;
-  rdfs:comment "Export counts a person's judgment not retracted, nor superseded by a judgment not itself retracted, and a machine's only when it rests on the same code, made with the current reference version." ;
+  rdfs:comment "Export counts a person's judgment not retracted, nor superseded by a judgment not itself retracted, and a matcher's claim only when it rests on the same code and counts as everyday would count it." ;
   mf:action [ qt:query <export-counts.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/export.rq> ] ;
   mf:result <export-counts.srj> .
@@ -38,7 +38,7 @@
 
 <#who-judged-what> a mf:QueryEvaluationTest ;
   mf:name "who-judged-what" ;
-  rdfs:comment "Everything each judgment says: when, by whom and in what role, its verdict and member, and what it supersedes or retracts." ;
+  rdfs:comment "Everything each judgment says: when a person made it, by whom and in what role, its verdict and member, what it supersedes or retracts, and the rule list version a claim is asserted under." ;
   mf:action [ qt:query <../../../queries/questions/judgment/Who%20judged%20what.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <who-judged-what.srj> .

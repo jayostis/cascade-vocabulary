@@ -155,6 +155,11 @@
 <#judgment-erroneous/no-time> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-erroneous/no-time.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PersonJudgmentShape ] ] .
+
+<#judgment-erroneous/two-times> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-erroneous/two-times.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:JudgmentShape ; sh:resultPath prov:generatedAtTime ] ] .
 
 <#judgment-erroneous/no-verdict> a sht:Validate ;
@@ -185,6 +190,20 @@
   mf:action [ sht:dataGraph <judgment-same-by-the-matcher/no-justification.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MachineSameShape ] ] .
+
+<#judgment-same-by-the-matcher/a-time> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-same-by-the-matcher/a-time.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MachineSameShape ] ] .
+
+<#claim-assertion/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <claim-assertion/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#claim-assertion/no-claim> a sht:Validate ;
+  mf:action [ sht:dataGraph <claim-assertion/no-claim.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ClaimAssertionShape ; sh:resultPath cascade:assertedClaim ] ] .
 
 <#judgment-different/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-different/valid.ttl> ] ;

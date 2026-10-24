@@ -1,11 +1,18 @@
-# Two records named together by a counting Same judgment are currently the same, unless they are also currently different:
-# a Different judgment wins.
+# Each member of a counting Same judgment is currently the same as its least member, in code point order of the IRI, both
+# ways: a star, so a claim of n members gives 2(n - 1) pairs and its members still make one entry. A pair is not the
+# same while it is also currently different: a Different judgment wins.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT { ?a cascade:currentlySame ?b }
 WHERE {
-  ?j cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?a , ?b .
-  FILTER (?a != ?b)
+  { SELECT ?j (IRI(MIN(STR(?m))) AS ?least)
+    WHERE { ?j cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?m }
+    GROUP BY ?j }
+  ?j prov:hadMember ?member .
+  FILTER (?member != ?least)
+  VALUES ?toLeast { true false }
+  BIND (IF(?toLeast, ?member, ?least) AS ?a)
+  BIND (IF(?toLeast, ?least, ?member) AS ?b)
   FILTER NOT EXISTS { ?a cascade:currentlyDifferent ?b }
 }

@@ -5,11 +5,11 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :person a prov:Person .
-:matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :joinedBySharedProduct a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameProductCode ; prov:hadMember :joinedA , :joinedB ;
-    prov:used :joinedAVersion , :joinedBVersion , :rules7 ;
-    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:used :joinedAVersion , :joinedBVersion ;
+    cascade:matcherRule cascade:SameProductCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :notTheSame a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :differentA , :differentB ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
@@ -17,23 +17,41 @@
 
 # a Same that used version 6 of the rules, which version 7 revises
 :lapsedBySharedCode a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMedicationCode ; prov:hadMember :lapsedA , :lapsedB ;
-    prov:used :lapsedAVersion , :lapsedBVersion , :rules6 ;
-    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:used :lapsedAVersion , :lapsedBVersion ;
+    cascade:matcherRule cascade:SameMedicationCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # an entry joined by an NDC and by a product code, both exact identity
 :exemptNdc a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMedicationCode ; prov:hadMember :refill , :fill ;
-    prov:used :refillVersion , :fillVersion , :rules7 ;
-    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:used :refillVersion , :fillVersion ;
+    cascade:matcherRule cascade:SameMedicationCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :exemptProduct a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameProductCode ; prov:hadMember :refill , :listed ;
-    prov:used :refillVersion , :listedVersion , :rules7 ;
-    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:used :refillVersion , :listedVersion ;
+    cascade:matcherRule cascade:SameProductCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # an entry joined by a product code and by a brand generic
 :otherProduct a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameProductCode ; prov:hadMember :genericOne , :genericTwo ;
-    prov:used :genericOneVersion , :genericTwoVersion , :rules7 ;
-    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:used :genericOneVersion , :genericTwoVersion ;
+    cascade:matcherRule cascade:SameProductCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :otherBrandGeneric a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameBrandGeneric ; prov:hadMember :brand , :genericOne ;
-    prov:used :brandVersion , :genericOneVersion , :rules7 ;
-    prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:used :brandVersion , :genericOneVersion ;
+    cascade:matcherRule cascade:SameBrandGenericRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:joinedBySharedProductUnderrules7 a cascade:ClaimAssertion ; cascade:assertedClaim :joinedBySharedProduct ;
+    cascade:assertedUnderRuleListVersion :rules7 ; cascade:assertedWithQueryHash :sameProductCodeQuery .
+
+:lapsedBySharedCodeUnderrules6 a cascade:ClaimAssertion ; cascade:assertedClaim :lapsedBySharedCode ;
+    cascade:assertedUnderRuleListVersion :rules6 ; cascade:assertedWithQueryHash :sameMedicationCodeQueryBefore .
+
+:exemptNdcUnderrules7 a cascade:ClaimAssertion ; cascade:assertedClaim :exemptNdc ;
+    cascade:assertedUnderRuleListVersion :rules7 ; cascade:assertedWithQueryHash :sameMedicationCodeQuery .
+
+:exemptProductUnderrules7 a cascade:ClaimAssertion ; cascade:assertedClaim :exemptProduct ;
+    cascade:assertedUnderRuleListVersion :rules7 ; cascade:assertedWithQueryHash :sameProductCodeQuery .
+
+:otherProductUnderrules7 a cascade:ClaimAssertion ; cascade:assertedClaim :otherProduct ;
+    cascade:assertedUnderRuleListVersion :rules7 ; cascade:assertedWithQueryHash :sameProductCodeQuery .
+
+:otherBrandGenericUnderrules7 a cascade:ClaimAssertion ; cascade:assertedClaim :otherBrandGeneric ;
+    cascade:assertedUnderRuleListVersion :rules7 ; cascade:assertedWithQueryHash :sameBrandGenericQuery .

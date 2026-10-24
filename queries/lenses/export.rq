@@ -1,6 +1,7 @@
 # A stricter lens, for records sent elsewhere: a person's judgment counts unless retracted or superseded, and a machine's
-# only when it rests on the same code, or code and date, or code and period, made with the current reference table. A
-# retracted judgment supersedes nothing.
+# claim only when the Cascade matcher made it resting on the same code, or code and date, or code and period, made with
+# current reference versions and asserted with a query hash the current version of a rule list pins. A retracted judgment
+# supersedes nothing.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX pav: <http://purl.org/pav/>
@@ -16,7 +17,7 @@ WHERE {
     }
     FILTER NOT EXISTS { ?retracting npx:retracts ?j } }
   UNION
-  { ?j a cascade:Judgment ; cascade:justification ?why .
+  { ?j a cascade:Judgment ; prov:wasAttributedTo cascade:CascadeMatcher ; cascade:justification ?why .
     FILTER (?why IN (cascade:SameCode, cascade:SameCodeAndDate, cascade:SameCodeAndPeriod))
     FILTER NOT EXISTS {
       ?superseding npx:supersedes ?j
@@ -24,6 +25,11 @@ WHERE {
       FILTER (!BOUND(?undoing))
     }
     FILTER NOT EXISTS { ?retracting npx:retracts ?j }
+    FILTER EXISTS {
+      ?assertion cascade:assertedClaim ?j ; cascade:assertedWithQueryHash ?hash .
+      ?ruleList pav:hasCurrentVersion ?rules .
+      ?rules cascade:queryHash ?hash .
+    }
     FILTER NOT EXISTS {
       ?j prov:used ?input .
       ?input prov:specializationOf ?series .

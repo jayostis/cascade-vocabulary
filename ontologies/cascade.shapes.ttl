@@ -1275,9 +1275,8 @@ cascade:JudgmentShape a sh:NodeShape ;
     ] , [
         sh:path prov:generatedAtTime ;
         sh:datatype xsd:dateTime ;
-        sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:message "A judgment carries the time it was made, one xsd:dateTime."@en ;
+        sh:message "A judgment carries at most one time it was made, an xsd:dateTime."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:wasAttributedTo ;
@@ -1407,9 +1406,11 @@ cascade:MachineSameShape a sh:NodeShape ;
             [ sh:path cascade:verdict ; sh:hasValue cascade:Same ]
         ) ] ]
         [ sh:property [ sh:path cascade:justification ; sh:minCount 1 ] ,
-                      [ sh:path prov:used ; sh:minCount 1 ] ]
+                      [ sh:path cascade:matcherRule ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                      [ sh:path prov:used ; sh:minCount 1 ] ,
+                      [ sh:path prov:generatedAtTime ; sh:maxCount 0 ] ]
     ) ;
-    sh:message "A machine's Same gives its justification and names what it used."@en ;
+    sh:message "A machine's Same is a claim: it gives its justification and the one matcher rule that made it, names what it used, and carries no time."@en ;
     sh:severity sh:Violation .
 
 cascade:PersonJudgmentShape a sh:NodeShape ;
@@ -1419,10 +1420,41 @@ cascade:PersonJudgmentShape a sh:NodeShape ;
         [ sh:property [ sh:path prov:qualifiedAttribution ; sh:minCount 1 ; sh:maxCount 1 ;
                         sh:node cascade:AttributionShape ] ,
                       [ sh:path ( prov:qualifiedAttribution prov:agent ) ;
-                        sh:equals prov:wasAttributedTo ] ]
+                        sh:equals prov:wasAttributedTo ] ,
+                      [ sh:path prov:generatedAtTime ; sh:minCount 1 ] ]
     ) ;
-    sh:message "A person's judgment names the role its author acted in, in one prov:qualifiedAttribution whose agent is the author."@en ;
+    sh:message "A person's judgment carries the time it was made and names the role its author acted in, in one prov:qualifiedAttribution whose agent is the author."@en ;
     sh:severity sh:Violation .
+
+cascade:ClaimAssertionShape a sh:NodeShape ;
+    sh:targetClass cascade:ClaimAssertion ;
+    sh:property [
+        sh:path cascade:assertedClaim ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "An assertion asserts one claim, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:assertedUnderRuleListVersion ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "An assertion is under one version of the rule list, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:assertedWithQueryHash ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "An assertion gives the one query hash its claim's rule has in the version it is under."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:generatedAtTime ;
+        sh:maxCount 0 ;
+        sh:message "An assertion carries no time: the run that wrote it is known from its snapshot."@en ;
+        sh:severity sh:Violation
+    ] .
 
 cascade:AttributionShape a sh:NodeShape ;
     sh:property [ sh:path prov:agent ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,

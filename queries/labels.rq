@@ -1,5 +1,6 @@
 # A name for every record, version, revision, document, judgment, reference version, entry and patient profile, made from
-# what each says: its kind, its name, where it came from and when. Names only help people read; nothing depends on them.
+# what each says: its kind, its name, where it came from and when, if it says when. Names only help people read; nothing
+# depends on them.
 # An entry is labelled as the view holding it names it: a view is built before this file, and its graph holds each entry
 # resolved against the view's address (N13), so the placeholder only the derived state holds is never labelled.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
@@ -73,8 +74,9 @@ WHERE {
   UNION
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
-      ?thing a cascade:Judgment ; prov:generatedAtTime ?t ; prov:wasAttributedTo ?who .
+      ?thing a cascade:Judgment ; prov:wasAttributedTo ?who .
       FILTER NOT EXISTS { ?thing rdfs:label [] }
+      OPTIONAL { ?thing prov:generatedAtTime ?t }
       OPTIONAL { ?thing cascade:verdict ?verdict }
       OPTIONAL { ?who rdfs:label ?machine }
       OPTIONAL { ?thing prov:qualifiedAttribution/prov:hadRole ?role }
@@ -83,7 +85,7 @@ WHERE {
       OPTIONAL { ?thing npx:retracts/prov:hadMember/^prov:specializationOf/cascade:displayName ?retractedAbout }
       BIND (CONCAT(COALESCE(REPLACE(STR(?verdict), "^.*#", ""), "Retraction"), " · ",
                    COALESCE(?machine, IF(?role = cascade:PatientRole, "the patient", "a person")), " · ",
-                   SUBSTR(STR(?t), 1, 10), " · ",
+                   IF(BOUND(?t), CONCAT(SUBSTR(STR(?t), 1, 10), " · "), ""),
                    IF(BOUND(?verdict), COALESCE(?about, "a patient profile"),
                       CONCAT("of ", COALESCE(REPLACE(STR(?retracted), "^.*#", ""), "a judgment"), " · ",
                              COALESCE(?retractedAbout, "a patient profile")))) AS ?l)

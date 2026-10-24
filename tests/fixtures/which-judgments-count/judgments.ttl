@@ -7,7 +7,7 @@
 
 :person a prov:Person .
 
-:matcher a prov:SoftwareAgent ; rdfs:label "Matcher" .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :personSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :record , :other ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
@@ -30,10 +30,19 @@
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :machineCode a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :record , :other ;
-    prov:used :rules-2 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:used :recordVersion , :otherVersion ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :machineMapped a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :record , :other ;
-    prov:used :rules-2 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:used :recordVersion , :otherVersion ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :machineOld a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :record , :other ;
-    prov:used :rules-1 ; prov:wasAttributedTo :matcher ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:used :recordVersion , :otherVersion ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:machineCodeUnderrules2 a cascade:ClaimAssertion ; cascade:assertedClaim :machineCode ;
+    cascade:assertedUnderRuleListVersion :rules-2 ; cascade:assertedWithQueryHash :sameCodeQuery .
+
+:machineMappedUnderrules2 a cascade:ClaimAssertion ; cascade:assertedClaim :machineMapped ;
+    cascade:assertedUnderRuleListVersion :rules-2 ; cascade:assertedWithQueryHash :sameMappedCodeQuery .
+
+:machineOldUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :machineOld ;
+    cascade:assertedUnderRuleListVersion :rules-1 ; cascade:assertedWithQueryHash :sameCodeQueryBefore .
