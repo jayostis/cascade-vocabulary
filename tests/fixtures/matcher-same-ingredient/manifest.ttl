@@ -14,5 +14,13 @@
   mf:name "same-ingredient" ;
   rdfs:comment "A brand and its ingredient match, with the table's version; a two-ingredient product and one of its ingredients, two records of one code, or two codes no one version of a product ingredient table maps to one ingredient, do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-ingredient.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:combination> ,
+                                  <urn:x:ingredient> ,
+                                  <urn:x:oneCodeA> ,
+                                  <urn:x:oneCodeB> ,
+                                  <urn:x:oneOfIt> ,
+                                  <urn:x:strayA> ,
+                                  <urn:x:strayB> ,
+                                  <urn:x:strayBrand> ] ;
   mf:result <same-ingredient.srj> .

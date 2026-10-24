@@ -14,5 +14,13 @@
   mf:name "same-vaccine-group-and-date" ;
   rdfs:comment "Two different codes of one group on one date match, a group's own code among them, with the table's version; on two dates, one code on both, or a code in no group of a vaccine group table, they do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-vaccine-group-and-date.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:groupOwnCodeB> ,
+                                  <urn:x:groupSameDayB> ,
+                                  <urn:x:groupTwoDaysA> ,
+                                  <urn:x:groupTwoDaysB> ,
+                                  <urn:x:noGroupA> ,
+                                  <urn:x:noGroupB> ,
+                                  <urn:x:oneCodeA> ,
+                                  <urn:x:oneCodeB> ] ;
   mf:result <same-vaccine-group-and-date.srj> .

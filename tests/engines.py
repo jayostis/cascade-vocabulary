@@ -45,9 +45,10 @@ def prepared(query):
 
 
 class Store:
-    def answer(self, query):
-        """The query's columns, and its rows with each bound column's term."""
-        names, solutions = self._solutions(query)
+    def answer(self, query, records=()):
+        """The query's columns, and its rows with each bound column's term: given records, the rows of the query
+        evaluated with ?record bound to each in turn, as a matcher run binds it."""
+        names, solutions = self._solutions(query, records)
         return names, [{name: self._term(row[name]) for name in names if row[name] is not None} for row in solutions]
 
     def select(self, query):
@@ -95,9 +96,13 @@ class Oxigraph(Store):
     def construct(self, query):
         return {tuple(self._term(t) for t in (x.subject, x.predicate, x.object)) for x in self.store.query(query)}
 
-    def _solutions(self, query):
-        solutions = self.store.query(query)
-        return [v.value for v in solutions.variables], solutions
+    def _solutions(self, query, records=()):
+        if not records:
+            solutions = self.store.query(query)
+            return [v.value for v in solutions.variables], solutions
+        found = [self.store.query(query, substitutions={pyoxigraph.Variable("record"): pyoxigraph.NamedNode(record)})
+                 for record in records]
+        return [v.value for v in found[0].variables], [row for solutions in found for row in solutions]
 
     def ask(self, query):
         return bool(self.store.query(query))
@@ -133,13 +138,14 @@ class Rdflib(Store):
         graphs = ([] if alone else [self.graph()]) + ([self.graph(graph)] if graph else [])
         self.dataset.addN((*triple, g) for triple in triples for g in graphs)
 
-    def _solutions(self, query):
+    def _solutions(self, query, records=()):
         """The query's columns, and its rows or triples, each made while literals are kept as written."""
+        bindings = [{"record": rdflib.URIRef(record)} for record in records] or [{}]
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", r"Dataset\.\w+ is deprecated", DeprecationWarning)
             with literals_as_written():
-                result = self.dataset.query(prepared(query))
-                return [str(v) for v in result.vars or ()], list(result)
+                results = [self.dataset.query(prepared(query), initBindings=bound) for bound in bindings]
+                return [str(v) for v in results[0].vars or ()], [row for result in results for row in result]
 
     def ask(self, query):
         with warnings.catch_warnings():

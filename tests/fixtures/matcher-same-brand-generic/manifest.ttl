@@ -14,5 +14,13 @@
   mf:name "same-brand-generic" ;
   rdfs:comment "A brand and its generic match, either way round, and so do two brands of one generic, with the brand generics table's version; a record that shares a code with either, one of an unrelated product, an NDC, or codes only another kind's version or a pod file maps, do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-brand-generic.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:both> ,
+                                  <urn:x:brandTwo> ,
+                                  <urn:x:fill> ,
+                                  <urn:x:generic> ,
+                                  <urn:x:lisinopril> ,
+                                  <urn:x:strayA> ,
+                                  <urn:x:strayB> ,
+                                  <urn:x:theirGeneric> ] ;
   mf:result <same-brand-generic.srj> .

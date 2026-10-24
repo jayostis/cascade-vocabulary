@@ -25,7 +25,9 @@ Feature: Opening a pod
     2. files a Same for each pair the current rule list and tables join and the pod's own do not, by M3 and M5 over
        those pairs. A pair a rule joins with a version's rows is new unless a rule of that justification in the rule
        list the pod names joins it with the version the pod names of that series, or, for a rule reading no table,
-       joins it at all. A rule list the pod names that M11 would refuse joins nothing. So a series the pod names no
+       joins it at all. Each is judged over its own versions alone (M13): the rule list the pod names over the versions
+       the pod names, the current one over the current versions, so neither reads the other's rows or descriptions. A
+       rule list the pod names that M11 would refuse joins nothing. So a series the pod names no
        version of, or a rule the pod's rule list lacks, judges every pair it joins, but a pair of which a person
        retracted a matcher Same: the everyday lens lets a Same count however a retracted one was made;
     3. writes the reference descriptions last: those M8 writes, and each version on the line after the pod's up to the
