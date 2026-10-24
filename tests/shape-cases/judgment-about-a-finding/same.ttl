@@ -1,0 +1,30 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:matcher a prov:SoftwareAgent .
+
+:claim a cascade:Judgment ;
+    cascade:verdict cascade:Same ;
+    prov:hadMember :one , :other ;
+    cascade:justification cascade:SameCode ;
+    prov:used :oneVersion , :otherVersion ;
+    cascade:matcherRule cascade:SameCodeRule ;
+    prov:wasAttributedTo :matcher .
+
+:finding a cascade:FindingForReview ;
+    oa:hasBody cascade:ClaimsNoLongerReached ;
+    oa:motivatedBy oa:classifying ;
+    cascade:noLongerReachedUnderRuleListVersion :rules2 ;
+    oa:hasTarget :claim .
+
+:alex a prov:Person .
+
+:answer a cascade:Judgment ;
+    cascade:verdict cascade:Same ;
+    prov:hadMember :finding ;
+    prov:wasAttributedTo :alex ;
+    prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
