@@ -1528,7 +1528,7 @@ cascade:ruleDeclaredWrong a owl:ObjectProperty ;
 
 cascade:ReleaseMigration a owl:Class ;
     rdfs:label "release migration"@en ;
-    rdfs:comment "An act an open performs before its matcher run when it adopts a rule list version that declares a rule wrong: it writes a retraction of each claim the release declares wrong that nothing retracts yet, each a prov:Activity that prov:invalidated the claim and prov:wasInfluencedBy the release, named by cascade:RetractionNamingRule with no time and no run, so two writers on one release write one file with one content."@en ;
+    rdfs:comment "An act an open performs before its matcher run when it adopts a rule list version that declares a rule wrong: it writes a retraction of each claim the release declares wrong, unless the pod holds that retraction already, each a prov:Activity that prov:invalidated the claim and prov:wasInfluencedBy the release, named by cascade:RetractionNamingRule with no time and no run, so two writers on one release write one file with one content."@en ;
     rdfs:subClassOf prov:Activity .
 
 cascade:currentlySame a owl:ObjectProperty ;

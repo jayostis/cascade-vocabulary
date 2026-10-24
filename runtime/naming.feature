@@ -353,7 +353,7 @@ Feature: Naming
     decisions/naming.md, rows "act" and "assertion, retraction by a release". A rule list version, the release, declares
     a matcher rule wrong by cascade:ruleDeclaredWrong in its description. An open that adopts it (O1) first performs the
     release's migration, an act (N7): for each claim of that rule asserted under a version the release revises, directly
-    or not, that nothing retracts yet, it writes a retraction, a prov:Activity that prov:invalidated the claim and
+    or not, it writes a retraction unless the pod holds it already: a prov:Activity that prov:invalidated the claim and
     prov:wasInfluencedBy the release, named by cascade:RetractionNamingRule over, in order, the release, the claim and the
     rule. It carries no time and names no run, so two writers on one release write one file with one content. The open's
     matcher run reads them: a retracted claim neither counts nor lapses, so "What needs review" never offers its pair
