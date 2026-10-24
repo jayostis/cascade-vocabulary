@@ -1,0 +1,7 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT ?judgment ?counts ?lapsed WHERE {
+  ?judgment a cascade:Judgment .
+  BIND (EXISTS { ?judgment cascade:countsUnderLens true } AS ?counts)
+  BIND (EXISTS { ?judgment cascade:lapsed true } AS ?lapsed)
+}
