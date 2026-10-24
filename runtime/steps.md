@@ -206,8 +206,8 @@ A reference version arrives: the version so numbered of the series so labelled, 
 
 ### `the matcher runs on the records of {step} on {time}`
 
-The matcher runs, taking the records with a first revision from that step's import, entry session or connect, or, for a step
-that received files, those whose first revisions all came from acts its sync names (M1).
+The matcher runs, taking the records with a first revision from that step's import, entry session or connect and the servers
+its connect wrote any revision for, or, for a step that received files, those whose first revisions all came from acts its sync names (M1).
 
 ### `the matcher rechecks on {time}`
 
