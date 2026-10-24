@@ -219,15 +219,18 @@ Feature: The matcher's procedure
     entry among the records that version's rows matched it with, or the rule matched it with when the rule reads no
     table, the least of those, in code point order of their names: a star, so a record matched with every earlier copy
     of one fact names one of them, and the entries are those every pair of them would give (queries/derivations/
-    same-pairs.rq). The entries are those of the derived state the run reads (M4). The claim is cascade:Same with the
+    same-pairs.rq). The entries are those the counting Sames make, as same-pairs.rq derives them, with the claims the
+    run has filed before, and without any Same that holds the record or a record that arrived after it (M3), so a run
+    again over the same records reaches the same claims. A Different filed later that splits an entry a claim's star
+    reached is answered by the next recheck (M7), so the facts give the same entries in either order. The claim is cascade:Same with the
     rule's justification and cites the rule (cascade:matcherRule). It uses the table version whose rows joined it, if
     any, and each member's current version, never the rule list's version. It is attributed to the matcher,
     cascade:CascadeMatcher, carries no time, and is named by N6.
 
     Its assertion, a cascade:ClaimAssertion named by N6, asserts it (cascade:assertedClaim) under the rule list's
-    version (cascade:assertedUnderRuleListVersion) with the cascade:queryHash of that version's row for the rule
-    (cascade:assertedWithQueryHash). The everyday lens counts the claim while the current version of a rule list pins
-    that hash and every version it used is current (queries/lenses/everyday.rq). A claim carries no run: which run
+    version (cascade:assertedUnderRuleListVersion). The everyday lens counts the claim while every version it used is
+    current and the current version of a rule list has a row for the claim's rule with the cascade:queryHash of that
+    rule's row in a version the claim is asserted under (M8, queries/lenses/everyday.rq). A claim carries no run: which run
     wrote an assertion is read from its snapshot (jayostis/cascade-vocabulary#209).
 
     Background:
@@ -305,6 +308,7 @@ Feature: The matcher's procedure
         | allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex", allergy RxNorm 8591 "Natural rubber latex" |
 
   Rule: M6. The matcher reads no person's Same or Different
+    No judgment decides which records a rule matches; only a claim's star reads the entries the judgments make (M5).
 
     Example: the matcher joins the pair a person called different, and not the pair a person called the same
       Given a new pod for Cleo on 2026-03-01 at 09:00
@@ -319,10 +323,13 @@ Feature: The matcher's procedure
         | same code     | allergy RxNorm 10180 from sulfa, allergy RxNorm 10180 "Gantanol"                                                |
         | same code     | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" |
 
-  Rule: M7. A recheck re-runs the rule of each matcher Same that used a reference version the tables revise, or whose rule now runs another query
+  Rule: M7. A recheck re-runs the rule of each matcher Same that used a reference version the tables revise, or whose rule now runs another query, or whose star a Different has split
     Unless the Same was retracted, or superseded by a judgment not itself retracted: a retracted judgment supersedes
-    nothing. A Same's rule runs another query when the current rule list's row for it carries a cascade:queryHash the
-    Same is not asserted with (M5). It runs on the members that are still the subject's, under the current version of
+    nothing. A Same's rule runs another query when the current rule list's row for it carries a cascade:queryHash that
+    no row for the rule carries in a version the Same is asserted under (M5). A Different has split a Same's star when
+    two of the records the Same's latest-arriving member matches by its rule are currently different: the rule is run
+    again for that record over the entries as they now are (M5), and the claim that gives is filed beside the Same,
+    which keeps counting, since every pair it joins its new claim joins too. It runs on the members that are still the subject's, under the current version of
     the series whose version the Same used, and files their claim (M5, M9) if at least two still match: a new claim
     when that version is new, and otherwise the claim's assertion under the current rule list alone. A version is
     revised when a version of the tables revises it, whether or not the pod describes that one, so an open that writes
@@ -385,8 +392,9 @@ Feature: The matcher's procedure
         | same mapped code | allergy SNOMED 372687004, allergy RxNorm 723 |
 
   Rule: M8. A reference version's description is written only if the pod lacks it
-    A rule list version's description also gives the cascade:queryHash of each of its rows, so the lens can tell
-    which queries the current version runs (M5).
+    A rule list version's description also describes each of its rows, named <version>#<the local name of its rule
+    term>, by cascade:rowOfRuleListVersion, its cascade:matcherRule and its cascade:queryHash, so the lens can compare
+    the row for a claim's rule in two versions (M5).
 
     Example: a reference series or version is described only by the first step that finds the pod lacking it
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -412,9 +420,11 @@ Feature: The matcher's procedure
   Rule: M9. A run that reaches a claim asserted with its rule's query hash writes nothing for it, and one asserted only with other hashes gets its assertion alone
     decisions/naming.md, row "assertion, retraction by a release". A claim is named once (N6) and carries no time, so
     a run that reaches a claim the pod holds never writes it again.
-    It writes the claim's assertion under the rule list's version unless the claim is already asserted with the hash
-    that version's row for the rule carries: at most one assertion per version per claim, and none under a version
-    that runs the query the claim is asserted with, so a new version asserts only the claims of the rules it changed.
+    It writes the claim's assertion under the rule list's version unless the claim is already asserted under a version
+    whose row for the rule carries the hash this version's row carries: at most one assertion per version per claim,
+    and none under a version that runs the query the claim is asserted with, so a new version asserts only the claims
+    of the rules it changed. A claim that does not count because a person retracted or superseded it is neither
+    asserted again nor read as joining its members.
     Only the reference descriptions it uses that the pod lacks are written (M8), so a run that stopped between its
     claims and its descriptions (W1) finishes when run again. So running again is always safe.
 

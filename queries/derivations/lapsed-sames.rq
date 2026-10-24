@@ -1,7 +1,8 @@
 # A matcher's claim has lapsed when it does not count, nothing retracts it, no judgment not itself retracted supersedes
 # it, and a newer version stopped it counting: a reference version it used has a newer current one, or no current
-# version of a rule list pins a query hash it was asserted with. An open adopted newer tables or rules and did not file
-# or assert it again, so the pair it joined may now be two entries.
+# version of a rule list has a row for its rule with the query hash of that rule's row in a version it is asserted
+# under. An open adopted newer tables or rules and did not file or assert it again, so the pair it joined may now be
+# two entries.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX pav: <http://purl.org/pav/>
@@ -30,8 +31,10 @@ WHERE {
     }
     FILTER NOT EXISTS { ?retracting npx:retracts ?j }
     FILTER NOT EXISTS {
-      ?assertion cascade:assertedClaim ?j ; cascade:assertedWithQueryHash ?hash .
-      ?ruleList pav:hasCurrentVersion ?rules .
-      ?rules cascade:queryHash ?hash .
+      ?j cascade:matcherRule ?rule .
+      ?assertion cascade:assertedClaim ?j ; cascade:assertedUnderRuleListVersion ?asserted .
+      ?assertedRow cascade:rowOfRuleListVersion ?asserted ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
+      ?ruleList pav:hasCurrentVersion ?current .
+      ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
     } }
 }

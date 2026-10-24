@@ -76,8 +76,8 @@ saying why; a document an import must convert and has no saved output for is the
   query as a path under
   `queries/` (`cascade:queryPath`), N5's name for that file's bytes (`cascade:queryHash`), and the kind of table the query
   reads, if any (`cascade:tableKind`). A matcher claim cites its rule (`cascade:matcherRule`), and its assertion names the
-  rule list's version and the `cascade:queryHash` of that version's row for the rule, so the assertion says which query
-  ran, by its bytes. A rule list version's description in the pod also gives each of its rows' `cascade:queryHash` (M8). A tables folder an `open` step
+  rule list's version, whose row for the rule says which query ran, by its bytes. A rule list version's description in
+  the pod also describes each of its rows, `<version>#<rule's local name>`, with its rule and query hash (M8). A tables folder an `open` step
   names may list a version of the vocabulary's rule list (`runtime/rule-list/`) without holding its file: the rows are
   those of the file of that name there, unless the folder holds a file of its own. A person's `references/` folder holds
   every file it lists.
@@ -293,7 +293,7 @@ reference series or version.
 |---|
 
 The reference series and versions the files the step wrote describe are exactly these, each as `references.ttl` does,
-and each version of a rule list with its rows' `cascade:queryHash` as well (M8).
+and each version of a rule list with its rows as well (M8).
 
 ### `{judgment} counts`, `{judgment} does not count`
 

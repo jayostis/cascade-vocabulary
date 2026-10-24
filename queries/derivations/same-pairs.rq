@@ -11,15 +11,17 @@ WHERE {
   { { SELECT ?j (IRI(MIN(STR(?m))) AS ?least)
       WHERE { ?j cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?m }
       GROUP BY ?j }
+    MINUS { ?j cascade:countsUnderLens true ; prov:hadMember ?x , ?y . ?x cascade:currentlyDifferent ?y }
     ?j prov:hadMember ?member .
     FILTER (?member != ?least)
-    FILTER NOT EXISTS { ?j prov:hadMember ?x , ?y . ?x cascade:currentlyDifferent ?y }
     VALUES ?toLeast { true false }
     BIND (IF(?toLeast, ?member, ?least) AS ?a)
     BIND (IF(?toLeast, ?least, ?member) AS ?b) }
   UNION
-  { ?j cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?a , ?b , ?x , ?y .
-    ?x cascade:currentlyDifferent ?y .
+  { { SELECT DISTINCT ?j
+      WHERE { ?j cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?x , ?y .
+              ?x cascade:currentlyDifferent ?y } }
+    ?j prov:hadMember ?a , ?b .
     FILTER (?a != ?b)
     FILTER NOT EXISTS { ?a cascade:currentlyDifferent ?b } }
 }

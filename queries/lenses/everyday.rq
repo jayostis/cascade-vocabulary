@@ -1,8 +1,8 @@
 # The lens decides which judgments count, and is the one step of the build that can be swapped. This one counts a person's
 # judgment not retracted, nor superseded by a judgment not itself retracted. A machine's claim counts on the same terms when
-# the Cascade matcher made it, every reference version it used is current, and it is asserted with a query hash that the
-# current version of a rule list pins: its rule runs now the query it was asserted with. A retracted judgment supersedes
-# nothing.
+# the Cascade matcher made it, every reference version it used is current, and the current version of a rule list has a
+# row for its rule with the query hash of that rule's row in a version it is asserted under: its rule runs now the query
+# it was asserted with. A retracted judgment supersedes nothing.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX pav: <http://purl.org/pav/>
@@ -26,9 +26,11 @@ WHERE {
     }
     FILTER NOT EXISTS { ?retracting npx:retracts ?j }
     FILTER EXISTS {
-      ?assertion cascade:assertedClaim ?j ; cascade:assertedWithQueryHash ?hash .
-      ?ruleList pav:hasCurrentVersion ?rules .
-      ?rules cascade:queryHash ?hash .
+      ?j cascade:matcherRule ?rule .
+      ?assertion cascade:assertedClaim ?j ; cascade:assertedUnderRuleListVersion ?asserted .
+      ?assertedRow cascade:rowOfRuleListVersion ?asserted ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
+      ?ruleList pav:hasCurrentVersion ?current .
+      ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash .
     }
     FILTER NOT EXISTS {
       ?j prov:used ?input .

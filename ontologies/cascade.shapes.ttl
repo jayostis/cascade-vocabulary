@@ -1302,6 +1302,12 @@ cascade:JudgmentShape a sh:NodeShape ;
         sh:message "A judgment retracts only judgments."@en ;
         sh:severity sh:Violation
     ] , [
+        sh:path cascade:matcherRule ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A judgment names at most one matcher rule, by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
         sh:path cascade:justification ;
         sh:maxCount 1 ;
         sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable ) ;
@@ -1443,16 +1449,31 @@ cascade:ClaimAssertionShape a sh:NodeShape ;
         sh:message "An assertion is under one version of the rule list, named by its IRI."@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:assertedWithQueryHash ;
-        sh:nodeKind sh:IRI ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:message "An assertion gives the one query hash its claim's rule has in the version it is under."@en ;
-        sh:severity sh:Violation
-    ] , [
         sh:path prov:generatedAtTime ;
         sh:maxCount 0 ;
         sh:message "An assertion carries no time: the run that wrote it is known from its snapshot."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:RuleListVersionRowShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:rowOfRuleListVersion ;
+    sh:property [
+        sh:path cascade:rowOfRuleListVersion ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A row described in a pod belongs to one rule list version."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:matcherRule ;
+        sh:minCount 1 ;
+        sh:message "A row described in a pod gives its matcher rule."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:queryHash ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A row described in a pod gives the one query hash of its rule."@en ;
         sh:severity sh:Violation
     ] .
 
