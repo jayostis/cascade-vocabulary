@@ -287,7 +287,17 @@ No matcher judgment has any of those records as a member.
 The claims the step asserted, writing an assertion of each, are exactly these, each as the step before says, whether or
 not the step wrote the claim itself (M9). Every claim the step wrote it asserted, and holds only what N6 names it from;
 every other subject in the files the step wrote is an assertion of one of these, the matcher, described as above, a
-reference series or version, or, in the run's own file, the run, its snapshot or the runtime (N7, N14).
+reference series or version, in the run's own file, the run, its snapshot or the runtime (N7, N14), or a release's
+retraction or, in its migration's own file, the migration, its snapshot or the runtime (N15).
+
+### `{step} wrote these retractions:`
+
+| justification | members | inputs | name |
+|---|---|---|---|
+
+The retractions the step wrote are exactly these, each of the matcher's claim of that justification and those members,
+as the step before reads them; each holds only what N15 says, and `inputs` are cascade:RetractionNamingRule, then the
+release it prov:wasInfluencedBy, the claim it prov:invalidated and the claim's cascade:matcherRule.
 
 ### `{step} wrote these reference descriptions:`
 

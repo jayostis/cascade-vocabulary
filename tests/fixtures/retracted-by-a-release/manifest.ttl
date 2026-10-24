@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "retracted-by-a-release" ;
+  rdfs:comment "A rule list whose version 2 revises version 1, runs both rules' queries unchanged and declares the same mapped code rule wrong, the matcher's same code and same mapped code claims, each asserted under version 1, and the release's retraction of the same mapped code claim." ;
+  mf:entries (
+    <#everyday-counts>
+  ) .
+
+<#everyday-counts> a mf:QueryEvaluationTest ;
+  mf:name "everyday-counts" ;
+  rdfs:comment "The same code claim counts; the same mapped code claim does not, though version 2 runs the query it was asserted with: a release's retraction invalidated it." ;
+  mf:action [ qt:query <everyday-counts.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <everyday-counts.srj> .

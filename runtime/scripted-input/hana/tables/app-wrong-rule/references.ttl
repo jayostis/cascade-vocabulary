@@ -1,0 +1,27 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a cascade:ReferenceSeries ;
+    rdfs:label "Matcher rules" ;
+    cascade:defaultTableVersion <urn:uuid:9d4fafb7-ec93-4481-9b31-6af8ae10febd> .
+
+<urn:uuid:f32ebeea-4ed7-4da7-b08c-031dc619538e> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "1" .
+
+<urn:uuid:9d4fafb7-ec93-4481-9b31-6af8ae10febd> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "1b" ;
+    prov:wasRevisionOf <urn:uuid:f32ebeea-4ed7-4da7-b08c-031dc619538e> ;
+    cascade:ruleDeclaredWrong cascade:SameMappedCodeAndDateRule .
+
+<urn:uuid:910b4e9b-77e0-423c-8b8d-4f4e29fa464d> a cascade:ReferenceSeries ;
+    rdfs:label "CDC CVX vaccine groups" ;
+    cascade:tableKind cascade:VaccineGroups ;
+    cascade:defaultTableVersion <ni:///sha-256;arpY4XbZRYhrxVWjs-qMHOVxw58XosRmhHdUkl83Zs8> .
+
+<ni:///sha-256;arpY4XbZRYhrxVWjs-qMHOVxw58XosRmhHdUkl83Zs8> a prov:Entity ;
+    prov:specializationOf <urn:uuid:910b4e9b-77e0-423c-8b8d-4f4e29fa464d> ;
+    pav:version "1" .
