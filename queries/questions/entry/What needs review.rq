@@ -1,9 +1,12 @@
 # Entries a person should look at, and why: its members disagree on how severe an allergy is,
 # the matcher joined it for two different reasons, two records judged different are still joined in it, a matcher's
 # Same of two records now in two entries has lapsed (an open adopted newer tables or rules and did not file it again,
-# so the pair it joined is apart until a person judges it), or two of its conditions, in two entries, carry one code
-# and their dates cannot tell whether they are one condition: either has no
-# onset, or one has an unknown end (no abatement that is a date on or after its onset, and no status that keeps it
+# so the pair it joined is apart until a person judges it), a finding of the claims a rule list version no longer
+# reaches names a lapsed claim of two records now in two entries (listed as one line, the finding, expanding to its pairs, each
+# with the claim of least IRI that names it, until a person answers the finding with a Same, which joins them all, or
+# an acknowledgement, which takes it off; a lapsed Same such a finding names is listed with it, never alone), or two of
+# its conditions, in two entries, carry one code and their dates cannot tell whether they are one condition: either
+# has no onset, or one has an unknown end (no abatement that is a date on or after its onset, and no status that keeps it
 # going: active, recurrence or relapse) and its onset is on or before the other's end, the other's period counted as
 # the matcher's rule R8 counts it. A condition with an unknown end that began after the other's end is apart from it:
 # the two are two episodes, not joined and not listed, as are two whose periods are both known and apart. Two
@@ -22,12 +25,13 @@
 # and no rule converts one into the other.
 # The build never settles these itself; a person does, with a judgment.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX oa: <http://www.w3.org/ns/oa#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT DISTINCT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
+SELECT DISTINCT ?entry ?entryLabel ?needs ?finding ?judgment ?judgmentLabel ?record ?recordLabel ?otherRecord ?otherRecordLabel
 WHERE {
   { { SELECT ?entry
       WHERE {
@@ -65,6 +69,7 @@ WHERE {
       WHERE {
         ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
         FILTER (STR(?record) < STR(?otherRecord))
+        FILTER NOT EXISTS { ?naming oa:hasBody cascade:ClaimsNoLongerReached ; oa:hasTarget ?lapsed }
       }
       GROUP BY ?record ?otherRecord }
     ?judgment cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
@@ -73,6 +78,27 @@ WHERE {
     FILTER (STR(?judgment) = ?first && ?entry != ?otherEntry
             && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord })
     BIND ("joined before, apart under newer tables or rules" AS ?needs)
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    OPTIONAL { ?record rdfs:label ?recordLabel }
+    OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
+  UNION
+  { { { SELECT ?finding ?record ?otherRecord (MIN(STR(?claim)) AS ?first)
+        WHERE {
+          ?finding oa:hasBody cascade:ClaimsNoLongerReached ; oa:hasTarget ?claim .
+          ?claim cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
+          FILTER (STR(?record) < STR(?otherRecord))
+        }
+        GROUP BY ?finding ?record ?otherRecord }
+      FILTER (BOUND(?first)) }
+    BIND (IRI(?first) AS ?judgment)
+    ?record ^cascade:mergedFrom ?entry .
+    ?otherRecord ^cascade:mergedFrom ?otherEntry .
+    FILTER (?entry != ?otherEntry
+            && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord }
+            && !EXISTS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
+                                          prov:hadMember ?finding })
+    BIND ("no longer joined under a newer rule list version" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
@@ -153,4 +179,4 @@ WHERE {
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
 }
-ORDER BY ?needs ?entryLabel ?entry ?judgment ?record ?otherRecord
+ORDER BY ?needs ?finding ?entryLabel ?entry ?judgment ?record ?otherRecord

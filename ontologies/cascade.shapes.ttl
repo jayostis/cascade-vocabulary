@@ -1531,13 +1531,13 @@ cascade:JudgmentShape a sh:NodeShape ;
         sh:path cascade:verdict ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About ) ;
-        sh:message "A judgment gives one verdict: cascade:Same, cascade:Different, cascade:Erroneous or cascade:About. A retraction is no judgment but an activity."@en ;
+        sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About cascade:Acknowledged ) ;
+        sh:message "A judgment gives one verdict: cascade:Same, cascade:Different, cascade:Erroneous, cascade:About or cascade:Acknowledged. A retraction is no judgment but an activity."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:hadMember ;
         sh:nodeKind sh:IRI ;
-        sh:message "A judgment's members are records or activities, named by their IRIs."@en ;
+        sh:message "A judgment's members are records, activities or a finding for review, named by their IRIs."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:generatedAtTime ;
@@ -1677,13 +1677,26 @@ cascade:VerdictMembersShape a sh:NodeShape ;
     sh:message "A judgment that gives a verdict judges at least one member."@en ;
     sh:severity sh:Violation .
 
+# A judgment and the finding it names are filed apart, so this shape's and the next one's sh:class holds over the pod's
+# union of files, never over a judgment's file alone.
 cascade:SetVerdictShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
         [ sh:not [ sh:path cascade:verdict ; sh:minCount 1 ; sh:in ( cascade:Same cascade:Different ) ] ]
         [ sh:path prov:hadMember ; sh:minCount 2 ]
+        [ sh:property [ sh:path cascade:verdict ; sh:hasValue cascade:Same ] ,
+                      [ sh:path prov:hadMember ; sh:minCount 1 ; sh:maxCount 1 ; sh:class cascade:FindingForReview ] ]
     ) ;
-    sh:message "A Same or a Different judges a set of at least two records."@en ;
+    sh:message "A Same or a Different judges a set of at least two records, or a Same one finding for review."@en ;
+    sh:severity sh:Violation .
+
+cascade:AcknowledgedShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path cascade:verdict ; sh:hasValue cascade:Acknowledged ] ]
+        [ sh:path prov:hadMember ; sh:minCount 1 ; sh:maxCount 1 ; sh:class cascade:FindingForReview ]
+    ) ;
+    sh:message "An Acknowledged judgment has one member, a finding for review."@en ;
     sh:severity sh:Violation .
 
 cascade:JustificationShape a sh:NodeShape ;
@@ -1745,6 +1758,58 @@ cascade:ClaimAssertionShape a sh:NodeShape ;
         sh:message "An assertion carries no time: the run that wrote it is known from its snapshot."@en ;
         sh:severity sh:Violation
     ] .
+
+cascade:FindingForReviewShape a sh:NodeShape ;
+    sh:targetClass cascade:FindingForReview ;
+    sh:property [
+        sh:path oa:hasBody ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( cascade:ClaimsNoLongerReached ) ;
+        sh:message "A finding for review gives one kind, its oa:hasBody: cascade:ClaimsNoLongerReached."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path oa:motivatedBy ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue oa:classifying ;
+        sh:message "A finding for review is motivated by oa:classifying: it classifies its targets as its kind."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path oa:hasTarget ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "A finding for review is about at least one thing, its oa:hasTarget, named by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:noLongerReachedUnderRuleListVersion ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A finding names at most one rule list version that no longer reaches its claims, by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:wasGeneratedBy ;
+        sh:maxCount 0 ;
+        sh:message "A finding for review names no act, so two writers file one: the act that filed it is known from its snapshot."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:generatedAtTime ;
+        sh:maxCount 0 ;
+        sh:message "A finding for review carries no time, so two writers file one: the act that filed it is known from its snapshot."@en ;
+        sh:severity sh:Violation
+    ] .
+
+# A finding and the claims it names are filed apart, so its targets' sh:class holds over the pod's union of files, never
+# over the finding's file alone.
+cascade:ClaimsNoLongerReachedShape a sh:NodeShape ;
+    sh:targetClass cascade:FindingForReview ;
+    sh:or (
+        [ sh:not [ sh:path oa:hasBody ; sh:hasValue cascade:ClaimsNoLongerReached ] ]
+        [ sh:property [ sh:path cascade:noLongerReachedUnderRuleListVersion ; sh:minCount 1 ] ,
+                      [ sh:path oa:hasTarget ; sh:class cascade:Judgment ] ]
+    ) ;
+    sh:message "A finding of claims no longer reached names the rule list version that no longer reaches them, and its targets are the matcher's claims."@en ;
+    sh:severity sh:Violation .
 
 cascade:MatcherRunShape a sh:NodeShape ;
     sh:targetClass cascade:MatcherRun ;
