@@ -13,7 +13,8 @@ WHERE {
   GRAPH ?view { ?entry cascade:mergedFrom [] ; ?field ?value }
   OPTIONAL { VALUES ?role { cascade:latestMember cascade:statusFrom cascade:dateFrom cascade:medicationUseStartDateFrom
                             cascade:prescriptionWrittenDateFrom }
-             ?entry ?role ?from .
+             ?entry cascade:mergedFrom/cascade:inEntry ?chosenFor .
+             ?chosenFor ?role ?from .
              ?from pav:hasCurrentVersion ?version .
              ?version ?field ?value .
              OPTIONAL { ?from rdfs:label ?fromLabel } }

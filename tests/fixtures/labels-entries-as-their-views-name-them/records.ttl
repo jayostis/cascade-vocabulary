@@ -5,7 +5,8 @@
 
 :subject a cascade:Subject .
 
-:peanut a cascade:AllergyOrIntolerance .
-:peanutVersion prov:specializationOf :peanut ; cascade:patient :subject ; cascade:allergen "Peanut" .
-:peanutRevision a cascade:Revision ; cascade:revisionOf :peanut ; cascade:version :peanutVersion ;
+:asthma a cascade:ProblemOrDiagnosis .
+:asthmaVersion prov:specializationOf :asthma ; cascade:patient :subject ; cascade:conditionName "Asthma" ;
+    cascade:onsetDate "2020-03-01"^^xsd:date .
+:asthmaRevision a cascade:Revision ; cascade:revisionOf :asthma ; cascade:version :asthmaVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

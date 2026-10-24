@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "labels-entries-as-their-views-name-them" ;
-  rdfs:comment "An allergy, and its view's graph holding its entry as a runtime's dataset does (view.trig): written <#4f2e> in the file, so resolved against the view's address in the graph." ;
+  rdfs:comment "A condition with an onset: its entry is a placeholder in the derived state and, in the conditions view's graph, resolved against the view's address." ;
   mf:entries (
     <#the-entries-labelled>
   ) .
 
 <#the-entries-labelled> a mf:QueryEvaluationTest ;
   mf:name "the-entries-labelled" ;
-  rdfs:comment "Each entry is labelled as the view's graph names it: the entry resolved against the view's address, and the placeholder the allergies view built here adds to that graph, since these fixtures build views without renaming their entries." ;
+  rdfs:comment "The entry the view names is labelled, with the date of the member its date is taken from; the placeholder, which no view holds, is not." ;
   mf:action [ qt:query <the-entries-labelled.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-entries-labelled.srj> .

@@ -1,8 +1,7 @@
 """A fixture: a few Turtle files laid out like a pod, beside the test manifest of what queries give over it. It is built
 as runtime/rules.md says a pod is queried at a step: each file a graph named by the pod's address and its path, the
-lens's derived state, the files a query writes, and the layout. A .trig file holds graphs no file of the pod is: table
-versions' rows, each in the graph its version names, as the matcher reads them (M13), or a view's entries as a runtime's
-dataset holds them, resolved against the view's address (N13)."""
+lens's derived state, the files a query writes, each view naming its entries as a runtime's dataset does (N13), and the
+layout. A .trig file holds table versions' rows, each in the graph its version names, as the matcher reads them (M13)."""
 
 from dataclasses import dataclass
 from functools import cache, cached_property
@@ -17,6 +16,7 @@ from engines import ENGINES, Store, parsed
 
 ADDRESS = "https://pod.example/"
 DERIVED = "urn:cascade:derived:"
+ENTRY = "urn:cascade:entry:"
 LAYOUT_GRAPH = "urn:cascade:pod-layout"
 
 
@@ -81,15 +81,30 @@ def write(store):
     triples by path. Each is marked a cascade:View, built with the current reference versions. A view is written only when
     the layout marks it written always or the pod holds a record of its class."""
     current = [row["version"] for row in store.select(query(questions()["pod/Which reference versions are current"]))]
-    files = {}
-    for path, (by, kind, always) in sorted(written().items(), key=lambda item: (item[1][1] is None, item[0])):
-        if kind is not None and not always and not store.ask(f"ASK {{ ?record a <{kind}> }}"):
-            continue
-        file = URIRef(ADDRESS + path)
-        triples = store.construct(query(by)) | {(file, RDF.type, CASCADE.View)} | {(file, PROV.used, v) for v in current}
+    marked = lambda path, triples: triples | {(URIRef(ADDRESS + path), RDF.type, CASCADE.View)} | {
+        (URIRef(ADDRESS + path), PROV.used, v) for v in current}
+    views, others = {}, {}
+    for path, (by, kind, always) in written().items():
+        if kind is None:
+            others[path] = by
+        elif always or store.ask(f"ASK {{ ?record a <{kind}> }}"):
+            views[path] = store.construct(query(by))
+    files = {path: marked(path, triples) for path, triples in resolved(views).items()}
+    for path, triples in sorted(files.items()):
         store.add(triples, ADDRESS + path)
-        files[path] = triples
+    for path, by in sorted(others.items()):
+        files[path] = marked(path, store.construct(query(by)))
+        store.add(files[path], ADDRESS + path)
     return files
+
+
+def resolved(views):
+    """Each view's triples with every entry placeholder resolved against the address of the view that gives the entry its
+    members, as a runtime's dataset holds a view it writes <#hex> (N13)."""
+    owner = {str(s): ADDRESS + path + "#" + str(s).removeprefix(ENTRY)
+             for path, triples in views.items() for s, p, _ in triples if p == CASCADE.mergedFrom and str(s).startswith(ENTRY)}
+    rename = lambda term: URIRef(owner[str(term)]) if str(term) in owner else term
+    return {path: {(rename(s), p, rename(o)) for s, p, o in triples} for path, triples in views.items()}
 
 
 FIXTURES = [Fixture(manifest) for manifest in sorted((ROOT / "tests" / "fixtures").glob("*/manifest.ttl"))]

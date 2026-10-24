@@ -26,7 +26,7 @@ SELECT DISTINCT ?entry ?entryLabel ?needs ?judgment ?judgmentLabel ?record ?reco
 WHERE {
   { { SELECT ?entry
       WHERE {
-        ?member cascade:inEntry ?entry ;
+        ?member ^cascade:mergedFrom ?entry ;
                 pav:hasCurrentVersion/cascade:allergyCriticality ?criticality .
       }
       GROUP BY ?entry
@@ -38,7 +38,7 @@ WHERE {
       WHERE {
         ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification ?why ;
               prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
-        ?member cascade:inEntry ?entry .
+        ?member ^cascade:mergedFrom ?entry .
       }
       GROUP BY ?entry
       HAVING (COUNT(DISTINCT ?why) > 1
@@ -46,8 +46,8 @@ WHERE {
     BIND ("joined through two kinds of machine sameness" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel } }
   UNION
-  { ?record cascade:currentlyDifferent ?otherRecord ; cascade:inEntry ?entry .
-    ?otherRecord cascade:inEntry ?entry .
+  { ?record cascade:currentlyDifferent ?otherRecord ; ^cascade:mergedFrom ?entry .
+    ?otherRecord ^cascade:mergedFrom ?entry .
     FILTER (STR(?record) < STR(?otherRecord))
     BIND ("judged different, still joined" AS ?needs)
     OPTIONAL { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Different ; prov:hadMember ?record , ?otherRecord }
@@ -63,8 +63,8 @@ WHERE {
       }
       GROUP BY ?record ?otherRecord }
     ?judgment cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
-    ?record cascade:inEntry ?entry .
-    ?otherRecord cascade:inEntry ?otherEntry .
+    ?record ^cascade:mergedFrom ?entry .
+    ?otherRecord ^cascade:mergedFrom ?otherEntry .
     FILTER (STR(?judgment) = ?first && ?entry != ?otherEntry
             && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord })
     BIND ("joined before, apart under newer tables or rules" AS ?needs)
@@ -74,8 +74,8 @@ WHERE {
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
   UNION
   { VALUES ?property { cascade:icd10Code cascade:snomedCode }
-    ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version ; cascade:inEntry ?entry .
-    ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; cascade:inEntry ?otherEntry .
+    ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
+    ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
     ?version ?property ?code .
     ?otherVersion ?property ?code .
     OPTIONAL { ?version cascade:displayDate ?onset }
@@ -105,8 +105,8 @@ WHERE {
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
   UNION
-  { ?record cascade:recordKind "Medication" ; pav:hasCurrentVersion ?version ; cascade:inEntry ?entry .
-    ?otherRecord cascade:recordKind "Medication" ; pav:hasCurrentVersion ?otherVersion ; cascade:inEntry ?otherEntry .
+  { ?record cascade:recordKind "Medication" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
+    ?otherRecord cascade:recordKind "Medication" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
     ?version cascade:rxNormCode ?code .
     ?otherVersion cascade:rxNormCode ?code .
     FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
