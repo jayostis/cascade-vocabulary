@@ -144,7 +144,7 @@ found hard to compare (#107: "written as a code IRI, not a string").
   ACMG classes; a pharmacogenomic implication names a drug and a phenotype, not a pathogenicity); a VUS later resolved
   by a reissued report with a new id, which leaves both calls current unless the source declares the replacement.
 - Which revision is current follows `currency.md`'s ladder, not `interpretedDate`. The view
-  (`views/variant-interpretations.rq`) takes its classification and date from `rec:latestMember`
+  (`views/variant-interpretations.rq`) takes its classification, date and lab from `rec:latestMember`
   (`derivations/latest-members.rq`, by arrival) over `pav:hasCurrentVersion` (`derivations/current-revisions.rq`), the
   derivations `currency.md` replaces, and follows when the ladder and the lead are applied.
 - Whom a ClinVar interpretation is attributed to, the SCV's submitter or ClinVar, is left out of #219: the ClinVar
