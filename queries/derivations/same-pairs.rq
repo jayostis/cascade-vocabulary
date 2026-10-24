@@ -27,10 +27,11 @@ WHERE {
   UNION
   { { SELECT DISTINCT ?j
       WHERE {
-        ?x cascade:currentlyDifferent ?y .
-        { ?j cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?x , ?y }
+        { ?x cascade:currentlyDifferent ?y .
+          ?j cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?x , ?y }
         UNION
-        { ?answer cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?finding .
+        { ?x cascade:currentlyDifferent ?y .
+          ?answer cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?finding .
           ?finding oa:hasBody cascade:ClaimsNoLongerReached ; oa:hasTarget ?j .
           ?j prov:hadMember ?x , ?y } } }
     ?j prov:hadMember ?a , ?b .
