@@ -12,7 +12,8 @@ Feature: The matcher's procedure
   the drug products table of an app, enters pairs of medications that share an NDC, a product code or only an
   ingredient, each pair in an entry of its own, under the rule list's version 7. Ivo, with the variant classifications
   table of an app, enters pairs of variants that carry a ClinVar ID, an HGVS expression or both, each pair in an entry
-  of its own, under the rule list's version 8.
+  of its own, under the rule list's version 8. Gus, with the vocabulary's rule list of an app, enters lab results whose values,
+  units and times differ by a little, under the rule list's version 11.
 
   Rule: M1. A step's records are those with at least one first revision from that step's import or entry session, or all from acts its sync names
     A record's first revisions are those with no prov:wasRevisionOf; it has one or more, one from each writer that
@@ -220,11 +221,20 @@ Feature: The matcher's procedure
       with cascade:VariantClassifications, for variants only. As same-variation-through-table.rq, with the rows an
       expression is on counted over current versions alone.
 
+    Version 11 of the vocabulary's list changes R6's query and adds a row, whose examples are under M18; versions 2 to
+    10 pin same-result.rq:
+
+    - R6, cascade:SameResultRule, justified cascade:SameResult: queries/matcher/same-code-instant-value-and-unit.rq, for lab
+      results only. Two results of one LOINC code at one instant whose values are of one kind and equal, in one unit.
+    - R14, cascade:SameResultOnOneDayRule, justified cascade:SameResultOnOneDay: queries/matcher/same-code-day-value-and-unit.rq,
+      for lab results only. As R6, on one day, at least one of the two stamped with the day alone: a likely join.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
     and R10 in its version 6, R5's newer query and R11 in its version 7, R12 and R13 in its version 8, R3's and
-    R4's changed queries in its version 9, and R11's and R13's in its version 10.
+    R4's changed queries in its version 9, R11's and R13's in its version 10, and R6's changed query and R14 in its
+    version 11.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -597,6 +607,8 @@ Feature: The matcher's procedure
     R5 joins two medications of one RxNorm code, whether each came from a prescription or from a list of what the
     person takes. R6 joins two lab results of one LOINC code, one time and one value: a time is compared as a time, so
     one instant written in two time zones is one time, and units are not compared, as sources spell them differently.
+    That is R6 in the rule list's versions 2 to 10, which these examples run under; M18 says how version 11 compares
+    a lab result.
 
     Background:
       Given a new pod for Gus on 2025-05-01 at 09:00
@@ -841,3 +853,36 @@ Feature: The matcher's procedure
       And Ivo enters "different-ids" on 2026-10-02 at 09:00
       When the matcher runs on the records of that entry on 2026-10-02 at 09:05
       Then the matcher has no judgment holding variant ClinVar 90012 and variant ClinVar 90011
+
+  Rule: M18. A lab result is compared by its code, its instant, its value and its unit, and joined on a day alone only as likely
+    decisions/quantities.md, row "matcher". From the rule list's version 11, R6 joins two lab results of one LOINC code
+    at one instant whose values are of one kind and equal: two quantities of one number, compared by value, so 4.10
+    and 4.1 are one, with the same comparator or none on both; two ratios of equal parts; two ranges of equal bounds;
+    two coded values sharing a code. Text is never compared. Units are equal once each annotation in braces is dropped,
+    a unit of annotations alone being 1, and case is kept, since UCUM's case-sensitive form is the one that tells
+    mmol/L from mmol/l. R14 joins as R6 does on one day, when at least one of the two is stamped with the day alone:
+    two draws in a day are common, so the join is likely, and "What needs review" lists the entry with its Same. Two
+    instants never join, though they are on one day.
+
+    Two results of one code at one instant whose units differ are joined by neither: "What needs review" lists the pair,
+    since no rule converts one unit into another. Two of one code, instant and unit whose values differ are joined by
+    neither: a correction should have come as a new version, and a later rule list version files a finding for a person
+    (jayostis/cascade-vocabulary#217). A shared business identifier within one organization joins no result yet: it is
+    a later rule list version's (jayostis/cascade-vocabulary#221). No step asks a question, so the vocabulary's fixtures
+    show the review page's lines.
+
+    Background:
+      Given a new pod for Gus on 2026-10-01 at 09:00
+      And the pod is opened with the tables "app-results" on 2026-10-01 at 09:01
+      And Gus enters "lab-quantities" on 2026-10-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-10-02 at 09:05
+
+    Example: two potassiums of one instant in two time zones, written 4.10 and 4.1 in one unit, are the same result, and one in mmol/l or of another value joins neither
+      Then the matcher's judgments holding lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium, other lab" and lab result LOINC 2823-3 "Potassium repeat" are:
+        | justification | members                                                                        | used                                                                                                     |
+        | same result   | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium" | version 1 of lab result LOINC 2823-3 "Potassium", version 1 of lab result LOINC 2823-3 "Serum potassium" |
+
+    Example: a glucose stamped with its day alone and one at an instant that day, of one value in one unit, are the same result on one day
+      Then the matcher's judgments holding lab result LOINC 2345-7 "Glucose" and lab result LOINC 2345-7 "Glucose, fasting" are:
+        | justification          | members                                                                       | used                                                                                                    |
+        | same result on one day | lab result LOINC 2345-7 "Glucose", lab result LOINC 2345-7 "Glucose, fasting" | version 1 of lab result LOINC 2345-7 "Glucose", version 1 of lab result LOINC 2345-7 "Glucose, fasting" |

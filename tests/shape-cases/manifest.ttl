@@ -449,3 +449,22 @@
   mf:action [ sht:dataGraph <record-organization/names-a-patient.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath cascade:patient ] ] .
+
+<#lab-result-value/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#lab-result-value/quantity-of-a-text-result> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/quantity-of-a-text-result.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultValueShape ] ] .
+
+<#lab-result-value/bound-with-a-comparator> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/bound-with-a-comparator.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultValueShape ; sh:resultPath cascade:referenceRangeHigh ] ] .
+
+<#lab-result-value/decimal-not-canonical> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/decimal-not-canonical.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:QuantityShape ; sh:resultPath cascade:decimalValue ] ] .

@@ -722,6 +722,133 @@ solid:instanceContainer a rdf:Property ;
     rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
     dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> .
 
+# A lab result's value, unit and reference range, typed; decisions/quantities.md
+
+cascade:Quantity a owl:Class ;
+    rdfs:label "quantity"@en ;
+    rdfs:comment "A number a source stated, with its comparator and its unit, as a node of the version that states it, named by the version's IRI, # and its role (value, numerator, denominator, range-low, range-high, reference-low, reference-high) and hashed with it."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes.html#Quantity> .
+
+cascade:decimalValue a owl:DatatypeProperty ;
+    rdfs:label "decimal value"@en ;
+    rdfs:comment "The number as an xsd:decimal in XSD's canonical form, for comparing, sorting and bounds: no exponent, no leading zero but the one before a point, no trailing zero after it, no point when it is a whole number, and no sign on zero. A number the source wrote with an exponent is written out in full."@en ;
+    rdfs:domain cascade:Quantity ;
+    rdfs:range xsd:decimal ;
+    rdfs:seeAlso <https://www.w3.org/TR/xmlschema11-2/#decimal> .
+
+cascade:writtenValue a owl:DatatypeProperty ;
+    rdfs:label "written value"@en ;
+    rdfs:comment "The number exactly as the source wrote it, its precision and any exponent kept: 6.80 is not written 6.8."@en ;
+    rdfs:domain cascade:Quantity ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes.html#decimal> .
+
+cascade:quantityComparator a owl:DatatypeProperty ;
+    rdfs:label "quantity comparator"@en ;
+    rdfs:comment "That the number is a bound and not the value: <, <=, >= or >, read as the actual value is less than, at most, at least or more than the number. A quantity with none is the value itself."@en ;
+    rdfs:domain cascade:Quantity ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-quantity-comparator.html> .
+
+cascade:ucumUnit a owl:DatatypeProperty ;
+    rdfs:label "UCUM unit"@en ;
+    rdfs:comment "The unit as a code of UCUM's case-sensitive form, exactly as the source wrote it, its case and its {annotations} kept; written only where the source says its unit is one."@en ;
+    rdfs:domain cascade:Quantity ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://ucum.org/ucum> .
+
+cascade:unitText a owl:DatatypeProperty ;
+    rdfs:label "unit text"@en ;
+    rdfs:comment "The unit as the source shows it to a reader, which need not be a UCUM code."@en ;
+    rdfs:domain cascade:Quantity ;
+    rdfs:range xsd:string .
+
+cascade:resultValueKind a owl:ObjectProperty ;
+    rdfs:label "result value kind"@en ;
+    rdfs:comment "Which of the kinds in cascade:ResultValueKinds a lab result's value is, and so which properties hold it."@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range skos:Concept .
+
+cascade:ResultValueKinds a skos:ConceptScheme ;
+    rdfs:label "Result value kinds"@en ;
+    rdfs:comment "The five kinds of value a lab result has, the set FHIR's Observation.value[x], CDA's data types and openEHR's DV_ types agree on. A value a source left out for a reason is no kind."@en ;
+    skos:hasTopConcept cascade:QuantityResultValue , cascade:RatioResultValue , cascade:RangeResultValue , cascade:CodedResultValue ,
+        cascade:TextResultValue .
+
+cascade:QuantityResultValue a skos:Concept ;
+    skos:inScheme cascade:ResultValueKinds ;
+    skos:prefLabel "quantity" ;
+    skos:definition "A number, with any comparator and unit, in the cascade:Quantity cascade:resultQuantity names."@en .
+
+cascade:RatioResultValue a skos:Concept ;
+    skos:inScheme cascade:ResultValueKinds ;
+    skos:prefLabel "ratio" ;
+    skos:definition "A numerator and a denominator, each a cascade:Quantity: a titre 1:64 is one, its parts with no unit."@en .
+
+cascade:RangeResultValue a skos:Concept ;
+    skos:inScheme cascade:ResultValueKinds ;
+    skos:prefLabel "range" ;
+    skos:definition "A low bound, a high bound or both, each a cascade:Quantity with no comparator, both bounds inside the range."@en .
+
+cascade:CodedResultValue a skos:Concept ;
+    skos:inScheme cascade:ResultValueKinds ;
+    skos:prefLabel "coded" ;
+    skos:definition "An answer from a code system, as the code's IRI, one cascade:resultCode for each coding the source gave."@en .
+
+cascade:TextResultValue a skos:Concept ;
+    skos:inScheme cascade:ResultValueKinds ;
+    skos:prefLabel "text" ;
+    skos:definition "Words, in cascade:resultValue, which no rule compares: two spellings of one finding are not one value."@en .
+
+cascade:resultQuantity a owl:ObjectProperty ;
+    rdfs:label "result quantity"@en ;
+    rdfs:comment "Of a lab result whose value is a quantity, that quantity, <version>#value."@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range cascade:Quantity .
+
+cascade:resultRatioNumerator a owl:ObjectProperty ;
+    rdfs:label "result ratio numerator"@en ;
+    rdfs:comment "Of a lab result whose value is a ratio, its numerator, <version>#numerator."@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range cascade:Quantity .
+
+cascade:resultRatioDenominator a owl:ObjectProperty ;
+    rdfs:label "result ratio denominator"@en ;
+    rdfs:comment "Of a lab result whose value is a ratio, its denominator, <version>#denominator."@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range cascade:Quantity .
+
+cascade:resultRangeLow a owl:ObjectProperty ;
+    rdfs:label "result range low"@en ;
+    rdfs:comment "Of a lab result whose value is a range, its low bound, <version>#range-low."@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range cascade:Quantity .
+
+cascade:resultRangeHigh a owl:ObjectProperty ;
+    rdfs:label "result range high"@en ;
+    rdfs:comment "Of a lab result whose value is a range, its high bound, <version>#range-high."@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range cascade:Quantity .
+
+cascade:resultCode a owl:ObjectProperty ;
+    rdfs:label "result code"@en ;
+    rdfs:comment "Of a lab result whose value is coded, the answer's code IRI, one for each coding the source gave in a code system cascade:CodeSystem names."@en ;
+    rdfs:domain cascade:LaboratoryTestResult .
+
+cascade:referenceRangeLow a owl:ObjectProperty ;
+    rdfs:label "reference range low"@en ;
+    rdfs:comment "The low bound of the one reference range the source marks normal, or of its only one, <version>#reference-low; with no low bound the range is everything up to its high one."@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range cascade:Quantity ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.referenceRange.low> .
+
+cascade:referenceRangeHigh a owl:ObjectProperty ;
+    rdfs:label "reference range high"@en ;
+    rdfs:comment "The high bound of the one reference range the source marks normal, or of its only one, <version>#reference-high; with no high bound the range is everything from its low one."@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:range cascade:Quantity ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.referenceRange.high> .
+
 # Reference tables and the matcher's rule list, as a runtime is given them; none of these is written to a pod
 
 cascade:defaultTableVersion a owl:ObjectProperty ;
@@ -1513,7 +1640,12 @@ cascade:SameBrandGeneric a owl:NamedIndividual ;
 
 cascade:SameResult a owl:NamedIndividual ;
     rdfs:label "same result"@en ;
-    rdfs:comment "Both lab results carry one test code, one time and one value, however each writes its unit."@en ;
+    rdfs:comment "Both lab results carry one test code, one instant, and one value of one kind in one unit, the units' UCUM annotations aside. In the rule list's versions 2 to 10 they carried one test code, one time and one value as written, however each wrote its unit."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+cascade:SameResultOnOneDay a owl:NamedIndividual ;
+    rdfs:label "same result on one day"@en ;
+    rdfs:comment "Both lab results carry one test code, one value of one kind in one unit, and one day, at least one of them a day with no time, so two draws that day cannot be told apart: a likely join, which the review page lists."@en ;
     skos:broadMatch semapv:LexicalMatching .
 
 cascade:SameConvertedCode a owl:NamedIndividual ;
@@ -1776,6 +1908,10 @@ cascade:SameVariationRule a owl:NamedIndividual ;
 cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
     rdfs:label "R13, same variation through the table"@en ;
     rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
+
+cascade:SameResultOnOneDayRule a owl:NamedIndividual ;
+    rdfs:label "R14, same result on one day"@en ;
+    rdfs:comment "Rule R14 of runtime/matcher.feature; its judgments are justified cascade:SameResultOnOneDay."@en .
 
 # Servers and organizations
 
