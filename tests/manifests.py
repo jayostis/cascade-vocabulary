@@ -27,6 +27,7 @@ class Entry:
     lens: Path | None
     query: Path | None
     result: Path | None
+    records: tuple = ()
 
 
 def path(iri):
@@ -47,7 +48,8 @@ def entries(manifest):
         found.append(Entry(
             iri=str(entry), name=str(graph.value(entry, MF.name)), types=frozenset(graph.objects(entry, RDF.type)),
             lens=path(graph.value(action, CASCADE.lensQueryPath)), query=path(graph.value(action, QT.query)),
-            result=path(graph.value(entry, MF.result))))
+            result=path(graph.value(entry, MF.result)),
+            records=tuple(sorted(str(record) for record in graph.objects(action, CASCADE.boundRecord)))))
     return found
 
 
@@ -90,7 +92,7 @@ def failure(entry, store):
         found = store.ask(query)
         return None if found == wanted else f"expected {wanted}, found {found}"
     variables, rows = wanted
-    names, solutions = store.answer(query)
+    names, solutions = store.answer(query, entry.records)
     if variables != set(names):
         return f"expected the variables {sorted(variables)}, found {sorted(names)}"
     found = Counter(row(binding) for binding in solutions)

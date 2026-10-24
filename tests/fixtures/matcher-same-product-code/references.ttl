@@ -5,7 +5,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 :products a cascade:ReferenceSeries ; rdfs:label "Drug products" ; cascade:tableKind cascade:DrugProducts .
-:products-1 prov:specializationOf :products ; pav:version "1" .
+:products-0 prov:specializationOf :products ; pav:version "0" .
+:products-1 prov:specializationOf :products ; pav:version "1" ; prov:wasRevisionOf :products-0 .
 
 :ingredients a cascade:ReferenceSeries ; rdfs:label "Product ingredients" ; cascade:tableKind cascade:ProductIngredients .
 :ingredients-1 prov:specializationOf :ingredients ; pav:version "1" .

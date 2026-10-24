@@ -130,8 +130,7 @@ treat both by kind without knowing the rule (`judgments.md`).
 ## Still open
 
 - Where a kind has more than one series, whether used lists the current version of each series the count read or
-  only `?origin`. `same-variation-through-table.rq` still counts over every held version (`?anyOrigin`) until it is
-  confined to current ones.
+  only `?origin`.
 - R12 and R13 are cross-organisation identity rules because a ClinVar ID or an HGVS expression is a global identity, not
   an organisation's. Whether every matcher rule on a global code (an RxNorm code, a LOINC code with a date) holds across
   organisations the same way, or only identity codes do, is open.

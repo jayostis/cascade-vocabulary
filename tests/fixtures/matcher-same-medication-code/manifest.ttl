@@ -14,5 +14,8 @@
   mf:name "same-medication-code" ;
   rdfs:comment "Only the prescription and the list entry match, both ways round." ;
   mf:action [ qt:query <../../../queries/matcher/same-medication-code.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:allergy> ,
+                                  <urn:x:otherMedicine> ,
+                                  <urn:x:prescribed> ] ;
   mf:result <same-medication-code.srj> .

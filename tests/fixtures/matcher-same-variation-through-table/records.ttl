@@ -78,3 +78,11 @@
 :r2 a cascade:GeneticVariantFinding .
 :r2Version prov:specializationOf :r2 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2000A>G" .
 :r2Revision a cascade:Revision ; cascade:revisionOf :r2 ; cascade:version :r2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+# Two records of one expression, which the version no longer current holds on a second row.
+:oldRow1 a cascade:GeneticVariantFinding .
+:oldRow1Version prov:specializationOf :oldRow1 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.1200A>G" .
+:oldRow1Revision a cascade:Revision ; cascade:revisionOf :oldRow1 ; cascade:version :oldRow1Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:oldRow2 a cascade:GeneticVariantFinding .
+:oldRow2Version prov:specializationOf :oldRow2 ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.1200A>G" .
+:oldRow2Revision a cascade:Revision ; cascade:revisionOf :oldRow2 ; cascade:version :oldRow2Version ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .

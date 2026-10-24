@@ -14,5 +14,11 @@
   mf:name "same-result" ;
   rdfs:comment "The two potassiums of one instant and one value match, and the two glucoses of one date; a date never matches a time." ;
   mf:action [ qt:query <../../../queries/matcher/same-result.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:dayB> ,
+                                  <urn:x:dayTime> ,
+                                  <urn:x:otherCode> ,
+                                  <urn:x:otherTime> ,
+                                  <urn:x:otherValue> ,
+                                  <urn:x:utc> ] ;
   mf:result <same-result.srj> .

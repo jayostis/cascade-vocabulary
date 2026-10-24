@@ -4,13 +4,14 @@
 # as pod/What each report says of a variant gives it, ?row the row's subject, ?origin the version and ?verdict one of four
 # literals. A variant finds its row as rule R13 does: through its ClinVar VariationIDs, as the rows of those variations,
 # when it carries any, and its HGVS expression, as the row holding it, only when it carries none; never through both. It
-# finds one row when the rows found, counted as distinct row subjects over every held version, are one. A version that
-# holds the row gives a verdict of its own; for a row found by an expression, the version must hold that expression on the
-# row, as R13 reads it, so a version whose row for the same variation lacks the expression gives none. The verdict is "labs disagree" when the row holds a conflicting
-# classification; else "agrees" when the report's ACMG value is among the row's, or "differs" when the row holds one of
-# the five ACMG values and not the report's; else "as ClinVar writes it", for a row that holds none of the five. A report
-# with no ACMG value has no verdict, and neither has one whose variant finds no row or two or more. Sub-tiers such as low
-# penetrance and VUS-high are not among the five.
+# finds one row when the rows found, counted as distinct row subjects over the current version of every series, the one
+# no version revises, are one. A version that holds the row gives a verdict of its own; for a row found by an expression,
+# the version must hold that expression on the row, as R13 reads it, so a version whose row for the same variation lacks
+# the expression gives none. The verdict is "labs disagree" when the row holds a conflicting classification; else
+# "agrees" when the report's ACMG value is among the row's, or "differs" when the row holds one of the five ACMG values
+# and not the report's; else "as ClinVar writes it", for a row that holds none of the five. A report with no ACMG value
+# has no verdict, and neither has one whose variant finds no row or two or more. Sub-tiers such as low penetrance and
+# VUS-high are not among the five.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
@@ -26,14 +27,16 @@ WHERE {
       { ?variant cascade:clinvarVariationId ?id
         BIND (IRI(CONCAT("https://identifiers.org/clinvar:", ENCODE_FOR_URI(STR(?id)))) AS ?found)
         BIND (?found AS ?lookup)
-        ?anyOrigin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
-        GRAPH ?anyOrigin { ?found ?any [] } }
+        ?current prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
+        FILTER NOT EXISTS { ?newer prov:wasRevisionOf ?current }
+        GRAPH ?current { ?found ?any [] } }
       UNION
       { ?variant cascade:hgvsCodingDnaExpression ?hgvs
         FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] }
         BIND (IRI(CONCAT("https://ns.cascadeprotocol.org/codes/hgvs/", ENCODE_FOR_URI(STR(?hgvs)))) AS ?lookup)
-        ?anyOrigin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
-        GRAPH ?anyOrigin { ?found cascade:hgvsExpression ?lookup } }
+        ?current prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
+        FILTER NOT EXISTS { ?newer prov:wasRevisionOf ?current }
+        GRAPH ?current { ?found cascade:hgvsExpression ?lookup } }
     }
     GROUP BY ?variant
     HAVING (COUNT(DISTINCT ?found) = 1) }

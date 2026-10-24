@@ -4,6 +4,7 @@ files pod-layout.ttl says a query writes."""
 import base64
 import itertools
 import json
+import re
 from functools import cache
 from pathlib import Path
 
@@ -29,6 +30,17 @@ def file_stem(name):
 
 def query(relative):
     return (QUERIES / relative).read_text(encoding="utf-8")
+
+
+TOKEN = re.compile(r'#[^\n]*|<[^<>"{}|^`\\\x00-\x20]*>|"(?:[^"\\\n]|\\.)*"|\'(?:[^\'\\\n]|\\.)*\'|\{')
+
+
+def values_bound(text, records):
+    """The query with VALUES ?record { ... } opening its outermost group: how a runtime whose engine takes no initial
+    binding binds ?record to the records a matcher run compares (M4)."""
+    found = next(match for match in TOKEN.finditer(text) if match.group() == "{")
+    block = " ".join(f"<{record}>" for record in records)
+    return f"{text[:found.end()]} VALUES ?record {{ {block} }}{text[found.end():]}"
 
 
 def prose(text):

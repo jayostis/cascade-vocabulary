@@ -1,12 +1,13 @@
+from collections import Counter
 from functools import cache
 from pathlib import Path
 
 import pytest
 from rdflib import URIRef
 
-from contract import QUERIES, built, derivations, named, query, questions
+from contract import QUERIES, built, derivations, named, query, questions, values_bound
 from engines import ENGINES
-from manifests import Entry, entries, failure, lens_name
+from manifests import Entry, entries, failure, lens_name, row
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
 LENSES = sorted(named("lenses"))
@@ -15,6 +16,7 @@ ASKED = {**questions(), **{f"matcher/{name}": relative for name, relative in nam
 ORDERED = {(QUERIES / relative).resolve() for relative in ASKED.values() if "ORDER BY" in query(relative)}
 ENTRIES = [on_its_worker(fixture, entry, id=f"{fixture.name}-{entry.name}")
            for fixture in FIXTURES for entry in entries(fixture.manifest)]
+COMPARISONS = {(QUERIES / relative).resolve() for relative in named("matcher").values()}
 
 
 @cache
@@ -33,6 +35,15 @@ def test_the_entry_gives_its_expected_rows_on_each_engine_and_an_ordered_questio
         text = Path(entry.query).read_text(encoding="utf-8")
         one, other = (store.select(text) for store in stores.values())
         assert one == other
+
+
+@pytest.mark.parametrize("fixture, entry", [case for case in ENTRIES if Path(case.values[1].query).resolve() in COMPARISONS])
+def test_a_comparison_binds_records_and_gives_rows_alike_bound_by_substitution_and_by_a_values_block(fixture, entry):
+    store = built_once(fixture, "oxigraph", lens_name(entry.lens)).store
+    text = Path(entry.query).read_text(encoding="utf-8")
+    substituted = Counter(row(found) for found in store.answer(text, entry.records)[1])
+    assert entry.records and substituted
+    assert Counter(row(found) for found in store.select(values_bound(text, entry.records))) == substituted
 
 
 def lenses_that_differ(fixture):
