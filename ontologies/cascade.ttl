@@ -12,8 +12,6 @@
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix np: <http://www.nanopub.org/nschema#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix org: <http://www.w3.org/ns/org#> .
@@ -592,7 +590,7 @@ cascade:membersJoinedByCurrentTableVersion a owl:ObjectProperty ;
 
 cascade:lapsed a owl:DatatypeProperty ;
     rdfs:label "lapsed"@en ;
-    rdfs:comment "Derived: the judgment is a matcher's Same that does not count because a reference version it used has a newer current one whose rows do not join its members, nothing retracts it, and no judgment not itself retracted supersedes it."@en ;
+    rdfs:comment "Derived: the judgment is a matcher's Same that does not count because a reference version it used has a newer current one whose rows do not join its members, nothing retracts it, and no judgment not itself retracted replaces it (dct:replaces)."@en ;
     rdfs:domain cascade:Judgment ;
     rdfs:range xsd:boolean .
 
@@ -658,7 +656,7 @@ cascade:topCriticality a owl:DatatypeProperty ;
 
 cascade:Placement a owl:Class ;
     rdfs:label "placement"@en ;
-    rdfs:comment "One entry of a pod's layout: where a runtime files things. It names a file (solid:instance), a folder (solid:instanceContainer), or the property whose value's folder the thing goes in (cascade:filedWith). A thing is placed by cascade:filedWith first, then by an entry whose cascade:forSubjectsOf it states, then by its solid:forClass alone; a file that says it is a cascade:View is placed only by the entries at or under the views folder."@en .
+    rdfs:comment "One entry of a pod's layout: where a runtime files things. It names a file (solid:instance), a folder (solid:instanceContainer), or the property whose value's folder the thing goes in (cascade:filedWith). A thing is placed by cascade:filedWith first, then by an entry whose cascade:forSubjectsOf it states, then by its solid:forClass alone; a thing stating the properties of two such entries is placed by the one for prov:invalidated over the one for prov:used, so a retraction that used a release is filed with the retractions; a file that says it is a cascade:View is placed only by the entries at or under the views folder."@en .
 
 cascade:subfolderPrefixLength a owl:DatatypeProperty ;
     rdfs:label "subfolder prefix length"@en ;
@@ -1534,17 +1532,21 @@ cascade:PatientRole a prov:Role ;
     rdfs:label "patient role"@en ;
     rdfs:comment "The person the pod is about, acting for themselves."@en .
 
-npx:supersedes a rdf:Property , owl:IrreflexiveObjectProperty ;
-    rdfs:isDefinedBy <http://purl.org/nanopub/x/> ;
-    rdfs:domain np:Nanopublication ;
-    rdfs:range np:Nanopublication ;
-    dct:source <https://github.com/peta-pico/ontologies/blob/271a83341f419de9ef3de87687b172b6790adaf2/nanopubx.ttl> .
+dct:replaces a rdf:Property ;
+    rdfs:label "Replaces"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:subPropertyOf dct:relation ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> .
 
-npx:retracts a rdf:Property ;
-    rdfs:isDefinedBy <http://purl.org/nanopub/x/> ;
-    rdfs:domain foaf:Agent ;
-    rdfs:range np:Nanopublication ;
-    dct:source <https://github.com/peta-pico/ontologies/blob/271a83341f419de9ef3de87687b172b6790adaf2/nanopubx.ttl> .
+cascade:matcherRuleDeclaredWrong a owl:ObjectProperty ;
+    rdfs:label "matcher rule declared wrong"@en ;
+    rdfs:comment "Of a rule list version, the release, a matcher rule it declares wrong: once a pod's current rule list version is the release or a version after it, the pod's cascade:RuleListVersionMigration retracts each assertion of that rule's claims under a version the release revises, so a known-bad join is not offered back. An assertion under the release or a later version is not declared wrong: a version that ships the rule fixed, or runs it again, can join the pair again."@en ;
+    rdfs:domain prov:Entity .
+
+cascade:RuleListVersionMigration a owl:Class ;
+    rdfs:label "rule list version migration"@en ;
+    rdfs:comment "An act a runtime performs whenever the pod's current rule list version, or a version it revises, declares a matcher rule wrong and the pod holds an assertion of that rule's claim, under a version the declaring version revises, that no retraction invalidates: at an open, before its matcher run; at a sync's arrival; before a matcher run. It writes a retraction of each such assertion, a prov:Activity that prov:invalidated the assertion and prov:used the declaring version, named by cascade:RetractionNamingRule with no time and no run, so two writers on one release write one file with one content, whatever order they met the versions in. It is written only when it writes a retraction."@en ;
+    rdfs:subClassOf prov:Activity .
 
 cascade:currentlySame a owl:ObjectProperty ;
     rdfs:label "currently same"@en ;
@@ -1650,7 +1652,7 @@ cascade:AssertionNamingRule a owl:NamedIndividual ;
 
 cascade:RetractionNamingRule a owl:NamedIndividual ;
     rdfs:label "retraction naming rule"@en ;
-    rdfs:comment "A release's retraction of a claim. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the release; the claim; the matcher rule the release declares wrong."@en ;
+    rdfs:comment "A release's retraction of a claim's assertion. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the release; the assertion; the matcher rule the release declares wrong."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
 # Snapshots

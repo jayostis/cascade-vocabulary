@@ -1,6 +1,6 @@
 @prefix : <urn:x:> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
-@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -41,8 +41,8 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :sameF a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :f1 , :f2 ;
     prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:retractF a cascade:Judgment ; npx:retracts :sameF ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:retractF a prov:Activity ; prov:invalidated :sameF ; prov:wasAssociatedWith :person ; prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 # g: a Same of three records that used version 1, two of which a Same that used version 2 joins
 :sameGOld a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :g1 , :g2 , :g3 ;
@@ -66,18 +66,18 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :sameJ a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :j1 , :j2 ;
     prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personSameJ a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :j1 , :j2 ; npx:supersedes :sameJ ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+:personSameJ a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :j1 , :j2 ; dct:replaces :sameJ ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-:retractPersonSameJ a cascade:Judgment ; npx:retracts :personSameJ ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:retractPersonSameJ a prov:Activity ; prov:invalidated :personSameJ ; prov:wasAssociatedWith :person ; prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 
 # k: a lapsed Same a person's Different supersedes, the Different not retracted
 :sameK a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :k1 , :k2 ;
     prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personDifferentK a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :k1 , :k2 ; npx:supersedes :sameK ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+:personDifferentK a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :k1 , :k2 ; dct:replaces :sameK ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :sameAUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameA ;

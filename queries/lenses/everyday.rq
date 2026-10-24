@@ -1,11 +1,11 @@
 # The lens decides which judgments count, and is the one step of the build that can be swapped. This one counts a person's
-# judgment not retracted, nor superseded by a judgment not itself retracted. A machine's claim counts on the same terms when
+# judgment not retracted, nor replaced by a judgment not itself retracted. A machine's claim counts on the same terms when
 # the Cascade matcher made it, every reference version it used is current or has a current version whose rows join its
 # members as its rule reads them (M7), and the current version of a rule list has a row for its rule with the query hash
-# of that rule's row in a version it is asserted under: its rule runs now the query it was asserted with. A retracted
-# judgment supersedes nothing.
+# of that rule's row in a version it is asserted under by an assertion no retraction invalidates: its rule runs now the
+# query it was asserted with, and no release declared that assertion wrong. A retracted judgment replaces nothing.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
-PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
@@ -13,11 +13,11 @@ CONSTRUCT { ?j cascade:countsUnderLens true }
 WHERE {
   { ?j a cascade:Judgment ; prov:wasAttributedTo/a prov:Person .
     FILTER NOT EXISTS {
-      ?superseding npx:supersedes ?j
-      OPTIONAL { ?undoing npx:retracts ?superseding }
+      ?replacing dct:replaces ?j
+      OPTIONAL { ?undoing prov:invalidated ?replacing }
       FILTER (!BOUND(?undoing))
     }
-    FILTER NOT EXISTS { ?retracting npx:retracts ?j } }
+    FILTER NOT EXISTS { ?retraction prov:invalidated ?j } }
   UNION
   { { SELECT DISTINCT ?j
           WHERE {
@@ -26,15 +26,16 @@ WHERE {
                       ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash } }
             ?assertedRow cascade:matcherRule ?rule ; cascade:queryHash ?hash ; cascade:rowOfRuleListVersion ?asserted .
             ?assertion cascade:assertedUnderRuleListVersion ?asserted ; cascade:assertedClaim ?j .
+            FILTER NOT EXISTS { ?assertionRetraction prov:invalidated ?assertion }
             ?j cascade:matcherRule ?rule .
           } }
     ?j a cascade:Judgment ; prov:wasAttributedTo cascade:CascadeMatcher .
     FILTER NOT EXISTS {
-      ?superseding npx:supersedes ?j
-      OPTIONAL { ?undoing npx:retracts ?superseding }
+      ?replacing dct:replaces ?j
+      OPTIONAL { ?undoing prov:invalidated ?replacing }
       FILTER (!BOUND(?undoing))
     }
-    FILTER NOT EXISTS { ?retracting npx:retracts ?j }
+    FILTER NOT EXISTS { ?retraction prov:invalidated ?j }
     MINUS {
       ?j prov:used ?input .
       ?input prov:specializationOf ?series .
