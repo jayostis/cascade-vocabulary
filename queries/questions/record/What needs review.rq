@@ -5,10 +5,10 @@
 # which is also the reason where a ClockDiscounted leaves either carrying no observation time. A candidate a later live
 # pull of the same source follows in ancestry is not listed: ancestry orders the two. A record is also listed for each
 # Before of its revisions that a cycle of Befores cancels, with the two revisions it orders. Either is fixed by one
-# Before. A finding that a source reported older states is listed as one line, ?finding, saying how many records went
-# back and the last date the source reported later states, expanding to each record, with its current revision and the
-# revision holding the older state, until a person acknowledges the finding or files a Before between that revision and
-# one the source contradicted. A finding that a writer's clock was behind is listed with each revision it names, until
+# Before. A finding that a source reported older states is listed as one line, ?finding, saying how many of the records
+# that went back are not yet answered and the last date the source reported later states, expanding to each record,
+# with its current revision and the revision holding the older state, until a person acknowledges the finding or files
+# a Before between that revision and one the source contradicted, which answers that record. A finding that a writer's clock was behind is listed with each revision it names, until
 # a person acknowledges it or discounts the act's clock.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX oa: <http://www.w3.org/ns/oa#>
@@ -17,11 +17,15 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT DISTINCT ?record ?recordLabel ?needs ?finding ?revision ?revisionLabel ?otherRevision ?otherRevisionLabel
 WHERE {
-  { ?record cascade:currentRevision ?revision ; cascade:currentRevisionCandidate ?otherRevision .
+  { { SELECT ?record ?otherRevision
+      WHERE {
+        ?record cascade:currentRevisionCandidate ?otherRevision .
+        FILTER NOT EXISTS { ?later cascade:laterInAncestryThan ?otherRevision }
+      } }
+    ?record cascade:currentRevision ?revision .
     ?revision cascade:version ?version ; cascade:observedAsOf ?seen .
     ?otherRevision cascade:version ?otherVersion ; cascade:observedAsOf ?otherSeen .
     FILTER (?otherVersion != ?version)
-    FILTER NOT EXISTS { ?later cascade:laterInAncestryThan ?otherRevision }
     OPTIONAL { ?revision cascade:observationTimeDiscountedBy ?discount }
     OPTIONAL { ?otherRevision cascade:observationTimeDiscountedBy ?otherDiscount }
     BIND (IF(?seen > ?otherSeen && !BOUND(?discount) && !BOUND(?otherDiscount), "observed later", "no basis") AS ?needs)
@@ -38,7 +42,13 @@ WHERE {
     OPTIONAL { ?otherRevision rdfs:label ?otherRevisionLabel } }
   UNION
   { { { SELECT ?finding (COUNT(?older) AS ?wentBack)
-        WHERE { ?finding oa:hasBody cascade:SourceReportedOlderStates ; oa:hasTarget ?older }
+        WHERE {
+          ?finding oa:hasBody cascade:SourceReportedOlderStates ; oa:hasTarget ?older .
+          FILTER NOT EXISTS {
+            ?older cascade:judgedBefore|^cascade:judgedBefore ?answered .
+            ?finding cascade:contradictedEarlierRevision ?answered .
+          }
+        }
         GROUP BY ?finding }
       FILTER (BOUND(?finding)) }
     { { SELECT ?finding (MAX(?reported) AS ?lastReported)

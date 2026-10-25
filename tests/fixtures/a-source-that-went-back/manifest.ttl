@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "a-source-that-went-back" ;
-  rdfs:comment "Three conditions pulled twice from one source, each changed and stamped later by the second pull, then pulled again after the source restored a backup: gout and eczema at the states the pod holds from the first pull, asthma at a state stamped between the two that the pod never held. The third pull's finding names the three revisions holding the older states and the three it contradicts; the person placed eczema's later state before its older one." ;
+  rdfs:comment "Three conditions pulled twice from one source, each changed and stamped later by the second pull, then pulled again after the source restored a backup: gout and eczema at the states the pod holds from the first pull, asthma at a state stamped between the two that the pod never held. The third pull's finding names the three revisions holding the older states and the three it contradicts; the person placed eczema's later state before its older one. The second pull had already reported psoriasis at a state stamped before the first pull's, and the person acknowledged that finding." ;
   mf:entries (
     <#what-needs-review>
   ) .
 
 <#what-needs-review> a mf:QueryEvaluationTest ;
   mf:name "what-needs-review" ;
-  rdfs:comment "The finding is one line, three records at states older than the source reported on 10 January, expanding to gout and asthma, each with its later state shown and its older one not: the pick is unchanged. Eczema, which the person's Before answered, is not listed." ;
+  rdfs:comment "The third pull's finding is one line, two records at states older than the source reported on 10 January, expanding to gout and asthma, each with its later state shown and its older one not: the pick is unchanged. Eczema, which the person's Before answered, is neither counted nor listed, and the acknowledged finding is not listed." ;
   mf:action [ qt:query <../../../queries/questions/record/What%20needs%20review.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-needs-review.srj> .
