@@ -32,9 +32,10 @@ Feature: The conformance kit
 
   Rule: Check 2. Each final view equals expected/
     Take the view graph the replay builds at the last step under everyday (the graph <address>clinical/<view>.ttl),
-    keep each subject that has cascade:mergedFrom with its triples, and replace each entry, which the file writes as
-    <#hex> (N13) and the graph holds resolved against the view's address, with a blank node. The result is the expected
-    file's graph, up to its blank nodes.
+    keep each subject that has cascade:mergedFrom with its triples but its members' current values
+    (cascade:memberCurrentValues), which the fixtures of queries/questions/entry/What it shows.rq hold to it, and
+    replace each entry, which the file writes as <#hex> (N13) and the graph holds resolved against the view's address,
+    with a blank node. The result is the expected file's graph, up to its blank nodes.
 
     No example states this check: SPARQL cannot compare two graphs up to their blank nodes.
 
