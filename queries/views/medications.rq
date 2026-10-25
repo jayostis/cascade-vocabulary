@@ -3,7 +3,9 @@
 # chosen for each, and every intent a member states, so an entry joining a prescription and a list entry says both. It
 # also says the lifecycle class of that status (cascade:lifecycle), so an app reads whether the medication is still
 # taken without reading the status. Each member's current values are a node of the view of their own, named after the
-# entry and the member, which says the member they came from.
+# entry and the member, which says the member they came from. A time its source wrote short of the second keeps the node
+# saying so (cascade:PaddedDateTime), named after the entry or the member's values and -padded-, so the view never shows
+# a padded time as exact.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -33,6 +35,14 @@ CONSTRUCT {
     cascade:prescriptionWrittenDate ?memberPrescriptionWrittenDate ;
     cascade:medicationUseEndDate ?memberMedicationUseEndDate ;
     cascade:prescribedOrReported ?memberPrescribedOrReported .
+  ?entry cascade:paddedDateTime ?startedPadded .
+  ?startedPadded cascade:paddedDateTimeProperty cascade:medicationUseStartDate ; cascade:writtenDate ?startedWritten .
+  ?entry cascade:paddedDateTime ?writtenPadded .
+  ?writtenPadded cascade:paddedDateTimeProperty cascade:prescriptionWrittenDate ; cascade:writtenDate ?writtenWritten .
+  ?entry cascade:paddedDateTime ?endPadded .
+  ?endPadded cascade:paddedDateTimeProperty cascade:medicationUseEndDate ; cascade:writtenDate ?endWritten .
+  ?memberValues cascade:paddedDateTime ?memberPadded .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
 }
 WHERE {
   { ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry .
@@ -47,7 +57,16 @@ WHERE {
     OPTIONAL { ?entry cascade:statusLifecycle ?lifecycle }
     OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:medicationUseEndDate ?end }
     OPTIONAL { ?entry cascade:medicationUseStartDateFrom/pav:hasCurrentVersion/cascade:medicationUseStartDate ?started }
-    OPTIONAL { ?entry cascade:prescriptionWrittenDateFrom/pav:hasCurrentVersion/cascade:prescriptionWrittenDate ?written } }
+    OPTIONAL { ?entry cascade:prescriptionWrittenDateFrom/pav:hasCurrentVersion/cascade:prescriptionWrittenDate ?written }
+    OPTIONAL { ?entry cascade:medicationUseStartDateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?startedPaddedAt .
+               ?startedPaddedAt cascade:paddedDateTimeProperty cascade:medicationUseStartDate ; cascade:writtenDate ?startedWritten }
+    BIND (IF(BOUND(?startedWritten), IRI(CONCAT(STR(?entry), "-padded-medicationUseStartDate")), 1/0) AS ?startedPadded)
+    OPTIONAL { ?entry cascade:prescriptionWrittenDateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?writtenPaddedAt .
+               ?writtenPaddedAt cascade:paddedDateTimeProperty cascade:prescriptionWrittenDate ; cascade:writtenDate ?writtenWritten }
+    BIND (IF(BOUND(?writtenWritten), IRI(CONCAT(STR(?entry), "-padded-prescriptionWrittenDate")), 1/0) AS ?writtenPadded)
+    OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?endPaddedAt .
+               ?endPaddedAt cascade:paddedDateTimeProperty cascade:medicationUseEndDate ; cascade:writtenDate ?endWritten }
+    BIND (IF(BOUND(?endWritten), IRI(CONCAT(STR(?entry), "-padded-medicationUseEndDate")), 1/0) AS ?endPadded) }
   UNION
   { ?member a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
@@ -59,5 +78,9 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:medicationUseStartDate ?memberMedicationUseStartDate }
     OPTIONAL { ?memberVersion cascade:prescriptionWrittenDate ?memberPrescriptionWrittenDate }
     OPTIONAL { ?memberVersion cascade:medicationUseEndDate ?memberMedicationUseEndDate }
-    OPTIONAL { ?memberVersion cascade:prescribedOrReported ?memberPrescribedOrReported } }
+    OPTIONAL { ?memberVersion cascade:prescribedOrReported ?memberPrescribedOrReported }
+    OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+    BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
+          AS ?memberPadded) }
 }

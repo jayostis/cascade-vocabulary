@@ -28,3 +28,11 @@
     cascade:vaccinationOccurrenceTime "2015"^^xsd:gYear .
 :hepBRevision a cascade:Revision ; cascade:revisionOf :hepB ; cascade:version :hepBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:covid a cascade:Vaccination .
+:covidVersion prov:specializationOf :covid ; cascade:patient :subject ; cascade:vaccineName "COVID-19, at two" ; cascade:workflowStatus "completed" ;
+    cascade:vaccinationOccurrenceTime "2025-11-03T14:00:00"^^xsd:dateTime ;
+    cascade:paddedDateTime <urn:x:covidVersion#padded-vaccinationOccurrenceTime> .
+<urn:x:covidVersion#padded-vaccinationOccurrenceTime> cascade:paddedDateTimeProperty cascade:vaccinationOccurrenceTime ; cascade:writtenDate "2025110314" .
+:covidRevision a cascade:Revision ; cascade:revisionOf :covid ; cascade:version :covidVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -670,9 +670,9 @@ cascade:VariantInterpretationShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:interpretedDate ;
-        sh:datatype xsd:date ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] ) ;
         sh:maxCount 1 ;
-        sh:message "An interpretation date is one xsd:date, the day the interpretation was issued, with no time"@en
+        sh:message "An interpretation date is one xsd:gYear, xsd:gYearMonth or xsd:date, the day the interpretation was issued, or the year or the month where its source wrote no day, with no time"@en
     ] ;
 
     sh:property [
@@ -1029,13 +1029,13 @@ cascade:VersionWithPaddedDateTimeShape a sh:NodeShape ;
     ] ;
     sh:sparql [
         a sh:SPARQLConstraint ;
-        sh:message "A padded time is the version's node <version>#padded- and its property's local name, and the version holds one xsd:dateTime under that property: {?node} is not."@en ;
+        sh:message "A padded time is the node <version>#padded- and its property's local name, or, of a view's entry or a member's values in a view, whose IRIs have a fragment already, <entry>-padded- and the local name; and its subject holds one xsd:dateTime under that property: {?node} is not."@en ;
         sh:severity sh:Violation ;
         sh:select """SELECT $this ?node WHERE {
   $this <https://ns.cascadeprotocol.org/cascade#paddedDateTime> ?node .
   OPTIONAL { ?node <https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty> ?property }
   FILTER (!BOUND(?property)
-          || STR(?node) != CONCAT(STR($this), "#padded-", REPLACE(STR(?property), "^.*[#/]", ""))
+          || STR(?node) != CONCAT(STR($this), IF(CONTAINS(STR($this), "#"), "-padded-", "#padded-"), REPLACE(STR(?property), "^.*[#/]", ""))
           || NOT EXISTS { $this ?property ?time .
                           FILTER (isLiteral(?time) && DATATYPE(?time) = <http://www.w3.org/2001/XMLSchema#dateTime>) })
 }"""
@@ -1048,7 +1048,10 @@ cascade:ValueAbsentForReasonShape a sh:NodeShape ;
         sh:nodeKind sh:IRI ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:message "A value absent for a reason names the one property it stands for."@en ;
+        sh:in ( cascade:dateOfBirth cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
+                cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
+                cascade:resultValueKind ) ;
+        sh:message "A value absent for a reason names the one property it stands for, a date or a lab result's value kind."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:absentReasonCode ;
