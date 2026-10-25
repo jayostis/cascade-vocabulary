@@ -384,6 +384,13 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
     ] ;
 
     sh:property [
+        sh:path dct:identifier ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:message "A lab result's business identifier is a non-empty literal, whose datatype names the identifier system, or a plain string when no system is stated."@en
+    ] ;
+
+    sh:property [
         sh:path cascade:workflowStatus ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
@@ -1599,8 +1606,8 @@ cascade:JudgmentShape a sh:NodeShape ;
     ] , [
         sh:path cascade:justification ;
         sh:maxCount 1 ;
-        sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost cascade:SameResultOnOneDay ) ;
-        sh:message "A judgment gives at most one justification: cascade:SameCode, cascade:SameCodeAndDate, cascade:SameMappedCode, cascade:SameMappedCodeAndDate, cascade:SameMedicationCode, cascade:SameProductCode, cascade:SameResult, cascade:SameConvertedCode, cascade:SameCodeAndPeriod, cascade:SameBrandGeneric, cascade:SameVariation, cascade:SameVariationThroughTable, cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost or cascade:SameResultOnOneDay."@en ;
+        sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost cascade:SameResultOnOneDay cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization ) ;
+        sh:message "A judgment gives at most one justification: cascade:SameCode, cascade:SameCodeAndDate, cascade:SameMappedCode, cascade:SameMappedCodeAndDate, cascade:SameMedicationCode, cascade:SameProductCode, cascade:SameResult, cascade:SameConvertedCode, cascade:SameCodeAndPeriod, cascade:SameBrandGeneric, cascade:SameVariation, cascade:SameVariationThroughTable, cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost, cascade:SameResultOnOneDay or cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization."@en ;
         sh:severity sh:Violation
     ] .
 

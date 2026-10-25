@@ -92,3 +92,44 @@
 <urn:x:valueOtherVersion#value> cascade:decimalValue "4.4"^^xsd:decimal ; cascade:writtenValue "4.4" ; cascade:ucumUnit "mmol/L" .
 :valueOtherRevision a cascade:Revision ; cascade:revisionOf :valueOther ; cascade:version <urn:x:valueOtherVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:identifiedFirst a cascade:LaboratoryTestResult .
+<urn:x:identifiedFirstVersion> prov:specializationOf :identifiedFirst ; cascade:patient :subject ; cascade:testName "Sodium" ;
+    cascade:testCode <http://loinc.org/rdf/2951-2> ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:identifiedFirstVersion#value> .
+<urn:x:identifiedFirstVersion#value> cascade:decimalValue "139"^^xsd:decimal ; cascade:writtenValue "139" ; cascade:ucumUnit "mmol/L" .
+:identifiedFirstRevision a cascade:Revision ; cascade:revisionOf :identifiedFirst ; cascade:version <urn:x:identifiedFirstVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:identifiedCorrected a cascade:LaboratoryTestResult .
+<urn:x:identifiedCorrectedVersion> prov:specializationOf :identifiedCorrected ; cascade:patient :subject ; cascade:testName "Sodium" ;
+    cascade:workflowStatus "corrected" ;
+    cascade:testCode <http://loinc.org/rdf/2951-2> ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:identifiedCorrectedVersion#value> .
+<urn:x:identifiedCorrectedVersion#value> cascade:decimalValue "141"^^xsd:decimal ; cascade:writtenValue "141" ; cascade:ucumUnit "mmol/L" .
+:identifiedCorrectedRevision a cascade:Revision ; cascade:revisionOf :identifiedCorrected ; cascade:version <urn:x:identifiedCorrectedVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:sameAsCorrected a cascade:LaboratoryTestResult .
+<urn:x:sameAsCorrectedVersion> prov:specializationOf :sameAsCorrected ; cascade:patient :subject ; cascade:testName "Sodium, serum" ;
+    cascade:testCode <http://loinc.org/rdf/2951-2> ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:sameAsCorrectedVersion#value> .
+<urn:x:sameAsCorrectedVersion#value> cascade:decimalValue "141"^^xsd:decimal ; cascade:writtenValue "141" ; cascade:ucumUnit "mmol/L" .
+:sameAsCorrectedRevision a cascade:Revision ; cascade:revisionOf :sameAsCorrected ; cascade:version <urn:x:sameAsCorrectedVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:unmarkedFirst a cascade:LaboratoryTestResult .
+<urn:x:unmarkedFirstVersion> prov:specializationOf :unmarkedFirst ; cascade:patient :subject ; cascade:testName "Chloride" ;
+    cascade:testCode <http://loinc.org/rdf/2075-0> ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:unmarkedFirstVersion#value> .
+<urn:x:unmarkedFirstVersion#value> cascade:decimalValue "98"^^xsd:decimal ; cascade:writtenValue "98" ; cascade:ucumUnit "mmol/L" .
+:unmarkedFirstRevision a cascade:Revision ; cascade:revisionOf :unmarkedFirst ; cascade:version <urn:x:unmarkedFirstVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:unmarkedSecond a cascade:LaboratoryTestResult .
+<urn:x:unmarkedSecondVersion> prov:specializationOf :unmarkedSecond ; cascade:patient :subject ; cascade:testName "Chloride, other channel" ;
+    cascade:testCode <http://loinc.org/rdf/2075-0> ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:unmarkedSecondVersion#value> .
+<urn:x:unmarkedSecondVersion#value> cascade:decimalValue "101"^^xsd:decimal ; cascade:writtenValue "101" ; cascade:ucumUnit "mmol/L" .
+:unmarkedSecondRevision a cascade:Revision ; cascade:revisionOf :unmarkedSecond ; cascade:version <urn:x:unmarkedSecondVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

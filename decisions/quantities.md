@@ -108,7 +108,7 @@ Every row is ruled, 2026-10-22. Where the research corrected a premise of #131, 
 | unit | FHIR `code` when `system` is UCUM; C-CDA "SHOULD" UCUM; v2 ISO+, case-insensitive; UCUM §6 | `ucumUnit` is the source's exact string, case and `{annotations}` kept, only where the source says it is case-sensitive UCUM (FHIR `system`, C-CDA `@unit` under a Warning shape); `unitText` is the display unit; a unit outside UCUM, and every v2 `OBX-6`, is `unitText` alone. The alternatives: store the annotation-stripped form instead, or both | borrowed from FHIR; corrects #183's "a non-UCUM C-CDA unit is a source error" |
 | unit IRI | UCUM none; SPHN UCUM classes; QUDT `ucumCode`, dotted | none; a QUDT or SPHN IRI, if ever, is a table beside the string | borrowed from UCUM; corrects #131's "no IRIs for units": UCUM defines none, others do |
 | value kinds | FHIR `value[x]`; CDA `PQ`, `RTO`, `IVL_PQ`, `CD`, `ST`; openEHR `DV_QUANTITY`, `DV_PROPORTION`, `DV_INTERVAL`, `DV_CODED_TEXT`, `DV_TEXT` | five, the set the three agree on, and one property naming which a result's value is: Quantity (row "number"); Ratio, a numerator and a denominator each a quantity node, a titre `1:64` a ratio with no unit; Range, a low and a high bound, the node shape the reference range row defines, reused; Coded, the answer as a code IRI, as every coded thing here is; Text, what is left, named as text and never matched by value. A value absent for a reason is no kind: it is row 7 of `partial-dates-and-absent-reasons.md` | borrowed from FHIR, CDA and openEHR |
-| matcher | no standard defines a duplicate; HL7 v2 filler order number and observation id; FHIR `identifier`; C-CDA entry `id`; Particle every field; de Graauw code, value, datetime | four tiers, a new rule list version: (i) a shared business identifier within one organisation joins for certain, first; (ii) same code, same instant, equal value, same unit is a strong join; (iii) same code and instant with a different value, or a value of another kind, is never Same and is a finding for review, coded answers only when of one code system; (iv) same code and instant with units that are not one UCUM unit is a finding for review, not joined, until conversion is in scope; units are one UCUM unit when equal once annotations are dropped and the litre's `l` and `L` are read as one, with any prefix, every other case kept; a different instant never joins, a time with no zone is compared only with another with none, as written, and a day-only time drops to likely, surfaced. Replaces M12's value clause; the four cases become examples in `runtime/matcher.feature`: rule M21 applies tiers (ii), (iii) as R16's finding for review and (iv) as R17's, the day-only drop as R15, and leaves tier (i) to #221 | ours: no standard defines a duplicate; the identifiers are the standards' |
+| matcher | no standard defines a duplicate; HL7 v2 filler order number and observation id; FHIR `identifier`; C-CDA entry `id`; Particle every field; de Graauw code, value, datetime | four tiers, a new rule list version: (i) a shared business identifier within one organisation joins for certain, first; (ii) same code, same instant, equal value, same unit is a strong join; (iii) same code and instant with a different value, or a value of another kind, is never Same and is a finding for review, coded answers only when of one code system; (iv) same code and instant with units that are not one UCUM unit is a finding for review, not joined, until conversion is in scope; units are one UCUM unit when equal once annotations are dropped and the litre's `l` and `L` are read as one, with any prefix, every other case kept; a different instant never joins, a time with no zone is compared only with another with none, as written, and a day-only time drops to likely, surfaced. Replaces M12's value clause; the four cases become examples in `runtime/matcher.feature`: rule M21 applies tiers (ii), (iii) as R16's finding for review and (iv) as R17's, the day-only drop as R15; rule M22 applies tier (i) as R18, a shared `dct:identifier` of a named system, a shared code and one time, from documents naming one organisation or two judged one (#270) | ours: no standard defines a duplicate; the identifiers are the standards' |
 | conversion | ucum-lhc within a dimension; LOINC molar masses | out of scope; a unit that differs goes to review (the matcher's tier iv) | waits on UCUM's licence |
 
 ## Why
@@ -166,7 +166,34 @@ spellings of one finding are not one value. An absent value is a reason, not a k
 the standards' identifiers, and the rubric's fourth test orders it by how sure each tier is. (i) Within one
 organisation a shared business identifier is certain: HL7 v2's filler order number with the observation id, "a
 permanent identifier for an order and its associated observations" (quoted in the ruling; not re-read here), FHIR's
-`identifier`, C-CDA's entry `id`; it is `republishing-sources.md`'s within-organisation rule, run first. (ii) Same
+`identifier`, C-CDA's entry `id`; it is `republishing-sources.md`'s within-organisation rule, run first. R18 compares
+the identifier as the literal #212 made an organisation's, its value typed by its system, which a C-CDA `id` reaches
+through HL7's CDA-to-FHIR identifier mapping, so one result in a hospital's FHIR and C-CDA summaries carries one
+identifier; one with no system is never compared, since nothing says which of an organisation's systems issued it. It
+also asks for one code, as `naming.md` says a judgment does ("share one plus a code"): a source copying an organizer's
+accession onto each member would otherwise join a whole panel. And it asks for one clinically relevant time, compared
+as tier (ii) compares instants, or one of the two stating none: a source that files serial draws under one accession
+would otherwise join every draw of a day, or of a year, into one; a correction keeps its specimen's time, so it still
+joins. It does not compare the value, so a correction's second value is not tier (iii)'s finding to be resolved by
+hand: the review page leaves a finding of two results R18 joins out when one of the two says it was corrected or
+amended (`workflowStatus`), and lists it otherwise, since two channels of one organisation disagreeing on a value
+neither marks as a correction is what a person should see. The organisation is an organisation record a record's
+documents name as custodian or author; an agent with no record, as Apple Health's export names its author, is no
+organisation, and a pull names none, so R18 joins no pulled record, holding them apart while which organisation a
+record from a shared server belongs to is open in `republishing-sources.md`. Two organisation records are one only by
+a person's judgment of organisations (`cascade:currentlySameOrganization`), never because a join of two servers made
+two organisations pulled from them one record, for the same reason.
+
+**The identifier term.** `dct:identifier`, "an unambiguous reference to the resource within a given context", with
+range `rdfs:Literal` and no domain, so a literal typed by its system is one, as #212 writes an organisation's
+`org:identifier`. Of a version of a lab result it is a business identifier its source gave the result: a FHIR
+`Observation.identifier`'s value typed by its system, a C-CDA observation's `id` as HL7's CDA-to-FHIR identifier
+mapping makes it one, a UUID in lower case in both; one with no system is a plain string. Looked at
+and failed: `org:identifier`, whose domain `org:Organization` would make a lab result an organisation; `skos:notation`,
+a concept's notation within its scheme, not a record's identifier; FHIR RDF's `fhir:identifier` and ADMS's
+`adms:identifier`, each a node with a system and a value, where #212 settled one literal; `schema:identifier`, whose
+range is a `PropertyValue`, text or a URL; SPHN's `hasSharedIdentifier`, a sameness asserted across providers, not an
+identifier a source gave. (ii) Same
 code, instant, value and unit is strong. Values are equal by kind: quantities by `decimalValue` through `FILTER(?a =
 ?b)`, never a shared variable, which joins `"6.8"` and `"6.80"` only on a store that canonicalises (inferred), with
 the same comparator or none on both; ratios by both parts; ranges by both bounds; coded by the same IRI; text never.
