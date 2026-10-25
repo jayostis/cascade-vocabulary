@@ -1520,6 +1520,16 @@ cascade:Acknowledged a owl:NamedIndividual ;
     rdfs:label "acknowledged"@en ;
     rdfs:comment "The member, a cascade:FindingForReview, has been seen and needs nothing done: it leaves the review page, still stands, and changes nothing else."@en .
 
+cascade:ClockDiscounted a owl:NamedIndividual ;
+    rdfs:label "clock discounted"@en ;
+    rdfs:comment "A person's judgment whose one member is an act: the times its writer's clock gave are known wrong, so every revision the act generated is ranked as carrying no cascade:observedAsOf, and its picks fall to the least IRI and the review page. Nothing is rewritten, and retracting it restores the ranking. It carries no offset: a wrong clock is discounted, not corrected. Not Erroneous over the act: the content is sound, only its clock is not."@en .
+
+cascade:observationTimeDiscountedBy a owl:ObjectProperty ;
+    rdfs:label "observation time discounted by"@en ;
+    rdfs:comment "Derived: a person's ClockDiscounted that stands names the act that generated this revision: no activity invalidates it, and no judgment that stands replaces it."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range cascade:Judgment .
+
 cascade:About a owl:NamedIndividual ;
     rdfs:label "about"@en ;
     rdfs:comment "The member, a source's patient record, is about the cascade:subject: every record naming it is the subject's."@en .
@@ -1669,6 +1679,28 @@ cascade:noLongerReachedUnderRuleListVersion a owl:ObjectProperty ;
     rdfs:comment "Of a cascade:ClaimsNoLongerReached finding, the rule list version that reaches none of the claims it names, though the version it revises reached each."@en ;
     rdfs:domain cascade:FindingForReview ;
     rdfs:range prov:Entity .
+
+cascade:SourceReportedOlderStates a skos:Concept ;
+    skos:inScheme cascade:FindingForReviewKinds ;
+    skos:prefLabel "source reported older states"@en ;
+    skos:definition "A source reported, by a live pull, records at states older than it had reported by earlier live pulls: each oa:hasTarget is the revision holding the older state of one record, and each cascade:contradictedEarlierRevision a revision of a target's record, from a live pull of the same source, whose source change time is later than the target's. A live pull is a document retrieved on a date that answers as of no other instant; two are of one source when both name one transmitter, the same agent, or neither names one. The body applies to each target alone: each is a state its source reported after reporting a later one. Filed once by the import that pulled the older states, naming every record that went back and no record a finding the pod holds already names with each of the same contradicted revisions, so a repeat pull of the same states files nothing while that finding stands, acknowledged or not. A copy by another path files nothing."@en .
+
+cascade:contradictedEarlierRevision a owl:ObjectProperty ;
+    rdfs:label "contradicted earlier revision"@en ;
+    rdfs:comment "Of a cascade:SourceReportedOlderStates finding, a revision from an earlier live pull of the same source holding a later state of the record one of its targets is a revision of: the earlier report the source now contradicts. Its act is the earlier act, its record the record that went back."@en ;
+    rdfs:domain cascade:FindingForReview ;
+    rdfs:range cascade:Revision .
+
+cascade:ClockBehind a skos:Concept ;
+    skos:inScheme cascade:FindingForReviewKinds ;
+    skos:prefLabel "clock behind"@en ;
+    skos:definition "The writer whose act generated its targets had a clock at least cascade:writerClockBehindByAtLeastDays days behind: each oa:hasTarget is a revision the act generated whose observation time the writer's own clock gave, as an entry session's start, an act's start, or the retrieval time of a live pull that names no transmitter, and that precedes the cascade:observedAsOf of a head it names, or a revision of such a pull whose source change time is after the pull's own time, by at least one whole day. The body applies to the targets together: the greatest whole number of days any one of them shows. Filed by an act whose revisions show it, unless an act in the first-parent ancestry of its snapshot filed one, so a writer has one while one stands. A person answers it with a cascade:ClockDiscounted over the act."@en .
+
+cascade:writerClockBehindByAtLeastDays a owl:DatatypeProperty ;
+    rdfs:label "writer clock behind by at least days"@en ;
+    rdfs:comment "Of a cascade:ClockBehind finding, the whole number of days its targets show the writer's clock was at least behind."@en ;
+    rdfs:domain cascade:FindingForReview ;
+    rdfs:range xsd:integer .
 
 # Naming rules: each name a runtime or an adapter mints follows one, and a changed recipe is a new rule
 

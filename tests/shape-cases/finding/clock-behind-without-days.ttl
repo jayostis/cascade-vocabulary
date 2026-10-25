@@ -1,0 +1,15 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:older a cascade:Revision ; cascade:revisionOf :record ; cascade:version :olderVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:later a cascade:Revision ; cascade:revisionOf :record ; cascade:version :laterVersion ; prov:wasRevisionOf :older ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:finding a cascade:FindingForReview ;
+    oa:hasBody cascade:ClockBehind ;
+    oa:motivatedBy oa:classifying ;
+    oa:hasTarget :later .

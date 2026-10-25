@@ -6,7 +6,8 @@ Feature: Arrivals
   imports Apple Health exports of four allergies (peanut, latex, shellfish, mango) from one hospital, and later
   exports that change them. Ben enters a peanut allergy and an asthma by hand. Finn brings exports, downloads and
   entries a runtime must refuse, two allergies of one code, a C-CDA download of one allergy, and a pull from his
-  hospital, whose FHIR server his app connects to.
+  hospital, whose FHIR server his app connects to; then pulls of his allergies before and after the hospital restored
+  a backup, and pulls on a clock that ran behind.
 
   Rule: A1. A document whose bytes the pod already keeps brings nothing new
     It is not converted, and nothing is written. The example saves no Bridge output for it, so a runtime that converted
@@ -153,8 +154,10 @@ Feature: Arrivals
         | oa:hasSource         | the document of allergy "Peanut"     |
         | prov:wasDerivedFrom  | the document of allergy "Peanut"     |
 
-  Rule: A10. A document is kept when it wrote a revision or the Bridge raised findings on it
-    Kept is its bytes under attachments/, and its description. Otherwise nothing of it is written.
+  Rule: A10. A document is kept when it wrote a revision, the Bridge raised findings on it, or it reported an older state
+    Kept is its bytes under attachments/, and its description. Otherwise nothing of it is written. A document with an
+    arrival that a finding that its source reported older states names (A18) is kept, though it wrote no revision: a
+    finding is something kept.
 
     Example: a document that wrote no revision is kept for the findings the Bridge raised on it
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -564,6 +567,151 @@ Feature: Arrivals
         SELECT ?server WHERE {
           GRAPH <urn:cascade:steps> { <urn:cascade:step:allergy-pull> prov:generated ?file }
           GRAPH ?file { ?server a cascade:Server }
+        }
+        """
+      Then it answers nothing
+
+  Rule: A18. An import whose source reports states older than it reported before files one finding naming each record that went back
+    decisions/currency.md, row "a source that goes backwards". A live pull is a document retrieved on a date
+    (pav:retrievedOn) that answers as of no other instant (cascade:answeredAsOf); two are of one source when both name
+    one transmitter, the same agent, or neither names one, as the ladder reads them (C2). An arrival from a live pull
+    that carries a source change time, of a record holding revisions from live pulls of the same source stamped later,
+    contradicts each of those. After its revisions and before its act (W1), the import files one
+    cascade:FindingForReview whose oa:hasBody is cascade:SourceReportedOlderStates, whose oa:motivatedBy is
+    oa:classifying, whose oa:hasTarget is, for each such arrival, the revision holding its state, the one A3 found or
+    the one the import wrote, and whose cascade:contradictedEarlierRevision is each revision it contradicts, so naming
+    each earlier act and each record that went back. It names no record a finding the pod holds already names with
+    each revision the arrival contradicts, acknowledged or not, and is not filed when it would name none: a repeat pull
+    of the rolled-back states files nothing. The current pick is unchanged (C2): a state the record held writes
+    nothing, and one it never held is written and ranked below the later stamp. A copy by another path, an export or a
+    transmitter's, contradicts nothing. It carries no time and names no act, and is named by cascade:FindingNamingRule
+    from its triples.
+
+    Example: a pull after the hospital restored a backup files one finding, and shows the later states still
+      The restored pull reports the peanut allergy at its first state, which the pod holds, and the latex allergy at a
+      state stamped between the first two pulls, which it never held.
+
+      Given a new pod for Finn on 2026-06-01 at 09:00
+      And the pull "hospital-first-pull" is imported on 2026-06-08 at 09:00
+      And the pull "hospital-second-pull" is imported on 2026-06-15 at 09:00
+      When the pull "hospital-restored-pull" is imported on 2026-06-20 at 09:00
+      When the query is:
+        """
+        SELECT ?record ?older ?contradicted WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-restored-pull> prov:generated ?file }
+          GRAPH ?file {
+            ?finding oa:hasBody cascade:SourceReportedOlderStates ; oa:motivatedBy oa:classifying ;
+                     oa:hasTarget ?olderRevision ; cascade:contradictedEarlierRevision ?contradictedRevision
+          }
+          ?olderRevision cascade:revisionOf ?record ; cascade:version ?older .
+          ?contradictedRevision cascade:revisionOf ?record ; cascade:version ?contradicted .
+        }
+        """
+      Then it answers:
+        | record                  | older                                | contradicted                         |
+        | allergy SNOMED 91935009 | version 1 of allergy SNOMED 91935009 | version 2 of allergy SNOMED 91935009 |
+        | allergy "Latex"         | version 3 of allergy "Latex"         | version 2 of allergy "Latex"         |
+      And these records have:
+        | record                  | field   | value |
+        | allergy SNOMED 91935009 | version | 2     |
+        | allergy "Latex"         | version | 2     |
+
+    Example: pulling the rolled-back states again names only the record that went back since
+      The pull after the restore left out the mango allergy; the next pull returns it at its first state, beside the
+      peanut and latex allergies at the states the earlier finding names.
+
+      Given a new pod for Finn on 2026-06-01 at 09:00
+      And the pull "hospital-first-pull" is imported on 2026-06-08 at 09:00
+      And the pull "hospital-second-pull" is imported on 2026-06-15 at 09:00
+      And the pull "hospital-restored-pull" is imported on 2026-06-20 at 09:00
+      When the pull "hospital-restored-pull-again" is imported on 2026-06-21 at 09:00
+      When the query is:
+        """
+        SELECT ?record ?older ?contradicted WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-restored-pull-again> prov:generated ?file }
+          GRAPH ?file { ?finding oa:hasTarget ?olderRevision ; cascade:contradictedEarlierRevision ?contradictedRevision }
+          ?olderRevision cascade:revisionOf ?record ; cascade:version ?older .
+          ?contradictedRevision cascade:revisionOf ?record ; cascade:version ?contradicted .
+        }
+        """
+      Then it answers:
+        | record          | older                        | contradicted                 |
+        | allergy "Mango" | version 1 of allergy "Mango" | version 2 of allergy "Mango" |
+
+    Example: an export of a state older than the one an earlier export holds files nothing
+      Apple Health names itself as the transmitter of each export, so each export is a path of its own, and its copy of
+      the peanut allergy stamped 4 January, after the export stamped 5 January, is a stale copy.
+
+      Given a new pod for Ada on 2026-01-01 at 09:00
+      And the export "first-export" is imported on 2026-01-02 at 10:00
+      And the export "new-content" is imported on 2026-01-06 at 10:00
+      When the export "stale-copy" is imported on 2026-01-08 at 10:00
+      When the query is:
+        """
+        SELECT ?finding WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:stale-copy> prov:generated ?file }
+          GRAPH ?file { ?finding a cascade:FindingForReview }
+        }
+        """
+      Then it answers nothing
+
+  Rule: A19. An act whose revisions show the writer's clock behind files one finding, unless an act in its first-parent ancestry filed one
+    decisions/currency.md, row "wrong writer clock". A revision's observation time is the writer's own clock when it is
+    an entry session's start, an act's start, or the pav:retrievedOn of a live pull that names no transmitter (A18).
+    Two checks run on each revision an act writes: one whose observation time is the writer's clock and precedes the
+    cascade:observedAsOf of a head it names (prov:wasRevisionOf), and one from a live pull that names no transmitter
+    whose source change time (pav:lastUpdateOn) is after the pull's pav:retrievedOn, each by at least one whole day.
+    After its revisions and before its act (W1), the act files a cascade:FindingForReview whose oa:hasBody is
+    cascade:ClockBehind, whose oa:motivatedBy is oa:classifying, whose oa:hasTarget is each revision either check
+    found, and whose cascade:writerClockBehindByAtLeastDays is the greatest whole number of days one of them shows; it
+    files none when an act in the first-parent ancestry of its snapshot (cascade:firstParentSnapshot, N14) filed one,
+    so a writer files one while one stands, and another writer's finding, received by a sync, silences nothing. Its name
+    follows cascade:FindingNamingRule.
+
+    Example: a pull on a clock behind the head it revises files a finding of the days between
+      Given a new pod for Finn on 2026-05-31 at 09:00
+      And the pull "hospital-unstamped-pull" is imported on 2026-06-10 at 09:00
+      When the pull "hospital-pull-on-a-clock-behind" is imported on 2026-06-11 at 09:00
+      When the query is:
+        """
+        SELECT ?days ?record ?version WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-pull-on-a-clock-behind> prov:generated ?file }
+          GRAPH ?file {
+            ?finding oa:hasBody cascade:ClockBehind ; oa:motivatedBy oa:classifying ;
+                     cascade:writerClockBehindByAtLeastDays ?days ; oa:hasTarget ?revision
+          }
+          ?revision cascade:revisionOf ?record ; cascade:version ?version .
+        }
+        """
+      Then it answers:
+        | days | record           | version                       |
+        | 9    | allergy "Sesame" | version 2 of allergy "Sesame" |
+
+    Example: a pull returning a record its source stamped after the pull's own time files a finding
+      Given a new pod for Finn on 2026-05-31 at 09:00
+      When the pull "hospital-pull-stamped-after-it" is imported on 2026-06-12 at 09:00
+      When the query is:
+        """
+        SELECT ?days ?record WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-pull-stamped-after-it> prov:generated ?file }
+          GRAPH ?file { ?finding oa:hasBody cascade:ClockBehind ; cascade:writerClockBehindByAtLeastDays ?days ; oa:hasTarget ?revision }
+          ?revision cascade:revisionOf ?record .
+        }
+        """
+      Then it answers:
+        | days | record           |
+        | 5    | allergy "Sesame" |
+
+    Example: a writer whose earlier act filed a clock finding files no second
+      Given a new pod for Finn on 2026-05-31 at 09:00
+      And the pull "hospital-unstamped-pull" is imported on 2026-06-10 at 09:00
+      And the pull "hospital-pull-on-a-clock-behind" is imported on 2026-06-11 at 09:00
+      When the pull "hospital-pull-stamped-after-it" is imported on 2026-06-12 at 09:00
+      When the query is:
+        """
+        SELECT ?finding WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-pull-stamped-after-it> prov:generated ?file }
+          GRAPH ?file { ?finding a cascade:FindingForReview }
         }
         """
       Then it answers nothing

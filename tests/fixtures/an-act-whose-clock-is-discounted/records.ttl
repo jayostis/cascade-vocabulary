@@ -1,0 +1,32 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:pulledByThem pav:retrievedOn "2026-01-10T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:pulledOnASkewedClock pav:retrievedOn "2026-01-02T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+
+:gout a cascade:ProblemOrDiagnosis .
+:goutActive prov:specializationOf :gout ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "active" .
+:goutResolved prov:specializationOf :gout ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "resolved" .
+:goutTheirs a cascade:Revision ; cascade:revisionOf :gout ; cascade:version :goutActive ;
+    prov:wasDerivedFrom :pulledByThem ; prov:wasGeneratedBy :theirPull ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+:goutMine a cascade:Revision ; cascade:revisionOf :gout ; cascade:version :goutResolved ;
+    prov:wasDerivedFrom :pulledOnASkewedClock ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:00Z"^^xsd:dateTime .
+
+:asthma a cascade:ProblemOrDiagnosis .
+:asthmaActive prov:specializationOf :asthma ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .
+:asthmaMine a cascade:Revision ; cascade:revisionOf :asthma ; cascade:version :asthmaActive ;
+    pav:lastUpdateOn "2026-01-05T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledOnASkewedClock ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:00Z"^^xsd:dateTime .
+
+:clockBehind a cascade:FindingForReview ; oa:hasBody cascade:ClockBehind ; oa:motivatedBy oa:classifying ;
+    oa:hasTarget :asthmaMine ; cascade:writerClockBehindByAtLeastDays 3 .

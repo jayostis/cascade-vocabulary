@@ -513,3 +513,30 @@
   mf:action [ sht:dataGraph <judgment-about-a-finding/acknowledged-a-record.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:AcknowledgedShape ] ] .
+
+<#finding/source-reported-older-states> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/source-reported-older-states.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#finding/older-states-contradicting-nothing> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/older-states-contradicting-nothing.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:SourceReportedOlderStatesShape ] ] .
+
+<#finding/clock-behind> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/clock-behind.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-clock-discounted/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-clock-discounted/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-clock-discounted/a-revision> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-clock-discounted/a-revision.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ClockDiscountedShape ] ] .
+
+<#finding/clock-behind-without-days> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/clock-behind-without-days.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ClockBehindShape ] ] .
