@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -19,40 +19,40 @@
   mf:name "everyday-counts" ;
   rdfs:comment "Everyday counts every judgment not retracted, nor superseded by a judgment not itself retracted, and a matcher's claim only while every version it used is current and a current rule list version runs the query it was asserted with." ;
   mf:action [ qt:query <everyday-counts.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <everyday-counts.srj> .
 
 <#export-counts> a mf:QueryEvaluationTest ;
   mf:name "export-counts" ;
   rdfs:comment "Export counts a person's judgment not retracted, nor superseded by a judgment not itself retracted, and a matcher's claim only when it rests on the same code and counts as everyday would count it." ;
   mf:action [ qt:query <export-counts.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/export.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/export.rq> ] ;
   mf:result <export-counts.srj> .
 
 <#whether-it-counts> a mf:QueryEvaluationTest ;
   mf:name "whether-it-counts" ;
   rdfs:comment "One row per judgment saying whether it counts, and one more for each thing that happened to it, with what did it." ;
   mf:action [ qt:query <../../../queries/questions/judgment/Whether%20it%20counts.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <whether-it-counts.srj> .
 
 <#who-judged-what> a mf:QueryEvaluationTest ;
   mf:name "who-judged-what" ;
   rdfs:comment "Everything each judgment says: when a person made it, by whom and in what role, its verdict and member, what it supersedes or retracts, and the rule list version a claim is asserted under." ;
   mf:action [ qt:query <../../../queries/questions/judgment/Who%20judged%20what.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <who-judged-what.srj> .
 
 <#how-many-count-everyday> a mf:QueryEvaluationTest ;
   mf:name "how-many-count-everyday" ;
   rdfs:comment "Under everyday, the judgments that count by verdict, justification and who made them." ;
   mf:action [ qt:query <../../../queries/questions/pod/How%20many%20judgments%20count.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <how-many-count-everyday.srj> .
 
 <#how-many-count-for-export> a mf:QueryEvaluationTest ;
   mf:name "how-many-count-for-export" ;
   rdfs:comment "Under export, the machine's SameMappedCode does not count." ;
   mf:action [ qt:query <../../../queries/questions/pod/How%20many%20judgments%20count.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/export.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/export.rq> ] ;
   mf:result <how-many-count-for-export.srj> .
