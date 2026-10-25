@@ -708,7 +708,7 @@ Feature: The matcher's procedure
     and a dateTime compare, and a time zone never moves a day, unlike R6's instants. Both bounds count. A condition
     with no onset joins nothing. So a condition two sources both call active joins whatever onsets they give, and two
     episodes that are each over, and apart, do not.
-    That is R8 in the rule list's versions 4 to 12, which these examples run under; M23 says how version 14 reads a
+    That is R8 in the rule list's versions 4 to 13, which these examples run under; M23 says how version 14 reads a
     date that is a year or a month.
 
     Hana's "episodes" are conditions of J18.9 (three), E11.9 (two), R10.9 (two) and SNOMED CT 195662009 (two).

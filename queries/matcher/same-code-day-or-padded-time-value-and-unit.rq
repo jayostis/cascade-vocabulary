@@ -20,9 +20,9 @@ WHERE {
       ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time ;
         cascade:resultValueKind ?valueKind .
       FILTER (DATATYPE(?time) IN (xsd:date, xsd:dateTime) && ?valueKind != cascade:TextResultValue)
+      OPTIONAL { ?version cascade:paddedDateTime ?padded }
       BIND (SUBSTR(STR(?time), 1, 10) AS ?day)
-      BIND (DATATYPE(?time) = xsd:date
-            || EXISTS { ?version cascade:paddedDateTime ?padded } AS ?dayAlone)
+      BIND (DATATYPE(?time) = xsd:date || BOUND(?padded) AS ?dayAlone)
       OPTIONAL { ?version cascade:resultQuantity ?firstQuantity . ?firstQuantity cascade:decimalValue ?firstQuantityNumber .
                  OPTIONAL { ?firstQuantity cascade:quantityComparator ?firstQuantityComparator }
                  OPTIONAL { ?firstQuantity cascade:ucumUnit ?firstQuantityUcum }
@@ -70,8 +70,8 @@ WHERE {
       FILTER (DATATYPE(?otherTime) IN (xsd:date, xsd:dateTime) && ?valueKind != cascade:TextResultValue)
       BIND (SUBSTR(STR(?otherTime), 1, 10) AS ?otherDay)
       BIND (?otherDay AS ?day)
-      BIND (DATATYPE(?otherTime) = xsd:date
-            || EXISTS { ?otherVersion cascade:paddedDateTime ?otherPadded } AS ?otherDayAlone)
+      OPTIONAL { ?otherVersion cascade:paddedDateTime ?otherPadded }
+      BIND (DATATYPE(?otherTime) = xsd:date || BOUND(?otherPadded) AS ?otherDayAlone)
       OPTIONAL { ?otherVersion cascade:resultQuantity ?otherFirstQuantity . ?otherFirstQuantity cascade:decimalValue ?otherFirstQuantityNumber .
                  OPTIONAL { ?otherFirstQuantity cascade:quantityComparator ?otherFirstQuantityComparator }
                  OPTIONAL { ?otherFirstQuantity cascade:ucumUnit ?otherFirstQuantityUcum }
