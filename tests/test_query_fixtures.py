@@ -144,8 +144,12 @@ def test_the_ladder_reads_a_persons_judgment_exactly_when_the_everyday_lens_coun
         (judgment, CASCADE.verdict, CASCADE.Erroneous), (judgment, PROV.hadMember, probe(judgment, "wrong")),
         (probe(judgment, "wrong"), RDF.type, CASCADE.Revision),
         (judgment, CASCADE.verdict, CASCADE.Before), (judgment, CASCADE.earlierMember, probe(judgment, "earlier")),
-        (judgment, PROV.hadMember, probe(judgment, "later")))})
+        (judgment, PROV.hadMember, probe(judgment, "later")),
+        (judgment, CASCADE.verdict, CASCADE.ClockDiscounted), (judgment, PROV.hadMember, probe(judgment, "act")),
+        (probe(judgment, "discounted"), PROV.wasGeneratedBy, probe(judgment, "act")),
+        (probe(judgment, "discounted"), RDF.type, CASCADE.Revision))})
     read = store.construct(query("derivations/revision-judgments.rq"))
     counted = {judgment for judgment, _, _ in store.construct(query(named("lenses")["everyday"]))} & judgments
     assert {j for j in judgments if (probe(j, "wrong"), CASCADE.revisionJudgedErroneousBy, j) in read} == counted
     assert {j for j in judgments if (probe(j, "earlier"), CASCADE.judgedBefore, probe(j, "later")) in read} == counted
+    assert {j for j in judgments if (probe(j, "discounted"), CASCADE.observationTimeDiscountedBy, j) in read} == counted

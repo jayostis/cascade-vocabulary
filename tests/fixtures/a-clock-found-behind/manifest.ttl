@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-clock-found-behind" ;
+  rdfs:comment "A condition whose source stamps no change time, pulled by another writer on 10 January, then pulled again by a writer that had received that pull, its clock saying 1 January: the second pull's revision precedes the head it names, and its act filed a finding that the writer's clock was at least 9 days behind. That writer's earlier pull, on its clock's 28 December, had returned asthma stamped 2 January and filed a finding that its clock was at least 5 days behind, which the person acknowledged." ;
+  mf:entries (
+    <#what-needs-review>
+  ) .
+
+<#what-needs-review> a mf:QueryEvaluationTest ;
+  mf:name "what-needs-review" ;
+  rdfs:comment "The second finding is listed with the revision it names, and the acknowledged one is not. The pick is not: ancestry decided it." ;
+  mf:action [ qt:query <../../../queries/questions/record/What%20needs%20review.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-needs-review.srj> .

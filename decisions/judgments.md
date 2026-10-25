@@ -46,6 +46,7 @@ who makes judgments.
 | maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` | borrowed |
 | verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`, and `cascade:Before`, of two revisions, naming the earlier as `cascade:earlierMember`, per `currency.md` | ours: a belief with a maker, not an axiom, and Different wins over Same |
 | acknowledgement | FHIR `DetectedIssue.mitigation`; `Flag.status` | `cascade:Acknowledged`, a verdict whose one member is a finding: the finding leaves the review page, still stands, and nothing else changes (`runtime/matcher.feature`, M19). A verdict, not a mark outside judgments, because a person's other answers to a finding, a Same or a Before, are judgments whose member is the finding, so the three list, count, retract and sync alike, and writers that file them in any order hold one answer (looked at `DetectedIssue.mitigation`, an action taken on a clinical issue with a practitioner author, and `Flag.status`, which edits the flag in place, where a pod edits nothing) | ours |
+| a clock known wrong | | `cascade:ClockDiscounted`, a person's verdict whose one member is an act: every revision the act generated is ranked as carrying no observation time, per `currency.md` (`runtime/currency.feature`, C7). It discounts and carries no offset: the derivation `currency.md` describes needs only that the times are wrong, and an offset would be a guess at how wrong (#204) | ours |
 | judgment over a source-level thing | | a Same whose members are servers or organisations, a Before whose member is a rollback finding, and a Same whose member is the finding of what a rule list version no longer reaches, each with a derivation to records or pairs, per `republishing-sources.md`, `currency.md` and `naming.md` | ours: test 3 of the rubric |
 | reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, the matching kinds each `skos:broadMatch` a SEMAPV kind (`jdg:Demographics` and the About bases have none); `jdg:basis` for a person's | borrowed from SEMAPV at the kind level; the kinds are ours |
 | confidence | SSSOM `confidence` | none; the justification kind stands in for it, and the review page lists the weaker kinds | diverged; see open |
@@ -133,8 +134,6 @@ domain `foaf:Agent`, making the retractor an agent and the retracted a nanopubli
   answers, files two judgments or the later supersedes.
 - Whether a derivation from a source-level judgment to records is written as a rule term the derived joins cite, so
   a derived Before or Same can say which judgment it came from.
-- A verdict over an act saying its observation times are known wrong, per `currency.md`: its name, and whether it
-  carries an offset or only discounts.
 - A declined act leaves no finding, because no act generated one; whether a refusal needs a home.
 - How `jdg:currentlySame` is amended for the derived joins, or whether it survives them; `republishing-sources.md`
   leaves the same question open.
