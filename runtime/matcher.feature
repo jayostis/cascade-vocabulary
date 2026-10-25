@@ -15,7 +15,9 @@ Feature: The matcher's procedure
   ingredient, each pair in an entry of its own, under the rule list's version 7. Ivo, with the variant classifications
   table of an app, enters pairs of variants that carry a ClinVar ID, an HGVS expression or both, each pair in an entry
   of its own, under the rule list's version 8. Gus, with the vocabulary's rule list of an app, enters lab results whose values,
-  units and times differ by a little, under the rule list's version 12.
+  units and times differ by a little, under the rule list's version 12. Hana, with the vocabulary's rule list of an app,
+  enters conditions, flu shots and lab results whose dates are a year, a month or a time to the hour, under the rule
+  list's version 13.
 
   Rule: M1. A step's records are those with at least one first revision from that step's import, entry session or connect, the servers its connect wrote any revision for, or all from acts its sync names
     A record's first revisions are those with no prov:wasRevisionOf; it has one or more, one from each writer that
@@ -248,12 +250,29 @@ Feature: The matcher's procedure
       queries/matcher/same-code-instant-different-units.rq, for lab results only. As R16, a finding for review, of two
       results of one code at one instant whose units differ.
 
+    Version 13 of the vocabulary's list changes the queries of R6, R8, R15, R16 and R17, whose examples are under M22, so
+    that each reads a date at the precision its source wrote (decisions/partial-dates-and-absent-reasons.md); versions 4
+    to 12 pin the old files:
+
+    - R8, cascade:SameCodeAndPeriodRule, justified cascade:SameCodeAndPeriod: queries/matcher/same-code-and-period-read-as-ranges.rq, for
+      conditions only. As same-code-and-period.rq, with each onset and abatement read as the days its type covers.
+    - R6, cascade:SameResultRule, justified cascade:SameResult: queries/matcher/same-code-instant-to-the-second-value-and-unit.rq,
+      for lab results only. As same-code-instant-value-and-unit.rq, with a padded time never an instant.
+    - R15, cascade:SameResultOnOneDayRule, justified cascade:SameResultOnOneDay:
+      queries/matcher/same-code-day-or-padded-time-value-and-unit.rq, for lab results only. As same-code-day-value-and-unit.rq,
+      with a padded time counted as a day alone.
+    - R16, cascade:DifferentResultValuesRule, finding cascade:DifferentResultValuesAtOneInstant:
+      queries/matcher/same-code-instant-to-the-second-different-values.rq, for lab results only, as R6 reads a time.
+    - R17, cascade:DifferentResultUnitsRule, finding cascade:DifferentResultUnitsAtOneInstant:
+      queries/matcher/same-code-instant-to-the-second-different-units.rq, for lab results only, as R6 reads a time.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
     and R10 in its version 6, R5's newer query and R11 in its version 7, R12 and R13 in its version 8, R3's and
     R4's changed queries in its version 9, R11's and R13's in its version 10, R14 as well in its version 11, and R6's
-    changed query, R15, R16 and R17 in its version 12.
+    changed query, R15, R16 and R17 in its version 12, and R6's, R8's, R15's, R16's and R17's changed queries in its
+    version 13.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -675,6 +694,8 @@ Feature: The matcher's procedure
     and a dateTime compare, and a time zone never moves a day, unlike R6's instants. Both bounds count. A condition
     with no onset joins nothing. So a condition two sources both call active joins whatever onsets they give, and two
     episodes that are each over, and apart, do not.
+    That is R8 in the rule list's versions 4 to 12, which these examples run under; M22 says how version 13 reads a
+    date that is a year or a month.
 
     Hana's "episodes" are conditions of J18.9 (three), E11.9 (two), R10.9 (two) and SNOMED CT 195662009 (two).
 
@@ -1093,3 +1114,36 @@ Feature: The matcher's procedure
         | different result units at one instant  | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Potassium, other lab"       |
         | different result units at one instant  | lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium, other lab" |
         | different result units at one instant  | lab result LOINC 2823-3 "Potassium repeat", lab result LOINC 2823-3 "Potassium, other lab" |
+
+  Rule: M22. A date is compared at the precision its source wrote
+    decisions/partial-dates-and-absent-reasons.md, rows "datatype", "comparison and order", "matching partial to full"
+    and "hour precision from CDA". A date is typed by what its source wrote: xsd:gYear for a year, xsd:gYearMonth for a
+    month, xsd:date for a day, xsd:dateTime for a time, and nothing is padded but a time written to the hour or the
+    minute, which is held padded to the second beside the characters its source sent (cascade:PaddedDateTime). XSD
+    makes the four types incomparable, so "2019" never equals "2019-10-01", by term or by value: R2, which compares
+    dates by term, never joins a year or a month with a day. From the rule list's version 13, R8 reads each onset and
+    abatement as the days it covers, as FHIR search reads a date, a year from 1 January to 31 December and a month
+    from its first day to its last, so a condition begun in 2019 and over within it overlaps one of 1 June 2019. R6,
+    R16 and R17 never read a padded time as an instant, since its source did not say the second; R15 counts it as a
+    day alone, so two results at one padded hour are joined only as likely. A year or a month is no day, and a result
+    stamped with one joins nothing. A result whose value is absent for a reason (cascade:ValueAbsentForReason) has no
+    value kind, and joins nothing.
+
+    Background:
+      Given a new pod for Hana on 2026-11-01 at 09:00
+      And the pod is opened with the tables "app-partial-dates" on 2026-11-01 at 09:01
+      And Hana enters "partial-dates" on 2026-11-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-11-02 at 09:05
+
+    Example: a condition begun in 2019 and over within it is the same by code and period as one of June 2019, and one begun in 2021 joins neither
+      Then the matcher's judgments holding condition ICD-10-CM R10.9 "Abdominal pain, in 2019", condition ICD-10-CM R10.9 "Abdominal pain, June 2019" and condition ICD-10-CM R10.9 "Abdominal pain, in 2021" are:
+        | justification        | members                                                                                                  | used                                                                                                                               |
+        | same code and period | condition ICD-10-CM R10.9 "Abdominal pain, in 2019", condition ICD-10-CM R10.9 "Abdominal pain, June 2019" | version 1 of condition ICD-10-CM R10.9 "Abdominal pain, in 2019", version 1 of condition ICD-10-CM R10.9 "Abdominal pain, June 2019" |
+
+    Example: a flu shot dated to its month never joins one of a day in that month by code and date
+      Then the matcher has no judgment holding immunization CVX 141 "Fluarix, sometime in October 2019" and immunization CVX 141 "Fluarix"
+
+    Example: two potassiums at one padded hour, of one value in one unit, are the same result on one day, and one stamped with its year or with no value joins neither
+      Then the matcher's judgments holding lab result LOINC 2823-3 "Potassium, at two", lab result LOINC 2823-3 "Potassium, other lab at two", lab result LOINC 2823-3 "Potassium, in 2025" and lab result LOINC 2823-3 "Potassium, not reported" are:
+        | justification          | members                                                                                          | used                                                                                                                       |
+        | same result on one day | lab result LOINC 2823-3 "Potassium, at two", lab result LOINC 2823-3 "Potassium, other lab at two" | version 1 of lab result LOINC 2823-3 "Potassium, at two", version 1 of lab result LOINC 2823-3 "Potassium, other lab at two" |

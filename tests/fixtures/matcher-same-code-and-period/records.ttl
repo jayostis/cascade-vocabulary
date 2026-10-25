@@ -135,3 +135,43 @@
 :procedureBRevision a cascade:Revision ; cascade:revisionOf :procedureB ; cascade:version :procedureBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+
+:yearA a cascade:ProblemOrDiagnosis .
+:yearAVersion prov:specializationOf :yearA ; cascade:icd10Code icd:J45.909 ; cascade:onsetDate "2019"^^xsd:gYear ; cascade:clinicalStatus "resolved" .
+:yearARevision a cascade:Revision ; cascade:revisionOf :yearA ; cascade:version :yearAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:yearB a cascade:ProblemOrDiagnosis .
+:yearBVersion prov:specializationOf :yearB ; cascade:icd10Code icd:J45.909 ; cascade:onsetDate "2019-06-01"^^xsd:date ; cascade:abatementDate "2019-06-03"^^xsd:date ; cascade:clinicalStatus "resolved" .
+:yearBRevision a cascade:Revision ; cascade:revisionOf :yearB ; cascade:version :yearBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:yearApartB a cascade:ProblemOrDiagnosis .
+:yearApartBVersion prov:specializationOf :yearApartB ; cascade:icd10Code icd:J45.909 ; cascade:onsetDate "2020-01-01"^^xsd:date ; cascade:clinicalStatus "resolved" .
+:yearApartBRevision a cascade:Revision ; cascade:revisionOf :yearApartB ; cascade:version :yearApartBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:monthA a cascade:ProblemOrDiagnosis .
+:monthAVersion prov:specializationOf :monthA ; cascade:icd10Code icd:J45.50 ; cascade:onsetDate "2018-03"^^xsd:gYearMonth ; cascade:abatementDate "2018-04"^^xsd:gYearMonth ; cascade:clinicalStatus "resolved" .
+:monthARevision a cascade:Revision ; cascade:revisionOf :monthA ; cascade:version :monthAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:monthB a cascade:ProblemOrDiagnosis .
+:monthBVersion prov:specializationOf :monthB ; cascade:icd10Code icd:J45.50 ; cascade:onsetDate "2018-04-30"^^xsd:date ; cascade:clinicalStatus "resolved" .
+:monthBRevision a cascade:Revision ; cascade:revisionOf :monthB ; cascade:version :monthBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:yearEndA a cascade:ProblemOrDiagnosis .
+:yearEndAVersion prov:specializationOf :yearEndA ; cascade:icd10Code icd:J45.40 ; cascade:onsetDate "2017-05-10"^^xsd:date ; cascade:abatementDate "2017"^^xsd:gYear ; cascade:clinicalStatus "resolved" .
+:yearEndARevision a cascade:Revision ; cascade:revisionOf :yearEndA ; cascade:version :yearEndAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:yearEndB a cascade:ProblemOrDiagnosis .
+:yearEndBVersion prov:specializationOf :yearEndB ; cascade:icd10Code icd:J45.40 ; cascade:onsetDate "2017-11-01"^^xsd:date ; cascade:clinicalStatus "resolved" .
+:yearEndBRevision a cascade:Revision ; cascade:revisionOf :yearEndB ; cascade:version :yearEndBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:yearEndC a cascade:ProblemOrDiagnosis .
+:yearEndCVersion prov:specializationOf :yearEndC ; cascade:icd10Code icd:J45.40 ; cascade:onsetDate "2016"^^xsd:gYear ; cascade:abatementDate "2015"^^xsd:gYear ; cascade:clinicalStatus "resolved" .
+:yearEndCRevision a cascade:Revision ; cascade:revisionOf :yearEndC ; cascade:version :yearEndCVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

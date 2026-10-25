@@ -1,0 +1,88 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:439a4425-7e92-49b0-a3b8-053c36d8c62d> a prov:Activity ;
+  rdfs:label "entered in the Cascade app" ;
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole cascade:PatientRole ] .
+
+<urn:cascade:output-0> a cascade:ProblemOrDiagnosis .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
+  cascade:conditionName "Abdominal pain, in 2019" ;
+  cascade:icd10Code <https://ns.cascadeprotocol.org/codes/icd10cm/R10.9> ;
+  cascade:onsetDate "2019"^^xsd:gYear ;
+  cascade:clinicalStatus "resolved" ;
+  cascade:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-1> a cascade:ProblemOrDiagnosis .
+<urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
+  cascade:conditionName "Abdominal pain, June 2019" ;
+  cascade:icd10Code <https://ns.cascadeprotocol.org/codes/icd10cm/R10.9> ;
+  cascade:onsetDate "2019-06-01"^^xsd:date ;
+  cascade:abatementDate "2019-06-03"^^xsd:date ;
+  cascade:clinicalStatus "resolved" ;
+  cascade:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-2> a cascade:ProblemOrDiagnosis .
+<urn:cascade:output-2-version> prov:specializationOf <urn:cascade:output-2> ;
+  cascade:conditionName "Abdominal pain, in 2021" ;
+  cascade:icd10Code <https://ns.cascadeprotocol.org/codes/icd10cm/R10.9> ;
+  cascade:onsetDate "2021"^^xsd:gYear ;
+  cascade:clinicalStatus "resolved" ;
+  cascade:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-3> a cascade:Vaccination .
+<urn:cascade:output-3-version> prov:specializationOf <urn:cascade:output-3> ;
+  cascade:vaccineName "Fluarix, sometime in October 2019" ;
+  cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/141> ;
+  cascade:vaccinationOccurrenceTime "2019-10"^^xsd:gYearMonth ;
+  cascade:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-4> a cascade:Vaccination .
+<urn:cascade:output-4-version> prov:specializationOf <urn:cascade:output-4> ;
+  cascade:vaccineName "Fluarix" ;
+  cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/141> ;
+  cascade:vaccinationOccurrenceTime "2019-10-01"^^xsd:date ;
+  cascade:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-5> a cascade:LaboratoryTestResult .
+<urn:cascade:output-5-version> prov:specializationOf <urn:cascade:output-5> ;
+  cascade:testName "Potassium, at two" ;
+  cascade:testCode <http://loinc.org/rdf/2823-3> ;
+  cascade:resultValueKind cascade:QuantityResultValue ;
+  cascade:resultQuantity <urn:cascade:output-5-version#value> ;
+  cascade:resultClinicallyRelevantTime "2025-03-27T14:00:00"^^xsd:dateTime ;
+  cascade:paddedDateTime <urn:cascade:output-5-version#padded-resultClinicallyRelevantTime> ;
+  cascade:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-5-version#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.1" ; cascade:ucumUnit "mmol/L" .
+<urn:cascade:output-5-version#padded-resultClinicallyRelevantTime> cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ;
+  cascade:writtenDate "2025032714" .
+<urn:cascade:output-6> a cascade:LaboratoryTestResult .
+<urn:cascade:output-6-version> prov:specializationOf <urn:cascade:output-6> ;
+  cascade:testName "Potassium, other lab at two" ;
+  cascade:testCode <http://loinc.org/rdf/2823-3> ;
+  cascade:resultValueKind cascade:QuantityResultValue ;
+  cascade:resultQuantity <urn:cascade:output-6-version#value> ;
+  cascade:resultClinicallyRelevantTime "2025-03-27T14:00:00"^^xsd:dateTime ;
+  cascade:paddedDateTime <urn:cascade:output-6-version#padded-resultClinicallyRelevantTime> ;
+  cascade:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-6-version#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.10" ; cascade:ucumUnit "mmol/L" .
+<urn:cascade:output-6-version#padded-resultClinicallyRelevantTime> cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ;
+  cascade:writtenDate "2025032714" .
+<urn:cascade:output-7> a cascade:LaboratoryTestResult .
+<urn:cascade:output-7-version> prov:specializationOf <urn:cascade:output-7> ;
+  cascade:testName "Potassium, in 2025" ;
+  cascade:testCode <http://loinc.org/rdf/2823-3> ;
+  cascade:resultValueKind cascade:QuantityResultValue ;
+  cascade:resultQuantity <urn:cascade:output-7-version#value> ;
+  cascade:resultClinicallyRelevantTime "2025"^^xsd:gYear ;
+  cascade:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-7-version#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.1" ; cascade:ucumUnit "mmol/L" .
+<urn:cascade:output-8> a cascade:LaboratoryTestResult .
+<urn:cascade:output-8-version> prov:specializationOf <urn:cascade:output-8> ;
+  cascade:testName "Potassium, not reported" ;
+  cascade:testCode <http://loinc.org/rdf/2823-3> ;
+  cascade:resultClinicallyRelevantTime "2025-03-27T14:00:00"^^xsd:dateTime ;
+  cascade:paddedDateTime <urn:cascade:output-8-version#padded-resultClinicallyRelevantTime> ;
+  cascade:valueAbsentForReason <urn:cascade:output-8-version#absent-resultValueKind> ;
+  cascade:patient <urn:uuid:d38f350d-38bf-47c9-b61f-bd106f649ca4> .
+<urn:cascade:output-8-version#padded-resultClinicallyRelevantTime> cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ;
+  cascade:writtenDate "2025032714" .
+<urn:cascade:output-8-version#absent-resultValueKind> cascade:absentValueProperty cascade:resultValueKind ;
+  cascade:absentReasonCode <https://ns.cascadeprotocol.org/codes/nullflavor/NI> .

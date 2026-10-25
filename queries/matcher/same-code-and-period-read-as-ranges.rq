@@ -1,0 +1,43 @@
+# Two conditions match when their current versions share an ICD-10-CM or SNOMED CT code and their periods
+# overlap, bounds included. Each date is read as the days its precision covers, as FHIR search reads a date: a year
+# from its 1 January to its 31 December, a month from its first day to its last, and a day, or a time, as its day, the
+# first ten characters as written, so a time zone never moves one. A period runs from the onset's first day to the
+# abatement's last. An abatement that is none of those four types, or ends before the onset begins, counts as none;
+# with none, the period runs on while the status is active, recurrence or relapse, and is the onset's own days
+# otherwise. A month's last day is written 31 whatever the month, which orders as its last day among the days written.
+# A version with no onset matches nothing. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  VALUES ?property { cascade:icd10Code cascade:snomedCode }
+  ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version .
+  ?other cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion .
+  ?version ?property ?code ; cascade:displayDate ?onset .
+  ?otherVersion ?property ?code ; cascade:displayDate ?otherOnset .
+  OPTIONAL { ?version cascade:abatementDate ?end }
+  OPTIONAL { ?version cascade:clinicalStatus ?status }
+  OPTIONAL { ?otherVersion cascade:abatementDate ?otherEnd }
+  OPTIONAL { ?otherVersion cascade:clinicalStatus ?otherStatus }
+  BIND (IF(DATATYPE(?onset) = xsd:gYear, CONCAT(SUBSTR(STR(?onset), 1, 4), "-01-01"),
+           IF(DATATYPE(?onset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?onset), 1, 7), "-01"), SUBSTR(STR(?onset), 1, 10))) AS ?from)
+  BIND (IF(DATATYPE(?onset) = xsd:gYear, CONCAT(SUBSTR(STR(?onset), 1, 4), "-12-31"),
+           IF(DATATYPE(?onset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?onset), 1, 7), "-31"), SUBSTR(STR(?onset), 1, 10))) AS ?onsetTo)
+  BIND (IF(DATATYPE(?otherOnset) = xsd:gYear, CONCAT(SUBSTR(STR(?otherOnset), 1, 4), "-01-01"),
+           IF(DATATYPE(?otherOnset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?otherOnset), 1, 7), "-01"), SUBSTR(STR(?otherOnset), 1, 10))) AS ?otherFrom)
+  BIND (IF(DATATYPE(?otherOnset) = xsd:gYear, CONCAT(SUBSTR(STR(?otherOnset), 1, 4), "-12-31"),
+           IF(DATATYPE(?otherOnset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?otherOnset), 1, 7), "-31"), SUBSTR(STR(?otherOnset), 1, 10))) AS ?otherOnsetTo)
+  BIND (IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime), SUBSTR(STR(?end), 1, 10),
+           IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?end), 1, 7), "-31"),
+              IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) = xsd:gYear, CONCAT(SUBSTR(STR(?end), 1, 4), "-12-31"), ""))) AS ?endTo)
+  BIND (IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime), SUBSTR(STR(?otherEnd), 1, 10),
+           IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?otherEnd), 1, 7), "-31"),
+              IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) = xsd:gYear, CONCAT(SUBSTR(STR(?otherEnd), 1, 4), "-12-31"), ""))) AS ?otherEndTo)
+  BIND (IF(?endTo >= ?from, ?endTo,
+           IF(COALESCE(?status, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?onsetTo)) AS ?to)
+  BIND (IF(?otherEndTo >= ?otherFrom, ?otherEndTo,
+           IF(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?otherOnsetTo)) AS ?otherTo)
+  FILTER (?record != ?other && ?from <= ?otherTo && ?otherFrom <= ?to)
+}
