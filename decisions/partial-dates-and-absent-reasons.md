@@ -96,7 +96,7 @@ Every row is ruled, 2026-10-22. Rows 1 to 5 are partial dates, 6 to 8 absent rea
 |---|---|---|---|
 | 1. datatype | FHIR RDF's union; DCAT 3; openEHR's reduced-accuracy string; against: HL7 v2's retired precision component, CDISC's flags, SPHN's and OMOP's parts | one property per date, typed `xsd:gYear`, `xsd:gYearMonth`, `xsd:date` or `xsd:dateTime` by the precision the source wrote, through `sh:or`; nothing padded; `dateOfBirth` takes the same four; rule M23 | borrowed from FHIR RDF, union and all |
 | 2. comparison and order | XSD's disjoint value spaces; SPARQL 1.1; Oxigraph 0.5.11; rdflib 7.6.0 | "2019" never equals "2019-06-01", by term or by value, which is the matcher's requirement met by the datatype alone; a query that sorts mixed precisions orders by the written form, `STR()` of the date, so a year sorts before its months and its days on every engine; rule M23 | borrowed from XSD; the sort rule is ours, since SPARQL defines none |
-| 3. matching partial to full | FHIR search's implied range, `eq` contains, `ap` overlaps; v3's TS to IVL_TS | `same-code-and-date.rq:11-12` stays term-equal, so a year never joins a day; `same-code-and-period.rq` reads each bound as the range its type implies, replacing the ten-character string compare at lines 23-31, as `same-code-and-period-read-as-ranges.rq` in the rule list's version 14; rule M23 | borrowed from FHIR search's ranges for periods; term equality for dates is ours |
+| 3. matching partial to full | FHIR search's implied range, `eq` contains, `ap` overlaps; v3's TS to IVL_TS | `same-code-and-date.rq:11-12` stays term-equal, so a year never joins a day, and from the rule list's version 14 R2 and R4 join only a day or a time written to the second, since two shots dated to one year or one padded hour may be two; `same-code-and-period.rq` reads each bound as the range its type implies, replacing the ten-character string compare at lines 23-31, as `same-code-and-period-read-as-ranges.rq` in the rule list's version 14; rule M23 | borrowed from FHIR search's ranges for periods; term equality for dates is ours |
 | 4. the currency ladder | FHIR `meta.lastUpdated`, an `instant`; CDA document `effectiveTime`, at least the day | partial dates never reach `currency.md`'s ladder: no source change time and no `rec:asOf` is a clinical date | borrowed; nothing to decide past saying so |
 | 5. hour precision from CDA | C-CDA on FHIR's precision rule; FHIR and XSD `dateTime`, which need seconds; `quantities.md` row "number" | kept, the pattern of `quantities.md`'s decimal: an `xsd:dateTime` padded with zeros to the second (`2023-05-31T14:00:00`), with no timezone where the source gave none, which sorts, compares and falls in a range; and `writtenDate`, a plain string of the characters the source sent (`2023053114`), only where the typed form was padded, below the day; no finding, since nothing is dropped; a padded time is never read as exact, and a query needing the precision reads the string; the string sits on a node of the version naming its property, `cascade:PaddedDateTime`, and from the rule list's version 14 the lab rules R6, R16 and R17 read no padded time as an instant and R15 counts it as a day alone; rule M23 | borrowed from C-CDA on FHIR's precision rule and from `quantities.md` row "number" |
 | 6. the reason's code | FHIR data-absent-reason, 15 codes; v3 NullFlavor, 17 in a hierarchy; the draft map, 9 of 15 | one term, `cascade:absentReasonCode`, whose value is exactly the code IRI the source gave, FHIR's (`cascade:DataAbsentReason`) or NullFlavor's (`cascade:NullFlavor`), with no crosswalk at write time; a view that needs one list applies HL7's `cm-data-absent-reason-v3` at read, where it maps, and the source's own term where it does not (NI, and the six FHIR codes it leaves out); the map is a versioned table like the matcher's code tables, cited as used, replaceable when HL7 finishes it; no view needs one list yet, so the table waits for the first that does (Still open) | borrowed from both systems, and from HL7's map, applied at read |
@@ -207,6 +207,18 @@ By #133, 2026-10-24, under the owner's delegation (jayostis/cascade-vocabulary#2
   `https://ns.cascadeprotocol.org/codes/data-absent-reason/` and `.../codes/nullflavor/`, each code as its system
   writes it, and the shapes list exactly the codes of HL7's CodeSystems (15 and 17, NP retired but kept, since a source
   may still send it).
+- **Which properties a reason may stand for.** The nine date properties and a lab result's `cascade:resultValueKind`,
+  the ones an adapter writes a reason for, listed by `cascade:absentValueProperty`'s shape; a property is added with the
+  first adapter that writes a reason for it.
+- **A padded time in a view.** A view copies each padded time it shows with its node, so no view shows one as exact;
+  the node is named after its holder, the entry or a member's values, `-padded-` and the local name, since a view
+  entry's IRI has its fragment already (`naming.md`, row "view entry").
+- **A variant interpretation's date.** `cascade:interpretedDate` takes `xsd:gYear`, `xsd:gYearMonth` or `xsd:date`: the
+  day the interpretation was issued, as before, or its year or month where the source wrote no day. A time still gives
+  its day, since the property is a date.
+- **Two immunizations of one year.** Term equality keeps a year from joining a day, but two shots dated "2019" are
+  term-equal and may be two shots, as may two at one padded hour: R2 and R4 read only a day or a time written to the
+  second from the rule list's version 14.
 
 ## Still open
 
@@ -216,6 +228,10 @@ Each with the lean and the one fact that decides it:
   5 and 7 rest on the standards, not on counts.
 - The view that first needs one list of reasons, and so HL7's map as a table (row 6). Lean: the review page, when it
   lists a result with no value. Decides it: a view that shows the reason.
+- Which date an entry shows when a newer member gives a coarser date than an older one: the member a date comes from
+  is chosen by currency (`currency.md`), so a newer "2019" replaces an older "2019-06-14" in the entry's display. Lean:
+  prefer the finer when it falls inside the coarser, since both say the same and one says more. Decides it: a view or a
+  story where a source sends a coarser date after a finer one.
 
 ## What would change our mind
 
