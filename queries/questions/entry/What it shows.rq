@@ -5,7 +5,8 @@
 # its own (cascade:memberCurrentValues) and this reads the view alone. The view takes the entry's name and codes from
 # its lead, and its status and dates from the members the derivations chose for them (cascade:statusFrom,
 # cascade:dateFrom and, for a medication, cascade:medicationUseStartDateFrom and cascade:prescriptionWrittenDateFrom). A
-# value no member states, such as the highest criticality among them, has no From.
+# value no member states, such as the highest criticality among them, has no From. A padded time is shown as the time;
+# the node saying it was written short of the second is no value of its own.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -13,14 +14,14 @@ SELECT DISTINCT ?entry ?entryLabel ?view ?field ?value ?valueLabel ?from ?fromLa
 WHERE {
   { GRAPH ?view { ?entry cascade:mergedFrom [] ; cascade:leadMember ?leader ; cascade:memberCurrentValues ?values .
                   ?values cascade:valuesOfMember ?from ; ?field ?value .
-                  FILTER (?field != cascade:valuesOfMember) }
+                  FILTER (?field NOT IN (cascade:valuesOfMember, cascade:paddedDateTime)) }
     BIND (?from = ?leader AS ?lead)
     OPTIONAL { ?from rdfs:label ?fromLabel }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?value rdfs:label ?valueLabel } }
   UNION
   { GRAPH ?view { ?entry cascade:mergedFrom [] ; ?field ?value
-                  FILTER (?field != cascade:memberCurrentValues)
+                  FILTER (?field NOT IN (cascade:memberCurrentValues, cascade:paddedDateTime))
                   FILTER NOT EXISTS { ?entry cascade:memberCurrentValues ?held . ?held ?field ?value } }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?value rdfs:label ?valueLabel } }
