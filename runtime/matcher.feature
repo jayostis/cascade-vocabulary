@@ -250,9 +250,14 @@ Feature: The matcher's procedure
       queries/matcher/same-code-instant-different-units.rq, for lab results only. As R16, a finding for review, of two
       results of one code at one instant whose units differ.
 
-    Version 13 of the vocabulary's list changes the queries of R6, R8, R15, R16 and R17, whose examples are under M22, so
-    that each reads a date at the precision its source wrote (decisions/partial-dates-and-absent-reasons.md); versions 4
-    to 12 pin the old files:
+    Version 13 of the vocabulary's list changes the queries of R2, R4, R6, R8, R15, R16 and R17, whose examples are under
+    M22, so that each reads a date at the precision its source wrote (decisions/partial-dates-and-absent-reasons.md);
+    versions 1 to 12 pin the old files:
+
+    - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-day-or-exact-time.rq,
+      for immunizations only. As same-code-and-date.rq, with the date a day or a time its source wrote to the second.
+    - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate:
+      queries/matcher/same-vaccine-group-and-day-or-exact-time.rq, for immunizations only, as R2 reads a date.
 
     - R8, cascade:SameCodeAndPeriodRule, justified cascade:SameCodeAndPeriod: queries/matcher/same-code-and-period-read-as-ranges.rq, for
       conditions only. As same-code-and-period.rq, with each onset and abatement read as the days its type covers.
@@ -271,8 +276,8 @@ Feature: The matcher's procedure
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
     and R10 in its version 6, R5's newer query and R11 in its version 7, R12 and R13 in its version 8, R3's and
     R4's changed queries in its version 9, R11's and R13's in its version 10, R14 as well in its version 11, and R6's
-    changed query, R15, R16 and R17 in its version 12, and R6's, R8's, R15's, R16's and R17's changed queries in its
-    version 13.
+    changed query, R15, R16 and R17 in its version 12, and R2's, R4's, R6's, R8's, R15's, R16's and R17's changed
+    queries in its version 13.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -1121,7 +1126,8 @@ Feature: The matcher's procedure
     month, xsd:date for a day, xsd:dateTime for a time, and nothing is padded but a time written to the hour or the
     minute, which is held padded to the second beside the characters its source sent (cascade:PaddedDateTime). XSD
     makes the four types incomparable, so "2019" never equals "2019-10-01", by term or by value: R2, which compares
-    dates by term, never joins a year or a month with a day. From the rule list's version 13, R8 reads each onset and
+    dates by term, never joins a year or a month with a day. From the rule list's version 13, R2 and R4 join only a day
+    or a time its source wrote to the second: two shots dated to one year, or to one padded hour, may be two shots. From the rule list's version 13, R8 reads each onset and
     abatement as the days it covers, as FHIR search reads a date, a year from 1 January to 31 December and a month
     from its first day to its last, so a condition begun in 2019 and over within it overlaps one of 1 June 2019. R6,
     R16 and R17 never read a padded time as an instant, since its source did not say the second; R15 counts it as a

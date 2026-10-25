@@ -5,9 +5,10 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-vaccine-group-and-date" ;
-  rdfs:comment "A version of a vaccine group table, its rows in its own graph, putting two CVX codes in one group; pairs of immunizations with those codes on one date and on two, one code on both, a group's own code with a code in its group, a code that only a pod file and a version of another kind put in the group, and a code that only a row written with skos:broadMatch puts in the group." ;
+  rdfs:comment "A version of a vaccine group table, its rows in its own graph, putting two CVX codes in one group; pairs of immunizations with those codes on one date and on two, one code on both, a group's own code with a code in its group, a code that only a pod file and a version of another kind put in the group, and a code that only a row written with skos:broadMatch puts in the group; and, for the query that reads only a day or an exact time, two codes of one group dated to one year." ;
   mf:entries (
     <#same-vaccine-group-and-date>
+    <#same-vaccine-group-and-day-or-exact-time>
   ) .
 
 <#same-vaccine-group-and-date> a mf:QueryEvaluationTest ;
@@ -24,3 +25,19 @@
                                   <urn:x:oneCodeA> ,
                                   <urn:x:oneCodeB> ] ;
   mf:result <same-vaccine-group-and-date.srj> .
+
+<#same-vaccine-group-and-day-or-exact-time> a mf:QueryEvaluationTest ;
+  mf:name "same-vaccine-group-and-day-or-exact-time" ;
+  rdfs:comment "The pairs same-vaccine-group-and-date.rq gives, and no pair of two codes of one group dated to one year, which may be two shots." ;
+  mf:action [ qt:query <../../../queries/matcher/same-vaccine-group-and-day-or-exact-time.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:groupOwnCodeB> ,
+                                  <urn:x:groupSameDayB> ,
+                                  <urn:x:groupTwoDaysA> ,
+                                  <urn:x:groupTwoDaysB> ,
+                                  <urn:x:noGroupA> ,
+                                  <urn:x:noGroupB> ,
+                                  <urn:x:oneCodeA> ,
+                                  <urn:x:oneCodeB> ,
+                                  <urn:x:groupSameYearB> ] ;
+  mf:result <same-vaccine-group-and-day-or-exact-time.srj> .

@@ -1,0 +1,28 @@
+# Two records of one kind match when their current versions give two different vaccine codes that one version of a
+# vaccine group table puts in one group, and one date, the same term, that is a day or a time its source wrote to the
+# second, as same-code-and-day-or-exact-time.rq reads a date. A record's vaccine code, a CVX code's IRI, joins a row
+# whose code is that IRI. Each ordered pair is a row, with the version whose rows joined it; a graph that is not a
+# version of a vaccine group table is never read for rows.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other ?origin
+WHERE {
+  ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups .
+  ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
+  ?version cascade:vaccineCode ?code ; cascade:displayDate ?date .
+  FILTER (DATATYPE(?date) IN (xsd:date, xsd:dateTime))
+  FILTER NOT EXISTS { ?version cascade:paddedDateTime ?padded }
+  ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
+  ?otherVersion cascade:vaccineCode ?otherCode ; cascade:displayDate ?date .
+  FILTER NOT EXISTS { ?otherVersion cascade:paddedDateTime ?otherPadded }
+  GRAPH ?origin {
+    ?row owl:annotatedSource ?code ; owl:annotatedProperty obo:RO_0002350 ; owl:annotatedTarget ?group .
+    ?otherRow owl:annotatedSource ?otherCode ; owl:annotatedProperty obo:RO_0002350 ; owl:annotatedTarget ?group .
+  }
+  FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
+}
