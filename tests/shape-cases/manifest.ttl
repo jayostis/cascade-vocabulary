@@ -344,6 +344,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:LaboratoryTestResultShape ; sh:resultPath cascade:resultValue ] ] .
 
+<#record-lab-result/two-performing-organizations> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-lab-result/two-performing-organizations.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultShape ; sh:resultPath prov:wasAttributedTo ] ] .
+
 <#record-lab-result/identifier-an-iri> a sht:Validate ;
   mf:action [ sht:dataGraph <record-lab-result/identifier-an-iri.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
@@ -454,6 +459,11 @@
 <#record-organization/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-organization/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-organization/named-as-another-record> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-organization/named-as-another-record.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:OrganizationRecordNameShape ] ] .
 
 <#record-organization/identifier-an-iri> a sht:Validate ;
   mf:action [ sht:dataGraph <record-organization/identifier-an-iri.ttl> ] ;

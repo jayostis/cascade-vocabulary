@@ -757,3 +757,55 @@ Feature: Arrivals
       Then it answers:
         | days | record           |
         | 5    | allergy "Sesame" |
+
+  Rule: A20. A pull writes the record of each Organization it holds, and a lab result names the organization that performed it
+    decisions/republishing-sources.md, row "organisation"; decisions/naming.md, row "server, organisation".
+    An Organization a pull's Bundle holds at the top of an entry, with an id and a fullUrl that is no urn:uuid, is a
+    cascade:Organization record named by cascade:OrganizationNamingRule from the pull's fhirBase, normalised,
+    Organization and its id, whatever names it, unless another entry holds an Organization with that id, when neither is
+    a record. Like any record from a server it states its cascade:sourceUrl, <base>/Organization/<id>, and its
+    cascade:sourceRecordId, and its version holds what the resource says, as A2 to A5 write any record's: its name as
+    foaf:name, each identifier as org:identifier, typed by its system, and each address as cascade:organizationAddress.
+    A lab result from a pull whose performers name one Organization, as Organization/<id> or <base>/Organization/<id>,
+    a version's /_history/ dropped, holds that organization's record as prov:wasAttributedTo on its version. The
+    reference alone names it, so the result is attributed whether or not the pull holds the Organization, unlike a
+    document's interpretation, whose performer names a record only where it resolves to an Organization of the
+    document. A reference made from an entry whose fullUrl is a urn:uuid, to an Organization the pull holds under one,
+    or to an id two entries hold an Organization under names none, and performers naming two name none. The
+    organization is content of the version, so a later pull naming another performer writes a revision of the same
+    record. An organization record is never the subject's (M2).
+
+    Example: a pull's Organization is a record named by its server and id, with a version of what it says
+      Given a new pod for Finn on 2026-06-01 at 09:00
+      When the pull "hospital-pull-with-a-lab" is imported on 2026-06-08 at 09:00
+      When the query is:
+        """
+        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+        PREFIX org: <http://www.w3.org/ns/org#>
+        SELECT ?organization ?predicate ?value WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-pull-with-a-lab> prov:generated ?recordFile, ?versionFile }
+          GRAPH ?recordFile { ?organization a cascade:Organization }
+          GRAPH ?versionFile { [] prov:specializationOf ?organization ; ?predicate ?value }
+          FILTER (?predicate != prov:specializationOf)
+        }
+        """
+      Then it answers:
+        | organization                                    | predicate                   | value                                             |
+        | <urn:uuid:7b40ed6a-7e98-86bb-aa22-26e771ea51a3> | foaf:name                   | "Example Hospital Laboratory"                     |
+        | <urn:uuid:7b40ed6a-7e98-86bb-aa22-26e771ea51a3> | org:identifier              | "1234567893"^^<http://hl7.org/fhir/sid/us-npi>    |
+        | <urn:uuid:7b40ed6a-7e98-86bb-aa22-26e771ea51a3> | cascade:organizationAddress | "12 Harbour Road, Bellingham, WA 98225"           |
+
+    Example: a pulled lab result's version is attributed to the organization its performer names
+      Given a new pod for Finn on 2026-06-01 at 09:00
+      When the pull "hospital-pull-with-a-lab" is imported on 2026-06-08 at 09:00
+      When the query is:
+        """
+        SELECT ?organization WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-pull-with-a-lab> prov:generated ?file }
+          GRAPH ?file { [] prov:specializationOf ?lab ; prov:wasAttributedTo ?organization }
+          ?lab a cascade:LaboratoryTestResult .
+        }
+        """
+      Then it answers:
+        | organization                                    |
+        | <urn:uuid:7b40ed6a-7e98-86bb-aa22-26e771ea51a3> |
