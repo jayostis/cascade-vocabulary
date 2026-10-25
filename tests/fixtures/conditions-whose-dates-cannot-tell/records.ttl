@@ -86,3 +86,13 @@
 :dualBVersion prov:specializationOf :dualB ; cascade:patient :subject ; cascade:conditionName "Migraine, 2021" ; cascade:icd10Code icd:G43.909 ; cascade:snomedCode sct:37796009 ; cascade:onsetDate "2021-01-01"^^xsd:date ; cascade:clinicalStatus "active" .
 :dualBRevision a cascade:Revision ; cascade:revisionOf :dualB ; cascade:version :dualBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:yearEndA a cascade:ProblemOrDiagnosis .
+:yearEndAVersion prov:specializationOf :yearEndA ; cascade:patient :subject ; cascade:conditionName "Asthma, over in 2018" ; cascade:icd10Code icd:J45.909 ; cascade:onsetDate "2018-01-01"^^xsd:date ; cascade:abatementDate "2018"^^xsd:gYear ; cascade:clinicalStatus "resolved" .
+:yearEndARevision a cascade:Revision ; cascade:revisionOf :yearEndA ; cascade:version :yearEndAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:yearEndB a cascade:ProblemOrDiagnosis .
+:yearEndBVersion prov:specializationOf :yearEndB ; cascade:patient :subject ; cascade:conditionName "Asthma, 2019" ; cascade:icd10Code icd:J45.909 ; cascade:onsetDate "2019-03-01"^^xsd:date ; cascade:clinicalStatus "resolved" .
+:yearEndBRevision a cascade:Revision ; cascade:revisionOf :yearEndB ; cascade:version :yearEndBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

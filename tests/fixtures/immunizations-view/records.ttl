@@ -22,3 +22,9 @@
     cascade:vaccinationOccurrenceTime "2015-01-01"^^xsd:date .
 :tdapRevision a cascade:Revision ; cascade:revisionOf :tdap ; cascade:version :tdapVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:hepB a cascade:Vaccination .
+:hepBVersion prov:specializationOf :hepB ; cascade:patient :subject ; cascade:vaccineName "Hepatitis B, in 2015" ; cascade:workflowStatus "completed" ;
+    cascade:vaccinationOccurrenceTime "2015"^^xsd:gYear .
+:hepBRevision a cascade:Revision ; cascade:revisionOf :hepB ; cascade:version :hepBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
