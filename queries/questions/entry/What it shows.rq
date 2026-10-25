@@ -1,38 +1,27 @@
 # What each entry shows: every value its view states of it and every value its members' current versions state of the
 # fields the view shows, each with From, the member whose current version states it, and Lead, whether that member is
 # the entry's lead (cascade:leadMember), whose values come first. An entry is what an app shows: one allergy, one
-# condition, one vaccination; no merged record is stored, so its members' values are read where they are. The view
-# takes the entry's name and codes from its lead, and its status and dates from the members the derivations chose for
-# them (cascade:statusFrom, cascade:dateFrom and, for a medication, cascade:medicationUseStartDateFrom and
-# cascade:prescriptionWrittenDateFrom). A value no member states, such as the highest criticality among them, has no
-# From.
+# condition, one vaccination; no merged record is stored, so the view holds each member's current values as a node of
+# its own (cascade:memberCurrentValues) and this reads the view alone. The view takes the entry's name and codes from
+# its lead, and its status and dates from the members the derivations chose for them (cascade:statusFrom,
+# cascade:dateFrom and, for a medication, cascade:medicationUseStartDateFrom and cascade:prescriptionWrittenDateFrom). A
+# value no member states, such as the highest criticality among them, has no From.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
-PREFIX pav: <http://purl.org/pav/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT DISTINCT ?entry ?entryLabel ?view ?field ?value ?valueLabel ?from ?fromLabel ?lead
 WHERE {
-  { GRAPH ?view { ?entry cascade:mergedFrom ?from ; cascade:leadMember ?leader ; ?field ?value }
-    ?from pav:hasCurrentVersion ?version .
-    ?version ?field ?value .
+  { GRAPH ?view { ?entry cascade:mergedFrom [] ; cascade:leadMember ?leader ; cascade:memberCurrentValues ?values .
+                  ?values cascade:valuesOfMember ?from ; ?field ?value .
+                  FILTER (?field != cascade:valuesOfMember) }
     BIND (?from = ?leader AS ?lead)
     OPTIONAL { ?from rdfs:label ?fromLabel }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?value rdfs:label ?valueLabel } }
   UNION
-  { GRAPH ?view { ?entry cascade:mergedFrom [] ; ?field ?value }
-    FILTER NOT EXISTS { ?entry cascade:mergedFrom ?member . ?member pav:hasCurrentVersion ?memberVersion .
-                        ?memberVersion ?field ?value }
-    OPTIONAL { ?entry rdfs:label ?entryLabel }
-    OPTIONAL { ?value rdfs:label ?valueLabel } }
-  UNION
-  { { SELECT DISTINCT ?view ?field WHERE { GRAPH ?view { ?shown cascade:mergedFrom [] ; ?field [] } } }
-    GRAPH ?view { ?entry cascade:mergedFrom ?from ; cascade:leadMember ?leader }
-    ?from pav:hasCurrentVersion ?version .
-    ?version ?field ?value .
-    FILTER NOT EXISTS { ?entry ?field ?value }
-    BIND (?from = ?leader AS ?lead)
-    OPTIONAL { ?from rdfs:label ?fromLabel }
+  { GRAPH ?view { ?entry cascade:mergedFrom [] ; ?field ?value
+                  FILTER (?field != cascade:memberCurrentValues)
+                  FILTER NOT EXISTS { ?entry cascade:memberCurrentValues ?held . ?held ?field ?value } }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?value rdfs:label ?valueLabel } }
 }

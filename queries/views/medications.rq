@@ -1,8 +1,9 @@
-# Each entry takes the name, every RxNorm code, every NDC code and the code the source chose of its lead, the status
-# and end date of the member chosen for status, the start of use and the day the prescription was written of the members
+# Each entry takes the name, every RxNorm code, every NDC code and the code the source chose of its lead, the status and
+# end date of the member chosen for status, the start of use and the day the prescription was written of the members
 # chosen for each, and every intent a member states, so an entry joining a prescription and a list entry says both. It
 # also says the lifecycle class of that status (cascade:lifecycle), so an app reads whether the medication is still
-# taken without reading the status.
+# taken without reading the status. Each member's current values are a node of the view of their own, named after the
+# entry and the member, which says the member they came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -21,19 +22,42 @@ CONSTRUCT {
     cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:drugName ?memberDrugName ;
+    cascade:rxNormCode ?memberRxNormCode ;
+    cascade:ndcCode ?memberNdcCode ;
+    cascade:userSelectedCode ?memberUserSelectedCode ;
+    cascade:workflowStatus ?memberWorkflowStatus ;
+    cascade:medicationUseStartDate ?memberMedicationUseStartDate ;
+    cascade:prescriptionWrittenDate ?memberPrescriptionWrittenDate ;
+    cascade:medicationUseEndDate ?memberMedicationUseEndDate ;
+    cascade:prescribedOrReported ?memberPrescribedOrReported .
 }
 WHERE {
-  ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry .
-  ?entry cascade:leadMember ?lead .
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:drugName ?name }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:rxNormCode ?code }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:ndcCode ?ndc }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:userSelectedCode ?selected }
-  OPTIONAL { ?record pav:hasCurrentVersion/cascade:prescribedOrReported ?intent }
-  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
-             ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
-  OPTIONAL { ?entry cascade:statusLifecycle ?lifecycle }
-  OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:medicationUseEndDate ?end }
-  OPTIONAL { ?entry cascade:medicationUseStartDateFrom/pav:hasCurrentVersion/cascade:medicationUseStartDate ?started }
-  OPTIONAL { ?entry cascade:prescriptionWrittenDateFrom/pav:hasCurrentVersion/cascade:prescriptionWrittenDate ?written }
+  { ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:drugName ?name }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:rxNormCode ?code }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:ndcCode ?ndc }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:userSelectedCode ?selected }
+    OPTIONAL { ?record pav:hasCurrentVersion/cascade:prescribedOrReported ?intent }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
+    OPTIONAL { ?entry cascade:statusLifecycle ?lifecycle }
+    OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:medicationUseEndDate ?end }
+    OPTIONAL { ?entry cascade:medicationUseStartDateFrom/pav:hasCurrentVersion/cascade:medicationUseStartDate ?started }
+    OPTIONAL { ?entry cascade:prescriptionWrittenDateFrom/pav:hasCurrentVersion/cascade:prescriptionWrittenDate ?written } }
+  UNION
+  { ?member a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:drugName ?memberDrugName }
+    OPTIONAL { ?memberVersion cascade:rxNormCode ?memberRxNormCode }
+    OPTIONAL { ?memberVersion cascade:ndcCode ?memberNdcCode }
+    OPTIONAL { ?memberVersion cascade:userSelectedCode ?memberUserSelectedCode }
+    OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
+    OPTIONAL { ?memberVersion cascade:medicationUseStartDate ?memberMedicationUseStartDate }
+    OPTIONAL { ?memberVersion cascade:prescriptionWrittenDate ?memberPrescriptionWrittenDate }
+    OPTIONAL { ?memberVersion cascade:medicationUseEndDate ?memberMedicationUseEndDate }
+    OPTIONAL { ?memberVersion cascade:prescribedOrReported ?memberPrescribedOrReported } }
 }
