@@ -3,9 +3,9 @@ from functools import cache
 from pathlib import Path
 
 import pytest
-from rdflib import RDF, URIRef
+from rdflib import OWL, RDF, Graph, URIRef
 
-from contract import CASCADE, PROV, QUERIES, built, derivations, named, query, questions
+from contract import CASCADE, PROV, QUERIES, ROOT, built, derivations, named, query, questions
 from engines import ENGINES, bound_to_records, marked_groups
 from manifests import Entry, entries, failure, lens_name, row
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
@@ -68,6 +68,20 @@ def test_the_derived_state_is_not_empty_and_shares_no_triple_with_the_fixtures_f
         build = built_once(fixture, "oxigraph", lens)
         files = set().union(*(build.store.triples(ADDRESS + path) for path in fixture.files()))
         assert build.derived and build.derived.isdisjoint(files), lens
+
+
+SYMMETRIC = sorted(Graph().parse(ROOT / "ontologies" / "cascade.ttl").subjects(RDF.type, OWL.SymmetricProperty))
+
+
+@every_fixture
+def test_a_property_declared_symmetric_holds_both_ways(fixture):
+    """A runtime may then find what a record reaches through currentlySame by union-find, as an entry."""
+    assert SYMMETRIC
+    for lens in LENSES:
+        store = built_once(fixture, "oxigraph", lens).store
+        for predicate in SYMMETRIC:
+            one_way = f"SELECT ?a ?b WHERE {{ ?a <{predicate}> ?b FILTER NOT EXISTS {{ ?b <{predicate}> ?a }} }}"
+            assert store.select(one_way) == [], (lens, str(predicate))
 
 
 SHOWN_AND_LEFT_OUT_ALIKE = """
