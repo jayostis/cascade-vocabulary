@@ -38,9 +38,9 @@ Each row is one thing decided; the ladder and the lead the rows refer to follow 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | two clocks | FHIR `meta.lastUpdated`; CDA `effectiveTime`; PROV `prov:generatedAtTime` | a revision carries `prov:generatedAtTime`, when the pod wrote it, and `rec:asOf`, written `cascade:observedAsOf`, when the source was observed saying this state: the first of the document's `rec:answeredAsOf`, the document's `pav:retrievedOn`, the source's own change time, and the act's start; for an entry it is the session's start. The first two rungs are the exporter's clock, the third the source's, and the fourth the writer's: an unstamped record from a live pull, and every entry, carry the writer's clock as their observation time (`runtime/currency.feature`, C1) | borrowed from PROV for when the pod wrote it; `rec:asOf` and its rungs are ours |
-| source's own version | FHIR `meta.versionId`, `meta.lastUpdated`; CDA `effectiveTime`, `versionNumber` | `meta.versionId`, `meta.lastUpdated`, or a C-CDA document's `effectiveTime` sits in a node nested in the revision, hashed with it, never on the revision itself | borrowed as the source states it; diverges in never ranking, since a version id is opaque and resets |
-| heads | git parents; openEHR version tree | a revision names the record's heads it saw as `prov:wasRevisionOf`, one or several; a sync is a union of files (`runtime/arrivals.feature`, A5; `runtime/sync.feature`, S6) | borrowed from git |
-| what an arrival writes | | a first arrival writes the record, its version and a revision. An arrival whose version is the current revision's writes nothing. An arrival whose (version, source version, source time) a revision already holds writes nothing, whether or not it would become current; so does an arrival with no source time whose version the record already holds, whatever stamp the held revision carries. Otherwise a revision, with its heads (`runtime/arrivals.feature`, A3 to A5) | ours |
+| source's own version | FHIR `meta.versionId`, `meta.lastUpdated`; CDA `effectiveTime`, `versionNumber` | `meta.versionId`, `meta.lastUpdated`, or a C-CDA document's `effectiveTime` sits in a node nested in the revision, hashed with it, never on the revision itself (`runtime/arrivals.feature`, A3) | borrowed as the source states it; diverges in never ranking, since a version id is opaque and resets |
+| heads | git parents; openEHR version tree | a revision names the record's heads it saw as `prov:wasRevisionOf`, one or several; a sync is a union of files (`runtime/arrivals.feature`, A5; `runtime/sync.feature`, S6; `runtime/currency.feature`, C2) | borrowed from git |
+| what an arrival writes | | a first arrival writes the record, its version and a revision. An arrival whose version is the current revision's writes nothing. An arrival whose (version, source version, source time) a revision already holds writes nothing, whether or not it would become current; so does an arrival with no source time whose version the record already holds, whatever stamp the held revision carries. Otherwise a revision, with its heads (`runtime/arrivals.feature`, A2 to A6) | ours |
 | current | CRDTs; git ref; openEHR | derived, never stored, by the ladder below: a Before orders one pair, not the set, so it removes rather than sorts, and the pick is a maximum over what remains (`runtime/currency.feature`, C2) | borrowed in spirit from CRDTs, every answer a function of the set; the ladder is ours |
 | view | | a view materialises the pick: current changes only when an act writes, and only for the records it wrote revisions for plus those its judgments reach by derivation, so an act rebuilds the entries of those records alone, and the rebuild equals the full one; a migration, a change to the trusted makers and a change of rule list version rebuild everything; the act's snapshot says whether a view is stale; a read is a lookup, and two writers at one snapshot rebuild one view (`runtime/currency.feature`, C8) | ours |
 | entry on a Same group | | shows every member: each member's current state is picked by its own ladder, and the entry is the union of their fields, each field saying which member it came from; where members disagree on a field, every value shows, the lead's first, the lead decided by the person's pick of the three ways below. No merged record is stored; the entry is computed from the members, and its view holds each member's current values as a node of its own naming the member, never a copy of a version's triples. "Latest observed member" is gone (`runtime/currency.feature`, C6) | ours |
@@ -79,13 +79,13 @@ would re-admit what the person ruled out.
 
 ## Why
 
-**Why the source's state decides, not the arrival.** The quantity that must decide is the source's state, not the
+**Why the source's state decides, not the arrival.** (row "current") The quantity that must decide is the source's state, not the
 messenger's arrival: "latest to arrive" let a transmitter's late copy of an old state overrule a correction, and A3 let
 a string the record had seen suppress new content, dropping a counter reset's correction. The source's change time
 ranks states of the source: a copy of an older state never beats a newer one, whatever clock the transmitter stamped
 on it.
 
-**Why `rec:asOf` ranks observations.** `rec:asOf` ranks observations of one state, a later look at a source being
+**Why `rec:asOf` ranks observations.** (rows "two clocks", "review page") `rec:asOf` ranks observations of one state, a later look at a source being
 better evidence of its current state, and a person's later session being their later edit; it is a writer's clock for a
 live pull or an entry, which is acceptable because a live pull has no other clock and an entry's order is
 the person's own. Between two pulls of one source where one's snapshot is an ancestor of the other's, ancestry orders the two
@@ -94,23 +94,23 @@ writers or two paths, go to the review page. Listed, a source that sends no chan
 records a year gives about 800 lines a year and about 8,000 by year ten, each kept until someone files a Before
 (assumed, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)).
 
-**Why neither the version id nor the write time ranks.** The source's version id never ranks: it is opaque, it
+**Why neither the version id nor the write time ranks.** (rows "source's own version", "current") The source's version id never ranks: it is opaque, it
 resets, and it is a string. The writer's write time ranks nothing on its own: it was a clock that happens to be right,
 which is a bias, not a reason, so the last step is the least IRI, there only so two writers agree, and the note says it
 is arbitrary.
 
-**Why a held state writes nothing.** The held state is skipped unconditionally because the only time it would become
+**Why a held state writes nothing.** (row "what an arrival writes") The held state is skipped unconditionally because the only time it would become
 current is when a judgment removed the revision that holds it, and writing it again would undo that judgment; an
 unstamped copy of a held state is skipped because it is a copy by another path of a state the pod has seen, and
 written it could win at step 4 on its observation time alone; an arrival with a new stamp is new evidence and is
 written.
 
-**Why a person's Before, not git's open fork.** A pod is a mirror of sources it does not author, so git's open fork is
+**Why a person's Before, not git's open fork.** (row "Before") A pod is a mirror of sources it does not author, so git's open fork is
 wrong by default: the person cannot judge every pair, and the source's change time can. Where it cannot, a person
 outranks the clocks with a Before, which states a fact the clocks were only inferring and composes across three states
 where a verdict on one would not.
 
-**Why a Before orders revisions, not versions.** Revisions, because a state recurs: a medication stopped and
+**Why a Before orders revisions, not versions.** (rows "Before", "Before over a finding") Revisions, because a state recurs: a medication stopped and
 restarted is the running version twice, and a Before over versions filed while the drug was stopped would hide the
 real restart for good, with nothing on the review page because the clocks never got to decide it; over revisions the
 restart is a new revision the Before does not name, so it shows, and the cost is a refile when a fresh stamp arrives,
@@ -119,10 +119,10 @@ over versions would need a record scope or leak; and because a rollback finding 
 picks out exactly one revision, so the derived Befores are recomputable from the finding and the file set after a
 sync.
 
-**Why the review page.** Because current is derived and never stored, the pod cannot record that it guessed, so the
+**Why the review page.** (row "review page") Because current is derived and never stored, the pod cannot record that it guessed, so the
 review page is the confession.
 
-**Why a rollback is one finding, and the later state stays.** A rollback is noticed by the same test that keeps a
+**Why a rollback is one finding, and the later state stays.** (rows "a source that goes backwards", "Before over a finding", "wrong writer clock") A rollback is noticed by the same test that keeps a
 stale copy quiet: a source contradicting its own earlier report is one fact, so it is one finding and, if the person
 agrees with the source, one Before with the per-record orderings derived, where a copy that is merely behind is what
 the ladder already expects. The pod keeps showing the later state because a hospital that restores a backup has
@@ -131,7 +131,7 @@ finding per earlier act made a 30-day restore about 30 findings; an acknowledged
 pull of the rolled-back state would file one again every day; and a skewed writer has one clock finding while one
 stands, where one per act is up to 365 a year (computed, #206).
 
-**Why a view rebuilds only what an act reached.** The ladder is per record and an entry is a closure over its
+**Why a view rebuilds only what an act reached.** (row "view") The ladder is per record and an entry is a closure over its
 members' judgments, so an act changes current only for the records it wrote revisions for and those its judgments
 reach by derivation, and rebuilding those gives what the full rebuild gives; two writers still agree, since the result
 is a function of the set. A full rebuild per act is the ladder over 200k revisions, counting over 32k judgments, the
@@ -139,7 +139,7 @@ pairs, the entries and nine views, 10 to 60 s on Node and too much for a browser
 (assumed, #206). What changes every record's inputs at once rebuilds everything: a migration, a change to the trusted
 makers, a change of rule list version.
 
-**Why heads rather than a line.** Heads rather than a line let two offline writers both import a correction and merge
+**Why heads rather than a line.** (row "heads") Heads rather than a line let two offline writers both import a correction and merge
 by union; a maximum over the set needs no walk of the line.
 
 ## Alternatives that lost

@@ -224,47 +224,47 @@ rest by the steps listed under the Question. Until then M4, `rec:CodeSystem` and
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| the rubric | FHIR RDF Appendix 2: the owner's stem, else the one the community records | the Rubric above: the owner's IRI, then a community registry's that passes (a)-(d), then Cascade's | borrowed: the owner's rubric is Appendix 2's rule in substance; where no repository records an RDF stem, Appendix 2's evidence test has nothing to find, and (a)-(d) decide |
-| LOINC | THO `iri-stem`; FHIR RDF | `http://loinc.org/rdf/` and the code with its check digit, `2823-3` | borrowed: THO's `http://` form, not R5's example `https://` |
-| MeSH | THO `iri-stem`; NLM | `http://id.nlm.nih.gov/mesh/` and the unique ID, `D004095`, `M0006414` | borrowed: THO's form, as above |
-| SNOMED CT | SNOMED URI Standard; FHIR RDF's table; SPHN, Bioregistry, Wikidata | `http://snomed.info/id/` and the SCTID | borrowed from the owner, where THO registers nothing |
-| ClinVar | identifiers.org `clinvar`; ClinVar's Variation ID | `https://identifiers.org/clinvar:` and the Variation ID's digits, no leading zero, `https://identifiers.org/clinvar:90011`: `https`, the namespace in lower case, no provider code, a colon, the code's normal form; C1 writes it into `records.ttl` and the `sh:pattern` at `records.shapes.ttl:397` | borrowed from identifiers.org: the owner publishes no IRI, and the registry passes (a)-(d); no repository records an RDF stem for it, so the choice rests on (a)-(d), not on Appendix 2's evidence |
-| UNII | identifiers.org `unii` | `https://identifiers.org/unii:` and the UNII as FDA gives it, ten upper-case letters and digits, `https://identifiers.org/unii:3G6A5W338E`, in the same canonical form; C1 writes it, A2 in `ccda-code-systems.ttl` | borrowed from identifiers.org, as above |
-| CVX | THO system URI only; Bioregistry `cvx` (a GitHub Pages provider); BioPortal | `https://ns.cascadeprotocol.org/codes/cvx/` and the code as CDC writes it, leading zero kept, `08`; C1 writes it and the `sh:pattern` at `records.shapes.ttl:373` | ours: no candidate passes (c) |
-| RxNorm | THO system URI only; RxNav pages; Bioregistry `rxnorm`; BioPortal | `https://ns.cascadeprotocol.org/codes/rxnorm/` and the RXCUI; C1, with `records.shapes.ttl:385` | ours: the owner publishes none; BioPortal fails (c) |
-| NDC | THO system URI only; identifiers.org `ndc` | `https://ns.cascadeprotocol.org/codes/ndc11/` and the 11-digit 5-4-2 form, no hyphens; a 10-digit labelled code (4-4-2, 5-3-2, 5-4-1) is zero-padded in its short segment first | ours, unchanged: identifiers.org's `ndc` strings are the 10-digit label forms others write, not one form per package |
-| ICD-10-CM | THO system URI only; Bioregistry `icd10cm`; BioPortal; identifiers.org `icd` (WHO) | `https://ns.cascadeprotocol.org/codes/icd10cm/` and the code as FHIR and C-CDA write it, with its dot, `E11.65`; C1, with `records.shapes.ttl:381` | ours: BioPortal fails (c); `icd` is another system |
-| ICD-9-CM | THO: diagnoses and procedures share `http://hl7.org/fhir/sid/icd-9-cm`; Bioregistry `icd9cm`; BioPortal | `https://ns.cascadeprotocol.org/codes/icd9cm/` and the code with its dot, one stem for diagnosis and procedure codes, as they share one system URI | ours, as ICD-10-CM |
-| CPT | THO system URI only; Bioregistry `cpt` (aapc.com); BioPortal | `https://ns.cascadeprotocol.org/codes/cpt/` and the five-character code | ours: no candidate passes (c); an IRI holding a code a source sent distributes no CPT content (inferred) |
-| MED-RT | THO system URI only; NCI EVS `MEDRT.owl#`; Bioregistry `ndfrt` (retired) | `https://ns.cascadeprotocol.org/codes/medrt/` and the NUI, `N0000175562` | ours, unchanged: EVS's form fails (c); `ndfrt` is NDF-RT's, retired, and fails (a) and (c) |
-| HGVS | THO system URI only; Bioregistry `hgvs` (a ClinGen query); VRS's string `Expression` | `https://ns.cascadeprotocol.org/codes/hgvs/` and the expression through `ENCODE_FOR_URI`, `…/codes/hgvs/NM_000249.4%3Ac.2042C%3ET`; C1, with `records.shapes.ttl:409` | ours: no registry has an identifier for an expression |
-| FHIR data absent reason, v3 NullFlavor | THO system URIs only; `Coding.system` and `#code`; FHIR RDF's `Coding`; OIDs; THO page anchors; Bioregistry `hl7.v3codesystem`; HL7's ORIM | `https://ns.cascadeprotocol.org/codes/data-absent-reason/` and the code as FHIR writes it, `asked-unknown`; `https://ns.cascadeprotocol.org/codes/nullflavor/` and the code as CDA writes it, `UNK`; #133, `partial-dates-and-absent-reasons.md` | ours: no candidate passes (b) and (c), each as Alternatives that lost says |
-| a segment's name in our space | Bioregistry prefixes | the Bioregistry prefix as of 2026-10-22 (`cvx`, `rxnorm`, `icd10cm`, `icd9cm`, `cpt`, `hgvs`), frozen whatever Bioregistry later does; `ndc11` and `medrt` keep theirs, since `ndc11` names the form and Bioregistry has no MED-RT | borrowed once |
-| HGNC | THO system URI; identifiers.org `hgnc` | no code IRI: a gene is its approved symbol, a literal | nothing to mint; Still open says which, if ever |
-| UCUM | UCUM none; SPHN UCUM classes; QUDT `ucumCode` (`quantities.md`) | no code IRI: `ucumUnit` is the source's string | borrowed from UCUM, as `quantities.md` ruled |
-| a code system's `Coding.system` | THO system URIs; GKS `Coding.system`; conformance-review C2 | `cascade:codingSystemUri`, an `xsd:anyURI`, is THO's preferred system URI; a reader writing FHIR takes `Coding.system` from it and `Coding.code` from the IRI's tail after `void:uriSpace`, percent-decoded; C1 writes the term and `rec:CodeSystem`'s comment, A1/A2 the adapters' rows | borrowed; replaces `skos:exactMatch` |
-| a stem registered later | none | THO registering a stem, or an owner publishing one, for a system here is recorded on the system beside its `void:uriSpace` and read as each code's `skos:exactMatch`; the code IRI is never renamed; C1 says so in `rec:CodeSystem`'s comment, and the term that records it is minted when a stem first exists | ours: a renamed IRI renames every version that holds it |
+| the rubric | FHIR RDF Appendix 2: the owner's stem, else the one the community records | the Rubric above: the owner's IRI, then a community registry's that passes (a)-(d), then Cascade's (`ontologies/cascade.ttl`) | borrowed: the owner's rubric is Appendix 2's rule in substance; where no repository records an RDF stem, Appendix 2's evidence test has nothing to find, and (a)-(d) decide |
+| LOINC | THO `iri-stem`; FHIR RDF | `http://loinc.org/rdf/` and the code with its check digit, `2823-3` (`ontologies/cascade.ttl`) | borrowed: THO's `http://` form, not R5's example `https://` |
+| MeSH | THO `iri-stem`; NLM | `http://id.nlm.nih.gov/mesh/` and the unique ID, `D004095`, `M0006414` (`ontologies/cascade.ttl`) | borrowed: THO's form, as above |
+| SNOMED CT | SNOMED URI Standard; FHIR RDF's table; SPHN, Bioregistry, Wikidata | `http://snomed.info/id/` and the SCTID (`ontologies/cascade.ttl`) | borrowed from the owner, where THO registers nothing |
+| ClinVar | identifiers.org `clinvar`; ClinVar's Variation ID | `https://identifiers.org/clinvar:` and the Variation ID's digits, no leading zero, `https://identifiers.org/clinvar:90011`: `https`, the namespace in lower case, no provider code, a colon, the code's normal form; C1 writes it into `records.ttl` and the `sh:pattern` at `records.shapes.ttl:397` (`ontologies/cascade.ttl`) | borrowed from identifiers.org: the owner publishes no IRI, and the registry passes (a)-(d); no repository records an RDF stem for it, so the choice rests on (a)-(d), not on Appendix 2's evidence |
+| UNII | identifiers.org `unii` | `https://identifiers.org/unii:` and the UNII as FDA gives it, ten upper-case letters and digits, `https://identifiers.org/unii:3G6A5W338E`, in the same canonical form; C1 writes it, A2 in `ccda-code-systems.ttl` (`ontologies/cascade.ttl`) | borrowed from identifiers.org, as above |
+| CVX | THO system URI only; Bioregistry `cvx` (a GitHub Pages provider); BioPortal | `https://ns.cascadeprotocol.org/codes/cvx/` and the code as CDC writes it, leading zero kept, `08`; C1 writes it and the `sh:pattern` at `records.shapes.ttl:373` (`ontologies/cascade.ttl`) | ours: no candidate passes (c) |
+| RxNorm | THO system URI only; RxNav pages; Bioregistry `rxnorm`; BioPortal | `https://ns.cascadeprotocol.org/codes/rxnorm/` and the RXCUI; C1, with `records.shapes.ttl:385` (`ontologies/cascade.ttl`) | ours: the owner publishes none; BioPortal fails (c) |
+| NDC | THO system URI only; identifiers.org `ndc` | `https://ns.cascadeprotocol.org/codes/ndc11/` and the 11-digit 5-4-2 form, no hyphens; a 10-digit labelled code (4-4-2, 5-3-2, 5-4-1) is zero-padded in its short segment first (`ontologies/cascade.ttl`) | ours, unchanged: identifiers.org's `ndc` strings are the 10-digit label forms others write, not one form per package |
+| ICD-10-CM | THO system URI only; Bioregistry `icd10cm`; BioPortal; identifiers.org `icd` (WHO) | `https://ns.cascadeprotocol.org/codes/icd10cm/` and the code as FHIR and C-CDA write it, with its dot, `E11.65`; C1, with `records.shapes.ttl:381` (`ontologies/cascade.ttl`) | ours: BioPortal fails (c); `icd` is another system |
+| ICD-9-CM | THO: diagnoses and procedures share `http://hl7.org/fhir/sid/icd-9-cm`; Bioregistry `icd9cm`; BioPortal | `https://ns.cascadeprotocol.org/codes/icd9cm/` and the code with its dot, one stem for diagnosis and procedure codes, as they share one system URI (`ontologies/cascade.ttl`) | ours, as ICD-10-CM |
+| CPT | THO system URI only; Bioregistry `cpt` (aapc.com); BioPortal | `https://ns.cascadeprotocol.org/codes/cpt/` and the five-character code (`ontologies/cascade.ttl`) | ours: no candidate passes (c); an IRI holding a code a source sent distributes no CPT content (inferred) |
+| MED-RT | THO system URI only; NCI EVS `MEDRT.owl#`; Bioregistry `ndfrt` (retired) | `https://ns.cascadeprotocol.org/codes/medrt/` and the NUI, `N0000175562` (`ontologies/cascade.ttl`) | ours, unchanged: EVS's form fails (c); `ndfrt` is NDF-RT's, retired, and fails (a) and (c) |
+| HGVS | THO system URI only; Bioregistry `hgvs` (a ClinGen query); VRS's string `Expression` | `https://ns.cascadeprotocol.org/codes/hgvs/` and the expression through `ENCODE_FOR_URI`, `…/codes/hgvs/NM_000249.4%3Ac.2042C%3ET`; C1, with `records.shapes.ttl:409` (`ontologies/cascade.ttl`) | ours: no registry has an identifier for an expression |
+| FHIR data absent reason, v3 NullFlavor | THO system URIs only; `Coding.system` and `#code`; FHIR RDF's `Coding`; OIDs; THO page anchors; Bioregistry `hl7.v3codesystem`; HL7's ORIM | `https://ns.cascadeprotocol.org/codes/data-absent-reason/` and the code as FHIR writes it, `asked-unknown`; `https://ns.cascadeprotocol.org/codes/nullflavor/` and the code as CDA writes it, `UNK`; #133, `partial-dates-and-absent-reasons.md` (`ontologies/cascade.ttl`) | ours: no candidate passes (b) and (c), each as Alternatives that lost says |
+| a segment's name in our space | Bioregistry prefixes | the Bioregistry prefix as of 2026-10-22 (`cvx`, `rxnorm`, `icd10cm`, `icd9cm`, `cpt`, `hgvs`), frozen whatever Bioregistry later does; `ndc11` and `medrt` keep theirs, since `ndc11` names the form and Bioregistry has no MED-RT (`ontologies/cascade.ttl`) | borrowed once |
+| HGNC | THO system URI; identifiers.org `hgnc` | no code IRI: a gene is its approved symbol, a literal (`ontologies/cascade.shapes.ttl`) | nothing to mint; Still open says which, if ever |
+| UCUM | UCUM none; SPHN UCUM classes; QUDT `ucumCode` (`quantities.md`) | no code IRI: `ucumUnit` is the source's string (`ontologies/cascade.shapes.ttl`) | borrowed from UCUM, as `quantities.md` ruled |
+| a code system's `Coding.system` | THO system URIs; GKS `Coding.system`; conformance-review C2 | `cascade:codingSystemUri`, an `xsd:anyURI`, is THO's preferred system URI; a reader writing FHIR takes `Coding.system` from it and `Coding.code` from the IRI's tail after `void:uriSpace`, percent-decoded; C1 writes the term and `rec:CodeSystem`'s comment, A1/A2 the adapters' rows (`ontologies/cascade.ttl`) | borrowed; replaces `skos:exactMatch` |
+| a stem registered later | none | THO registering a stem, or an owner publishing one, for a system here is recorded on the system beside its `void:uriSpace` and read as each code's `skos:exactMatch`; the code IRI is never renamed; C1 says so in `rec:CodeSystem`'s comment, and the term that records it is minted when a stem first exists (`ontologies/cascade.ttl`) | ours: a renamed IRI renames every version that holds it |
 | a literal joining as an IRI | `ENCODE_FOR_URI`; RFC 3986 §2.3 and §2.1; R2RML §7.3 | the stem, then the literal through `ENCODE_FOR_URI`: every character but `A-Z a-z 0-9 - _ . ~` as `%` and two upper-case hexadecimal digits of its UTF-8; M4 and `rec:CodeSystem` say so | borrowed from SPARQL; diverged from R2RML on `ucschar` (conformance-review C3), which no code here holds |
-| the pinned CVX comparisons | the settlement: rule lists and matcher queries rewritten in place, `published-bytes.json` regenerated (`settlements.md:89`, D3) | today `same-mapped-code-and-date.rq` and `same-vaccine-group-and-date.rq` join the unencoded literal, and a test checks that every query joining a stem to a literal encodes it unless a rule list pins it and its kind's code shape allows unreserved characters only (`tests/test_variants.py:213-236`, `PINNED`); C1 rewrites both in place with `ENCODE_FOR_URI` around the code and deletes `PINNED`, so every query encodes | ours: the exception's reason, that a pinned query's bytes are its version's, ends at this re-mint, which rewrites every pinned query's bytes anyway |
-| an HGVS key's form | HGVS: `NM_` a coding transcript, `c.`, a version required; ClinVar's `Type` | `rec:HgvsCodeShape`: a coding `NM_` expression by its form; the row's `Type` plays no part | HGVS's form borrowed; ClinVar's `Type` set aside, since 2,302 of 34,428 submitted `NM_` rows of Lynch's genes are typed "genomic" (verified, #203) |
-| a variation's normal form | ClinVar's Variation ID and VCV accession | `rec:ClinVarCodeShape`: the digits without a leading zero; `VCV000090011` and `VCV000090011.7` give `90011`; an SCV or RCV accession is not a variation | borrowed |
-| other allele identifiers | ClinGen CA ids; VRS digests | neither is a code system here | diverged: VRS needs the reference sequence, which a browser does not hold; no report in the story carries a CA id (`variant-record.md`) |
+| the pinned CVX comparisons | the settlement: rule lists and matcher queries rewritten in place, `published-bytes.json` regenerated (`settlements.md:89`, D3) | today `same-mapped-code-and-date.rq` and `same-vaccine-group-and-date.rq` join the unencoded literal, and a test checks that every query joining a stem to a literal encodes it unless a rule list pins it and its kind's code shape allows unreserved characters only (`tests/test_variants.py:213-236`, `PINNED`); C1 rewrites both in place with `ENCODE_FOR_URI` around the code and deletes `PINNED`, so every query encodes (`tests/test_variants.py`) | ours: the exception's reason, that a pinned query's bytes are its version's, ends at this re-mint, which rewrites every pinned query's bytes anyway |
+| an HGVS key's form | HGVS: `NM_` a coding transcript, `c.`, a version required; ClinVar's `Type` | `rec:HgvsCodeShape`: a coding `NM_` expression by its form; the row's `Type` plays no part (`ontologies/cascade.shapes.ttl`) | HGVS's form borrowed; ClinVar's `Type` set aside, since 2,302 of 34,428 submitted `NM_` rows of Lynch's genes are typed "genomic" (verified, #203) |
+| a variation's normal form | ClinVar's Variation ID and VCV accession | `rec:ClinVarCodeShape`: the digits without a leading zero; `VCV000090011` and `VCV000090011.7` give `90011`; an SCV or RCV accession is not a variation (`ontologies/cascade.shapes.ttl`) | borrowed |
+| other allele identifiers | ClinGen CA ids; VRS digests | neither is a code system here (`ontologies/cascade.ttl`) | diverged: VRS needs the reference sequence, which a browser does not hold; no report in the story carries a CA id (`variant-record.md`) |
 
 ## Why
 
-**The rubric is FHIR's own rule.** The owner ruled that the vocabulary defers to what a community already made when it
+**The rubric is FHIR's own rule.** (rows "the rubric", "LOINC", "MeSH", "SNOMED CT") The owner ruled that the vocabulary defers to what a community already made when it
 is pretty good and workable, and mints its own only where nothing is, saying what was checked. FHIR RDF's Appendix 2
 says the same of a stem THO would register: the owner's publication first, then the one the community uses. Each
 candidate was tested on the four conditions of the Rubric. A name hashes the IRI, so (b) and (c) carry the weight: an
 IRI no one else computes the same way, or one whose pattern may change, costs every pod a re-mint.
 
-**Why not the system URI and a slash.** The old note's only reason was that CVX, RxNorm and ICD-10-CM already did so:
+**Why not the system URI and a slash.** (rows "CVX", "RxNorm", "ICD-10-CM", "ICD-9-CM", "CPT") The old note's only reason was that CVX, RxNorm and ICD-10-CM already did so:
 consistency, not merit. It allocates URIs in space others own, a right web architecture gives the owner; FHIR RDF
 computes no such IRI, so no FHIR consumer recognises it; and if THO registered a different stem, two IRIs in the
 owner's own space would name one code. `records.ttl:471` says the stem "is never the FHIR Coding.system URI", and every
 one of these was that URI and a slash.
 
-**Why identifiers.org for ClinVar and UNII.** It is the only candidate here that passes all four. (a) EMBL-EBI runs it
+**Why identifiers.org for ClinVar and UNII.** (rows "ClinVar", "UNII") It is the only candidate here that passes all four. (a) EMBL-EBI runs it
 as a community registry, and NCBI's ClinVar and FDA's UNII are its namespaces' resources. (b) Many strings reach one
 code there (case variants, a provider code, the old slash form, other resolvers), and the pattern admits a leading
 zero, so the vocabulary fixes one: the documented `https` form, the namespace in lower case as registered, no provider
@@ -278,39 +278,39 @@ for either, and prefix.cc has no entry; the choice rests on (a)-(d), and a stem 
 calls valid. Of the eight others, the owner has no scheme and identifiers.org none, or for NDC one that does not give
 one form; ClinVar's and UNII's owners have pages only, which carry no commitment.
 
-**Why NDC stays ours.** The owner writes an NDC in three 10-digit label forms (4-4-2, 5-3-2, 5-4-1) and CMS's 11-digit
+**Why NDC stays ours.** (row "NDC") The owner writes an NDC in three 10-digit label forms (4-4-2, 5-3-2, 5-4-1) and CMS's 11-digit
 HIPAA form, and identifiers.org's `ndc`, whose sample is `0002-1975-61`, holds the hyphenated label forms others write.
 Cascade keys an NDC by the 11-digit form RxNorm gives, so a Cascade `ndc:` string would not be the one another user of
 the namespace writes for the same package, and the 10-digit form cannot be recovered from the 11-digit one (the padded
 segment is not marked). ClinVar differs: its owner writes one form, the Variation ID. The namespace's only official
 resource is a commercial billing site.
 
-**Why BioPortal fails.** NCBO says it generates these URIs; no statement that it keeps them was found, and NCBO has said
+**Why BioPortal fails.** (rows "CVX", "RxNorm", "ICD-10-CM", "ICD-9-CM", "CPT") NCBO says it generates these URIs; no statement that it keeps them was found, and NCBO has said
 a terminology that leaves BioPortal leaves 404s. It is the strongest candidate for CVX, RxNorm, ICD-10-CM, ICD-9-CM and
 CPT, and FHIR RDF's own table uses it for WHO ICD-10, but a hashed name cannot rest on an unstated commitment.
 
-**Why Bioregistry and Wikidata fail.** Bioregistry's resolver URLs carry no persistence statement, its page formats for
+**Why Bioregistry and Wikidata fail.** (rows "CVX", "CPT") Bioregistry's resolver URLs carry no persistence statement, its page formats for
 these systems are mostly third-party sites, and its preferred ClinVar prefix differs from identifiers.org's, with two
 synonyms: the prefix is not fixed. Wikidata's items are lookups, not computable from the code, and its RDF formatter is
 set for MeSH, LOINC and SNOMED CT only, which agrees with the Rubric's item 4. UMLS CUIs fail (b): a CUI is a concept
 across sources, not one code, and NLM publishes no IRI for it.
 
-**Why our own space.** Cascade owns `ns.cascadeprotocol.org` and commits here that a `codes/<system>/` stem never
+**Why our own space.** (rows "a segment's name in our space", "NDC", "MED-RT", "HGVS", "FHIR data absent reason, v3 NullFlavor") Cascade owns `ns.cascadeprotocol.org` and commits here that a `codes/<system>/` stem never
 changes once a version holds it. Two of the thirteen were already there for the same reason (NDC, MED-RT); SPHN does
 the same with `biomedit.ch/rdf/sphn-resource/<system>/`. Bioregistry's prefixes name the segments, so a reader can find
 each system in a registry; a segment is frozen once minted, since a later Bioregistry rename would otherwise rename
 every code.
 
-**Why every query encodes after the re-mint.** The pinned comparisons were exempt only because a rule list version pins
+**Why every query encodes after the re-mint.** (rows "the pinned CVX comparisons", "a literal joining as an IRI") The pinned comparisons were exempt only because a rule list version pins
 its queries' bytes, so encoding them meant a new version for no change in what they join. The settlement rewrites rule
 lists and matcher queries in place and regenerates `published-bytes.json` (D3): every pinned query's bytes change at
 this re-mint, the CVX stem with them, so the exemption buys nothing and its test exception goes.
 
-**Why `Coding.system` stays as data.** FHIR, GA4GH and SPHN all keep a code as a system and a code; an IRI is extra. The
+**Why `Coding.system` stays as data.** (row "a code system's Coding.system") FHIR, GA4GH and SPHN all keep a code as a system and a code; an IRI is extra. The
 system URI is therefore recorded on each system as `cascade:codingSystemUri`, and a reader writing FHIR gets the
 `Coding` from it and the IRI's tail; the IRI never has to be a FHIR concept IRI to be mapped back.
 
-**Why a later stem aligns rather than renames.** A code IRI is inside every version's content, and the version's name
+**Why a later stem aligns rather than renames.** (row "a stem registered later") A code IRI is inside every version's content, and the version's name
 hashes it; renaming it renames the version and every claim and judgment on it. A second stem is a mapping: each code's
 IRI under it is its `skos:exactMatch`, which SKOS allows between concepts, unlike exactMatch on a code system
 (conformance-review C2).

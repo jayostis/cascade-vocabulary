@@ -42,16 +42,16 @@ who makes judgments.
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| judgment | nanopub assertion; SSSOM row | `jdg:Judgment`, a `prov:Collection` whose `prov:hadMember` are the records; one verdict | borrowed from PROV; the verdict is ours |
-| maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` | borrowed |
-| verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`, and `cascade:Before`, of two revisions, naming the earlier as `cascade:earlierMember`, per `currency.md` | ours: a belief with a maker, not an axiom, and Different wins over Same |
+| judgment | nanopub assertion; SSSOM row | `jdg:Judgment`, a `prov:Collection` whose `prov:hadMember` are the records; one verdict (`ontologies/cascade.ttl`) | borrowed from PROV; the verdict is ours |
+| maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` (`runtime/matcher.feature`, M5; `ontologies/cascade.ttl`) | borrowed |
+| verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`, and `cascade:Before`, of two revisions, naming the earlier as `cascade:earlierMember`, per `currency.md` (`ontologies/cascade.ttl`) | ours: a belief with a maker, not an axiom, and Different wins over Same |
 | acknowledgement | FHIR `DetectedIssue.mitigation`; `Flag.status` | `cascade:Acknowledged`, a verdict whose one member is a finding: the finding leaves the review page, still stands, and nothing else changes (`runtime/matcher.feature`, M19). A verdict, not a mark outside judgments, because a person's other answers to a finding, a Same or a Before, are judgments whose member is the finding, so the three list, count, retract and sync alike, and writers that file them in any order hold one answer (looked at `DetectedIssue.mitigation`, an action taken on a clinical issue with a practitioner author, and `Flag.status`, which edits the flag in place, where a pod edits nothing) | ours |
 | a clock known wrong | | `cascade:ClockDiscounted`, a person's verdict whose one member is an act: every revision the act generated is ranked as carrying no observation time, per `currency.md` (`runtime/currency.feature`, C7). It discounts and carries no offset: the derivation `currency.md` describes needs only that the times are wrong, and an offset would be a guess at how wrong (#204) | ours |
-| judgment over a source-level thing | | a Same whose members are servers or organisations, a Before whose member is a rollback finding, and a Same whose member is the finding of what a rule list version no longer reaches, each with a derivation to records or pairs, per `republishing-sources.md`, `currency.md` and `naming.md` | ours: test 3 of the rubric |
-| reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, the matching kinds each `skos:broadMatch` a SEMAPV kind (`jdg:Demographics` and the About bases have none); `jdg:basis` for a person's | borrowed from SEMAPV at the kind level; the kinds are ours |
-| confidence | SSSOM `confidence` | none; the justification kind stands in for it, and the review page lists the weaker kinds | diverged; see open |
-| retraction | `npx:retracts` | a `prov:Activity` that `prov:invalidated` the judgment, per `naming.md` | diverged: the pod's retraction is an act, not an agent's statement |
-| machine claim and assertion | nanopub assertion | a claim named once from its maker, rule, justification, members and used, its members the record and the least member of each entry it matched, a star that `same-pairs.rq` derives; an assertion per rule list version that reaches it and changed its rule's `rec:queryHash`, per `naming.md` | borrowed split; ours in the parts |
+| judgment over a source-level thing | | a Same whose members are servers or organisations, a Before whose member is a rollback finding, and a Same whose member is the finding of what a rule list version no longer reaches, each with a derivation to records or pairs, per `republishing-sources.md`, `currency.md` and `naming.md` (`runtime/matcher.feature`, M19) | ours: test 3 of the rubric |
+| reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, the matching kinds each `skos:broadMatch` a SEMAPV kind (`jdg:Demographics` and the About bases have none); `jdg:basis` for a person's (`ontologies/cascade.ttl`) | borrowed from SEMAPV at the kind level; the kinds are ours |
+| confidence | SSSOM `confidence` | none; the justification kind stands in for it, and the review page lists the weaker kinds (`ontologies/cascade.ttl`) | diverged; see open |
+| retraction | `npx:retracts` | a `prov:Activity` that `prov:invalidated` the judgment, per `naming.md` (`runtime/naming.feature`, N10 and N15) | diverged: the pod's retraction is an act, not an agent's statement |
+| machine claim and assertion | nanopub assertion | a claim named once from its maker, rule, justification, members and used, its members the record and the least member of each entry it matched, a star that `same-pairs.rq` derives; an assertion per rule list version that reaches it and changed its rule's `rec:queryHash`, per `naming.md` (`runtime/naming.feature`, N6; `runtime/matcher.feature`, M5 and M9) | borrowed split; ours in the parts |
 
 Every judgment names its maker, and nothing else about a judgment depends on there being one matcher.
 
@@ -72,22 +72,22 @@ kind of shared-identifier join without knowing the rule.
 
 ## Why
 
-**Why a belief with a maker, not an axiom.** That two records are one fact, that two servers are one hospital, that a
+**Why a belief with a maker, not an axiom.** (rows "judgment", "maker") That two records are one fact, that two servers are one hospital, that a
 source's patient is this person: each is a belief, filed with its reason and its maker, so that it can be wrong and
 can be retracted without touching a name (`naming.md`, the rubric's second test).
 
 **Why a person outranks every machine.** A person's Same stands over a machine's Different since the person has seen
 the objection and overridden it.
 
-**Why Different outranks Same among machines.** Keeping two records apart is the mistake that can be undone: a later
+**Why Different outranks Same among machines.** (row "verdict") Keeping two records apart is the mistake that can be undone: a later
 Same joins them and nothing was lost. A wrong merge hides one record behind the other, and the person may never see
 it. So where two makers disagree, the pod errs toward showing two things, and a person's Same settles it.
 
-**Why every maker leaves a trail.** Where a maker went wrong, its trail is what finds the damage: a rule list version
+**Why every maker leaves a trail.** (row "maker") Where a maker went wrong, its trail is what finds the damage: a rule list version
 by the assertions under it, a runtime by the acts it performed, an app by its agent and version, and a person's
 Erroneous over an act hides bad data from any of them.
 
-**Why a claim, an assertion per rule list version, and one matcher agent.** A machine judgment is one claim with an
+**Why a claim, an assertion per rule list version, and one matcher agent.** (row "machine claim and assertion") A machine judgment is one claim with an
 assertion per rule list version because the same inputs give the same name, so a later version that agrees could
 otherwise write nothing, and a run that reaches an asserted claim writes nothing, so a daily run adds no files. The
 rule list's version is out of the claim's name because with it in, every version renamed every claim, the duplication
@@ -102,7 +102,7 @@ it sits on the run's act with every other act's performer (`naming.md`).
 **Why a model's judgment is minted, not hashed.** No hash of inputs names an answer the inputs do not fix, so a
 model's judgment is minted once, as a person's is.
 
-**Why a retraction is an activity.** PROV already says how an entity is invalidated (`naming.md`); `npx:retracts` has
+**Why a retraction is an activity.** (row "retraction") PROV already says how an entity is invalidated (`naming.md`); `npx:retracts` has
 domain `foaf:Agent`, making the retractor an agent and the retracted a nanopublication.
 
 ## Alternatives that lost

@@ -10,6 +10,7 @@ Feature: Arrivals
   a backup, and pulls on a clock that ran behind.
 
   Rule: A1. A document whose bytes the pod already keeps brings nothing new
+    decisions/naming.md, row "document, finding", and decisions/performance.md, row "content names and the held-state rule".
     It is not converted, and nothing is written. The example saves no Bridge output for it, so a runtime that converted
     it would have none.
 
@@ -20,6 +21,7 @@ Feature: Arrivals
       Then that step wrote no file
 
   Rule: A2. A record's first arrival writes the record, its version, and a revision with no prov:wasRevisionOf
+    decisions/currency.md, row "what an arrival writes".
 
     Example: each record's first arrival is its first version and a revision that follows none
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -32,7 +34,8 @@ Feature: Arrivals
         | allergy "Mango"     | 2026-01-02 at 10:00 | 1       |       |
 
   Rule: A3. An arrival whose version, source version and source change time a revision of the record holds writes no revision
-    decisions/currency.md, row "what an arrival writes". The source version is the arrival's pav:version and its change
+    decisions/currency.md, rows "what an arrival writes" and "source's own version"; decisions/performance.md, row "content names and the held-state rule".
+    The source version is the arrival's pav:version and its change
     time its pav:lastUpdateOn. So does an arrival that carries no source change time and whose version the record
     holds, whatever stamp the revision holding it carries. Either holds whether or not the arrival would be current: it
     would be only if a judgment removed the revision that holds its state, and writing it again would undo the
@@ -58,7 +61,8 @@ Feature: Arrivals
         | 2026-01-04 at 10:00 | 2       | 2026-01-02 at 10:00 |
 
   Rule: A4. An arrival whose version is the record's current version writes no revision
-    decisions/currency.md, row "what an arrival writes". Even under a new source version or a new source change time.
+    decisions/currency.md, row "what an arrival writes"; decisions/performance.md, row "content names and the held-state rule".
+    Even under a new source version or a new source change time.
     The record's current version is its current revision's, as the ladder picks it before the step (C2).
 
     Example: the peanut allergy arrives again unchanged under a new source version
@@ -70,6 +74,7 @@ Feature: Arrivals
         | 2026-01-02 at 10:00 | 1       |       |
 
   Rule: A5. Any other arrival writes a revision after each of the record's heads
+    decisions/currency.md, rows "what an arrival writes" and "heads".
     Its prov:wasRevisionOf names each head, as a git merge names each parent: one, unless two writers revised the
     record apart (S6).
 
@@ -83,6 +88,7 @@ Feature: Arrivals
         | 2026-01-06 at 10:00 | 2       | inactive        | 2026-01-02 at 10:00 |
 
   Rule: A6. Arrivals with no source version are told apart by their content alone
+    decisions/currency.md, row "what an arrival writes".
     So, by A4, one with the content the record is at now writes no revision.
 
     Example: with no source version, new content is a revision and the content the record is at is none
@@ -96,6 +102,7 @@ Feature: Arrivals
         | 2026-01-07 at 10:00 | 2       | inactive        | 2026-01-02 at 10:00 |
 
   Rule: A7. A change that is undone at its source reuses the earlier version
+    decisions/naming.md, row "version".
     The new revision points at it.
 
     Example: the peanut allergy changes and changes back, and its third revision sets its first version again
@@ -110,6 +117,7 @@ Feature: Arrivals
         | 2026-01-08 at 10:00 | 1       | active          | 2026-01-06 at 10:00 |
 
   Rule: A8. A record that is missing from a later export gets nothing written, and nothing of it goes
+    No note rules this.
 
     Example: three allergies missing from a later export keep what they had
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -123,6 +131,7 @@ Feature: Arrivals
         | allergy "Mango"     | 2026-01-02 at 10:00 | 1       |       |
 
   Rule: A9. A revision holds exactly the triples listed in N4
+    decisions/naming.md, row "revision".
 
     Example: a revision holds its own six statements and its arrival's, the import that made it shown as its step
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -155,6 +164,7 @@ Feature: Arrivals
         | prov:wasDerivedFrom  | the document of allergy "Peanut"     |
 
   Rule: A10. A document is kept when it wrote a revision, the Bridge raised findings on it, or it reported an older state
+    decisions/currency.md, row "a source that goes backwards".
     Kept is its bytes under attachments/, and its description. Otherwise nothing of it is written. A document with an
     arrival that a finding that its source reported older states names (A18) is kept, though it wrote no revision: a
     finding is something kept.
@@ -192,6 +202,7 @@ Feature: Arrivals
       And the pod neither names nor stores the document "no-source-version-again/apple_health_export/clinical-records/AllergyIntolerance-shellfish.json"
 
   Rule: A11. An import that kept any document writes its description once
+    decisions/naming.md, row "act".
     That description is the label, the start and the association the Bridge gave, the runtime that performed the import
     (N7), and prov:used for each kept document. The import's snapshot (N14) is in its file.
     An import that kept nothing writes nothing, not even itself.
@@ -286,6 +297,7 @@ Feature: Arrivals
       And the pod neither names nor stores the document "allergy-pull/pull.json"
 
   Rule: A12. An entry writes its session's description
+    decisions/naming.md, rows "record from an entry" and "act".
     Each draft becomes a record (N2) with its version and a first revision, at the session's start, generated by the
     session.
 
@@ -311,6 +323,7 @@ Feature: Arrivals
         | condition "Asthma" | version 1 of condition "Asthma" | "2026-02-01T08:30:00Z"^^xsd:dateTime | "2026-02-01T08:30:00Z"^^xsd:dateTime | "entered in the Cascade app" |          |
 
   Rule: A13. The pod's creation writes the subject as a cascade:Subject
+    decisions/naming.md, row "pod identity".
     With it, the owner's profile, saying only who the owner is, where the pod's root is and where the preferences file
     is, and the preferences file, saying only that it is one and where the owner's type index is. The build writes the
     type index, from the views it writes (A15).
@@ -329,6 +342,7 @@ Feature: Arrivals
         | Ben     |
 
   Rule: A14. Some steps are refused, and a refused step writes no revision and no import
+    No note rules this.
     Refused are: an export, a download or a pull no importer recognises, or one its importer cannot read, as an Apple
     Health export whose export.xml it cannot read, a downloaded file that is not well-formed or a pull whose pull.json
     names no FHIR base; a connect whose connect.json names no FHIR base that can be normalised or no client id, whose
@@ -403,6 +417,7 @@ Feature: Arrivals
       And the pod holds no revision
 
   Rule: A15. The build writes a view once the pod holds a record of its kind, and at every build after
+    No note rules this.
     Records are never removed, so nothing a build wrote goes stale. The labels file, and each view pod-layout.ttl marks
     cascade:writtenAlways, as the patient-profile view, are written at every build: a pod always has a subject. The type
     index registers only the views written. So a kind the layout adds changes no pod that holds none of it.
@@ -424,7 +439,8 @@ Feature: Arrivals
         | <https://pod.example/clinical/patient-profile.ttl> |
 
   Rule: A16. A connect writes its act and a version of its server's record holding what the server reported
-    decisions/republishing-sources.md, row "server". A connect is a cascade:ConnectToServer and a prov:Activity, named
+    decisions/republishing-sources.md, row "server"; decisions/naming.md, row "server, organisation".
+    A connect is a cascade:ConnectToServer and a prov:Activity, named
     as N7 says, started at the step's time. It writes its server's record, named by cascade:ServerNamingRule from
     connect.json's fhirBase and stating that base, normalised, as its cascade:serverBaseUrl, unless the pod holds it;
     and a version of it, with a revision as A2 to A5 say, generated by the connect. The version holds what
@@ -537,7 +553,8 @@ Feature: Arrivals
         | "revision" |
 
   Rule: A17. An import writes the record of each server its kept documents name, with no version, when the pod has none
-    decisions/republishing-sources.md, row "server". Each document an import keeps (A10) that states a
+    decisions/republishing-sources.md, row "server"; decisions/naming.md, row "server, organisation".
+    Each document an import keeps (A10) that states a
     cascade:serverBaseUrl, as a pull's and an Apple Health export's do, names a server: the import writes that server's
     record, named and stating its base as A16 says, with no version, unless the pod holds it. So a server a connect
     wrote is not written again, and a server known only from a document has a record with no version. A base URL that
@@ -572,7 +589,8 @@ Feature: Arrivals
       Then it answers nothing
 
   Rule: A18. An import whose source reports states older than it reported before files one finding naming each record that went back
-    decisions/currency.md, row "a source that goes backwards". A live pull is a document retrieved on a date
+    decisions/currency.md, row "a source that goes backwards"; decisions/performance.md, row "findings bounded".
+    A live pull is a document retrieved on a date
     (pav:retrievedOn) that answers as of no other instant (cascade:answeredAsOf); two are of one source when both name
     one transmitter, the same agent, or neither names one, as the ladder reads them (C2). An arrival from a live pull
     that carries a source change time, of a record holding revisions from live pulls of the same source stamped later,
@@ -656,7 +674,8 @@ Feature: Arrivals
       Then it answers nothing
 
   Rule: A19. An act whose revisions show the writer's clock behind files one finding, unless an act in its first-parent ancestry filed one no one answered
-    decisions/currency.md, row "wrong writer clock". A revision's observation time is the writer's own clock when it is
+    decisions/currency.md, row "wrong writer clock"; decisions/performance.md, row "findings bounded".
+    A revision's observation time is the writer's own clock when it is
     an entry session's start, an act's start, or the pav:retrievedOn of a live pull that names no transmitter (A18).
     Two checks run on each revision an act writes: one whose observation time is the writer's clock and precedes the
     cascade:observedAsOf of a head it names (prov:wasRevisionOf), and one from a live pull that names no transmitter

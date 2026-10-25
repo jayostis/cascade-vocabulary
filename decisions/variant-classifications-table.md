@@ -71,52 +71,52 @@ as cited in `variant-record.md`. The counts, the scripts and the archived classi
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| the table kind | ClinVar's two files: `variant_summary`, a line per variation and assembly; `hgvs4variation`, a line per expression | one kind, `rec:VariantClassifications`: a row per variation, found by its variation IRI (`rec:RowSubject`) and by each coding `NM_` expression a submitter used (`rec:hgvsExpression`) | diverged: one row from both files, so a report with only an expression finds its classification in one lookup; a row per variation, since the classification is per variation (#107) |
+| the table kind | ClinVar's two files: `variant_summary`, a line per variation and assembly; `hgvs4variation`, a line per expression | one kind, `rec:VariantClassifications`: a row per variation, found by its variation IRI (`rec:RowSubject`) and by each coding `NM_` expression a submitter used (`rec:hgvsExpression`) (`ontologies/cascade.ttl`) | diverged: one row from both files, so a report with only an expression finds its classification in one lookup; a row per variation, since the classification is per variation (#107) |
 | which expressions | `hgvs4variation`'s `Submitted` column | those with `Submitted` `Current` or `Previous` | the column borrowed; diverged from carrying every expression, for size (Why) |
-| what a row holds | `variant_summary`'s `ClinicalSignificance`, `ReviewStatus`, `LastEvaluated`, `NumberSubmitters`, `SCVsForAggregateGermlineClassification` | its classification concepts, review status, the day last evaluated, and `rec:contributingSubmitters` or `rec:submitters`, never both, so the row says which count it has | borrowed |
-| conditions | ClinVar's RCV, a variant and a condition; the IG's Diagnostic Implication | none | diverged: no planted case reads them, they are the row's longest field, and beside a person's conditions they would be the linkage #107 leaves out |
-| the classification values | ClinVar's grammar; the ACMG/AMP terms; LOINC LL4034-6 | parsed into concepts by four rules: the whole value `-`; split on `; ` then `/`, never on `,`; exact match on a concept's label with case kept; an unmatched term is a finding, never a refused build. The five ACMG concepts are the copied `genomics:` individuals, labelled as ClinVar spells them in `records.ttl`, with the LOINC answer code as `skos:exactMatch` | the terms and the grammar borrowed; diverged from the IG's one coded value per observation, since a ClinVar value may hold several terms |
-| the schemes | SKOS concept schemes | `rec:ClinVarClassifications` and `rec:ClinVarReviewStatuses`, each concept a `skos:Concept` with its label as ClinVar writes it and `skos:altLabel` for a renamed one; `-` is `rec:ClinVarCombinationOnly`, whose preferred label is the sentence a page shows and whose notation is the hyphen | borrowed |
-| a value in both columns | SKOS: a concept in more than one scheme | `rec:ClinVarNoClassificationForTheSingleVariant` and `rec:ClinVarNoClassificationsFromUnflaggedRecords` are one IRI each, in both schemes | borrowed; ClinVar writes each in both columns |
-| gene coverage | nothing found | `rec:coversGene` on the version, an HGNC symbol, any number including none; a changed gene list is a new version; a version without it covers no named gene | ours |
-| kinds an app keeps for its pages | nothing found | `rec:readByPages true` marks the kinds an app keeps and packs because its pages read them, though no rule does: `rec:CodeNames`, `rec:CodeStatus`, `rec:VariantClassifications`, `rec:PanelMembers` and `rec:DrugClasses` (`records.ttl`); it replaces the set a runtime hard-coded | ours |
-| a row whose classification parses to no concept | | keeps its keys | ours: the join through a row is identity and reads no classification |
+| what a row holds | `variant_summary`'s `ClinicalSignificance`, `ReviewStatus`, `LastEvaluated`, `NumberSubmitters`, `SCVsForAggregateGermlineClassification` | its classification concepts, review status, the day last evaluated, and `rec:contributingSubmitters` or `rec:submitters`, never both, so the row says which count it has (`ontologies/cascade.shapes.ttl`) | borrowed |
+| conditions | ClinVar's RCV, a variant and a condition; the IG's Diagnostic Implication | none (`ontologies/cascade.shapes.ttl`) | diverged: no planted case reads them, they are the row's longest field, and beside a person's conditions they would be the linkage #107 leaves out |
+| the classification values | ClinVar's grammar; the ACMG/AMP terms; LOINC LL4034-6 | parsed into concepts by four rules: the whole value `-`; split on `; ` then `/`, never on `,`; exact match on a concept's label with case kept; an unmatched term is a finding, never a refused build. The five ACMG concepts are the copied `genomics:` individuals, labelled as ClinVar spells them in `records.ttl`, with the LOINC answer code as `skos:exactMatch` (`ontologies/cascade.ttl`) | the terms and the grammar borrowed; diverged from the IG's one coded value per observation, since a ClinVar value may hold several terms |
+| the schemes | SKOS concept schemes | `rec:ClinVarClassifications` and `rec:ClinVarReviewStatuses`, each concept a `skos:Concept` with its label as ClinVar writes it and `skos:altLabel` for a renamed one; `-` is `rec:ClinVarCombinationOnly`, whose preferred label is the sentence a page shows and whose notation is the hyphen (`ontologies/cascade.ttl`) | borrowed |
+| a value in both columns | SKOS: a concept in more than one scheme | `rec:ClinVarNoClassificationForTheSingleVariant` and `rec:ClinVarNoClassificationsFromUnflaggedRecords` are one IRI each, in both schemes (`ontologies/cascade.ttl`) | borrowed; ClinVar writes each in both columns |
+| gene coverage | nothing found | `rec:coversGene` on the version, an HGNC symbol, any number including none; a changed gene list is a new version; a version without it covers no named gene (`ontologies/cascade.ttl`) | ours |
+| kinds an app keeps for its pages | nothing found | `rec:readByPages true` marks the kinds an app keeps and packs because its pages read them, though no rule does: `rec:CodeNames`, `rec:CodeStatus`, `rec:VariantClassifications`, `rec:PanelMembers` and `rec:DrugClasses` (`records.ttl`); it replaces the set a runtime hard-coded (`ontologies/cascade.ttl`) | ours |
+| a row whose classification parses to no concept | | keeps its keys (`ontologies/cascade.ttl`) | ours: the join through a row is identity and reads no classification |
 | versions an app keeps | ClinVar archives `variant_summary` monthly | R13 counts over current versions only (`variant-identity.md`), so an old version's rows may be dropped; a new version re-mints only the claims whose joining rows changed in it (M7) | ours |
 
 ## Why
 
-**Why one row per variation, found two ways.** A report may carry only an expression, only an ID, or both. With a row
+**Why one row per variation, found two ways.** (row "the table kind") A report may carry only an expression, only an ID, or both. With a row
 found by either, each finds its classification in one lookup, and two tables cannot disagree on the variation. The row
 is per variation because ClinVar's classification is: `variant_summary` repeats it on each assembly's line, and some
 variations have no GRCh38 line (#107). Variation 90011's GRCh37 and GRCh38 lines are identical in eight archived
 releases (verified for 90011; for every variation inferred,
 [#203](https://github.com/jayostis/cascade-vocabulary/issues/203)).
 
-**Why only the expressions a submitter used.** A report cites what a lab wrote (#107), and the rest is size. Keeping
+**Why only the expressions a submitter used.** (row "which expressions") A report cites what a lab wrote (#107), and the rest is size. Keeping
 the submitted expressions cuts variation 90011 from 29 expressions to 2, and Lynch's variations from 692,290 coding
 expressions to 34,405 (both verified, #203). Every expression would break the keep bounds even for Lynch: 2.24 GB at
 the first check, against 0.60 GB for the submitted ones (verified, Step 0, one laptop, N = 3; #203).
 
-**Why a grammar mapped to concepts.** ClinVar writes 107 distinct values in one release (verified, #203), built from
+**Why a grammar mapped to concepts.** (rows "the classification values", "the schemes") ClinVar writes 107 distinct values in one release (verified, #203), built from
 a short list of terms, and renamed a label in 2024. Mapping each term to a concept survives the rename through an
 alternative label, and a combination ClinVar has not written yet still parses.
 
-**Why one concept in both schemes.** ClinVar writes "no classification for the single variant" and "no
+**Why one concept in both schemes.** (row "a value in both columns") ClinVar writes "no classification for the single variant" and "no
 classifications from unflagged records" in both `ClinicalSignificance` and `ReviewStatus`, with equal counts in every
 gene list (verified, #203), so each is one statement, not two.
 
-**Why no conditions.** They are the row's longest field, no planted case reads them, and showing them beside a person's
+**Why no conditions.** (row "conditions") They are the row's longest field, no planted case reads them, and showing them beside a person's
 conditions would be the linkage #107 leaves out.
 
-**Why the genes sit on the version.** A page can then tell "not covered" from "not found" without reading the series,
+**Why the genes sit on the version.** (row "gene coverage") A page can then tell "not covered" from "not found" without reading the series,
 which carries no content. A series is described once, on first publish, and a runtime keeps only the series fields it
 lists (#139), so a changed gene list can only be a new version.
 
-**Why current versions only.** A page and R13 both ask what ClinVar says today. Held for the count, a monthly 0.60 GB
+**Why current versions only.** (row "versions an app keeps") A page and R13 both ask what ClinVar says today. Held for the count, a monthly 0.60 GB
 version is 72 GB in ten years (computed, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)), against
 a browser's keep bounds.
 
-**Why a marker, not a list.** A runtime that hard-codes the kinds its pages read changes for every new kind a page
+**Why a marker, not a list.** (row "kinds an app keeps for its pages") A runtime that hard-codes the kinds its pages read changes for every new kind a page
 reads; a marker in the vocabulary changes none.
 
 ## Alternatives that lost

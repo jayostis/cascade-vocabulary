@@ -63,40 +63,40 @@ verified). Research: #107's body (https://github.com/jayostis/cascade-vocabulary
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| the interpretation | FHIR Diagnostic Implication, an Observation; VA-spec Statement; SEPIO | its own record, `genomics:VariantInterpretation`, a `prov:Entity`, separate from the variant | borrowed from FHIR in being separate; diverged from FHIR's Observation and VA-spec's Statement in form; the reason is owed (Still open) |
-| its name | `naming.md` | named as any record from its source is | borrowed from `naming.md` |
-| link to its variant | FHIR `derivedFrom`; VA-spec proposition's subject | `variantInterpreted`, at most one, the variant record's IRI, as `rec:patient` points to its profile record; within one document that is a name; a `urn:uuid` never crosses documents, and how a variant held from another document is reached is open (Still open) | borrowed from FHIR's `derivedFrom` |
-| classification | FHIR 53037-8, LOINC LL4034-6 (example); ACMG/AMP 2015; VA-spec classification | `acmgClassification`, at most one, one of the five concepts of `cascade:ClinVarClassifications` named above; a report whose answer is not one of the five states none | borrowed: the five ACMG terms as `skos:Concept`s of the ClinVar scheme, each `skos:exactMatch` its LOINC answer; a coded value is what the IG writes |
-| date | FHIR `issued`, else `effective[x]` | `interpretedDate`, at most one `xsd:date` | borrowed |
-| which revision is current | `currency.md` | `currency.md`'s ladder; `interpretedDate` is content, not a rung | borrowed from `currency.md` |
-| condition | FHIR predicted phenotype 81259-4; VA-spec proposition's `objectCondition`; ClinVar RCV | `objectCondition`, at most one, the IRI of a `cascade:ProblemOrDiagnosis` record in the same document; none when the report states none | borrowed: VA-spec's name; the therapy objects wait (Why) |
-| evidence | FHIR evidence level 93044-6; VA-spec ACMG 2015 profile evidence outcomes; SEPIO | `acmgEvidenceCode`, any number of strings, each written as VA-spec's ACMG 2015 profile writes an evidence outcome (`PM2`, `PS3_moderate`, `PS3_not_met`, `no_criteria_met`) | borrowed: VA-spec's string form, copied as a pattern |
-| who called it | FHIR `Observation.performer`; VA-spec contributions; ClinVar SCV submitter; PROV-O `wasAttributedTo`; `republishing-sources.md` organisation | the version is `prov:wasAttributedTo` the lab's `cascade:Organization` record, at most one, named by `OrganizationNamingRule`; from FHIR, the one organisation record a Diagnostic Implication's `performer` names; none where it names none, or more than one, which the adapter reports | borrowed from PROV-O, the property judgments use; FHIR's performer as its source |
-| status | FHIR `Observation.status` | `clinical:status` | borrowed |
-| reclassification | ClinVar SCV versions | a new version, or a new report | ours |
+| the interpretation | FHIR Diagnostic Implication, an Observation; VA-spec Statement; SEPIO | its own record, `genomics:VariantInterpretation`, a `prov:Entity`, separate from the variant (`ontologies/cascade.ttl`) | borrowed from FHIR in being separate; diverged from FHIR's Observation and VA-spec's Statement in form; the reason is owed (Still open) |
+| its name | `naming.md` | named as any record from its source is (`runtime/naming.feature`, N1) | borrowed from `naming.md` |
+| link to its variant | FHIR `derivedFrom`; VA-spec proposition's subject | `variantInterpreted`, at most one, the variant record's IRI, as `rec:patient` points to its profile record; within one document that is a name; a `urn:uuid` never crosses documents, and how a variant held from another document is reached is open (Still open) (`ontologies/cascade.shapes.ttl`) | borrowed from FHIR's `derivedFrom` |
+| classification | FHIR 53037-8, LOINC LL4034-6 (example); ACMG/AMP 2015; VA-spec classification | `acmgClassification`, at most one, one of the five concepts of `cascade:ClinVarClassifications` named above; a report whose answer is not one of the five states none (`ontologies/cascade.shapes.ttl`) | borrowed: the five ACMG terms as `skos:Concept`s of the ClinVar scheme, each `skos:exactMatch` its LOINC answer; a coded value is what the IG writes |
+| date | FHIR `issued`, else `effective[x]` | `interpretedDate`, at most one `xsd:date` (`ontologies/cascade.shapes.ttl`) | borrowed |
+| which revision is current | `currency.md` | `currency.md`'s ladder; `interpretedDate` is content, not a rung (`runtime/currency.feature`, C2) | borrowed from `currency.md` |
+| condition | FHIR predicted phenotype 81259-4; VA-spec proposition's `objectCondition`; ClinVar RCV | `objectCondition`, at most one, the IRI of a `cascade:ProblemOrDiagnosis` record in the same document; none when the report states none (`ontologies/cascade.shapes.ttl`) | borrowed: VA-spec's name; the therapy objects wait (Why) |
+| evidence | FHIR evidence level 93044-6; VA-spec ACMG 2015 profile evidence outcomes; SEPIO | `acmgEvidenceCode`, any number of strings, each written as VA-spec's ACMG 2015 profile writes an evidence outcome (`PM2`, `PS3_moderate`, `PS3_not_met`, `no_criteria_met`) (`ontologies/cascade.shapes.ttl`) | borrowed: VA-spec's string form, copied as a pattern |
+| who called it | FHIR `Observation.performer`; VA-spec contributions; ClinVar SCV submitter; PROV-O `wasAttributedTo`; `republishing-sources.md` organisation | the version is `prov:wasAttributedTo` the lab's `cascade:Organization` record, at most one, named by `OrganizationNamingRule`; from FHIR, the one organisation record a Diagnostic Implication's `performer` names; none where it names none, or more than one, which the adapter reports (`ontologies/cascade.shapes.ttl`) | borrowed from PROV-O, the property judgments use; FHIR's performer as its source |
+| status | FHIR `Observation.status` | `clinical:status` (`ontologies/cascade.shapes.ttl`) | borrowed |
+| reclassification | ClinVar SCV versions | a new version, or a new report (`runtime/naming.feature`, N3) | ours |
 
 ## Why
 
-**Why the report's call is its own record.** The report's classification is the record's content and a table's is the
+**Why the report's call is its own record.** (rows "the interpretation", "reclassification") The report's classification is the record's content and a table's is the
 table's; nothing overwrites the report (#107). A reclassification is a new version or a new report, and the pod keeps
 what each lab said, as ClinVar keeps a classification per submitted record and the IG an implication per Observation.
 Martin's two reports call one variant uncertain and likely pathogenic, and the page shows both beside ClinVar's row
 (#138, case M2).
 
-**Why it is named like any record.** The rubric's first test in `naming.md` names a thing by what its source says
+**Why it is named like any record.** (rows "its name", "link to its variant") The rubric's first test in `naming.md` names a thing by what its source says
 identifies it, and an interpretation is as much a source's statement as its variant is; a view entry, a judgment and
 a shared view each cite a record by its name. Its pointer to its variant is a name only where both came in one
 document, since a `urn:uuid` is unique within one bundle only; in the story every interpretation points to a variant of
 its own report (`conformance/martin-okafor/scripted-input/martin/bridge/E3/bundle/graph.ttl`).
 
-**Why a condition, as VA-spec names it.** A pathogenicity statement's object is a condition in VA-spec, and a report may
+**Why a condition, as VA-spec names it.** (row "condition") A pathogenicity statement's object is a condition in VA-spec, and a report may
 state one, a panel's uncertain-significance call none (#107), so it is optional and at most one. We take its name
 `objectCondition` and a range of `cascade:ProblemOrDiagnosis`. VA-spec's therapy objects (`objectTherapeutic`) and
 `conditionQualifier` are left out: no source carries a therapy statement yet, and this is where to extend. VA-spec 1.1
 renamed the property `object`; we keep the 1.0 name, which says what the object is.
 
 
-**Why the version is attributed to the lab.** Which lab called a variant is what makes two calls of it two statements
+**Why the version is attributed to the lab.** (row "who called it") Which lab called a variant is what makes two calls of it two statements
 rather than one changed value, and the lab is an organisation record (`republishing-sources.md`). PROV-O's
 `wasAttributedTo` is the property a judgment names its author by, so "who said what" lists alike over a lab's call and a
 person's belief. It is on the version, since a version is what the lab stated, and at most one, since a report that
@@ -104,11 +104,11 @@ names two labs does not say which made the call. The story (#138) shows no lab o
 it; the shape case `record-variant-interpretation/two-labs` and the fixture of "What each report says of a variant"
 test it (#219).
 
-**Why evidence codes as strings.** A report's ACMG evidence is the criteria it applied, with a strength and whether met,
+**Why evidence codes as strings.** (row "evidence") A report's ACMG evidence is the criteria it applied, with a strength and whether met,
 and VA-spec's ACMG 2015 profile writes each as one string; we copy its pattern so one string says all three. Its
 evidence lines, with their own records, wait for a source that needs more than the code.
 
-**Why a coded classification.** A coded concept is what the IG writes and what ACMG/AMP names; a string is what #132
+**Why a coded classification.** (row "classification") A coded concept is what the IG writes and what ACMG/AMP names; a string is what #132
 found hard to compare (#107: "written as a code IRI, not a string").
 
 ## Alternatives that lost

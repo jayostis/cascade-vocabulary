@@ -97,41 +97,41 @@ Every row is ruled, 2026-10-22. Rows 1 to 5 are partial dates, 6 to 8 absent rea
 | 1. datatype | FHIR RDF's union; DCAT 3; openEHR's reduced-accuracy string; against: HL7 v2's retired precision component, CDISC's flags, SPHN's and OMOP's parts | one property per date, typed `xsd:gYear`, `xsd:gYearMonth`, `xsd:date` or `xsd:dateTime` by the precision the source wrote, through `sh:or`; nothing padded; `dateOfBirth` takes the same four; rule M23 | borrowed from FHIR RDF, union and all |
 | 2. comparison and order | XSD's disjoint value spaces; SPARQL 1.1; Oxigraph 0.5.11; rdflib 7.6.0 | "2019" never equals "2019-06-01", by term or by value, which is the matcher's requirement met by the datatype alone; a query that sorts mixed precisions orders by the written form, `STR()` of the date, so a year sorts before its months and its days on every engine; rule M23 | borrowed from XSD; the sort rule is ours, since SPARQL defines none |
 | 3. matching partial to full | FHIR search's implied range, `eq` contains, `ap` overlaps; v3's TS to IVL_TS | `same-code-and-date.rq:11-12` stays term-equal, so a year never joins a day, and from the rule list's version 14 R2 and R4 join only a day or a time written to the second, since two shots dated to one year or one padded hour may be two; `same-code-and-period.rq` reads each bound as the range its type implies, replacing the ten-character string compare at lines 23-31, as `same-code-and-period-read-as-ranges.rq` in the rule list's version 14; rule M23 | borrowed from FHIR search's ranges for periods; term equality for dates is ours |
-| 4. the currency ladder | FHIR `meta.lastUpdated`, an `instant`; CDA document `effectiveTime`, at least the day | partial dates never reach `currency.md`'s ladder: no source change time and no `rec:asOf` is a clinical date | borrowed; nothing to decide past saying so |
+| 4. the currency ladder | FHIR `meta.lastUpdated`, an `instant`; CDA document `effectiveTime`, at least the day | partial dates never reach `currency.md`'s ladder: no source change time and no `rec:asOf` is a clinical date (`runtime/currency.feature`, C1) | borrowed; nothing to decide past saying so |
 | 5. hour precision from CDA | C-CDA on FHIR's precision rule; FHIR and XSD `dateTime`, which need seconds; `quantities.md` row "number" | kept, the pattern of `quantities.md`'s decimal: an `xsd:dateTime` padded with zeros to the second (`2023-05-31T14:00:00`), with no timezone where the source gave none, which sorts, compares and falls in a range; and `writtenDate`, a plain string of the characters the source sent (`2023053114`), only where the typed form was padded, below the day; no finding, since nothing is dropped; a padded time is never read as exact, and a query needing the precision reads the string; the string sits on a node of the version naming its property, `cascade:PaddedDateTime`, and from the rule list's version 14 the lab rules R6, R16 and R17 read no padded time as an instant and R15 counts it as a day alone; rule M23 | borrowed from C-CDA on FHIR's precision rule and from `quantities.md` row "number" |
-| 6. the reason's code | FHIR data-absent-reason, 15 codes; v3 NullFlavor, 17 in a hierarchy; the draft map, 9 of 15 | one term, `cascade:absentReasonCode`, whose value is exactly the code IRI the source gave, FHIR's (`cascade:DataAbsentReason`) or NullFlavor's (`cascade:NullFlavor`), with no crosswalk at write time; a view that needs one list applies HL7's `cm-data-absent-reason-v3` at read, where it maps, and the source's own term where it does not (NI, and the six FHIR codes it leaves out); the map is a versioned table like the matcher's code tables, cited as used, replaceable when HL7 finishes it; no view needs one list yet, so the table waits for the first that does (Still open) | borrowed from both systems, and from HL7's map, applied at read |
-| 7. where it sits | FHIR obs-6 and the extension; CDA `@nullFlavor` anywhere; openEHR ELEMENT; HL7 v2 `""` | on the record's version, naming the property it stands for, and only where that property is absent: `cascade:ValueAbsentForReason`, a node of the version named `<version>#absent-` and the property's local name; a result's absent value is this row, naming `cascade:resultValueKind`, and no value kind of `quantities.md`; v2's `""` is a delete and is never read as a reason | borrowed from obs-6, widened to any property as the extension is |
+| 6. the reason's code | FHIR data-absent-reason, 15 codes; v3 NullFlavor, 17 in a hierarchy; the draft map, 9 of 15 | one term, `cascade:absentReasonCode`, whose value is exactly the code IRI the source gave, FHIR's (`cascade:DataAbsentReason`) or NullFlavor's (`cascade:NullFlavor`), with no crosswalk at write time; a view that needs one list applies HL7's `cm-data-absent-reason-v3` at read, where it maps, and the source's own term where it does not (NI, and the six FHIR codes it leaves out); the map is a versioned table like the matcher's code tables, cited as used, replaceable when HL7 finishes it; no view needs one list yet, so the table waits for the first that does (Still open) (`ontologies/cascade.ttl`, `ontologies/cascade.shapes.ttl`) | borrowed from both systems, and from HL7's map, applied at read |
+| 7. where it sits | FHIR obs-6 and the extension; CDA `@nullFlavor` anywhere; openEHR ELEMENT; HL7 v2 `""` | on the record's version, naming the property it stands for, and only where that property is absent: `cascade:ValueAbsentForReason`, a node of the version named `<version>#absent-` and the property's local name; a result's absent value is this row, naming `cascade:resultValueKind`, and no value kind of `quantities.md`; v2's `""` is a delete and is never read as a reason (`ontologies/cascade.shapes.ttl`) | borrowed from obs-6, widened to any property as the extension is |
 | 8. negation | C-CDA `negationInd`; US Core | out of scope: "no known allergies" is a statement, not an absent value, and is #152's "no known X" | borrowed from C-CDA's split |
 
 ## Why
 
-**Why the union.** Every health standard carries precision in the form as written and none pads: FHIR, CDA and HL7 v2
+**Why the union.** (row "1. datatype") Every health standard carries precision in the form as written and none pads: FHIR, CDA and HL7 v2
 drop digits from the right, openEHR keeps a reduced-accuracy string, and C-CDA on FHIR says "not
 2023-05-31T00:00:00+00:00" (verified). FHIR RDF already writes the union and DCAT 3 does the same, so the vocabulary
 adds two types to an `sh:or` that already mixes two incomparable ones, `xsd:date` and `xsd:dateTime`. XSD defines
 each type as an interval, so the range FHIR search wants is the literal itself, with no second triple to keep in step.
 
-**Why disjointness is the requirement, not the cost.** #133 asks that the matcher never treat "2019" as "2019-06-01".
+**Why disjointness is the requirement, not the cost.** (rows "2. comparison and order", "1. datatype") #133 asks that the matcher never treat "2019" as "2019-06-01".
 Under the union it cannot: XSD makes the values incomparable and Oxigraph 0.5.11 returns false for `=` (verified),
 so a term-equal join is safe by construction. The cost is order: SPARQL defines none across types, Oxigraph falls
 back to the written form and rdflib to the datatype IRI (verified), so two engines sort one list two ways. A query
 that sorts dates says it sorts by the written form, which puts "2019" before "2019-03" before "2019-03-14"; that is
 start order with the coarser value first, which a timeline can show as a span.
 
-**Why the period query changes.** `same-code-and-period.rq:23-31` takes `SUBSTR(STR(?onset), 1, 10)` as a string and
+**Why the period query changes.** (row "3. matching partial to full") `same-code-and-period.rq:23-31` takes `SUBSTR(STR(?onset), 1, 10)` as a string and
 admits an abatement only if it is `xsd:date` or `xsd:dateTime`. With a year onset "2019" the rules as written give an
 active condition the period "2019" to "9999-12-31", which overlaps a 2019-06-01 onset, while an inactive one does not
 match, since "2019-06-01" <= "2019" is false, and a `gYear` abatement counts as none (inferred, not run). The same
 pair matching or not by status is a bug the union exposes; reading a year as 1 January to 31 December, as FHIR search
 and v3's IVL_TS do (verified), fixes it.
 
-**Why the ladder never meets them.** `currency.md` ranks by source change time, then `rec:asOf`. FHIR's change time
+**Why the ladder never meets them.** (row "4. the currency ladder") `currency.md` ranks by source change time, then `rec:asOf`. FHIR's change time
 is `Meta.lastUpdated`, an `instant`; a C-CDA document's `effectiveTime` "SHALL be precise to at least the day"; and
 `rec:asOf` is an exporter's stamp or a device clock (verified). A partial date is a clinical date and is on a version,
 never a clock (inferred). The ladder has its own mix, a day-precision C-CDA `effectiveTime` beside a FHIR `instant`,
 which Oxigraph cannot order with `<`; that is `currency.md`'s to note, not this note's.
 
-**Why pad the hour, and keep what was sent.** A CDA time to the hour has no FHIR or XSD form short of padding the
+**Why pad the hour, and keep what was sent.** (row "5. hour precision from CDA") A CDA time to the hour has no FHIR or XSD form short of padding the
 minutes and seconds (inferred), so it follows `quantities.md` row "number": a typed literal that does the typed jobs
 and a plain string that keeps the source's characters. Padded to the second, `2023-05-31T14:00:00` sorts, compares and
 falls in a range as every other `xsd:dateTime` does, where keeping only the day, as the C-CDA adapter does today
@@ -143,7 +143,7 @@ a year, a month or a day carries its precision in its own type (row 1), so this 
 lost for row 1, used only where no typed form holds the precision. Nothing is dropped, so no finding is written. How
 often a source sends hours is not counted (unverified).
 
-**Why the source's own code, and HL7's map at read.** The draft map covers 9 of FHIR's 15 codes, and NI, CDA's default
+**Why the source's own code, and HL7's map at read.** (row "6. the reason's code") The draft map covers 9 of FHIR's 15 codes, and NI, CDA's default
 and the most general code, has no FHIR counterpart (verified). Mapping at write time would invent a counterpart for NI
 or drop it, and the adapter would then be stating HL7's draft as fact, so the version stores exactly the IRI the
 source gave. A view that needs one list, as the review page does, applies `cm-data-absent-reason-v3` at read where it
@@ -151,7 +151,7 @@ maps and shows the source's own term where it does not. The map is a table like 
 versioned and cited as used, so a view says which map it applied; when HL7 finishes it, the table is replaced and every
 view improves without touching a record. Nothing is lost and nothing invented.
 
-**Why on the version, beside the property.** Open-world RDF makes a missing triple say nothing (verified), so only a
+**Why on the version, beside the property.** (row "7. where it sits") Open-world RDF makes a missing triple say nothing (verified), so only a
 written term can say "absent because", and no PROV or W3C term does (none found). FHIR's obs-6 already gives the shape:
 a reason only where the value is absent. Putting it on the version keeps the vocabulary's rule that content is on a
 version, and naming the property says which absence it explains, as CDA's attribute does by sitting on the element.

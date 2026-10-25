@@ -53,10 +53,18 @@ A note that replaces an older rule names it, as `naming.md` names N1, N2, N6, N7
 A5, M1 and M3. Notes cite one another by file name.
 
 A note and a feature rule point at each other. A Choice row states the rule in one sentence and names the rule in
-`runtime/` that applies it (`N3`, `M17`); that rule's first line names the note and the row that ruled it. Neither
-leans on the other to be read: the note says what and why, the feature says exactly how, with the examples. An
-example belongs in the feature, never in the note; a reason belongs in the note, never in the feature. A ruling with
-no feature rule yet names the issue that will write it.
+`runtime/` that applies it (`N3`, `M17`, or a run, `A3 to A5`); that rule's first line names the note and the row that
+ruled it, as `decisions/currency.md, rows "current" and "heads".`, a sentence of its own. Neither leans on the other to
+be read: the note says what and why, the feature says exactly how, with the examples. An example belongs in the
+feature, never in the note; a reason belongs in the note, never in the feature. A ruling with no feature rule yet
+names the issue that will write it. A ruling no runtime applies, a term, a shape, a code's IRI or a table's form,
+names instead the file of this repository that does, by its path: `ontologies/cascade.shapes.ttl`. A rule no note
+rules, mechanics a runtime must agree on, says so in its first line: `No note rules this.`
+
+A Why paragraph that explains a row names it right after its bold lead, `**Why content names a version.** (row
+"version")`, or several, `(rows "act", "sync")`, so a rule's reader is shown the reason beside the rule. The spec
+page cascade-runtime-js builds from these files (`npm run build:spec`) reads both pointers and the Why's, and warns
+of each that is missing or names nothing.
 
 ## The notes
 

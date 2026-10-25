@@ -6,6 +6,7 @@ Feature: Medication lifecycle
   nothing matches.
 
   Rule: L1. A medication entry's status is classed active, stopped, paused, unknown or entered-in-error by the first step of this order that holds
+    decisions/one-meaning-per-term.md, rows "3. a medication's status" and "5. one status for every kind".
     The entry's status is the one of the member it takes its status from. The class is the concept of cascade:MedicationLifecycle
     the entry shows as cascade:lifecycle (derived as cascade:statusLifecycle), and the step that gave it as
     cascade:statusLifecycleStep. The rows each step reads, and the
