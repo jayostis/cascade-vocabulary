@@ -1148,7 +1148,7 @@ Feature: The matcher's procedure
         | different result units at one instant  | lab result LOINC 2823-3 "Potassium repeat", lab result LOINC 2823-3 "Potassium, other lab" |
 
   Rule: M22. Two lab results of one business identifier and one code, from documents of one organization, are the same result for certain
-    decisions/quantities.md, row "matcher"; decisions/republishing-sources.md, rows "two organisations are one" and "within-organisation rules".
+    decisions/quantities.md, row "matcher", tier (i); decisions/republishing-sources.md, rows "two organisations are one" and "within-organisation rules".
     From the rule list's version 13, R18 joins two lab results whose
     current versions carry one dct:identifier, one LOINC code and one clinically relevant time, or of which one states
     no time, when the documents their revisions come from name, as custodian or author (cascade:CustodianRole,
