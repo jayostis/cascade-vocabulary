@@ -52,3 +52,32 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :theSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :sameA , :sameB ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-03T00:00:00Z"^^xsd:dateTime .
+
+:byIdentifier a cascade:Judgment ; cascade:verdict cascade:Same ;
+    cascade:justification cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization ;
+    prov:hadMember :identifiedFirst , :identifiedCorrected ;
+    prov:used <urn:x:identifiedFirstVersion> , <urn:x:identifiedCorrectedVersion> ;
+    cascade:matcherRule cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule ;
+    prov:wasAttributedTo cascade:CascadeMatcher .
+
+:byIdentifierUnderrules11 a cascade:ClaimAssertion ; cascade:assertedClaim :byIdentifier ;
+    cascade:assertedUnderRuleListVersion :rules11 .
+
+:rules11SameBusinessIdentifierRule cascade:rowOfRuleListVersion :rules11 ;
+    cascade:matcherRule cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule ;
+    cascade:queryHash :sameBusinessIdentifierQuery .
+
+:byValue a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameResult ;
+    prov:hadMember :identifiedCorrected , :sameAsCorrected ;
+    prov:used <urn:x:identifiedCorrectedVersion> , <urn:x:sameAsCorrectedVersion> ;
+    cascade:matcherRule cascade:SameResultRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:byValueUnderrules11 a cascade:ClaimAssertion ; cascade:assertedClaim :byValue ;
+    cascade:assertedUnderRuleListVersion :rules11 .
+
+:rules11SameResultRule cascade:rowOfRuleListVersion :rules11 ; cascade:matcherRule cascade:SameResultRule ;
+    cascade:queryHash :sameResultQuery .
+
+:correctedValue a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
+    oa:motivatedBy oa:classifying ; oa:hasTarget :identifiedFirst , :identifiedCorrected ;
+    prov:used <urn:x:identifiedFirstVersion> , <urn:x:identifiedCorrectedVersion> .

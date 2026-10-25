@@ -17,14 +17,17 @@
 # code no held table knows, which is every shared RxNorm code when no drug products table is held. A pair is listed once,
 # from the entry of its smaller record, unless a person judged it different or a lapsed Same of it is listed already.
 # An entry joined by an NDC (R5) and a product code (R11) alone is joined through one kind of sameness, since both are
-# exact identity; any other two justifications are two kinds, with either of these included. An entry the matcher
+# exact identity; any other two justifications are two kinds, with either of these included. A join by a shared
+# business identifier within one organization (R18) is certain, so it adds no kind: an entry it joins with one other
+# rule is joined through that rule's kind alone. An entry the matcher
 # joined by the same result on one day (R15) is listed with that Same: at least one of the two results was stamped with
 # a day alone, and two draws in one day are common, so the join is likely, not sure. Two lab results in two entries of
 # one test code at one instant whose values' units differ once their UCUM annotations are dropped are listed too, once,
 # from the entry of the smaller record, unless a person judged them different: mmol/L and mg/dL may measure one draw,
 # and no rule converts one into the other. A finding of different result values at one instant (R16) is listed, as the
 # finding with its two results, while both are at the versions it compared, until a person acknowledges it or judges
-# the two different.
+# the two different. A finding of different values or units is not listed while the two share a business identifier
+# within one organization (R18): the source said they are one result, so the second value is its correction.
 # The build never settles these itself; a person does, with a judgment.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX oa: <http://www.w3.org/ns/oa#>
@@ -50,6 +53,7 @@ WHERE {
         ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification ?why ;
               prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
         ?member ^cascade:mergedFrom ?entry .
+        FILTER (?why != cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization)
       }
       GROUP BY ?entry
       HAVING (COUNT(DISTINCT ?why) > 1
@@ -169,6 +173,9 @@ WHERE {
     MINUS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ; prov:hadMember ?finding }
     MINUS { ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record , ?otherRecord .
             FILTER NOT EXISTS { ?same prov:wasAttributedTo/a prov:SoftwareAgent } }
+    MINUS { ?certain cascade:countsUnderLens true ; cascade:verdict cascade:Same ;
+                     cascade:justification cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization ;
+                     prov:hadMember ?record , ?otherRecord }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }

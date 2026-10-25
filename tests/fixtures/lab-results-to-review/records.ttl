@@ -92,3 +92,27 @@
 <urn:x:valueOtherVersion#value> cascade:decimalValue "4.4"^^xsd:decimal ; cascade:writtenValue "4.4" ; cascade:ucumUnit "mmol/L" .
 :valueOtherRevision a cascade:Revision ; cascade:revisionOf :valueOther ; cascade:version <urn:x:valueOtherVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:identifiedFirst a cascade:LaboratoryTestResult .
+<urn:x:identifiedFirstVersion> prov:specializationOf :identifiedFirst ; cascade:patient :subject ; cascade:testName "Sodium" ;
+    cascade:testCode <http://loinc.org/rdf/2951-2> ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:identifiedFirstVersion#value> .
+<urn:x:identifiedFirstVersion#value> cascade:decimalValue "139"^^xsd:decimal ; cascade:writtenValue "139" ; cascade:ucumUnit "mmol/L" .
+:identifiedFirstRevision a cascade:Revision ; cascade:revisionOf :identifiedFirst ; cascade:version <urn:x:identifiedFirstVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:identifiedCorrected a cascade:LaboratoryTestResult .
+<urn:x:identifiedCorrectedVersion> prov:specializationOf :identifiedCorrected ; cascade:patient :subject ; cascade:testName "Sodium" ;
+    cascade:testCode <http://loinc.org/rdf/2951-2> ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:identifiedCorrectedVersion#value> .
+<urn:x:identifiedCorrectedVersion#value> cascade:decimalValue "141"^^xsd:decimal ; cascade:writtenValue "141" ; cascade:ucumUnit "mmol/L" .
+:identifiedCorrectedRevision a cascade:Revision ; cascade:revisionOf :identifiedCorrected ; cascade:version <urn:x:identifiedCorrectedVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:sameAsCorrected a cascade:LaboratoryTestResult .
+<urn:x:sameAsCorrectedVersion> prov:specializationOf :sameAsCorrected ; cascade:patient :subject ; cascade:testName "Sodium, serum" ;
+    cascade:testCode <http://loinc.org/rdf/2951-2> ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:sameAsCorrectedVersion#value> .
+<urn:x:sameAsCorrectedVersion#value> cascade:decimalValue "141"^^xsd:decimal ; cascade:writtenValue "141" ; cascade:ucumUnit "mmol/L" .
+:sameAsCorrectedRevision a cascade:Revision ; cascade:revisionOf :sameAsCorrected ; cascade:version <urn:x:sameAsCorrectedVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

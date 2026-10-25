@@ -1,0 +1,27 @@
+# Two records match when their current versions carry one business identifier and one test code, and the documents
+# their revisions come from name, as custodian or author, one organization, or two that are currently the same. An
+# identifier is compared as the term it is, its value with the system its datatype names, so one written by a FHIR
+# source and one a C-CDA source mapped to FHIR's form are one; an identifier with no system, a plain string, is never
+# compared, since nothing says which of an organization's systems issued it. A record whose documents name no
+# organization, as a pull from a server does, matches nothing here. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record pav:hasCurrentVersion ?version .
+  ?version dct:identifier ?identifier ; cascade:testCode ?code .
+  FILTER (isLiteral(?identifier) && DATATYPE(?identifier) != xsd:string)
+  ?otherVersion dct:identifier ?identifier ; cascade:testCode ?code .
+  ?other pav:hasCurrentVersion ?otherVersion .
+  FILTER (?other != ?record)
+  ?revision cascade:revisionOf ?record ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+  ?attribution prov:hadRole ?role ; prov:agent ?organization .
+  ?otherRevision cascade:revisionOf ?other ; prov:wasDerivedFrom/prov:qualifiedAttribution ?otherAttribution .
+  ?otherAttribution prov:hadRole ?otherRole ; prov:agent ?otherOrganization .
+  FILTER (?role IN (cascade:CustodianRole, cascade:AuthorRole) && ?otherRole IN (cascade:CustodianRole, cascade:AuthorRole)
+          && (?organization = ?otherOrganization || EXISTS { ?organization cascade:currentlySame+ ?otherOrganization }))
+}

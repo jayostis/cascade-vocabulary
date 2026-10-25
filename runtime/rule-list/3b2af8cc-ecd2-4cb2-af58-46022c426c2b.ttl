@@ -1,0 +1,126 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameCodeRule ;
+    cascade:justifiedAs cascade:SameCode ;
+    cascade:appliesToClass cascade:AllergyOrIntolerance , cascade:MedicalProcedure ;
+    cascade:queryPath "matcher/same-code.rq" ;
+    cascade:queryHash <ni:///sha-256;HYjC65ynkofjUu0UN6vFmXqw8Xp7zT_gIHGE3hC-j3A> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameCodeAndDateRule ;
+    cascade:justifiedAs cascade:SameCodeAndDate ;
+    cascade:appliesToClass cascade:Vaccination ;
+    cascade:queryPath "matcher/same-code-and-date.rq" ;
+    cascade:queryHash <ni:///sha-256;1ouqn1JB9e6O5i113ZPtU1pmmLHp5GVs1UUhZfpvDmw> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameMappedCodeRule ;
+    cascade:justifiedAs cascade:SameMappedCode ;
+    cascade:appliesToClass cascade:AllergyOrIntolerance ;
+    cascade:queryPath "matcher/same-active-ingredient.rq" ;
+    cascade:queryHash <ni:///sha-256;9eh1KA2Wgjk4AGxHOU8SlxnWljSxdUEFXzulDWg0LrQ> ;
+    cascade:tableKind cascade:ProductIngredients .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameMappedCodeAndDateRule ;
+    cascade:justifiedAs cascade:SameMappedCodeAndDate ;
+    cascade:appliesToClass cascade:Vaccination ;
+    cascade:queryPath "matcher/same-vaccine-group-and-date.rq" ;
+    cascade:queryHash <ni:///sha-256;mtILE5ICBvMxaKD2J6K2dBPFbsu8irXd9lmX7OJvKKM> ;
+    cascade:tableKind cascade:VaccineGroups .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameMedicationCodeRule ;
+    cascade:justifiedAs cascade:SameMedicationCode ;
+    cascade:appliesToClass cascade:PrescribedOrReportedMedication ;
+    cascade:queryPath "matcher/same-ndc-code.rq" ;
+    cascade:queryHash <ni:///sha-256;i4INjsHpGRwfnjq5STLC2ppkMdAUfOp33zx_D8S8XPg> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameResultRule ;
+    cascade:justifiedAs cascade:SameResult ;
+    cascade:appliesToClass cascade:LaboratoryTestResult ;
+    cascade:queryPath "matcher/same-code-instant-value-and-unit.rq" ;
+    cascade:queryHash <ni:///sha-256;WPjSBJ0DjL12aD9vwHY1ScKXj4YIOz20F-m-a8ml-0k> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameConvertedCodeRule ;
+    cascade:justifiedAs cascade:SameConvertedCode ;
+    cascade:appliesToClass cascade:ProblemOrDiagnosis ;
+    cascade:queryPath "matcher/same-one-to-one-conversion.rq" ;
+    cascade:queryHash <ni:///sha-256;mi99SzBfxB-f26THyBlH4hzQlc1DaRjTwtaVFZWQzQE> ;
+    cascade:tableKind cascade:CodeConversions .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameCodeAndPeriodRule ;
+    cascade:justifiedAs cascade:SameCodeAndPeriod ;
+    cascade:appliesToClass cascade:ProblemOrDiagnosis ;
+    cascade:queryPath "matcher/same-code-and-period.rq" ;
+    cascade:queryHash <ni:///sha-256;9XcldXXvIIdzPBPDoD4qUFgNgEpSTmWttpwvCave2BA> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameBrandGenericRule ;
+    cascade:justifiedAs cascade:SameBrandGeneric ;
+    cascade:appliesToClass cascade:PrescribedOrReportedMedication ;
+    cascade:queryPath "matcher/same-brand-generic.rq" ;
+    cascade:queryHash <ni:///sha-256;tIvnt3E1zP0IPyLiVgF_6npqdlVuaup-xJFZnFo-Z4k> ;
+    cascade:tableKind cascade:BrandGenerics .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameProductCodeRule ;
+    cascade:justifiedAs cascade:SameProductCode ;
+    cascade:appliesToClass cascade:PrescribedOrReportedMedication ;
+    cascade:queryPath "matcher/same-product-code-in-current-tables.rq" ;
+    cascade:queryHash <ni:///sha-256;T9q7X0OGcRA4mFSkvTmMKpyOAbB6dn8z5cCIo0_jelU> ;
+    cascade:tableKind cascade:DrugProducts .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameVariationRule ;
+    cascade:justifiedAs cascade:SameVariation ;
+    cascade:appliesToClass cascade:GeneticVariantFinding ;
+    cascade:queryPath "matcher/same-variation.rq" ;
+    cascade:queryHash <ni:///sha-256;Bk3nzLOdyjXdT4sPVak151L7P__yYdKkaTSKuiwAGws> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameVariationThroughTableRule ;
+    cascade:justifiedAs cascade:SameVariationThroughTable ;
+    cascade:appliesToClass cascade:GeneticVariantFinding ;
+    cascade:queryPath "matcher/same-variation-through-current-tables.rq" ;
+    cascade:queryHash <ni:///sha-256;fRIlZC6Nl1mZt1_cHEEGgi6lh9H132KCY8UenQZkhek> ;
+    cascade:tableKind cascade:VariantClassifications .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule ;
+    cascade:justifiedAs cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost ;
+    cascade:appliesToClass cascade:Server ;
+    cascade:queryPath "matcher/same-self-asserted-base-url-and-authorization-endpoint-on-one-host.rq" ;
+    cascade:queryHash <ni:///sha-256;laDRTR1v85XUYQ5MOxMrHlRYTti4qU1hOJfdwze_G5A> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameResultOnOneDayRule ;
+    cascade:justifiedAs cascade:SameResultOnOneDay ;
+    cascade:appliesToClass cascade:LaboratoryTestResult ;
+    cascade:queryPath "matcher/same-code-day-value-and-unit.rq" ;
+    cascade:queryHash <ni:///sha-256;f9FOCcYXVRYwjHggKBo1MzANJdZZt92NJF-K7qgwy1Q> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:DifferentResultValuesRule ;
+    cascade:findingKind cascade:DifferentResultValuesAtOneInstant ;
+    cascade:appliesToClass cascade:LaboratoryTestResult ;
+    cascade:queryPath "matcher/same-code-instant-different-values.rq" ;
+    cascade:queryHash <ni:///sha-256;5NqlhiUc9Uuwp9gXWJ69mmPdOu7WbNuCu0L_zT-A4Eg> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:DifferentResultUnitsRule ;
+    cascade:findingKind cascade:DifferentResultUnitsAtOneInstant ;
+    cascade:appliesToClass cascade:LaboratoryTestResult ;
+    cascade:queryPath "matcher/same-code-instant-different-units.rq" ;
+    cascade:queryHash <ni:///sha-256;gQvp1rtelj1N3HJzkJ5pYnZ-_B6MVbNs6sb4zELHVTM> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule ;
+    cascade:justifiedAs cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization ;
+    cascade:appliesToClass cascade:LaboratoryTestResult ;
+    cascade:queryPath "matcher/same-business-identifier-and-test-code-within-one-organization.rq" ;
+    cascade:queryHash <ni:///sha-256;SFOfuU44WqeYbshSndGgc3_wJ42i2pvwC43ixkkOnS8> .
