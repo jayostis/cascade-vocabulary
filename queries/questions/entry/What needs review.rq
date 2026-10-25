@@ -8,7 +8,7 @@
 # its conditions, in two entries, carry one code and their dates cannot tell whether they are one condition: either
 # has no onset, or one has an unknown end (no abatement that is a date ending on or after its onset begins, and no
 # status that keeps it going: active, recurrence or relapse) and its onset begins on or before the other's end, the
-# other's period counted as the matcher's rule R8 counts it from the rule list's version 13, each date read as the days
+# other's period counted as the matcher's rule R8 counts it from the rule list's version 14, each date read as the days
 # its precision covers. A condition with an unknown end that began after the other's end is apart from it:
 # the two are two episodes, not joined and not listed, as are two whose periods are both known and apart. Two
 # medications in two entries that share an RxNorm code are possibly the same medication: a pod cannot tell which shared
@@ -114,43 +114,50 @@ WHERE {
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
   UNION
-  { VALUES ?property { cascade:icd10Code cascade:snomedCode }
-    ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
-    ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
-    ?version ?property ?code .
-    ?otherVersion ?property ?code .
+  {
+    { SELECT ?record ?entry ?property ?code ?dated ?from ?to ?open
+      WHERE {
+        VALUES ?property { cascade:icd10Code cascade:snomedCode }
+        ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
+        ?version ?property ?code .
+        OPTIONAL { ?version cascade:displayDate ?onset }
+        OPTIONAL { ?version cascade:abatementDate ?end }
+        OPTIONAL { ?version cascade:clinicalStatus ?status }
+        BIND (IF(DATATYPE(?onset) = xsd:gYear, CONCAT(SUBSTR(STR(?onset), 1, 4), "-01-01"),
+                 IF(DATATYPE(?onset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?onset), 1, 7), "-01"), SUBSTR(STR(?onset), 1, 10))) AS ?from)
+        BIND (IF(DATATYPE(?onset) = xsd:gYear, CONCAT(SUBSTR(STR(?onset), 1, 4), "-12-31"),
+                 IF(DATATYPE(?onset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?onset), 1, 7), "-31"), SUBSTR(STR(?onset), 1, 10))) AS ?onsetTo)
+        BIND (IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime), SUBSTR(STR(?end), 1, 10),
+                 IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?end), 1, 7), "-31"),
+                    IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) = xsd:gYear, CONCAT(SUBSTR(STR(?end), 1, 4), "-12-31"), ""))) AS ?endTo)
+        BIND (COALESCE(?status, "") IN ("active", "recurrence", "relapse") AS ?keepsGoing)
+        BIND (BOUND(?onset) AS ?dated)
+        BIND (IF(?endTo != "" && ?endTo >= ?from, ?endTo, IF(?keepsGoing, "9999-12-31", ?onsetTo)) AS ?to)
+        BIND (!(?endTo != "" && ?endTo >= ?from) && !?keepsGoing AS ?open)
+      } }
+    { SELECT ?otherRecord ?otherEntry ?property ?code ?otherDated ?otherFrom ?otherTo ?otherOpen
+      WHERE {
+        VALUES ?property { cascade:icd10Code cascade:snomedCode }
+        ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
+        ?otherVersion ?property ?code .
+        OPTIONAL { ?otherVersion cascade:displayDate ?otherOnset }
+        OPTIONAL { ?otherVersion cascade:abatementDate ?otherEnd }
+        OPTIONAL { ?otherVersion cascade:clinicalStatus ?otherStatus }
+        BIND (IF(DATATYPE(?otherOnset) = xsd:gYear, CONCAT(SUBSTR(STR(?otherOnset), 1, 4), "-01-01"),
+                 IF(DATATYPE(?otherOnset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?otherOnset), 1, 7), "-01"), SUBSTR(STR(?otherOnset), 1, 10))) AS ?otherFrom)
+        BIND (IF(DATATYPE(?otherOnset) = xsd:gYear, CONCAT(SUBSTR(STR(?otherOnset), 1, 4), "-12-31"),
+                 IF(DATATYPE(?otherOnset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?otherOnset), 1, 7), "-31"), SUBSTR(STR(?otherOnset), 1, 10))) AS ?otherOnsetTo)
+        BIND (IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime), SUBSTR(STR(?otherEnd), 1, 10),
+                 IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?otherEnd), 1, 7), "-31"),
+                    IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) = xsd:gYear, CONCAT(SUBSTR(STR(?otherEnd), 1, 4), "-12-31"), ""))) AS ?otherEndTo)
+        BIND (COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse") AS ?otherKeepsGoing)
+        BIND (BOUND(?otherOnset) AS ?otherDated)
+        BIND (IF(?otherEndTo != "" && ?otherEndTo >= ?otherFrom, ?otherEndTo, IF(?otherKeepsGoing, "9999-12-31", ?otherOnsetTo)) AS ?otherTo)
+        BIND (!(?otherEndTo != "" && ?otherEndTo >= ?otherFrom) && !?otherKeepsGoing AS ?otherOpen)
+      } }
     MINUS { ?record cascade:currentlyDifferent ?otherRecord }
-    OPTIONAL { ?version cascade:displayDate ?onset }
-    OPTIONAL { ?version cascade:abatementDate ?end }
-    OPTIONAL { ?version cascade:clinicalStatus ?status }
-    OPTIONAL { ?otherVersion cascade:displayDate ?otherOnset }
-    OPTIONAL { ?otherVersion cascade:abatementDate ?otherEnd }
-    OPTIONAL { ?otherVersion cascade:clinicalStatus ?otherStatus }
-    BIND (IF(DATATYPE(?onset) = xsd:gYear, CONCAT(SUBSTR(STR(?onset), 1, 4), "-01-01"),
-             IF(DATATYPE(?onset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?onset), 1, 7), "-01"), SUBSTR(STR(?onset), 1, 10))) AS ?from)
-    BIND (IF(DATATYPE(?onset) = xsd:gYear, CONCAT(SUBSTR(STR(?onset), 1, 4), "-12-31"),
-             IF(DATATYPE(?onset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?onset), 1, 7), "-31"), SUBSTR(STR(?onset), 1, 10))) AS ?onsetTo)
-    BIND (IF(DATATYPE(?otherOnset) = xsd:gYear, CONCAT(SUBSTR(STR(?otherOnset), 1, 4), "-01-01"),
-             IF(DATATYPE(?otherOnset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?otherOnset), 1, 7), "-01"), SUBSTR(STR(?otherOnset), 1, 10))) AS ?otherFrom)
-    BIND (IF(DATATYPE(?otherOnset) = xsd:gYear, CONCAT(SUBSTR(STR(?otherOnset), 1, 4), "-12-31"),
-             IF(DATATYPE(?otherOnset) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?otherOnset), 1, 7), "-31"), SUBSTR(STR(?otherOnset), 1, 10))) AS ?otherOnsetTo)
-    BIND (IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) IN (xsd:date, xsd:dateTime), SUBSTR(STR(?end), 1, 10),
-             IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?end), 1, 7), "-31"),
-                IF(BOUND(?end) && isLiteral(?end) && DATATYPE(?end) = xsd:gYear, CONCAT(SUBSTR(STR(?end), 1, 4), "-12-31"), ""))) AS ?endTo)
-    BIND (IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) IN (xsd:date, xsd:dateTime), SUBSTR(STR(?otherEnd), 1, 10),
-             IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) = xsd:gYearMonth, CONCAT(SUBSTR(STR(?otherEnd), 1, 7), "-31"),
-                IF(BOUND(?otherEnd) && isLiteral(?otherEnd) && DATATYPE(?otherEnd) = xsd:gYear, CONCAT(SUBSTR(STR(?otherEnd), 1, 4), "-12-31"), ""))) AS ?otherEndTo)
-    BIND (?endTo != "" && ?endTo >= ?from AS ?endKnown)
-    BIND (?otherEndTo != "" && ?otherEndTo >= ?otherFrom AS ?otherEndKnown)
-    BIND (IF(?endKnown, ?endTo,
-             IF(COALESCE(?status, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?onsetTo)) AS ?to)
-    BIND (IF(?otherEndKnown, ?otherEndTo,
-             IF(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"), "9999-12-31", ?otherOnsetTo)) AS ?otherTo)
     FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
-            && (!BOUND(?onset) || !BOUND(?otherOnset)
-                || (!?endKnown && !(COALESCE(?status, "") IN ("active", "recurrence", "relapse")) && ?from <= ?otherTo)
-                || (!?otherEndKnown && !(COALESCE(?otherStatus, "") IN ("active", "recurrence", "relapse"))
-                    && ?otherFrom <= ?to)))
+            && (!?dated || !?otherDated || (?open && ?from <= ?otherTo) || (?otherOpen && ?otherFrom <= ?to)))
     BIND ("same code, dates cannot tell" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
