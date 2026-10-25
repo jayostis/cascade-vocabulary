@@ -157,25 +157,52 @@ WHERE {
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
   UNION
-  { ?record cascade:recordKind "Lab result" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
-    ?otherRecord cascade:recordKind "Lab result" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
-    ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time ;
-             cascade:resultQuantity|cascade:resultRatioNumerator|cascade:resultRangeLow ?first .
-    ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime ;
-                  cascade:resultQuantity|cascade:resultRatioNumerator|cascade:resultRangeLow ?otherFirst .
-    FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry
-            && DATATYPE(?time) = xsd:dateTime && DATATYPE(?otherTime) = xsd:dateTime && ?time = ?otherTime)
+  { { SELECT ?record ?code ?instant ?unit
+      WHERE {
+        ?record cascade:recordKind "Lab result" ; pav:hasCurrentVersion ?version .
+        ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time .
+        FILTER (DATATYPE(?time) = xsd:dateTime)
+        BIND (STR(?time - "1970-01-01T00:00:00Z"^^xsd:dateTime) AS ?instant)
+        OPTIONAL { ?version cascade:resultQuantity ?firstQuantity .
+                   OPTIONAL { ?firstQuantity cascade:ucumUnit ?firstQuantityUcum }
+                   OPTIONAL { ?firstQuantity cascade:unitText ?firstQuantityText } }
+        OPTIONAL { ?version cascade:resultRatioNumerator ?firstNumerator .
+                   OPTIONAL { ?firstNumerator cascade:ucumUnit ?firstNumeratorUcum }
+                   OPTIONAL { ?firstNumerator cascade:unitText ?firstNumeratorText } }
+        OPTIONAL { ?version cascade:resultRangeLow ?firstLow .
+                   OPTIONAL { ?firstLow cascade:ucumUnit ?firstLowUcum }
+                   OPTIONAL { ?firstLow cascade:unitText ?firstLowText } }
+        FILTER (BOUND(?firstQuantity) || BOUND(?firstNumerator) || BOUND(?firstLow))
+        BIND (COALESCE(?firstQuantityUcum, ?firstNumeratorUcum, ?firstLowUcum, ?firstQuantityText, ?firstNumeratorText, ?firstLowText, "") AS ?unitWritten)
+        BIND (REPLACE(?unitWritten, "\\{[^{}]*\\}", "") AS ?unitBare)
+        BIND (IF(?unitBare = "" && ?unitWritten != "", "1", ?unitBare) AS ?unit)
+      } }
+    { SELECT ?otherRecord ?code ?instant ?otherInstant ?otherUnit
+      WHERE {
+        ?otherRecord cascade:recordKind "Lab result" ; pav:hasCurrentVersion ?otherVersion .
+        ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime .
+        FILTER (DATATYPE(?otherTime) = xsd:dateTime)
+        BIND (STR(?otherTime - "1970-01-01T00:00:00Z"^^xsd:dateTime) AS ?otherInstant)
+        BIND (?otherInstant AS ?instant)
+        OPTIONAL { ?otherVersion cascade:resultQuantity ?otherFirstQuantity .
+                   OPTIONAL { ?otherFirstQuantity cascade:ucumUnit ?otherFirstQuantityUcum }
+                   OPTIONAL { ?otherFirstQuantity cascade:unitText ?otherFirstQuantityText } }
+        OPTIONAL { ?otherVersion cascade:resultRatioNumerator ?otherFirstNumerator .
+                   OPTIONAL { ?otherFirstNumerator cascade:ucumUnit ?otherFirstNumeratorUcum }
+                   OPTIONAL { ?otherFirstNumerator cascade:unitText ?otherFirstNumeratorText } }
+        OPTIONAL { ?otherVersion cascade:resultRangeLow ?otherFirstLow .
+                   OPTIONAL { ?otherFirstLow cascade:ucumUnit ?otherFirstLowUcum }
+                   OPTIONAL { ?otherFirstLow cascade:unitText ?otherFirstLowText } }
+        FILTER (BOUND(?otherFirstQuantity) || BOUND(?otherFirstNumerator) || BOUND(?otherFirstLow))
+        BIND (COALESCE(?otherFirstQuantityUcum, ?otherFirstNumeratorUcum, ?otherFirstLowUcum, ?otherFirstQuantityText, ?otherFirstNumeratorText, ?otherFirstLowText, "") AS ?otherUnitWritten)
+        BIND (REPLACE(?otherUnitWritten, "\\{[^{}]*\\}", "") AS ?otherUnitBare)
+        BIND (IF(?otherUnitBare = "" && ?otherUnitWritten != "", "1", ?otherUnitBare) AS ?otherUnit)
+      } }
+    FILTER (STR(?record) < STR(?otherRecord) && ?instant = ?otherInstant && ?unit != ?otherUnit)
+    ?record ^cascade:mergedFrom ?entry .
+    ?otherRecord ^cascade:mergedFrom ?otherEntry .
+    FILTER (?entry != ?otherEntry)
     MINUS { ?record cascade:currentlyDifferent ?otherRecord }
-    OPTIONAL { ?first cascade:ucumUnit ?firstUcum }
-    OPTIONAL { ?first cascade:unitText ?firstText }
-    OPTIONAL { ?otherFirst cascade:ucumUnit ?otherFirstUcum }
-    OPTIONAL { ?otherFirst cascade:unitText ?otherFirstText }
-    BIND (COALESCE(?firstUcum, ?firstText, "") AS ?unitWritten)
-    BIND (COALESCE(?otherFirstUcum, ?otherFirstText, "") AS ?otherUnitWritten)
-    BIND (REPLACE(?unitWritten, "\\{[^{}]*\\}", "") AS ?unitBare)
-    BIND (REPLACE(?otherUnitWritten, "\\{[^{}]*\\}", "") AS ?otherUnitBare)
-    FILTER (IF(?unitBare = "" && ?unitWritten != "", "1", ?unitBare)
-            != IF(?otherUnitBare = "" && ?otherUnitWritten != "", "1", ?otherUnitBare))
     BIND ("one test at one instant, in units that differ" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
