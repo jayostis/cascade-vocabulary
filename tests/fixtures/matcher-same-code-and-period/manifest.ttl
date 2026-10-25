@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -15,8 +15,8 @@
   mf:name "same-code-and-period" ;
   rdfs:comment "Only the pairs of one code whose periods overlap match, in either order." ;
   mf:action [ qt:query <../../../queries/matcher/same-code-and-period.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:apartA> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:apartA> ,
                                   <urn:x:apartB> ,
                                   <urn:x:backwardsB> ,
                                   <urn:x:dualB> ,
@@ -40,8 +40,8 @@
   mf:name "same-code-and-period-read-as-ranges" ;
   rdfs:comment "The pairs same-code-and-period.rq gives, and those whose periods overlap once each date is read as the days its precision covers: a year onset and a day within it, a month abatement reaching a day in that month, a year abatement ending after its onset. A day the year after a year onset, and a year abatement ending before its year onset, join nothing." ;
   mf:action [ qt:query <../../../queries/matcher/same-code-and-period-read-as-ranges.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:apartA> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:apartA> ,
                                   <urn:x:apartB> ,
                                   <urn:x:backwardsB> ,
                                   <urn:x:dualB> ,

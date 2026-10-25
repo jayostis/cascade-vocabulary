@@ -12,11 +12,12 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, XSD
 
-from contract import QUERIES, CASCADE, named
+from contract import QUERIES, named
 from engines import literal
 
 MF = Namespace("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#")
 QT = Namespace("http://www.w3.org/2001/sw/DataAccess/tests/test-query#")
+CTM = Namespace("https://ns.cascadeprotocol.org/test-manifest#")
 
 
 @dataclass(frozen=True)
@@ -47,9 +48,9 @@ def entries(manifest):
         action = graph.value(entry, MF.action)
         found.append(Entry(
             iri=str(entry), name=str(graph.value(entry, MF.name)), types=frozenset(graph.objects(entry, RDF.type)),
-            lens=path(graph.value(action, CASCADE.lensQueryPath)), query=path(graph.value(action, QT.query)),
+            lens=path(graph.value(action, CTM.lensQueryPath)), query=path(graph.value(action, QT.query)),
             result=path(graph.value(entry, MF.result)),
-            records=tuple(sorted(str(record) for record in graph.objects(action, CASCADE.boundRecord)))))
+            records=tuple(sorted(str(record) for record in graph.objects(action, CTM.boundRecord)))))
     return found
 
 

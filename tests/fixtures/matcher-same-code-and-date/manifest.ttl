@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -15,8 +15,8 @@
   mf:name "same-code-and-date" ;
   rdfs:comment "Only the pair giving one code and one date matches." ;
   mf:action [ qt:query <../../../queries/matcher/same-code-and-date.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:sameDayB> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:sameDayB> ,
                                   <urn:x:twoDaysA> ,
                                   <urn:x:twoDaysB> ,
                                   <urn:x:undatedA> ,
@@ -27,8 +27,8 @@
   mf:name "same-code-and-day-or-exact-time" ;
   rdfs:comment "Only the pair giving one code on one day matches: two shots of one code dated to one year, or to one time padded from the hour, may be two shots, and do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-code-and-day-or-exact-time.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:sameDayB> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:sameDayB> ,
                                   <urn:x:twoDaysA> ,
                                   <urn:x:twoDaysB> ,
                                   <urn:x:undatedA> ,

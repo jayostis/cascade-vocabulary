@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -14,8 +14,8 @@
   mf:name "same-medication-code" ;
   rdfs:comment "Only the prescription and the list entry match, both ways round." ;
   mf:action [ qt:query <../../../queries/matcher/same-medication-code.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:allergy> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:allergy> ,
                                   <urn:x:otherMedicine> ,
                                   <urn:x:prescribed> ] ;
   mf:result <same-medication-code.srj> .
