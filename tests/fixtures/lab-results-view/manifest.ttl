@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "lab-results-view" ;
-  rdfs:comment "A potassium entry of two members, the later one stating another name and unit and no status or time; a glucose at a time; and a hemoglobin A1c on that day, as a day." ;
+  rdfs:comment "A potassium entry of two members, the earlier written 4.10, the later stating another name, a unit text beside its UCUM unit, and no status or time; a glucose at a time, its value and unit as text; a hemoglobin A1c on that day, as a day, below 5.7; a titre 1:64; and a urine count of 0 to 5." ;
   mf:entries (
     <#the-lab-results-view>
     <#my-lab-results>
@@ -13,7 +13,7 @@
 
 <#the-lab-results-view> a mf:QueryEvaluationTest ;
   mf:name "the-lab-results-view" ;
-  rdfs:comment "Each entry takes the test, code, value, unit and time of its lead, so the potassium shows no time, and the status of the member chosen for status." ;
+  rdfs:comment "Each entry takes the test, code, value, unit and time of its lead, so the potassium shows no time and its unit text, and the status of the member chosen for status; a bound shows its comparator, a ratio its two parts and a range its two bounds." ;
   mf:action [ qt:query <the-lab-results-view.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-lab-results-view.srj> .

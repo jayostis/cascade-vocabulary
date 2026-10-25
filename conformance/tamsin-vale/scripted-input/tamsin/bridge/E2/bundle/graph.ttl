@@ -10,14 +10,14 @@
 <ni:///sha-256;x1vy51eUPcAQmD9qW2ttHcGVma9k9oHHtVLyNgDZowg> foaf:familyName "Vale" ;
 	foaf:givenName "Tamsin" ;
 	cascade:dateOfBirth "1957-09-30"^^xsd:date .
-_:bf87d148a47a333629d9314333ed182d pav:lastUpdateOn "2022-03-01T00:00:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;x1vy51eUPcAQmD9qW2ttHcGVma9k9oHHtVLyNgDZowg> .
-<ni:///sha-256;x1vy51eUPcAQmD9qW2ttHcGVma9k9oHHtVLyNgDZowg> prov:specializationOf <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> .
-<urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> cascade:sourceRecordId "story-stopped" ;
+<urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> a cascade:PatientProfile ;
 	cascade:sourceUrl <https://cascade-north.demo.invalid/fhir/Patient/story-stopped> ;
-	a cascade:PatientProfile .
-_:bf87d148a47a333629d9314333ed182d oa:hasSelector _:5351f88d00751394ad1e1af2431eb3e0 ;
+	cascade:sourceRecordId "story-stopped" .
+<ni:///sha-256;x1vy51eUPcAQmD9qW2ttHcGVma9k9oHHtVLyNgDZowg> prov:specializationOf <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> .
+_:bf87d148a47a333629d9314333ed182d bridge:arrivedAs <ni:///sha-256;x1vy51eUPcAQmD9qW2ttHcGVma9k9oHHtVLyNgDZowg> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2022-03-01T00:00:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:5351f88d00751394ad1e1af2431eb3e0 ;
 	oa:hasSource <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasDerivedFrom <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasGeneratedBy _:57ad0dea8002a13ab570a3141a81b82a .
@@ -30,82 +30,94 @@ _:5351f88d00751394ad1e1af2431eb3e0 a oa:FragmentSelector ;
 	cascade:workflowStatus "active" ;
 	cascade:medicationUseStartDate "2022-03-01"^^xsd:date ;
 	cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> .
-_:15cb52090e325d4c412ad13aa6ac9c3f pav:lastUpdateOn "2022-03-01T00:00:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;yZcA8c-YhOfWK6IxzOcsQ5G8rrAl99drJ2D_dScPZyY> .
-<ni:///sha-256;yZcA8c-YhOfWK6IxzOcsQ5G8rrAl99drJ2D_dScPZyY> cascade:patient <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> ;
-	prov:specializationOf <urn:uuid:eb3a91fc-6f47-8b0e-9803-2452e8d034ce> .
-<urn:uuid:eb3a91fc-6f47-8b0e-9803-2452e8d034ce> cascade:sourceRecordId "story-stopped-med-1" ;
+<urn:uuid:eb3a91fc-6f47-8b0e-9803-2452e8d034ce> a cascade:PrescribedOrReportedMedication ;
 	cascade:sourceUrl <https://cascade-north.demo.invalid/fhir/MedicationStatement/story-stopped-med-1> ;
-	a cascade:PrescribedOrReportedMedication .
-_:15cb52090e325d4c412ad13aa6ac9c3f oa:hasSelector _:d176d6943a619f43e44e886d2da1ced3 ;
+	cascade:sourceRecordId "story-stopped-med-1" .
+<ni:///sha-256;yZcA8c-YhOfWK6IxzOcsQ5G8rrAl99drJ2D_dScPZyY> prov:specializationOf <urn:uuid:eb3a91fc-6f47-8b0e-9803-2452e8d034ce> ;
+	cascade:patient <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> .
+_:15cb52090e325d4c412ad13aa6ac9c3f bridge:arrivedAs <ni:///sha-256;yZcA8c-YhOfWK6IxzOcsQ5G8rrAl99drJ2D_dScPZyY> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2022-03-01T00:00:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:d176d6943a619f43e44e886d2da1ced3 ;
 	oa:hasSource <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasDerivedFrom <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasGeneratedBy _:57ad0dea8002a13ab570a3141a81b82a .
 _:d176d6943a619f43e44e886d2da1ced3 a oa:FragmentSelector ;
 	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/1" .
-<ni:///sha-256;5HNcRfrGh99fD6zkve6zJTRyh4IbR7747X0Gk4lJlxc> cascade:workflowStatus "final" ;
-	cascade:resultClinicallyRelevantTime "2023-07-10T16:00:00Z"^^xsd:dateTime ;
-	cascade:resultUnit "%" ;
-	cascade:resultValue "6.6" ;
+<ni:///sha-256;T12feMkCscMf0EC93S-XaRyQ8dEfqUh96nqO21DCNoo> cascade:resultQuantity <ni:///sha-256;T12feMkCscMf0EC93S-XaRyQ8dEfqUh96nqO21DCNoo#value> .
+<ni:///sha-256;T12feMkCscMf0EC93S-XaRyQ8dEfqUh96nqO21DCNoo#value> cascade:decimalValue 6.6 ;
+	cascade:writtenValue "6.6" ;
+	cascade:ucumUnit "%" ;
+	cascade:unitText "%" .
+<ni:///sha-256;T12feMkCscMf0EC93S-XaRyQ8dEfqUh96nqO21DCNoo> cascade:testName "Hemoglobin A1c" ;
 	cascade:testCode <http://loinc.org/rdf/4548-4> ;
-	cascade:testName "Hemoglobin A1c" .
-_:ecea68bd1d212af076626ffe3d8e7b81 pav:lastUpdateOn "2023-07-10T16:00:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;5HNcRfrGh99fD6zkve6zJTRyh4IbR7747X0Gk4lJlxc> .
-<ni:///sha-256;5HNcRfrGh99fD6zkve6zJTRyh4IbR7747X0Gk4lJlxc> cascade:patient <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> ;
-	prov:specializationOf <urn:uuid:f022b622-485c-8253-8d3f-766b1d871c5a> .
-<urn:uuid:f022b622-485c-8253-8d3f-766b1d871c5a> cascade:sourceRecordId "story-stopped-a1c-1" ;
+	cascade:resultValueKind cascade:QuantityResultValue ;
+	cascade:resultClinicallyRelevantTime "2023-07-10T16:00:00Z"^^xsd:dateTime ;
+	cascade:workflowStatus "final" .
+<urn:uuid:f022b622-485c-8253-8d3f-766b1d871c5a> a cascade:LaboratoryTestResult ;
 	cascade:sourceUrl <https://cascade-north.demo.invalid/fhir/Observation/story-stopped-a1c-1> ;
-	a cascade:LaboratoryTestResult .
-_:ecea68bd1d212af076626ffe3d8e7b81 oa:hasSelector _:ef90bbf00cc7add7900c3a0ae6986cdd ;
+	cascade:sourceRecordId "story-stopped-a1c-1" .
+<ni:///sha-256;T12feMkCscMf0EC93S-XaRyQ8dEfqUh96nqO21DCNoo> prov:specializationOf <urn:uuid:f022b622-485c-8253-8d3f-766b1d871c5a> ;
+	cascade:patient <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> .
+_:8c89065a905b6110c200d4567ae16d14 bridge:arrivedAs <ni:///sha-256;T12feMkCscMf0EC93S-XaRyQ8dEfqUh96nqO21DCNoo> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2023-07-10T16:00:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:3b4c56a2d086f148b2566b61e0f744a6 ;
 	oa:hasSource <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasDerivedFrom <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasGeneratedBy _:57ad0dea8002a13ab570a3141a81b82a .
-_:ef90bbf00cc7add7900c3a0ae6986cdd a oa:FragmentSelector ;
+_:3b4c56a2d086f148b2566b61e0f744a6 a oa:FragmentSelector ;
 	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/2" .
-<ni:///sha-256;EDc2nnMTi5tmggy7n4JOAR2XNcWa09oczL6t6kH5Z1Y> cascade:workflowStatus "final" ;
-	cascade:resultClinicallyRelevantTime "2023-10-09T16:00:00Z"^^xsd:dateTime ;
-	cascade:resultUnit "%" ;
-	cascade:resultValue "6.5" ;
+<ni:///sha-256;Os3cePZR1PDA7qjRcoIKO9hCQoyFSsOwncEz6ToWHFs> cascade:resultQuantity <ni:///sha-256;Os3cePZR1PDA7qjRcoIKO9hCQoyFSsOwncEz6ToWHFs#value> .
+<ni:///sha-256;Os3cePZR1PDA7qjRcoIKO9hCQoyFSsOwncEz6ToWHFs#value> cascade:decimalValue 6.5 ;
+	cascade:writtenValue "6.5" ;
+	cascade:ucumUnit "%" ;
+	cascade:unitText "%" .
+<ni:///sha-256;Os3cePZR1PDA7qjRcoIKO9hCQoyFSsOwncEz6ToWHFs> cascade:testName "Hemoglobin A1c" ;
 	cascade:testCode <http://loinc.org/rdf/4548-4> ;
-	cascade:testName "Hemoglobin A1c" .
-_:738dc1fde4301c91da53f97119e30608 pav:lastUpdateOn "2023-10-09T16:00:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;EDc2nnMTi5tmggy7n4JOAR2XNcWa09oczL6t6kH5Z1Y> .
-<ni:///sha-256;EDc2nnMTi5tmggy7n4JOAR2XNcWa09oczL6t6kH5Z1Y> cascade:patient <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> ;
-	prov:specializationOf <urn:uuid:24951dba-839b-8298-b1ac-a8961e784267> .
-<urn:uuid:24951dba-839b-8298-b1ac-a8961e784267> cascade:sourceRecordId "story-stopped-a1c-2" ;
+	cascade:resultValueKind cascade:QuantityResultValue ;
+	cascade:resultClinicallyRelevantTime "2023-10-09T16:00:00Z"^^xsd:dateTime ;
+	cascade:workflowStatus "final" .
+<urn:uuid:24951dba-839b-8298-b1ac-a8961e784267> a cascade:LaboratoryTestResult ;
 	cascade:sourceUrl <https://cascade-north.demo.invalid/fhir/Observation/story-stopped-a1c-2> ;
-	a cascade:LaboratoryTestResult .
-_:738dc1fde4301c91da53f97119e30608 oa:hasSelector _:ca5660d2dc9295742397c10efe103b15 ;
+	cascade:sourceRecordId "story-stopped-a1c-2" .
+<ni:///sha-256;Os3cePZR1PDA7qjRcoIKO9hCQoyFSsOwncEz6ToWHFs> prov:specializationOf <urn:uuid:24951dba-839b-8298-b1ac-a8961e784267> ;
+	cascade:patient <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> .
+_:fc3a6796220eed257cda9f8d7db5caea bridge:arrivedAs <ni:///sha-256;Os3cePZR1PDA7qjRcoIKO9hCQoyFSsOwncEz6ToWHFs> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2023-10-09T16:00:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:c31b146992d55eb517bb6f913fe97a2e ;
 	oa:hasSource <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasDerivedFrom <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasGeneratedBy _:57ad0dea8002a13ab570a3141a81b82a .
-_:ca5660d2dc9295742397c10efe103b15 a oa:FragmentSelector ;
+_:c31b146992d55eb517bb6f913fe97a2e a oa:FragmentSelector ;
 	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/3" .
-<ni:///sha-256;ep4kam-4YYP_TXJeV0AEoX3v6P-YIV7F0pPXRkCwOjo> cascade:workflowStatus "final" ;
-	cascade:resultClinicallyRelevantTime "2024-01-15T16:00:00Z"^^xsd:dateTime ;
-	cascade:resultUnit "%" ;
-	cascade:resultValue "6.7" ;
+<ni:///sha-256;SURsObQ3IRcWBFgfZxbWyjhrMb29W27mlAvi3yiitms> cascade:resultQuantity <ni:///sha-256;SURsObQ3IRcWBFgfZxbWyjhrMb29W27mlAvi3yiitms#value> .
+<ni:///sha-256;SURsObQ3IRcWBFgfZxbWyjhrMb29W27mlAvi3yiitms#value> cascade:decimalValue 6.7 ;
+	cascade:writtenValue "6.7" ;
+	cascade:ucumUnit "%" ;
+	cascade:unitText "%" .
+<ni:///sha-256;SURsObQ3IRcWBFgfZxbWyjhrMb29W27mlAvi3yiitms> cascade:testName "Hemoglobin A1c" ;
 	cascade:testCode <http://loinc.org/rdf/4548-4> ;
-	cascade:testName "Hemoglobin A1c" .
-_:8b67c2481c661f35613906bb3bf03bf7 pav:lastUpdateOn "2024-01-15T16:00:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;ep4kam-4YYP_TXJeV0AEoX3v6P-YIV7F0pPXRkCwOjo> .
-<ni:///sha-256;ep4kam-4YYP_TXJeV0AEoX3v6P-YIV7F0pPXRkCwOjo> cascade:patient <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> ;
-	prov:specializationOf <urn:uuid:58de1059-0d71-8244-9549-c4ef8b4c3146> .
-<urn:uuid:58de1059-0d71-8244-9549-c4ef8b4c3146> cascade:sourceRecordId "story-stopped-a1c-3" ;
+	cascade:resultValueKind cascade:QuantityResultValue ;
+	cascade:resultClinicallyRelevantTime "2024-01-15T16:00:00Z"^^xsd:dateTime ;
+	cascade:workflowStatus "final" .
+<urn:uuid:58de1059-0d71-8244-9549-c4ef8b4c3146> a cascade:LaboratoryTestResult ;
 	cascade:sourceUrl <https://cascade-north.demo.invalid/fhir/Observation/story-stopped-a1c-3> ;
-	a cascade:LaboratoryTestResult .
-_:8b67c2481c661f35613906bb3bf03bf7 oa:hasSelector _:d482ea361dd2ac4d23697116858d1531 ;
+	cascade:sourceRecordId "story-stopped-a1c-3" .
+<ni:///sha-256;SURsObQ3IRcWBFgfZxbWyjhrMb29W27mlAvi3yiitms> prov:specializationOf <urn:uuid:58de1059-0d71-8244-9549-c4ef8b4c3146> ;
+	cascade:patient <urn:uuid:04cd6e3f-922b-8f2d-ad65-81a0a7842efc> .
+_:53523c53b7dca6dce725e9ee6d12c296 bridge:arrivedAs <ni:///sha-256;SURsObQ3IRcWBFgfZxbWyjhrMb29W27mlAvi3yiitms> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2024-01-15T16:00:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:1a8d4de6b4399a7f6d4af0783c526f5c ;
 	oa:hasSource <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasDerivedFrom <ni:///sha-256;fIOEvoik2VN5L4Ht1B-w2YxZBRR0tkCbId2CgXxeMCk> ;
 	prov:wasGeneratedBy _:57ad0dea8002a13ab570a3141a81b82a .
-_:d482ea361dd2ac4d23697116858d1531 a oa:FragmentSelector ;
+_:1a8d4de6b4399a7f6d4af0783c526f5c a oa:FragmentSelector ;
 	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/4" .
 _:57ad0dea8002a13ab570a3141a81b82a <http://www.w3.org/2000/01/rdf-schema#label> "FHIR pull" ;

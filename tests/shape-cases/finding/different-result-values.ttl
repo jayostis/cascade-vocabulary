@@ -1,0 +1,13 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+:one a cascade:LaboratoryTestResult .
+:other a cascade:LaboratoryTestResult .
+
+:finding a cascade:FindingForReview ;
+    oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
+    oa:motivatedBy oa:classifying ;
+    oa:hasTarget :one , :other ;
+    prov:used :oneVersion , :otherVersion .

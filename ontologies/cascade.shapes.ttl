@@ -842,6 +842,155 @@ cascade:AnsweredAsOfShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+cascade:LaboratoryTestResultValueShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:resultValueKind , cascade:resultQuantity , cascade:resultRatioNumerator ,
+        cascade:resultRatioDenominator , cascade:resultRangeLow , cascade:resultRangeHigh , cascade:resultCode ,
+        cascade:resultValue , cascade:referenceRangeLow , cascade:referenceRangeHigh ;
+    sh:property [
+        sh:path cascade:resultValueKind ;
+        sh:maxCount 1 ;
+        sh:in ( cascade:QuantityResultValue cascade:RatioResultValue cascade:RangeResultValue cascade:CodedResultValue cascade:TextResultValue ) ;
+        sh:message "A lab result's value is of one kind: cascade:QuantityResultValue, cascade:RatioResultValue, cascade:RangeResultValue, cascade:CodedResultValue or cascade:TextResultValue."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:resultQuantity ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A lab result has at most one quantity as its value, a node of its version."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:resultRatioNumerator ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A ratio has at most one numerator, a quantity node of its version."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:resultRatioDenominator ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A ratio has at most one denominator, a quantity node of its version."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:resultRangeLow ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:node cascade:BoundQuantityShape ;
+        sh:message "A range has at most one low bound, a quantity node of its version with no comparator."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:resultRangeHigh ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:node cascade:BoundQuantityShape ;
+        sh:message "A range has at most one high bound, a quantity node of its version with no comparator."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:resultCode ;
+        sh:node cascade:CodeShape ;
+        sh:message "A coded result's answer is a code IRI of one of the code systems' forms."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:referenceRangeLow ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:node cascade:BoundQuantityShape ;
+        sh:message "A reference range has at most one low bound, a quantity node of its version with no comparator: its bounds are inside it (FHIR SimpleQuantity, sqty-1)."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:referenceRangeHigh ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:node cascade:BoundQuantityShape ;
+        sh:message "A reference range has at most one high bound, a quantity node of its version with no comparator: its bounds are inside it (FHIR SimpleQuantity, sqty-1)."@en ;
+        sh:severity sh:Violation
+    ] ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A lab result's value is held only by the properties of its kind: {?property} is not one of {?kind}'s."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this ?kind ?property WHERE {
+  $this ?property ?value ; <https://ns.cascadeprotocol.org/cascade#resultValueKind> ?kind .
+  FILTER ((?property = <https://ns.cascadeprotocol.org/cascade#resultQuantity>
+           && ?kind != <https://ns.cascadeprotocol.org/cascade#QuantityResultValue>)
+          || (?property IN (<https://ns.cascadeprotocol.org/cascade#resultRatioNumerator>,
+                            <https://ns.cascadeprotocol.org/cascade#resultRatioDenominator>)
+              && ?kind != <https://ns.cascadeprotocol.org/cascade#RatioResultValue>)
+          || (?property IN (<https://ns.cascadeprotocol.org/cascade#resultRangeLow>,
+                            <https://ns.cascadeprotocol.org/cascade#resultRangeHigh>)
+              && ?kind != <https://ns.cascadeprotocol.org/cascade#RangeResultValue>)
+          || (?property = <https://ns.cascadeprotocol.org/cascade#resultCode>
+              && ?kind != <https://ns.cascadeprotocol.org/cascade#CodedResultValue>))
+}"""
+    ] , [
+        a sh:SPARQLConstraint ;
+        sh:message "A lab result's version that holds a value says which kind it is, by cascade:resultValueKind: it holds {?property} and no kind."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this ?property WHERE {
+  $this ?property ?value .
+  FILTER (?property IN (<https://ns.cascadeprotocol.org/cascade#resultQuantity>, <https://ns.cascadeprotocol.org/cascade#resultRatioNumerator>,
+                        <https://ns.cascadeprotocol.org/cascade#resultRatioDenominator>, <https://ns.cascadeprotocol.org/cascade#resultRangeLow>,
+                        <https://ns.cascadeprotocol.org/cascade#resultRangeHigh>, <https://ns.cascadeprotocol.org/cascade#resultCode>,
+                        <https://ns.cascadeprotocol.org/cascade#resultValue>))
+  FILTER NOT EXISTS { $this <https://ns.cascadeprotocol.org/cascade#resultValueKind> ?kind }
+  FILTER NOT EXISTS { $this <https://ns.cascadeprotocol.org/cascade#mergedFrom> ?member }
+}"""
+    ] .
+
+cascade:QuantityShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:decimalValue , cascade:writtenValue , cascade:quantityComparator , cascade:ucumUnit ,
+        cascade:unitText ;
+    sh:property [
+        sh:path cascade:decimalValue ;
+        sh:datatype xsd:decimal ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^(-?[1-9][0-9]*|-?0\\.[0-9]*[1-9]|-?[1-9][0-9]*\\.[0-9]*[1-9]|0)$" ;
+        sh:message "A quantity has one decimal value, an xsd:decimal in XSD's canonical form: a number two runtimes write alike, whatever form the source wrote it in."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:writtenValue ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^[+-]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][+-]?[0-9]+)?$" ;
+        sh:message "A quantity has one written value, the number as the source wrote it: digits, an optional sign, point and exponent."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:quantityComparator ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ( "<" "<=" ">=" ">" ) ;
+        sh:message "A quantity has at most one comparator, one of <, <=, >= and >: = is written as none, and ~, <> and ad are refused, since no rule can compare them."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:ucumUnit ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A quantity has at most one UCUM unit, a non-empty string."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:ucumUnit ;
+        sh:pattern "^[!-~]+$" ;
+        sh:message "A UCUM code is printable ASCII with no space; this one is likely not UCUM, though its source said it was."@en ;
+        sh:severity sh:Warning
+    ] , [
+        sh:path cascade:unitText ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A quantity has at most one unit text, a non-empty string."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:BoundQuantityShape a sh:NodeShape ;
+    sh:property [
+        sh:path cascade:quantityComparator ;
+        sh:maxCount 0 ;
+        sh:message "A bound carries no comparator: a range's bounds are inside it (FHIR SimpleQuantity, sqty-1)."@en ;
+        sh:severity sh:Violation
+    ] .
+
 cascade:PatientShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:patient ;
     sh:property [
@@ -1449,8 +1598,8 @@ cascade:JudgmentShape a sh:NodeShape ;
     ] , [
         sh:path cascade:justification ;
         sh:maxCount 1 ;
-        sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost ) ;
-        sh:message "A judgment gives at most one justification: cascade:SameCode, cascade:SameCodeAndDate, cascade:SameMappedCode, cascade:SameMappedCodeAndDate, cascade:SameMedicationCode, cascade:SameProductCode, cascade:SameResult, cascade:SameConvertedCode, cascade:SameCodeAndPeriod, cascade:SameBrandGeneric, cascade:SameVariation, cascade:SameVariationThroughTable or cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost."@en ;
+        sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost cascade:SameResultOnOneDay ) ;
+        sh:message "A judgment gives at most one justification: cascade:SameCode, cascade:SameCodeAndDate, cascade:SameMappedCode, cascade:SameMappedCodeAndDate, cascade:SameMedicationCode, cascade:SameProductCode, cascade:SameResult, cascade:SameConvertedCode, cascade:SameCodeAndPeriod, cascade:SameBrandGeneric, cascade:SameVariation, cascade:SameVariationThroughTable, cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost or cascade:SameResultOnOneDay."@en ;
         sh:severity sh:Violation
     ] .
 
@@ -1662,8 +1811,8 @@ cascade:FindingForReviewShape a sh:NodeShape ;
         sh:path oa:hasBody ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( cascade:ClaimsNoLongerReached ) ;
-        sh:message "A finding for review gives one kind, its oa:hasBody: cascade:ClaimsNoLongerReached."@en ;
+        sh:in ( cascade:ClaimsNoLongerReached cascade:DifferentResultValuesAtOneInstant cascade:DifferentResultUnitsAtOneInstant ) ;
+        sh:message "A finding for review gives one kind, its oa:hasBody: cascade:ClaimsNoLongerReached, cascade:DifferentResultValuesAtOneInstant or cascade:DifferentResultUnitsAtOneInstant."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path oa:motivatedBy ;
@@ -1706,6 +1855,18 @@ cascade:ClaimsNoLongerReachedShape a sh:NodeShape ;
                       [ sh:path oa:hasTarget ; sh:class cascade:Judgment ] ]
     ) ;
     sh:message "A finding of claims no longer reached names the rule list version that no longer reaches them, and its targets are the matcher's claims."@en ;
+    sh:severity sh:Violation .
+
+cascade:FindingOfTwoLabResultsShape a sh:NodeShape ;
+    sh:targetClass cascade:FindingForReview ;
+    sh:or (
+        [ sh:not [ sh:property [ sh:path oa:hasBody ; sh:minCount 1 ;
+                                 sh:in ( cascade:DifferentResultValuesAtOneInstant cascade:DifferentResultUnitsAtOneInstant ) ] ] ]
+        [ sh:property [ sh:path oa:hasTarget ; sh:minCount 2 ; sh:maxCount 2 ; sh:class cascade:LaboratoryTestResult ] ,
+                      [ sh:path prov:used ; sh:nodeKind sh:IRI ; sh:minCount 2 ; sh:maxCount 2 ] ,
+                      [ sh:path cascade:noLongerReachedUnderRuleListVersion ; sh:maxCount 0 ] ]
+    ) ;
+    sh:message "A finding of different result values or units at one instant names two lab results and the two versions it compared, and no rule list version."@en ;
     sh:severity sh:Violation .
 
 cascade:MatcherRunShape a sh:NodeShape ;

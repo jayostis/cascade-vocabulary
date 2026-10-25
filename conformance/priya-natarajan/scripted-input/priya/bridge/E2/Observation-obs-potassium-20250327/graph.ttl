@@ -6,27 +6,41 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;4QFGJu8-wCagADjqmMylDQ8hvX1lwwPqbqwO9LK555w> cascade:workflowStatus "final" ;
-	cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
-	cascade:resultInterpretation "N" ;
-	cascade:referenceRange "3.5-5.1 mmol/L" ;
-	cascade:resultUnit "mmol/L" ;
-	cascade:resultValue "4.1" ;
+<ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ> cascade:resultQuantity <ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ#value> .
+<ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ#value> cascade:decimalValue 4.1 ;
+	cascade:writtenValue "4.1" ;
+	cascade:ucumUnit "mmol/L" ;
+	cascade:unitText "mmol/L" .
+<ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ> cascade:referenceRangeHigh <ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ#reference-high> .
+<ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ#reference-high> cascade:decimalValue 5.1 ;
+	cascade:writtenValue "5.1" ;
+	cascade:ucumUnit "mmol/L" ;
+	cascade:unitText "mmol/L" .
+<ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ> cascade:referenceRangeLow <ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ#reference-low> .
+<ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ#reference-low> cascade:decimalValue 3.5 ;
+	cascade:writtenValue "3.5" ;
+	cascade:ucumUnit "mmol/L" ;
+	cascade:unitText "mmol/L" .
+<ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ> cascade:testName "Potassium" ;
 	cascade:testCode <http://loinc.org/rdf/2823-3> ;
-	cascade:testName "Potassium" .
-_:8133087c6b4b087b53af020e893cf9ec pav:lastUpdateOn "2025-03-27T14:02:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;4QFGJu8-wCagADjqmMylDQ8hvX1lwwPqbqwO9LK555w> .
-<ni:///sha-256;4QFGJu8-wCagADjqmMylDQ8hvX1lwwPqbqwO9LK555w> cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> ;
-	prov:specializationOf <urn:uuid:5d05bfc9-fed1-8887-a78a-62bd0f938d7e> .
-<urn:uuid:5d05bfc9-fed1-8887-a78a-62bd0f938d7e> cascade:sourceRecordId "obs-potassium-20250327" ;
+	cascade:resultValueKind cascade:QuantityResultValue ;
+	cascade:referenceRange "3.5-5.1 mmol/L" ;
+	cascade:resultInterpretation "N" ;
+	cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+	cascade:workflowStatus "final" .
+<urn:uuid:5d05bfc9-fed1-8887-a78a-62bd0f938d7e> a cascade:LaboratoryTestResult ;
 	cascade:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/Observation/obs-potassium-20250327> ;
-	a cascade:LaboratoryTestResult .
-_:8133087c6b4b087b53af020e893cf9ec oa:hasSelector _:e9b8163904364f5bfbc234be47135d63 ;
+	cascade:sourceRecordId "obs-potassium-20250327" .
+<ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ> prov:specializationOf <urn:uuid:5d05bfc9-fed1-8887-a78a-62bd0f938d7e> ;
+	cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> .
+_:37b49af74ab0dd05348f4dc7ee560e4f bridge:arrivedAs <ni:///sha-256;6fhzk9YruCYVQpvAYrZaVlz_xW5ovguNrAoa-oMv1UQ> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2025-03-27T14:02:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:18a5cb607568161754e2b5f4a9a14fad ;
 	oa:hasSource <ni:///sha-256;9A9vb7ioqrBFMhikgEJ_t7jN_ytVUXaoQ7a8eBBia4c> ;
 	prov:wasDerivedFrom <ni:///sha-256;9A9vb7ioqrBFMhikgEJ_t7jN_ytVUXaoQ7a8eBBia4c> ;
 	prov:wasGeneratedBy _:54efa4aded4fd010dd236c9d2af1c35a .
-_:e9b8163904364f5bfbc234be47135d63 a oa:FragmentSelector ;
+_:18a5cb607568161754e2b5f4a9a14fad a oa:FragmentSelector ;
 	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "" .
 _:54efa4aded4fd010dd236c9d2af1c35a <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
