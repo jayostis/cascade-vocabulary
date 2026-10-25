@@ -1,0 +1,77 @@
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+<urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> a cascade:Organization .
+<ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> prov:qualifiedAttribution _:d8eb978687aa84b47d8309c1b577e2a8 .
+_:d8eb978687aa84b47d8309c1b577e2a8 prov:agent <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> ;
+	prov:hadRole cascade:CustodianRole .
+<ni:///sha-256;5rNG4N2I8C9jutyJj32NuTX-8YIs3kBrMJiGS8dJV9I> prov:specializationOf <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> .
+_:d1d8cd64bf84cdcf3eda83f271e12698 bridge:arrivedAs <ni:///sha-256;5rNG4N2I8C9jutyJj32NuTX-8YIs3kBrMJiGS8dJV9I> ;
+	oa:hasSelector _:d8a0ce3df77f46bbf83522f9fb3b05ce .
+_:d8a0ce3df77f46bbf83522f9fb3b05ce a oa:XPathSelector ;
+	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='custodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='assignedCustodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='representedCustodianOrganization' and namespace-uri()='urn:hl7-org:v3'][1]" .
+<ni:///sha-256;5rNG4N2I8C9jutyJj32NuTX-8YIs3kBrMJiGS8dJV9I> foaf:name "Kestrel Harbor Hospital" ;
+	org:identifier "1234567893"^^<http://hl7.org/fhir/sid/us-npi> .
+<ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> prov:qualifiedAttribution _:e9f051f9cd3c21dca36cf901fab7efe0 .
+_:e9f051f9cd3c21dca36cf901fab7efe0 prov:agent <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> ;
+	prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;0vjsR5TM6Wn6S5sSJf7q3e8y_KykeZcLrW_I0iD7MXU> foaf:familyName "Lindqvist" ;
+	foaf:givenName "Gus" ;
+	cascade:dateOfBirth "1971-03-18"^^xsd:date .
+<urn:uuid:a3a2b91c-7bfe-8df9-92c4-dcea3284bc80> a cascade:LaboratoryTestResult ;
+	cascade:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.99999.2:K-20251002-1> ;
+	cascade:sourceRecordId "2.16.840.1.113883.19.5.99999.2:K-20251002-1" .
+<ni:///sha-256;8Nwn_kyGrzl-yN_RORsgT0WhNBhecAkf-B3WfucC-1s> prov:specializationOf <urn:uuid:a3a2b91c-7bfe-8df9-92c4-dcea3284bc80> ;
+	cascade:patient <urn:uuid:56e875f6-e008-8222-9c87-fac86fea8647> .
+_:c507ed6f553b5ea53092f47b828361fe a oa:XPathSelector ;
+	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='entry' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='organizer' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='observation' and namespace-uri()='urn:hl7-org:v3'][1]" .
+_:61900f9be38142f60a7bad1a5d77887a bridge:arrivedAs <ni:///sha-256;8Nwn_kyGrzl-yN_RORsgT0WhNBhecAkf-B3WfucC-1s> ;
+	oa:hasSelector _:c507ed6f553b5ea53092f47b828361fe .
+<urn:uuid:56e875f6-e008-8222-9c87-fac86fea8647> a cascade:PatientProfile ;
+	cascade:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.99999.4:MRN-771204> ;
+	cascade:sourceRecordId "2.16.840.1.113883.19.5.99999.4:MRN-771204" .
+<ni:///sha-256;0vjsR5TM6Wn6S5sSJf7q3e8y_KykeZcLrW_I0iD7MXU> prov:specializationOf <urn:uuid:56e875f6-e008-8222-9c87-fac86fea8647> .
+_:eb499552f8a18d113a48db908e0ec99c a oa:XPathSelector ;
+	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='recordTarget' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='patientRole' and namespace-uri()='urn:hl7-org:v3'][1]" .
+_:3d5e0d0a6c65c122b5a5da28c09fd12d bridge:arrivedAs <ni:///sha-256;0vjsR5TM6Wn6S5sSJf7q3e8y_KykeZcLrW_I0iD7MXU> ;
+	oa:hasSelector _:eb499552f8a18d113a48db908e0ec99c .
+<ni:///sha-256;8Nwn_kyGrzl-yN_RORsgT0WhNBhecAkf-B3WfucC-1s> dct:identifier "K-20251002-1"^^<urn:oid:2.16.840.1.113883.19.5.99999.2> ;
+	cascade:resultQuantity <ni:///sha-256;8Nwn_kyGrzl-yN_RORsgT0WhNBhecAkf-B3WfucC-1s#value> .
+<ni:///sha-256;8Nwn_kyGrzl-yN_RORsgT0WhNBhecAkf-B3WfucC-1s#value> cascade:decimalValue 4.3 ;
+	cascade:writtenValue "4.3" ;
+	cascade:ucumUnit "mmol/L" .
+<ni:///sha-256;8Nwn_kyGrzl-yN_RORsgT0WhNBhecAkf-B3WfucC-1s> cascade:resultClinicallyRelevantTime "2025-10-02T08:15:00"^^xsd:dateTime ;
+	cascade:workflowStatus "final" ;
+	cascade:testName "Serum potassium" ;
+	cascade:testCode <http://loinc.org/rdf/2823-3> ;
+	cascade:resultValueKind cascade:QuantityResultValue .
+_:3d5e0d0a6c65c122b5a5da28c09fd12d oa:hasSource <ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> ;
+	prov:wasDerivedFrom <ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> ;
+	prov:wasGeneratedBy _:6e853182605619ef7a76218c7bf5693a .
+_:61900f9be38142f60a7bad1a5d77887a oa:hasSource <ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> ;
+	prov:wasDerivedFrom <ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> ;
+	prov:wasGeneratedBy _:6e853182605619ef7a76218c7bf5693a .
+_:d1d8cd64bf84cdcf3eda83f271e12698 oa:hasSource <ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> ;
+	prov:wasDerivedFrom <ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> ;
+	prov:wasGeneratedBy _:6e853182605619ef7a76218c7bf5693a .
+_:6e853182605619ef7a76218c7bf5693a <http://www.w3.org/2000/01/rdf-schema#label> "C-CDA download" ;
+	prov:startedAtTime "2026-10-03T09:00:00Z"^^xsd:dateTime .
+<ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> cascade:sourceFormatVersion "2015-08-01" ;
+	a prov:Entity .
+_:6e853182605619ef7a76218c7bf5693a a prov:Activity ;
+	prov:used <ni:///sha-256;6xIXdS1bjEUH3YpCDpTSgwdg-hgB-LjP1WEN2n7bTX4> ;
+	prov:qualifiedAssociation _:41d67c3b0f3c7f83e50d5b57f700efb4 .
+_:41d67c3b0f3c7f83e50d5b57f700efb4 prov:hadPlan _:bce3092c69f1daa65ded2c281c72a481 .
+_:bce3092c69f1daa65ded2c281c72a481 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "ccda" ;
+	<http://purl.org/pav/version> "0.1.0" .
+_:41d67c3b0f3c7f83e50d5b57f700efb4 prov:agent _:2942e8805fc52c5a81228e757bce1f97 .
+_:2942e8805fc52c5a81228e757bce1f97 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	<http://purl.org/pav/version> "0.1.0" .

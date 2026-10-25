@@ -153,7 +153,8 @@ A judgment a person makes is named by its handle in a kit (`J21`) or by its file
 judgment is named `the matcher's <justification> of <records>`, the justification in words: `same code`,
 `same code and date`, `same mapped code`, `same mapped code and date`, `same medication code`, `same result`,
 `same converted code`, `same code and period`, `same brand generic`, `same product code`, `same variation`,
-`same variation through the table` or `same self-asserted base URL and authorization endpoint on one host`. A
+`same variation through the table`, `same self-asserted base URL and authorization endpoint on one host` or
+`same business identifier and test code within one organization`. A
 reference series is named by its `rdfs:label` in `references/` or any of the person's `tables/` folders, one series per label, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
 name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5. An entry of a view is

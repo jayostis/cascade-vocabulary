@@ -15,7 +15,9 @@ Feature: The matcher's procedure
   ingredient, each pair in an entry of its own, under the rule list's version 7. Ivo, with the variant classifications
   table of an app, enters pairs of variants that carry a ClinVar ID, an HGVS expression or both, each pair in an entry
   of its own, under the rule list's version 8. Gus, with the vocabulary's rule list of an app, enters lab results whose values,
-  units and times differ by a little, under the rule list's version 12.
+  units and times differ by a little, under the rule list's version 12, and imports a hospital's summary, an exchange's
+  that names the hospital as its author, and a clinic's, each holding a potassium of one business identifier, under the
+  rule list's version 13.
 
   Rule: M1. A step's records are those with at least one first revision from that step's import, entry session or connect, the servers its connect wrote any revision for, or all from acts its sync names
     A record's first revisions are those with no prov:wasRevisionOf; it has one or more, one from each writer that
@@ -248,12 +250,20 @@ Feature: The matcher's procedure
       queries/matcher/same-code-instant-different-units.rq, for lab results only. As R16, a finding for review, of two
       results of one code at one instant whose units differ.
 
+    Version 13 of the vocabulary's list adds one row, whose examples are under M22:
+
+    - R18, cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule, justified
+      cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization:
+      queries/matcher/same-business-identifier-and-test-code-within-one-organization.rq, for lab results only. Two
+      results whose current versions carry one business identifier of a named system and one LOINC code, from documents
+      naming one organization, or two currently the same.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
     and R10 in its version 6, R5's newer query and R11 in its version 7, R12 and R13 in its version 8, R3's and
     R4's changed queries in its version 9, R11's and R13's in its version 10, R14 as well in its version 11, and R6's
-    changed query, R15, R16 and R17 in its version 12.
+    changed query, R15, R16 and R17 in its version 12, and R18 as well in its version 13.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -1065,9 +1075,8 @@ Feature: The matcher's procedure
     M18's is: its type, its kind, its oa:motivatedBy oa:classifying, the two records as its oa:hasTarget and their
     current versions as its prov:used. A run files it for each pair the query gives that the pod holds no finding of,
     so a second run files none. "What needs review" lists it while both records are still at those versions, until a
-    person acknowledges it or judges the two the same or different. A shared business identifier within one
-    organization joins no result yet: it is a later rule list version's (jayostis/cascade-vocabulary#221). The review
-    page's lines for R15's joins and for the findings are shown by the vocabulary's fixtures.
+    person acknowledges it or judges the two the same or different, or while R18 joins them (M22). The review page's
+    lines for R15's joins and for the findings are shown by the vocabulary's fixtures.
 
     Background:
       Given a new pod for Gus on 2026-10-01 at 09:00
@@ -1093,3 +1102,31 @@ Feature: The matcher's procedure
         | different result units at one instant  | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Potassium, other lab"       |
         | different result units at one instant  | lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium, other lab" |
         | different result units at one instant  | lab result LOINC 2823-3 "Potassium repeat", lab result LOINC 2823-3 "Potassium, other lab" |
+
+  Rule: M22. Two lab results of one business identifier and one code, from documents of one organization, are the same result for certain
+    decisions/quantities.md, row "matcher", tier (i). From the rule list's version 13, R18 joins two lab results whose
+    current versions carry one dct:identifier and one LOINC code, when the documents their revisions come from name, as
+    custodian or author (cascade:CustodianRole, cascade:AuthorRole), one organization record, or two a person or the
+    matcher judged the same. An identifier is compared as the literal it is, its value typed by its system, which the
+    adapters write alike from a FHIR Observation.identifier and a C-CDA observation's id, by HL7's CDA-to-FHIR identifier
+    mapping: so a hospital's FHIR summary and its C-CDA summary give one result one identifier, as the adapters'
+    fixtures show. An identifier with no system, a plain string, is never compared, since an organization runs many
+    systems and nothing says which issued it. Neither the time nor the value is compared: the source said the two are one result, so a second value at one
+    instant is its correction, and "What needs review" lists no finding of R16 or R17 of two results R18 joins, nor
+    counts R18 as a kind of sameness of its own. A record whose documents name no organization, as a pull from a server
+    does, is joined by no identifier: which organization a record from a server serving many belongs to is open
+    (decisions/republishing-sources.md, "Still open"), and a server judged the same is not an organization judged the
+    same, so this rule holds two records apart until their documents say whose they are.
+
+    Example: a potassium from the hospital's summary and the one from an exchange's summary that names the hospital as its author carry one identifier and are the same result, and the clinic's of that identifier joins neither
+      Given a new pod for Gus on 2026-10-01 at 09:00
+      And the pod is opened with the tables "app-identifiers" on 2026-10-01 at 09:01
+      And the download "hospital-summary.xml" is imported on 2026-10-03 at 09:00
+      And Gus files the judgment "about-the-summaries" on 2026-10-03 at 09:05
+      And the download "exchange-summary.xml" is imported on 2026-10-04 at 09:00
+      And the matcher runs on the records of that import on 2026-10-04 at 09:05 (match-exchange)
+      And the download "clinic-summary.xml" is imported on 2026-10-05 at 09:00
+      When the matcher runs on the records of that import on 2026-10-05 at 09:05 (match-clinic)
+      Then the matcher's judgments holding lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium" and lab result LOINC 2823-3 "Potassium, clinic" are:
+        | justification                                                  | members                                                                        | used                                                                                                     |
+        | same business identifier and test code within one organization | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium" | version 1 of lab result LOINC 2823-3 "Potassium", version 1 of lab result LOINC 2823-3 "Serum potassium" |
