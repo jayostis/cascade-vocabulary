@@ -114,24 +114,34 @@ def test_every_derivation_lens_view_and_the_labels_add_a_triple_and_every_questi
 
 
 MARKED = {name: relative for name, relative in named("matcher").items() if marked_groups(query(relative))}
+MADE_FROM = {relative: named("matcher")[name.removesuffix(suffix)] for name, relative in named("matcher").items()
+             for suffix in ("-bound-per-side", "-key-joined-first") if name.endswith(suffix)}
 CURRENT_VERSIONS = "SELECT DISTINCT ?record WHERE { ?record <http://purl.org/pav/hasCurrentVersion> [] }"
 
 
 @pytest.mark.parametrize("fixture", [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES
                                      if fixture.name.startswith("matcher-")])
 def test_a_comparison_bound_in_the_groups_it_marks_gives_its_unbound_rows_of_the_records_bound(fixture):
-    """And a comparison bound per side gives, unbound, the rows of the comparison it was made from."""
+    """And a comparison bound per side or joined on its key first gives the rows of the comparison it was made from,
+    bound and unbound, on each engine."""
     store = built_once(fixture, "oxigraph", LENSES[0]).store
     records = sorted(str(found["record"]) for found in store.select(CURRENT_VERSIONS))[::2]
-    assert MARKED and records
+    assert MARKED and MADE_FROM and records
+
+    def rows(text):
+        return Counter(row(found) for found in store.select(text))
+
     for name, relative in MARKED.items():
         text = query(relative)
-        rows = Counter(row(found) for found in store.select(text))
         unbound = Counter(row(found) for found in store.select(text) if str(found["record"]) in records)
-        assert Counter(row(found) for found in store.select(bound_to_records(text, records))) == unbound, name
-        unmarked = named("matcher").get(name.removesuffix("-bound-per-side"))
-        if unmarked != relative:
-            assert Counter(row(found) for found in store.select(query(unmarked))) == rows, name
+        assert rows(bound_to_records(text, records)) == unbound, name
+    for engine in sorted(ENGINES):
+        held = built_once(fixture, engine, LENSES[0]).store
+        for relative, made_from in MADE_FROM.items():
+            for texts in ((query(relative), query(made_from)),
+                          (bound_to_records(query(relative), records), bound_to_records(query(made_from), records))):
+                new, old = (Counter(row(found) for found in held.select(text)) for text in texts)
+                assert new == old, (engine, relative)
 
 
 def test_each_engine_loads_the_default_graph_of_a_trig_file_into_its_default_graph_against_one_base(tmp_path):

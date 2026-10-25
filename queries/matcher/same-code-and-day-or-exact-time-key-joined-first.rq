@@ -1,0 +1,21 @@
+# Two records of one kind match when their current versions give one vaccine code and one date, each the same term,
+# and that date is a day or a time its source wrote to the second: a year or a month is a span, and a time the version
+# holds padded (cascade:PaddedDateTime) was written to the hour or the minute, so two of either may be two events. A
+# version with no date matches nothing. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record pav:hasCurrentVersion ?version .
+  ?version cascade:vaccineCode ?code ; cascade:displayDate ?date .
+  FILTER (DATATYPE(?date) IN (xsd:date, xsd:dateTime))
+  FILTER NOT EXISTS { ?version cascade:paddedDateTime ?padded }
+  ?otherVersion cascade:vaccineCode ?code ; cascade:displayDate ?date .
+  FILTER NOT EXISTS { ?otherVersion cascade:paddedDateTime ?otherPadded }
+  ?other pav:hasCurrentVersion ?otherVersion .
+  ?record cascade:recordKind ?kind .
+  ?other cascade:recordKind ?otherKind .
+  FILTER (?record != ?other && sameTerm(?kind, ?otherKind))
+}
