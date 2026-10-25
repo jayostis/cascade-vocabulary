@@ -7,7 +7,11 @@
 :theirPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :theirPull ;
     cascade:setHash "1111111111111111111111111111111111111111111111111111111111111111" ;
     cascade:fileAddedToSet "provenance/imports/th/their-pull.ttl" .
-:skewedPull a prov:Activity ; prov:startedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime .
+:theirLaterPull a prov:Activity ; prov:startedAtTime "2026-01-25T00:00:00Z"^^xsd:dateTime .
+:theirLaterPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :theirLaterPull ; cascade:firstParentSnapshot :theirPullSnapshot ;
+    cascade:setHash "3333333333333333333333333333333333333333333333333333333333333333" ;
+    cascade:fileAddedToSet "provenance/imports/tl/their-later-pull.ttl" .
+:skewedPull a prov:Activity ; prov:startedAtTime "2026-01-20T00:00:00Z"^^xsd:dateTime .
 :skewedPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :skewedPull ;
     cascade:setHash "2222222222222222222222222222222222222222222222222222222222222222" ;
     cascade:fileAddedToSet "provenance/imports/sk/skewed-pull.ttl" .

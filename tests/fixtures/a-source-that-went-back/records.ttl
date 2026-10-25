@@ -46,3 +46,13 @@
 :eczemaSecond a cascade:Revision ; cascade:revisionOf :eczema ; cascade:version :eczemaResolved ; prov:wasRevisionOf :eczemaFirst ;
     pav:lastUpdateOn "2026-01-06T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledSecond ; prov:wasGeneratedBy :secondPull ;
     prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:psoriasis a cascade:ProblemOrDiagnosis .
+:psoriasisActive prov:specializationOf :psoriasis ; cascade:patient :subject ; cascade:conditionName "Psoriasis" ; cascade:clinicalStatus "active" .
+:psoriasisResolved prov:specializationOf :psoriasis ; cascade:patient :subject ; cascade:conditionName "Psoriasis" ; cascade:clinicalStatus "resolved" .
+:psoriasisFirst a cascade:Revision ; cascade:revisionOf :psoriasis ; cascade:version :psoriasisActive ; pav:lastUpdateOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
+    prov:wasDerivedFrom :pulledFirst ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:psoriasisSecond a cascade:Revision ; cascade:revisionOf :psoriasis ; cascade:version :psoriasisResolved ; prov:wasRevisionOf :psoriasisFirst ;
+    pav:lastUpdateOn "2025-12-01T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledSecond ; prov:wasGeneratedBy :secondPull ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .

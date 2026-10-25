@@ -5,22 +5,30 @@
 
 <> a mf:Manifest ;
   rdfs:label "an-act-whose-clock-is-discounted" ;
-  rdfs:comment "Two writers that never received each other's pulls pulled gout, which the source stamps with no change time, one on 10 January and one on a clock that said 2 January; the second also pulled asthma stamped 5 January, after its own time, and filed a finding that its clock was at least 3 days behind. The person discounted the second pull's clock." ;
+  rdfs:comment "Two writers that never received each other's pulls pulled one source, which stamps gout, eczema and migraine with no change time: one on 10 January, and again on 25 January, and one on a clock that said 20 January. The second writer's pull also returned asthma stamped 23 January, after its own time, and it filed a finding that its clock was at least 3 days behind. The person joined the two migraines by a Same and discounted the second writer's pull's clock." ;
   mf:entries (
     <#the-current-revisions>
+    <#the-entry>
     <#what-needs-review>
   ) .
 
 <#the-current-revisions> a mf:QueryEvaluationTest ;
   mf:name "the-current-revisions" ;
-  rdfs:comment "The discounted revision of gout stands beside the other pull's, observed later, and the least IRI picks it." ;
+  rdfs:comment "Each discounted revision stands beside the other writer's, whichever the clocks put later, and the least IRI picks: gout's other revision, eczema's discounted one." ;
   mf:action [ qt:query <the-current-revisions.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-current-revisions.srj> .
 
+<#the-entry> a mf:QueryEvaluationTest ;
+  mf:name "the-entry" ;
+  rdfs:comment "The migraine noted on the discounted clock stands beside the one pulled later, and the least IRI makes it the lead and the member the entry takes its status and date from." ;
+  mf:action [ qt:query <the-entry.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-entry.srj> .
+
 <#what-needs-review> a mf:QueryEvaluationTest ;
   mf:name "what-needs-review" ;
-  rdfs:comment "Gout's pick is listed with no basis, and the clock finding, answered by the discount, is not." ;
+  rdfs:comment "Gout's and eczema's picks are listed with no basis, eczema's though its shown revision was observed later, and the clock finding, answered by the discount, is not." ;
   mf:action [ qt:query <../../../queries/questions/record/What%20needs%20review.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-needs-review.srj> .
