@@ -1,0 +1,17 @@
+# Two records of one kind match when their current versions share a ClinVar VariationID. A VariationID names a variation,
+# not a transcript, so two reports on different transcript versions of one variant match here. No table is read, and
+# HGVS expressions are not compared: the rule that reads a variant classifications table joins those that a row finds.
+# Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record pav:hasCurrentVersion ?version .
+  ?version cascade:clinvarVariationId ?id .
+  ?otherVersion cascade:clinvarVariationId ?id .
+  ?other pav:hasCurrentVersion ?otherVersion .
+  ?record cascade:recordKind ?kind .
+  ?other cascade:recordKind ?otherKind .
+  FILTER (?record != ?other && sameTerm(?kind, ?otherKind))
+}

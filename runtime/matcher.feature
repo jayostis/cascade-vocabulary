@@ -312,14 +312,43 @@ Feature: The matcher's procedure
       queries/matcher/same-business-identifier-and-test-code-within-one-organization-bound-per-side.rq, for lab results
       only.
 
+    Version 16 of the vocabulary's list changes the queries of R1, R2, R3, R4, R5, R7, R10, R11, R12 and R13, each of
+    which paired every record of a kind with every other before it compared their codes, so that each reaches the other
+    record of a pair through the code, or the table row, the two share, and compares their kinds only then. Each gives
+    the rows the query it replaces gives on valid data; versions 1 to 15 pin the old files:
+
+    - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code-key-joined-first.rq.
+    - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate:
+      queries/matcher/same-code-and-day-or-exact-time-key-joined-first.rq, for immunizations only.
+    - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode:
+      queries/matcher/same-active-ingredient-key-joined-first.rq, with cascade:ProductIngredients, for allergies only.
+    - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate:
+      queries/matcher/same-vaccine-group-and-day-or-exact-time-key-joined-first.rq, with cascade:VaccineGroups, for
+      immunizations only.
+    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode:
+      queries/matcher/same-ndc-code-key-joined-first.rq, for medications only.
+    - R7, cascade:SameConvertedCodeRule, justified cascade:SameConvertedCode:
+      queries/matcher/same-one-to-one-conversion-key-joined-first.rq, with cascade:CodeConversions, for conditions only.
+    - R10, cascade:SameBrandGenericRule, justified cascade:SameBrandGeneric:
+      queries/matcher/same-brand-generic-key-joined-first.rq, with cascade:BrandGenerics, for medications only.
+    - R11, cascade:SameProductCodeRule, justified cascade:SameProductCode:
+      queries/matcher/same-product-code-in-current-tables-key-joined-first.rq, with cascade:DrugProducts, for
+      medications only.
+    - R12, cascade:SameVariationRule, justified cascade:SameVariation: queries/matcher/same-variation-key-joined-first.rq,
+      for variants only.
+    - R13, cascade:SameVariationThroughTableRule, justified cascade:SameVariationThroughTable:
+      queries/matcher/same-variation-through-current-tables-key-joined-first.rq, with cascade:VariantClassifications,
+      for variants only.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
     and R10 in its version 6, R5's newer query and R11 in its version 7, R12 and R13 in its version 8, R3's and
     R4's changed queries in its version 9, R11's and R13's in its version 10, R14 as well in its version 11, and R6's
     changed query, R15, R16 and R17 in its version 12, R18 as well in its version 13, and R2's, R4's, R6's, R8's,
-    R15's, R16's and R17's changed queries in its version 14, and R6's, R15's, R16's, R17's and R18's queries bound
-    per side in its version 15.
+    R15's, R16's and R17's changed queries in its version 14, R6's, R15's, R16's, R17's and R18's queries bound
+    per side in its version 15, and R1's, R2's, R3's, R4's, R5's, R7's, R10's, R11's, R12's and R13's queries joined
+    on the code first in its version 16.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
