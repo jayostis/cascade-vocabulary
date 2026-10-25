@@ -5,16 +5,17 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-result-by-value-and-unit" ;
-  rdfs:comment "Potassium results at one instant: one written 4.10 and one 4.1 in another time zone, both in UCUM mmol/L, one with mmol/L as unit text alone, one in mmol/l, one of another value, one a bound, one at another instant. Leukocyte counts in 10*3/uL and in 10*3{cells}/uL. Titres 1:64 twice, the second denominator written 64.0, and 1:128. Urine ranges 0-5 twice and one with a high bound alone. Coded answers: negative twice and positive. The text Negative twice. Glucose of 95 mg/dL on two days stamped with no time, at two instants that day, one written 95.0, and on the next day." ;
+  rdfs:comment "Potassium results at one instant: one written 4.10 and one 4.1 in another time zone, both in UCUM mmol/L, one with mmol/L as unit text alone, one in mmol/l, one in Mmol/L, one of another value, one a bound, one at another instant, and two at that time written with no time zone. Leukocyte counts in 10*3/uL and in 10*3{cells}/uL. Titres 1:64 twice, the second denominator written 64.0, and 1:128. Urine ranges 0-5 /[HPF] twice, one with a high bound alone, and one whose high bound is in /[LPF]. Coded answers: LOINC negative twice and positive, SNOMED CT negative, and the text Negative. The text Negative twice at another code. Glucose of 95 mg/dL on two days stamped with no time, at two instants that day, one written 95.0, and on the next day. Every record but the potassium in another time zone is a record of the run." ;
   mf:entries (
     <#same-code-instant-value-and-unit>
     <#same-code-day-value-and-unit>
-    <#same-code-instant-and-unit-different-values>
+    <#same-code-instant-different-values>
+    <#same-code-instant-different-units>
   ) .
 
 <#same-code-instant-value-and-unit> a mf:QueryEvaluationTest ;
   mf:name "same-code-instant-value-and-unit" ;
-  rdfs:comment "At one instant: the three potassiums of one number in one unit match, 4.10 and 4.1 being one number and the UCUM unit compared with the unit text where one has none; the two leukocyte counts, an annotation being no part of a unit; the two titres, by both parts; the two two-bound ranges; and the two coded negatives. Not matched: a unit that differs in case, another value, a bound against a value, another instant, a range missing a bound the other has, another code, text, and any result stamped with a day alone." ;
+  rdfs:comment "At one instant: the four potassiums of one number in one unit match, 4.10 and 4.1 being one number, an instant written in two time zones one instant, the UCUM unit compared with the unit text where one has none, and mmol/l being mmol/L, the litre's two symbols; the two potassiums with no time zone, compared as written; the two leukocyte counts, an annotation being no part of a unit; the two titres, by both parts; the two two-bound ranges; and the two coded negatives. Not matched: Mmol/L, whose case differs elsewhere than the litre, another value, a bound against a value, another instant, a time with no zone against one with a zone, a range missing a bound the other has or with a bound in another unit, another code or code system, text, and any result stamped with a day alone." ;
   mf:action [ qt:query <../../../queries/matcher/same-code-instant-value-and-unit.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               cascade:boundRecord <urn:x:glucoseDayA> ,
@@ -22,37 +23,13 @@
                                   <urn:x:glucoseEvening> ,
                                   <urn:x:glucoseMorning> ,
                                   <urn:x:glucoseOtherDay> ,
-                                  <urn:x:leukocytesPlain> ,
-                                  <urn:x:potassiumBound> ,
-                                  <urn:x:potassiumLowerCase> ,
-                                  <urn:x:potassiumOtherInstant> ,
-                                  <urn:x:potassiumOtherValue> ,
-                                  <urn:x:potassiumUnitText> ,
-                                  <urn:x:potassiumWritten> ,
-                                  <urn:x:surfaceAntigenB> ,
-                                  <urn:x:surfaceAntigenOther> ,
-                                  <urn:x:textA> ,
-                                  <urn:x:textB> ,
-                                  <urn:x:titreB> ,
-                                  <urn:x:titreOther> ,
-                                  <urn:x:urineRangeB> ,
-                                  <urn:x:urineRangeHighOnly> ] ;
-  mf:result <same-code-instant-value-and-unit.srj> .
-
-<#same-code-day-value-and-unit> a mf:QueryEvaluationTest ;
-  mf:name "same-code-day-value-and-unit" ;
-  rdfs:comment "The two glucoses stamped with the day alone match each other and each of the two instants that day, 95.0 and 95 being one number; the two instants do not match each other, nor does the next day, nor does any pair of instants." ;
-  mf:action [ qt:query <../../../queries/matcher/same-code-day-value-and-unit.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:glucoseDayB> ,
-                                  <urn:x:glucoseEvening> ,
-                                  <urn:x:glucoseMorning> ,
-                                  <urn:x:glucoseOtherDay> ,
                                   <urn:x:leukocytesAnnotated> ,
                                   <urn:x:leukocytesPlain> ,
                                   <urn:x:potassiumBound> ,
-                                  <urn:x:potassiumEastern> ,
                                   <urn:x:potassiumLowerCase> ,
+                                  <urn:x:potassiumMega> ,
+                                  <urn:x:potassiumNoZoneA> ,
+                                  <urn:x:potassiumNoZoneB> ,
                                   <urn:x:potassiumOtherInstant> ,
                                   <urn:x:potassiumOtherValue> ,
                                   <urn:x:potassiumUnitText> ,
@@ -60,6 +37,8 @@
                                   <urn:x:surfaceAntigenA> ,
                                   <urn:x:surfaceAntigenB> ,
                                   <urn:x:surfaceAntigenOther> ,
+                                  <urn:x:surfaceAntigenSnomed> ,
+                                  <urn:x:surfaceAntigenText> ,
                                   <urn:x:textA> ,
                                   <urn:x:textB> ,
                                   <urn:x:titreA> ,
@@ -67,13 +46,14 @@
                                   <urn:x:titreOther> ,
                                   <urn:x:urineRangeA> ,
                                   <urn:x:urineRangeB> ,
-                                  <urn:x:urineRangeHighOnly> ] ;
-  mf:result <same-code-day-value-and-unit.srj> .
+                                  <urn:x:urineRangeHighOnly> ,
+                                  <urn:x:urineRangeOtherHighUnit> ] ;
+  mf:result <same-code-instant-value-and-unit.srj> .
 
-<#same-code-instant-and-unit-different-values> a mf:QueryEvaluationTest ;
-  mf:name "same-code-instant-and-unit-different-values" ;
-  rdfs:comment "At one instant and in one unit: each potassium of 4.1 against the one of 4.4 and the bound below 4.1, and those two against each other; the titre 1:128 against each 1:64; the range with a high bound alone against each two-bound range; the positive against each negative. Not given: the potassium in mmol/l, whose unit differs, the potassium at another instant, the leukocyte counts, of one value, the text, and any result stamped with a day alone." ;
-  mf:action [ qt:query <../../../queries/matcher/same-code-instant-and-unit-different-values.rq> ;
+<#same-code-day-value-and-unit> a mf:QueryEvaluationTest ;
+  mf:name "same-code-day-value-and-unit" ;
+  rdfs:comment "The two glucoses stamped with the day alone match each other and each of the two instants that day, 95.0 and 95 being one number; the two instants do not match each other, nor does the next day, nor does any pair of instants." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-day-value-and-unit.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               cascade:boundRecord <urn:x:glucoseDayA> ,
                                   <urn:x:glucoseDayB> ,
@@ -82,18 +62,101 @@
                                   <urn:x:glucoseOtherDay> ,
                                   <urn:x:leukocytesAnnotated> ,
                                   <urn:x:leukocytesPlain> ,
-                                  <urn:x:potassiumEastern> ,
+                                  <urn:x:potassiumBound> ,
                                   <urn:x:potassiumLowerCase> ,
+                                  <urn:x:potassiumMega> ,
+                                  <urn:x:potassiumNoZoneA> ,
+                                  <urn:x:potassiumNoZoneB> ,
                                   <urn:x:potassiumOtherInstant> ,
                                   <urn:x:potassiumOtherValue> ,
                                   <urn:x:potassiumUnitText> ,
                                   <urn:x:potassiumWritten> ,
+                                  <urn:x:surfaceAntigenA> ,
                                   <urn:x:surfaceAntigenB> ,
                                   <urn:x:surfaceAntigenOther> ,
+                                  <urn:x:surfaceAntigenSnomed> ,
+                                  <urn:x:surfaceAntigenText> ,
                                   <urn:x:textA> ,
                                   <urn:x:textB> ,
+                                  <urn:x:titreA> ,
                                   <urn:x:titreB> ,
                                   <urn:x:titreOther> ,
+                                  <urn:x:urineRangeA> ,
                                   <urn:x:urineRangeB> ,
-                                  <urn:x:urineRangeHighOnly> ] ;
-  mf:result <same-code-instant-and-unit-different-values.srj> .
+                                  <urn:x:urineRangeHighOnly> ,
+                                  <urn:x:urineRangeOtherHighUnit> ] ;
+  mf:result <same-code-day-value-and-unit.srj> .
+
+<#same-code-instant-different-values> a mf:QueryEvaluationTest ;
+  mf:name "same-code-instant-different-values" ;
+  rdfs:comment "At one instant: each potassium of 4.1 in mmol/L, written in either case of the litre, against the one of 4.4 and the bound below 4.1, and those two against each other; the titre 1:128 against each 1:64; the range with a high bound alone against each two-bound range; the positive against each LOINC negative; and the text against each coded answer, being of another kind. Not given: the potassium in Mmol/L and the range whose high bound is in another unit, whose units differ, the SNOMED CT negative against the LOINC answers, of another code system, the potassiums with no time zone, the potassium at another instant, the leukocyte counts, of one value, two texts, and any result stamped with a day alone." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-instant-different-values.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:glucoseDayA> ,
+                                  <urn:x:glucoseDayB> ,
+                                  <urn:x:glucoseEvening> ,
+                                  <urn:x:glucoseMorning> ,
+                                  <urn:x:glucoseOtherDay> ,
+                                  <urn:x:leukocytesAnnotated> ,
+                                  <urn:x:leukocytesPlain> ,
+                                  <urn:x:potassiumBound> ,
+                                  <urn:x:potassiumLowerCase> ,
+                                  <urn:x:potassiumMega> ,
+                                  <urn:x:potassiumNoZoneA> ,
+                                  <urn:x:potassiumNoZoneB> ,
+                                  <urn:x:potassiumOtherInstant> ,
+                                  <urn:x:potassiumOtherValue> ,
+                                  <urn:x:potassiumUnitText> ,
+                                  <urn:x:potassiumWritten> ,
+                                  <urn:x:surfaceAntigenA> ,
+                                  <urn:x:surfaceAntigenB> ,
+                                  <urn:x:surfaceAntigenOther> ,
+                                  <urn:x:surfaceAntigenSnomed> ,
+                                  <urn:x:surfaceAntigenText> ,
+                                  <urn:x:textA> ,
+                                  <urn:x:textB> ,
+                                  <urn:x:titreA> ,
+                                  <urn:x:titreB> ,
+                                  <urn:x:titreOther> ,
+                                  <urn:x:urineRangeA> ,
+                                  <urn:x:urineRangeB> ,
+                                  <urn:x:urineRangeHighOnly> ,
+                                  <urn:x:urineRangeOtherHighUnit> ] ;
+  mf:result <same-code-instant-different-values.srj> .
+
+<#same-code-instant-different-units> a mf:QueryEvaluationTest ;
+  mf:name "same-code-instant-different-units" ;
+  rdfs:comment "At one instant: the potassium in Mmol/L against each potassium in mmol/L, the bound and the other value included, and the range whose high bound is in /[LPF] against each range whose high bound is in /[HPF], the one with a high bound alone included. Not given: mmol/l, one unit with mmol/L, the leukocyte counts, whose units differ only by an annotation, coded answers and text, which have no unit, and any result stamped with a day alone." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-instant-different-units.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:glucoseDayA> ,
+                                  <urn:x:glucoseDayB> ,
+                                  <urn:x:glucoseEvening> ,
+                                  <urn:x:glucoseMorning> ,
+                                  <urn:x:glucoseOtherDay> ,
+                                  <urn:x:leukocytesAnnotated> ,
+                                  <urn:x:leukocytesPlain> ,
+                                  <urn:x:potassiumBound> ,
+                                  <urn:x:potassiumLowerCase> ,
+                                  <urn:x:potassiumMega> ,
+                                  <urn:x:potassiumNoZoneA> ,
+                                  <urn:x:potassiumNoZoneB> ,
+                                  <urn:x:potassiumOtherInstant> ,
+                                  <urn:x:potassiumOtherValue> ,
+                                  <urn:x:potassiumUnitText> ,
+                                  <urn:x:potassiumWritten> ,
+                                  <urn:x:surfaceAntigenA> ,
+                                  <urn:x:surfaceAntigenB> ,
+                                  <urn:x:surfaceAntigenOther> ,
+                                  <urn:x:surfaceAntigenSnomed> ,
+                                  <urn:x:surfaceAntigenText> ,
+                                  <urn:x:textA> ,
+                                  <urn:x:textB> ,
+                                  <urn:x:titreA> ,
+                                  <urn:x:titreB> ,
+                                  <urn:x:titreOther> ,
+                                  <urn:x:urineRangeA> ,
+                                  <urn:x:urineRangeB> ,
+                                  <urn:x:urineRangeHighOnly> ,
+                                  <urn:x:urineRangeOtherHighUnit> ] ;
+  mf:result <same-code-instant-different-units.srj> .

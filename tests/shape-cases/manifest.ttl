@@ -524,10 +524,15 @@
   mf:action [ sht:dataGraph <finding/different-result-values.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
+<#lab-result-value/value-of-no-kind> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/value-of-no-kind.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultValueShape ] ] .
+
 <#finding/different-result-values-of-one-result> a sht:Validate ;
   mf:action [ sht:dataGraph <finding/different-result-values-of-one-result.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:DifferentResultValuesAtOneInstantShape ] ] .
+              sh:result [ sh:sourceShape cascade:FindingOfTwoLabResultsShape ] ] .
 
 <#judgment-about-a-finding/same> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-about-a-finding/same.ttl> ] ;

@@ -1,25 +1,28 @@
 # Two records of one kind match when their current versions give one test code, one instant, and one value of one
-# kind in one unit. Both times are instants, compared as instants, so one instant written in two time zones is one;
-# a day with no time is same-code-day-value-and-unit.rq's. A quantity's number is compared by value, never as a term,
-# so 6.8 and 6.80 are one number, with the same comparator or none on both. A ratio compares its numerator and its
-# denominator so, a range its low and its high bounds, each bound present on both or on neither; a coded value shares a
-# code; text is never compared. Units are compared as written once UCUM's annotations are dropped: each annotation in
-# braces goes, a unit that was annotations alone is 1, and case is kept, so a count per minute annotated as beats is
-# one per minute, and mmol/L and mmol/l differ, though UCUM reads both as one unit, until a rule converts units. A
-# UCUM unit is compared where a quantity has one, else its unit text. Each ordered pair is a row.
+# kind in one unit. Two times with zones are compared as instants, so one instant written in two time zones is one;
+# two times with no zone, as a C-CDA time may be written, are compared as written, and a time with a zone and one
+# without never match, since nothing says where the second was taken; a day with no time is
+# same-code-day-value-and-unit.rq's. A quantity's number is compared by value, never as a term, so 6.8 and 6.80 are one
+# number, with the same comparator or none on both. A ratio compares its numerator and its denominator so, a range its
+# low and its high bounds, each bound present on both or on neither; a coded value shares a code; text is never
+# compared. Units are compared as UCUM defines one unit: each annotation in braces goes, a unit that was annotations
+# alone is 1, the litre's two symbols, l and L, with any prefix, are one, and every other difference of case is kept,
+# so a count per minute annotated as beats is one per minute and mmol/l is mmol/L, but Mmol/L is not. A UCUM unit is
+# compared where a quantity has one, else its unit text. Each ordered pair is a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?record ?other
 WHERE {
-  { SELECT ?record ?version ?code ?valueKind ?instant ?firstNumber ?firstComparator ?firstUnit ?secondNumber ?secondComparator ?secondUnit
+  { SELECT ?record ?version ?code ?instant ?valueKind ?firstNumber ?firstComparator ?firstUnit ?secondNumber ?secondComparator ?secondUnit
     WHERE {
       ?record pav:hasCurrentVersion ?version .
       ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time ;
         cascade:resultValueKind ?valueKind .
       FILTER (DATATYPE(?time) = xsd:dateTime && ?valueKind != cascade:TextResultValue)
-      BIND (STR(?time - "1970-01-01T00:00:00Z"^^xsd:dateTime) AS ?instant)
+      BIND (IF(TZ(?time) != "", STR(?time - "1970-01-01T00:00:00Z"^^xsd:dateTime),
+               CONCAT("local ", STR(?time - "1970-01-01T00:00:00"^^xsd:dateTime))) AS ?instant)
       OPTIONAL { ?version cascade:resultQuantity ?firstQuantity . ?firstQuantity cascade:decimalValue ?firstQuantityNumber .
                  OPTIONAL { ?firstQuantity cascade:quantityComparator ?firstQuantityComparator }
                  OPTIONAL { ?firstQuantity cascade:ucumUnit ?firstQuantityUcum }
@@ -46,22 +49,27 @@ WHERE {
       BIND (COALESCE(?firstQuantityText, ?firstNumeratorText, ?firstLowText) AS ?firstText)
       BIND (COALESCE(?firstUcum, ?firstText, "") AS ?firstUnitWritten)
       BIND (REPLACE(?firstUnitWritten, "\\{[^{}]*\\}", "") AS ?firstUnitBare)
-      BIND (IF(?firstUnitBare = "" && ?firstUnitWritten != "", "1", ?firstUnitBare) AS ?firstUnit)
+      BIND (REPLACE(REPLACE(REPLACE(?firstUnitBare, "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "\u0001", "L")
+            AS ?firstUnitFolded)
+      BIND (IF(?firstUnitFolded = "" && ?firstUnitWritten != "", "1", ?firstUnitFolded) AS ?firstUnit)
       BIND (COALESCE(?secondDenominatorNumber, ?secondHighNumber) AS ?secondNumber)
       BIND (COALESCE(?secondDenominatorComparator, ?secondHighComparator) AS ?secondComparator)
       BIND (COALESCE(?secondDenominatorUcum, ?secondHighUcum) AS ?secondUcum)
       BIND (COALESCE(?secondDenominatorText, ?secondHighText) AS ?secondText)
       BIND (COALESCE(?secondUcum, ?secondText, "") AS ?secondUnitWritten)
       BIND (REPLACE(?secondUnitWritten, "\\{[^{}]*\\}", "") AS ?secondUnitBare)
-      BIND (IF(?secondUnitBare = "" && ?secondUnitWritten != "", "1", ?secondUnitBare) AS ?secondUnit)
+      BIND (REPLACE(REPLACE(REPLACE(?secondUnitBare, "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "\u0001", "L")
+            AS ?secondUnitFolded)
+      BIND (IF(?secondUnitFolded = "" && ?secondUnitWritten != "", "1", ?secondUnitFolded) AS ?secondUnit)
     } }
-  { SELECT ?other ?otherVersion ?code ?valueKind ?instant ?otherInstant ?otherFirstNumber ?otherFirstComparator ?otherFirstUnit ?otherSecondNumber ?otherSecondComparator ?otherSecondUnit
+  { SELECT ?other ?otherVersion ?code ?instant ?otherInstant ?valueKind ?otherFirstNumber ?otherFirstComparator ?otherFirstUnit ?otherSecondNumber ?otherSecondComparator ?otherSecondUnit
     WHERE {
       ?other pav:hasCurrentVersion ?otherVersion .
       ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime ;
         cascade:resultValueKind ?valueKind .
       FILTER (DATATYPE(?otherTime) = xsd:dateTime && ?valueKind != cascade:TextResultValue)
-      BIND (STR(?otherTime - "1970-01-01T00:00:00Z"^^xsd:dateTime) AS ?otherInstant)
+      BIND (IF(TZ(?otherTime) != "", STR(?otherTime - "1970-01-01T00:00:00Z"^^xsd:dateTime),
+               CONCAT("local ", STR(?otherTime - "1970-01-01T00:00:00"^^xsd:dateTime))) AS ?otherInstant)
       BIND (?otherInstant AS ?instant)
       OPTIONAL { ?otherVersion cascade:resultQuantity ?otherFirstQuantity . ?otherFirstQuantity cascade:decimalValue ?otherFirstQuantityNumber .
                  OPTIONAL { ?otherFirstQuantity cascade:quantityComparator ?otherFirstQuantityComparator }
@@ -89,25 +97,29 @@ WHERE {
       BIND (COALESCE(?otherFirstQuantityText, ?otherFirstNumeratorText, ?otherFirstLowText) AS ?otherFirstText)
       BIND (COALESCE(?otherFirstUcum, ?otherFirstText, "") AS ?otherFirstUnitWritten)
       BIND (REPLACE(?otherFirstUnitWritten, "\\{[^{}]*\\}", "") AS ?otherFirstUnitBare)
-      BIND (IF(?otherFirstUnitBare = "" && ?otherFirstUnitWritten != "", "1", ?otherFirstUnitBare) AS ?otherFirstUnit)
+      BIND (REPLACE(REPLACE(REPLACE(?otherFirstUnitBare, "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "\u0001", "L")
+            AS ?otherFirstUnitFolded)
+      BIND (IF(?otherFirstUnitFolded = "" && ?otherFirstUnitWritten != "", "1", ?otherFirstUnitFolded) AS ?otherFirstUnit)
       BIND (COALESCE(?otherSecondDenominatorNumber, ?otherSecondHighNumber) AS ?otherSecondNumber)
       BIND (COALESCE(?otherSecondDenominatorComparator, ?otherSecondHighComparator) AS ?otherSecondComparator)
       BIND (COALESCE(?otherSecondDenominatorUcum, ?otherSecondHighUcum) AS ?otherSecondUcum)
       BIND (COALESCE(?otherSecondDenominatorText, ?otherSecondHighText) AS ?otherSecondText)
       BIND (COALESCE(?otherSecondUcum, ?otherSecondText, "") AS ?otherSecondUnitWritten)
       BIND (REPLACE(?otherSecondUnitWritten, "\\{[^{}]*\\}", "") AS ?otherSecondUnitBare)
-      BIND (IF(?otherSecondUnitBare = "" && ?otherSecondUnitWritten != "", "1", ?otherSecondUnitBare) AS ?otherSecondUnit)
+      BIND (REPLACE(REPLACE(REPLACE(?otherSecondUnitBare, "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "\u0001", "L")
+            AS ?otherSecondUnitFolded)
+      BIND (IF(?otherSecondUnitFolded = "" && ?otherSecondUnitWritten != "", "1", ?otherSecondUnitFolded) AS ?otherSecondUnit)
     } }
   ?record pav:hasCurrentVersion ?version .
   FILTER (?record != ?other && ?instant = ?otherInstant)
   FILTER (IF(?valueKind = cascade:CodedResultValue,
-             EXISTS { ?version cascade:resultCode ?sharedCode . ?otherVersion cascade:resultCode ?sharedCode },
-             (BOUND(?firstNumber) || BOUND(?secondNumber))
-             && BOUND(?firstNumber) = BOUND(?otherFirstNumber) && BOUND(?secondNumber) = BOUND(?otherSecondNumber)
-             && (!BOUND(?firstNumber)
-                 || (?firstNumber = ?otherFirstNumber && ?firstUnit = ?otherFirstUnit
-                     && COALESCE(?firstComparator, "") = COALESCE(?otherFirstComparator, "")))
-             && (!BOUND(?secondNumber)
-                 || (?secondNumber = ?otherSecondNumber && ?secondUnit = ?otherSecondUnit
-                     && COALESCE(?secondComparator, "") = COALESCE(?otherSecondComparator, "")))))
+                EXISTS { ?version cascade:resultCode ?sharedCode . ?otherVersion cascade:resultCode ?sharedCode },
+                (BOUND(?firstNumber) || BOUND(?secondNumber))
+                && BOUND(?firstNumber) = BOUND(?otherFirstNumber) && BOUND(?secondNumber) = BOUND(?otherSecondNumber)
+                && (!BOUND(?firstNumber)
+                    || (?firstNumber = ?otherFirstNumber && ?firstUnit = ?otherFirstUnit
+                        && COALESCE(?firstComparator, "") = COALESCE(?otherFirstComparator, "")))
+                && (!BOUND(?secondNumber)
+                    || (?secondNumber = ?otherSecondNumber && ?secondUnit = ?otherSecondUnit
+                        && COALESCE(?secondComparator, "") = COALESCE(?otherSecondComparator, "")))))
 }

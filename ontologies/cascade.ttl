@@ -920,7 +920,7 @@ cascade:appliesToClass a owl:ObjectProperty ;
 
 cascade:matcherRule a owl:ObjectProperty ;
     rdfs:label "matcher rule"@en ;
-    rdfs:comment "The matcher rule a row of a rule list runs, or that a machine claim was made by: one of the rule terms R1 to R16 of runtime/matcher.feature. A claim's name takes it."@en ;
+    rdfs:comment "The matcher rule a row of a rule list runs, or that a machine claim was made by: one of the rule terms R1 to R17 of runtime/matcher.feature. A claim's name takes it."@en ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:RuleListRow cascade:Judgment ) ] .
 
 cascade:queryPath a owl:DatatypeProperty ;
@@ -1811,7 +1811,12 @@ cascade:noLongerReachedUnderRuleListVersion a owl:ObjectProperty ;
 cascade:DifferentResultValuesAtOneInstant a skos:Concept ;
     skos:inScheme cascade:FindingForReviewKinds ;
     skos:prefLabel "different result values at one instant"@en ;
-    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant, whose values are of one kind and in one unit, their UCUM annotations aside, and differ: two numbers, a comparator on one and not the other, or coded answers sharing no code. The finding's prov:used are the two versions whose values differ. The body applies to its targets together: neither result is wrong alone, but both cannot be the one draw, and a correction should have come as a new version. The matcher never judges such a pair the same (R6); it files this finding by rule R16 instead, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
+    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant whose values differ: values of two kinds, or of one kind other than text, in one unit, their UCUM annotations aside and the litre written either way, that differ: two numbers, a comparator on one and not the other, a part or a bound one holds and the other lacks, or coded answers of one code system sharing no code. The finding's prov:used are the two versions whose values differ. The body applies to its targets together: neither result is wrong alone, but both cannot be the one draw, and a correction should have come as a new version. The matcher never judges such a pair the same (R6); it files this finding by rule R16 instead, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
+
+cascade:DifferentResultUnitsAtOneInstant a skos:Concept ;
+    skos:inScheme cascade:FindingForReviewKinds ;
+    skos:prefLabel "different result units at one instant"@en ;
+    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant whose values are of one kind that has units, where both hold a number in one place, the first or the second, in units that differ once their UCUM annotations are dropped and the litre is written one way. The finding's prov:used are the two versions compared. Two units may measure one draw, mmol/L and mg/dL, and no rule converts one into the other, so the matcher neither joins nor parts them; it files this finding by rule R17, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
 
 # Naming rules: each name a runtime or an adapter mints follows one, and a changed recipe is a new rule
 
@@ -2032,6 +2037,10 @@ cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule a owl:Named
 cascade:DifferentResultValuesRule a owl:NamedIndividual ;
     rdfs:label "R16, different result values"@en ;
     rdfs:comment "Rule R16 of runtime/matcher.feature; it files no judgment, but a finding for review of kind cascade:DifferentResultValuesAtOneInstant."@en .
+
+cascade:DifferentResultUnitsRule a owl:NamedIndividual ;
+    rdfs:label "R17, different result units"@en ;
+    rdfs:comment "Rule R17 of runtime/matcher.feature; it files no judgment, but a finding for review of kind cascade:DifferentResultUnitsAtOneInstant."@en .
 
 cascade:SameResultOnOneDayRule a owl:NamedIndividual ;
     rdfs:label "R15, same result on one day"@en ;

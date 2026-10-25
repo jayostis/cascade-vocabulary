@@ -36,3 +36,19 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :seen a cascade:Judgment ; cascade:verdict cascade:Acknowledged ; prov:hadMember :countsDiffer ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+
+:differentUnits a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultUnitsAtOneInstant ;
+    oa:motivatedBy oa:classifying ; oa:hasTarget :unitsUpper , :unitsOther ;
+    prov:used <urn:x:unitsUpperVersion> , <urn:x:unitsOtherVersion> .
+
+:unitsOfTheDifferent a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultUnitsAtOneInstant ;
+    oa:motivatedBy oa:classifying ; oa:hasTarget :differentA , :differentB ;
+    prov:used <urn:x:differentAVersion> , <urn:x:differentBVersion> .
+
+:unitsOfTheSame a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultUnitsAtOneInstant ;
+    oa:motivatedBy oa:classifying ; oa:hasTarget :sameA , :sameB ;
+    prov:used <urn:x:sameAVersion> , <urn:x:sameBVersion> .
+
+:theSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :sameA , :sameB ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-02-03T00:00:00Z"^^xsd:dateTime .

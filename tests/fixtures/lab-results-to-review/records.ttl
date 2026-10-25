@@ -29,12 +29,12 @@
 :unitsUpperRevision a cascade:Revision ; cascade:revisionOf :unitsUpper ; cascade:version <urn:x:unitsUpperVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:unitsLower a cascade:LaboratoryTestResult .
-<urn:x:unitsLowerVersion> prov:specializationOf :unitsLower ; cascade:patient :subject ; cascade:testName "Serum potassium" ;
+:unitsOther a cascade:LaboratoryTestResult .
+<urn:x:unitsOtherVersion> prov:specializationOf :unitsOther ; cascade:patient :subject ; cascade:testName "Serum potassium" ;
     cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultClinicallyRelevantTime "2025-03-27T07:00:00-05:00"^^xsd:dateTime ;
-    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:unitsLowerVersion#value> .
-<urn:x:unitsLowerVersion#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.1" ; cascade:ucumUnit "mmol/l" .
-:unitsLowerRevision a cascade:Revision ; cascade:revisionOf :unitsLower ; cascade:version <urn:x:unitsLowerVersion> ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:unitsOtherVersion#value> .
+<urn:x:unitsOtherVersion#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.1" ; cascade:ucumUnit "meq/L" .
+:unitsOtherRevision a cascade:Revision ; cascade:revisionOf :unitsOther ; cascade:version <urn:x:unitsOtherVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :countPlain a cascade:LaboratoryTestResult .
@@ -69,12 +69,20 @@
 :differentBRevision a cascade:Revision ; cascade:revisionOf :differentB ; cascade:version <urn:x:differentBVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:laterUnits a cascade:LaboratoryTestResult .
-<urn:x:laterUnitsVersion> prov:specializationOf :laterUnits ; cascade:patient :subject ; cascade:testName "Potassium, later" ;
-    cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultClinicallyRelevantTime "2025-03-27T13:00:00Z"^^xsd:dateTime ;
-    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:laterUnitsVersion#value> .
-<urn:x:laterUnitsVersion#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.1" ; cascade:ucumUnit "meq/L" .
-:laterUnitsRevision a cascade:Revision ; cascade:revisionOf :laterUnits ; cascade:version <urn:x:laterUnitsVersion> ;
+:sameA a cascade:LaboratoryTestResult .
+<urn:x:sameAVersion> prov:specializationOf :sameA ; cascade:patient :subject ; cascade:testName "Creatinine" ;
+    cascade:testCode <http://loinc.org/rdf/2160-0> ; cascade:resultClinicallyRelevantTime "2025-03-29T09:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:sameAVersion#value> .
+<urn:x:sameAVersion#value> cascade:decimalValue "1.1"^^xsd:decimal ; cascade:writtenValue "1.1" ; cascade:ucumUnit "mg/dL" .
+:sameARevision a cascade:Revision ; cascade:revisionOf :sameA ; cascade:version <urn:x:sameAVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:sameB a cascade:LaboratoryTestResult .
+<urn:x:sameBVersion> prov:specializationOf :sameB ; cascade:patient :subject ; cascade:testName "Creatinine, other lab" ;
+    cascade:testCode <http://loinc.org/rdf/2160-0> ; cascade:resultClinicallyRelevantTime "2025-03-29T09:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:sameBVersion#value> .
+<urn:x:sameBVersion#value> cascade:decimalValue "97"^^xsd:decimal ; cascade:writtenValue "97" ; cascade:ucumUnit "umol/L" .
+:sameBRevision a cascade:Revision ; cascade:revisionOf :sameB ; cascade:version <urn:x:sameBVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :valueOther a cascade:LaboratoryTestResult .

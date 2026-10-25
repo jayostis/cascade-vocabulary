@@ -42,7 +42,7 @@
     cascade:justifiedAs cascade:SameResult ;
     cascade:appliesToClass cascade:LaboratoryTestResult ;
     cascade:queryPath "matcher/same-code-instant-value-and-unit.rq" ;
-    cascade:queryHash <ni:///sha-256;KRZumkAuokfupKy9i9N3f1thNwLzCbch9kmHITYvobI> .
+    cascade:queryHash <ni:///sha-256;WPjSBJ0DjL12aD9vwHY1ScKXj4YIOz20F-m-a8ml-0k> .
 
 [] a cascade:RuleListRow ;
     cascade:matcherRule cascade:SameConvertedCodeRule ;
@@ -102,11 +102,18 @@
     cascade:justifiedAs cascade:SameResultOnOneDay ;
     cascade:appliesToClass cascade:LaboratoryTestResult ;
     cascade:queryPath "matcher/same-code-day-value-and-unit.rq" ;
-    cascade:queryHash <ni:///sha-256;ZNdNLrosWr6n1dGtxFRWcpA6woIucLscnHtYfX1ucCE> .
+    cascade:queryHash <ni:///sha-256;f9FOCcYXVRYwjHggKBo1MzANJdZZt92NJF-K7qgwy1Q> .
 
 [] a cascade:RuleListRow ;
     cascade:matcherRule cascade:DifferentResultValuesRule ;
     cascade:findingKind cascade:DifferentResultValuesAtOneInstant ;
     cascade:appliesToClass cascade:LaboratoryTestResult ;
-    cascade:queryPath "matcher/same-code-instant-and-unit-different-values.rq" ;
-    cascade:queryHash <ni:///sha-256;-oowts7E7OeZoG74uIrBxV9jB5Tp0QRxN5eAN-zY7Pk> .
+    cascade:queryPath "matcher/same-code-instant-different-values.rq" ;
+    cascade:queryHash <ni:///sha-256;5NqlhiUc9Uuwp9gXWJ69mmPdOu7WbNuCu0L_zT-A4Eg> .
+
+[] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:DifferentResultUnitsRule ;
+    cascade:findingKind cascade:DifferentResultUnitsAtOneInstant ;
+    cascade:appliesToClass cascade:LaboratoryTestResult ;
+    cascade:queryPath "matcher/same-code-instant-different-units.rq" ;
+    cascade:queryHash <ni:///sha-256;gQvp1rtelj1N3HJzkJ5pYnZ-_B6MVbNs6sb4zELHVTM> .

@@ -43,6 +43,16 @@
 :potassiumLowerCaseRevision a cascade:Revision ; cascade:revisionOf :potassiumLowerCase ; cascade:version <urn:x:potassiumLowerCaseVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+:potassiumMega a cascade:LaboratoryTestResult .
+<urn:x:potassiumMegaVersion> prov:specializationOf :potassiumMega ;
+    cascade:testCode <http://loinc.org/rdf/2823-3> ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ;
+    cascade:resultQuantity <urn:x:potassiumMegaVersion#value> .
+<urn:x:potassiumMegaVersion#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.1" ; cascade:ucumUnit "Mmol/L" .
+:potassiumMegaRevision a cascade:Revision ; cascade:revisionOf :potassiumMega ; cascade:version <urn:x:potassiumMegaVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
 :potassiumOtherValue a cascade:LaboratoryTestResult .
 <urn:x:potassiumOtherValueVersion> prov:specializationOf :potassiumOtherValue ;
     cascade:testCode <http://loinc.org/rdf/2823-3> ;
@@ -71,6 +81,26 @@
     cascade:resultQuantity <urn:x:potassiumOtherInstantVersion#value> .
 <urn:x:potassiumOtherInstantVersion#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.1" ; cascade:ucumUnit "mmol/L" .
 :potassiumOtherInstantRevision a cascade:Revision ; cascade:revisionOf :potassiumOtherInstant ; cascade:version <urn:x:potassiumOtherInstantVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:potassiumNoZoneA a cascade:LaboratoryTestResult .
+<urn:x:potassiumNoZoneAVersion> prov:specializationOf :potassiumNoZoneA ;
+    cascade:testCode <http://loinc.org/rdf/2823-3> ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ;
+    cascade:resultQuantity <urn:x:potassiumNoZoneAVersion#value> .
+<urn:x:potassiumNoZoneAVersion#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.1" ; cascade:ucumUnit "mmol/L" .
+:potassiumNoZoneARevision a cascade:Revision ; cascade:revisionOf :potassiumNoZoneA ; cascade:version <urn:x:potassiumNoZoneAVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:potassiumNoZoneB a cascade:LaboratoryTestResult .
+<urn:x:potassiumNoZoneBVersion> prov:specializationOf :potassiumNoZoneB ;
+    cascade:testCode <http://loinc.org/rdf/2823-3> ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:QuantityResultValue ;
+    cascade:resultQuantity <urn:x:potassiumNoZoneBVersion#value> .
+<urn:x:potassiumNoZoneBVersion#value> cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.10" ; cascade:ucumUnit "mmol/L" .
+:potassiumNoZoneBRevision a cascade:Revision ; cascade:revisionOf :potassiumNoZoneB ; cascade:version <urn:x:potassiumNoZoneBVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :leukocytesPlain a cascade:LaboratoryTestResult .
@@ -163,6 +193,18 @@
 :urineRangeHighOnlyRevision a cascade:Revision ; cascade:revisionOf :urineRangeHighOnly ; cascade:version <urn:x:urineRangeHighOnlyVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+:urineRangeOtherHighUnit a cascade:LaboratoryTestResult .
+<urn:x:urineRangeOtherHighUnitVersion> prov:specializationOf :urineRangeOtherHighUnit ;
+    cascade:testCode <http://loinc.org/rdf/5821-4> ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:RangeResultValue ;
+    cascade:resultRangeLow <urn:x:urineRangeOtherHighUnitVersion#range-low> ;
+    cascade:resultRangeHigh <urn:x:urineRangeOtherHighUnitVersion#range-high> .
+<urn:x:urineRangeOtherHighUnitVersion#range-low> cascade:decimalValue "0"^^xsd:decimal ; cascade:writtenValue "0" ; cascade:ucumUnit "/[HPF]" .
+<urn:x:urineRangeOtherHighUnitVersion#range-high> cascade:decimalValue "5"^^xsd:decimal ; cascade:writtenValue "5" ; cascade:ucumUnit "/[LPF]" .
+:urineRangeOtherHighUnitRevision a cascade:Revision ; cascade:revisionOf :urineRangeOtherHighUnit ; cascade:version <urn:x:urineRangeOtherHighUnitVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
 :surfaceAntigenA a cascade:LaboratoryTestResult .
 <urn:x:surfaceAntigenAVersion> prov:specializationOf :surfaceAntigenA ;
     cascade:testCode <http://loinc.org/rdf/5196-1> ;
@@ -188,6 +230,24 @@
     cascade:resultValueKind cascade:CodedResultValue ;
     cascade:resultCode <http://loinc.org/rdf/LA6576-8> .
 :surfaceAntigenOtherRevision a cascade:Revision ; cascade:revisionOf :surfaceAntigenOther ; cascade:version <urn:x:surfaceAntigenOtherVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:surfaceAntigenSnomed a cascade:LaboratoryTestResult .
+<urn:x:surfaceAntigenSnomedVersion> prov:specializationOf :surfaceAntigenSnomed ;
+    cascade:testCode <http://loinc.org/rdf/5196-1> ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:CodedResultValue ;
+    cascade:resultCode <http://snomed.info/id/260385009> .
+:surfaceAntigenSnomedRevision a cascade:Revision ; cascade:revisionOf :surfaceAntigenSnomed ; cascade:version <urn:x:surfaceAntigenSnomedVersion> ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:surfaceAntigenText a cascade:LaboratoryTestResult .
+<urn:x:surfaceAntigenTextVersion> prov:specializationOf :surfaceAntigenText ;
+    cascade:testCode <http://loinc.org/rdf/5196-1> ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:resultValueKind cascade:TextResultValue ;
+    cascade:resultValue "Negative" .
+:surfaceAntigenTextRevision a cascade:Revision ; cascade:revisionOf :surfaceAntigenText ; cascade:version <urn:x:surfaceAntigenTextVersion> ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :textA a cascade:LaboratoryTestResult .

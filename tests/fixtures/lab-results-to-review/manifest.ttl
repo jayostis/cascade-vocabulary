@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "lab-results-to-review" ;
-  rdfs:comment "Two glucoses the matcher joined by the same result on one day, one stamped with the day alone; two potassiums at one instant in mmol/L and mmol/l; two leukocyte counts at one instant in 10*3/uL and 10*3{cells}/uL; two glucoses at one instant in mg/dL and mmol/L that a person judged different; a potassium in meq/L an hour later; and a potassium of 4.4 mmol/L at the first potassium's instant, with a finding of the two's different values, and a finding of the leukocyte counts' values that the person acknowledged." ;
+  rdfs:comment "Two glucoses the matcher joined by the same result on one day, one stamped with the day alone; a potassium of 4.1 mmol/L, one of 4.1 meq/L at that instant in another time zone with a finding of the two\'s different units, and one of 4.4 mmol/L at the first\'s instant with a finding of the two\'s different values; two leukocyte counts with a finding of their values that the person acknowledged; two glucoses in mg/dL and mmol/L with a finding of their units, that the person judged different; and two creatinines in mg/dL and umol/L with a finding of their units, that the person judged the same." ;
   mf:entries (
     <#listed-for-review>
   ) .
 
 <#listed-for-review> a mf:QueryEvaluationTest ;
   mf:name "listed-for-review" ;
-  rdfs:comment "The entry joined on one day is listed with its Same, and each pair of potassiums at one instant whose units differ in case is listed once, from the smaller record. The finding of the two potassiums' values is listed with them. Not listed: the leukocyte counts, whose units differ only by an annotation and whose finding is acknowledged, the glucoses judged different, and the potassium at another instant." ;
+  rdfs:comment "The entry joined on one day is listed with its Same, and each finding of different values or units is listed with its two results, once. Not listed: the finding the person acknowledged, the finding of two results the person judged different, and the finding of two results the person judged the same." ;
   mf:action [ qt:query <../../../queries/questions/entry/What%20needs%20review.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <listed-for-review.srj> .

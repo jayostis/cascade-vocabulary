@@ -23,7 +23,7 @@
 
 :glucose a cascade:LaboratoryTestResult .
 :glucoseVersion prov:specializationOf :glucose ; cascade:patient :subject ; cascade:testName "Glucose" ;
-    cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValue "95" ; cascade:resultUnit "mg/dL" ;
+    cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "95" ; cascade:resultUnit "mg/dL" ;
     cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-04-10T08:00:00Z"^^xsd:dateTime .
 :glucoseRevision a cascade:Revision ; cascade:revisionOf :glucose ; cascade:version :glucoseVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
