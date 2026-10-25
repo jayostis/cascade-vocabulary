@@ -1,0 +1,11 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:version prov:specializationOf :record ;
+    cascade:resultValueKind cascade:QuantityResultValue ;
+    cascade:resultQuantity :value ;
+    cascade:referenceRangeHigh :high .
+:value cascade:decimalValue "0.01"^^xsd:decimal ; cascade:writtenValue "0.01" ; cascade:quantityComparator "<" .
+:high cascade:decimalValue "0.04"^^xsd:decimal ; cascade:writtenValue "0.04" ; cascade:quantityComparator "<=" .

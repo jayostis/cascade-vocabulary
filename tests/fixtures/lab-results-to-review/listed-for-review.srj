@@ -1,0 +1,110 @@
+{
+  "head": {
+    "vars": [
+      "entry",
+      "entryLabel",
+      "needs",
+      "finding",
+      "judgment",
+      "judgmentLabel",
+      "record",
+      "recordLabel",
+      "otherRecord",
+      "otherRecordLabel"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "entry": {
+          "type": "uri",
+          "value": "https://pod.example/clinical/lab-results.ttl#b1036d5d2f236647686c777b57276a4a416187f3c4b14a5fe11e3a68899497fa"
+        },
+        "entryLabel": {
+          "type": "literal",
+          "value": "Lab result entry · Glucose, fasting · 2025-03-27T08:00:00Z"
+        },
+        "needs": {
+          "type": "literal",
+          "value": "joined on one day, with no time to tell two draws apart"
+        },
+        "judgment": {
+          "type": "uri",
+          "value": "urn:x:onOneDay"
+        },
+        "judgmentLabel": {
+          "type": "literal",
+          "value": "Same · Cascade matcher · onOneDay · Glucose"
+        }
+      },
+      {
+        "entry": {
+          "type": "uri",
+          "value": "https://pod.example/clinical/lab-results.ttl#6ede58fbbda260407caf9b27e29935db5a0a1affe0281052cda0d2e187fead07"
+        },
+        "entryLabel": {
+          "type": "literal",
+          "value": "Lab result entry · Serum potassium · 2025-03-27T07:00:00-05:00"
+        },
+        "needs": {
+          "type": "literal",
+          "value": "one test at one instant, in units that differ"
+        },
+        "finding": {
+          "type": "uri",
+          "value": "urn:x:differentUnits"
+        },
+        "record": {
+          "type": "uri",
+          "value": "urn:x:unitsOther"
+        },
+        "recordLabel": {
+          "type": "literal",
+          "value": "Lab result · Serum potassium · own entry"
+        },
+        "otherRecord": {
+          "type": "uri",
+          "value": "urn:x:unitsUpper"
+        },
+        "otherRecordLabel": {
+          "type": "literal",
+          "value": "Lab result · Potassium · own entry"
+        }
+      },
+      {
+        "entry": {
+          "type": "uri",
+          "value": "https://pod.example/clinical/lab-results.ttl#bc2a852f0c08c8af6837d3343f6480638549734b388f3a77bf1bb9c5e41d13ad"
+        },
+        "entryLabel": {
+          "type": "literal",
+          "value": "Lab result entry · Potassium · 2025-03-27T12:00:00Z"
+        },
+        "needs": {
+          "type": "literal",
+          "value": "one test at one instant, two values"
+        },
+        "finding": {
+          "type": "uri",
+          "value": "urn:x:differentValues"
+        },
+        "record": {
+          "type": "uri",
+          "value": "urn:x:unitsUpper"
+        },
+        "recordLabel": {
+          "type": "literal",
+          "value": "Lab result · Potassium · own entry"
+        },
+        "otherRecord": {
+          "type": "uri",
+          "value": "urn:x:valueOther"
+        },
+        "otherRecordLabel": {
+          "type": "literal",
+          "value": "Lab result · Potassium, repeat · own entry"
+        }
+      }
+    ]
+  }
+}

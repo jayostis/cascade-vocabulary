@@ -86,8 +86,9 @@ Feature: Priya Natarajan's pod
         | "reportedUse" |
 
   Rule: P3. The same lab result from FHIR and from C-CDA
-    Potassium on 2025-03-27 is KHF-LAB-K-0327, at 2025-03-27T12:00:00Z in mmol/L, and KHC-LAB-K-0327, at
-    20250327120000+0000 in mmol/l: the matcher joins them by the same result, a LOINC code, a time and a value.
+    Potassium on 2025-03-27 is KHF-LAB-K-0327, at 2025-03-27T12:00:00Z, 4.1 in mmol/L, and KHC-LAB-K-0327, at
+    20250327120000+0000, 4.1 in mmol/l: the matcher joins them by the same result, a LOINC code, an instant, a value
+    and a unit, the litre's two symbols being one unit to UCUM.
 
     Example: the two potassium results are joined by the same result
       When the pod is read as it stood after "M2"
@@ -105,7 +106,7 @@ Feature: Priya Natarajan's pod
         """
         SELECT ?unit WHERE {
           ?record pav:hasCurrentVersion ?version .
-          ?version cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultUnit ?unit .
+          ?version cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultQuantity/cascade:ucumUnit ?unit .
         }
         """
       Then it answers:
@@ -326,12 +327,12 @@ Feature: Priya Natarajan's pod
   Rule: The tables an app holds name her potassium and class her lisinopril
     An app opens her pod with tables of its own (app-names-classes): the published LOINC names, RxNorm product
     ingredients, MED-RT drug classes and MED-RT names, each only the rows her potassium and her lisinopril need, and the
-    vocabulary's rule list version 9. Which names an app shows is its own choice, so the example asks only that her
+    vocabulary's rule list version 12. Which names an app shows is its own choice, so the example asks only that her
     potassium's code, LOINC 2823-3, joins the held names version. Lisinopril 10 MG Oral Tablet (RxNorm 314076) bears no
     class row: it maps to lisinopril (29046), and FDA classes lisinopril anhydrous (1546022), which maps to lisinopril
     too, as an angiotensin converting enzyme inhibitor (N0000175562) acting by that mechanism (N0000000181).
 
-    Opening writes seven files, by O1: her pod names no version of the vocabulary's rule list, so version 9 judges every
+    Opening writes seven files, by O1: her pod names no version of the vocabulary's rule list, so version 12 judges every
     pair it joins, four Sames, the open describes that list and its version, and the run's act holds its snapshot (N7,
     N14).
 
@@ -376,7 +377,7 @@ Feature: Priya Natarajan's pod
 
   Rule: Her lab results in a LOINC panel she names
     An app opens her pod with tables of its own (app-panels): the published LOINC panel members rows of the Electrolytes
-    1998 panel (24326-1), and the vocabulary's rule list version 9. LOINC lists sodium (2951-2), potassium (2823-3) and
+    1998 panel (24326-1), and the vocabulary's rule list version 12. LOINC lists sodium (2951-2), potassium (2823-3) and
     chloride (2075-0) in it, in that order and required (R), bicarbonate (1963-8) and carbon dioxide (2028-9) as
     alternatives (R-a), and the anion gap (33037-3) as optional. Her two potassium entries are in it, and she has no
     sodium and no chloride: the panel is hers to pick, and nothing says her potassium was drawn in it.
@@ -397,7 +398,7 @@ Feature: Priya Natarajan's pod
   Rule: An estradiol tablet is an estrogen, told from a product of fluoroestradiol F-18 by its precise ingredient
     Priya enters estradiol 1 MG Oral Tablet (RxNorm 197658) she takes. An app opens her pod with tables of its own
     (app-precise): RxNorm product ingredients that state precise ingredients, MED-RT drug classes and MED-RT names, each
-    only the rows her estradiol needs, and the vocabulary's rule list version 9. Estradiol (4083) and its precise
+    only the rows her estradiol needs, and the vocabulary's rule list version 12. Estradiol (4083) and its precise
     ingredient fluoroestradiol F-18 (2372221) are classed differently: FDA gives estradiol Estrogen [EPC] (N0000175825)
     and Estrogen Receptor Agonists [MoA] (N0000000100), and fluoroestradiol F-18 Radioactive Diagnostic Agent [EPC] and
     Positron Emitting Activity [MoA]. The version gives her tablet no precise ingredient, and it states precise

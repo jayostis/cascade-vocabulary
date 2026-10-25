@@ -477,6 +477,25 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath cascade:patient ] ] .
 
+<#lab-result-value/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#lab-result-value/quantity-of-a-text-result> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/quantity-of-a-text-result.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultValueShape ] ] .
+
+<#lab-result-value/bound-with-a-comparator> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/bound-with-a-comparator.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultValueShape ; sh:resultPath cascade:referenceRangeHigh ] ] .
+
+<#lab-result-value/decimal-not-canonical> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/decimal-not-canonical.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:QuantityShape ; sh:resultPath cascade:decimalValue ] ] .
+
 <#finding/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <finding/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
@@ -500,6 +519,20 @@
   mf:action [ sht:dataGraph <finding/no-rule-list-version.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ClaimsNoLongerReachedShape ] ] .
+
+<#finding/different-result-values> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/different-result-values.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#lab-result-value/value-of-no-kind> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/value-of-no-kind.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultValueShape ] ] .
+
+<#finding/different-result-values-of-one-result> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/different-result-values-of-one-result.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:FindingOfTwoLabResultsShape ] ] .
 
 <#judgment-about-a-finding/same> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-about-a-finding/same.ttl> ] ;

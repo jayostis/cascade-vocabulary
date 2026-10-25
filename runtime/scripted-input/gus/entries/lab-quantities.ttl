@@ -1,0 +1,80 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<urn:uuid:d3c7293f-1a21-433c-91b2-b23e34142aef> a prov:Activity ;
+  rdfs:label "entered in the Cascade app" ;
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole cascade:PatientRole ] .
+
+<urn:cascade:output-0> a <https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult> .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
+  <https://ns.cascadeprotocol.org/cascade#testName> "Potassium" ;
+  <https://ns.cascadeprotocol.org/cascade#testCode> <http://loinc.org/rdf/2823-3> ;
+  <https://ns.cascadeprotocol.org/cascade#resultValueKind> <https://ns.cascadeprotocol.org/cascade#QuantityResultValue> ;
+  <https://ns.cascadeprotocol.org/cascade#resultQuantity> <urn:cascade:output-0-version#value> ;
+  <https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime> "2025-03-27T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "final" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-0-version#value> <https://ns.cascadeprotocol.org/cascade#decimalValue> "4.1"^^<http://www.w3.org/2001/XMLSchema#decimal> ;
+  <https://ns.cascadeprotocol.org/cascade#writtenValue> "4.10" ;
+  <https://ns.cascadeprotocol.org/cascade#ucumUnit> "mmol/L" .
+<urn:cascade:output-1> a <https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult> .
+<urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
+  <https://ns.cascadeprotocol.org/cascade#testName> "Serum potassium" ;
+  <https://ns.cascadeprotocol.org/cascade#testCode> <http://loinc.org/rdf/2823-3> ;
+  <https://ns.cascadeprotocol.org/cascade#resultValueKind> <https://ns.cascadeprotocol.org/cascade#QuantityResultValue> ;
+  <https://ns.cascadeprotocol.org/cascade#resultQuantity> <urn:cascade:output-1-version#value> ;
+  <https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime> "2025-03-27T07:00:00-05:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "final" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-1-version#value> <https://ns.cascadeprotocol.org/cascade#decimalValue> "4.1"^^<http://www.w3.org/2001/XMLSchema#decimal> ;
+  <https://ns.cascadeprotocol.org/cascade#writtenValue> "4.1" ;
+  <https://ns.cascadeprotocol.org/cascade#ucumUnit> "mmol/l" .
+<urn:cascade:output-2> a <https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult> .
+<urn:cascade:output-2-version> prov:specializationOf <urn:cascade:output-2> ;
+  <https://ns.cascadeprotocol.org/cascade#testName> "Potassium, other lab" ;
+  <https://ns.cascadeprotocol.org/cascade#testCode> <http://loinc.org/rdf/2823-3> ;
+  <https://ns.cascadeprotocol.org/cascade#resultValueKind> <https://ns.cascadeprotocol.org/cascade#QuantityResultValue> ;
+  <https://ns.cascadeprotocol.org/cascade#resultQuantity> <urn:cascade:output-2-version#value> ;
+  <https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime> "2025-03-27T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "final" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-2-version#value> <https://ns.cascadeprotocol.org/cascade#decimalValue> "4.1"^^<http://www.w3.org/2001/XMLSchema#decimal> ;
+  <https://ns.cascadeprotocol.org/cascade#writtenValue> "4.1" ;
+  <https://ns.cascadeprotocol.org/cascade#ucumUnit> "mg/dL" .
+<urn:cascade:output-3> a <https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult> .
+<urn:cascade:output-3-version> prov:specializationOf <urn:cascade:output-3> ;
+  <https://ns.cascadeprotocol.org/cascade#testName> "Potassium repeat" ;
+  <https://ns.cascadeprotocol.org/cascade#testCode> <http://loinc.org/rdf/2823-3> ;
+  <https://ns.cascadeprotocol.org/cascade#resultValueKind> <https://ns.cascadeprotocol.org/cascade#QuantityResultValue> ;
+  <https://ns.cascadeprotocol.org/cascade#resultQuantity> <urn:cascade:output-3-version#value> ;
+  <https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime> "2025-03-27T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "final" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-3-version#value> <https://ns.cascadeprotocol.org/cascade#decimalValue> "4.4"^^<http://www.w3.org/2001/XMLSchema#decimal> ;
+  <https://ns.cascadeprotocol.org/cascade#writtenValue> "4.4" ;
+  <https://ns.cascadeprotocol.org/cascade#ucumUnit> "mmol/L" .
+<urn:cascade:output-4> a <https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult> .
+<urn:cascade:output-4-version> prov:specializationOf <urn:cascade:output-4> ;
+  <https://ns.cascadeprotocol.org/cascade#testName> "Glucose" ;
+  <https://ns.cascadeprotocol.org/cascade#testCode> <http://loinc.org/rdf/2345-7> ;
+  <https://ns.cascadeprotocol.org/cascade#resultValueKind> <https://ns.cascadeprotocol.org/cascade#QuantityResultValue> ;
+  <https://ns.cascadeprotocol.org/cascade#resultQuantity> <urn:cascade:output-4-version#value> ;
+  <https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime> "2025-03-28"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "final" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-4-version#value> <https://ns.cascadeprotocol.org/cascade#decimalValue> "95"^^<http://www.w3.org/2001/XMLSchema#decimal> ;
+  <https://ns.cascadeprotocol.org/cascade#writtenValue> "95" ;
+  <https://ns.cascadeprotocol.org/cascade#ucumUnit> "mg/dL" .
+<urn:cascade:output-5> a <https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult> .
+<urn:cascade:output-5-version> prov:specializationOf <urn:cascade:output-5> ;
+  <https://ns.cascadeprotocol.org/cascade#testName> "Glucose, fasting" ;
+  <https://ns.cascadeprotocol.org/cascade#testCode> <http://loinc.org/rdf/2345-7> ;
+  <https://ns.cascadeprotocol.org/cascade#resultValueKind> <https://ns.cascadeprotocol.org/cascade#QuantityResultValue> ;
+  <https://ns.cascadeprotocol.org/cascade#resultQuantity> <urn:cascade:output-5-version#value> ;
+  <https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime> "2025-03-28T08:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "final" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-5-version#value> <https://ns.cascadeprotocol.org/cascade#decimalValue> "95"^^<http://www.w3.org/2001/XMLSchema#decimal> ;
+  <https://ns.cascadeprotocol.org/cascade#writtenValue> "95.0" ;
+  <https://ns.cascadeprotocol.org/cascade#ucumUnit> "mg/dL" .

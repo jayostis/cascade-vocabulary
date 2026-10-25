@@ -1,5 +1,8 @@
 # Each entry takes the test, code, value, unit and time of its lead, so a value is never shown at another member's
-# time, and the status of the member chosen for status.
+# time, and the status of the member chosen for status. A value is shown as its source wrote it: a quantity with its
+# comparator before its number, a ratio as its numerator, a colon and its denominator, a range as its two bounds with a
+# hyphen between, or the one it has after >= or <=, and any other value as its text. The unit is the quantity's unit
+# text, else its UCUM unit, else the result's unit as text.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -20,8 +23,28 @@ WHERE {
   ?entry cascade:leadMember ?lead .
   OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testName ?name }
   OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testCode ?code }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultValue ?value }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultUnit ?unit }
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultValue ?text }
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultUnit ?textUnit }
+  OPTIONAL {
+    ?lead pav:hasCurrentVersion/cascade:resultQuantity ?quantity .
+    ?quantity cascade:writtenValue ?written .
+    OPTIONAL { ?quantity cascade:quantityComparator ?comparator }
+    OPTIONAL { ?quantity cascade:unitText ?unitText }
+    OPTIONAL { ?quantity cascade:ucumUnit ?ucumUnit }
+  }
+  OPTIONAL {
+    ?lead pav:hasCurrentVersion ?ratioVersion .
+    ?ratioVersion cascade:resultRatioNumerator/cascade:writtenValue ?numerator ;
+                  cascade:resultRatioDenominator/cascade:writtenValue ?denominator .
+  }
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultRangeLow/cascade:writtenValue ?low }
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultRangeHigh/cascade:writtenValue ?high }
+  BIND (COALESCE(CONCAT(COALESCE(?comparator, ""), ?written),
+                 CONCAT(?numerator, ":", ?denominator),
+                 IF(BOUND(?low) && BOUND(?high), CONCAT(?low, "-", ?high),
+                    IF(BOUND(?low), CONCAT(">=", ?low), CONCAT("<=", ?high))),
+                 ?text) AS ?value)
+  BIND (COALESCE(?unitText, ?ucumUnit, ?textUnit) AS ?unit)
   OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
              ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
   OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultClinicallyRelevantTime ?date }
