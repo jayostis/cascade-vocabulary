@@ -25,4 +25,4 @@ WHERE {
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?value rdfs:label ?valueLabel } }
 }
-ORDER BY ?entryLabel ?entry ?field DESC(?lead) ?value ?from
+ORDER BY ?entryLabel ?entry ?field DESC(?lead) STR(?value) ?from
