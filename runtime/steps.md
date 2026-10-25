@@ -136,11 +136,11 @@ A record is named by what a person reads in it, never by its IRI, except where a
   the rule that names it (`naming.feature`, N1 and N2): by its server, type and ID (`cascade:sourceUrl`); by its entry's
   file and the draft's position; by its `document` and `selector`, the `rdf:value` of its selector, RFC 6901's fragment
   form for a JSON document and the XPath for an XML one, for a FHIR record with no `id` or a `urn:uuid:` `fullUrl`, and
-  for a C-CDA entry whose id its document repeats with other content, and for every record of a C-CDA document that
-  states no custodian id or not exactly one patient with an id; a C-CDA record with an id by its `document`, whose
-  custodian and patient ids scope it, and its `identifier`, `root:extension` or the root alone; one with no id by its
-  `document`, its `class` and its `key`, a list of `field=value` strings whose fingerprint its name takes, or, with no
-  key, its `members`, a list of member strings.
+  for a C-CDA entry whose id its document repeats with other content, and for every record of a C-CDA document whose
+  custodian has no id that names an organization record, or that states not exactly one patient with an id; a C-CDA
+  record with an id by its `document`, whose custodian and patient ids scope it, and its `identifier`, `root:extension`
+  or the root alone; one with no id by its `document`, its `class` and its `key`, a list of `field=value` strings whose
+  fingerprint its name takes, or, with no key, its `members`, a list of member strings.
 - **`server <base URL>`**, as `server https://fhir.example-hospital.example/r4`: the server record whose
   `cascade:serverBaseUrl` is that base URL.
 - **A person's name**, as `Alex`: the pod's subject.
