@@ -9,7 +9,8 @@ Feature: Currency
   copy of the peanut allergy active as its source stamped it on 4 January: an older state, observed later.
 
   Rule: C1. A revision carries when its source was observed saying its state
-    decisions/currency.md, row "two clocks". Its cascade:observedAsOf is the first there is of its document's
+    decisions/currency.md, row "two clocks"; decisions/partial-dates-and-absent-reasons.md, row "4. the currency ladder".
+    Its cascade:observedAsOf is the first there is of its document's
     cascade:answeredAsOf, the document's pav:retrievedOn, the source's own change time it carries as pav:lastUpdateOn,
     and the start of the act that generated it; for an entry, the session's start. It is one of the revision's own
     triples (N4), beside prov:generatedAtTime, when the pod wrote it.
@@ -30,7 +31,7 @@ Feature: Currency
         | "2026-01-02T10:00:00Z"^^xsd:dateTime | "2026-01-02T10:00:00Z"^^xsd:dateTime |
 
   Rule: C2. A record's current revision is the ladder's pick
-    decisions/currency.md, rows "current", "heads" and "Erroneous", and its ladder.
+    decisions/currency.md, rows "current", "heads" and "Erroneous", and its ladder; decisions/performance.md, row "the ladder as a maximum"; decisions/variant-interpretation.md, row "which revision is current"; decisions/variant-record.md, row "which revision is current".
     Of the record's revisions, whatever revises what: remove each an Erroneous names; remove each a Before places before another still present,
     unless Befores form a cycle (C4); keep those at the latest source change time with those carrying none; of those,
     the greatest cascade:observedAsOf, but between two imports from documents reached by one path, the one whose act's
@@ -82,7 +83,8 @@ Feature: Currency
         | allergy "Peanut" | version | 2     |
 
   Rule: C5. The review page lists every pick the source's change time did not decide
-    decisions/currency.md, row "review page". queries/questions/record/What needs review.rq lists each record whose
+    decisions/currency.md, row "review page"; decisions/performance.md, row "the review page bounded".
+    queries/questions/record/What needs review.rq lists each record whose
     current revision was picked from candidates at other versions by the observation time ("observed later") or the
     least IRI ("no basis"), beside the state shown and each state not shown, but not a pick between two live pulls of
     one source whose snapshots ancestry orders: documents with a pav:retrievedOn and no cascade:answeredAsOf, naming
@@ -106,7 +108,8 @@ Feature: Currency
     one. Priya's kit shows it, P15 and P11, and tests/fixtures/the-lead-member and allergies-view show the rest.
 
   Rule: C7. A person's ClockDiscounted ranks every revision its act generated as carrying no observation time
-    decisions/currency.md, row "wrong writer clock". A cascade:Judgment with the verdict cascade:ClockDiscounted, by a
+    decisions/currency.md, rows "wrong writer clock" and "review page"; decisions/judgments.md, row "a clock known wrong".
+    A cascade:Judgment with the verdict cascade:ClockDiscounted, by a
     person, whose one member is an act, says the times its writer's clock gave are known wrong, usually in answer to a
     finding that the clock was behind (A19). It carries no offset. While it stands, the ladder ranks every revision the
     act generated as carrying no cascade:observedAsOf (queries/derivations/revision-judgments.rq): at step 4 such a

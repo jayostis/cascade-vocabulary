@@ -87,20 +87,20 @@ verified); PROV-O (https://www.w3.org/TR/prov-o/, verified). Research: #107's bo
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| the variant | FHIR IG Variant, an Observation coded 69548-6; openEHR `genomic_variant_result`; SPHN `VariantDescriptor` | its own record, `genomics:Variant`, a `prov:Entity`, copied with its IRI from the retired spec (d819bc2) | diverged from FHIR's Observation; the reason is owed (Still open) |
-| its name | `naming.md` | named as any record from its source is: a server's by server, type and id; a document's by document and selector; a C-CDA entry's by custodian, patient and id. Never by its HGVS expression | borrowed from `naming.md` |
-| HGVS expression | FHIR c.HGVS component 48004-6; HGVS nomenclature | `hgvsCDot`, at most one per version, in the normal form: a reference sequence with its version (`NM_`, `NG_`, `XM_`, `NC_`, `LRG_`), a colon, `c.` and the change. It is the record's display name and a join key for the identity rules | borrowed; one per version is ours |
-| ClinVar variation | FHIR variation code 81252-9, ClinVar's variant ID as code; ClinVar VariationID | `clinvarVariationId`, at most one per version, the digits with no leading zero | borrowed |
-| gene | FHIR gene studied 48018-6: HGNC ID as code, symbol as display; HGNC | `geneSymbol`, at most one per version, the display of the gene-studied coding under HGNC (`http://www.genenames.org/geneId` or `http://www.genenames.org`); never the HGNC ID; with no display a source writes none and records a finding | diverged from FHIR's code: the symbol is what a table's gene list states (Why) |
-| content | FHIR versions; `naming.md` | on a version; a reclassified or corrected report is a new version | borrowed from the vocabulary's rule |
-| which revision is current | `currency.md` | `currency.md`'s ladder, like any record | borrowed from `currency.md` |
-| status | FHIR `Observation.status` | `clinical:status` | borrowed |
-| computed identity | GA4GH VRS digest; ClinGen CA id | none | diverged: no source states a reference sequence or a CA id (Why) |
-| an entry | | shows every member's codes | ours |
+| the variant | FHIR IG Variant, an Observation coded 69548-6; openEHR `genomic_variant_result`; SPHN `VariantDescriptor` | its own record, `genomics:Variant`, a `prov:Entity`, copied with its IRI from the retired spec (d819bc2) (`ontologies/cascade.ttl`) | diverged from FHIR's Observation; the reason is owed (Still open) |
+| its name | `naming.md` | named as any record from its source is: a server's by server, type and id; a document's by document and selector; a C-CDA entry's by custodian, patient and id. Never by its HGVS expression (`runtime/naming.feature`, N1) | borrowed from `naming.md` |
+| HGVS expression | FHIR c.HGVS component 48004-6; HGVS nomenclature | `hgvsCDot`, at most one per version, in the normal form: a reference sequence with its version (`NM_`, `NG_`, `XM_`, `NC_`, `LRG_`), a colon, `c.` and the change. It is the record's display name and a join key for the identity rules (`ontologies/cascade.shapes.ttl`) | borrowed; one per version is ours |
+| ClinVar variation | FHIR variation code 81252-9, ClinVar's variant ID as code; ClinVar VariationID | `clinvarVariationId`, at most one per version, the digits with no leading zero (`ontologies/cascade.shapes.ttl`) | borrowed |
+| gene | FHIR gene studied 48018-6: HGNC ID as code, symbol as display; HGNC | `geneSymbol`, at most one per version, the display of the gene-studied coding under HGNC (`http://www.genenames.org/geneId` or `http://www.genenames.org`); never the HGNC ID; with no display a source writes none and records a finding (`ontologies/cascade.shapes.ttl`) | diverged from FHIR's code: the symbol is what a table's gene list states (Why) |
+| content | FHIR versions; `naming.md` | on a version; a reclassified or corrected report is a new version (`runtime/naming.feature`, N3) | borrowed from the vocabulary's rule |
+| which revision is current | `currency.md` | `currency.md`'s ladder, like any record (`runtime/currency.feature`, C2) | borrowed from `currency.md` |
+| status | FHIR `Observation.status` | `clinical:status` (`ontologies/cascade.shapes.ttl`) | borrowed |
+| computed identity | GA4GH VRS digest; ClinGen CA id | none (`runtime/matcher.feature`, M17) | diverged: no source states a reference sequence or a CA id (Why) |
+| an entry | | shows every member's codes (`queries/views/variants.rq`) | ours |
 
 ## Why
 
-**Why a name from the source and not the expression.** The rubric's first test in `naming.md` names a thing by what its
+**Why a name from the source and not the expression.** (row "its name") The rubric's first test in `naming.md` names a thing by what its
 source says identifies it. A report says which record it holds by its server and id, or its document and position; it
 does not say its expression identifies a variant, and HGVS itself makes two transcript versions two expressions. That two
 expressions are one variant is a judgment, filed by a rule that reads a table (`variant-identity.md`), so it can be wrong
@@ -108,18 +108,18 @@ and be retracted without touching a name. An expression is not even unique to on
 coding expressions map to two VariationIDs across the 2026-10 file, and 3 within Lynch's five genes (both verified,
 [#203](https://github.com/jayostis/cascade-vocabulary/issues/203)).
 
-**Why these three codes.** They are what a report states and what a page looks a variant up by. The ClinVar VariationID
+**Why these three codes.** (rows "HGVS expression", "ClinVar variation", "gene") They are what a report states and what a page looks a variant up by. The ClinVar VariationID
 is the code the IG puts in its variation component and the key of ClinVar's rows; the HGVS expression is the IG's
 required c.HGVS component; both are copied as #107 asked ("Copy only what the story uses"). The normal form keeps the
 reference sequence's version, which HGVS requires, and drops the gene in parentheses, which is not part of the
 expression.
 
-**Why the gene is a symbol.** A variant classifications table states the genes it covers by symbol (`rec:coversGene`,
+**Why the gene is a symbol.** (row "gene") A variant classifications table states the genes it covers by symbol (`rec:coversGene`,
 `records.ttl:431`; `rec:coversGene "MLH1"` in `runtime/scripted-input/ivo/tables/app-variants/references.ttl:57`), and the page tells "not covered" from "not found" by comparing them (#107, "`geneSymbol`,
 which the page needs to tell 'not covered'"; #138, case M4). ClinVar's files carry the symbol too. `hgncId` waits, with
 `zygosity`, `genomeAssembly` and `transcriptRef`, for a planted case that reads it (#107).
 
-**Why no computed identity.** A VRS digest needs the reference sequence, which neither ClinVar's `variant_summary` nor a
+**Why no computed identity.** (row "computed identity") A VRS digest needs the reference sequence, which neither ClinVar's `variant_summary` nor a
 browser has (#107), and no report in the story states one; nor does any carry a CA id (#138's inputs carry an HGVS
 expression, a ClinVar ID where they have one, and a gene). So the join keys are the ClinVar VariationID and the HGVS
 expression as written, exact.

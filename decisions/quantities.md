@@ -101,19 +101,19 @@ Every row is ruled, 2026-10-22. Where the research corrected a premise of #131, 
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| quantity node | FHIR `Quantity`; openEHR `DV_QUANTITY`; `naming.md`'s `#source-version` | a `Quantity` nested in the version as `<version>#value`, `#reference-low`, `#reference-high`, hashed with it, carrying `decimalValue`, `writtenValue`, `quantityComparator`, `ucumUnit`, `unitText`; reached by `resultQuantity`, `referenceRangeLow`, `referenceRangeHigh` (and a ratio's `resultRatioNumerator` and `resultRatioDenominator`, a range's `resultRangeLow` and `resultRangeHigh`); `resultValue` and `referenceRange` stay as text, and `resultUnit` is no longer written for a quantity, whose unit is on its node and which the lab-results view shows from there, but is written beside a value an adapter refused to type and kept as text | borrowed from FHIR's parts; the nesting is `naming.md`'s |
-| number | FHIR keeps the written form; v2 and XSD say it carries nothing; SPHN, OMOP a float | two literals on the quantity node, both hashed into the version: `decimalValue`, an `xsd:decimal` by value, which the store canonicalises (`"6.80"` to `"6.8"`), for comparison, sorting and bounds; `writtenValue`, a plain string of the exact characters the source sent (`"6.80"`), which no store normalises; openEHR's precision is derivable by counting places and is not stored; an exponent (`1.2e3`) is a plain decimal in the typed literal and kept as sent in the string; the written form no longer rides on `health:resultValue` | borrowed from FHIR for precision, kept in the written form, and from XSD for the value; diverges from SPHN's and OMOP's float; corrects #131's "exact `xsd:decimal` as the source wrote it", which the Bridge's store cannot keep |
-| comparator | FHIR R4 and SPHN four; openEHR adds `=` `~`; v2 adds `=` `<>`; R5 `ad` | `sh:in ("<" "<=" ">=" ">")`; `=` written as none; `~`, `<>` and `ad` refused with a finding, the text kept; a comparator makes the value a bound | borrowed from FHIR R4; diverges from openEHR's `~` |
-| reference range | FHIR 0..*; C-CDA on FHIR the `N` one; openEHR one normal plus others; v2, SPHN, OMOP one | bounds inclusive, never a comparator on one (sqty-1); a missing bound one-sided; one typed range, the one the source marks normal or the only one, the rest as text; a one-bound `IVL_PQ` result from C-CDA becomes a quantity with a comparator, as C-CDA on FHIR maps it, never a Range result, since a bound with nothing on the other side is what a comparator says | borrowed from FHIR's `referenceRange` and C-CDA on FHIR; corrects #131's "a missing bound means unknown", which is `Range`'s wording, and the #183 table's keeping a one-bound result as a range |
-| unit | FHIR `code` when `system` is UCUM; C-CDA "SHOULD" UCUM; v2 ISO+, case-insensitive; UCUM §6 | `ucumUnit` is the source's exact string, case and `{annotations}` kept, only where the source says it is case-sensitive UCUM (FHIR `system`, C-CDA `@unit` under a Warning shape); `unitText` is the display unit; a unit outside UCUM, and every v2 `OBX-6`, is `unitText` alone. The alternatives: store the annotation-stripped form instead, or both | borrowed from FHIR; corrects #183's "a non-UCUM C-CDA unit is a source error" |
-| unit IRI | UCUM none; SPHN UCUM classes; QUDT `ucumCode`, dotted | none; a QUDT or SPHN IRI, if ever, is a table beside the string | borrowed from UCUM; corrects #131's "no IRIs for units": UCUM defines none, others do |
-| value kinds | FHIR `value[x]`; CDA `PQ`, `RTO`, `IVL_PQ`, `CD`, `ST`; openEHR `DV_QUANTITY`, `DV_PROPORTION`, `DV_INTERVAL`, `DV_CODED_TEXT`, `DV_TEXT` | five, the set the three agree on, and one property naming which a result's value is: Quantity (row "number"); Ratio, a numerator and a denominator each a quantity node, a titre `1:64` a ratio with no unit; Range, a low and a high bound, the node shape the reference range row defines, reused; Coded, the answer as a code IRI, as every coded thing here is; Text, what is left, named as text and never matched by value. A value absent for a reason is no kind: it is row 7 of `partial-dates-and-absent-reasons.md` | borrowed from FHIR, CDA and openEHR |
+| quantity node | FHIR `Quantity`; openEHR `DV_QUANTITY`; `naming.md`'s `#source-version` | a `Quantity` nested in the version as `<version>#value`, `#reference-low`, `#reference-high`, hashed with it, carrying `decimalValue`, `writtenValue`, `quantityComparator`, `ucumUnit`, `unitText`; reached by `resultQuantity`, `referenceRangeLow`, `referenceRangeHigh` (and a ratio's `resultRatioNumerator` and `resultRatioDenominator`, a range's `resultRangeLow` and `resultRangeHigh`); `resultValue` and `referenceRange` stay as text, and `resultUnit` is no longer written for a quantity, whose unit is on its node and which the lab-results view shows from there, but is written beside a value an adapter refused to type and kept as text (`ontologies/cascade.shapes.ttl`) | borrowed from FHIR's parts; the nesting is `naming.md`'s |
+| number | FHIR keeps the written form; v2 and XSD say it carries nothing; SPHN, OMOP a float | two literals on the quantity node, both hashed into the version: `decimalValue`, an `xsd:decimal` by value, which the store canonicalises (`"6.80"` to `"6.8"`), for comparison, sorting and bounds; `writtenValue`, a plain string of the exact characters the source sent (`"6.80"`), which no store normalises; openEHR's precision is derivable by counting places and is not stored; an exponent (`1.2e3`) is a plain decimal in the typed literal and kept as sent in the string; the written form no longer rides on `health:resultValue` (`ontologies/cascade.shapes.ttl`) | borrowed from FHIR for precision, kept in the written form, and from XSD for the value; diverges from SPHN's and OMOP's float; corrects #131's "exact `xsd:decimal` as the source wrote it", which the Bridge's store cannot keep |
+| comparator | FHIR R4 and SPHN four; openEHR adds `=` `~`; v2 adds `=` `<>`; R5 `ad` | `sh:in ("<" "<=" ">=" ">")`; `=` written as none; `~`, `<>` and `ad` refused with a finding, the text kept; a comparator makes the value a bound (`ontologies/cascade.shapes.ttl`) | borrowed from FHIR R4; diverges from openEHR's `~` |
+| reference range | FHIR 0..*; C-CDA on FHIR the `N` one; openEHR one normal plus others; v2, SPHN, OMOP one | bounds inclusive, never a comparator on one (sqty-1); a missing bound one-sided; one typed range, the one the source marks normal or the only one, the rest as text; a one-bound `IVL_PQ` result from C-CDA becomes a quantity with a comparator, as C-CDA on FHIR maps it, never a Range result, since a bound with nothing on the other side is what a comparator says (`ontologies/cascade.shapes.ttl`) | borrowed from FHIR's `referenceRange` and C-CDA on FHIR; corrects #131's "a missing bound means unknown", which is `Range`'s wording, and the #183 table's keeping a one-bound result as a range |
+| unit | FHIR `code` when `system` is UCUM; C-CDA "SHOULD" UCUM; v2 ISO+, case-insensitive; UCUM §6 | `ucumUnit` is the source's exact string, case and `{annotations}` kept, only where the source says it is case-sensitive UCUM (FHIR `system`, C-CDA `@unit` under a Warning shape); `unitText` is the display unit; a unit outside UCUM, and every v2 `OBX-6`, is `unitText` alone. The alternatives: store the annotation-stripped form instead, or both (`ontologies/cascade.shapes.ttl`) | borrowed from FHIR; corrects #183's "a non-UCUM C-CDA unit is a source error" |
+| unit IRI | UCUM none; SPHN UCUM classes; QUDT `ucumCode`, dotted | none; a QUDT or SPHN IRI, if ever, is a table beside the string (`ontologies/cascade.shapes.ttl`) | borrowed from UCUM; corrects #131's "no IRIs for units": UCUM defines none, others do |
+| value kinds | FHIR `value[x]`; CDA `PQ`, `RTO`, `IVL_PQ`, `CD`, `ST`; openEHR `DV_QUANTITY`, `DV_PROPORTION`, `DV_INTERVAL`, `DV_CODED_TEXT`, `DV_TEXT` | five, the set the three agree on, and one property naming which a result's value is: Quantity (row "number"); Ratio, a numerator and a denominator each a quantity node, a titre `1:64` a ratio with no unit; Range, a low and a high bound, the node shape the reference range row defines, reused; Coded, the answer as a code IRI, as every coded thing here is; Text, what is left, named as text and never matched by value. A value absent for a reason is no kind: it is row 7 of `partial-dates-and-absent-reasons.md` (`ontologies/cascade.shapes.ttl`) | borrowed from FHIR, CDA and openEHR |
 | matcher | no standard defines a duplicate; HL7 v2 filler order number and observation id; FHIR `identifier`; C-CDA entry `id`; Particle every field; de Graauw code, value, datetime | four tiers, a new rule list version: (i) a shared business identifier within one organisation joins for certain, first; (ii) same code, same instant, equal value, same unit is a strong join; (iii) same code and instant with a different value, or a value of another kind, is never Same and is a finding for review, coded answers only when of one code system; (iv) same code and instant with units that are not one UCUM unit is a finding for review, not joined, until conversion is in scope; units are one UCUM unit when equal once annotations are dropped and the litre's `l` and `L` are read as one, with any prefix, every other case kept; a different instant never joins, a time with no zone is compared only with another with none, as written, and a day-only time drops to likely, surfaced. Replaces M12's value clause; the four cases become examples in `runtime/matcher.feature`: rule M21 applies tiers (ii), (iii) as R16's finding for review and (iv) as R17's, the day-only drop as R15; rule M22 applies tier (i) as R18, a shared `dct:identifier` of a named system, a shared code and one time, from documents naming one organisation or two judged one (#270) | ours: no standard defines a duplicate; the identifiers are the standards' |
-| conversion | ucum-lhc within a dimension; LOINC molar masses | out of scope; a unit that differs goes to review (the matcher's tier iv) | waits on UCUM's licence |
+| conversion | ucum-lhc within a dimension; LOINC molar masses | out of scope; a unit that differs goes to review (the matcher's tier iv) (`runtime/matcher.feature`, M21) | waits on UCUM's licence |
 
 ## Why
 
-**Two literals, one job each.** A version is named by a hash of its triples (`currency.md`), so two runtimes must
+**Two literals, one job each.** (rows "quantity node", "number") A version is named by a hash of its triples (`currency.md`), so two runtimes must
 write one lexical form for one state. XSD defines one canonical decimal and Oxigraph prints it whatever it was given
 (verified in its code), so `decimalValue` is alike on every runtime, and `writtenValue` is a string no store rewrites,
 so the hash over both is deterministic. The decimal compares, sorts and bounds, XSD's rule; the string keeps the
@@ -121,24 +121,24 @@ precision FHIR says "should be preserved", and openEHR's decimal places are coun
 `0.01` differ, v2 and XSD that they do not; with a literal for each answer the pod need not take a side.
 `health:resultValue` no longer carries the written form: it is off the node and glues on a comparator (`"<5.7"`).
 
-**A decimal, not a float.** FHIR `decimal` and v3 `REAL` admit an exact decimal, and a double turns `0.1` into another
+**A decimal, not a float.** (row "number") FHIR `decimal` and v3 `REAL` admit an exact decimal, and a double turns `0.1` into another
 number. An exponent is exact as a plain decimal, so `1.2e3` as `1200` loses only the spelling, which `writtenValue`
 keeps.
 
-**Four comparators, because four is what every source agrees on.** The four are the intersection of FHIR R4, openEHR,
+**Four comparators, because four is what every source agrees on.** (row "comparator") The four are the intersection of FHIR R4, openEHR,
 v2, SPHN and OMOP. `=` means the same as none in all three that have it. `~` is openEHR's and an R6 CI build's, with no
 tolerance in one and 10% recommended in the other; a value that is "about" something can neither be compared as a
 point nor as a bound. `ad` is about dosing and `<>` is v2's alone. A comparator makes the value a bound, which FHIR
 says "can never be ignored", so a query testing the number still knows it is a bound.
 
-**One range, and a missing bound is one-sided.** FHIR's `referenceRange.low` says an omitted bound is "meaningless
+**One range, and a missing bound is one-sided.** (row "reference range") FHIR's `referenceRange.low` says an omitted bound is "meaningless
 (e.g. reference range is <=2.3)": a range with a high only is everything below it, which is how a lab writes `<5.7`.
 `Range`'s "not known" is the generic type's, not the reference range's. One typed range is what v2, SPHN and OMOP hold
 and what C-CDA on FHIR keeps; FHIR says "most observations only have one generic reference range", and the rest stay in
 `health:referenceRange`, so nothing is dropped. A bound carries no comparator because FHIR forbids one and the
 inclusivity is the range's.
 
-**The unit as the source wrote it, compared as UCUM says.** UCUM is case-sensitive and its case-insensitive variant is
+**The unit as the source wrote it, compared as UCUM says.** (row "unit") UCUM is case-sensitive and its case-insensitive variant is
 "incompatible", so a v2 unit, case-insensitive by default, is display text and never `ucumUnit`. Storing the exact
 string keeps what the source said; UCUM §6 says annotations carry nothing and a conformant parser discards them, so the
 matcher strips them rather than the store, and `{beats}/min` equals `/min` while both strings survive. UCUM also
@@ -148,12 +148,12 @@ sensitive variant the liter is defined both with an upper case 'L' and a lower c
 That is not conversion: no factor is applied, and every other case difference is kept, since UCUM is case-sensitive
 and `Mmol/L` is another unit.
 
-**No unit IRIs yet.** UCUM defines none. QUDT's codes are dotted, so `mg.dL-1` never string-matches the `mg/dL` labs
+**No unit IRIs yet.** (row "unit IRI") UCUM defines none. QUDT's codes are dotted, so `mg.dL-1` never string-matches the `mg/dL` labs
 send, and `10*3/uL` and `U/L`, among the commonest lab units, are absent (verified, counted). SPHN's classes exist, but
 under what permission it republishes UCUM was not found (unverified). An IRI needs a normaliser and a gap table, and a
 string needs neither.
 
-**Five kinds, because three standards agree on five.** FHIR's `value[x]`, CDA's datatypes and openEHR's `DV_` types
+**Five kinds, because three standards agree on five.** (row "value kinds") FHIR's `value[x]`, CDA's datatypes and openEHR's `DV_` types
 each type a quantity, a ratio, a range, a code and text, so the set is borrowed whole. Deferring four of them left the
 matcher half a rule: a titre or a "positive" could never dedupe. The cost is two small node shapes mirroring the
 quantity, one kind property, and a matcher rule per kind. The adapter knows a ratio from a quantity because FHIR sends
@@ -162,7 +162,7 @@ so one shape checks both; a coded answer is an IRI, as every coded thing here is
 spellings of one finding are not one value. An absent value is a reason, not a kind: row 7 of
 `partial-dates-and-absent-reasons.md`.
 
-**What a same result needs, tiered.** No standard defines a duplicate, so the rule is ours, its strongest input is
+**What a same result needs, tiered.** (row "matcher") No standard defines a duplicate, so the rule is ours, its strongest input is
 the standards' identifiers, and the rubric's fourth test orders it by how sure each tier is. (i) Within one
 organisation a shared business identifier is certain: HL7 v2's filler order number with the observation id, "a
 permanent identifier for an order and its associated observations" (quoted in the ruling; not re-read here), FHIR's
@@ -184,7 +184,7 @@ record from a shared server belongs to is open in `republishing-sources.md`. Two
 a person's judgment of organisations (`cascade:currentlySameOrganization`), never because a join of two servers made
 two organisations pulled from them one record, for the same reason.
 
-**The identifier term.** `dct:identifier`, "an unambiguous reference to the resource within a given context", with
+**The identifier term.** (row "matcher") `dct:identifier`, "an unambiguous reference to the resource within a given context", with
 range `rdfs:Literal` and no domain, so a literal typed by its system is one, as #212 writes an organisation's
 `org:identifier`. Of a version of a lab result it is a business identifier its source gave the result: a FHIR
 `Observation.identifier`'s value typed by its system, a C-CDA observation's `id` as HL7's CDA-to-FHIR identifier
@@ -209,7 +209,7 @@ comparing every pair of results on each read (0.20 s against 1.30 s for the revi
 and drops to likely, surfaced, since two draws in a day are common for inpatients. A changed rule is a new rule list
 version, as `naming.md` requires, so the old rule's claims stop counting by derivation.
 
-**Conversion waits.** Within a dimension it is mechanical, but mass to molar needs a molar mass per LOINC code, and
+**Conversion waits.** (row "conversion") Within a dimension it is mechanical, but mass to molar needs a molar mass per LOINC code, and
 UCUM's licence forbids derivative works; whether a published LOINC-keyed table is one is a legal question (unverified).
 
 ## Alternatives that lost

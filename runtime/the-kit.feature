@@ -67,7 +67,8 @@ Feature: The conformance kit
     No example states this check: SPARQL cannot read a stored document's bytes.
 
   Rule: Check 6. No view the runtime wrote, nor any view it shares, holds the pod's address
-    decisions/naming.md, row "view entry". A view entry is written in the view file as <#hex>, relative to its view
+    decisions/naming.md, row "view entry"; decisions/republishing-sources.md, row "what leaves the pod".
+    A view entry is written in the view file as <#hex>, relative to its view
     (N13), never as the derivations' placeholder urn:cascade:entry:<hex>, and no IRI a view file holds, as its bytes
     write it, begins with the pod's address: a view says nothing of where the pod lives.
 

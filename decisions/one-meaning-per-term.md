@@ -132,24 +132,23 @@ Every row is ruled, as the status line says. "#132" in the last column means the
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | 1. clinical state and workflow state | FHIR R4 and R5 `clinicalStatus` beside `status`; openEHR's ISM for workflow only | two terms: `clinicalStatus` on a condition and an allergy, the person's state; `status`, renamed `workflowStatus` (row 12), on a procedure, an immunization, a lab result, a variant, a variant interpretation and a medication, the state of the act or the record; `verificationStatus` unchanged. Every reader of `rec:status` moves to the term its kind states, as #193 removes the copy: M14 (`same-code-and-period.rq`) and `What needs review.rq` read `clinicalStatus`; `records.rq`'s table, `status-sources.rq`, `rec:statusFrom` and `rec:statusOnlyFromDocuments`, and `labels.rq` read either. Applied by #132 with #193's sweep; M14 rewritten | borrowed from FHIR |
-| 2. which list a status value is from | FHIR binds one value set per element and resource and writes a bare code; R5 RDF shares `fhir:status` across resources | the value stays FHIR's code as a string; the term and the record's kind fix its list; each kind's shape names exactly one FHIR value set with `sh:in`, adding Observation.status's list to the two genomics shapes, which have none; #128's mapping table names the CodeSystem per (term, kind). No concept IRI is minted: none is defined until HL7 Terminology registers a stem. Shapes only; #132 | borrowed from FHIR's binding per element |
+| 2. which list a status value is from | FHIR binds one value set per element and resource and writes a bare code; R5 RDF shares `fhir:status` across resources | the value stays FHIR's code as a string; the term and the record's kind fix its list; each kind's shape names exactly one FHIR value set with `sh:in`, adding Observation.status's list to the two genomics shapes, which have none; #128's mapping table names the CodeSystem per (term, kind). No concept IRI is minted: none is defined until HL7 Terminology registers a stem. Shapes only; #132; `ontologies/cascade.shapes.ttl` | borrowed from FHIR's binding per element |
 | 3. a medication's status | R4 MedicationRequest and MedicationStatement status; R5's recorded-status plus `adherence`; C-CDA on FHIR's ConceptMap | the status stays the source's text, listed by no shape, because a person types it in an entry; its one meaning for any reader is L1's lifecycle class. L1 unchanged | borrowed from FHIR's codes and C-CDA on FHIR's map, through L1 |
 | 4. the C-CDA crosswalk at write time | C-CDA on FHIR's maps; `partial-dates-and-absent-reasons.md` row 6, no crosswalk for a reason | kept: the C-CDA adapter writes the FHIR code its scheme maps a SNOMED or v3 status to, and a code its scheme lacks is not written and is a finding, as today | borrowed from C-CDA on FHIR; differs from row 6 there, see Why |
 | 5. one status for every kind | nothing: no standard defines one | refused: a page that needs "is it current?" for a kind derives a class from that kind's list, as L1 does for medications | ours, by having none |
 | 6. `vaccineCode` | FHIR CodeableConcept; `testCode`, `allergenCode`, `icd10Code` here, one IRI per coding | keeps its name, becomes an IRI per coding in a registered code system (CVX now), and becomes repeatable, as `testCode` is; the immunization view and `My immunizations.rq` show the CVX code among them, and the vaccine comparisons change in a new rule list version. M4 rewritten by #132 | borrowed from FHIR, flattened as `testCode` is |
-| 7. `reaction` | FHIR `reaction` backbone, its `manifestation` a CodeableConcept | renamed `reactionManifestationText`, beside `manifestationCode` renamed `reactionManifestationCode` (row 12). Shapes and adapters; #132 | borrowed from FHIR's element name |
+| 7. `reaction` | FHIR `reaction` backbone, its `manifestation` a CodeableConcept | renamed `reactionManifestationText`, beside `manifestationCode` renamed `reactionManifestationCode` (row 12). Shapes and adapters; #132; `ontologies/cascade.ttl` | borrowed from FHIR's element name |
 | 8. a lab result's time | FHIR `effective[x]`; C-CDA "clinically relevant time"; FHIR `performed[x]` is an R4 procedure's | renamed `resultClinicallyRelevantTime`, with FHIR's definition; never the time the lab ran the test. M12 and `quantities.md`'s matcher row read it under the new name; #132 | borrowed from FHIR and C-CDA |
-| 9. a medication's start | FHIR `MedicationStatement.effective[x]`; `MedicationRequest.authoredOn`, written; R5 `effectiveDosePeriod`; C-CDA `effectiveTime` low; PAV `authoredOn` | `startDate`, renamed `medicationUseStartDate` (row 12), never takes `authoredOn`; a new `prescriptionWrittenDate` holds the day the prescription was written; an R5 source's `effectiveDosePeriod.start` is a start; `records.rq`'s date for a medication becomes `COALESCE(medicationUseStartDate, prescriptionWrittenDate)`, so a prescription keeps a place on a timeline; the view shows both. #132 | borrowed from FHIR's split; diverges from PAV's term, see Why |
-| 10. duplicates | `naming.md`; #193 | one declaration each by #193's merge: `snomedCode`, `sourceRecordId`, `status`. Not ruled here; see Why for what the merge must pick | #193's |
-| 11. `Procedure rdfs:subClassOf fhir:Procedure` | #128: a close match; FHIR RDF's `fhir:Procedure` is a resource | removed; the pointer is a closeMatch row in #128's mapping table naming FHIR R4, the release the adapter reads; no `rdfs:seeAlso` on the class, which the copied-term rule forbids. #132 for the axiom, #128 for the row | diverged from the prototype's claim, toward #128's table |
-| 12. names of the classes and properties this note touches | FHIR resource and element names; OMOP CDM table and column names; openEHR archetypes; SPHN classes; PROV and PAV | the owner's rule: a name says what every instance or value is, read alone in a query, and is as long as that takes and no longer; never a word an instance can falsify, as "administered" or "performed" is by a not-done one; no `Record` suffix, which says nothing of the kind. Classes: `AllergyOrIntolerance`, `ProblemOrDiagnosis`, `Vaccination`, `LaboratoryTestResult`, `MedicalProcedure`, `PrescribedOrReportedMedication`, `GeneticVariantFinding`; `VariantInterpretation` and `PatientProfile` pass. Properties: `workflowStatus`, `clinicalStatus`, `verificationStatus`, `vaccineCode`, `reactionManifestationText`, `reactionManifestationCode`, `resultClinicallyRelevantTime`, `vaccinationOccurrenceTime`, `prescribedOrReported`,
-`medicationUseStartDate`, `medicationUseEndDate`, `prescriptionWrittenDate`. The table under Why gives each one's today, alternative and reason. Widens #132's scope. #132 | borrowed per name, see Why; removes the clashes with FHIR's `Procedure` and `Medication` |
+| 9. a medication's start | FHIR `MedicationStatement.effective[x]`; `MedicationRequest.authoredOn`, written; R5 `effectiveDosePeriod`; C-CDA `effectiveTime` low; PAV `authoredOn` | `startDate`, renamed `medicationUseStartDate` (row 12), never takes `authoredOn`; a new `prescriptionWrittenDate` holds the day the prescription was written; an R5 source's `effectiveDosePeriod.start` is a start; `records.rq`'s date for a medication becomes `COALESCE(medicationUseStartDate, prescriptionWrittenDate)`, so a prescription keeps a place on a timeline; the view shows both. #132; `ontologies/cascade.ttl`, `queries/derivations/records.rq` | borrowed from FHIR's split; diverges from PAV's term, see Why |
+| 10. duplicates | `naming.md`; #193 | one declaration each by #193's merge: `snomedCode`, `sourceRecordId`, `status`. Not ruled here; see Why for what the merge must pick (`ontologies/cascade.ttl`) | #193's |
+| 11. `Procedure rdfs:subClassOf fhir:Procedure` | #128: a close match; FHIR RDF's `fhir:Procedure` is a resource | removed; the pointer is a closeMatch row in #128's mapping table naming FHIR R4, the release the adapter reads; no `rdfs:seeAlso` on the class, which the copied-term rule forbids. #132 for the axiom, #128 for the row (`ontologies/cascade.ttl`) | diverged from the prototype's claim, toward #128's table |
+| 12. names of the classes and properties this note touches | FHIR resource and element names; OMOP CDM table and column names; openEHR archetypes; SPHN classes; PROV and PAV | the owner's rule: a name says what every instance or value is, read alone in a query, and is as long as that takes and no longer; never a word an instance can falsify, as "administered" or "performed" is by a not-done one; no `Record` suffix, which says nothing of the kind. Classes: `AllergyOrIntolerance`, `ProblemOrDiagnosis`, `Vaccination`, `LaboratoryTestResult`, `MedicalProcedure`, `PrescribedOrReportedMedication`, `GeneticVariantFinding`; `VariantInterpretation` and `PatientProfile` pass. Properties: `workflowStatus`, `clinicalStatus`, `verificationStatus`, `vaccineCode`, `reactionManifestationText`, `reactionManifestationCode`, `resultClinicallyRelevantTime`, `vaccinationOccurrenceTime`, `prescribedOrReported`, `medicationUseStartDate`, `medicationUseEndDate`, `prescriptionWrittenDate`. The table under Why gives each one's today, alternative and reason. Widens #132's scope. #132; `ontologies/cascade.ttl` | borrowed per name, see Why; removes the clashes with FHIR's `Procedure` and `Medication` |
 | 13. R5's renames | R5 `occurrence[x]`, `medication[x]` a CodeableReference, kept in R6; SSSOM `object_source_version` | no term changes: none is named after an element R5 renames; each row of #128's mapping table names the FHIR release in `object_source_version`. #128 | borrowed from SSSOM |
 | 14. how a renamed term goes | #132: "deprecated, not deleted, until alpha"; #193: never renamed after its namespace lands | removed outright, not deprecated, in #191's re-mint, before #193's promise starts at v1; one `Depends-On` set across the vocabulary, both adapters and cascade-runtime-js | ours; departs from #132's wording, see Why |
 
 ## Why
 
-**Two statuses, because the standards have two.** FHIR R4 and R5 give a condition and an allergy a `clinicalStatus`
+**Two statuses, because the standards have two.** (row "1. clinical state and workflow state") FHIR R4 and R5 give a condition and an allergy a `clinicalStatus`
 and no `status`, and give the acts a `status` and no `clinicalStatus` (verified); openEHR keeps workflow state on the
 ISM and no state on an observation or an evaluation. A condition "resolved" is a fact about the person; an immunization
 "completed" is a fact about an act. One term for both is what makes "active" ambiguous: M14 and `What needs
@@ -159,7 +158,7 @@ review.rq` test `rec:status` for `active`, `recurrence` and `relapse` on any kin
 clinical state (inferred). Reading `clinicalStatus` there makes the query say what it means. The cost is one term and
 the readers listed in row 1, which #193's removal of `rec:status` touches anyway.
 
-**One list per term and kind, which the kind already says.** After row 1, a status's list is fixed by the term and the
+**One list per term and kind, which the kind already says.** (row "2. which list a status value is from") After row 1, a status's list is fixed by the term and the
 record's kind, exactly as FHIR's is fixed by the element and the resource, and as R5 RDF's shared `fhir:status` relies
 on. The shapes already say so for every kind but the medication's and the two genomics kinds (verified, the table under
 Question). A concept IRI per value would say the list a second time, and none exists to use: FHIR RDF defines a concept
@@ -168,24 +167,24 @@ C-CDA adapter's schemes target are not defined concept IRIs. Every query that te
 differs from `partial-dates-and-absent-reasons.md` row 6, which stores a reason's IRI, because a reason may come from two
 systems for one property, and a status from exactly one per term and kind.
 
-**A medication's status means its lifecycle class.** People type medication statuses in entries
+**A medication's status means its lifecycle class.** (row "3. a medication's status") People type medication statuses in entries
 (`runtime/scripted-input/ben/entries/medication-statuses.ttl`), and L1 reads that text, both FHIR lists and synonyms
 into five classes (verified, `runtime/lifecycle.feature:8-29`), so a single list on the shape would reject what L1 is
 there to read. R5's move of "taking" to `adherence` is why the class, not the code, is the meaning: an R5 statement's
 status says nothing about use.
 
-**The crosswalk at write time stays, unlike a reason's.** Row 6 of `partial-dates-and-absent-reasons.md` stores a
+**The crosswalk at write time stays, unlike a reason's.** (row "4. the C-CDA crosswalk at write time") Row 6 of `partial-dates-and-absent-reasons.md` stores a
 reason's own code because HL7's map is a draft covering 9 of 15 codes and the reason may come from either system. A
 status's map is the adapter's, published by C-CDA on FHIR, and its target is one list the kind's shape requires, so the
 pod holds one list per kind. The cost is what it drops: a code the scheme lacks is not written, with a finding, and a
 v3 `held` that L1 would read as paused is lost (verified, the adapter's scheme has no `held`). An EVN-mood medication
 gets a MedicationRequest code though it is a list entry; under row 3 that is harmless, since L1 reads both lists alike.
 
-**No status across kinds.** The steelman for one merged term is a single "is it current?" view. No standard defines one
+**No status across kinds.** (row "5. one status for every kind") The steelman for one merged term is a single "is it current?" view. No standard defines one
 (none of FHIR, openEHR, OMOP or SPHN has it), and L1 shows the honest form: a class per kind, derived from that kind's
 list, with the step that chose it recorded.
 
-**Names that say what they hold.** The clinical code terms hold an IRI per coding (`testCode`, `allergenCode`,
+**Names that say what they hold.** (rows "6. vaccineCode", "7. reaction", "8. a lab result's time") The clinical code terms hold an IRI per coding (`testCode`, `allergenCode`,
 `manifestationCode`, `icd10Code`, the condition's `snomedCode`; verified in the adapters' queries and fixtures), except
 `cptCode`, the procedure's `snomedCode` and `vaccineCode`, which hold the code as a literal; and M4 already turns
 `vaccineCode "141"` into `<http://hl7.org/fhir/sid/cvx/141>` to join a table (`runtime/matcher.feature:89-91`). An IRI
@@ -199,7 +198,7 @@ holds a claim under them). `reactionManifestationText` takes FHIR's path, `react
 `resultValue` is; C-CDA calls the same time "clinically relevant" and gives the sample's draw as its example,
 so "performed" says something neither source says.
 
-**A start is not a prescription's date.** R4's MedicationRequest has no `effective[x]`, so the FHIR adapter's
+**A start is not a prescription's date.** (row "9. a medication's start") R4's MedicationRequest has no `effective[x]`, so the FHIR adapter's
 `startDate` for every prescription is `authoredOn`, the day it was written (verified, `medication.rq:154-157`). A person
 reading "started 2026-03-01" is told when they began taking it, which no source said. The cost: a FHIR prescription
 loses its `startDate` in `My active medications.rq` and `My medication history.rq`, and the kits' expected views change;
@@ -211,17 +210,17 @@ written date is a clinical fact about an act, not about the resource, so it gets
 otherwise. R5's `effectiveDosePeriod.start` is the prescription's real start where a source sends it; R4 sources have
 only the dosage timing's bounds, filled how often is unmeasured (unverified).
 
-**What #193's merge must pick, as fallout.** The two `snomedCode` declarations differ in kind and both adapters write
+**What #193's merge must pick, as fallout.** (row "10. duplicates") The two `snomedCode` declarations differ in kind and both adapters write
 both forms: a condition's an IRI, a procedure's a literal (verified,
 `cascade-bridge-adapter-ccda/fixtures/expected/narrative-id-twice.ttl:58,76`). One term needs one kind; row 6's
 reasoning makes it the IRI. This is said for #193 to apply, not ruled here.
 
-**The subclass claims too much.** Under RDFS a `rdfs:subClassOf fhir:Procedure` makes every Cascade procedure a FHIR
+**The subclass claims too much.** (row "11. Procedure rdfs:subClassOf fhir:Procedure") Under RDFS a `rdfs:subClassOf fhir:Procedure` makes every Cascade procedure a FHIR
 Procedure resource, which FHIR RDF's shapes would then hold to FHIR's cardinalities (inferred); #128 found only a close
 match. The copied-term rule lets the class carry its superclasses and nothing else, so the pointer to FHIR lives in the
 mapping table, which also says which release it names.
 
-**Names that say what the thing is.** The owner's rule of 2026-10-22: a name says what every instance or
+**Names that say what the thing is.** (row "12. names of the classes and properties this note touches") The owner's rule of 2026-10-22: a name says what every instance or
 value is, read alone in a query and out of its class, and is longer where that takes; living vocabularies, when in
 doubt, take the longer name. Two tests follow. A name is true of every instance the adapters write, so a class that
 holds not-done, refused or entered-in-error items is named for the kind of act or finding, which its status
@@ -259,7 +258,7 @@ openEHR's archetype names in its Clinical Knowledge Manager (from knowledge; not
 The rule's pass over every other term of the vocabulary was made in the same re-mint; its result, each term's final
 name, is `epic-alpha/term-map.csv`'s `new` column.
 
-**Removed, not deprecated.** Deprecation would protect the readers that name the old terms: both adapters, their
+**Removed, not deprecated.** (row "14. how a renamed term goes") Deprecation would protect the readers that name the old terms: both adapters, their
 views, cascade-runtime-js and the nightly compatibility check; no pod exists (`epic-alpha/delivery.md`). #191's re-mint
 already changes every name across those repositories in one `Depends-On` set, so the renames ride it and leave nothing
 to deprecate. #193's "never renamed afterwards" is read as starting at v1, which #193 itself times "before anything is

@@ -45,49 +45,49 @@ fixes: [#206](https://github.com/jayostis/cascade-vocabulary/issues/206); the ru
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| content names and the held-state rule | git's content-named objects | a version is named by its content and an arrival the pod already holds writes nothing (`naming.md`, `currency.md`): an unchanged daily pull costs a hash and a lookup per resource, about 73M hashes in ten years, 0.5 to 2 CPU-hours, and writes 0 files (assumed, computed) | borrowed |
-| snapshot chain | git commit parents; delta-state CRDTs | each snapshot is the previous one's hash plus the act's additions, with an order-free hash of the set (`naming.md`): 60 to 115 MB in ten years (computed) | borrowed from git's chain; diverged from git's tree, 1 to 2 GB with this layout (assumed) |
-| sync as union, with the no-hash test | CRDT union; git's index | a sync is a union of files, written only when the writer holds an act, other than a sync, whose snapshot is no ancestor of its last snapshot; files that change in place are outside the set (`naming.md`): a check costs a walk of the snapshots the writer holds, kept in memory, never a read of every file | borrowed from CRDTs; the test is ours |
+| content names and the held-state rule | git's content-named objects | a version is named by its content and an arrival the pod already holds writes nothing (`naming.md`, `currency.md`): an unchanged daily pull costs a hash and a lookup per resource, about 73M hashes in ten years, 0.5 to 2 CPU-hours, and writes 0 files (assumed, computed) (`runtime/arrivals.feature`, A1, A3 and A4) | borrowed |
+| snapshot chain | git commit parents; delta-state CRDTs | each snapshot is the previous one's hash plus the act's additions, with an order-free hash of the set (`naming.md`): 60 to 115 MB in ten years (computed) (`runtime/naming.feature`, N14) | borrowed from git's chain; diverged from git's tree, 1 to 2 GB with this layout (assumed) |
+| sync as union, with the no-hash test | CRDT union; git's index | a sync is a union of files, written only when the writer holds an act, other than a sync, whose snapshot is no ancestor of its last snapshot; files that change in place are outside the set (`naming.md`): a check costs a walk of the snapshots the writer holds, kept in memory, never a read of every file (`runtime/sync.feature`, S1) | borrowed from CRDTs; the test is ours |
 | current per act, incrementally | openEHR `CONTRIBUTION`; FHIR `_since` | an act rebuilds only the records it wrote revisions for and those its judgments reach by derivation, equal to the full rebuild; a migration, a trusted-makers change and a rule list version change rebuild everything (`currency.md`; `runtime/currency.feature`, C8): the work is what the act touched and its groups; on Oxigraph JS 0.5.11 at 10k records a step's rebuild takes 0.8 to 1.8 s against 9 to 11 s whole, the writing of the views and labels about half of it (measured, on a machine shared with other work) | ours |
-| the ladder as a maximum | CRDTs | current is a maximum over one record's revisions, about four, less its Befores and Erroneous, with no walk of history (`currency.md`; computed) | borrowed in spirit from CRDTs |
+| the ladder as a maximum | CRDTs | current is a maximum over one record's revisions, about four, less its Befores and Erroneous, with no walk of history (`currency.md`; computed) (`runtime/currency.feature`, C2) | borrowed in spirit from CRDTs |
 | claims named once, asserted per query hash | nanopub assertions | a claim counts under any rule list version whose row for its rule carries the same `rec:queryHash`, so a new version asserts only the claims of the rules it changed; M7 re-mints only claims whose joining rows changed (`naming.md`, `judgments.md`, `variant-identity.md`): assertions track rule changes, not versions times claims | ours |
-| the star | `prov:hadMember` | a claim's members are the record and the least member of each entry it matched; `same-pairs.rq` derives a star and entries are unchanged (`naming.md`, `judgments.md`): linear in members, where every earlier copy was 58M derived pairs (computed from A5) | ours |
-| runs bound to arrivals, scoped within an organisation | FHIR `_since` | a run binds `?record` to the records the import, entry or sync brought, and within-organisation rules stay within one (`republishing-sources.md`): about 100k comparisons a run against 1 to 5M rows unbound (assumed) | ours |
+| the star | `prov:hadMember` | a claim's members are the record and the least member of each entry it matched; `same-pairs.rq` derives a star and entries are unchanged (`naming.md`, `judgments.md`): linear in members, where every earlier copy was 58M derived pairs (computed from A5) (`runtime/matcher.feature`, M5) | ours |
+| runs bound to arrivals, scoped within an organisation | FHIR `_since` | a run binds `?record` to the records the import, entry or sync brought, and within-organisation rules stay within one (`republishing-sources.md`): about 100k comparisons a run against 1 to 5M rows unbound (assumed) (`runtime/matcher.feature`, M1) | ours |
 | derivations of a source-level Same | FHIR `Linkage`, computed | a server Same's joins are a hash join on type and id over the records under both, kept with the derived state and redone when the judgment is filed or retracted, never per read (`republishing-sources.md`): on Oxigraph JS 0.5.11, 10,000 records under each of two servers judged one give about 10k pairs in 0.7 to 0.9 s, 1.0 to 2.5 s when every document names a custodian, and a pod with no server Same pays 2 to 5 ms (measured, on a machine shared with other work); until the runtime keeps them across steps ([cascade-runtime-js#518](https://github.com/jayostis/cascade-runtime-js/issues/518)), every derive recomputes them | ours |
-| page-read tables, current versions only | openEHR AQL's latest version | tables are keyed row lookups, and R13 counts over current versions only, so an old version's rows may be dropped (`variant-identity.md`, `variant-classifications-table.md`): one version held, where every one was 72 GB of ClinVar (computed) | borrowed from AQL's default |
-| findings bounded | | one rollback finding per import that goes back, an acknowledged one still standing; no second clock finding while one stands on the new act's first-parent ancestry; one un-reached finding per rule list version, 40 in ten years (`currency.md`, `naming.md`; computed) | ours |
-| the review page bounded | | a pick between two pulls of one source where one's snapshot is an ancestor of the other's is ordered by ancestry and not listed; only picks ancestry does not order are (`currency.md`): against about 8,000 lines by year ten (assumed) | ours |
+| page-read tables, current versions only | openEHR AQL's latest version | tables are keyed row lookups, and R13 counts over current versions only, so an old version's rows may be dropped (`variant-identity.md`, `variant-classifications-table.md`): one version held, where every one was 72 GB of ClinVar (computed) (`runtime/matcher.feature`, M17) | borrowed from AQL's default |
+| findings bounded | | one rollback finding per import that goes back, an acknowledged one still standing; no second clock finding while one stands on the new act's first-parent ancestry; one un-reached finding per rule list version, 40 in ten years (`currency.md`, `naming.md`; computed) (`runtime/arrivals.feature`, A18 and A19; `runtime/matcher.feature`, M18) | ours |
+| the review page bounded | | a pick between two pulls of one source where one's snapshot is an ancestor of the other's is ordered by ancestry and not listed; only picks ancestry does not order are (`currency.md`): against about 8,000 lines by year ten (assumed) (`runtime/currency.feature`, C5) | ours |
 
 ## Why
 
-**Storage follows change, not polling.** Content names and the held-state rule mean a daily pull that finds nothing
+**Storage follows change, not polling.** (row "content names and the held-state rule") Content names and the held-state rule mean a daily pull that finds nothing
 new writes nothing, so the pod is about 443k files and 1 GB at year ten (assumed, A2) however often it is pulled; the
 cost of a pull is CPU, about two hours over ten years.
 
-**History is a chain, never a list per act.** Anything that names the whole set on every act is quadratic: 1.1 to 2.1
+**History is a chain, never a list per act.** (row "snapshot chain") Anything that names the whole set on every act is quadratic: 1.1 to 2.1
 billion entries over 5,000 acts. A chain of additions sums to the set itself, 60 to 115 MB, and the order-free hash
 keeps "in sync" one comparison. The pod only grows, so the chain loses nothing a list held.
 
-**Work follows what arrived.** A sync check, a matcher run and a view rebuild each cost what the act brought and the
+**Work follows what arrived.** (rows "sync as union, with the no-hash test", "runs bound to arrivals, scoped within an organisation", "current per act, incrementally", "the ladder as a maximum") A sync check, a matcher run and a view rebuild each cost what the act brought and the
 groups it touches: a sync check needs no hash of the set because in a grow-only set "a file arrived I lacked" says the
 same; a run compares the arrived records with their code groups, since every older pair was compared when its later
 record arrived; a rebuild touches the records whose current state could have changed, because the ladder is per
 record and an entry a closure. The wholesale cases are named and rare: a rule list version's first run (40), a vendor
 switch, an organisation Same, and the three rebuild triggers.
 
-**Judgments grow with facts, not with versions or copies.** A claim per conclusion, asserted again only when its
+**Judgments grow with facts, not with versions or copies.** (rows "claims named once, asserted per query hash", "the star") A claim per conclusion, asserted again only when its
 rule's bytes change, keeps assertions near the claim count rather than 600k to 1.2M; re-minting only claims whose
 rows changed keeps M7 to what a table version changed rather than 8k claims an adoption; and a star keeps a fact seen in 120 summaries at 120 members
 rather than 120³/3 derived pairs.
 
-**Tables are today's.** A page and R13 ask what a table says now, so only current versions are read and kept, and a
+**Tables are today's.** (row "page-read tables, current versions only") A page and R13 ask what a table says now, so only current versions are read and kept, and a
 browser holds one ClinVar version rather than a decade of them.
 
-**What a person reads is bounded by events.** A finding is one per thing that happened, a restore or a skewed writer,
+**What a person reads is bounded by events.** (rows "findings bounded", "the review page bounded") A finding is one per thing that happened, a restore or a skewed writer,
 not one per act it touches; the review page lists only what the pod truly guessed, and what ancestry orders is not
 a guess.
 
-**Where it runs.** A browser can demo views read from materialised files and keyed table lookups. Full matcher runs,
+**Where it runs.** (row "derivations of a source-level Same") A browser can demo views read from materialised files and keyed table lookups. Full matcher runs,
 a rule list version's first run and the derivations of source-level Sames belong on the Node server, since the whole
 store is 0.5 to 1 GB in WASM (assumed).
 

@@ -47,27 +47,27 @@ is one judgment per source-level fact, from which the per-record joins are deriv
 | server | FHIR `CapabilityStatement` | a record named by the base URL the client used; a connect is an act, and each writes a version of what the server reported: self-asserted base, login endpoint, software, and the client id it was reported to, since a pod holds connects from several apps; an address known only from a document or an export (Apple's copy carries the URL, not what the server said) has a server record with no version (A16, A17); never the subject's record, and taken by the matcher only once it has a version, for the machine's server Same (M2, M20) | ours; the self-URL is evidence, never a name input, diverging from FHIR's own statement of where a server lives |
 | organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | a record, `prov:Organization`, named by server plus `Organization/{id}` from a server, and by a business identifier from a document, as `naming.md` maps it (a C-CDA `id` through HL7's CDA-to-FHIR identifier mapping, a FHIR `Organization.identifier`, a registered OID as its URI in both, so one NPI is one record in either format); name, address and identifiers on versions; a document names its custodian and author by it, in `cascade:CustodianRole` and `cascade:AuthorRole`; never the subject's record, so never taken by the matcher (M2) | borrowed from PROV; FHIR's `Organization` resource treated as any record |
 | two servers are one | git remotes | a Same whose members are two servers, by a person on the app's proposal, or by the machine when two connects made with one client id report the same self-URL, the same login endpoint and the same host (the Epic path edit: 57 of 57 kept the self-URL, 19 of 19 hosting moves changed it; verified, probed, [research 2](https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328100407)); with no like-for-like connect, the app proposes and the person decides; derivation: every record of one type and id under both, within one organisation, is one record (M20; `same-records-under-same-servers.rq`) | ours; the derivation is `Linkage` computed rather than asserted |
-| two organisations are one | `Patient.link`; SPHN | a Same whose members are two organisations, usually the machine's from a shared NPI or OID, where one was read from a server or a document named them by different identifiers; derivation: the matcher's within-organisation rules run over both, and the server Same's derivation counts the two as one organisation (`same-records-under-same-servers.rq`) | ours |
+| two organisations are one | `Patient.link`; SPHN | a Same whose members are two organisations, usually the machine's from a shared NPI or OID, where one was read from a server or a document named them by different identifiers; derivation: the matcher's within-organisation rules run over both, and the server Same's derivation counts the two as one organisation (`queries/derivations/same-organizations.rq`, `queries/derivations/same-records-under-same-servers.rq`; `runtime/matcher.feature`, M22) | ours |
 | two documents from one organisation | CDA `setId`, `versionNumber`, `relatedDocument` `RPLC`; FHIR `relatesTo` | no judgment: a document names its custodian and author organisations by an identifier they carry (a C-CDA `id`; a FHIR document's `Organization` by an NPI or an identifier whose system is rooted at an OID or a UUID, never by its id in the bundle), as `naming.md` picks one, so two documents from one organisation point at one organisation record by name; where a document declares that it replaces another, the adapter reads it onto the document's version, once #254 rules what a replaced document is named by, since a pod names a document by its bytes; the overlap between the two is joined by name for C-CDA entries and by the within-organisation rules for a FHIR document's | borrowed: a declared replacement is the standards' fact, stored as stated; "edition" as a judgment of ours is dropped |
-| within-organisation rules | | inside one organisation a shared business identifier joins, and a shared code and date joins; which pairs, and what belongs to an organisation when one server serves many, is open | ours |
+| within-organisation rules | | inside one organisation a shared business identifier joins, and a shared code and date joins; which pairs, and what belongs to an organisation when one server serves many, is open (`runtime/matcher.feature`, M22) | ours |
 | what a run compares | | a matcher run binds `?record` to the records the import, entry or sync that triggered it brought, never the whole pod; a sync is a trigger, named as the run's cause (M1); the matcher queries change to bind it | ours |
-| record from a FHIR document | FHIR documents | named per document; joined across documents like any re-published record; a C-CDA's entries are named across documents by CDA id, per `naming.md` | borrowed from FHIR's within-one-bundle promise |
-| what leaves the pod | | a shared view carries records, by their opaque names, and their current states; never a server or organisation record, an act, or a Same over them, so a name outside the pod is stable and citable and says nothing of where the record came from; the keyed scheme is for a pod that must hide it even from one who knows the address, and the URL scheme for one that need hide nothing | ours |
-| what joins mean | `jdg:currentlySame` | a derived join counts as a counting Same; a record-level Different still wins (`same-records-under-same-servers.rq`); the amended definition is open | ours |
+| record from a FHIR document | FHIR documents | named per document; joined across documents like any re-published record; a C-CDA's entries are named across documents by CDA id, per `naming.md` (`runtime/naming.feature`, N1) | borrowed from FHIR's within-one-bundle promise |
+| what leaves the pod | | a shared view carries records, by their opaque names, and their current states; never a server or organisation record, an act, or a Same over them, so a name outside the pod is stable and citable and says nothing of where the record came from; the keyed scheme is for a pod that must hide it even from one who knows the address, and the URL scheme for one that need hide nothing (`runtime/the-kit.feature`, Check 6) | ours |
+| what joins mean | `jdg:currentlySame` | a derived join counts as a counting Same; a record-level Different still wins (`queries/derivations/same-records-under-same-servers.rq`); the amended definition is open | ours |
 
 ## Why
 
-**Why one mechanism.** The three problems are one problem at three levels, answered by one mechanism: name by the
+**Why one mechanism.** (rows "two servers are one", "two organisations are one", "what joins mean") The three problems are one problem at three levels, answered by one mechanism: name by the
 source, join by one judgment per source-level fact, and let the matcher work per record only inside the scope that
 judgment gives it. Everything here is derived, so timing does not matter and retraction undoes every join at once.
 
-**Why the client's address, and the self-URL only as evidence.** Hashing the server's self-asserted base instead of
+**Why the client's address, and the self-URL only as evidence.** (row "server") Hashing the server's self-asserted base instead of
 the client's address was measured and lost (research 2): it survives a path edit and not a hosting move (verified,
 probed: 19 of 19 old Epic hosts now report the new host as themselves), MEDITECH never sends it, eClinicalWorks
 reports one base for every practice (both verified, probed), and Epic documents that it can differ per client id; as
 a judgment input it keeps the benefit and makes the failure retractable.
 
-**Why the machine's server Same needs two connects under one client id.** An address change is a server Same, and ids
+**Why the machine's server Same needs two connects under one client id.** (rows "two servers are one", "server") An address change is a server Same, and ids
 survive (inferred, not observed), so the derivation joins by id; the machine makes it only from two of the pod's own
 connects under one client id, because Epic documents that the self-URL can differ by the client id asking and a pod
 holds connects from several apps, so a mismatch across apps proves nothing and is left to the person, the safe
@@ -75,37 +75,37 @@ direction; the app may propose it before a record is pulled, and a judgment made
 was never baked into a name. Records pulled under the new address are still written, so a name never depends on a
 judgment in one pod.
 
-**Why Apple's copy usually needs no join.** The common case needs no join at all: Apple's copy of a Mercy record
+**Why Apple's copy usually needs no join.** (row "server") The common case needs no join at all: Apple's copy of a Mercy record
 carries the address Apple used, and where that is the address the app used the names already agree and the copy is
 one more revision; where Apple's address is the older one, the pod never spoke to it, so the join is the person's, or
 the app connects to the old address itself and earns like-for-like evidence while it still answers.
 
-**Why a server Same joins only within one organisation.** The derivation is confined to one organisation because a
+**Why a server Same joins only within one organisation.** (row "two servers are one") The derivation is confined to one organisation because a
 multi-tenant server is one server, so the Same is true, and `Patient/1` under two of its practices are two people.
 
-**Why a vendor switch is joined by the within-organisation rules.** A vendor switch re-issues ids, so a server Same
+**Why a vendor switch is joined by the within-organisation rules.** (row "within-organisation rules") A vendor switch re-issues ids, so a server Same
 joins nothing; but within one organisation a shared identifier is certain and a shared code and date is strong, and
 those rules join most of the history, with what is left on the review page. The floor is a source that carries no
 identifier at all, which falls back to labels and a person's judgment, as today.
 
-**Why a run is bound to what arrived.** A pair neither of whose records arrived was compared when the later of them
+**Why a run is bound to what arrived.** (row "what a run compares") A pair neither of whose records arrived was compared when the later of them
 did, so a run compares the arrived records with their code groups and nothing else; a sync is a trigger because a union leaves
 pairs no matcher saw together. With `?record` unbound, every run enumerates every ordered pair of every code group,
 about 1 to 5M rows, and same-result within one code is about 80M comparisons, where bound it is about 100k
 (assumed ten-year pod, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)).
 
-**Why two documents from one organisation need no judgment.** Two summaries from one hospital need no judgment of
+**Why two documents from one organisation need no judgment.** (rows "two documents from one organisation", "record from a FHIR document") Two summaries from one hospital need no judgment of
 their own: each names its custodian by the identifier it carries, so both point at one organisation record by name, a
 C-CDA's entries are named across documents by their CDA ids under that custodian, and a FHIR document's entries fall
 to the within-organisation rules like a vendor switch's; "edition" as a judgment would have been a story told about
 two documents that are only sometimes editions, and where one is, the document says so and the adapter stores what it
 said.
 
-**Why an organisation is a record.** An organisation is a record because a proposal, a view and a Same now point at
+**Why an organisation is a record.** (row "organisation") An organisation is a record because a proposal, a view and a Same now point at
 one, and the source gives an OID or NPI to name it by; its name and address sit on versions so a merger's rename is
 history.
 
-**Why privacy is drawn at the boundary.** The server and organisation records are in the clear inside the pod because
+**Why privacy is drawn at the boundary.** (row "what leaves the pod") The server and organisation records are in the clear inside the pod because
 the person owns the pod; the opaque name earns its keep at the boundary, where a receiver gets a name it can cite and
 reconcile by, and nothing that says where the record came from, because what leaves the pod is the person's choice,
 record by record, and the source is one more thing they may not want known.

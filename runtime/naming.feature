@@ -11,7 +11,8 @@ Feature: Naming
   an About, imports five allergies, enters ten more by hand, and judges some herself.
 
   Rule: N1. A record from a document keeps the name the Bridge gave it
-    decisions/naming.md, rows "record from a server", "record from a document", "record from C-CDA". The Bridge names
+    decisions/naming.md, rows "record from a server", "record from a document" and "record from C-CDA"; decisions/republishing-sources.md, row "record from a FHIR document"; decisions/variant-interpretation.md, row "its name"; decisions/variant-record.md, row "its name".
+    The Bridge names
     each record by its rule, cascade:RecordFromServerNamingRule, cascade:RecordFromDocumentNamingRule,
     cascade:RecordFromCcdaNamingRule, cascade:RecordFromCcdaWithoutIdNamingRule or cascade:ContainedRecordNamingRule,
     as tests/vectors/naming/ shows.
@@ -39,7 +40,8 @@ Feature: Naming
         | condition "Asthma" | cascade:EnteredRecordNamingRule, urn:uuid:ee6c4455-4446-4a5a-b28b-dedf744f4c01, 1 | urn:uuid:58858af9-286c-8630-9711-c04ea178bf2e |
 
   Rule: N3. A version is named from its content
-    decisions/naming.md, row "version". cascade:VersionNamingRule, the Bridge's VersioningTest in
+    decisions/naming.md, row "version"; decisions/variant-interpretation.md, row "reclassification"; decisions/variant-record.md, row "content".
+    cascade:VersionNamingRule, the Bridge's VersioningTest in
     https://github.com/jayostis/cascade-bridge-spec/blob/main/vocab/bridge.ttl. An entry's versions are named by the
     same rule, with a reference to a draft record replaced by that record's name.
 
@@ -56,7 +58,8 @@ Feature: Naming
         | condition "Asthma" | influenced by | allergy "Peanut" |
 
   Rule: N4. A revision is named the same way, from its own triples
-    decisions/naming.md, row "revision". cascade:RevisionNamingRule. Its placeholder is urn:cascade:this-revision, and
+    decisions/naming.md, rows "revision" and "source's own version".
+    cascade:RevisionNamingRule. Its placeholder is urn:cascade:this-revision, and
     its triples are: rdf:type cascade:Revision, cascade:revisionOf, cascade:version, prov:generatedAtTime (the start of
     the import, the session or the connect), cascade:observedAsOf (C1), prov:wasGeneratedBy (the import, the session or
     the connect),
@@ -85,7 +88,7 @@ Feature: Naming
         | the document of allergy "Mango"     | ni:///sha-256;BMVJZrtTlT-XS2y6CvRWFW3r9Pi9GmNMlC-jzs1doZs |
 
   Rule: N6. A matcher judgment is a claim named by the claim rule, and each assertion of it by the assertion rule
-    decisions/naming.md, rows "machine judgment" and "assertion, retraction by a release".
+    decisions/naming.md, rows "machine judgment" and "assertion, retraction by a release"; decisions/judgments.md, row "machine claim and assertion".
     The claim: cascade:ClaimNamingRule, over, in this order: the maker, cascade:CascadeMatcher; the matcher rule term the rule list's row names (cascade:matcherRule); the
     justification; the members (M5), as a list; and everything it used, as a list, which never holds the rule list's
     version. It carries no time, so every run that reaches it reaches one name. Its assertion:
@@ -232,7 +235,7 @@ Feature: Naming
         |                                                             | "04c54966bb53953f974b6cba0af456156debf4f8bd1a634c942fa3cecd5da19b"     |
 
   Rule: N10. A person's judgment, and a person's retraction, keeps the IRI its input gives it
-    decisions/naming.md, rows "person's judgment" and "retraction".
+    decisions/naming.md, rows "person's judgment" and "retraction"; decisions/judgments.md, row "retraction".
     A judgment a person makes arrives with its name: whoever made it minted that once, as the subject's ID was minted. A
     runtime files it under that IRI and gives it no other; it is neither a new random UUID nor named by a rule. So a
     judgment can name another person's judgment, and an answer can name it, on every run. A person's retraction, a
@@ -295,7 +298,8 @@ Feature: Naming
     check 6 holds every view a replay writes to it, and tests/vectors/naming/ names an entry.
 
   Rule: N14. Every act leaves one snapshot, chained to the writer's previous one
-    decisions/naming.md, row "snapshot". A node in the act's own file, a cascade:Snapshot, prov:wasGeneratedBy the act
+    decisions/naming.md, row "snapshot"; decisions/performance.md, row "snapshot chain".
+    A node in the act's own file, a cascade:Snapshot, prov:wasGeneratedBy the act
     and named by cascade:SnapshotNamingRule. Its cascade:firstParentSnapshot is the writer's last snapshot, its
     previous one or the head it took as git fast-forwards (S4), which the writer keeps outside the pod as git keeps
     HEAD; a writer's first snapshot has none, and a writer that lost its last one is a new writer: a writer handed a
@@ -365,7 +369,7 @@ Feature: Naming
         | "references"  | true      |
 
   Rule: N15. A release's retraction is named from the release, the assertion and the rule it declares wrong
-    decisions/naming.md, rows "act", "assertion, retraction by a release" and "retraction".
+    decisions/naming.md, rows "act", "assertion, retraction by a release" and "retraction"; decisions/judgments.md, row "retraction".
     A rule list version, the release, declares a matcher rule wrong by cascade:matcherRuleDeclaredWrong in its description. Whenever the pod's current rule list
     version is the release or a version after it, a runtime performs the rule list version migration, an act (N7): at
     an open, before its matcher run (O1), with the version it adopts as the current one; at a sync's arrival; and before
