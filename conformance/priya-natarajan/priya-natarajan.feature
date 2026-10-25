@@ -85,19 +85,20 @@ Feature: Priya Natarajan's pod
         | "prescribed"  |
         | "reportedUse" |
 
-  Rule: P3. The same lab result from FHIR and from C-CDA
-    Potassium on 2025-03-27 is KHF-LAB-K-0327, at 2025-03-27T12:00:00Z in mmol/L, and KHC-LAB-K-0327, at
-    20250327120000+0000 in mmol/l: the matcher joins them by the same result, a LOINC code, a time and a value.
+  Rule: P3. One lab result from FHIR and from C-CDA, in units written two ways
+    Potassium on 2025-03-27 is KHF-LAB-K-0327, at 2025-03-27T12:00:00Z, 4.1 in mmol/L, and KHC-LAB-K-0327, at
+    20250327120000+0000, 4.1 in mmol/l: one draw, but each source writes its value as a quantity and its unit its own
+    way. The rule this kit's matcher runs compares a value as written text, which neither carries now, and the
+    vocabulary's own list compares units as written, so no rule joins them: they stay two entries, and the vocabulary's
+    "What needs review" lists them as one test at one instant in units that differ.
 
-    Example: the two potassium results are joined by the same result
+    Example: the two potassium results are not joined
       When the pod is read as it stood after "M2"
       Then these records have:
         | record         | field | value      |
         | KHF-LAB-K-0327 | kind  | lab result |
         | KHC-LAB-K-0327 | kind  | lab result |
-      And the matcher's judgments holding KHF-LAB-K-0327 are:
-        | justification | members                        |
-        | same result   | KHF-LAB-K-0327, KHC-LAB-K-0327 |
+      And the matcher has no judgment holding KHF-LAB-K-0327
 
     Example: each states its unit as its source wrote it
       When the pod is read as it stood after "M2"
@@ -105,7 +106,7 @@ Feature: Priya Natarajan's pod
         """
         SELECT ?unit WHERE {
           ?record pav:hasCurrentVersion ?version .
-          ?version cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultUnit ?unit .
+          ?version cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultQuantity/cascade:ucumUnit ?unit .
         }
         """
       Then it answers:
@@ -133,9 +134,10 @@ Feature: Priya Natarajan's pod
 
     Example: June's potassium is an entry of its own
       Then the lab-results view holds these entries:
-        | members                        |
-        | KHF-LAB-K-0327, KHC-LAB-K-0327 |
-        | KHF-LAB-K-0610                 |
+        | members        |
+        | KHF-LAB-K-0327 |
+        | KHC-LAB-K-0327 |
+        | KHF-LAB-K-0610 |
       And the matcher has no judgment holding KHF-LAB-K-0610
 
   Rule: P6. A record only a C-CDA has
@@ -373,7 +375,7 @@ Feature: Priya Natarajan's pod
     An app opens her pod with tables of its own (app-panels): the published LOINC panel members rows of the Electrolytes
     1998 panel (24326-1), and the vocabulary's rule list version 9. LOINC lists sodium (2951-2), potassium (2823-3) and
     chloride (2075-0) in it, in that order and required (R), bicarbonate (1963-8) and carbon dioxide (2028-9) as
-    alternatives (R-a), and the anion gap (33037-3) as optional. Her two potassium entries are in it, and she has no
+    alternatives (R-a), and the anion gap (33037-3) as optional. Her three potassium entries are in it, and she has no
     sodium and no chloride: the panel is hers to pick, and nothing says her potassium was drawn in it.
 
     Opening writes seven files, by O1, as it does for app-names-classes: the same rule list judges the same pairs.
@@ -386,6 +388,7 @@ Feature: Priya Natarajan's pod
         | panel                          | member                        | sequence | required | via                            | origin                                                                  | entry                       |
         | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2951-2> | 1        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 |                             |
         | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2823-3> | 2        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 | the entry of KHF-LAB-K-0327 |
+        | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2823-3> | 2        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 | the entry of KHC-LAB-K-0327 |
         | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2823-3> | 2        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 | the entry of KHF-LAB-K-0610 |
         | <http://loinc.org/rdf/24326-1> | <http://loinc.org/rdf/2075-0> | 3        | "R"      | <http://loinc.org/rdf/24326-1> | Regenstrief LOINC panel members subset for Priya Natarajan version 2.83 |                             |
 
