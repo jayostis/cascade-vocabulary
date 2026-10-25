@@ -1,5 +1,6 @@
 # Each entry takes the allergen and code of its lead, the status of the member chosen for status, and the highest
-# criticality any member states.
+# criticality any member states. Each member's current values are a node of the view of their own, named after the entry
+# and the member, which says the member they came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -12,13 +13,26 @@ CONSTRUCT {
     cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:allergen ?memberAllergen ;
+    cascade:allergenCode ?memberAllergenCode ;
+    cascade:clinicalStatus ?memberClinicalStatus ;
+    cascade:allergyCriticality ?memberAllergyCriticality .
 }
 WHERE {
-  ?record a cascade:AllergyOrIntolerance ; cascade:inEntry ?entry .
-  ?entry cascade:leadMember ?lead .
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergen ?allergen }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenCode ?code }
-  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
-             ?statusFrom pav:hasCurrentVersion/cascade:clinicalStatus ?status }
-  OPTIONAL { ?entry cascade:topCriticality ?criticality }
+  { ?record a cascade:AllergyOrIntolerance ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergen ?allergen }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenCode ?code }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:clinicalStatus ?status }
+    OPTIONAL { ?entry cascade:topCriticality ?criticality } }
+  UNION
+  { ?member a cascade:AllergyOrIntolerance ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:allergen ?memberAllergen }
+    OPTIONAL { ?memberVersion cascade:allergenCode ?memberAllergenCode }
+    OPTIONAL { ?memberVersion cascade:clinicalStatus ?memberClinicalStatus }
+    OPTIONAL { ?memberVersion cascade:allergyCriticality ?memberAllergyCriticality } }
 }

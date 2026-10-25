@@ -1,5 +1,6 @@
 # Each entry takes the vaccine and code of its lead, the status of the member chosen for status, and the date of the
-# member chosen for the date.
+# member chosen for the date. Each member's current values are a node of the view of their own, named after the entry
+# and the member, which says the member they came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -12,13 +13,26 @@ CONSTRUCT {
     cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:vaccineName ?memberVaccineName ;
+    cascade:vaccineCode ?memberVaccineCode ;
+    cascade:workflowStatus ?memberWorkflowStatus ;
+    cascade:vaccinationOccurrenceTime ?memberVaccinationOccurrenceTime .
 }
 WHERE {
-  ?record a cascade:Vaccination ; cascade:inEntry ?entry .
-  ?entry cascade:leadMember ?lead .
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:vaccineName ?name }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:vaccineCode ?code }
-  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
-             ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
-  OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:vaccinationOccurrenceTime ?date }
+  { ?record a cascade:Vaccination ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:vaccineName ?name }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:vaccineCode ?code }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
+    OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:vaccinationOccurrenceTime ?date } }
+  UNION
+  { ?member a cascade:Vaccination ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:vaccineName ?memberVaccineName }
+    OPTIONAL { ?memberVersion cascade:vaccineCode ?memberVaccineCode }
+    OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
+    OPTIONAL { ?memberVersion cascade:vaccinationOccurrenceTime ?memberVaccinationOccurrenceTime } }
 }

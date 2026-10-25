@@ -1,5 +1,6 @@
 # Each entry takes the name and codes of its lead, the status and abatement date of the member chosen for status, and
-# the onset of the member chosen for the date.
+# the onset of the member chosen for the date. Each member's current values are a node of the view of their own, named
+# after the entry and the member, which says the member they came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -14,15 +15,32 @@ CONSTRUCT {
     cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:conditionName ?memberConditionName ;
+    cascade:snomedCode ?memberSnomedCode ;
+    cascade:icd10Code ?memberIcd10Code ;
+    cascade:clinicalStatus ?memberClinicalStatus ;
+    cascade:abatementDate ?memberAbatementDate ;
+    cascade:onsetDate ?memberOnsetDate .
 }
 WHERE {
-  ?record a cascade:ProblemOrDiagnosis ; cascade:inEntry ?entry .
-  ?entry cascade:leadMember ?lead .
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:conditionName ?name }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:snomedCode ?snomed }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:icd10Code ?icd10 }
-  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
-             ?statusFrom pav:hasCurrentVersion/cascade:clinicalStatus ?status }
-  OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:abatementDate ?abatement }
-  OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:onsetDate ?onset }
+  { ?record a cascade:ProblemOrDiagnosis ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:conditionName ?name }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:snomedCode ?snomed }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:icd10Code ?icd10 }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:clinicalStatus ?status }
+    OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:abatementDate ?abatement }
+    OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:onsetDate ?onset } }
+  UNION
+  { ?member a cascade:ProblemOrDiagnosis ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:conditionName ?memberConditionName }
+    OPTIONAL { ?memberVersion cascade:snomedCode ?memberSnomedCode }
+    OPTIONAL { ?memberVersion cascade:icd10Code ?memberIcd10Code }
+    OPTIONAL { ?memberVersion cascade:clinicalStatus ?memberClinicalStatus }
+    OPTIONAL { ?memberVersion cascade:abatementDate ?memberAbatementDate }
+    OPTIONAL { ?memberVersion cascade:onsetDate ?memberOnsetDate } }
 }

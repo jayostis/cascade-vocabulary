@@ -282,7 +282,8 @@ Feature: Naming
     writes each entry in the view file as <#hex>, the relative reference from the view's own path, never resolved
     against the pod's address, and no placeholder remains. An entry is named in the view that gives it members; another
     view in the same folder cites it by the relative reference from its own path, as the variant interpretations view
-    cites a variant's entry as <variants.ttl#hex>.
+    cites a variant's entry as <variants.ttl#hex>. A member's current values in the view (cascade:memberCurrentValues)
+    are a node named as the entry is, followed by -, and the lower-case hexadecimal SHA-256 of the member's IRI: <#hex-hex>.
 
     No example shows this rule, because a query reads an entry's IRI resolved against the view's address, and the
     derived state, which examples query, holds the placeholder. The kit's
