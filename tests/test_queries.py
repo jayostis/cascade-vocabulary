@@ -5,7 +5,7 @@ from functools import lru_cache
 from pathlib import Path
 
 import pytest
-from pyparsing import ParseResults
+from pyparsing import ParseException, ParseResults
 from rdflib import RDF, Graph, URIRef, Variable
 from rdflib.paths import Path as PropertyPath
 from rdflib.plugins.sparql.parser import parseQuery
@@ -13,7 +13,7 @@ from rdflib.plugins.sparql.parserutils import CompValue
 
 import contract
 from contract import ROOT
-from engines import prepared
+from engines import TOKEN, marked_groups, opened, prepared
 
 CASCADE = "https://ns.cascadeprotocol.org/cascade#"
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
@@ -113,6 +113,72 @@ def test_every_comparison_binds_record_in_a_triple_of_its_outermost_group_whose_
 ])
 def test_the_outermost_binding_check_refuses_a_record_bound_only_inside_a_nested_pattern(form):
     assert not binds_record_outermost(parseQuery(form))
+
+
+BOUND_RECORD = URIRef("urn:cascade:bound-record")
+
+
+def keeps_every_row_of_a_record(subselect):
+    """Whether a sub-select gives each record's rows whatever other records it is given: it cuts no rows off with
+    LIMIT, OFFSET or HAVING, and groups, if it groups or aggregates at all, by ?record."""
+    if "limitoffset" in subselect or "having" in subselect:
+        return False
+    grouped = "groupby" in subselect
+    aggregated = any(node.name.startswith("Aggregate_") for node in nodes(subselect.get("projection")))
+    return not (grouped or aggregated) or Variable("record") in set(leaves(subselect.get("groupby")))
+
+
+def marked_groups_bind_record(text):
+    """Whether every `# bound: ?record` line marks a group, and each group marked is inside a sub-select that keeps
+    every row of a record and holds ?record in a triple pattern of its own, outside any nested pattern, so the VALUES
+    block opening it binds ?record there as the one opening the outermost group does (M4)."""
+    marks = len(re.findall(r"^\s*#\s*bound:", text, re.MULTILINE))
+    if marks != len(marked_groups(text)):
+        return False
+    try:
+        tree = parseQuery(opened(text, marked_groups(text), [BOUND_RECORD]))
+    except ParseException:
+        return False
+    groups = []
+
+    def walk(node, subselect):
+        if isinstance(node, CompValue):
+            parts = (node.get("part") or []) if node.name == "GroupGraphPatternSub" else []
+            if any(part.name == "InlineData" and BOUND_RECORD in set(leaves(part)) for part in parts):
+                blocks = [part for part in parts if part.name == "TriplesBlock"]
+                groups.append(subselect is not None and keeps_every_row_of_a_record(subselect)
+                              and Variable("record") in set(leaves(blocks)))
+            for value in node.values():
+                walk(value, node if node.name == "SubSelect" else subselect)
+        elif isinstance(node, (list, tuple, ParseResults)):
+            for value in node:
+                walk(value, subselect)
+
+    walk(tree, None)
+    return len(groups) == marks and all(groups)
+
+
+@pytest.mark.parametrize("relative", sorted(contract.named("matcher").values()))
+def test_each_group_a_comparison_marks_binds_record_in_a_triple_of_its_own_inside_a_sub_select(relative):
+    assert marked_groups_bind_record(contract.query(relative)), relative
+
+
+@pytest.mark.parametrize("form", [
+    "SELECT ?record WHERE {\n  # bound: ?record\n  ?record ?p ?o { ?o ?q ?r }\n}",
+    "SELECT ?record\n# bound: ?record\nWHERE { ?record ?p ?o }",
+    "SELECT ?record WHERE { { SELECT ?record ?c\n  # bound: ?record\n  WHERE { OPTIONAL { ?record ?p ?c } } } ?record ?p ?c }",
+    "SELECT ?record WHERE {\n  # bound: ?record\n  { SELECT ?record WHERE { ?record ?p ?c } } ?record ?p ?c }",
+    "SELECT ?record WHERE { { SELECT (SAMPLE(?r) AS ?record) ?c\n  # bound: ?record\n  WHERE { ?record ?p ?c ; ?q ?r }\n"
+    "  GROUP BY ?c } ?record ?p ?c }",
+])
+def test_the_mark_check_refuses_a_mark_on_no_group_on_one_not_in_a_sub_select_keeping_every_row_or_not_binding_record(form):
+    assert not marked_groups_bind_record(form)
+
+
+def test_a_less_than_comparison_is_no_iri_though_an_iris_own_characters_stand_before_a_greater_than_sign():
+    iris = [token.group() for token in TOKEN.finditer("FILTER (?x <3&&?y>1) ?s <urn:a#b> <> ?o FILTER (?a<=?b&&?b>=?c)")
+            if token.group().startswith("<")]
+    assert iris == ["<urn:a#b>", "<>"]
 
 
 ENTRY_PLACEHOLDER = 'CONCAT("urn:cascade:entry:", SHA256(MIN(STR('

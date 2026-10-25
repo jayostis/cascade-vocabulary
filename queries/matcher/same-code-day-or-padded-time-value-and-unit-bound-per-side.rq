@@ -1,0 +1,130 @@
+# Two records of one kind match when their current versions give one test code, one day, and one value of one kind in
+# one unit, and at least one of the two times is no instant: a day with no time, or a time its source wrote to the hour
+# or the minute and the version holds padded (cascade:PaddedDateTime), which is its clinically relevant time, the one
+# time a lab result holds. It is a likely join, since two draws that day cannot be told apart. A day is the first ten
+# characters of the time as written, so a time zone never moves it; a year or a month is no day and joins nothing. Two
+# instants are same-code-instant-to-the-second-value-and-unit.rq's, and two instants on one day never join. Values and
+# units are compared as that query compares them: a quantity's number by value, with the same comparator or none on
+# both; a ratio's two parts and a range's two bounds so; a coded value by a shared code; text never; units with their
+# UCUM annotations dropped, a unit of annotations alone being 1, the litre's l and L one, and other case kept. Each
+# ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  { SELECT ?record ?version ?code ?day ?dayAlone ?valueKind ?firstNumber ?firstComparator ?firstUnit ?secondNumber ?secondComparator ?secondUnit
+    # bound: ?record
+    WHERE {
+      ?record pav:hasCurrentVersion ?version .
+      ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time ;
+        cascade:resultValueKind ?valueKind .
+      FILTER (DATATYPE(?time) IN (xsd:date, xsd:dateTime) && ?valueKind != cascade:TextResultValue)
+      OPTIONAL { ?version cascade:paddedDateTime ?padded }
+      BIND (SUBSTR(STR(?time), 1, 10) AS ?day)
+      BIND (DATATYPE(?time) = xsd:date || BOUND(?padded) AS ?dayAlone)
+      OPTIONAL { ?version cascade:resultQuantity ?firstQuantity . ?firstQuantity cascade:decimalValue ?firstQuantityNumber .
+                 OPTIONAL { ?firstQuantity cascade:quantityComparator ?firstQuantityComparator }
+                 OPTIONAL { ?firstQuantity cascade:ucumUnit ?firstQuantityUcum }
+                 OPTIONAL { ?firstQuantity cascade:unitText ?firstQuantityText } }
+      OPTIONAL { ?version cascade:resultRatioNumerator ?firstNumerator . ?firstNumerator cascade:decimalValue ?firstNumeratorNumber .
+                 OPTIONAL { ?firstNumerator cascade:quantityComparator ?firstNumeratorComparator }
+                 OPTIONAL { ?firstNumerator cascade:ucumUnit ?firstNumeratorUcum }
+                 OPTIONAL { ?firstNumerator cascade:unitText ?firstNumeratorText } }
+      OPTIONAL { ?version cascade:resultRangeLow ?firstLow . ?firstLow cascade:decimalValue ?firstLowNumber .
+                 OPTIONAL { ?firstLow cascade:quantityComparator ?firstLowComparator }
+                 OPTIONAL { ?firstLow cascade:ucumUnit ?firstLowUcum }
+                 OPTIONAL { ?firstLow cascade:unitText ?firstLowText } }
+      OPTIONAL { ?version cascade:resultRatioDenominator ?secondDenominator . ?secondDenominator cascade:decimalValue ?secondDenominatorNumber .
+                 OPTIONAL { ?secondDenominator cascade:quantityComparator ?secondDenominatorComparator }
+                 OPTIONAL { ?secondDenominator cascade:ucumUnit ?secondDenominatorUcum }
+                 OPTIONAL { ?secondDenominator cascade:unitText ?secondDenominatorText } }
+      OPTIONAL { ?version cascade:resultRangeHigh ?secondHigh . ?secondHigh cascade:decimalValue ?secondHighNumber .
+                 OPTIONAL { ?secondHigh cascade:quantityComparator ?secondHighComparator }
+                 OPTIONAL { ?secondHigh cascade:ucumUnit ?secondHighUcum }
+                 OPTIONAL { ?secondHigh cascade:unitText ?secondHighText } }
+      BIND (COALESCE(?firstQuantityNumber, ?firstNumeratorNumber, ?firstLowNumber) AS ?firstNumber)
+      BIND (COALESCE(?firstQuantityComparator, ?firstNumeratorComparator, ?firstLowComparator) AS ?firstComparator)
+      BIND (COALESCE(?firstQuantityUcum, ?firstNumeratorUcum, ?firstLowUcum) AS ?firstUcum)
+      BIND (COALESCE(?firstQuantityText, ?firstNumeratorText, ?firstLowText) AS ?firstText)
+      BIND (COALESCE(?firstUcum, ?firstText, "") AS ?firstUnitWritten)
+      BIND (REPLACE(?firstUnitWritten, "\\{[^{}]*\\}", "") AS ?firstUnitBare)
+      BIND (REPLACE(REPLACE(REPLACE(?firstUnitBare, "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "\u0001", "L")
+            AS ?firstUnitFolded)
+      BIND (IF(?firstUnitFolded = "" && ?firstUnitWritten != "", "1", ?firstUnitFolded) AS ?firstUnit)
+      BIND (COALESCE(?secondDenominatorNumber, ?secondHighNumber) AS ?secondNumber)
+      BIND (COALESCE(?secondDenominatorComparator, ?secondHighComparator) AS ?secondComparator)
+      BIND (COALESCE(?secondDenominatorUcum, ?secondHighUcum) AS ?secondUcum)
+      BIND (COALESCE(?secondDenominatorText, ?secondHighText) AS ?secondText)
+      BIND (COALESCE(?secondUcum, ?secondText, "") AS ?secondUnitWritten)
+      BIND (REPLACE(?secondUnitWritten, "\\{[^{}]*\\}", "") AS ?secondUnitBare)
+      BIND (REPLACE(REPLACE(REPLACE(?secondUnitBare, "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "\u0001", "L")
+            AS ?secondUnitFolded)
+      BIND (IF(?secondUnitFolded = "" && ?secondUnitWritten != "", "1", ?secondUnitFolded) AS ?secondUnit)
+    } }
+  { SELECT ?other ?otherVersion ?code ?day ?otherDay ?otherDayAlone ?valueKind ?otherFirstNumber ?otherFirstComparator ?otherFirstUnit ?otherSecondNumber ?otherSecondComparator ?otherSecondUnit
+    WHERE {
+      { SELECT DISTINCT ?code
+        # bound: ?record
+        WHERE { ?record pav:hasCurrentVersion ?version . ?version cascade:testCode ?code } }
+      ?other pav:hasCurrentVersion ?otherVersion .
+      ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime ;
+        cascade:resultValueKind ?valueKind .
+      FILTER (DATATYPE(?otherTime) IN (xsd:date, xsd:dateTime) && ?valueKind != cascade:TextResultValue)
+      BIND (SUBSTR(STR(?otherTime), 1, 10) AS ?otherDay)
+      BIND (?otherDay AS ?day)
+      OPTIONAL { ?otherVersion cascade:paddedDateTime ?otherPadded }
+      BIND (DATATYPE(?otherTime) = xsd:date || BOUND(?otherPadded) AS ?otherDayAlone)
+      OPTIONAL { ?otherVersion cascade:resultQuantity ?otherFirstQuantity . ?otherFirstQuantity cascade:decimalValue ?otherFirstQuantityNumber .
+                 OPTIONAL { ?otherFirstQuantity cascade:quantityComparator ?otherFirstQuantityComparator }
+                 OPTIONAL { ?otherFirstQuantity cascade:ucumUnit ?otherFirstQuantityUcum }
+                 OPTIONAL { ?otherFirstQuantity cascade:unitText ?otherFirstQuantityText } }
+      OPTIONAL { ?otherVersion cascade:resultRatioNumerator ?otherFirstNumerator . ?otherFirstNumerator cascade:decimalValue ?otherFirstNumeratorNumber .
+                 OPTIONAL { ?otherFirstNumerator cascade:quantityComparator ?otherFirstNumeratorComparator }
+                 OPTIONAL { ?otherFirstNumerator cascade:ucumUnit ?otherFirstNumeratorUcum }
+                 OPTIONAL { ?otherFirstNumerator cascade:unitText ?otherFirstNumeratorText } }
+      OPTIONAL { ?otherVersion cascade:resultRangeLow ?otherFirstLow . ?otherFirstLow cascade:decimalValue ?otherFirstLowNumber .
+                 OPTIONAL { ?otherFirstLow cascade:quantityComparator ?otherFirstLowComparator }
+                 OPTIONAL { ?otherFirstLow cascade:ucumUnit ?otherFirstLowUcum }
+                 OPTIONAL { ?otherFirstLow cascade:unitText ?otherFirstLowText } }
+      OPTIONAL { ?otherVersion cascade:resultRatioDenominator ?otherSecondDenominator . ?otherSecondDenominator cascade:decimalValue ?otherSecondDenominatorNumber .
+                 OPTIONAL { ?otherSecondDenominator cascade:quantityComparator ?otherSecondDenominatorComparator }
+                 OPTIONAL { ?otherSecondDenominator cascade:ucumUnit ?otherSecondDenominatorUcum }
+                 OPTIONAL { ?otherSecondDenominator cascade:unitText ?otherSecondDenominatorText } }
+      OPTIONAL { ?otherVersion cascade:resultRangeHigh ?otherSecondHigh . ?otherSecondHigh cascade:decimalValue ?otherSecondHighNumber .
+                 OPTIONAL { ?otherSecondHigh cascade:quantityComparator ?otherSecondHighComparator }
+                 OPTIONAL { ?otherSecondHigh cascade:ucumUnit ?otherSecondHighUcum }
+                 OPTIONAL { ?otherSecondHigh cascade:unitText ?otherSecondHighText } }
+      BIND (COALESCE(?otherFirstQuantityNumber, ?otherFirstNumeratorNumber, ?otherFirstLowNumber) AS ?otherFirstNumber)
+      BIND (COALESCE(?otherFirstQuantityComparator, ?otherFirstNumeratorComparator, ?otherFirstLowComparator) AS ?otherFirstComparator)
+      BIND (COALESCE(?otherFirstQuantityUcum, ?otherFirstNumeratorUcum, ?otherFirstLowUcum) AS ?otherFirstUcum)
+      BIND (COALESCE(?otherFirstQuantityText, ?otherFirstNumeratorText, ?otherFirstLowText) AS ?otherFirstText)
+      BIND (COALESCE(?otherFirstUcum, ?otherFirstText, "") AS ?otherFirstUnitWritten)
+      BIND (REPLACE(?otherFirstUnitWritten, "\\{[^{}]*\\}", "") AS ?otherFirstUnitBare)
+      BIND (REPLACE(REPLACE(REPLACE(?otherFirstUnitBare, "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "\u0001", "L")
+            AS ?otherFirstUnitFolded)
+      BIND (IF(?otherFirstUnitFolded = "" && ?otherFirstUnitWritten != "", "1", ?otherFirstUnitFolded) AS ?otherFirstUnit)
+      BIND (COALESCE(?otherSecondDenominatorNumber, ?otherSecondHighNumber) AS ?otherSecondNumber)
+      BIND (COALESCE(?otherSecondDenominatorComparator, ?otherSecondHighComparator) AS ?otherSecondComparator)
+      BIND (COALESCE(?otherSecondDenominatorUcum, ?otherSecondHighUcum) AS ?otherSecondUcum)
+      BIND (COALESCE(?otherSecondDenominatorText, ?otherSecondHighText) AS ?otherSecondText)
+      BIND (COALESCE(?otherSecondUcum, ?otherSecondText, "") AS ?otherSecondUnitWritten)
+      BIND (REPLACE(?otherSecondUnitWritten, "\\{[^{}]*\\}", "") AS ?otherSecondUnitBare)
+      BIND (REPLACE(REPLACE(REPLACE(?otherSecondUnitBare, "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "(^|[./(])(Y|Z|E|P|T|G|M|k|h|da|d|c|m|u|n|p|f|a|z|y)?l($|[./)0-9+-])", "$1$2\u0001$3"), "\u0001", "L")
+            AS ?otherSecondUnitFolded)
+      BIND (IF(?otherSecondUnitFolded = "" && ?otherSecondUnitWritten != "", "1", ?otherSecondUnitFolded) AS ?otherSecondUnit)
+    } }
+  ?record pav:hasCurrentVersion ?version .
+  FILTER (?record != ?other && ?day = ?otherDay && (?dayAlone || ?otherDayAlone))
+  FILTER (IF(?valueKind = cascade:CodedResultValue,
+                EXISTS { ?version cascade:resultCode ?sharedCode . ?otherVersion cascade:resultCode ?sharedCode },
+                (BOUND(?firstNumber) || BOUND(?secondNumber))
+                && BOUND(?firstNumber) = BOUND(?otherFirstNumber) && BOUND(?secondNumber) = BOUND(?otherSecondNumber)
+                && (!BOUND(?firstNumber)
+                    || (?firstNumber = ?otherFirstNumber && ?firstUnit = ?otherFirstUnit
+                        && COALESCE(?firstComparator, "") = COALESCE(?otherFirstComparator, "")))
+                && (!BOUND(?secondNumber)
+                    || (?secondNumber = ?otherSecondNumber && ?secondUnit = ?otherSecondUnit
+                        && COALESCE(?secondComparator, "") = COALESCE(?otherSecondComparator, "")))))
+}
