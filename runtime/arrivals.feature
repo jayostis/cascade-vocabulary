@@ -655,18 +655,21 @@ Feature: Arrivals
         """
       Then it answers nothing
 
-  Rule: A19. An act whose revisions show the writer's clock behind files one finding, unless an act in its first-parent ancestry filed one
+  Rule: A19. An act whose revisions show the writer's clock behind files one finding, unless an act in its first-parent ancestry filed one no one answered
     decisions/currency.md, row "wrong writer clock". A revision's observation time is the writer's own clock when it is
     an entry session's start, an act's start, or the pav:retrievedOn of a live pull that names no transmitter (A18).
     Two checks run on each revision an act writes: one whose observation time is the writer's clock and precedes the
     cascade:observedAsOf of a head it names (prov:wasRevisionOf), and one from a live pull that names no transmitter
-    whose source change time (pav:lastUpdateOn) is after the pull's pav:retrievedOn, each by at least one whole day.
+    whose source change time (pav:lastUpdateOn) is after the pull's pav:retrievedOn, each by at least one whole day; the
+    second cannot tell a writer's slow clock from a source's fast one.
     After its revisions and before its act (W1), the act files a cascade:FindingForReview whose oa:hasBody is
     cascade:ClockBehind, whose oa:motivatedBy is oa:classifying, whose oa:hasTarget is each revision either check
     found, and whose cascade:writerClockBehindByAtLeastDays is the greatest whole number of days one of them shows; it
-    files none when an act in the first-parent ancestry of its snapshot (cascade:firstParentSnapshot, N14) filed one,
-    so a writer files one while one stands, and another writer's finding, received by a sync, silences nothing. Its name
-    follows cascade:FindingNamingRule.
+    files none when an act in the first-parent ancestry of its snapshot (cascade:firstParentSnapshot, N14) filed one
+    that no person's judgment answers, neither a cascade:Acknowledged whose member is the finding nor a
+    cascade:ClockDiscounted whose member is the act that filed it, each standing as C7 reads a person's judgment. So a
+    writer has one unanswered at a time, and a clock that stays wrong is found once more after each answer; another
+    writer's finding, received by a sync, silences nothing. Its name follows cascade:FindingNamingRule.
 
     Example: a pull on a clock behind the head it revises files a finding of the days between
       Given a new pod for Finn on 2026-05-31 at 09:00
@@ -715,3 +718,23 @@ Feature: Arrivals
         }
         """
       Then it answers nothing
+
+    Example: a writer whose clock finding the person answered files one more
+      Finn discounted the clock of the act that filed the first finding, which answers it.
+
+      Given a new pod for Finn on 2026-05-31 at 09:00
+      And the pull "hospital-unstamped-pull" is imported on 2026-06-10 at 09:00
+      And the pull "hospital-pull-on-a-clock-behind" is imported on 2026-06-11 at 09:00
+      And Finn files the judgment "discount-the-clock-behind" on 2026-06-11 at 12:00
+      When the pull "hospital-pull-stamped-after-it" is imported on 2026-06-12 at 09:00
+      When the query is:
+        """
+        SELECT ?days ?record WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-pull-stamped-after-it> prov:generated ?file }
+          GRAPH ?file { ?finding oa:hasBody cascade:ClockBehind ; cascade:writerClockBehindByAtLeastDays ?days ; oa:hasTarget ?revision }
+          ?revision cascade:revisionOf ?record .
+        }
+        """
+      Then it answers:
+        | days | record           |
+        | 5    | allergy "Sesame" |

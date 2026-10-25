@@ -199,7 +199,9 @@ The person makes the entry `entries/<name>.ttl`.
 ### `{person} files the judgment {name} on {time}`
 
 The person makes the judgment `judgments/<name>.ttl`. A revision's name depends on its run, so the file names one as
-`<urn:cascade:revision-setting:{version}>`, `{version}` a version's IRI: the one revision that sets that version.
+`<urn:cascade:revision-setting:{version}>`, `{version}` a version's IRI: the one revision that sets that version. An
+act's name is random, so the file names one as `<urn:cascade:act-of-step:{step}>`, `{step}` an earlier step's name: the
+act that step performed.
 
 ### `version {name} of {name} arrives on {time}`
 

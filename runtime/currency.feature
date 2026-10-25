@@ -115,7 +115,7 @@ Feature: Currency
     revision it names until the person acknowledges it or discounts the act, and a finding that a source reported
     older states as one line, "this source reports N records at states older than it reported on" the last date of the
     revisions it contradicts, expanding to each record, until the person acknowledges it or files a Before between a
-    record's older revision and one the finding names it contradicts (A18).
+    record's older revision and one the finding names it contradicts (A18); N counts the records no such Before answers.
 
-    No example here shows this rule: an act's name is random, and no step names one for a judgment file. The fixtures
-    tests/fixtures/an-act-whose-clock-is-discounted, a-clock-found-behind and a-source-that-went-back show it.
+    No example here shows this rule; A19 shows a discount answering a finding. The fixtures
+    tests/fixtures/an-act-whose-clock-is-discounted, a-clock-found-behind and a-source-that-went-back show the rest.
