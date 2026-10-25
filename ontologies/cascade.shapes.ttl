@@ -401,6 +401,13 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
     ] ;
 
     sh:property [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A lab result's version is attributed to at most one organization, the one its performer names, by the IRI of its cascade:Organization record"@en
+    ] ;
+
+    sh:property [
         sh:path cascade:sourceRecordId ;
         sh:datatype xsd:string ;
         sh:maxCount 1

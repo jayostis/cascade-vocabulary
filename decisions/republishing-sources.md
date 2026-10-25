@@ -45,7 +45,7 @@ is one judgment per source-level fact, from which the per-record joins are deriv
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | server | FHIR `CapabilityStatement` | a record named by the base URL the client used; a connect is an act, and each writes a version of what the server reported: self-asserted base, login endpoint, software, and the client id it was reported to, since a pod holds connects from several apps; an address known only from a document or an export (Apple's copy carries the URL, not what the server said) has a server record with no version (A16, A17); never the subject's record, and taken by the matcher only once it has a version, for the machine's server Same (M2, M20) | ours; the self-URL is evidence, never a name input, diverging from FHIR's own statement of where a server lives |
-| organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | a record, `prov:Organization`, named by server plus `Organization/{id}` from a server, and by a business identifier from a document, as `naming.md` maps it (a C-CDA `id` through HL7's CDA-to-FHIR identifier mapping, a FHIR `Organization.identifier`, a registered OID as its URI in both, so one NPI is one record in either format); name, address and identifiers on versions; a document names its custodian and author by it, in `cascade:CustodianRole` and `cascade:AuthorRole`; never the subject's record, so never taken by the matcher (M2) | borrowed from PROV; FHIR's `Organization` resource treated as any record |
+| organisation | `prov:Organization`; FHIR `Organization`; CDA custodian | a record, `prov:Organization`, named by server plus `Organization/{id}` from a server, and by a business identifier from a document, as `naming.md` maps it (a C-CDA `id` through HL7's CDA-to-FHIR identifier mapping, a FHIR `Organization.identifier`, a registered OID as its URI in both, so one NPI is one record in either format); name, address and identifiers on versions; a document names its custodian and author by it, in `cascade:CustodianRole` and `cascade:AuthorRole`; a pull writes one for each `Organization` it holds, and a record from a server names, on its version, the organisation the source says performed it, by `prov:wasAttributedTo`, as a variant interpretation names its lab: a lab result's `Observation.performer` (A20); never the subject's record, so never taken by the matcher (M2) | borrowed from PROV; FHIR's `Organization` resource treated as any record |
 | two servers are one | git remotes | a Same whose members are two servers, by a person on the app's proposal, or by the machine when two connects made with one client id report the same self-URL, the same login endpoint and the same host (the Epic path edit: 57 of 57 kept the self-URL, 19 of 19 hosting moves changed it; verified, probed, [research 2](https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328100407)); with no like-for-like connect, the app proposes and the person decides; derivation: every record of one type and id under both, within one organisation, is one record (M20; `same-records-under-same-servers.rq`) | ours; the derivation is `Linkage` computed rather than asserted |
 | two organisations are one | `Patient.link`; SPHN | a Same whose members are two organisations, usually the machine's from a shared NPI or OID, where one was read from a server or a document named them by different identifiers; derivation: the matcher's within-organisation rules run over both, and the server Same's derivation counts the two as one organisation (`queries/derivations/same-organizations.rq`, `queries/derivations/same-records-under-same-servers.rq`; `runtime/matcher.feature`, M22) | ours |
 | two documents from one organisation | CDA `setId`, `versionNumber`, `relatedDocument` `RPLC`; FHIR `relatesTo` | no judgment: a document names its custodian and author organisations by an identifier they carry (a C-CDA `id`; a FHIR document's `Organization` by an NPI or an identifier whose system is rooted at an OID or a UUID, never by its id in the bundle), as `naming.md` picks one, so two documents from one organisation point at one organisation record by name; where a document declares that it replaces another, the adapter reads it onto the document's version, once #254 rules what a replaced document is named by, since a pod names a document by its bytes; the overlap between the two is joined by name for C-CDA entries and by the within-organisation rules for a FHIR document's | borrowed: a declared replacement is the standards' fact, stored as stated; "edition" as a judgment of ours is dropped |
@@ -105,6 +105,19 @@ said.
 one, and the source gives an OID or NPI to name it by; its name and address sit on versions so a merger's rename is
 history.
 
+**Why a record names its performing organisation by `prov:wasAttributedTo`, on its version.** (row "organisation")
+PROV's attribution, "the ascribing of an entity to an agent", is already how a variant interpretation's version names
+the lab that performed it, read from the same FHIR element, `Observation.performer`, so a lab result from a server says
+it the same way, with no term of ours. Looked at: FHIR's own elements (`performer`, `managingOrganization`,
+`serviceProvider`), which are where the fact is read from, not terms a pod carries outside FHIR RDF's namespace; W3C
+ORG, whose properties (`org:memberOf`, `org:hasUnit`, `org:siteOf`) relate people, units and sites to an organisation
+and never an entity to one, so none fits a record; and PROV's qualified attribution with a role, as a document names
+its custodian, which needs a node per attribution inside the version and whose role would say nothing a performer's
+plain attribution does not. It sits on the version because it is what one pull of the record says: a server that later
+names another lab writes another version, and the record, named by server, type and id, keeps its name. Only
+`Observation.performer` is read: `Patient.managingOrganization` assigns a person's records to an organisation on a
+server that may serve many, the open question below, and an `Encounter`, where `serviceProvider` sits, is no record.
+
 **Why privacy is drawn at the boundary.** (row "what leaves the pod") The server and organisation records are in the clear inside the pod because
 the person owns the pod; the opaque name earns its keep at the boundary, where a receiver gets a name it can cite and
 reconcile by, and nothing that says where the record came from, because what leaves the pod is the person's choice,
@@ -155,7 +168,9 @@ record by record, and the source is one more thing they may not want known.
   rule for lab results (R18, `runtime/matcher.feature` M22, #270) assumes the other way round, the safe direction: a
   record's organisation is one its documents name as custodian or author, or one a Same joins to it, and a record
   whose documents name none, as every pull's, is joined by no identifier; a server Same counts for nothing there,
-  since one server serves many organisations.
+  since one server serves many organisations. A pulled lab result's performing organisation (A20) is not read as its
+  organisation by either: the lab that ran a test is not the organisation whose record it is, and the performer is one
+  candidate for the assignment, as `Patient.managingOrganization` is another, which this question rules on.
 - The amended `jdg:currentlySame`.
 - A matcher rule for organisations: `jdg:SameBusinessIdentifier` needs a shared code, which an organisation lacks,
   and M2 takes no organisation's record.
