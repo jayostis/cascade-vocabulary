@@ -1,0 +1,18 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:theirPull a prov:Activity ; prov:startedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+:theirPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :theirPull ;
+    cascade:setHash "1111111111111111111111111111111111111111111111111111111111111111" ;
+    cascade:fileAddedToSet "provenance/imports/th/their-pull.ttl" .
+:earlierSkewedPull a prov:Activity ; prov:startedAtTime "2025-12-28T00:00:00Z"^^xsd:dateTime .
+:earlierSkewedPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :earlierSkewedPull ;
+    cascade:setHash "3333333333333333333333333333333333333333333333333333333333333333" ;
+    cascade:fileAddedToSet "provenance/imports/ea/earlier-skewed-pull.ttl" .
+:skewedPull a prov:Activity ; prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:skewedPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :skewedPull ;
+    cascade:firstParentSnapshot :earlierSkewedPullSnapshot ; cascade:mergedParentSnapshot :theirPullSnapshot ;
+    cascade:setHash "2222222222222222222222222222222222222222222222222222222222222222" ;
+    cascade:fileAddedToSet "provenance/imports/sk/skewed-pull.ttl" .

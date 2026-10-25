@@ -1,0 +1,57 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:pulledByThem pav:retrievedOn "2026-01-10T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:pulledByThemLater pav:retrievedOn "2026-01-25T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:pulledOnASkewedClock pav:retrievedOn "2026-01-20T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+
+:gout a cascade:ProblemOrDiagnosis .
+:goutActive prov:specializationOf :gout ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "active" .
+:goutResolved prov:specializationOf :gout ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "resolved" .
+:goutPulledByThem a cascade:Revision ; cascade:revisionOf :gout ; cascade:version :goutActive ;
+    prov:wasDerivedFrom :pulledByThem ; prov:wasGeneratedBy :theirPull ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+:goutPulledOnTheSkewedClock a cascade:Revision ; cascade:revisionOf :gout ; cascade:version :goutResolved ;
+    prov:wasDerivedFrom :pulledOnASkewedClock ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2026-01-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-20T00:00:00Z"^^xsd:dateTime .
+
+:eczema a cascade:ProblemOrDiagnosis .
+:eczemaActive prov:specializationOf :eczema ; cascade:patient :subject ; cascade:conditionName "Eczema" ; cascade:clinicalStatus "active" .
+:eczemaResolved prov:specializationOf :eczema ; cascade:patient :subject ; cascade:conditionName "Eczema" ; cascade:clinicalStatus "resolved" .
+:eczemaPulledByThem a cascade:Revision ; cascade:revisionOf :eczema ; cascade:version :eczemaActive ;
+    prov:wasDerivedFrom :pulledByThem ; prov:wasGeneratedBy :theirPull ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+:eczemaOnTheSkewedClock a cascade:Revision ; cascade:revisionOf :eczema ; cascade:version :eczemaResolved ;
+    prov:wasDerivedFrom :pulledOnASkewedClock ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2026-01-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-20T00:00:00Z"^^xsd:dateTime .
+
+:migraineNotedOnTheSkewedClock a cascade:ProblemOrDiagnosis .
+:migraineSinceMarch prov:specializationOf :migraineNotedOnTheSkewedClock ; cascade:patient :subject ;
+    cascade:conditionName "Migraine" ; cascade:clinicalStatus "active" ; cascade:onsetDate "2025-03-01"^^xsd:date .
+:migraineNotedOnTheSkewedClockRevision a cascade:Revision ; cascade:revisionOf :migraineNotedOnTheSkewedClock ;
+    cascade:version :migraineSinceMarch ; prov:wasDerivedFrom :pulledOnASkewedClock ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2026-01-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-20T00:00:00Z"^^xsd:dateTime .
+:migrainePulledByThemLater a cascade:ProblemOrDiagnosis .
+:migraineSinceMay prov:specializationOf :migrainePulledByThemLater ; cascade:patient :subject ;
+    cascade:conditionName "Migraine" ; cascade:clinicalStatus "resolved" ; cascade:onsetDate "2025-05-01"^^xsd:date .
+:migrainePulledByThemLaterRevision a cascade:Revision ; cascade:revisionOf :migrainePulledByThemLater ;
+    cascade:version :migraineSinceMay ; prov:wasDerivedFrom :pulledByThemLater ; prov:wasGeneratedBy :theirLaterPull ;
+    prov:generatedAtTime "2026-01-25T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-25T00:00:00Z"^^xsd:dateTime .
+
+:asthma a cascade:ProblemOrDiagnosis .
+:asthmaActive prov:specializationOf :asthma ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .
+:asthmaOnTheSkewedClock a cascade:Revision ; cascade:revisionOf :asthma ; cascade:version :asthmaActive ;
+    pav:lastUpdateOn "2026-01-23T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledOnASkewedClock ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2026-01-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-20T00:00:00Z"^^xsd:dateTime .
+
+:clockBehind a cascade:FindingForReview ; oa:hasBody cascade:ClockBehind ; oa:motivatedBy oa:classifying ;
+    oa:hasTarget :asthmaOnTheSkewedClock ; cascade:writerClockBehindByAtLeastDays 3 .

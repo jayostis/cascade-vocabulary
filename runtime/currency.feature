@@ -105,7 +105,25 @@ Feature: Currency
     No example here shows this rule: no scripted input but a kit's joins a record the person entered to an imported
     one. Priya's kit shows it, P15 and P11, and tests/fixtures/the-lead-member and allergies-view show the rest.
 
-  Rule: C7. An act rebuilds only what it reached, and the views it leaves are those of a build of the whole pod
+  Rule: C7. A person's ClockDiscounted ranks every revision its act generated as carrying no observation time
+    decisions/currency.md, row "wrong writer clock". A cascade:Judgment with the verdict cascade:ClockDiscounted, by a
+    person, whose one member is an act, says the times its writer's clock gave are known wrong, usually in answer to a
+    finding that the clock was behind (A19). It carries no offset. While it stands, the ladder ranks every revision the
+    act generated as carrying no cascade:observedAsOf (queries/derivations/revision-judgments.rq): at step 4 such a
+    revision stands beside the greatest observation time, so a pick between them falls to the least IRI, and
+    queries/questions/record/What needs review.rq lists it with "no basis"; the lead and the members an entry takes
+    its status and dates from are ranked the same way. A pick ancestry orders is untouched, ancestry being no clock.
+    Nothing is rewritten, and retracting the judgment restores the ranking. It is not Erroneous over the act: the
+    content is sound, only its clock is not. The review page lists a finding that a writer's clock was behind with each
+    revision it names until the person acknowledges it or discounts the act, and a finding that a source reported
+    older states as one line, "this source reports N records at states older than it reported on" the last date of the
+    revisions it contradicts, expanding to each record, until the person acknowledges it or files a Before between a
+    record's older revision and one the finding names it contradicts (A18); N counts the records no such Before answers.
+
+    No example here shows this rule; A19 shows a discount answering a finding. The fixtures
+    tests/fixtures/an-act-whose-clock-is-discounted, a-clock-found-behind and a-source-that-went-back show the rest.
+
+  Rule: C8. An act rebuilds only what it reached, and the views it leaves are those of a build of the whole pod
     decisions/currency.md, row "view", and decisions/performance.md, row "current per act, incrementally". After an
     act, the derived state, the views and the labels are those a build of the whole pod gives. A runtime need build
     again only the records the act wrote a revision of and those its judgments, retractions, assertions and findings

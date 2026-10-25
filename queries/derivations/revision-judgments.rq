@@ -4,14 +4,15 @@
 # places the member it names earlier before its other member: the ladder removes the earlier of two revisions of one
 # record, and the lead passes over the earlier of two members' current revisions. A Before between two revisions of one
 # record is also said apart, so that the ladder looks for a cycle among that record's revisions alone. An Erroneous
-# removes each revision it names.
+# removes each revision it names. A ClockDiscounted over an act leaves every revision the act generated ranked as
+# carrying no cascade:observedAsOf.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT {
   ?earlier cascade:judgedBefore ?later . ?earlierOfTheRecord cascade:judgedBeforeRevisionOfSameRecord ?later .
-  ?wrong cascade:revisionJudgedErroneousBy ?judgment .
+  ?wrong cascade:revisionJudgedErroneousBy ?judgment . ?discounted cascade:observationTimeDiscountedBy ?judgment .
 }
 WHERE {
   { ?judgment cascade:verdict cascade:Before ; cascade:earlierMember ?earlier ; prov:hadMember ?later ;
@@ -27,6 +28,15 @@ WHERE {
   UNION
   { ?judgment cascade:verdict cascade:Erroneous ; prov:hadMember ?wrong ; prov:wasAttributedTo/a prov:Person .
     ?wrong a cascade:Revision .
+    FILTER NOT EXISTS {
+      ?replacing dct:replaces ?judgment
+      OPTIONAL { ?undoing prov:invalidated ?replacing }
+      FILTER (!BOUND(?undoing))
+    }
+    FILTER NOT EXISTS { ?retraction prov:invalidated ?judgment } }
+  UNION
+  { ?judgment cascade:verdict cascade:ClockDiscounted ; prov:hadMember ?act ; prov:wasAttributedTo/a prov:Person .
+    ?discounted prov:wasGeneratedBy ?act ; a cascade:Revision .
     FILTER NOT EXISTS {
       ?replacing dct:replaces ?judgment
       OPTIONAL { ?undoing prov:invalidated ?replacing }
