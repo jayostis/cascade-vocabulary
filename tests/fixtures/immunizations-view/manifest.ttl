@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -10,25 +10,33 @@
     <#the-immunizations-view>
     <#my-immunizations>
     <#its-padded-times>
+    <#what-it-shows>
   ) .
 
 <#the-immunizations-view> a mf:QueryEvaluationTest ;
   mf:name "the-immunizations-view" ;
   rdfs:comment "Each entry takes the vaccine and code of its lead, the status of the member chosen for status, and the date of the member chosen for the date." ;
   mf:action [ qt:query <the-immunizations-view.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-immunizations-view.srj> .
 
 <#my-immunizations> a mf:QueryEvaluationTest ;
   mf:name "my-immunizations" ;
   rdfs:comment "Every entry, newest first by the date as written, so the year 2015 follows 1 January 2015, with its code as CVX's IRI and how many records it joins." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20immunizations.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-immunizations.srj> .
 
 <#its-padded-times> a mf:QueryEvaluationTest ;
   mf:name "its-padded-times" ;
   rdfs:comment "A time its source wrote to the hour keeps, in the view, the node saying so and what was written, on the entry and on its member's values, each named after its holder and -padded-." ;
   mf:action [ qt:query <its-padded-times.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <its-padded-times.srj> .
+
+<#what-it-shows> a mf:QueryEvaluationTest ;
+  mf:name "what-it-shows" ;
+  rdfs:comment "A time its source wrote to the hour is shown once, as the time, with the member that states it, and the node saying it was written short of the second is no field value." ;
+  mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-it-shows.srj> .

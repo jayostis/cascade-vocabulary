@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -15,12 +15,12 @@
   mf:name "star-pairs" ;
   rdfs:comment "Each member is the same as its claim's least member, both ways, and as no other member: a1 with a2 and a3, b1 with b2." ;
   mf:action [ qt:query <star-pairs.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <star-pairs.srj> .
 
 <#entries> a mf:QueryEvaluationTest ;
   mf:name "entries" ;
   rdfs:comment "The star gives the entries every pair gave: the three members in one entry, named from a1, and the two in one named from b1." ;
   mf:action [ qt:query <entries.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <entries.srj> .

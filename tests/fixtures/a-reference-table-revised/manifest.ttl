@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -16,19 +16,19 @@
   mf:name "the-current-reference-version" ;
   rdfs:comment "A series' current version is the one no newer version revises." ;
   mf:action [ qt:query <the-current-reference-version.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-current-reference-version.srj> .
 
 <#which-reference-versions-are-current> a mf:QueryEvaluationTest ;
   mf:name "which-reference-versions-are-current" ;
   rdfs:comment "The question lists the series and its current version only." ;
   mf:action [ qt:query <../../../queries/questions/pod/Which%20reference%20versions%20are%20current.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <which-reference-versions-are-current.srj> .
 
 <#claims-that-count> a mf:QueryEvaluationTest ;
   mf:name "claims-that-count" ;
   rdfs:comment "The claim no longer counts, and has lapsed: the second version's rows do not join its members." ;
   mf:action [ qt:query <claims-that-count.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <claims-that-count.srj> .

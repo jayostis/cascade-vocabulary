@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -14,8 +14,8 @@
   mf:name "same-mapped-code-and-date" ;
   rdfs:comment "Two different codes of one group on one date match, a group's own code among them, with the table's version; on two dates, one code on both, or a code in no group of a vaccine group table, they do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-mapped-code-and-date.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:groupOwnCodeB> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:groupOwnCodeB> ,
                                   <urn:x:groupSameDayB> ,
                                   <urn:x:groupTwoDaysA> ,
                                   <urn:x:groupTwoDaysB> ,
