@@ -22,6 +22,19 @@
     prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinicElsewhere ] .
 :pull a prov:Entity ; cascade:serverBaseUrl "https://fhir.hospital.example/r4" .
 
+:serverOld a cascade:Server ; cascade:serverBaseUrl "https://fhir.exchange.example/r4" .
+:serverNew a cascade:Server ; cascade:serverBaseUrl "https://fhir.exchange.example/v2/r4" .
+:oldServerPull a prov:Entity ; cascade:serverBaseUrl "https://fhir.exchange.example/r4" .
+:newServerPull a prov:Entity ; cascade:serverBaseUrl "https://fhir.exchange.example/v2/r4" .
+:pulledFromOldServer a cascade:Organization ; cascade:sourceRecordId "o1" ;
+    cascade:sourceUrl <https://fhir.exchange.example/r4/Organization/o1> .
+:pulledFromOldServerRevision a cascade:Revision ; cascade:revisionOf :pulledFromOldServer ; prov:wasDerivedFrom :oldServerPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:pulledFromNewServer a cascade:Organization ; cascade:sourceRecordId "o1" ;
+    cascade:sourceUrl <https://fhir.exchange.example/v2/r4/Organization/o1> .
+:pulledFromNewServerRevision a cascade:Revision ; cascade:revisionOf :pulledFromNewServer ; prov:wasDerivedFrom :newServerPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
 :fromFhir a cascade:LaboratoryTestResult .
 <urn:x:fromFhirVersion> prov:specializationOf :fromFhir ;
     dct:identifier "K-20250327-1"^^<urn:oid:2.16.840.1.113883.19.5.99999.2> ; cascade:testCode <http://loinc.org/rdf/2823-3> ;
@@ -33,8 +46,24 @@
 :fromCcda a cascade:LaboratoryTestResult .
 <urn:x:fromCcdaVersion> prov:specializationOf :fromCcda ;
     dct:identifier "K-20250327-1"^^<urn:oid:2.16.840.1.113883.19.5.99999.2> ; cascade:testCode <http://loinc.org/rdf/2823-3> ;
-    cascade:resultClinicallyRelevantTime "2025-03-27T07:00:00"^^xsd:dateTime .
+    cascade:resultClinicallyRelevantTime "2025-03-27T07:00:00-05:00"^^xsd:dateTime .
 :fromCcdaRevision a cascade:Revision ; cascade:revisionOf :fromCcda ; cascade:version <urn:x:fromCcdaVersion> ;
+    prov:wasDerivedFrom :ccdaSummary ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:correction a cascade:LaboratoryTestResult .
+<urn:x:correctionVersion> prov:specializationOf :correction ;
+    dct:identifier "K-20250327-1"^^<urn:oid:2.16.840.1.113883.19.5.99999.2> ; cascade:testCode <http://loinc.org/rdf/2823-3> ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ; cascade:workflowStatus "corrected" .
+:correctionRevision a cascade:Revision ; cascade:revisionOf :correction ; cascade:version <urn:x:correctionVersion> ;
+    prov:wasDerivedFrom :fhirSummary ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:serialDraw a cascade:LaboratoryTestResult .
+<urn:x:serialDrawVersion> prov:specializationOf :serialDraw ;
+    dct:identifier "K-20250327-1"^^<urn:oid:2.16.840.1.113883.19.5.99999.2> ; cascade:testCode <http://loinc.org/rdf/2823-3> ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T13:00:00Z"^^xsd:dateTime .
+:serialDrawRevision a cascade:Revision ; cascade:revisionOf :serialDraw ; cascade:version <urn:x:serialDrawVersion> ;
     prov:wasDerivedFrom :ccdaSummary ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
@@ -47,7 +76,8 @@
 
 :authoredByTheHospital a cascade:LaboratoryTestResult .
 <urn:x:authoredByTheHospitalVersion> prov:specializationOf :authoredByTheHospital ;
-    dct:identifier "K-20250327-1"^^<urn:oid:2.16.840.1.113883.19.5.99999.2> ; cascade:testCode <http://loinc.org/rdf/2823-3> .
+    dct:identifier "K-20250327-1"^^<urn:oid:2.16.840.1.113883.19.5.99999.2> ; cascade:testCode <http://loinc.org/rdf/2823-3> ;
+    cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime .
 :authoredByTheHospitalRevision a cascade:Revision ; cascade:revisionOf :authoredByTheHospital ;
     cascade:version <urn:x:authoredByTheHospitalVersion> ; prov:wasDerivedFrom :exchangeSummary ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
@@ -105,3 +135,20 @@
     cascade:version <urn:x:identifierDroppedVersion> ; prov:wasDerivedFrom :ccdaSummary ;
     prov:wasRevisionOf :identifierDroppedFirstRevision ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:healthExport a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ a prov:Organization ] ] .
+
+:exportedFirst a cascade:LaboratoryTestResult .
+<urn:x:exportedFirstVersion> prov:specializationOf :exportedFirst ;
+    dct:identifier "N-20250327-1"^^<urn:oid:2.16.840.1.113883.19.5.99999.2> ; cascade:testCode <http://loinc.org/rdf/2823-3> .
+:exportedFirstRevision a cascade:Revision ; cascade:revisionOf :exportedFirst ; cascade:version <urn:x:exportedFirstVersion> ;
+    prov:wasDerivedFrom :healthExport ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:exportedSecond a cascade:LaboratoryTestResult .
+<urn:x:exportedSecondVersion> prov:specializationOf :exportedSecond ;
+    dct:identifier "N-20250327-1"^^<urn:oid:2.16.840.1.113883.19.5.99999.2> ; cascade:testCode <http://loinc.org/rdf/2823-3> .
+:exportedSecondRevision a cascade:Revision ; cascade:revisionOf :exportedSecond ; cascade:version <urn:x:exportedSecondVersion> ;
+    prov:wasDerivedFrom :healthExport ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

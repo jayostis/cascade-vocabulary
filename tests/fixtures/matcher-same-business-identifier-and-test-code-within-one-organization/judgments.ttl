@@ -8,3 +8,17 @@
 :organizationsSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :hospital , :hospitalAfterMerger ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
+
+:serversSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :serverOld , :serverNew ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
+
+:hospitalAndOldServerOrganizationSame a cascade:Judgment ; cascade:verdict cascade:Same ;
+    prov:hadMember :hospital , :pulledFromOldServer ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
+
+:clinicAndNewServerOrganizationSame a cascade:Judgment ; cascade:verdict cascade:Same ;
+    prov:hadMember :clinicElsewhere , :pulledFromNewServer ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
