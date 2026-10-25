@@ -1,0 +1,14 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:version prov:specializationOf :record ;
+    cascade:testCode <http://loinc.org/rdf/2823-3> ;
+    cascade:resultValueKind cascade:QuantityResultValue ;
+    cascade:resultQuantity :value ;
+    cascade:referenceRangeLow :low ;
+    cascade:referenceRangeHigh :high .
+:value cascade:decimalValue "4.1"^^xsd:decimal ; cascade:writtenValue "4.10" ; cascade:ucumUnit "mmol/L" ; cascade:unitText "mmol/L" .
+:low cascade:decimalValue "3.5"^^xsd:decimal ; cascade:writtenValue "3.5" ; cascade:ucumUnit "mmol/L" .
+:high cascade:decimalValue "5.1"^^xsd:decimal ; cascade:writtenValue "5.1" ; cascade:ucumUnit "mmol/L" .

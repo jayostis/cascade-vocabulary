@@ -16,6 +16,13 @@
       "license": { "@id": "https://spdx.org/licenses/Apache-2.0" },
       "isBasedOn": { "@id": "https://github.com/the-cascade-protocol/spec" },
       "hasPart": [
+        { "@id": "queries/matcher/same-code-instant-different-units.rq" },
+        { "@id": "queries/matcher/same-code-instant-different-values.rq" },
+        { "@id": "runtime/scripted-input/gus/tables/app-results/references.ttl" },
+        { "@id": "runtime/scripted-input/gus/entries/lab-quantities.ttl" },
+        { "@id": "runtime/rule-list/699dd4d3-af7e-42b1-8fb9-72bd760de3bf.ttl" },
+        { "@id": "queries/matcher/same-code-instant-value-and-unit.rq" },
+        { "@id": "queries/matcher/same-code-day-value-and-unit.rq" },
         { "@id": "ontologies/cascade.ttl" },
         { "@id": "ontologies/cascade.shapes.ttl" },
         { "@id": "queries/derivations/records.rq" },
@@ -1632,6 +1639,13 @@
     { "@id": "#tamsin-vale-conversions", "@type": "CreateAction", "name": "The Bridge's conversions of the two saved pulls, as the runtime's pull importer hands them on", "instrument": [{ "@id": "https://github.com/jayostis/cascade-bridge-rs/tree/1751e00fe4ec6d3d0374e002d10de1ac22344ffb" }, { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/tree/010637edb9bc707574b879bbd0a809e6fccf3d0c" }, { "@id": "https://github.com/jayostis/cascade-runtime-js/tree/3311b93a20a085fccc1bd3eab17bd9fea66c5a7b" }], "result": { "@id": "conformance/tamsin-vale/scripted-input/tamsin/bridge/" } },
     { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4/tree/010637edb9bc707574b879bbd0a809e6fccf3d0c", "@type": "SoftwareSourceCode", "name": "cascade-bridge-adapter-fhir-r4", "codeRepository": { "@id": "https://github.com/jayostis/cascade-bridge-adapter-fhir-r4" }, "version": "010637edb9bc707574b879bbd0a809e6fccf3d0c", "description": "The adapter of each Bundle, in its #envelope-bundle envelope.", "conformsTo": { "@id": "https://github.com/jayostis/cascade-bridge-spec/tree/510ba7d73bf8c6b406a82f2d357260eac45bd699" } },
     { "@id": "https://github.com/jayostis/cascade-runtime-js/tree/a8e89e31e2bd7aaf1d03ef8d5328b2cae0157b01", "@type": "SoftwareSourceCode", "name": "cascade-runtime-js", "codeRepository": { "@id": "https://github.com/jayostis/cascade-runtime-js" }, "version": "a8e89e31e2bd7aaf1d03ef8d5328b2cae0157b01", "description": "Its story:pulls generator, which signed in to the demo hospital and pulled Tamsin's record as it stood at each pull's date, saving that date as the pull's asOf." },
+    { "@id": "queries/matcher/same-code-day-value-and-unit.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
+    { "@id": "queries/matcher/same-code-instant-value-and-unit.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
+    { "@id": "runtime/rule-list/699dd4d3-af7e-42b1-8fb9-72bd760de3bf.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "runtime/scripted-input/gus/entries/lab-quantities.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "runtime/scripted-input/gus/tables/app-results/references.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    { "@id": "queries/matcher/same-code-instant-different-values.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
+    { "@id": "queries/matcher/same-code-instant-different-units.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
     { "@id": "https://github.com/jayostis/cascade-runtime-js/tree/3311b93a20a085fccc1bd3eab17bd9fea66c5a7b", "@type": "SoftwareSourceCode", "name": "cascade-runtime-js", "codeRepository": { "@id": "https://github.com/jayostis/cascade-runtime-js" }, "version": "3311b93a20a085fccc1bd3eab17bd9fea66c5a7b", "description": "Its pull importer, which handed each Bundle on with its facts at its step's time, the pull's asOf as the document's cascade:answeredAsOf." }
   ]
 }
