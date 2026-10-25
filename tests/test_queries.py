@@ -13,7 +13,7 @@ from rdflib.plugins.sparql.parserutils import CompValue
 
 import contract
 from contract import ROOT
-from engines import prepared
+from engines import marked_groups, opened, prepared
 
 CASCADE = "https://ns.cascadeprotocol.org/cascade#"
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
@@ -113,6 +113,48 @@ def test_every_comparison_binds_record_in_a_triple_of_its_outermost_group_whose_
 ])
 def test_the_outermost_binding_check_refuses_a_record_bound_only_inside_a_nested_pattern(form):
     assert not binds_record_outermost(parseQuery(form))
+
+
+BOUND_RECORD = URIRef("urn:cascade:bound-record")
+
+
+def marked_groups_bind_record(text):
+    """Whether every `# bound: ?record` line marks a group, and each group marked is inside a sub-select and holds
+    ?record in a triple pattern of its own, outside any nested pattern, so the VALUES block opening it binds ?record
+    there as the one opening the outermost group does (M4)."""
+    marks = len(re.findall(r"^\s*#\s*bound:", text, re.MULTILINE))
+    if marks != len(marked_groups(text)):
+        return False
+    groups = []
+
+    def walk(node, in_subselect):
+        if isinstance(node, CompValue):
+            parts = (node.get("part") or []) if node.name == "GroupGraphPatternSub" else []
+            if any(part.name == "InlineData" and BOUND_RECORD in set(leaves(part)) for part in parts):
+                blocks = [part for part in parts if part.name == "TriplesBlock"]
+                groups.append(in_subselect and Variable("record") in set(leaves(blocks)))
+            for value in node.values():
+                walk(value, in_subselect or node.name == "SubSelect")
+        elif isinstance(node, (list, tuple, ParseResults)):
+            for value in node:
+                walk(value, in_subselect)
+
+    walk(parseQuery(opened(text, marked_groups(text), [BOUND_RECORD])), False)
+    return len(groups) == marks and all(groups)
+
+
+@pytest.mark.parametrize("relative", sorted(contract.named("matcher").values()))
+def test_each_group_a_comparison_marks_binds_record_in_a_triple_of_its_own_inside_a_sub_select(relative):
+    assert marked_groups_bind_record(contract.query(relative)), relative
+
+
+@pytest.mark.parametrize("form", [
+    "SELECT ?record WHERE {\n  # bound: ?record\n  ?record ?p ?o { ?o ?q ?r }\n}",
+    "SELECT ?record\n# bound: ?record\nWHERE { ?record ?p ?o }",
+    "SELECT ?record WHERE { { SELECT ?record ?c\n  # bound: ?record\n  WHERE { OPTIONAL { ?record ?p ?c } } } ?record ?p ?c }",
+])
+def test_the_mark_check_refuses_a_mark_on_no_group_on_the_outermost_or_on_one_binding_record_only_in_a_nested_pattern(form):
+    assert not marked_groups_bind_record(form)
 
 
 ENTRY_PLACEHOLDER = 'CONCAT("urn:cascade:entry:", SHA256(MIN(STR('

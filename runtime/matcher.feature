@@ -135,9 +135,15 @@ Feature: The matcher's procedure
     ?record is bound as SPARQL's substitution binds a variable: an initial binding, as pyoxigraph's substitutions and
     rdflib's initBindings give it, one evaluation per record; or, on an engine that takes no initial binding, as
     Oxigraph's JavaScript build does not, a VALUES ?record block of the run's records opening the query's outermost
-    group, one evaluation per query per run. The two give the same rows because every comparison binds ?record in its
-    outermost group before any sub-select or MINUS reads it. A query is plain SPARQL, which an adapter or an app may run
-    unbound.
+    group and each group the query marks, one evaluation per query per run. A comparison marks a group with a comment
+    line, # bound: ?record, with nothing but white space, or WHERE, between it and the group's opening brace; a number
+    sign inside a string or an IRI opens no comment. It marks only a group inside a sub-select that binds ?record in a
+    triple pattern of its own, outside any nested pattern, and only where taking ?record as the run's records leaves
+    those records' rows as they are: a comparison that works each side of a pair out in a sub-select marks the record's
+    side, so a run works out that side for its records alone, never for every record in the pod. The two give the same
+    rows because every comparison binds ?record in its outermost group before any sub-select or MINUS reads it, and
+    binding a marked group drops no row of the run's records. A query is plain SPARQL, which an adapter or an app may
+    run unbound.
 
     A query reads a table's rows only inside GRAPH ?origin, guarded by ?origin prov:specializationOf/cascade:tableKind
     and its kind. A record's code joins a row by the code's IRI, one form per code system (cascade:CodeSystem in
@@ -280,13 +286,34 @@ Feature: The matcher's procedure
     - R17, cascade:DifferentResultUnitsRule, finding cascade:DifferentResultUnitsAtOneInstant:
       queries/matcher/same-code-instant-to-the-second-different-units.rq, for lab results only, as R6 reads a time.
 
+    Version 15 of the vocabulary's list changes the queries of R6, R15, R16, R17 and R18, each of which works out each
+    side of a pair in a sub-select, so that a run binds ?record in the record's side (M4). Each is the query it replaces
+    with that side marked, and gives its rows, so the examples under M21, M22 and M23 hold for it; versions 1 to 14 pin
+    the old files:
+
+    - R6, cascade:SameResultRule, justified cascade:SameResult:
+      queries/matcher/same-code-instant-to-the-second-value-and-unit-bound-on-the-record-side.rq, for lab results only.
+    - R15, cascade:SameResultOnOneDayRule, justified cascade:SameResultOnOneDay:
+      queries/matcher/same-code-day-or-padded-time-value-and-unit-bound-on-the-record-side.rq, for lab results only.
+    - R16, cascade:DifferentResultValuesRule, finding cascade:DifferentResultValuesAtOneInstant:
+      queries/matcher/same-code-instant-to-the-second-different-values-bound-on-the-record-side.rq, for lab results
+      only.
+    - R17, cascade:DifferentResultUnitsRule, finding cascade:DifferentResultUnitsAtOneInstant:
+      queries/matcher/same-code-instant-to-the-second-different-units-bound-on-the-record-side.rq, for lab results
+      only.
+    - R18, cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule, justified
+      cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization:
+      queries/matcher/same-business-identifier-and-test-code-within-one-organization-bound-on-the-record-side.rq, for
+      lab results only.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
     and R10 in its version 6, R5's newer query and R11 in its version 7, R12 and R13 in its version 8, R3's and
     R4's changed queries in its version 9, R11's and R13's in its version 10, R14 as well in its version 11, and R6's
     changed query, R15, R16 and R17 in its version 12, R18 as well in its version 13, and R2's, R4's, R6's, R8's,
-    R15's, R16's and R17's changed queries in its version 14.
+    R15's, R16's and R17's changed queries in its version 14, and R6's, R15's, R16's, R17's and R18's queries bound on
+    the record's side in its version 15.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00

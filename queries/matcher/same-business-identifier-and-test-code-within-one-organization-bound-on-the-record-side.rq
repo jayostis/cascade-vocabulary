@@ -1,0 +1,80 @@
+# Two records match when their current versions carry one business identifier, one test code and one clinically
+# relevant time, or one of them no time, and the documents their revisions come from name, as custodian or author, one
+# organization record, or two that are currently the same organization. An identifier is compared as the term it is,
+# its value with the system its datatype names, so one written by a FHIR source and one a C-CDA source mapped to FHIR's
+# form are one; an identifier with no system, a plain string, is never compared, since nothing says which of an
+# organization's systems issued it. Times are compared as same-code-instant-different-values.rq compares them: two with
+# a time zone when they name one moment, two with none when written alike, one of each never; a day alone only with
+# that day alone. So serial draws a source filed under one accession are not joined, and a correction, which keeps its
+# specimen's time, is. An agent that is no organization record, as Apple Health's author is, names no organization, and
+# a record whose documents name none, as a pull from a server does, matches nothing here. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  { SELECT ?record ?version ?identifier ?code ?moment
+    WHERE {
+      # bound: ?record
+      { ?record pav:hasCurrentVersion ?version .
+        ?version dct:identifier ?identifier ; cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time .
+        FILTER (isLiteral(?identifier) && DATATYPE(?identifier) != xsd:string)
+        BIND (COALESCE(IF(DATATYPE(?time) = xsd:dateTime,
+                          IF(TZ(?time) != "", STR(?time - "1970-01-01T00:00:00Z"^^xsd:dateTime),
+                             CONCAT("local ", STR(?time - "1970-01-01T00:00:00"^^xsd:dateTime))),
+                          CONCAT("day ", STR(?time))), "") AS ?moment) }
+      UNION
+      { { SELECT ?record ?version ?identifier ?code
+          # bound: ?record
+          WHERE {
+            ?record pav:hasCurrentVersion ?version .
+            ?version dct:identifier ?identifier ; cascade:testCode ?code .
+            FILTER (isLiteral(?identifier) && DATATYPE(?identifier) != xsd:string)
+            FILTER NOT EXISTS { ?version cascade:resultClinicallyRelevantTime ?time }
+          } }
+        ?groupRecord pav:hasCurrentVersion ?groupVersion .
+        ?groupVersion dct:identifier ?identifier ; cascade:testCode ?code .
+        OPTIONAL { ?groupVersion cascade:resultClinicallyRelevantTime ?groupTime }
+        BIND (COALESCE(IF(DATATYPE(?groupTime) = xsd:dateTime,
+                          IF(TZ(?groupTime) != "", STR(?groupTime - "1970-01-01T00:00:00Z"^^xsd:dateTime),
+                             CONCAT("local ", STR(?groupTime - "1970-01-01T00:00:00"^^xsd:dateTime))),
+                          CONCAT("day ", STR(?groupTime))), "none") AS ?moment) }
+    } }
+  { SELECT ?other ?identifier ?code ?moment
+    WHERE {
+      { ?other pav:hasCurrentVersion ?otherVersion .
+        ?otherVersion dct:identifier ?identifier ; cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime .
+        BIND (COALESCE(IF(DATATYPE(?otherTime) = xsd:dateTime,
+                          IF(TZ(?otherTime) != "", STR(?otherTime - "1970-01-01T00:00:00Z"^^xsd:dateTime),
+                             CONCAT("local ", STR(?otherTime - "1970-01-01T00:00:00"^^xsd:dateTime))),
+                          CONCAT("day ", STR(?otherTime))), "") AS ?moment) }
+      UNION
+      { { SELECT ?other ?otherVersion ?identifier ?code
+          WHERE {
+            ?other pav:hasCurrentVersion ?otherVersion .
+            ?otherVersion dct:identifier ?identifier ; cascade:testCode ?code .
+            FILTER NOT EXISTS { ?otherVersion cascade:resultClinicallyRelevantTime ?otherTime }
+          } }
+        ?otherGroupRecord pav:hasCurrentVersion ?otherGroupVersion .
+        ?otherGroupVersion dct:identifier ?identifier ; cascade:testCode ?code .
+        OPTIONAL { ?otherGroupVersion cascade:resultClinicallyRelevantTime ?otherGroupTime }
+        BIND (COALESCE(IF(DATATYPE(?otherGroupTime) = xsd:dateTime,
+                          IF(TZ(?otherGroupTime) != "", STR(?otherGroupTime - "1970-01-01T00:00:00Z"^^xsd:dateTime),
+                             CONCAT("local ", STR(?otherGroupTime - "1970-01-01T00:00:00"^^xsd:dateTime))),
+                          CONCAT("day ", STR(?otherGroupTime))), "none") AS ?moment) }
+    } }
+  ?record pav:hasCurrentVersion ?version .
+  FILTER (?other != ?record)
+  ?revision cascade:revisionOf ?record ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+  ?attribution prov:hadRole ?role ; prov:agent ?organization .
+  ?organization a cascade:Organization .
+  ?otherRevision cascade:revisionOf ?other ; prov:wasDerivedFrom/prov:qualifiedAttribution ?otherAttribution .
+  ?otherAttribution prov:hadRole ?otherRole ; prov:agent ?otherOrganization .
+  ?otherOrganization a cascade:Organization .
+  FILTER (?role IN (cascade:CustodianRole, cascade:AuthorRole) && ?otherRole IN (cascade:CustodianRole, cascade:AuthorRole)
+          && (?organization = ?otherOrganization
+              || EXISTS { ?organization cascade:currentlySameOrganization+ ?otherOrganization }))
+}

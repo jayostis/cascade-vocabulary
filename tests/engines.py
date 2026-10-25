@@ -3,6 +3,7 @@ Every triple added under a graph's name is in the default graph as well, unless 
 loaded from TriG, and queries read the default graph.
 """
 
+import re
 import warnings
 from contextlib import contextmanager
 from functools import lru_cache
@@ -42,6 +43,40 @@ def prepared(query):
     """A query parsed once, with no prefix but those it declares."""
     with literals_as_written():
         return prepareQuery(query)
+
+
+TOKEN = re.compile(r'''"""(?:[^"\\]|\\.|"(?!""))*"""|\'\'\'(?:[^'\\]|\\.|'(?!''))*\'\'\'|#[^\n]*|<[^<>"{}|^`\\\s]*>'''
+                   r'''|"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|\\.|\{''')
+MARK = re.compile(r"#\s*bound:\s*\?record\s*")
+BEFORE_BRACE = re.compile(r"\s*(?:WHERE\s*)?", re.IGNORECASE)
+
+
+def marked_groups(query):
+    """Just after the brace of each group a `# bound: ?record` line marks, with nothing but WHERE between them (M4)."""
+    found, mark = [], None
+    for token in TOKEN.finditer(query):
+        if token.group() != "{":
+            mark = token.end() if MARK.fullmatch(token.group()) else None
+            continue
+        if mark is not None and BEFORE_BRACE.fullmatch(query, mark, token.start()):
+            found.append(token.end())
+        mark = None
+    return found
+
+
+def opened(query, places, records):
+    """The query with a VALUES ?record block of the records just after each of the places."""
+    block = " VALUES ?record { " + " ".join(f"<{record}>" for record in records) + " }"
+    for at in sorted(set(places), reverse=True):
+        query = query[:at] + block + query[at:]
+    return query
+
+
+def bound_to_records(query, records):
+    """The query as an engine with no initial binding runs it bound to the records (M4): a VALUES ?record block opening
+    its outermost group and each group it marks."""
+    outermost = next(token.end() for token in TOKEN.finditer(query) if token.group() == "{")
+    return opened(query, [outermost, *marked_groups(query)], records)
 
 
 class Store:

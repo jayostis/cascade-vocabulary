@@ -1,3 +1,4 @@
+from collections import Counter
 from functools import cache
 from pathlib import Path
 
@@ -5,8 +6,8 @@ import pytest
 from rdflib import RDF, URIRef
 
 from contract import CASCADE, PROV, QUERIES, built, derivations, named, query, questions
-from engines import ENGINES
-from manifests import Entry, entries, failure, lens_name
+from engines import ENGINES, bound_to_records, marked_groups
+from manifests import Entry, entries, failure, lens_name, row
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
 LENSES = sorted(named("lenses"))
@@ -96,6 +97,22 @@ def test_every_derivation_lens_view_and_the_labels_add_a_triple_and_every_questi
             if lens in lenses_that_differ(fixture):
                 quiet -= {ASKED[name] for name, rows in answers(fixture, lens).items() if rows}
     assert quiet == set()
+
+
+MARKED = {name: relative for name, relative in named("matcher").items() if marked_groups(query(relative))}
+CURRENT_VERSIONS = "SELECT DISTINCT ?record WHERE { ?record <http://purl.org/pav/hasCurrentVersion> [] }"
+
+
+@pytest.mark.parametrize("fixture", [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES
+                                     if fixture.name.startswith("matcher-")])
+def test_a_comparison_bound_in_the_groups_it_marks_gives_its_unbound_rows_of_the_records_bound(fixture):
+    store = built_once(fixture, "oxigraph", LENSES[0]).store
+    records = sorted(str(found["record"]) for found in store.select(CURRENT_VERSIONS))[::2]
+    assert MARKED and records
+    for name, relative in MARKED.items():
+        text = query(relative)
+        unbound = Counter(row(found) for found in store.select(text) if str(found["record"]) in records)
+        assert Counter(row(found) for found in store.select(bound_to_records(text, records))) == unbound, name
 
 
 def test_each_engine_loads_the_default_graph_of_a_trig_file_into_its_default_graph_against_one_base(tmp_path):
