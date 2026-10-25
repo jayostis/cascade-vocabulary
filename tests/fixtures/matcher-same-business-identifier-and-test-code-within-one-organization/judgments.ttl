@@ -9,16 +9,16 @@
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
 
-:serversSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :serverOld , :serverNew ;
+:serversSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember <urn:uuid:818da826-ebc2-818f-aa16-83af37bb7b83> , <urn:uuid:8b56deee-b176-8f3b-9712-fc5a274c7f97> ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
 
 :hospitalAndOldServerOrganizationSame a cascade:Judgment ; cascade:verdict cascade:Same ;
-    prov:hadMember :hospital , :pulledFromOldServer ;
+    prov:hadMember :hospital , <urn:uuid:d48d6fc4-258a-8a5d-8281-6729a96fbcc7> ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
 
 :clinicAndNewServerOrganizationSame a cascade:Judgment ; cascade:verdict cascade:Same ;
-    prov:hadMember :clinicElsewhere , :pulledFromNewServer ;
+    prov:hadMember :clinicElsewhere , <urn:uuid:0997e5ce-eccf-8af0-9ba8-52f5df24397b> ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
