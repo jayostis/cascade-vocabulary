@@ -81,3 +81,17 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :correctedValue a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
     oa:motivatedBy oa:classifying ; oa:hasTarget :identifiedFirst , :identifiedCorrected ;
     prov:used <urn:x:identifiedFirstVersion> , <urn:x:identifiedCorrectedVersion> .
+
+:byIdentifierUnmarked a cascade:Judgment ; cascade:verdict cascade:Same ;
+    cascade:justification cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization ;
+    prov:hadMember :unmarkedFirst , :unmarkedSecond ;
+    prov:used <urn:x:unmarkedFirstVersion> , <urn:x:unmarkedSecondVersion> ;
+    cascade:matcherRule cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule ;
+    prov:wasAttributedTo cascade:CascadeMatcher .
+
+:byIdentifierUnmarkedUnderrules11 a cascade:ClaimAssertion ; cascade:assertedClaim :byIdentifierUnmarked ;
+    cascade:assertedUnderRuleListVersion :rules11 .
+
+:unmarkedValue a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
+    oa:motivatedBy oa:classifying ; oa:hasTarget :unmarkedFirst , :unmarkedSecond ;
+    prov:used <urn:x:unmarkedFirstVersion> , <urn:x:unmarkedSecondVersion> .

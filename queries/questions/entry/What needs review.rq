@@ -26,8 +26,10 @@
 # from the entry of the smaller record, unless a person judged them different: mmol/L and mg/dL may measure one draw,
 # and no rule converts one into the other. A finding of different result values at one instant (R16) is listed, as the
 # finding with its two results, while both are at the versions it compared, until a person acknowledges it or judges
-# the two different. A finding of different values or units is not listed while the two share a business identifier
-# within one organization (R18): the source said they are one result, so the second value is its correction.
+# the two different. A finding of different values or units is not listed while R18 joins the two, as sharing a
+# business identifier within one organization, and the current version of one of them says it was corrected or amended:
+# the source said the second value is its correction. Two results R18 joins that neither marks so are still listed, since
+# two channels of one organization disagreeing is for a person to see.
 # The build never settles these itself; a person does, with a judgment.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX oa: <http://www.w3.org/ns/oa#>
@@ -175,7 +177,9 @@ WHERE {
             FILTER NOT EXISTS { ?same prov:wasAttributedTo/a prov:SoftwareAgent } }
     MINUS { ?certain cascade:countsUnderLens true ; cascade:verdict cascade:Same ;
                      cascade:justification cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization ;
-                     prov:hadMember ?record , ?otherRecord }
+                     prov:hadMember ?record , ?otherRecord , ?corrected .
+            ?corrected pav:hasCurrentVersion/cascade:workflowStatus ?status .
+            FILTER (?corrected IN (?record, ?otherRecord) && ?status IN ("corrected", "amended")) }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
