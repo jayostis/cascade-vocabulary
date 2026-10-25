@@ -96,7 +96,7 @@ about 1 to 5M rows, and same-result within one code is about 80M comparisons, wh
 
 **Why two documents from one organisation need no judgment.** (rows "two documents from one organisation", "record from a FHIR document") Two summaries from one hospital need no judgment of
 their own: each names its custodian by the identifier it carries, so both point at one organisation record by name, a
-C-CDA's entries are named across documents by their CDA ids under that custodian, and a FHIR document's entries fall
+C-CDA's entries are named across documents by their CDA ids under the custodian's id that names that record, and a FHIR document's entries fall
 to the within-organisation rules like a vendor switch's; "edition" as a judgment would have been a story told about
 two documents that are only sometimes editions, and where one is, the document says so and the adapter stores what it
 said.
