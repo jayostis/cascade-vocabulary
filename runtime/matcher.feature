@@ -15,9 +15,10 @@ Feature: The matcher's procedure
   ingredient, each pair in an entry of its own, under the rule list's version 7. Ivo, with the variant classifications
   table of an app, enters pairs of variants that carry a ClinVar ID, an HGVS expression or both, each pair in an entry
   of its own, under the rule list's version 8. Gus, with the vocabulary's rule list of an app, enters lab results whose values,
-  units and times differ by a little, under the rule list's version 12. Hana, with the vocabulary's rule list of an app,
-  enters conditions, flu shots and lab results whose dates are a year, a month or a time to the hour, under the rule
-  list's version 13.
+  units and times differ by a little, under the rule list's version 12, and imports a hospital's summary, an exchange's
+  that names the hospital as its author, and a clinic's, each holding a potassium of one business identifier, under the
+  rule list's version 13. Hana, with the vocabulary's rule list of an app, enters conditions, flu
+  shots and lab results whose dates are a year, a month or a time to the hour, under the rule list's version 14.
 
   Rule: M1. A step's records are those with at least one first revision from that step's import, entry session or connect, the servers its connect wrote any revision for, or all from acts its sync names
     A record's first revisions are those with no prov:wasRevisionOf; it has one or more, one from each writer that
@@ -250,9 +251,17 @@ Feature: The matcher's procedure
       queries/matcher/same-code-instant-different-units.rq, for lab results only. As R16, a finding for review, of two
       results of one code at one instant whose units differ.
 
-    Version 13 of the vocabulary's list changes the queries of R2, R4, R6, R8, R15, R16 and R17, whose examples are under
-    M22, so that each reads a date at the precision its source wrote (decisions/partial-dates-and-absent-reasons.md);
-    versions 1 to 12 pin the old files:
+    Version 13 of the vocabulary's list adds one row, whose examples are under M22:
+
+    - R18, cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule, justified
+      cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization:
+      queries/matcher/same-business-identifier-and-test-code-within-one-organization.rq, for lab results only. Two
+      results whose current versions carry one business identifier of a named system, one LOINC code and one time, or
+      one no time, from documents naming one organization record, or two currently the same organization.
+
+    Version 14 of the vocabulary's list changes the queries of R2, R4, R6, R8, R15, R16 and R17, whose examples are under
+    M23, so that each reads a date at the precision its source wrote (decisions/partial-dates-and-absent-reasons.md);
+    versions 1 to 13 pin the old files:
 
     - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-day-or-exact-time.rq,
       for immunizations only. As same-code-and-date.rq, with the date a day or a time its source wrote to the second.
@@ -276,8 +285,8 @@ Feature: The matcher's procedure
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
     and R10 in its version 6, R5's newer query and R11 in its version 7, R12 and R13 in its version 8, R3's and
     R4's changed queries in its version 9, R11's and R13's in its version 10, R14 as well in its version 11, and R6's
-    changed query, R15, R16 and R17 in its version 12, and R2's, R4's, R6's, R8's, R15's, R16's and R17's changed
-    queries in its version 13.
+    changed query, R15, R16 and R17 in its version 12, R18 as well in its version 13, and R2's, R4's, R6's, R8's,
+    R15's, R16's and R17's changed queries in its version 14.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -699,7 +708,7 @@ Feature: The matcher's procedure
     and a dateTime compare, and a time zone never moves a day, unlike R6's instants. Both bounds count. A condition
     with no onset joins nothing. So a condition two sources both call active joins whatever onsets they give, and two
     episodes that are each over, and apart, do not.
-    That is R8 in the rule list's versions 4 to 12, which these examples run under; M22 says how version 13 reads a
+    That is R8 in the rule list's versions 4 to 12, which these examples run under; M23 says how version 14 reads a
     date that is a year or a month.
 
     Hana's "episodes" are conditions of J18.9 (three), E11.9 (two), R10.9 (two) and SNOMED CT 195662009 (two).
@@ -1091,9 +1100,9 @@ Feature: The matcher's procedure
     M18's is: its type, its kind, its oa:motivatedBy oa:classifying, the two records as its oa:hasTarget and their
     current versions as its prov:used. A run files it for each pair the query gives that the pod holds no finding of,
     so a second run files none. "What needs review" lists it while both records are still at those versions, until a
-    person acknowledges it or judges the two the same or different. A shared business identifier within one
-    organization joins no result yet: it is a later rule list version's (jayostis/cascade-vocabulary#221). The review
-    page's lines for R15's joins and for the findings are shown by the vocabulary's fixtures.
+    person acknowledges it or judges the two the same or different, or while R18 joins them and one says it was
+    corrected or amended (M22). The review page's
+    lines for R15's joins and for the findings are shown by the vocabulary's fixtures.
 
     Background:
       Given a new pod for Gus on 2026-10-01 at 09:00
@@ -1120,17 +1129,53 @@ Feature: The matcher's procedure
         | different result units at one instant  | lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium, other lab" |
         | different result units at one instant  | lab result LOINC 2823-3 "Potassium repeat", lab result LOINC 2823-3 "Potassium, other lab" |
 
-  Rule: M22. A date is compared at the precision its source wrote
+  Rule: M22. Two lab results of one business identifier and one code, from documents of one organization, are the same result for certain
+    decisions/quantities.md, row "matcher", tier (i). From the rule list's version 13, R18 joins two lab results whose
+    current versions carry one dct:identifier, one LOINC code and one clinically relevant time, or of which one states
+    no time, when the documents their revisions come from name, as custodian or author (cascade:CustodianRole,
+    cascade:AuthorRole), one organization record, or two a person judged the same organization
+    (cascade:currentlySameOrganization). An identifier is compared as the literal it is, its value typed by its system,
+    which the adapters write alike from a FHIR Observation.identifier and a C-CDA observation's id, by HL7's CDA-to-FHIR
+    identifier mapping, a UUID in lower case in both: so a hospital's FHIR summary and its C-CDA summary give one result
+    one identifier, as the adapters' fixtures show. An identifier with no system, a plain string, is never compared,
+    since an organization runs many systems and nothing says which issued it. Times are compared as M21 compares them:
+    two with a time zone when they name one moment, two with none when written alike, one of each never, a day alone
+    only with that day. A source that files serial draws under one accession gives them one identifier, and their times
+    keep them apart; a correction keeps its specimen's time, so it joins. The value is not compared: "What needs review"
+    leaves out a finding of R16 or R17 of two results R18 joins when the current version of one says it was corrected or
+    amended (cascade:workflowStatus), and lists it otherwise, since two channels of one organization disagreeing is for
+    a person to see; it never counts R18 as a kind of sameness of its own. An agent that is no organization record, as
+    the author an Apple Health export names, names no organization, and a record whose documents name no organization,
+    as a pull from a server does, is joined by no identifier: which organization a record from a server serving many
+    belongs to is open (decisions/republishing-sources.md, "Still open"), so neither a server judged the same nor two
+    organizations pulled from servers a join made one record are an organization judged the same, and this rule holds
+    two records apart until their documents say whose they are.
+
+    Example: a potassium from the hospital's summary and the one from an exchange's summary that names the hospital as its author carry one identifier and one instant and are the same result, and the clinic's of that identifier joins neither
+      Given a new pod for Gus on 2026-10-01 at 09:00
+      And the pod is opened with the tables "app-identifiers" on 2026-10-01 at 09:01
+      And the download "hospital-summary.xml" is imported on 2026-10-03 at 09:00
+      And Gus files the judgment "about-the-summaries" on 2026-10-03 at 09:05
+      And the download "exchange-summary.xml" is imported on 2026-10-04 at 09:00
+      And the matcher runs on the records of that import on 2026-10-04 at 09:05 (match-exchange)
+      And the download "clinic-summary.xml" is imported on 2026-10-05 at 09:00
+      When the matcher runs on the records of that import on 2026-10-05 at 09:05 (match-clinic)
+      Then the matcher's judgments holding lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium" and lab result LOINC 2823-3 "Potassium, clinic" are:
+        | justification                                                  | members                                                                        | used                                                                                                     |
+        | same business identifier and test code within one organization | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium" | version 1 of lab result LOINC 2823-3 "Potassium", version 1 of lab result LOINC 2823-3 "Serum potassium" |
+        | same result                                                    | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium" | version 1 of lab result LOINC 2823-3 "Potassium", version 1 of lab result LOINC 2823-3 "Serum potassium" |
+
+  Rule: M23. A date is compared at the precision its source wrote
     decisions/partial-dates-and-absent-reasons.md, rows "datatype", "comparison and order", "matching partial to full"
     and "hour precision from CDA". A date is typed by what its source wrote: xsd:gYear for a year, xsd:gYearMonth for a
     month, xsd:date for a day, xsd:dateTime for a time, and nothing is padded but a time written to the hour or the
     minute, which is held padded to the second beside the characters its source sent (cascade:PaddedDateTime). XSD
     makes the four types incomparable, so "2019" never equals "2019-10-01", by term or by value: R2, which compares
-    dates by term, never joins a year or a month with a day. From the rule list's version 13, R2 and R4 join only a day
-    or a time its source wrote to the second: two shots dated to one year, or to one padded hour, may be two shots. From the rule list's version 13, R8 reads each onset and
-    abatement as the days it covers, as FHIR search reads a date, a year from 1 January to 31 December and a month
-    from its first day to its last, so a condition begun in 2019 and over within it overlaps one of 1 June 2019. R6,
-    R16 and R17 never read a padded time as an instant, since its source did not say the second; R15 counts it as a
+    dates by term, never joins a year or a month with a day. From the rule list's version 14, R2 and R4 join only a day
+    or a time its source wrote to the second: two shots dated to one year, or to one padded hour, may be two shots. From the
+    rule list's version 14, R8 reads each onset and abatement as the days it covers, as FHIR search reads a date, a
+    year from 1 January to 31 December and a month from its first day to its last, so a condition begun in 2019 and
+    over within it overlaps one of 1 June 2019. R6, R16 and R17 never read a padded time as an instant, since its source did not say the second; R15 counts it as a
     day alone, so two results at one padded hour are joined only as likely. A year or a month is no day, and a result
     stamped with one joins nothing. A result whose value is absent for a reason (cascade:ValueAbsentForReason) has no
     value kind, and joins nothing.

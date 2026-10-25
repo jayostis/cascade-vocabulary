@@ -151,7 +151,11 @@ record by record, and the source is one more thing they may not want known.
   which the within-organisation derivation now depends on. Until it is ruled, the server Same's derivation holds two
   records apart only when their documents name custodians that are not one organisation, so records from pulls, which
   name none, are joined whenever the Same holds: a working choice pending Jay on
-  [#204](https://github.com/jayostis/cascade-vocabulary/issues/204), not a ruling.
+  [#204](https://github.com/jayostis/cascade-vocabulary/issues/204), not a ruling. The within-organisation identifier
+  rule for lab results (R18, `runtime/matcher.feature` M22, #270) assumes the other way round, the safe direction: a
+  record's organisation is one its documents name as custodian or author, or one a Same joins to it, and a record
+  whose documents name none, as every pull's, is joined by no identifier; a server Same counts for nothing there,
+  since one server serves many organisations.
 - The amended `jdg:currentlySame`.
 - A matcher rule for organisations: `jdg:SameBusinessIdentifier` needs a shared code, which an organisation lacks,
   and M2 takes no organisation's record.

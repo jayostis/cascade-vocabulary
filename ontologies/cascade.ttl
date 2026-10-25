@@ -1620,6 +1620,14 @@ dct:isReplacedBy a rdf:Property ;
     rdfs:subPropertyOf dct:relation ;
     dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> .
 
+dct:identifier a owl:DatatypeProperty ;
+    rdfs:label "Identifier"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:range rdfs:Literal ;
+    rdfs:subPropertyOf <http://purl.org/dc/elements/1.1/identifier> ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
 # Test terms, used with W3C's mf: test-manifest vocabulary
 
 cascade:lensQueryPath a owl:ObjectProperty ;
@@ -1809,6 +1817,11 @@ cascade:SameResult a owl:NamedIndividual ;
     rdfs:comment "Both lab results carry one test code, one instant, and one value of one kind in one unit, the units' UCUM annotations aside. In the rule list's versions 2 to 10 they carried one test code, one time and one value as written, however each wrote its unit."@en ;
     skos:broadMatch semapv:LexicalMatching .
 
+cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization a owl:NamedIndividual ;
+    rdfs:label "same business identifier and test code within one organization"@en ;
+    rdfs:comment "Both lab results carry one business identifier of a named system and one test code, and one clinically relevant time, or one of them none, and documents they came from name one organization record, or two currently the same organization, as custodian or author: a certain join, ahead of every other rule for lab results. Rule M22 and decisions/quantities.md, row \"matcher\", say why."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
 cascade:SameResultOnOneDay a owl:NamedIndividual ;
     rdfs:label "same result on one day"@en ;
     rdfs:comment "Both lab results carry one test code, one value of one kind in one unit, and one day, at least one of them a day with no time, so two draws that day cannot be told apart: a likely join, which the review page lists."@en ;
@@ -1858,6 +1871,10 @@ cascade:RuleListVersionMigration a owl:Class ;
 cascade:currentlySame a owl:ObjectProperty ;
     rdfs:label "currently same"@en ;
     rdfs:comment "Derived: two records that a counting Same joins, or that are of one type and id under two servers a counting Same joins (queries/derivations/same-records-under-same-servers.rq), and that no counting Different separates."@en .
+
+cascade:currentlySameOrganization a owl:ObjectProperty ;
+    rdfs:label "currently same organization"@en ;
+    rdfs:comment "Derived: two organization records a counting Same judgment names together and no counting Different separates (queries/derivations/same-organizations.rq); never two that a join of their servers alone makes one record."@en .
 
 cascade:currentlyDifferent a owl:ObjectProperty ;
     rdfs:label "currently different"@en ;
@@ -2144,6 +2161,10 @@ cascade:DifferentResultUnitsRule a owl:NamedIndividual ;
 cascade:SameResultOnOneDayRule a owl:NamedIndividual ;
     rdfs:label "R15, same result on one day"@en ;
     rdfs:comment "Rule R15 of runtime/matcher.feature; its judgments are justified cascade:SameResultOnOneDay."@en .
+
+cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule a owl:NamedIndividual ;
+    rdfs:label "R18, same business identifier and test code within one organization"@en ;
+    rdfs:comment "Rule R18 of runtime/matcher.feature; its judgments are justified cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization."@en .
 
 # Servers and organizations
 

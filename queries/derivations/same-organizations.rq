@@ -1,0 +1,15 @@
+# Two organization records named together by a counting Same judgment are currently the same organization, unless they
+# are also currently different. Only a judgment joins two organizations here: two organizations pulled from servers a
+# counting Same joins are one record to currentlySame (same-records-under-same-servers.rq), but not one organization,
+# since a server serving many organizations says nothing of whose records are whose.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT { ?a cascade:currentlySameOrganization ?b }
+WHERE {
+  ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?a , ?b .
+  FILTER (?a != ?b)
+  ?a a cascade:Organization .
+  ?b a cascade:Organization .
+  FILTER NOT EXISTS { ?a cascade:currentlyDifferent ?b }
+}
