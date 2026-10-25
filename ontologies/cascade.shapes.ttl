@@ -1557,8 +1557,9 @@ cascade:JudgmentShape a sh:NodeShape ;
         sh:path cascade:verdict ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About cascade:Before cascade:Acknowledged ) ;
-        sh:message "A judgment gives one verdict: cascade:Same, cascade:Different, cascade:Erroneous, cascade:About, cascade:Before or cascade:Acknowledged. A retraction is no judgment but an activity."@en ;
+        sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About cascade:Before cascade:Acknowledged
+                cascade:ClockDiscounted ) ;
+        sh:message "A judgment gives one verdict: cascade:Same, cascade:Different, cascade:Erroneous, cascade:About, cascade:Before, cascade:Acknowledged or cascade:ClockDiscounted. A retraction is no judgment but an activity."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:hadMember ;
@@ -1725,6 +1726,16 @@ cascade:AcknowledgedShape a sh:NodeShape ;
     sh:message "An Acknowledged judgment has one member, a finding for review."@en ;
     sh:severity sh:Violation .
 
+cascade:ClockDiscountedShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path cascade:verdict ; sh:hasValue cascade:ClockDiscounted ] ]
+        [ sh:property [ sh:path prov:hadMember ; sh:minCount 1 ; sh:maxCount 1 ; sh:class prov:Activity ] ,
+                      [ sh:path prov:wasAttributedTo ; sh:class prov:Person ] ]
+    ) ;
+    sh:message "A ClockDiscounted is a person's, and its one member is an act."@en ;
+    sh:severity sh:Violation .
+
 cascade:BeforeVerdictShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
@@ -1811,8 +1822,9 @@ cascade:FindingForReviewShape a sh:NodeShape ;
         sh:path oa:hasBody ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( cascade:ClaimsNoLongerReached cascade:DifferentResultValuesAtOneInstant cascade:DifferentResultUnitsAtOneInstant ) ;
-        sh:message "A finding for review gives one kind, its oa:hasBody: cascade:ClaimsNoLongerReached, cascade:DifferentResultValuesAtOneInstant or cascade:DifferentResultUnitsAtOneInstant."@en ;
+        sh:in ( cascade:ClaimsNoLongerReached cascade:SourceReportedOlderStates cascade:ClockBehind
+                cascade:DifferentResultValuesAtOneInstant cascade:DifferentResultUnitsAtOneInstant ) ;
+        sh:message "A finding for review gives one kind, its oa:hasBody: cascade:ClaimsNoLongerReached, cascade:SourceReportedOlderStates, cascade:ClockBehind, cascade:DifferentResultValuesAtOneInstant or cascade:DifferentResultUnitsAtOneInstant."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path oa:motivatedBy ;
@@ -1832,6 +1844,18 @@ cascade:FindingForReviewShape a sh:NodeShape ;
         sh:nodeKind sh:IRI ;
         sh:maxCount 1 ;
         sh:message "A finding names at most one rule list version that no longer reaches its claims, by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:contradictedEarlierRevision ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A finding names each earlier revision its source contradicts by its IRI."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:writerClockBehindByAtLeastDays ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:maxCount 1 ;
+        sh:message "A finding names at most one number of days a writer's clock was behind, a whole number of at least one."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:wasGeneratedBy ;
@@ -1855,6 +1879,26 @@ cascade:ClaimsNoLongerReachedShape a sh:NodeShape ;
                       [ sh:path oa:hasTarget ; sh:class cascade:Judgment ] ]
     ) ;
     sh:message "A finding of claims no longer reached names the rule list version that no longer reaches them, and its targets are the matcher's claims."@en ;
+    sh:severity sh:Violation .
+
+cascade:SourceReportedOlderStatesShape a sh:NodeShape ;
+    sh:targetClass cascade:FindingForReview ;
+    sh:or (
+        [ sh:not [ sh:path oa:hasBody ; sh:hasValue cascade:SourceReportedOlderStates ] ]
+        [ sh:property [ sh:path cascade:contradictedEarlierRevision ; sh:minCount 1 ; sh:class cascade:Revision ] ,
+                      [ sh:path oa:hasTarget ; sh:class cascade:Revision ] ]
+    ) ;
+    sh:message "A finding of a source that reported older states names the earlier revisions it contradicts, and its targets are the revisions holding the older states."@en ;
+    sh:severity sh:Violation .
+
+cascade:ClockBehindShape a sh:NodeShape ;
+    sh:targetClass cascade:FindingForReview ;
+    sh:or (
+        [ sh:not [ sh:path oa:hasBody ; sh:hasValue cascade:ClockBehind ] ]
+        [ sh:property [ sh:path cascade:writerClockBehindByAtLeastDays ; sh:minCount 1 ] ,
+                      [ sh:path oa:hasTarget ; sh:class cascade:Revision ] ]
+    ) ;
+    sh:message "A finding of a clock behind names how many days behind, and its targets are revisions."@en ;
     sh:severity sh:Violation .
 
 cascade:FindingOfTwoLabResultsShape a sh:NodeShape ;

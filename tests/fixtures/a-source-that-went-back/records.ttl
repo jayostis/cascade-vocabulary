@@ -1,0 +1,58 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:pulledFirst pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:pulledSecond pav:retrievedOn "2026-01-10T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:pulledAfterTheRestore pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+
+:gout a cascade:ProblemOrDiagnosis .
+:goutActive prov:specializationOf :gout ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "active" .
+:goutResolved prov:specializationOf :gout ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "resolved" .
+:goutFirst a cascade:Revision ; cascade:revisionOf :gout ; cascade:version :goutActive ; pav:lastUpdateOn "2025-12-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasDerivedFrom :pulledFirst ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:goutSecond a cascade:Revision ; cascade:revisionOf :gout ; cascade:version :goutResolved ; prov:wasRevisionOf :goutFirst ;
+    pav:lastUpdateOn "2026-01-05T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledSecond ; prov:wasGeneratedBy :secondPull ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:asthma a cascade:ProblemOrDiagnosis .
+:asthmaActive prov:specializationOf :asthma ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .
+:asthmaInactive prov:specializationOf :asthma ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "inactive" .
+:asthmaRecurring prov:specializationOf :asthma ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "recurrence" .
+:asthmaFirst a cascade:Revision ; cascade:revisionOf :asthma ; cascade:version :asthmaActive ; pav:lastUpdateOn "2025-12-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasDerivedFrom :pulledFirst ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:asthmaSecond a cascade:Revision ; cascade:revisionOf :asthma ; cascade:version :asthmaInactive ; prov:wasRevisionOf :asthmaFirst ;
+    pav:lastUpdateOn "2026-01-08T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledSecond ; prov:wasGeneratedBy :secondPull ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+:asthmaRestored a cascade:Revision ; cascade:revisionOf :asthma ; cascade:version :asthmaRecurring ; prov:wasRevisionOf :asthmaSecond ;
+    pav:lastUpdateOn "2026-01-03T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledAfterTheRestore ; prov:wasGeneratedBy :restoredPull ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:eczema a cascade:ProblemOrDiagnosis .
+:eczemaActive prov:specializationOf :eczema ; cascade:patient :subject ; cascade:conditionName "Eczema" ; cascade:clinicalStatus "active" .
+:eczemaResolved prov:specializationOf :eczema ; cascade:patient :subject ; cascade:conditionName "Eczema" ; cascade:clinicalStatus "resolved" .
+:eczemaFirst a cascade:Revision ; cascade:revisionOf :eczema ; cascade:version :eczemaActive ; pav:lastUpdateOn "2025-12-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasDerivedFrom :pulledFirst ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:eczemaSecond a cascade:Revision ; cascade:revisionOf :eczema ; cascade:version :eczemaResolved ; prov:wasRevisionOf :eczemaFirst ;
+    pav:lastUpdateOn "2026-01-06T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledSecond ; prov:wasGeneratedBy :secondPull ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:psoriasis a cascade:ProblemOrDiagnosis .
+:psoriasisActive prov:specializationOf :psoriasis ; cascade:patient :subject ; cascade:conditionName "Psoriasis" ; cascade:clinicalStatus "active" .
+:psoriasisResolved prov:specializationOf :psoriasis ; cascade:patient :subject ; cascade:conditionName "Psoriasis" ; cascade:clinicalStatus "resolved" .
+:psoriasisFirst a cascade:Revision ; cascade:revisionOf :psoriasis ; cascade:version :psoriasisActive ; pav:lastUpdateOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
+    prov:wasDerivedFrom :pulledFirst ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:psoriasisSecond a cascade:Revision ; cascade:revisionOf :psoriasis ; cascade:version :psoriasisResolved ; prov:wasRevisionOf :psoriasisFirst ;
+    pav:lastUpdateOn "2025-12-01T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledSecond ; prov:wasGeneratedBy :secondPull ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .

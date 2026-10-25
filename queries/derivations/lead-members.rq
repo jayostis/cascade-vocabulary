@@ -1,17 +1,26 @@
-# An entry's lead is the candidate whose current revision has the greatest cascade:observedAsOf, then the least IRI. The
-# entry shows every member's fields, the lead's first.
+# An entry's lead is the candidate whose current revision has the greatest cascade:observedAsOf, beside every candidate
+# whose current revision a ClockDiscounted leaves carrying none, then the least IRI. The entry shows every member's
+# fields, the lead's first.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 CONSTRUCT { ?entry cascade:leadMember ?lead }
 WHERE {
   { SELECT ?entry (IRI(MIN(STR(?member))) AS ?lead)
     WHERE {
       { SELECT ?entry (MAX(?seen0) AS ?latestSeen)
-        WHERE { ?entry cascade:leadMemberCandidate/cascade:currentRevision/cascade:observedAsOf ?seen0 }
+        WHERE {
+          ?entry cascade:leadMemberCandidate/cascade:currentRevision ?revision0 .
+          ?revision0 cascade:observedAsOf ?observed0 .
+          OPTIONAL { ?revision0 cascade:observationTimeDiscountedBy ?discount0 }
+          BIND (IF(BOUND(?discount0), "0001-01-01T00:00:00Z"^^xsd:dateTime, ?observed0) AS ?seen0)
+        }
         GROUP BY ?entry }
       ?entry cascade:leadMemberCandidate ?member .
-      ?member cascade:currentRevision/cascade:observedAsOf ?seen .
-      FILTER (?seen = ?latestSeen)
+      ?member cascade:currentRevision ?revision .
+      ?revision cascade:observedAsOf ?seen .
+      OPTIONAL { ?revision cascade:observationTimeDiscountedBy ?discount }
+      FILTER (?seen = ?latestSeen || BOUND(?discount))
     }
     GROUP BY ?entry }
 }
