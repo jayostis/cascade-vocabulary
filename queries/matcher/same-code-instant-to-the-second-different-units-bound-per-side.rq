@@ -1,16 +1,9 @@
-# Two records of one kind match when their current versions give one test code, one instant, and one value of one kind
-# in one unit. Two times with zones are compared as instants, so one instant written in two time zones is one; two times
-# with no zone, as a C-CDA time may be written, are compared as written, and a time with a zone and one without never
-# match, since nothing says where the second was taken. A day with no time, and a time its source wrote to the hour or
-# the minute and the version holds padded (cascade:PaddedDateTime), which is its clinically relevant time, the one time
-# a lab result holds, is never an instant: it is same-code-day-or-padded-time-value-and-unit.rq's. A quantity's number
-# is compared by value, never as a term, so 6.8 and 6.80 are one number, with the same comparator or none on both. A
-# ratio compares its numerator and its denominator so, a range its low and its high bounds, each bound present on both
-# or on neither; a coded value shares a code; text is never compared. Units are compared as UCUM defines one unit: each
-# annotation in braces goes, a unit that was annotations alone is 1, the litre's two symbols, l and L, with any prefix,
-# are one, and every other difference of case is kept, so a count per minute annotated as beats is one per minute and
-# mmol/l is mmol/L, but Mmol/L is not. A UCUM unit is compared where a quantity has one, else its unit text. Each
-# ordered pair is a row.
+# Two records of one kind give a finding when their current versions give one test code, one instant, and values of one
+# kind other than text and coded, both holding a number in one place, the first (a quantity, a numerator, a low bound)
+# or the second (a denominator, a high bound), in units that differ: mmol/L and mg/dL may measure one draw, and no rule
+# converts one into the other. Times and units are read as same-code-instant-to-the-second-value-and-unit.rq reads them,
+# so units equal there are equal here, and a pair this query gives is joined by no rule and given by no other finding's
+# query. Each ordered pair is a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -68,6 +61,9 @@ WHERE {
     } }
   { SELECT ?other ?otherVersion ?code ?instant ?otherInstant ?valueKind ?otherFirstNumber ?otherFirstComparator ?otherFirstUnit ?otherSecondNumber ?otherSecondComparator ?otherSecondUnit
     WHERE {
+      { SELECT DISTINCT ?code
+        # bound: ?record
+        WHERE { ?record pav:hasCurrentVersion ?version . ?version cascade:testCode ?code } }
       ?other pav:hasCurrentVersion ?otherVersion .
       ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime ;
         cascade:resultValueKind ?valueKind .
@@ -117,14 +113,7 @@ WHERE {
     } }
   ?record pav:hasCurrentVersion ?version .
   FILTER (?record != ?other && ?instant = ?otherInstant)
-  FILTER (IF(?valueKind = cascade:CodedResultValue,
-                EXISTS { ?version cascade:resultCode ?sharedCode . ?otherVersion cascade:resultCode ?sharedCode },
-                (BOUND(?firstNumber) || BOUND(?secondNumber))
-                && BOUND(?firstNumber) = BOUND(?otherFirstNumber) && BOUND(?secondNumber) = BOUND(?otherSecondNumber)
-                && (!BOUND(?firstNumber)
-                    || (?firstNumber = ?otherFirstNumber && ?firstUnit = ?otherFirstUnit
-                        && COALESCE(?firstComparator, "") = COALESCE(?otherFirstComparator, "")))
-                && (!BOUND(?secondNumber)
-                    || (?secondNumber = ?otherSecondNumber && ?secondUnit = ?otherSecondUnit
-                        && COALESCE(?secondComparator, "") = COALESCE(?otherSecondComparator, "")))))
+  FILTER (?valueKind != cascade:CodedResultValue
+          && ((BOUND(?firstNumber) && BOUND(?otherFirstNumber) && ?firstUnit != ?otherFirstUnit)
+              || (BOUND(?secondNumber) && BOUND(?otherSecondNumber) && ?secondUnit != ?otherSecondUnit)))
 }

@@ -45,7 +45,7 @@ def prepared(query):
         return prepareQuery(query)
 
 
-TOKEN = re.compile(r'''"""(?:[^"\\]|\\.|"(?!""))*"""|\'\'\'(?:[^'\\]|\\.|'(?!''))*\'\'\'|#[^\n]*|<[^<>"{}|^`\\\s]*>'''
+TOKEN = re.compile(r'''"""(?:[^"\\]|\\.|"(?!""))*"""|\'\'\'(?:[^'\\]|\\.|'(?!''))*\'\'\'|#[^\n]*|<(?:[^<>"{}|^`\\\s0-9?$=!&|()+-][^<>"{}|^`\\\s]*)?>'''
                    r'''|"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|\\.|\{''')
 MARK = re.compile(r"#\s*bound:\s*\?record\s*")
 BEFORE_BRACE = re.compile(r"\s*(?:WHERE\s*)?", re.IGNORECASE)

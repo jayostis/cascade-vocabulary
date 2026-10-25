@@ -106,13 +106,18 @@ CURRENT_VERSIONS = "SELECT DISTINCT ?record WHERE { ?record <http://purl.org/pav
 @pytest.mark.parametrize("fixture", [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES
                                      if fixture.name.startswith("matcher-")])
 def test_a_comparison_bound_in_the_groups_it_marks_gives_its_unbound_rows_of_the_records_bound(fixture):
+    """And a comparison bound per side gives, unbound, the rows of the comparison it was made from."""
     store = built_once(fixture, "oxigraph", LENSES[0]).store
     records = sorted(str(found["record"]) for found in store.select(CURRENT_VERSIONS))[::2]
     assert MARKED and records
     for name, relative in MARKED.items():
         text = query(relative)
+        rows = Counter(row(found) for found in store.select(text))
         unbound = Counter(row(found) for found in store.select(text) if str(found["record"]) in records)
         assert Counter(row(found) for found in store.select(bound_to_records(text, records))) == unbound, name
+        unmarked = named("matcher").get(name.removesuffix("-bound-per-side"))
+        if unmarked != relative:
+            assert Counter(row(found) for found in store.select(query(unmarked))) == rows, name
 
 
 def test_each_engine_loads_the_default_graph_of_a_trig_file_into_its_default_graph_against_one_base(tmp_path):

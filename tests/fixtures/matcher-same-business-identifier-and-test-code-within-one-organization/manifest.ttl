@@ -8,34 +8,12 @@
   rdfs:comment "Potassiums carrying one business identifier of one system: from a FHIR summary and a C-CDA summary whose custodian is the hospital, at one instant written in two zones; a correction from the FHIR summary at that instant; a later draw from the C-CDA summary filed under that identifier; from a summary whose custodian is the organization a merger gave the hospital, which the person judged the same as it, stating no time; from an exchange's summary that names the hospital as an author; from a clinic's summary, the clinic judged the same as an organization pulled from an exchange's new server, and the hospital as that organization pulled from its old one, the two servers judged one; and from a pull, whose document names no organization. Two potassiums of another identifier from a health export whose author is an agent with no organization record. A sodium carrying the first identifier from the hospital's summary, a potassium carrying its value under another system, two glucoses sharing an identifier with no system from the hospital's two summaries, and a potassium whose current version dropped the identifier its first version carried. Every record but the one after the merger is a record of the run." ;
   mf:entries (
     <#same-business-identifier-and-test-code-within-one-organization>
-    <#same-business-identifier-and-test-code-within-one-organization-bound-on-the-record-side>
   ) .
 
 <#same-business-identifier-and-test-code-within-one-organization> a mf:QueryEvaluationTest ;
   mf:name "same-business-identifier-and-test-code-within-one-organization" ;
   rdfs:comment "The five potassiums of the hospital at one instant match one another: the hospital's two, the correction, the one after the merger, the organizations being judged one, and the exchange's, which names the hospital as author. The later draw matches only the one after the merger, which states no time. Not matched: the clinic's, joined to the hospital only through the servers' join; the pulled one; the two exported, whose author is no organization record; the sodium, which has another code; the potassium under another system; the two glucoses, whose identifier names no system; and the potassium that no longer carries the identifier." ;
   mf:action [ qt:query <../../../queries/matcher/same-business-identifier-and-test-code-within-one-organization.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:authoredByTheHospital> ,
-                                  <urn:x:correction> ,
-                                  <urn:x:elsewhere> ,
-                                  <urn:x:exportedFirst> ,
-                                  <urn:x:exportedSecond> ,
-                                  <urn:x:fromCcda> ,
-                                  <urn:x:fromFhir> ,
-                                  <urn:x:identifierDropped> ,
-                                  <urn:x:noSystemFirst> ,
-                                  <urn:x:noSystemSecond> ,
-                                  <urn:x:otherCode> ,
-                                  <urn:x:otherSystem> ,
-                                  <urn:x:pulled> ,
-                                  <urn:x:serialDraw> ] ;
-  mf:result <same-business-identifier-and-test-code-within-one-organization.srj> .
-
-<#same-business-identifier-and-test-code-within-one-organization-bound-on-the-record-side> a mf:QueryEvaluationTest ;
-  mf:name "same-business-identifier-and-test-code-within-one-organization-bound-on-the-record-side" ;
-  rdfs:comment "The rows same-business-identifier-and-test-code-within-one-organization.rq gives: it is that query with the record's side marked for a run that binds ?record (M4)." ;
-  mf:action [ qt:query <../../../queries/matcher/same-business-identifier-and-test-code-within-one-organization-bound-on-the-record-side.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               cascade:boundRecord <urn:x:authoredByTheHospital> ,
                                   <urn:x:correction> ,

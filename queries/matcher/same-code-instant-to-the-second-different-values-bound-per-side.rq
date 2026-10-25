@@ -64,6 +64,9 @@ WHERE {
     } }
   { SELECT ?other ?otherVersion ?code ?instant ?otherInstant ?otherValueKind ?otherFirstNumber ?otherFirstComparator ?otherFirstUnit ?otherSecondNumber ?otherSecondComparator ?otherSecondUnit
     WHERE {
+      { SELECT DISTINCT ?code
+        # bound: ?record
+        WHERE { ?record pav:hasCurrentVersion ?version . ?version cascade:testCode ?code } }
       ?other pav:hasCurrentVersion ?otherVersion .
       ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime ;
         cascade:resultValueKind ?otherValueKind .

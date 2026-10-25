@@ -45,7 +45,11 @@ WHERE {
     } }
   { SELECT ?other ?identifier ?code ?moment
     WHERE {
-      { ?other pav:hasCurrentVersion ?otherVersion .
+      {
+        { SELECT DISTINCT ?identifier ?code
+          # bound: ?record
+          WHERE { ?record pav:hasCurrentVersion ?version . ?version dct:identifier ?identifier ; cascade:testCode ?code } }
+        ?other pav:hasCurrentVersion ?otherVersion .
         ?otherVersion dct:identifier ?identifier ; cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime .
         BIND (COALESCE(IF(DATATYPE(?otherTime) = xsd:dateTime,
                           IF(TZ(?otherTime) != "", STR(?otherTime - "1970-01-01T00:00:00Z"^^xsd:dateTime),
@@ -54,6 +58,9 @@ WHERE {
       UNION
       { { SELECT ?other ?otherVersion ?identifier ?code
           WHERE {
+            { SELECT DISTINCT ?identifier ?code
+              # bound: ?record
+              WHERE { ?record pav:hasCurrentVersion ?version . ?version dct:identifier ?identifier ; cascade:testCode ?code } }
             ?other pav:hasCurrentVersion ?otherVersion .
             ?otherVersion dct:identifier ?identifier ; cascade:testCode ?code .
             FILTER NOT EXISTS { ?otherVersion cascade:resultClinicallyRelevantTime ?otherTime }

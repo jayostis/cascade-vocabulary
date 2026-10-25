@@ -1,12 +1,15 @@
-# Two records of one kind match when their current versions give one test code, one day, and one value of one kind in
-# one unit, and at least one of the two times is no instant: a day with no time, or a time its source wrote to the hour
-# or the minute and the version holds padded (cascade:PaddedDateTime), which is its clinically relevant time, the one
-# time a lab result holds. It is a likely join, since two draws that day cannot be told apart. A day is the first ten
-# characters of the time as written, so a time zone never moves it; a year or a month is no day and joins nothing. Two
-# instants are same-code-instant-to-the-second-value-and-unit.rq's, and two instants on one day never join. Values and
-# units are compared as that query compares them: a quantity's number by value, with the same comparator or none on
-# both; a ratio's two parts and a range's two bounds so; a coded value by a shared code; text never; units with their
-# UCUM annotations dropped, a unit of annotations alone being 1, the litre's l and L one, and other case kept. Each
+# Two records of one kind match when their current versions give one test code, one instant, and one value of one kind
+# in one unit. Two times with zones are compared as instants, so one instant written in two time zones is one; two times
+# with no zone, as a C-CDA time may be written, are compared as written, and a time with a zone and one without never
+# match, since nothing says where the second was taken. A day with no time, and a time its source wrote to the hour or
+# the minute and the version holds padded (cascade:PaddedDateTime), which is its clinically relevant time, the one time
+# a lab result holds, is never an instant: it is same-code-day-or-padded-time-value-and-unit.rq's. A quantity's number
+# is compared by value, never as a term, so 6.8 and 6.80 are one number, with the same comparator or none on both. A
+# ratio compares its numerator and its denominator so, a range its low and its high bounds, each bound present on both
+# or on neither; a coded value shares a code; text is never compared. Units are compared as UCUM defines one unit: each
+# annotation in braces goes, a unit that was annotations alone is 1, the litre's two symbols, l and L, with any prefix,
+# are one, and every other difference of case is kept, so a count per minute annotated as beats is one per minute and
+# mmol/l is mmol/L, but Mmol/L is not. A UCUM unit is compared where a quantity has one, else its unit text. Each
 # ordered pair is a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
@@ -14,16 +17,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?record ?other
 WHERE {
-  { SELECT ?record ?version ?code ?day ?dayAlone ?valueKind ?firstNumber ?firstComparator ?firstUnit ?secondNumber ?secondComparator ?secondUnit
+  { SELECT ?record ?version ?code ?instant ?valueKind ?firstNumber ?firstComparator ?firstUnit ?secondNumber ?secondComparator ?secondUnit
     # bound: ?record
     WHERE {
       ?record pav:hasCurrentVersion ?version .
       ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time ;
         cascade:resultValueKind ?valueKind .
-      FILTER (DATATYPE(?time) IN (xsd:date, xsd:dateTime) && ?valueKind != cascade:TextResultValue)
-      OPTIONAL { ?version cascade:paddedDateTime ?padded }
-      BIND (SUBSTR(STR(?time), 1, 10) AS ?day)
-      BIND (DATATYPE(?time) = xsd:date || BOUND(?padded) AS ?dayAlone)
+      FILTER (DATATYPE(?time) = xsd:dateTime && ?valueKind != cascade:TextResultValue)
+      MINUS { ?version cascade:paddedDateTime ?padded }
+      BIND (IF(TZ(?time) != "", STR(?time - "1970-01-01T00:00:00Z"^^xsd:dateTime),
+               CONCAT("local ", STR(?time - "1970-01-01T00:00:00"^^xsd:dateTime))) AS ?instant)
       OPTIONAL { ?version cascade:resultQuantity ?firstQuantity . ?firstQuantity cascade:decimalValue ?firstQuantityNumber .
                  OPTIONAL { ?firstQuantity cascade:quantityComparator ?firstQuantityComparator }
                  OPTIONAL { ?firstQuantity cascade:ucumUnit ?firstQuantityUcum }
@@ -63,16 +66,19 @@ WHERE {
             AS ?secondUnitFolded)
       BIND (IF(?secondUnitFolded = "" && ?secondUnitWritten != "", "1", ?secondUnitFolded) AS ?secondUnit)
     } }
-  { SELECT ?other ?otherVersion ?code ?day ?otherDay ?otherDayAlone ?valueKind ?otherFirstNumber ?otherFirstComparator ?otherFirstUnit ?otherSecondNumber ?otherSecondComparator ?otherSecondUnit
+  { SELECT ?other ?otherVersion ?code ?instant ?otherInstant ?valueKind ?otherFirstNumber ?otherFirstComparator ?otherFirstUnit ?otherSecondNumber ?otherSecondComparator ?otherSecondUnit
     WHERE {
+      { SELECT DISTINCT ?code
+        # bound: ?record
+        WHERE { ?record pav:hasCurrentVersion ?version . ?version cascade:testCode ?code } }
       ?other pav:hasCurrentVersion ?otherVersion .
       ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime ;
         cascade:resultValueKind ?valueKind .
-      FILTER (DATATYPE(?otherTime) IN (xsd:date, xsd:dateTime) && ?valueKind != cascade:TextResultValue)
-      BIND (SUBSTR(STR(?otherTime), 1, 10) AS ?otherDay)
-      BIND (?otherDay AS ?day)
-      OPTIONAL { ?otherVersion cascade:paddedDateTime ?otherPadded }
-      BIND (DATATYPE(?otherTime) = xsd:date || BOUND(?otherPadded) AS ?otherDayAlone)
+      FILTER (DATATYPE(?otherTime) = xsd:dateTime && ?valueKind != cascade:TextResultValue)
+      MINUS { ?otherVersion cascade:paddedDateTime ?otherPadded }
+      BIND (IF(TZ(?otherTime) != "", STR(?otherTime - "1970-01-01T00:00:00Z"^^xsd:dateTime),
+               CONCAT("local ", STR(?otherTime - "1970-01-01T00:00:00"^^xsd:dateTime))) AS ?otherInstant)
+      BIND (?otherInstant AS ?instant)
       OPTIONAL { ?otherVersion cascade:resultQuantity ?otherFirstQuantity . ?otherFirstQuantity cascade:decimalValue ?otherFirstQuantityNumber .
                  OPTIONAL { ?otherFirstQuantity cascade:quantityComparator ?otherFirstQuantityComparator }
                  OPTIONAL { ?otherFirstQuantity cascade:ucumUnit ?otherFirstQuantityUcum }
@@ -113,7 +119,7 @@ WHERE {
       BIND (IF(?otherSecondUnitFolded = "" && ?otherSecondUnitWritten != "", "1", ?otherSecondUnitFolded) AS ?otherSecondUnit)
     } }
   ?record pav:hasCurrentVersion ?version .
-  FILTER (?record != ?other && ?day = ?otherDay && (?dayAlone || ?otherDayAlone))
+  FILTER (?record != ?other && ?instant = ?otherInstant)
   FILTER (IF(?valueKind = cascade:CodedResultValue,
                 EXISTS { ?version cascade:resultCode ?sharedCode . ?otherVersion cascade:resultCode ?sharedCode },
                 (BOUND(?firstNumber) || BOUND(?secondNumber))
