@@ -96,8 +96,11 @@ Feature: Currency
     decisions/currency.md, row "entry on a Same group", and its lead. An entry's cascade:leadMember is a record the
     person entered when it holds one; otherwise the member left once a Before outside a cycle has placed the
     others' current revisions before it, ranked as the ladder's last three steps rank revisions. A view takes the
-    entry's name and codes from its lead, and queries/questions/entry/What it shows.rq lists every value each member's
-    current version states, saying which member it came from, the lead's first. No merged record is stored.
+    entry's name and codes from its lead, and holds each member's current values as a node of its own
+    (cascade:memberCurrentValues), named after the entry and the member (N13), which names the member it came from
+    (cascade:valuesOfMember); queries/questions/entry/What it shows.rq lists them from the view alone, the lead's first.
+    No merged record is stored, and no triple of a version is copied into a view, so no count over the union sees one
+    twice.
 
     No example here shows this rule: no scripted input but a kit's joins a record the person entered to an imported
     one. Priya's kit shows it, P15 and P11, and tests/fixtures/the-lead-member and allergies-view show the rest.
@@ -119,3 +122,22 @@ Feature: Currency
 
     No example here shows this rule; A19 shows a discount answering a finding. The fixtures
     tests/fixtures/an-act-whose-clock-is-discounted, a-clock-found-behind and a-source-that-went-back show the rest.
+
+  Rule: C8. An act rebuilds only what it reached, and the views it leaves are those of a build of the whole pod
+    decisions/currency.md, row "view", and decisions/performance.md, row "current per act, incrementally". After an
+    act, the derived state, the views and the labels are those a build of the whole pod gives. A runtime need build
+    again only the records the act wrote a revision of and those its judgments, retractions, assertions and findings
+    reach through what each names, retracts, replaces, asserts or targets: a revision's record, each record an act
+    a judgment names revised, and each record one of whose versions names what a judgment names, as an About's profile; closed
+    over every record currently the same as one, before the act or by a judgment it wrote, each a version of one names
+    or whose version names one, each with one's source record id once two servers are judged the same, and each member
+    of a matcher Same over an older table version with one among its members, which M7 joins by their current versions.
+    An act that changes the current version of a reference series the pod described before, a migration of the rule
+    list versions (N15), an open, which gives the pod the tables it is read with, and a change to the trusted makers
+    change what every record's judgments count, and are built whole; a runtime may build any step whole. The
+    manifest's build activity used the writer's last snapshot (prov:used): a view whose manifest names another
+    snapshot than the writer's last is stale, and is built again.
+
+    No example shows this rule: an example reads a dataset built whole from the files its story wrote, so a build in
+    part and a build whole give it the same rows. Each runtime tests it itself, replaying every kit and building the
+    pod both ways after each step.

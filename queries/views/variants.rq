@@ -1,5 +1,6 @@
 # Each entry takes every member's gene symbol, HGVS expressions and ClinVar IDs, since codes are identity and nothing is
-# chosen among them, and the status of the member chosen for status.
+# chosen among them, and the status of the member chosen for status. Each member's current values are a node of the view
+# of their own, named after the entry and the member, which says the member they came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -12,13 +13,26 @@ CONSTRUCT {
     cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:geneSymbol ?memberGeneSymbol ;
+    cascade:hgvsCodingDnaExpression ?memberHgvsCodingDnaExpression ;
+    cascade:clinvarVariationId ?memberClinvarVariationId ;
+    cascade:workflowStatus ?memberWorkflowStatus .
 }
 WHERE {
-  ?record a cascade:GeneticVariantFinding ; cascade:inEntry ?entry .
-  ?entry cascade:leadMember ?lead .
-  OPTIONAL { ?record pav:hasCurrentVersion/cascade:geneSymbol ?gene }
-  OPTIONAL { ?record pav:hasCurrentVersion/cascade:hgvsCodingDnaExpression ?hgvs }
-  OPTIONAL { ?record pav:hasCurrentVersion/cascade:clinvarVariationId ?variation }
-  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
-             ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
+  { ?record a cascade:GeneticVariantFinding ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?record pav:hasCurrentVersion/cascade:geneSymbol ?gene }
+    OPTIONAL { ?record pav:hasCurrentVersion/cascade:hgvsCodingDnaExpression ?hgvs }
+    OPTIONAL { ?record pav:hasCurrentVersion/cascade:clinvarVariationId ?variation }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status } }
+  UNION
+  { ?member a cascade:GeneticVariantFinding ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:geneSymbol ?memberGeneSymbol }
+    OPTIONAL { ?memberVersion cascade:hgvsCodingDnaExpression ?memberHgvsCodingDnaExpression }
+    OPTIONAL { ?memberVersion cascade:clinvarVariationId ?memberClinvarVariationId }
+    OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus } }
 }

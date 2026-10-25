@@ -698,6 +698,14 @@ cascade:prescriptionWrittenDateFrom a owl:ObjectProperty ;
     rdfs:label "prescription written date from"@en ;
     rdfs:comment "Derived: the member whose prescription's written date a medication entry shows."@en .
 
+cascade:memberCurrentValues a owl:ObjectProperty ;
+    rdfs:label "member current values"@en ;
+    rdfs:comment "Derived: one member's current values as the entry's view holds them, a node of the view named after the entry and the member (N13): it names the member (cascade:valuesOfMember) and states what that member's current version states of the fields the view shows, so the view holds every member's values and the member each came from."@en .
+
+cascade:valuesOfMember a owl:ObjectProperty ;
+    rdfs:label "values of member"@en ;
+    rdfs:comment "Derived: the member of an entry whose current version states the values this node of its view holds."@en .
+
 cascade:topCriticality a owl:DatatypeProperty ;
     rdfs:label "top criticality"@en ;
     rdfs:comment "Derived: the most severe criticality a member states."@en ;
