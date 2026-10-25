@@ -10,6 +10,7 @@
     <#the-immunizations-view>
     <#my-immunizations>
     <#its-padded-times>
+    <#what-it-shows>
   ) .
 
 <#the-immunizations-view> a mf:QueryEvaluationTest ;
@@ -32,3 +33,10 @@
   mf:action [ qt:query <its-padded-times.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <its-padded-times.srj> .
+
+<#what-it-shows> a mf:QueryEvaluationTest ;
+  mf:name "what-it-shows" ;
+  rdfs:comment "A time its source wrote to the hour is shown once, as the time, with the member that states it, and the node saying it was written short of the second is no field value." ;
+  mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-it-shows.srj> .
