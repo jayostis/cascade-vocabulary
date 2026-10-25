@@ -1,6 +1,8 @@
 # Each entry takes the name and codes of its lead, the status and abatement date of the member chosen for status, and
 # the onset of the member chosen for the date. Each member's current values are a node of the view of their own, named
-# after the entry and the member, which says the member they came from.
+# after the entry and the member, which says the member they came from. A time its source wrote short of the second
+# keeps the node saying so (cascade:PaddedDateTime), named after the entry or the member's values and -padded-, so the
+# view never shows a padded time as exact.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -23,6 +25,12 @@ CONSTRUCT {
     cascade:clinicalStatus ?memberClinicalStatus ;
     cascade:abatementDate ?memberAbatementDate ;
     cascade:onsetDate ?memberOnsetDate .
+  ?entry cascade:paddedDateTime ?onsetPadded .
+  ?onsetPadded cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:writtenDate ?onsetWritten .
+  ?entry cascade:paddedDateTime ?abatementPadded .
+  ?abatementPadded cascade:paddedDateTimeProperty cascade:abatementDate ; cascade:writtenDate ?abatementWritten .
+  ?memberValues cascade:paddedDateTime ?memberPadded .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
 }
 WHERE {
   { ?record a cascade:ProblemOrDiagnosis ; cascade:inEntry ?entry .
@@ -33,7 +41,13 @@ WHERE {
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:clinicalStatus ?status }
     OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:abatementDate ?abatement }
-    OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:onsetDate ?onset } }
+    OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:onsetDate ?onset }
+    OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?onsetPaddedAt .
+               ?onsetPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:writtenDate ?onsetWritten }
+    BIND (IF(BOUND(?onsetWritten), IRI(CONCAT(STR(?entry), "-padded-onsetDate")), 1/0) AS ?onsetPadded)
+    OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?abatementPaddedAt .
+               ?abatementPaddedAt cascade:paddedDateTimeProperty cascade:abatementDate ; cascade:writtenDate ?abatementWritten }
+    BIND (IF(BOUND(?abatementWritten), IRI(CONCAT(STR(?entry), "-padded-abatementDate")), 1/0) AS ?abatementPadded) }
   UNION
   { ?member a cascade:ProblemOrDiagnosis ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
@@ -42,5 +56,9 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:icd10Code ?memberIcd10Code }
     OPTIONAL { ?memberVersion cascade:clinicalStatus ?memberClinicalStatus }
     OPTIONAL { ?memberVersion cascade:abatementDate ?memberAbatementDate }
-    OPTIONAL { ?memberVersion cascade:onsetDate ?memberOnsetDate } }
+    OPTIONAL { ?memberVersion cascade:onsetDate ?memberOnsetDate }
+    OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+    BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
+          AS ?memberPadded) }
 }

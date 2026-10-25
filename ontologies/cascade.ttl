@@ -42,7 +42,7 @@ cascade:PatientProfile a owl:Class ;
 cascade:dateOfBirth a owl:DatatypeProperty ;
     rdfs:label "Date of Birth"@en ;
     rdfs:domain cascade:PatientProfile ;
-    rdfs:range xsd:date ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -138,7 +138,7 @@ cascade:allergyCategory a owl:DatatypeProperty ;
 cascade:onsetDate a owl:DatatypeProperty ;
     rdfs:label "Onset Date"@en ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:ProblemOrDiagnosis cascade:AllergyOrIntolerance ) ] ;
-    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -198,7 +198,7 @@ cascade:vaccineCode a owl:ObjectProperty ;
 cascade:vaccinationOccurrenceTime a owl:DatatypeProperty ;
     rdfs:label "Vaccination Occurrence Time"@en ;
     rdfs:domain cascade:Vaccination ;
-    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -279,7 +279,7 @@ cascade:resultInterpretation a owl:DatatypeProperty ;
 cascade:resultClinicallyRelevantTime a owl:DatatypeProperty ;
     rdfs:label "Result Clinically Relevant Time"@en ;
     rdfs:domain cascade:LaboratoryTestResult ;
-    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -301,7 +301,7 @@ cascade:procedureName a owl:DatatypeProperty ;
 cascade:procedureDate a owl:DatatypeProperty ;
     rdfs:label "Procedure Date"@en ;
     rdfs:domain cascade:MedicalProcedure ;
-    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -338,7 +338,7 @@ cascade:conditionCategory a owl:DatatypeProperty ;
 
 cascade:abatementDate a owl:DatatypeProperty ;
     rdfs:label "Abatement Date"@en ;
-    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -377,13 +377,13 @@ cascade:dosage a owl:DatatypeProperty ;
 
 cascade:medicationUseStartDate a owl:DatatypeProperty ;
     rdfs:label "Medication Use Start Date"@en ;
-    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
 cascade:medicationUseEndDate a owl:DatatypeProperty ;
     rdfs:label "Medication Use End Date"@en ;
-    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -439,7 +439,7 @@ cascade:acmgClassification a owl:ObjectProperty ;
 cascade:interpretedDate a owl:DatatypeProperty ;
     rdfs:label "Interpretation Date"@en ;
     rdfs:domain cascade:VariantInterpretation ;
-    rdfs:range xsd:date ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -474,7 +474,7 @@ cascade:prescriptionWrittenDate a owl:DatatypeProperty ;
     rdfs:label "prescription written date"@en ;
     rdfs:comment "Of a version of a prescribed medication, when the prescription was written, as FHIR's MedicationRequest.authoredOn: never the start of use."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
-    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:date xsd:dateTime ) ] ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.authoredOn> .
 
 cascade:userSelectedCode a owl:ObjectProperty ;
@@ -897,6 +897,51 @@ cascade:referenceRangeHigh a owl:ObjectProperty ;
     rdfs:range cascade:Quantity ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.referenceRange.high> .
 
+# A time written short of the second, and a value absent for a stated reason; decisions/partial-dates-and-absent-reasons.md
+
+cascade:PaddedDateTime a owl:Class ;
+    rdfs:label "padded date-time"@en ;
+    rdfs:comment "That one of a version's times was written by its source to the hour or the minute, and is held as an xsd:dateTime padded with zeros to the second, with no time zone where the source gave none: a node of the version, named by the version's IRI, #padded- and the local name of the property it is about, and hashed with it. The padded time sorts, compares and falls in a range as any xsd:dateTime does, and is never read as exact to the second: a query that needs its precision reads cascade:writtenDate. A year, a month or a day is no padded time, since its own type holds its precision."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/us/ccda/en/mappingGuidance.html> .
+
+cascade:paddedDateTime a owl:ObjectProperty ;
+    rdfs:label "padded date-time"@en ;
+    rdfs:comment "Of a version, the node saying that one of its times was written short of the second, one for each such property."@en ;
+    rdfs:range cascade:PaddedDateTime .
+
+cascade:paddedDateTimeProperty a owl:ObjectProperty ;
+    rdfs:label "padded date-time property"@en ;
+    rdfs:comment "The property of the version whose value is the padded time."@en ;
+    rdfs:domain cascade:PaddedDateTime ;
+    rdfs:range rdf:Property .
+
+cascade:writtenDate a owl:DatatypeProperty ;
+    rdfs:label "written date"@en ;
+    rdfs:comment "The time exactly as the source wrote it, every character kept: a CDA time to the hour, 2023053114, is written 2023053114, its offset too where it had one. How many digits it has is its precision."@en ;
+    rdfs:domain cascade:PaddedDateTime ;
+    rdfs:range xsd:string .
+
+cascade:ValueAbsentForReason a owl:Class ;
+    rdfs:label "value absent for a reason"@en ;
+    rdfs:comment "That a version holds no value for one property because its source said why: a node of the version, named by the version's IRI, #absent- and the property's local name, and hashed with it. A version holds it only where it holds no value for that property. A value a source left out without a reason has none, since a pod read open-world takes a missing triple as nothing said."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/extension-data-absent-reason.html> , <https://terminology.hl7.org/CodeSystem-v3-NullFlavor.html> .
+
+cascade:valueAbsentForReason a owl:ObjectProperty ;
+    rdfs:label "value absent for a reason"@en ;
+    rdfs:comment "Of a version, the node saying why it holds no value for one property, one for each such property."@en ;
+    rdfs:range cascade:ValueAbsentForReason .
+
+cascade:absentValueProperty a owl:ObjectProperty ;
+    rdfs:label "absent value property"@en ;
+    rdfs:comment "The property the version holds no value for. A lab result's value, of whatever kind, is cascade:resultValueKind's: with no value there is no kind."@en ;
+    rdfs:domain cascade:ValueAbsentForReason ;
+    rdfs:range rdf:Property .
+
+cascade:absentReasonCode a owl:ObjectProperty ;
+    rdfs:label "absent reason code"@en ;
+    rdfs:comment "Why the value is absent, as the source said it: the code's IRI in cascade:DataAbsentReason, as FHIR's dataAbsentReason or data-absent-reason extension gives it, or in cascade:NullFlavor, as CDA's nullFlavor gives it, one for each such coding the source gave. It is never mapped from one system into the other when written: a view that needs one list maps at read, and shows the source's own code where HL7's map has none."@en ;
+    rdfs:domain cascade:ValueAbsentForReason .
+
 # Reference tables and the matcher's rule list, as a runtime is given them; none of these is written to a pod
 
 cascade:defaultTableVersion a owl:ObjectProperty ;
@@ -1234,6 +1279,20 @@ cascade:ClinVar a cascade:CodeSystem ;
     cascade:codePageUrlTemplate "https://www.ncbi.nlm.nih.gov/clinvar/variation/{code}/" ;
     cascade:codingSystemUri "http://www.ncbi.nlm.nih.gov/clinvar"^^xsd:anyURI ;
     dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/hta/namingSystems/clinVarV.xml> .
+
+cascade:DataAbsentReason a cascade:CodeSystem ;
+    rdfs:label "FHIR data absent reason"@en ;
+    rdfs:comment "The code as FHIR writes it: unknown, asked-unknown, masked. Cascade's own space: HL7 Terminology, which publishes the system, registers no IRI stem for it, and Bioregistry names HL7's code systems, not their codes."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/data-absent-reason/" ;
+    cascade:codingSystemUri "http://terminology.hl7.org/CodeSystem/data-absent-reason"^^xsd:anyURI ;
+    dct:source <https://terminology.hl7.org/CodeSystem-data-absent-reason.html> .
+
+cascade:NullFlavor a cascade:CodeSystem ;
+    rdfs:label "HL7 v3 NullFlavor"@en ;
+    rdfs:comment "The code as CDA writes it in nullFlavor, upper case: NI, UNK, ASKU. Cascade's own space, as cascade:DataAbsentReason's is."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/nullflavor/" ;
+    cascade:codingSystemUri "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"^^xsd:anyURI ;
+    dct:source <https://terminology.hl7.org/CodeSystem-v3-NullFlavor.html> .
 
 cascade:ClinVarClassifications a skos:ConceptScheme ;
     rdfs:label "ClinVar classifications"@en ;

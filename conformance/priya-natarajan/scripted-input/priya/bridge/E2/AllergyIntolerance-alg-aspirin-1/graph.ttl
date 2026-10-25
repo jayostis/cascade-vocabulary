@@ -6,28 +6,29 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;sspd_6PURZiswfQtm4QtQa1Bm7cNM7T9N1rFvN2fuKg> cascade:reactionManifestationText "Hives" ;
+<ni:///sha-256;ZPPemEIkJtdAoLAzhIjFfAQ9yqUAhuUy6yqnO-K5v2Q> cascade:allergen "Aspirin" ;
+	cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/1191> ;
+	cascade:clinicalStatus "active" ;
+	cascade:verificationStatus "confirmed" ;
 	cascade:allergyType "allergy" ;
 	cascade:allergyCriticality "low" ;
-	cascade:reactionManifestationCode <http://snomed.info/id/126485001> ;
-	cascade:clinicalStatus "active" ;
-	cascade:allergen "Aspirin" ;
-	cascade:verificationStatus "confirmed" ;
 	cascade:allergyCategory "medication" ;
-	cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/1191> .
-_:951c677e9371342e9a08a8bc19b5112a pav:lastUpdateOn "2016-08-22T15:10:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;sspd_6PURZiswfQtm4QtQa1Bm7cNM7T9N1rFvN2fuKg> .
-<ni:///sha-256;sspd_6PURZiswfQtm4QtQa1Bm7cNM7T9N1rFvN2fuKg> cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> ;
-	prov:specializationOf <urn:uuid:3276d319-248c-8b93-8342-3b1ffa356f20> .
-<urn:uuid:3276d319-248c-8b93-8342-3b1ffa356f20> cascade:sourceRecordId "alg-aspirin-1" ;
+	cascade:onsetDate "2016-08"^^xsd:gYearMonth ;
+	cascade:reactionManifestationText "Hives" ;
+	cascade:reactionManifestationCode <http://snomed.info/id/126485001> .
+<urn:uuid:3276d319-248c-8b93-8342-3b1ffa356f20> a cascade:AllergyOrIntolerance ;
 	cascade:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/AllergyIntolerance/alg-aspirin-1> ;
-	a cascade:AllergyOrIntolerance .
-_:951c677e9371342e9a08a8bc19b5112a oa:hasSelector _:e2230b14c7f5c82980a17e4157c42f4a ;
+	cascade:sourceRecordId "alg-aspirin-1" .
+<ni:///sha-256;ZPPemEIkJtdAoLAzhIjFfAQ9yqUAhuUy6yqnO-K5v2Q> prov:specializationOf <urn:uuid:3276d319-248c-8b93-8342-3b1ffa356f20> ;
+	cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> .
+_:a5f9f46a6c6e0788ca01f67695debca bridge:arrivedAs <ni:///sha-256;ZPPemEIkJtdAoLAzhIjFfAQ9yqUAhuUy6yqnO-K5v2Q> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2016-08-22T15:10:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:421f831e0c71173e7abf307b229f5f0c ;
 	oa:hasSource <ni:///sha-256;qXn6lMeu_atscvvwusJYEXv5V5rOs7zhN3BQ40XFKd0> ;
 	prov:wasDerivedFrom <ni:///sha-256;qXn6lMeu_atscvvwusJYEXv5V5rOs7zhN3BQ40XFKd0> ;
 	prov:wasGeneratedBy _:c19db5ce599a2470b17a31e581c254a1 .
-_:e2230b14c7f5c82980a17e4157c42f4a a oa:FragmentSelector ;
+_:421f831e0c71173e7abf307b229f5f0c a oa:FragmentSelector ;
 	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "" .
 _:c19db5ce599a2470b17a31e581c254a1 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;

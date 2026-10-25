@@ -35,8 +35,9 @@ cascade:PatientProfileShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:dateOfBirth ;
-        sh:datatype xsd:date ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
+        sh:message "A date of birth is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -118,9 +119,9 @@ cascade:AllergyOrIntoleranceShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:onsetDate ;
-        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "Onset Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:message "An onset date is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -216,17 +217,17 @@ cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:onsetDate ;
-        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "Onset Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:message "An onset date is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en ;
         sh:severity sh:Violation
     ] ;
 
     sh:property [
         sh:path cascade:abatementDate ;
-        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "Abatement Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:message "An abatement date is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en ;
         sh:severity sh:Warning
     ] ;
 
@@ -271,9 +272,9 @@ cascade:VaccinationShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:vaccinationOccurrenceTime ;
-        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "A vaccination occurrence time must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en ;
+        sh:message "A vaccination occurrence time is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -378,9 +379,9 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:resultClinicallyRelevantTime ;
-        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "A result's clinically relevant time must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+        sh:message "A result's clinically relevant time is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en
     ] ;
 
     sh:property [
@@ -423,9 +424,9 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:procedureDate ;
-        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "Procedure Date must be an xsd:date or an xsd:dateTime. FHIR's dateTime primitive permits date precision (YYYY, YYYY-MM, YYYY-MM-DD), so a source that stated only a calendar day must not be given an invented time; an untyped or xsd:string literal is not either type."@en
+        sh:message "A procedure date is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en
     ] ;
 
     sh:property [
@@ -527,23 +528,23 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:medicationUseStartDate ;
-        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "A medication use start date must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+        sh:message "A medication use start date is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en
     ] ;
 
     sh:property [
         sh:path cascade:medicationUseEndDate ;
-        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "A medication use end date must be an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+        sh:message "A medication use end date is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en
     ] ;
 
     sh:property [
         sh:path cascade:prescriptionWrittenDate ;
-        sh:or ( [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "A medication states at most one day its prescription was written, an xsd:date or an xsd:dateTime, so a source that stated only a calendar day is not given an invented time"@en
+        sh:message "A medication states at most one date its prescription was written, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en
     ] ;
 
     sh:property [
@@ -669,9 +670,9 @@ cascade:VariantInterpretationShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:interpretedDate ;
-        sh:datatype xsd:date ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] ) ;
         sh:maxCount 1 ;
-        sh:message "An interpretation date is one xsd:date, the day the interpretation was issued, with no time"@en
+        sh:message "An interpretation date is one xsd:gYear, xsd:gYearMonth or xsd:date, the day the interpretation was issued, or the year or the month where its source wrote no day, with no time"@en
     ] ;
 
     sh:property [
@@ -997,6 +998,107 @@ cascade:BoundQuantityShape a sh:NodeShape ;
         sh:message "A bound carries no comparator: a range's bounds are inside it (FHIR SimpleQuantity, sqty-1)."@en ;
         sh:severity sh:Violation
     ] .
+
+cascade:PaddedDateTimeShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:paddedDateTimeProperty , cascade:writtenDate ;
+    sh:property [
+        sh:path cascade:paddedDateTimeProperty ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( cascade:dateOfBirth cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
+                cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate ) ;
+        sh:message "A padded time names the one property that holds it, a property whose value may be a time."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:writtenDate ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A padded time keeps one non-empty string, the time exactly as its source wrote it."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:VersionWithPaddedDateTimeShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:paddedDateTime ;
+    sh:property [
+        sh:path cascade:paddedDateTime ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A version's padded time is a node of the version."@en ;
+        sh:severity sh:Violation
+    ] ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A padded time is the node <version>#padded- and its property's local name, or, of a view's entry or a member's values in a view, whose IRIs have a fragment already, <entry>-padded- and the local name; and its subject holds one xsd:dateTime under that property: {?node} is not."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this ?node WHERE {
+  $this <https://ns.cascadeprotocol.org/cascade#paddedDateTime> ?node .
+  OPTIONAL { ?node <https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty> ?property }
+  FILTER (!BOUND(?property)
+          || STR(?node) != CONCAT(STR($this), IF(CONTAINS(STR($this), "#"), "-padded-", "#padded-"), REPLACE(STR(?property), "^.*[#/]", ""))
+          || NOT EXISTS { $this ?property ?time .
+                          FILTER (isLiteral(?time) && DATATYPE(?time) = <http://www.w3.org/2001/XMLSchema#dateTime>) })
+}"""
+    ] .
+
+cascade:ValueAbsentForReasonShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:absentValueProperty , cascade:absentReasonCode ;
+    sh:property [
+        sh:path cascade:absentValueProperty ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( cascade:dateOfBirth cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
+                cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
+                cascade:resultValueKind ) ;
+        sh:message "A value absent for a reason names the one property it stands for, a date or a lab result's value kind."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:absentReasonCode ;
+        sh:minCount 1 ;
+        sh:or ( cascade:DataAbsentReasonCodeShape cascade:NullFlavorCodeShape ) ;
+        sh:message "A value absent for a reason gives at least one reason, each a code of FHIR's data absent reasons or of HL7 v3 NullFlavor, as its source gave it."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:VersionWithValueAbsentForReasonShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:valueAbsentForReason ;
+    sh:property [
+        sh:path cascade:valueAbsentForReason ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A version's value absent for a reason is a node of the version."@en ;
+        sh:severity sh:Violation
+    ] ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A value absent for a reason is the version's node <version>#absent- and its property's local name, and stands only where the version holds no value for that property: {?node} is not."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this ?node WHERE {
+  $this <https://ns.cascadeprotocol.org/cascade#valueAbsentForReason> ?node .
+  OPTIONAL { ?node <https://ns.cascadeprotocol.org/cascade#absentValueProperty> ?property }
+  FILTER (!BOUND(?property)
+          || STR(?node) != CONCAT(STR($this), "#absent-", REPLACE(STR(?property), "^.*[#/]", ""))
+          || EXISTS { $this ?property ?value })
+}"""
+    ] .
+
+cascade:DataAbsentReasonCodeShape a sh:NodeShape ;
+    sh:in ( <https://ns.cascadeprotocol.org/codes/data-absent-reason/unknown> <https://ns.cascadeprotocol.org/codes/data-absent-reason/asked-unknown>
+            <https://ns.cascadeprotocol.org/codes/data-absent-reason/temp-unknown> <https://ns.cascadeprotocol.org/codes/data-absent-reason/not-asked>
+            <https://ns.cascadeprotocol.org/codes/data-absent-reason/asked-declined> <https://ns.cascadeprotocol.org/codes/data-absent-reason/masked>
+            <https://ns.cascadeprotocol.org/codes/data-absent-reason/not-applicable> <https://ns.cascadeprotocol.org/codes/data-absent-reason/unsupported>
+            <https://ns.cascadeprotocol.org/codes/data-absent-reason/as-text> <https://ns.cascadeprotocol.org/codes/data-absent-reason/error>
+            <https://ns.cascadeprotocol.org/codes/data-absent-reason/not-a-number> <https://ns.cascadeprotocol.org/codes/data-absent-reason/negative-infinity>
+            <https://ns.cascadeprotocol.org/codes/data-absent-reason/positive-infinity> <https://ns.cascadeprotocol.org/codes/data-absent-reason/not-performed>
+            <https://ns.cascadeprotocol.org/codes/data-absent-reason/not-permitted> ) .
+
+cascade:NullFlavorCodeShape a sh:NodeShape ;
+    sh:in ( <https://ns.cascadeprotocol.org/codes/nullflavor/NI> <https://ns.cascadeprotocol.org/codes/nullflavor/NP> <https://ns.cascadeprotocol.org/codes/nullflavor/NAV>
+            <https://ns.cascadeprotocol.org/codes/nullflavor/DER> <https://ns.cascadeprotocol.org/codes/nullflavor/OTH> <https://ns.cascadeprotocol.org/codes/nullflavor/UNC>
+            <https://ns.cascadeprotocol.org/codes/nullflavor/INV> <https://ns.cascadeprotocol.org/codes/nullflavor/MSK> <https://ns.cascadeprotocol.org/codes/nullflavor/NA>
+            <https://ns.cascadeprotocol.org/codes/nullflavor/UNK> <https://ns.cascadeprotocol.org/codes/nullflavor/NINF> <https://ns.cascadeprotocol.org/codes/nullflavor/PINF>
+            <https://ns.cascadeprotocol.org/codes/nullflavor/ASKU> <https://ns.cascadeprotocol.org/codes/nullflavor/NASK> <https://ns.cascadeprotocol.org/codes/nullflavor/NAVU>
+            <https://ns.cascadeprotocol.org/codes/nullflavor/QS> <https://ns.cascadeprotocol.org/codes/nullflavor/TRC> ) .
 
 cascade:PatientShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:patient ;

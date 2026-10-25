@@ -1,0 +1,27 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<ni:///sha-256;dates-valid-condition> prov:specializationOf <urn:uuid:5a0b1c2d-0000-4000-8000-000000000001> ;
+    cascade:onsetDate "2019"^^xsd:gYear ;
+    cascade:abatementDate "2023-05-31T14:00:00"^^xsd:dateTime ;
+    cascade:paddedDateTime <ni:///sha-256;dates-valid-condition#padded-abatementDate> .
+<ni:///sha-256;dates-valid-condition#padded-abatementDate> cascade:paddedDateTimeProperty cascade:abatementDate ;
+    cascade:writtenDate "2023053114" .
+
+<ni:///sha-256;dates-valid-procedure> prov:specializationOf <urn:uuid:5a0b1c2d-0000-4000-8000-000000000008> ;
+    cascade:valueAbsentForReason <ni:///sha-256;dates-valid-procedure#absent-procedureDate> .
+<ni:///sha-256;dates-valid-procedure#absent-procedureDate> cascade:absentValueProperty cascade:procedureDate ;
+    cascade:absentReasonCode <https://ns.cascadeprotocol.org/codes/nullflavor/UNK> .
+
+<https://pod.example/clinical/conditions.ttl#dates-valid-entry> cascade:abatementDate "2023-05-31T14:00:00"^^xsd:dateTime ;
+    cascade:paddedDateTime <https://pod.example/clinical/conditions.ttl#dates-valid-entry-padded-abatementDate> .
+<https://pod.example/clinical/conditions.ttl#dates-valid-entry-padded-abatementDate> cascade:paddedDateTimeProperty cascade:abatementDate ;
+    cascade:writtenDate "2023053114" .
+
+<ni:///sha-256;dates-valid-lab> prov:specializationOf <urn:uuid:5a0b1c2d-0000-4000-8000-000000000002> ;
+    cascade:testCode <http://loinc.org/rdf/2823-3> ;
+    cascade:resultClinicallyRelevantTime "2019-06"^^xsd:gYearMonth ;
+    cascade:valueAbsentForReason <ni:///sha-256;dates-valid-lab#absent-resultValueKind> .
+<ni:///sha-256;dates-valid-lab#absent-resultValueKind> cascade:absentValueProperty cascade:resultValueKind ;
+    cascade:absentReasonCode <https://ns.cascadeprotocol.org/codes/data-absent-reason/asked-declined> .

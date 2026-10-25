@@ -238,6 +238,7 @@ rest by the steps listed under the Question. Until then M4, `rec:CodeSystem` and
 | CPT | THO system URI only; Bioregistry `cpt` (aapc.com); BioPortal | `https://ns.cascadeprotocol.org/codes/cpt/` and the five-character code | ours: no candidate passes (c); an IRI holding a code a source sent distributes no CPT content (inferred) |
 | MED-RT | THO system URI only; NCI EVS `MEDRT.owl#`; Bioregistry `ndfrt` (retired) | `https://ns.cascadeprotocol.org/codes/medrt/` and the NUI, `N0000175562` | ours, unchanged: EVS's form fails (c); `ndfrt` is NDF-RT's, retired, and fails (a) and (c) |
 | HGVS | THO system URI only; Bioregistry `hgvs` (a ClinGen query); VRS's string `Expression` | `https://ns.cascadeprotocol.org/codes/hgvs/` and the expression through `ENCODE_FOR_URI`, `…/codes/hgvs/NM_000249.4%3Ac.2042C%3ET`; C1, with `records.shapes.ttl:409` | ours: no registry has an identifier for an expression |
+| FHIR data absent reason, v3 NullFlavor | THO system URIs only; `Coding.system` and `#code`; FHIR RDF's `Coding`; OIDs; THO page anchors; Bioregistry `hl7.v3codesystem`; HL7's ORIM | `https://ns.cascadeprotocol.org/codes/data-absent-reason/` and the code as FHIR writes it, `asked-unknown`; `https://ns.cascadeprotocol.org/codes/nullflavor/` and the code as CDA writes it, `UNK`; #133, `partial-dates-and-absent-reasons.md` | ours: no candidate passes (b) and (c), each as Alternatives that lost says |
 | a segment's name in our space | Bioregistry prefixes | the Bioregistry prefix as of 2026-10-22 (`cvx`, `rxnorm`, `icd10cm`, `icd9cm`, `cpt`, `hgvs`), frozen whatever Bioregistry later does; `ndc11` and `medrt` keep theirs, since `ndc11` names the form and Bioregistry has no MED-RT | borrowed once |
 | HGNC | THO system URI; identifiers.org `hgnc` | no code IRI: a gene is its approved symbol, a literal | nothing to mint; Still open says which, if ever |
 | UCUM | UCUM none; SPHN UCUM classes; QUDT `ucumCode` (`quantities.md`) | no code IRI: `ucumUnit` is the source's string | borrowed from UCUM, as `quantities.md` ruled |
@@ -348,6 +349,15 @@ IRI under it is its `skos:exactMatch`, which SKOS allows between concepts, unlik
   the second differs on non-ASCII only, and SPARQL has no function for it.
 - **A ClinGen CA id or a VRS digest as a variant's code.** The strongest case: one identity across transcripts and
   assemblies. A VRS digest needs the reference sequence, and no report in the story carries a CA id.
+- **For FHIR's data absent reasons and v3 NullFlavor** (#133), each candidate, both systems: `Coding.system`, `#` and the
+  code, `http://terminology.hl7.org/CodeSystem/v3-NullFlavor#UNK`, the form some RDF writes. FHIR RDF's Appendix 1
+  builds a code's IRI only from a registered stem and stops where there is none, and this note already reversed "the
+  system URI as a stem" (the first alternative above), so it fails (a) and (c). FHIR RDF's own `Coding` keeps
+  `fhir:system` and `fhir:code` as values and gives no IRI per code, failing (b). An OID names the system
+  (`2.16.840.1.113883.5.1008` for NullFlavor), and v3 concepts have no OID arc of their own, so it fails (b). THO's
+  page anchors, `CodeSystem-v3-NullFlavor.html#v3-NullFlavor-UNK`, are a page's layout with no persistence commitment,
+  failing (c). Bioregistry's `hl7.v3codesystem` names HL7's code systems, not their codes, failing (b). HL7's ORIM
+  RDF of the v3 RIM is unmaintained, failing (a). So both go in Cascade's space, as the Rubric's item 3 says.
 
 ## Still open
 

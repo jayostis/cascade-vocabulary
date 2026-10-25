@@ -553,6 +553,50 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:AcknowledgedShape ] ] .
 
+<#dates-and-absent-values/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#dates-and-absent-values/padded-time-not-a-date-time> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/padded-time-not-a-date-time.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:VersionWithPaddedDateTimeShape ] ] .
+
+<#dates-and-absent-values/padded-time-without-what-was-written> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/padded-time-without-what-was-written.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PaddedDateTimeShape ; sh:resultPath cascade:writtenDate ] ] .
+
+<#dates-and-absent-values/absent-beside-a-value> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/absent-beside-a-value.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:VersionWithValueAbsentForReasonShape ] ] .
+
+<#dates-and-absent-values/absent-reason-of-no-system> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/absent-reason-of-no-system.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ValueAbsentForReasonShape ; sh:resultPath cascade:absentReasonCode ] ] .
+
+<#dates-and-absent-values/padded-time-misnamed> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/padded-time-misnamed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:VersionWithPaddedDateTimeShape ] ] .
+
+<#dates-and-absent-values/absent-misnamed> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/absent-misnamed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:VersionWithValueAbsentForReasonShape ] ] .
+
+<#dates-and-absent-values/absent-property-not-a-date> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/absent-property-not-a-date.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ValueAbsentForReasonShape ; sh:resultPath cascade:absentValueProperty ] ] .
+
+<#dates-and-absent-values/date-of-birth-as-a-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/date-of-birth-as-a-string.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PatientProfileShape ; sh:resultPath cascade:dateOfBirth ] ] .
+
 <#finding/source-reported-older-states> a sht:Validate ;
   mf:action [ sht:dataGraph <finding/source-reported-older-states.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

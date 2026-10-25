@@ -3,7 +3,9 @@
 # comparator before its number, a ratio as its numerator, a colon and its denominator, a range as its two bounds with a
 # hyphen between, or the one it has after >= or <=, and any other value as its text. The unit is the quantity's unit
 # text, else its UCUM unit, else the result's unit as text. Each member's current values are a node of the view of their
-# own, named after the entry and the member, which says the member they came from.
+# own, named after the entry and the member, which says the member they came from. A time its source wrote short of the
+# second keeps the node saying so (cascade:PaddedDateTime), named after the entry or the member's values and -padded-,
+# so the view never shows a padded time as exact.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -26,6 +28,10 @@ CONSTRUCT {
     cascade:resultUnit ?memberResultUnit ;
     cascade:workflowStatus ?memberWorkflowStatus ;
     cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime .
+  ?entry cascade:paddedDateTime ?datePadded .
+  ?datePadded cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ; cascade:writtenDate ?dateWritten .
+  ?memberValues cascade:paddedDateTime ?memberPadded .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
 }
 WHERE {
   { ?record a cascade:LaboratoryTestResult ; cascade:inEntry ?entry .
@@ -56,7 +62,10 @@ WHERE {
     BIND (COALESCE(?unitText, ?ucumUnit, ?textUnit) AS ?unit)
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultClinicallyRelevantTime ?date } }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultClinicallyRelevantTime ?date }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
+               ?datePaddedAt cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ; cascade:writtenDate ?dateWritten }
+    BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-resultClinicallyRelevantTime")), 1/0) AS ?datePadded) }
   UNION
   { ?member a cascade:LaboratoryTestResult ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
@@ -65,5 +74,9 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:resultValue ?memberResultValue }
     OPTIONAL { ?memberVersion cascade:resultUnit ?memberResultUnit }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
-    OPTIONAL { ?memberVersion cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime } }
+    OPTIONAL { ?memberVersion cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime }
+    OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+    BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
+          AS ?memberPadded) }
 }

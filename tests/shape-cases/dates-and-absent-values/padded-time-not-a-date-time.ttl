@@ -1,0 +1,9 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<ni:///sha-256;dates-padded-day> prov:specializationOf <urn:uuid:5a0b1c2d-0000-4000-8000-000000000003> ;
+    cascade:procedureDate "2023-05-31"^^xsd:date ;
+    cascade:paddedDateTime <ni:///sha-256;dates-padded-day#padded-procedureDate> .
+<ni:///sha-256;dates-padded-day#padded-procedureDate> cascade:paddedDateTimeProperty cascade:procedureDate ;
+    cascade:writtenDate "20230531" .

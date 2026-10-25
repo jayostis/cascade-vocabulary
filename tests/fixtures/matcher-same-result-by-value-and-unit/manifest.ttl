@@ -5,12 +5,16 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-result-by-value-and-unit" ;
-  rdfs:comment "Potassium results at one instant: one written 4.10 and one 4.1 in another time zone, both in UCUM mmol/L, one with mmol/L as unit text alone, one in mmol/l, one in Mmol/L, one of another value, one a bound, one at another instant, and two at that time written with no time zone. Leukocyte counts in 10*3/uL and in 10*3{cells}/uL. Titres 1:64 twice, the second denominator written 64.0, and 1:128. Urine ranges 0-5 /[HPF] twice, one with a high bound alone, and one whose high bound is in /[LPF]. Coded answers: LOINC negative twice and positive, SNOMED CT negative, and the text Negative. The text Negative twice at another code. Glucose of 95 mg/dL on two days stamped with no time, at two instants that day, one written 95.0, and on the next day. Every record but the potassium in another time zone is a record of the run." ;
+  rdfs:comment "Potassium results at one instant: one written 4.10 and one 4.1 in another time zone, both in UCUM mmol/L, one with mmol/L as unit text alone, one in mmol/l, one in Mmol/L, one of another value, one a bound, one at another instant, and two at that time written with no time zone. Leukocyte counts in 10*3/uL and in 10*3{cells}/uL. Titres 1:64 twice, the second denominator written 64.0, and 1:128. Urine ranges 0-5 /[HPF] twice, one with a high bound alone, and one whose high bound is in /[LPF]. Coded answers: LOINC negative twice and positive, SNOMED CT negative, and the text Negative. The text Negative twice at another code. Glucose of 95 mg/dL on two days stamped with no time, at two instants that day, one written 95.0, and on the next day. Sodiums at an hour their source wrote short of the second, the version holding it padded: two of one value, one of another value, one in another unit, and one with no value; one written to the second at that hour; one stamped with its year. Every record but the potassium in another time zone is a record of the run." ;
   mf:entries (
     <#same-code-instant-value-and-unit>
     <#same-code-day-value-and-unit>
     <#same-code-instant-different-values>
     <#same-code-instant-different-units>
+    <#same-code-instant-to-the-second-value-and-unit>
+    <#same-code-day-or-padded-time-value-and-unit>
+    <#same-code-instant-to-the-second-different-values>
+    <#same-code-instant-to-the-second-different-units>
   ) .
 
 <#same-code-instant-value-and-unit> a mf:QueryEvaluationTest ;
@@ -160,3 +164,179 @@
                                   <urn:x:urineRangeHighOnly> ,
                                   <urn:x:urineRangeOtherHighUnit> ] ;
   mf:result <same-code-instant-different-units.srj> .
+
+<#same-code-day-or-padded-time-value-and-unit> a mf:QueryEvaluationTest ;
+  mf:name "same-code-day-or-padded-time-value-and-unit" ;
+  rdfs:comment "As same-code-day-value-and-unit.rq, and the two sodiums of one value at one padded hour match each other and the one written to the second that hour, a padded time counting as a day alone; a sodium of another value or unit, one stamped with its year, and one with no value match nothing." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-day-or-padded-time-value-and-unit.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:glucoseDayA> ,
+                                  <urn:x:glucoseDayB> ,
+                                  <urn:x:glucoseEvening> ,
+                                  <urn:x:glucoseMorning> ,
+                                  <urn:x:glucoseOtherDay> ,
+                                  <urn:x:leukocytesAnnotated> ,
+                                  <urn:x:leukocytesPlain> ,
+                                  <urn:x:potassiumBound> ,
+                                  <urn:x:potassiumLowerCase> ,
+                                  <urn:x:potassiumMega> ,
+                                  <urn:x:potassiumNoZoneA> ,
+                                  <urn:x:potassiumNoZoneB> ,
+                                  <urn:x:potassiumOtherInstant> ,
+                                  <urn:x:potassiumOtherValue> ,
+                                  <urn:x:potassiumUnitText> ,
+                                  <urn:x:potassiumWritten> ,
+                                  <urn:x:surfaceAntigenA> ,
+                                  <urn:x:surfaceAntigenB> ,
+                                  <urn:x:surfaceAntigenOther> ,
+                                  <urn:x:surfaceAntigenSnomed> ,
+                                  <urn:x:surfaceAntigenText> ,
+                                  <urn:x:textA> ,
+                                  <urn:x:textB> ,
+                                  <urn:x:titreA> ,
+                                  <urn:x:titreB> ,
+                                  <urn:x:titreOther> ,
+                                  <urn:x:urineRangeA> ,
+                                  <urn:x:urineRangeB> ,
+                                  <urn:x:urineRangeHighOnly> ,
+                                  <urn:x:urineRangeOtherHighUnit> ,
+                                  <urn:x:sodiumInAYear> ,
+                                  <urn:x:sodiumNotReported> ,
+                                  <urn:x:sodiumPaddedA> ,
+                                  <urn:x:sodiumPaddedB> ,
+                                  <urn:x:sodiumPaddedOtherUnit> ,
+                                  <urn:x:sodiumPaddedOtherValue> ,
+                                  <urn:x:sodiumToTheSecond> ] ;
+  mf:result <same-code-day-or-padded-time-value-and-unit.srj> .
+
+<#same-code-instant-to-the-second-different-units> a mf:QueryEvaluationTest ;
+  mf:name "same-code-instant-to-the-second-different-units" ;
+  rdfs:comment "As same-code-instant-different-units.rq, and no sodium gives a finding: the sodium in another unit at that padded hour is at no instant." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-instant-to-the-second-different-units.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:glucoseDayA> ,
+                                  <urn:x:glucoseDayB> ,
+                                  <urn:x:glucoseEvening> ,
+                                  <urn:x:glucoseMorning> ,
+                                  <urn:x:glucoseOtherDay> ,
+                                  <urn:x:leukocytesAnnotated> ,
+                                  <urn:x:leukocytesPlain> ,
+                                  <urn:x:potassiumBound> ,
+                                  <urn:x:potassiumLowerCase> ,
+                                  <urn:x:potassiumMega> ,
+                                  <urn:x:potassiumNoZoneA> ,
+                                  <urn:x:potassiumNoZoneB> ,
+                                  <urn:x:potassiumOtherInstant> ,
+                                  <urn:x:potassiumOtherValue> ,
+                                  <urn:x:potassiumUnitText> ,
+                                  <urn:x:potassiumWritten> ,
+                                  <urn:x:surfaceAntigenA> ,
+                                  <urn:x:surfaceAntigenB> ,
+                                  <urn:x:surfaceAntigenOther> ,
+                                  <urn:x:surfaceAntigenSnomed> ,
+                                  <urn:x:surfaceAntigenText> ,
+                                  <urn:x:textA> ,
+                                  <urn:x:textB> ,
+                                  <urn:x:titreA> ,
+                                  <urn:x:titreB> ,
+                                  <urn:x:titreOther> ,
+                                  <urn:x:urineRangeA> ,
+                                  <urn:x:urineRangeB> ,
+                                  <urn:x:urineRangeHighOnly> ,
+                                  <urn:x:urineRangeOtherHighUnit> ,
+                                  <urn:x:sodiumInAYear> ,
+                                  <urn:x:sodiumNotReported> ,
+                                  <urn:x:sodiumPaddedA> ,
+                                  <urn:x:sodiumPaddedB> ,
+                                  <urn:x:sodiumPaddedOtherUnit> ,
+                                  <urn:x:sodiumPaddedOtherValue> ,
+                                  <urn:x:sodiumToTheSecond> ] ;
+  mf:result <same-code-instant-to-the-second-different-units.srj> .
+
+<#same-code-instant-to-the-second-different-values> a mf:QueryEvaluationTest ;
+  mf:name "same-code-instant-to-the-second-different-values" ;
+  rdfs:comment "As same-code-instant-different-values.rq, and no sodium gives a finding: a padded time is no instant, so the sodium of another value at that padded hour differs from none." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-instant-to-the-second-different-values.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:glucoseDayA> ,
+                                  <urn:x:glucoseDayB> ,
+                                  <urn:x:glucoseEvening> ,
+                                  <urn:x:glucoseMorning> ,
+                                  <urn:x:glucoseOtherDay> ,
+                                  <urn:x:leukocytesAnnotated> ,
+                                  <urn:x:leukocytesPlain> ,
+                                  <urn:x:potassiumBound> ,
+                                  <urn:x:potassiumLowerCase> ,
+                                  <urn:x:potassiumMega> ,
+                                  <urn:x:potassiumNoZoneA> ,
+                                  <urn:x:potassiumNoZoneB> ,
+                                  <urn:x:potassiumOtherInstant> ,
+                                  <urn:x:potassiumOtherValue> ,
+                                  <urn:x:potassiumUnitText> ,
+                                  <urn:x:potassiumWritten> ,
+                                  <urn:x:surfaceAntigenA> ,
+                                  <urn:x:surfaceAntigenB> ,
+                                  <urn:x:surfaceAntigenOther> ,
+                                  <urn:x:surfaceAntigenSnomed> ,
+                                  <urn:x:surfaceAntigenText> ,
+                                  <urn:x:textA> ,
+                                  <urn:x:textB> ,
+                                  <urn:x:titreA> ,
+                                  <urn:x:titreB> ,
+                                  <urn:x:titreOther> ,
+                                  <urn:x:urineRangeA> ,
+                                  <urn:x:urineRangeB> ,
+                                  <urn:x:urineRangeHighOnly> ,
+                                  <urn:x:urineRangeOtherHighUnit> ,
+                                  <urn:x:sodiumInAYear> ,
+                                  <urn:x:sodiumNotReported> ,
+                                  <urn:x:sodiumPaddedA> ,
+                                  <urn:x:sodiumPaddedB> ,
+                                  <urn:x:sodiumPaddedOtherUnit> ,
+                                  <urn:x:sodiumPaddedOtherValue> ,
+                                  <urn:x:sodiumToTheSecond> ] ;
+  mf:result <same-code-instant-to-the-second-different-values.srj> .
+
+<#same-code-instant-to-the-second-value-and-unit> a mf:QueryEvaluationTest ;
+  mf:name "same-code-instant-to-the-second-value-and-unit" ;
+  rdfs:comment "As same-code-instant-value-and-unit.rq, and no sodium joins: two sodiums at one hour their source wrote short of the second are never one instant, nor is one of them with one written to the second; a year is no instant, and a result with no value has no kind." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-instant-to-the-second-value-and-unit.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              cascade:boundRecord <urn:x:glucoseDayA> ,
+                                  <urn:x:glucoseDayB> ,
+                                  <urn:x:glucoseEvening> ,
+                                  <urn:x:glucoseMorning> ,
+                                  <urn:x:glucoseOtherDay> ,
+                                  <urn:x:leukocytesAnnotated> ,
+                                  <urn:x:leukocytesPlain> ,
+                                  <urn:x:potassiumBound> ,
+                                  <urn:x:potassiumLowerCase> ,
+                                  <urn:x:potassiumMega> ,
+                                  <urn:x:potassiumNoZoneA> ,
+                                  <urn:x:potassiumNoZoneB> ,
+                                  <urn:x:potassiumOtherInstant> ,
+                                  <urn:x:potassiumOtherValue> ,
+                                  <urn:x:potassiumUnitText> ,
+                                  <urn:x:potassiumWritten> ,
+                                  <urn:x:surfaceAntigenA> ,
+                                  <urn:x:surfaceAntigenB> ,
+                                  <urn:x:surfaceAntigenOther> ,
+                                  <urn:x:surfaceAntigenSnomed> ,
+                                  <urn:x:surfaceAntigenText> ,
+                                  <urn:x:textA> ,
+                                  <urn:x:textB> ,
+                                  <urn:x:titreA> ,
+                                  <urn:x:titreB> ,
+                                  <urn:x:titreOther> ,
+                                  <urn:x:urineRangeA> ,
+                                  <urn:x:urineRangeB> ,
+                                  <urn:x:urineRangeHighOnly> ,
+                                  <urn:x:urineRangeOtherHighUnit> ,
+                                  <urn:x:sodiumInAYear> ,
+                                  <urn:x:sodiumNotReported> ,
+                                  <urn:x:sodiumPaddedA> ,
+                                  <urn:x:sodiumPaddedB> ,
+                                  <urn:x:sodiumPaddedOtherUnit> ,
+                                  <urn:x:sodiumPaddedOtherValue> ,
+                                  <urn:x:sodiumToTheSecond> ] ;
+  mf:result <same-code-instant-to-the-second-value-and-unit.srj> .

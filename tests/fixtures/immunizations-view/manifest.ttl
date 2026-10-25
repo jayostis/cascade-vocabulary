@@ -5,10 +5,11 @@
 
 <> a mf:Manifest ;
   rdfs:label "immunizations-view" ;
-  rdfs:comment "An immunization entry of two members, the later naming it and stating no status and no date; and one not done." ;
+  rdfs:comment "An immunization entry of two members, the later naming it and stating no status and no date; and one not done; and one given in a year it names alone; and one given at a time its source wrote to the hour." ;
   mf:entries (
     <#the-immunizations-view>
     <#my-immunizations>
+    <#its-padded-times>
   ) .
 
 <#the-immunizations-view> a mf:QueryEvaluationTest ;
@@ -20,7 +21,14 @@
 
 <#my-immunizations> a mf:QueryEvaluationTest ;
   mf:name "my-immunizations" ;
-  rdfs:comment "Every entry, newest first, with its code as CVX's IRI and how many records it joins." ;
+  rdfs:comment "Every entry, newest first by the date as written, so the year 2015 follows 1 January 2015, with its code as CVX's IRI and how many records it joins." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20immunizations.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-immunizations.srj> .
+
+<#its-padded-times> a mf:QueryEvaluationTest ;
+  mf:name "its-padded-times" ;
+  rdfs:comment "A time its source wrote to the hour keeps, in the view, the node saying so and what was written, on the entry and on its member's values, each named after its holder and -padded-." ;
+  mf:action [ qt:query <its-padded-times.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <its-padded-times.srj> .

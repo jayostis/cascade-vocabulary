@@ -2,6 +2,7 @@
 valid or broken one way, and its manifest says what validating it reports, in the SHACL test suite's terms: each result
 as the node shape that reported it, directly or through one of its properties, and the result's path."""
 
+import json
 from functools import cache
 
 import pyoxigraph
@@ -282,3 +283,18 @@ def test_no_absolute_subject_iri_is_the_subject_of_nodes_in_two_shape_case_files
         for node in {s for s in parsed(file).subjects() if isinstance(s, URIRef) and ":" in s}:
             owners.setdefault(node, set()).add(name)
     assert {str(node): sorted(names) for node, names in owners.items() if len(names) > 1} == {}
+
+
+def test_an_absent_reason_shape_lists_exactly_the_codes_of_its_hl7_code_system():
+    """HL7 Terminology's CodeSystems as published (tests/terminology/hl7-terminology/, CC0), every code at every depth."""
+    def codes(concepts):
+        for concept in concepts:
+            yield concept["code"]
+            yield from codes(concept.get("concept", []))
+    for shape, system, file in ((CASCADE.DataAbsentReasonCodeShape, CASCADE.DataAbsentReason, "CodeSystem-data-absent-reason.json"),
+                                (CASCADE.NullFlavorCodeShape, CASCADE.NullFlavor, "CodeSystem-v3-NullFlavor.json")):
+        published = json.loads((ROOT / "tests" / "terminology" / "hl7-terminology" / file).read_text(encoding="utf-8"))
+        assert published["url"] == str(ontology().value(system, CASCADE.codingSystemUri))
+        stem = str(ontology().value(system, URIRef("http://rdfs.org/ns/void#uriSpace")))
+        listed = [str(code) for code in Collection(shapes(), shapes().value(shape, SH["in"]))]
+        assert listed == [stem + code for code in codes(published["concept"])]
