@@ -5,6 +5,7 @@ Feature: Nothing is edited or deleted
   exports that change them.
 
   Rule: X1. No file, once written, changes or goes
+    No note rules this.
     A retraction, a later revision and an entered-in-error status each leave everything they follow in the pod.
 
     Example: a later revision leaves the earlier revision and version in the files the earlier step wrote

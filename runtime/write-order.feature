@@ -1,6 +1,7 @@
 Feature: Write order
 
   Rule: W1. Content-addressed files are written first, the revision files after them, and the act's file last
+    No note rules this.
     A step that stops partway then leaves nothing that passes for finished: the act's file holds its snapshot (N14), so
     no snapshot names a set the step did not finish writing. The views, the type index and the manifest may be stale
     after a crash, and are rebuilt. A matcher run writes its judgments before the reference descriptions it writes, and
