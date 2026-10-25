@@ -85,8 +85,8 @@ Feature: Naming
         | the document of allergy "Mango"     | ni:///sha-256;BMVJZrtTlT-XS2y6CvRWFW3r9Pi9GmNMlC-jzs1doZs |
 
   Rule: N6. A matcher judgment is a claim named by the claim rule, and each assertion of it by the assertion rule
-    decisions/naming.md, rows "machine judgment" and "assertion". The claim: cascade:ClaimNamingRule, over, in this
-    order: the maker, cascade:CascadeMatcher; the matcher rule term the rule list's row names (cascade:matcherRule); the
+    decisions/naming.md, rows "machine judgment" and "assertion, retraction by a release".
+    The claim: cascade:ClaimNamingRule, over, in this order: the maker, cascade:CascadeMatcher; the matcher rule term the rule list's row names (cascade:matcherRule); the
     justification; the members (M5), as a list; and everything it used, as a list, which never holds the rule list's
     version. It carries no time, so every run that reaches it reaches one name. Its assertion:
     cascade:AssertionNamingRule, over the rule list version it is asserted under and the claim; it carries no time and
@@ -173,6 +173,7 @@ Feature: Naming
         | true   | <urn:uuid:4c555575-696f-4a0a-b4fa-228549fb872f> | the runtime |
 
   Rule: N8. What a runtime gives the Bridge
+    No note rules this.
     - The adapter: <repository>/tree/<commit>/, at the commit the run reads, of the adapter the document is offered to.
       A document is offered, one adapter at a time, to the adapters cascade-runtime.json names whose
       bridge:sourceMediaType is the media type its importer gives it, in that order: each is asked whether it accepts
@@ -190,6 +191,7 @@ Feature: Naming
     cascade-bridge-spec and the runtime's Bridge interface use it, and their own tests check it.
 
   Rule: N9. A file's name comes from the name of what it holds
+    No note rules this.
     For a urn:uuid: name, the UUID; for an ni:///sha-256; name, the hash in lowercase hex. An RDF file adds .ttl; a stored
     document adds nothing. The folder and the fan-out are the layout's, pod-layout.ttl.
 
@@ -230,6 +232,7 @@ Feature: Naming
         |                                                             | "04c54966bb53953f974b6cba0af456156debf4f8bd1a634c942fa3cecd5da19b"     |
 
   Rule: N10. A person's judgment, and a person's retraction, keeps the IRI its input gives it
+    decisions/naming.md, rows "person's judgment" and "retraction".
     A judgment a person makes arrives with its name: whoever made it minted that once, as the subject's ID was minted. A
     runtime files it under that IRI and gives it no other; it is neither a new random UUID nor named by a rule. So a
     judgment can name another person's judgment, and an answer can name it, on every run. A person's retraction, a
@@ -255,6 +258,7 @@ Feature: Naming
         | <urn:cascade:step:retract-about-r> | <urn:uuid:f2b6d9a4-7e3c-4815-b9d7-5a8e2c6f1d43> | prov:Activity    |               |
 
   Rule: N11. A mapping row is named from its subject, its predicate and its object
+    decisions/naming.md, row "derived name".
     cascade:TableRowNamingRule. Its IRI is its SSSOM record_id, and the rule's inputs, in this order, are the IRIs of
     its owl:annotatedSource, owl:annotatedProperty and owl:annotatedTarget. A row in two versions has one name in both.
 
@@ -265,6 +269,7 @@ Feature: Naming
     vector against it.
 
   Rule: N12. A table version is named from its series, the version it revises and its rows
+    decisions/naming.md, row "version".
     cascade:TableVersionNamingRule: N3's rule over exactly these triples: <urn:cascade:this-version> prov:specializationOf its series,
     <urn:cascade:this-version> prov:wasRevisionOf the version it revises when there is one, and its rows. A row holds
     no blank node, so the canonical form is its triples' N-Triples lines in order. Two series with no rows have two
@@ -360,8 +365,8 @@ Feature: Naming
         | "references"  | true      |
 
   Rule: N15. A release's retraction is named from the release, the assertion and the rule it declares wrong
-    decisions/naming.md, rows "act" and "assertion, retraction by a release". A rule list version, the release, declares
-    a matcher rule wrong by cascade:matcherRuleDeclaredWrong in its description. Whenever the pod's current rule list
+    decisions/naming.md, rows "act", "assertion, retraction by a release" and "retraction".
+    A rule list version, the release, declares a matcher rule wrong by cascade:matcherRuleDeclaredWrong in its description. Whenever the pod's current rule list
     version is the release or a version after it, a runtime performs the rule list version migration, an act (N7): at
     an open, before its matcher run (O1), with the version it adopts as the current one; at a sync's arrival; and before
     a matcher run. For each version on the line up to the current one that declares a rule wrong, oldest first, and each

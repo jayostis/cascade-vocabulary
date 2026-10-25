@@ -30,8 +30,8 @@ Feature: Currency
         | "2026-01-02T10:00:00Z"^^xsd:dateTime | "2026-01-02T10:00:00Z"^^xsd:dateTime |
 
   Rule: C2. A record's current revision is the ladder's pick
-    decisions/currency.md, rows "current" and "heads", and its ladder. Of the record's revisions, whatever revises
-    what: remove each an Erroneous names; remove each a Before places before another still present,
+    decisions/currency.md, rows "current", "heads" and "Erroneous", and its ladder.
+    Of the record's revisions, whatever revises what: remove each an Erroneous names; remove each a Before places before another still present,
     unless Befores form a cycle (C4); keep those at the latest source change time with those carrying none; of those,
     the greatest cascade:observedAsOf, but between two imports from documents reached by one path, the one whose act's
     snapshot descends from the other's; then the least IRI. queries/derivations/current-revisions.rq and the

@@ -29,6 +29,7 @@ Feature: Syncs
       Then "sync" wrote 1 file
 
   Rule: S2. A sync names each act it is written for, and the runtime that performed it
+    decisions/naming.md, row "sync".
     It is prov:wasInformedBy each act, other than a sync, whose snapshot is no ancestor of the writer's last snapshot:
     an act is held once its file, which holds its snapshot, is. It says prov:wasAssociatedWith the runtime, as every
     act does (N7). The matcher run it causes takes the records all of whose first revisions those acts generated (M1).
@@ -120,6 +121,7 @@ Feature: Syncs
         | <urn:cascade:step:sync-back> | <urn:cascade:step:later>   | <urn:cascade:step:sync>    | 0          |
 
   Rule: S4. A writer given only syncs writes nothing, and takes the one head it then holds as its last snapshot
+    decisions/naming.md, row "sync".
     No sync names a sync, so syncs arriving alone give the writer no act to name: two writers that sync back and forth
     settle. The files that arrived are written all the same. When the writer then holds one head, and it is not the
     writer's last snapshot, that head descends from it and becomes its last snapshot, as git fast-forwards: the
@@ -187,6 +189,7 @@ Feature: Syncs
         | 2     | 1         |
 
   Rule: S6. An arrival after a sync revises each of the record's heads
+    decisions/currency.md, row "heads".
     Two writers that each imported a record hold, once synced, two revisions of it that none revises: its heads. The
     next arrival that changes it writes one revision, prov:wasRevisionOf each head, as a git merge names each parent
     (A5), and one whose version is the record's current one writes none (A4).
