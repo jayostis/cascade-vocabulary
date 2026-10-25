@@ -315,7 +315,7 @@ Feature: The matcher's procedure
     Version 16 of the vocabulary's list changes the queries of R1, R2, R3, R4, R5, R7, R10, R11, R12 and R13, each of
     which paired every record of a kind with every other before it compared their codes, so that each reaches the other
     record of a pair through the code, or the table row, the two share, and compares their kinds only then. Each gives
-    the rows the query it replaces gives; versions 1 to 15 pin the old files:
+    the rows the query it replaces gives on valid data; versions 1 to 15 pin the old files:
 
     - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code-key-joined-first.rq.
     - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate:

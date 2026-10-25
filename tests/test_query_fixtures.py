@@ -123,7 +123,7 @@ CURRENT_VERSIONS = "SELECT DISTINCT ?record WHERE { ?record <http://purl.org/pav
                                      if fixture.name.startswith("matcher-")])
 def test_a_comparison_bound_in_the_groups_it_marks_gives_its_unbound_rows_of_the_records_bound(fixture):
     """And a comparison bound per side or joined on its key first gives the rows of the comparison it was made from,
-    bound and unbound."""
+    bound and unbound, on each engine."""
     store = built_once(fixture, "oxigraph", LENSES[0]).store
     records = sorted(str(found["record"]) for found in store.select(CURRENT_VERSIONS))[::2]
     assert MARKED and MADE_FROM and records
@@ -135,10 +135,13 @@ def test_a_comparison_bound_in_the_groups_it_marks_gives_its_unbound_rows_of_the
         text = query(relative)
         unbound = Counter(row(found) for found in store.select(text) if str(found["record"]) in records)
         assert rows(bound_to_records(text, records)) == unbound, name
-    for relative, made_from in MADE_FROM.items():
-        assert rows(query(relative)) == rows(query(made_from)), relative
-        bound = (rows(bound_to_records(query(path), records)) for path in (relative, made_from))
-        assert next(bound) == next(bound), relative
+    for engine in sorted(ENGINES):
+        held = built_once(fixture, engine, LENSES[0]).store
+        for relative, made_from in MADE_FROM.items():
+            for texts in ((query(relative), query(made_from)),
+                          (bound_to_records(query(relative), records), bound_to_records(query(made_from), records))):
+                new, old = (Counter(row(found) for found in held.select(text)) for text in texts)
+                assert new == old, (engine, relative)
 
 
 def test_each_engine_loads_the_default_graph_of_a_trig_file_into_its_default_graph_against_one_base(tmp_path):
