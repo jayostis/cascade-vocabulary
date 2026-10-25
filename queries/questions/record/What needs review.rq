@@ -54,7 +54,7 @@ WHERE {
     FILTER NOT EXISTS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
                                          prov:hadMember ?finding }
     FILTER NOT EXISTS {
-      { ?contradicted cascade:judgedBefore ?otherRevision } UNION { ?otherRevision cascade:judgedBefore ?contradicted }
+      ?otherRevision cascade:judgedBefore|^cascade:judgedBefore ?contradicted .
       ?finding cascade:contradictedEarlierRevision ?contradicted .
     }
     BIND (CONCAT("this source reports ", STR(?wentBack), IF(?wentBack = 1, " record", " records"),
