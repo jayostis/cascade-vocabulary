@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -16,19 +16,19 @@
   mf:name "the-dates-the-view-shows" ;
   rdfs:comment "The entry shows the list entry's start and the prescription's written date." ;
   mf:action [ qt:query <the-dates-the-view-shows.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-dates-the-view-shows.srj> .
 
 <#my-active-medications> a mf:QueryEvaluationTest ;
   mf:name "my-active-medications" ;
   rdfs:comment "The active medication gives when it started and the day its prescription was written." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-active-medications.srj> .
 
 <#my-medication-history> a mf:QueryEvaluationTest ;
   mf:name "my-medication-history" ;
   rdfs:comment "The history gives when it started and the day its prescription was written." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20medication%20history.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-medication-history.srj> .

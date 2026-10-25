@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -15,12 +15,12 @@
   mf:name "whether-it-counts" ;
   rdfs:comment "The claim asserted under version 1 alone does not count, since version 2 runs another query for its rule, and the question says version 2 did it; the claim asserted again under version 2 counts." ;
   mf:action [ qt:query <../../../queries/questions/judgment/Whether%20it%20counts.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <whether-it-counts.srj> .
 
 <#lapsed> a mf:QueryEvaluationTest ;
   mf:name "lapsed" ;
   rdfs:comment "The claim that stopped counting has lapsed: nothing retracts or supersedes it." ;
   mf:action [ qt:query <lapsed.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <lapsed.srj> .

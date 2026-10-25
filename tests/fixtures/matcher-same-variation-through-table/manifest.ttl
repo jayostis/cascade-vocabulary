@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -15,8 +15,8 @@
   mf:name "same-variation-through-table" ;
   rdfs:comment "Two records match with each version that holds the row both find, either way round: through the expression on both transcripts of 90011, through an ID and an expression of 90012 in both series, and through an expression and an ID of 90013. None matches by an ID that is on no row, by two different IDs, by a shared ID, by an expression on two rows, by no row, or by rows of another kind or a pod file." ;
   mf:action [ qt:query <../../../queries/matcher/same-variation-through-table.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:oldRow1> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:oldRow1> ,
                                   <urn:x:oldRow2> ,
                                   <urn:x:q1> ,
                                   <urn:x:q2> ,
@@ -41,8 +41,8 @@
   mf:name "same-variation-through-current-tables" ;
   rdfs:comment "As same-variation-through-table, with rows counted over the current version of each series alone: two records whose expression the version no longer current holds on a second row join through the current version's one row, which same-variation-through-table leaves out." ;
   mf:action [ qt:query <../../../queries/matcher/same-variation-through-current-tables.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:oldRow1> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:oldRow1> ,
                                   <urn:x:oldRow2> ,
                                   <urn:x:q1> ,
                                   <urn:x:q2> ,

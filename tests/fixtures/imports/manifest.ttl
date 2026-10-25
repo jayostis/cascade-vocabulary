@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -14,5 +14,5 @@
   mf:name "what-each-import-brought-in" ;
   rdfs:comment "Every revision each import added, with its record and version, in the order the imports started; the matcher run brought none, so it has no row." ;
   mf:action [ qt:query <../../../queries/questions/pod/What%20each%20import%20brought%20in.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-each-import-brought-in.srj> .

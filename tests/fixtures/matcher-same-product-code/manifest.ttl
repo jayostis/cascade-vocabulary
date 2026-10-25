@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -15,8 +15,8 @@
   mf:name "same-product-code" ;
   rdfs:comment "Two records sharing a code the drug products version lists match with that version, either way round, whatever else either carries. None of the four counterexamples matches, nor a pair that shares an NDC, nor a record that carries two products with either of the records that share one with it, whether one version lists both or two series list one each, nor records of a code only a pod file or another kind's version lists." ;
   mf:action [ qt:query <../../../queries/matcher/same-product-code.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:brandFive> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:brandFive> ,
                                   <urn:x:brandTen> ,
                                   <urn:x:bridgeA> ,
                                   <urn:x:bridgeB> ,
@@ -45,8 +45,8 @@
   mf:name "same-product-code-in-current-tables" ;
   rdfs:comment "As same-product-code, with codes counted over the current version of each series alone: a code only the drug products version no longer current lists is not counted, so the record that carries it beside a product another record shares joins that record, which same-product-code leaves out." ;
   mf:action [ qt:query <../../../queries/matcher/same-product-code-in-current-tables.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:brandFive> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:brandFive> ,
                                   <urn:x:brandTen> ,
                                   <urn:x:bridgeA> ,
                                   <urn:x:bridgeB> ,

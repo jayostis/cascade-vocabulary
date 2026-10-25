@@ -1,4 +1,4 @@
-@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -14,8 +14,8 @@
   mf:name "same-mapped-code" ;
   rdfs:comment "A SNOMED CT code matches each RxNorm code the map pairs it with, either way round, with the map's version; two RxNorm codes mapped from one SNOMED CT code, and a code only a pod file's row pairs, do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-mapped-code.rq> ;
-              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              cascade:boundRecord <urn:x:fromRxnorm> ,
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:fromRxnorm> ,
                                   <urn:x:fromSnomed> ,
                                   <urn:x:unmapped> ] ;
   mf:result <same-mapped-code.srj> .
