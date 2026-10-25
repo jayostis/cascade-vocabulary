@@ -1,5 +1,6 @@
-# Each entry takes the test, code, value, unit and time of its lead, so a value is never shown at another member's
-# time, and the status of the member chosen for status.
+# Each entry takes the test, code, value, unit and time of its lead, so a value is never shown at another member's time,
+# and the status of the member chosen for status. Each member's current values are a node of the view of their own,
+# named after the entry and the member, which says the member they came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -14,15 +15,32 @@ CONSTRUCT {
     cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:testName ?memberTestName ;
+    cascade:testCode ?memberTestCode ;
+    cascade:resultValue ?memberResultValue ;
+    cascade:resultUnit ?memberResultUnit ;
+    cascade:workflowStatus ?memberWorkflowStatus ;
+    cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime .
 }
 WHERE {
-  ?record a cascade:LaboratoryTestResult ; cascade:inEntry ?entry .
-  ?entry cascade:leadMember ?lead .
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testName ?name }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testCode ?code }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultValue ?value }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultUnit ?unit }
-  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
-             ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultClinicallyRelevantTime ?date }
+  { ?record a cascade:LaboratoryTestResult ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testName ?name }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testCode ?code }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultValue ?value }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultUnit ?unit }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultClinicallyRelevantTime ?date } }
+  UNION
+  { ?member a cascade:LaboratoryTestResult ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:testName ?memberTestName }
+    OPTIONAL { ?memberVersion cascade:testCode ?memberTestCode }
+    OPTIONAL { ?memberVersion cascade:resultValue ?memberResultValue }
+    OPTIONAL { ?memberVersion cascade:resultUnit ?memberResultUnit }
+    OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
+    OPTIONAL { ?memberVersion cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime } }
 }

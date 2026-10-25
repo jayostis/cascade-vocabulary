@@ -96,8 +96,12 @@ Feature: Currency
     decisions/currency.md, row "entry on a Same group", and its lead. An entry's cascade:leadMember is a record the
     person entered when it holds one; otherwise the member left once a Before outside a cycle has placed the
     others' current revisions before it, ranked as the ladder's last three steps rank revisions. A view takes the
-    entry's name and codes from its lead, and queries/questions/entry/What it shows.rq lists every value each member's
-    current version states, saying which member it came from, the lead's first. No merged record is stored.
+    entry's name and codes from its lead, and holds each member's current values as a node of its own
+    (cascade:memberCurrentValues), named after the entry and the member (N13), which names the member it came from
+    (cascade:valuesOfMember); queries/questions/entry/What it shows.rq lists them from the view alone, the lead's first.
+    No merged record is stored, and no triple of a version is copied into a view, so no count over the union sees one
+    twice.
 
     No example here shows this rule: no scripted input but a kit's joins a record the person entered to an imported
     one. Priya's kit shows it, P15 and P11, and tests/fixtures/the-lead-member and allergies-view show the rest.
+

@@ -1,6 +1,8 @@
 # Each entry takes the classification, date and lab of its lead, the status of the member chosen for status, and the
 # entry of the variant the lead interprets: its version names a variant record, and the entry is the one that record is
-# in, none when the record is in no entry. The lab is the organization record itself, not an entry.
+# in, none when the record is in no entry. The lab is the organization record itself, not an entry. Each member's
+# current values are a node of the view of their own, named after the entry and the member, which says the member they
+# came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -15,14 +17,29 @@ CONSTRUCT {
     cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:acmgClassification ?memberAcmgClassification ;
+    cascade:interpretedDate ?memberInterpretedDate ;
+    cascade:variantInterpreted ?memberVariantInterpreted ;
+    cascade:workflowStatus ?memberWorkflowStatus ;
+    prov:wasAttributedTo ?memberWasAttributedTo .
 }
 WHERE {
-  ?record a cascade:VariantInterpretation ; cascade:inEntry ?entry .
-  ?entry cascade:leadMember ?lead .
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:acmgClassification ?classification }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:interpretedDate ?date }
-  OPTIONAL { ?lead pav:hasCurrentVersion/prov:wasAttributedTo ?lab }
-  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:variantInterpreted/cascade:inEntry ?variantEntry }
-  OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
-             ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
+  { ?record a cascade:VariantInterpretation ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:acmgClassification ?classification }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:interpretedDate ?date }
+    OPTIONAL { ?lead pav:hasCurrentVersion/prov:wasAttributedTo ?lab }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:variantInterpreted/cascade:inEntry ?variantEntry }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status } }
+  UNION
+  { ?member a cascade:VariantInterpretation ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:acmgClassification ?memberAcmgClassification }
+    OPTIONAL { ?memberVersion cascade:interpretedDate ?memberInterpretedDate }
+    OPTIONAL { ?memberVersion cascade:variantInterpreted ?memberVariantInterpreted }
+    OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
+    OPTIONAL { ?memberVersion prov:wasAttributedTo ?memberWasAttributedTo } }
 }
