@@ -760,14 +760,20 @@ Feature: Arrivals
 
   Rule: A20. A pull writes the record of each Organization it holds, and a lab result names the organization that performed it
     decisions/republishing-sources.md, row "organisation"; decisions/naming.md, row "server, organisation".
-    An Organization a pull's Bundle holds at the top of an entry, with an id, is a cascade:Organization record named by
-    cascade:OrganizationNamingRule from the pull's fhirBase, normalised, Organization and its id, whatever names it, and
-    its version holds what the resource says, as A2 to A5 write any record's: its name as foaf:name, each identifier as
-    org:identifier, typed by its system, and each address as cascade:organizationAddress. A lab result from a pull whose
-    performers name one Organization, as Organization and its id, holds that organization's record as
-    prov:wasAttributedTo on its version, whether or not the pull holds the Organization; performers naming two name
-    none. The organization is content of the version, so a later pull naming another performer writes a revision of the
-    same record. An organization record is never the subject's (M2).
+    An Organization a pull's Bundle holds at the top of an entry, with an id and a fullUrl that is no urn:uuid, is a
+    cascade:Organization record named by cascade:OrganizationNamingRule from the pull's fhirBase, normalised,
+    Organization and its id, whatever names it, unless another entry holds an Organization with that id, when neither is
+    a record. Like any record from a server it states its cascade:sourceUrl, <base>/Organization/<id>, and its
+    cascade:sourceRecordId, and its version holds what the resource says, as A2 to A5 write any record's: its name as
+    foaf:name, each identifier as org:identifier, typed by its system, and each address as cascade:organizationAddress.
+    A lab result from a pull whose performers name one Organization, as Organization/<id> or <base>/Organization/<id>,
+    a version's /_history/ dropped, holds that organization's record as prov:wasAttributedTo on its version. The
+    reference alone names it, so the result is attributed whether or not the pull holds the Organization, unlike a
+    document's interpretation, whose performer names a record only where it resolves to an Organization of the
+    document. A reference made from an entry whose fullUrl is a urn:uuid, to an Organization the pull holds under one,
+    or to an id two entries hold an Organization under names none, and performers naming two name none. The
+    organization is content of the version, so a later pull naming another performer writes a revision of the same
+    record. An organization record is never the subject's (M2).
 
     Example: a pull's Organization is a record named by its server and id, with a version of what it says
       Given a new pod for Finn on 2026-06-01 at 09:00

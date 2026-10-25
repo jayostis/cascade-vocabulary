@@ -460,6 +460,11 @@
   mf:action [ sht:dataGraph <record-organization/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
+<#record-organization/named-as-another-record> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-organization/named-as-another-record.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:OrganizationRecordNameShape ] ] .
+
 <#record-organization/identifier-an-iri> a sht:Validate ;
   mf:action [ sht:dataGraph <record-organization/identifier-an-iri.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
