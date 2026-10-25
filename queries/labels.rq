@@ -76,11 +76,16 @@ WHERE {
   UNION
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
+      { SELECT ?who (MIN(?name) AS ?machine)
+        WHERE {
+          { SELECT DISTINCT ?who WHERE { ?judgment a cascade:Judgment ; prov:wasAttributedTo ?who } }
+          OPTIONAL { ?who rdfs:label ?name }
+        }
+        GROUP BY ?who }
       ?thing a cascade:Judgment ; prov:wasAttributedTo ?who .
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       OPTIONAL { ?thing prov:generatedAtTime ?t }
       OPTIONAL { ?thing cascade:verdict ?verdict }
-      OPTIONAL { ?who rdfs:label ?machine }
       OPTIONAL { ?thing prov:qualifiedAttribution/prov:hadRole ?role }
       OPTIONAL { ?thing prov:hadMember/^prov:specializationOf/cascade:displayName ?about }
       BIND (CONCAT(REPLACE(STR(?verdict), "^.*#", ""), " · ",
