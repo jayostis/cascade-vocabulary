@@ -1,9 +1,10 @@
 # The ladder's last two steps pick a record's current revision from its candidates, and its version is the record's
 # current version. A candidate a later one in ancestry follows is out; of what is left, the greatest
-# cascade:observedAsOf, then the least IRI, which is arbitrary and only there so that two writers agree. Every later
-# step reads a record through these.
+# cascade:observedAsOf, beside every candidate a ClockDiscounted leaves carrying none, then the least IRI, which is
+# arbitrary and only there so that two writers agree. Every later step reads a record through these.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 CONSTRUCT { ?record cascade:currentRevision ?r ; pav:hasCurrentVersion ?v }
 WHERE {
@@ -12,14 +13,17 @@ WHERE {
       { SELECT ?record (MAX(?seen0) AS ?latestSeen)
         WHERE {
           ?record cascade:currentRevisionCandidate ?c0 .
-          ?c0 cascade:observedAsOf ?seen0 .
+          ?c0 cascade:observedAsOf ?observed0 .
           MINUS { ?anyLater0 cascade:laterInAncestryThan ?c0 }
+          OPTIONAL { ?c0 cascade:observationTimeDiscountedBy ?discount0 }
+          BIND (IF(BOUND(?discount0), "0001-01-01T00:00:00Z"^^xsd:dateTime, ?observed0) AS ?seen0)
         }
         GROUP BY ?record }
       ?record cascade:currentRevisionCandidate ?c .
       ?c cascade:observedAsOf ?seen .
       MINUS { ?anyLater cascade:laterInAncestryThan ?c }
-      FILTER (?seen = ?latestSeen)
+      OPTIONAL { ?c cascade:observationTimeDiscountedBy ?discount }
+      FILTER (?seen = ?latestSeen || BOUND(?discount))
     }
     GROUP BY ?record }
   ?r cascade:revisionOf ?record ; cascade:version ?v .

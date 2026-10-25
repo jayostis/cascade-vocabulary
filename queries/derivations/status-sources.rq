@@ -1,7 +1,7 @@
 # An entry takes its status from a member that states one, chosen as the lead is from the members' current revisions:
-# of those at the latest source change time, with those carrying none, the greatest cascade:observedAsOf, then the least
-# IRI. A kind whose status comes only from documents, as an allergy's does, never takes it from a member the person
-# entered.
+# of those at the latest source change time, with those carrying none, the greatest cascade:observedAsOf beside those a
+# ClockDiscounted leaves carrying none, then the least IRI. A kind whose status comes only from documents, as an
+# allergy's does, never takes it from a member the person entered.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -23,7 +23,9 @@ WHERE {
             GROUP BY ?entry }
           ?r1 cascade:inEntry ?entry ; cascade:statusOnlyFromDocuments ?documentsOnly1 ;
               cascade:currentRevision ?rev1 ; pav:hasCurrentVersion/(cascade:clinicalStatus|cascade:workflowStatus) [] .
-          ?rev1 cascade:observedAsOf ?seen1 .
+          ?rev1 cascade:observedAsOf ?observed1 .
+          OPTIONAL { ?rev1 cascade:observationTimeDiscountedBy ?discount1 }
+          BIND (IF(BOUND(?discount1), "0001-01-01T00:00:00Z"^^xsd:dateTime, ?observed1) AS ?seen1)
           FILTER (!?documentsOnly1 || EXISTS { ?rev1 prov:wasDerivedFrom [] })
           OPTIONAL { ?rev1 pav:lastUpdateOn ?changed1 }
           FILTER (!BOUND(?changed1) || ?changed1 = ?latest)
@@ -31,7 +33,9 @@ WHERE {
         GROUP BY ?entry ?latest }
       ?r cascade:inEntry ?entry ; cascade:statusOnlyFromDocuments ?documentsOnly ;
          cascade:currentRevision ?rev ; pav:hasCurrentVersion/(cascade:clinicalStatus|cascade:workflowStatus) [] .
-      ?rev cascade:observedAsOf ?seen .
+      ?rev cascade:observedAsOf ?observed .
+      OPTIONAL { ?rev cascade:observationTimeDiscountedBy ?discount }
+      FILTER (?observed = ?seen || BOUND(?discount))
       FILTER (!?documentsOnly || EXISTS { ?rev prov:wasDerivedFrom [] })
       OPTIONAL { ?rev pav:lastUpdateOn ?changed }
       FILTER (!BOUND(?changed) || ?changed = ?latest)

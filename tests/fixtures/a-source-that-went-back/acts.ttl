@@ -1,0 +1,17 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:firstPull a prov:Activity ; prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:firstPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :firstPull ;
+    cascade:setHash "1111111111111111111111111111111111111111111111111111111111111111" ;
+    cascade:fileAddedToSet "provenance/imports/fi/first-pull.ttl" .
+:secondPull a prov:Activity ; prov:startedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
+:secondPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :secondPull ; cascade:firstParentSnapshot :firstPullSnapshot ;
+    cascade:setHash "2222222222222222222222222222222222222222222222222222222222222222" ;
+    cascade:fileAddedToSet "provenance/imports/se/second-pull.ttl" .
+:restoredPull a prov:Activity ; prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:restoredPullSnapshot a cascade:Snapshot ; prov:wasGeneratedBy :restoredPull ; cascade:firstParentSnapshot :secondPullSnapshot ;
+    cascade:setHash "3333333333333333333333333333333333333333333333333333333333333333" ;
+    cascade:fileAddedToSet "provenance/imports/re/restored-pull.ttl" .

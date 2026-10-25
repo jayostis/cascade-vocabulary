@@ -1,0 +1,6 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT ?member ?lead ?statusFrom ?dateFrom WHERE {
+  ?member cascade:inEntry ?entry .
+  ?entry cascade:leadMember ?lead ; cascade:statusFrom ?statusFrom ; cascade:dateFrom ?dateFrom .
+}
