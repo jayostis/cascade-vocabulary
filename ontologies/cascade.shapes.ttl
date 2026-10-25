@@ -35,9 +35,9 @@ cascade:PatientProfileShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:dateOfBirth ;
-        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] ) ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
-        sh:message "A date of birth is one xsd:gYear, xsd:gYearMonth or xsd:date, typed by the precision its source wrote: a year or a month is never padded to a day."@en ;
+        sh:message "A date of birth is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -998,7 +998,7 @@ cascade:PaddedDateTimeShape a sh:NodeShape ;
         sh:path cascade:paddedDateTimeProperty ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
+        sh:in ( cascade:dateOfBirth cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate ) ;
         sh:message "A padded time names the one property that holds it, a property whose value may be a time."@en ;
         sh:severity sh:Violation
