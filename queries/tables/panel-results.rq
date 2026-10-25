@@ -24,7 +24,7 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 SELECT DISTINCT ?panel ?member ?sequence ?required ?via ?origin ?entry
 WHERE {
   {
-    ?entry cascade:testCode ?member ; cascade:latestMember ?latest .
+    ?entry cascade:testCode ?member ; cascade:leadMember ?lead .
     ?origin prov:specializationOf/cascade:tableKind cascade:PanelMembers .
     GRAPH ?origin {
       ?row owl:annotatedSource ?via ; owl:annotatedTarget ?member ; cascade:panelSequence ?sequence .
@@ -34,7 +34,7 @@ WHERE {
   } UNION {
     { SELECT DISTINCT ?panel ?origin
       WHERE {
-        ?held cascade:testCode ?code ; cascade:latestMember ?last .
+        ?held cascade:testCode ?code ; cascade:leadMember ?last .
         ?origin prov:specializationOf/cascade:tableKind cascade:PanelMembers .
         GRAPH ?origin { ?listed owl:annotatedTarget ?code ; owl:annotatedSource ?lister .
                         ?lister (^owl:annotatedTarget/owl:annotatedSource)* ?panel }
@@ -51,7 +51,7 @@ WHERE {
         FILTER NOT EXISTS { ?link cascade:observationRequiredInPanel "R" }
       }
     }
-    FILTER NOT EXISTS { ?entry cascade:testCode ?member ; cascade:latestMember ?latest }
+    FILTER NOT EXISTS { ?entry cascade:testCode ?member ; cascade:leadMember ?lead }
     BIND ("R" AS ?required)
   }
 }

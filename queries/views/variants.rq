@@ -9,13 +9,13 @@ CONSTRUCT {
     cascade:hgvsCodingDnaExpression ?hgvs ;
     cascade:clinvarVariationId ?variation ;
     cascade:workflowStatus ?status ;
-    cascade:latestMember ?latest ;
+    cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
 }
 WHERE {
   ?record a cascade:GeneticVariantFinding ; cascade:inEntry ?entry .
-  ?entry cascade:latestMember ?latest .
+  ?entry cascade:leadMember ?lead .
   OPTIONAL { ?record pav:hasCurrentVersion/cascade:geneSymbol ?gene }
   OPTIONAL { ?record pav:hasCurrentVersion/cascade:hgvsCodingDnaExpression ?hgvs }
   OPTIONAL { ?record pav:hasCurrentVersion/cascade:clinvarVariationId ?variation }

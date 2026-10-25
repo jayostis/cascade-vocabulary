@@ -198,7 +198,8 @@ The person makes the entry `entries/<name>.ttl`.
 
 ### `{person} files the judgment {name} on {time}`
 
-The person makes the judgment `judgments/<name>.ttl`.
+The person makes the judgment `judgments/<name>.ttl`. A revision's name depends on its run, so the file names one as
+`<urn:cascade:revision-setting:{version}>`, `{version}` a version's IRI: the one revision that sets that version.
 
 ### `version {name} of {name} arrives on {time}`
 
@@ -378,7 +379,7 @@ The view holds no entry.
 
 The entry holding the record has, for each field the table names, exactly these values; with `only`, it states nothing
 else but its members. The fields are `type`, `status`, `criticality`, `abatement date`, `status from` and
-`latest member`.
+`lead member`.
 
 ### `{records} is/are in no view`
 

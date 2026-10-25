@@ -584,11 +584,11 @@ Feature: Alex Rivera's pod
         | arrived                | version | after |
         | 2026-09-01 at 10:00:04 | 1       |       |
 
-    Example: after E6 resends H1-ALG-PCN unchanged, H2O-ALG-PCN is still its entry's latest member
+    Example: after E6 resends H1-ALG-PCN unchanged, H2O-ALG-PCN still leads its entry
       When the pod is read as it stood after "M7"
       Then the entry of H1-ALG-PCN shows:
         | field         | value       |
-        | latest member | H2O-ALG-PCN |
+        | lead member   | H2O-ALG-PCN |
 
   Rule: P24. The wrong patient: a family member's records imported as Alex's
     Sam's proxy account is in x-e10; J22 (E10) claims his profile, and J23 retracts J22 (E14). From E10 to E13 H1P-PAT

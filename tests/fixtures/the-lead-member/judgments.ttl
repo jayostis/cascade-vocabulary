@@ -1,0 +1,23 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+
+:pollen a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :older, :newer ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-07-01T00:00:00Z"^^xsd:dateTime .
+
+:latex a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :pulled, :entered ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-07-01T00:00:00Z"^^xsd:dateTime .
+
+:shellfish a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :shownFirst, :clocksFirst ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-07-01T00:00:00Z"^^xsd:dateTime .
+
+:showThisOneFirst a cascade:Judgment ; cascade:verdict cascade:Before ;
+    prov:hadMember :clocksFirstRevision, :shownFirstRevision ; cascade:earlierMember :clocksFirstRevision ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-07-02T00:00:00Z"^^xsd:dateTime .

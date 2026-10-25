@@ -1,0 +1,61 @@
+# Of two candidates for a record's current revision from two live pulls of one source, the one whose act's snapshot
+# descends from the other's is the later, whatever their clocks say. A live pull is a document retrieved on a date
+# (pav:retrievedOn) that answers as of no other instant (cascade:answeredAsOf), as an export does; two pulls are of one
+# source when both name one transmitter, the same agent, or neither names one. Ancestry is asked once for each two acts,
+# and the pairs of documents and of candidates are joined to the acts it orders.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT { ?later cascade:laterInAncestryThan ?earlier }
+WHERE {
+  { SELECT ?earlierAct ?laterAct
+    WHERE {
+      { SELECT DISTINCT ?earlierAct ?laterAct
+        WHERE {
+          { SELECT DISTINCT ?earlierAct ?laterAct ?earlierDocument1 ?laterDocument1
+            WHERE {
+              ?record1 cascade:currentRevisionCandidate ?earlier1 , ?later1 .
+              ?earlier1 prov:wasGeneratedBy ?earlierAct ; prov:wasDerivedFrom ?earlierDocument1 .
+              ?later1 prov:wasGeneratedBy ?laterAct ; prov:wasDerivedFrom ?laterDocument1 .
+              FILTER (?laterAct != ?earlierAct)
+              ?earlierDocument1 pav:retrievedOn ?earlierRetrieved1 .
+              ?laterDocument1 pav:retrievedOn ?laterRetrieved1 .
+              FILTER NOT EXISTS { ?earlierDocument1 cascade:answeredAsOf ?earlierAnswered1 }
+              FILTER NOT EXISTS { ?laterDocument1 cascade:answeredAsOf ?laterAnswered1 }
+            } }
+          OPTIONAL { ?earlierDocument1 prov:qualifiedAttribution ?earlierVia1 .
+                     ?earlierVia1 prov:hadRole cascade:TransmitterRole ; prov:agent ?earlierTransmitter1 }
+          OPTIONAL { ?laterDocument1 prov:qualifiedAttribution ?laterVia1 .
+                     ?laterVia1 prov:hadRole cascade:TransmitterRole ; prov:agent ?laterTransmitter1 }
+          FILTER (COALESCE(?earlierTransmitter1 = ?laterTransmitter1,
+                           !BOUND(?earlierTransmitter1) && !BOUND(?laterTransmitter1)))
+        } }
+      ?earlierSnapshot a cascade:Snapshot ; prov:wasGeneratedBy ?earlierAct .
+      ?laterSnapshot a cascade:Snapshot ; prov:wasGeneratedBy ?laterAct .
+      FILTER EXISTS { ?laterSnapshot (cascade:firstParentSnapshot|cascade:mergedParentSnapshot)+ ?earlierSnapshot }
+    } }
+  { SELECT DISTINCT ?earlierAct ?laterAct ?earlierDocument ?laterDocument
+    WHERE {
+      { SELECT DISTINCT ?earlierAct ?laterAct ?earlierDocument ?laterDocument
+        WHERE {
+          ?record0 cascade:currentRevisionCandidate ?earlier0 , ?later0 .
+          ?earlier0 prov:wasGeneratedBy ?earlierAct ; prov:wasDerivedFrom ?earlierDocument .
+          ?later0 prov:wasGeneratedBy ?laterAct ; prov:wasDerivedFrom ?laterDocument .
+          FILTER (?laterAct != ?earlierAct)
+          ?earlierDocument pav:retrievedOn ?earlierRetrieved0 .
+          ?laterDocument pav:retrievedOn ?laterRetrieved0 .
+          FILTER NOT EXISTS { ?earlierDocument cascade:answeredAsOf ?earlierAnswered0 }
+          FILTER NOT EXISTS { ?laterDocument cascade:answeredAsOf ?laterAnswered0 }
+        } }
+      OPTIONAL { ?earlierDocument prov:qualifiedAttribution ?earlierVia0 .
+                 ?earlierVia0 prov:hadRole cascade:TransmitterRole ; prov:agent ?earlierTransmitter0 }
+      OPTIONAL { ?laterDocument prov:qualifiedAttribution ?laterVia0 .
+                 ?laterVia0 prov:hadRole cascade:TransmitterRole ; prov:agent ?laterTransmitter0 }
+      FILTER (COALESCE(?earlierTransmitter0 = ?laterTransmitter0,
+                       !BOUND(?earlierTransmitter0) && !BOUND(?laterTransmitter0)))
+    } }
+  ?record cascade:currentRevisionCandidate ?earlier , ?later .
+  ?earlier prov:wasGeneratedBy ?earlierAct ; prov:wasDerivedFrom ?earlierDocument .
+  ?later prov:wasGeneratedBy ?laterAct ; prov:wasDerivedFrom ?laterDocument .
+}

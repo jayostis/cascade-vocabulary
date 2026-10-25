@@ -1,0 +1,41 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:apple rdfs:label "Apple Health" .
+:otherApple rdfs:label "Apple Health" .
+:pulledDirectly pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:pulledThroughApple pav:retrievedOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] .
+:pulledThroughOtherApple pav:retrievedOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :otherApple ] .
+:pulledThroughAppleFirst pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] .
+
+:directThenRelayed a cascade:ProblemOrDiagnosis .
+:directThenRelayedFirst prov:specializationOf :directThenRelayed ; cascade:patient :subject ; cascade:conditionName "Migraine" ; cascade:clinicalStatus "active" .
+:directThenRelayedSecond prov:specializationOf :directThenRelayed ; cascade:patient :subject ; cascade:conditionName "Migraine" ; cascade:clinicalStatus "inactive" .
+:directThenRelayedDirect a cascade:Revision ; cascade:revisionOf :directThenRelayed ; cascade:version :directThenRelayedFirst ;
+    prov:wasDerivedFrom :pulledDirectly ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:directThenRelayedRelayed a cascade:Revision ; cascade:revisionOf :directThenRelayed ; cascade:version :directThenRelayedSecond ;
+    prov:wasRevisionOf :directThenRelayedDirect ; prov:wasDerivedFrom :pulledThroughApple ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2025-12-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2025-12-20T00:00:00Z"^^xsd:dateTime .
+
+:twoRelays a cascade:ProblemOrDiagnosis .
+:twoRelaysFirst prov:specializationOf :twoRelays ; cascade:patient :subject ; cascade:conditionName "Rash" ; cascade:clinicalStatus "active" .
+:twoRelaysSecond prov:specializationOf :twoRelays ; cascade:patient :subject ; cascade:conditionName "Rash" ; cascade:clinicalStatus "resolved" .
+:twoRelaysApple a cascade:Revision ; cascade:revisionOf :twoRelays ; cascade:version :twoRelaysFirst ;
+    prov:wasDerivedFrom :pulledThroughAppleFirst ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:twoRelaysOtherApple a cascade:Revision ; cascade:revisionOf :twoRelays ; cascade:version :twoRelaysSecond ;
+    prov:wasRevisionOf :twoRelaysApple ; prov:wasDerivedFrom :pulledThroughOtherApple ; prov:wasGeneratedBy :skewedPull ;
+    prov:generatedAtTime "2025-12-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2025-12-20T00:00:00Z"^^xsd:dateTime .

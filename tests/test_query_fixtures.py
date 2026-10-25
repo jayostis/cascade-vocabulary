@@ -2,9 +2,9 @@ from functools import cache
 from pathlib import Path
 
 import pytest
-from rdflib import URIRef
+from rdflib import RDF, URIRef
 
-from contract import QUERIES, built, derivations, named, query, questions
+from contract import CASCADE, PROV, QUERIES, built, derivations, named, query, questions
 from engines import ENGINES
 from manifests import Entry, entries, failure, lens_name
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
@@ -125,3 +125,27 @@ def test_an_entry_fails_when_its_query_returns_other_variables_than_its_result_n
     result.write_text('{"head": {"vars": ["z"]}, "results": {"bindings": []}}', encoding="utf-8")
     entry = Entry(iri="urn:x:e", name="e", types=frozenset(), lens=None, query=query, result=result)
     assert "variables" in (failure(entry, ENGINES["oxigraph"]()) or "")
+
+
+PERSONS_JUDGMENTS = """
+    PREFIX prov: <http://www.w3.org/ns/prov#>
+    PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+    SELECT ?judgment WHERE { ?judgment a cascade:Judgment ; prov:wasAttributedTo/a prov:Person }"""
+
+
+@every_fixture
+def test_the_ladder_reads_a_persons_judgment_exactly_when_the_everyday_lens_counts_it(fixture):
+    store = ENGINES["oxigraph"]()
+    for path in fixture.files():
+        store.load(fixture.folder / path, ADDRESS + path)
+    judgments = {row["judgment"] for row in store.select(PERSONS_JUDGMENTS)}
+    probe = lambda judgment, role: URIRef(f"urn:probe:{role}:{judgment}")
+    store.add({triple for judgment in judgments for triple in (
+        (judgment, CASCADE.verdict, CASCADE.Erroneous), (judgment, PROV.hadMember, probe(judgment, "wrong")),
+        (probe(judgment, "wrong"), RDF.type, CASCADE.Revision),
+        (judgment, CASCADE.verdict, CASCADE.Before), (judgment, CASCADE.earlierMember, probe(judgment, "earlier")),
+        (judgment, PROV.hadMember, probe(judgment, "later")))})
+    read = store.construct(query("derivations/revision-judgments.rq"))
+    counted = {judgment for judgment, _, _ in store.construct(query(named("lenses")["everyday"]))} & judgments
+    assert {j for j in judgments if (probe(j, "wrong"), CASCADE.revisionJudgedErroneousBy, j) in read} == counted
+    assert {j for j in judgments if (probe(j, "earlier"), CASCADE.judgedBefore, probe(j, "later")) in read} == counted

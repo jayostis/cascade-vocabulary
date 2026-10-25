@@ -10,17 +10,17 @@
 :c1 a cascade:AllergyOrIntolerance .
 :c1Version prov:specializationOf :c1 ; cascade:patient :subject ; cascade:allergen "Sulfamethoxazole" .
 :c1Revision a cascade:Revision ; cascade:revisionOf :c1 ; cascade:version :c1Version ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :c2 a cascade:AllergyOrIntolerance .
 :c2Version prov:specializationOf :c2 ; cascade:patient :subject ; cascade:allergen "Bactrim" .
 :c2Revision a cascade:Revision ; cascade:revisionOf :c2 ; cascade:version :c2Version ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :c3 a cascade:AllergyOrIntolerance .
 :c3Version prov:specializationOf :c3 ; cascade:patient :subject ; cascade:allergen "Septra" .
 :c3Revision a cascade:Revision ; cascade:revisionOf :c3 ; cascade:version :c3Version ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :rules1 prov:specializationOf :rules ; pav:version "1" .

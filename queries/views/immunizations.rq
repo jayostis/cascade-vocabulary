@@ -1,5 +1,5 @@
-# Each entry takes the vaccine and code of its latest member, the status of the member chosen for status, and the date
-# of the member chosen for the date.
+# Each entry takes the vaccine and code of its lead, the status of the member chosen for status, and the date of the
+# member chosen for the date.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -9,15 +9,15 @@ CONSTRUCT {
     cascade:vaccineCode ?code ;
     cascade:workflowStatus ?status ;
     cascade:vaccinationOccurrenceTime ?date ;
-    cascade:latestMember ?latest ;
+    cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
 }
 WHERE {
   ?record a cascade:Vaccination ; cascade:inEntry ?entry .
-  ?entry cascade:latestMember ?latest .
-  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:vaccineName ?name }
-  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:vaccineCode ?code }
+  ?entry cascade:leadMember ?lead .
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:vaccineName ?name }
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:vaccineCode ?code }
   OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
              ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
   OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:vaccinationOccurrenceTime ?date }

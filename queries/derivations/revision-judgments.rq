@@ -1,0 +1,36 @@
+# The judgments the ladder reads before the lens: a Before or an Erroneous over revisions is a person's, and stands while
+# no activity invalidates it and no judgment that stands replaces it, as every lens counts a person's judgment. The
+# ladder runs before the lens because a lens counts a matcher's Same by its members' current versions (M7). A Before
+# places the member it names earlier before its other member: the ladder removes the earlier of two revisions of one
+# record, and the lead passes over the earlier of two members' current revisions. A Before between two revisions of one
+# record is also said apart, so that the ladder looks for a cycle among that record's revisions alone. An Erroneous
+# removes each revision it names.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT {
+  ?earlier cascade:judgedBefore ?later . ?earlierOfTheRecord cascade:judgedBeforeRevisionOfSameRecord ?later .
+  ?wrong cascade:revisionJudgedErroneousBy ?judgment .
+}
+WHERE {
+  { ?judgment cascade:verdict cascade:Before ; cascade:earlierMember ?earlier ; prov:hadMember ?later ;
+              prov:wasAttributedTo/a prov:Person .
+    FILTER (?later != ?earlier)
+    OPTIONAL { ?earlier cascade:revisionOf ?record . ?later cascade:revisionOf ?record BIND (?earlier AS ?earlierOfTheRecord) }
+    FILTER NOT EXISTS {
+      ?replacing dct:replaces ?judgment
+      OPTIONAL { ?undoing prov:invalidated ?replacing }
+      FILTER (!BOUND(?undoing))
+    }
+    FILTER NOT EXISTS { ?retraction prov:invalidated ?judgment } }
+  UNION
+  { ?judgment cascade:verdict cascade:Erroneous ; prov:hadMember ?wrong ; prov:wasAttributedTo/a prov:Person .
+    ?wrong a cascade:Revision .
+    FILTER NOT EXISTS {
+      ?replacing dct:replaces ?judgment
+      OPTIONAL { ?undoing prov:invalidated ?replacing }
+      FILTER (!BOUND(?undoing))
+    }
+    FILTER NOT EXISTS { ?retraction prov:invalidated ?judgment } }
+}

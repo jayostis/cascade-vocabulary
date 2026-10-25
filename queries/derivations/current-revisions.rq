@@ -1,19 +1,25 @@
-# A record's current revision is the latest to arrive that no other revision revises, and its version is the record's
-# current version. Every later step reads a record through these.
+# The ladder's last two steps pick a record's current revision from its candidates, and its version is the record's
+# current version. A candidate a later one in ancestry follows is out; of what is left, the greatest
+# cascade:observedAsOf, then the least IRI, which is arbitrary and only there so that two writers agree. Every later
+# step reads a record through these.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT { ?record cascade:currentRevision ?r ; pav:hasCurrentVersion ?v }
 WHERE {
-  { SELECT ?record (MIN(STR(?h)) AS ?first)
+  { SELECT ?record (MIN(STR(?c)) AS ?first)
     WHERE {
-      { SELECT ?record (MAX(?t0) AS ?t)
-        WHERE { ?h0 cascade:revisionOf ?record ; prov:generatedAtTime ?t0 .
-                FILTER NOT EXISTS { ?n0 prov:wasRevisionOf ?h0 } }
+      { SELECT ?record (MAX(?seen0) AS ?latestSeen)
+        WHERE {
+          ?record cascade:currentRevisionCandidate ?c0 .
+          ?c0 cascade:observedAsOf ?seen0 .
+          MINUS { ?anyLater0 cascade:laterInAncestryThan ?c0 }
+        }
         GROUP BY ?record }
-      ?h cascade:revisionOf ?record ; prov:generatedAtTime ?t .
-      FILTER NOT EXISTS { ?n prov:wasRevisionOf ?h }
+      ?record cascade:currentRevisionCandidate ?c .
+      ?c cascade:observedAsOf ?seen .
+      MINUS { ?anyLater cascade:laterInAncestryThan ?c }
+      FILTER (?seen = ?latestSeen)
     }
     GROUP BY ?record }
   ?r cascade:revisionOf ?record ; cascade:version ?v .

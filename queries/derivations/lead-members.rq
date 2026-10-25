@@ -1,0 +1,17 @@
+# An entry's lead is the candidate whose current revision has the greatest cascade:observedAsOf, then the least IRI. The
+# entry shows every member's fields, the lead's first.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+CONSTRUCT { ?entry cascade:leadMember ?lead }
+WHERE {
+  { SELECT ?entry (IRI(MIN(STR(?member))) AS ?lead)
+    WHERE {
+      { SELECT ?entry (MAX(?seen0) AS ?latestSeen)
+        WHERE { ?entry cascade:leadMemberCandidate/cascade:currentRevision/cascade:observedAsOf ?seen0 }
+        GROUP BY ?entry }
+      ?entry cascade:leadMemberCandidate ?member .
+      ?member cascade:currentRevision/cascade:observedAsOf ?seen .
+      FILTER (?seen = ?latestSeen)
+    }
+    GROUP BY ?entry }
+}

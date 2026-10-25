@@ -1,0 +1,13 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:record a cascade:ProblemOrDiagnosis .
+:first prov:specializationOf :record ; cascade:conditionName "Asthma" .
+:second prov:specializationOf :record ; cascade:conditionName "Asthma, mild" .
+:earlier a cascade:Revision ; cascade:revisionOf :record ; cascade:version :first ;
+    prov:generatedAtTime "2026-03-01T10:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T10:00:00Z"^^xsd:dateTime .
+:later a cascade:Revision ; cascade:revisionOf :record ; cascade:version :second ;
+    prov:generatedAtTime "2026-03-01T09:30:00-02:00"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T09:30:00-02:00"^^xsd:dateTime ;
+    prov:wasDerivedFrom :north , :south .

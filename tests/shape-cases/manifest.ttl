@@ -102,10 +102,10 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath oa:hasSource ] ] .
 
-<#revision/two-earlier-revisions> a sht:Validate ;
-  mf:action [ sht:dataGraph <revision/two-earlier-revisions.ttl> ] ;
+<#revision/no-observation-time> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/no-observation-time.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath prov:wasRevisionOf ] ] .
+              sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath cascade:observedAsOf ] ] .
 
 <#derived-current-revision/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <derived-current-revision/valid.ttl> ] ;
@@ -454,6 +454,24 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:OrganizationShape ; sh:resultPath org:identifier ] ] .
 
+<#judgment-before/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-before/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-before/by-a-machine> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-before/by-a-machine.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:BeforeVerdictShape ] ] .
+
+<#judgment-before/no-earlier-member> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-before/no-earlier-member.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:BeforeVerdictShape ] ] .
+
+<#judgment-before/earlier-member-of-a-same> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-before/earlier-member-of-a-same.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:EarlierMemberShape ; sh:resultPath cascade:verdict ] ] .
 <#record-organization/names-a-patient> a sht:Validate ;
   mf:action [ sht:dataGraph <record-organization/names-a-patient.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;

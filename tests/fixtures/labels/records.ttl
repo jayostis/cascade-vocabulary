@@ -11,7 +11,7 @@
 :fromDocumentVersion prov:specializationOf :fromDocument ; cascade:patient :profile ; cascade:allergen "Peanut" ;
     cascade:clinicalStatus "active" .
 :fromDocumentRevision a cascade:Revision ; cascade:revisionOf :fromDocument ; cascade:version :fromDocumentVersion ;
-    prov:wasDerivedFrom :document ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:wasDerivedFrom :document ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :document pav:retrievedFrom <https://north.example/fhir/AllergyIntolerance/peanut> ;
     pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
     prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
@@ -20,7 +20,7 @@
 :enteredVersion prov:specializationOf :entered ; cascade:patient :subject ; cascade:allergen "Peanut" ;
     cascade:clinicalStatus "active" .
 :enteredRevision a cascade:Revision ; cascade:revisionOf :entered ; cascade:version :enteredVersion ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :table a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :table-1 prov:specializationOf :table ; pav:version "1" .

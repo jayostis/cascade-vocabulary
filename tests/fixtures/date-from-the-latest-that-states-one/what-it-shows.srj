@@ -8,7 +8,8 @@
       "value",
       "valueLabel",
       "from",
-      "fromLabel"
+      "fromLabel",
+      "lead"
     ]
   },
   "results": {
@@ -58,11 +59,16 @@
         },
         "from": {
           "type": "uri",
-          "value": "urn:x:dated"
+          "value": "urn:x:undated"
         },
         "fromLabel": {
           "type": "literal",
           "value": "Condition · Asthma · own entry"
+        },
+        "lead": {
+          "type": "literal",
+          "value": "true",
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
         }
       },
       {
@@ -88,11 +94,16 @@
         },
         "from": {
           "type": "uri",
-          "value": "urn:x:undated"
+          "value": "urn:x:dated"
         },
         "fromLabel": {
           "type": "literal",
           "value": "Condition · Asthma · own entry"
+        },
+        "lead": {
+          "type": "literal",
+          "value": "false",
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
         }
       },
       {
@@ -110,7 +121,7 @@
         },
         "field": {
           "type": "uri",
-          "value": "https://ns.cascadeprotocol.org/cascade#latestMember"
+          "value": "https://ns.cascadeprotocol.org/cascade#leadMember"
         },
         "value": {
           "type": "uri",
@@ -202,6 +213,11 @@
         "fromLabel": {
           "type": "literal",
           "value": "Condition · Asthma · own entry"
+        },
+        "lead": {
+          "type": "literal",
+          "value": "false",
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
         }
       }
     ]

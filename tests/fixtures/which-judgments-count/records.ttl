@@ -10,7 +10,7 @@
 :record a cascade:AllergyOrIntolerance .
 :recordVersion prov:specializationOf :record ; cascade:patient :subject ; cascade:allergen "Peanut" .
 :recordRevision a cascade:Revision ; cascade:revisionOf :record ; cascade:version :recordVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :rules-1 prov:specializationOf :rules ; pav:version "1" .
@@ -25,4 +25,4 @@
 :other a cascade:AllergyOrIntolerance .
 :otherVersion prov:specializationOf :other ; cascade:patient :subject ; cascade:allergen "Peanut oil" .
 :otherRevision a cascade:Revision ; cascade:revisionOf :other ; cascade:version :otherVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

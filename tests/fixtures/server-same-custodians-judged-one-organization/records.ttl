@@ -26,7 +26,7 @@
 :oldA3Version prov:specializationOf <urn:uuid:73ad8730-ae74-8c5a-9300-dc29b5155e02> ; cascade:patient :subject ;
     cascade:allergen "Shellfish" .
 :oldA3Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:73ad8730-ae74-8c5a-9300-dc29b5155e02> ;
-    cascade:version :oldA3Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    cascade:version :oldA3Version ; prov:wasDerivedFrom :oldPull ; prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
 
 <urn:uuid:02e022bf-8b94-808c-8391-6b8eefe40745> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a3" ;
     cascade:sourceUrl <https://fhir.hospital.example/interconnect/api/FHIR/R4/AllergyIntolerance/a3> .
@@ -34,4 +34,4 @@
     cascade:allergen "Shellfish" .
 :newA3Revision a cascade:Revision ; cascade:revisionOf <urn:uuid:02e022bf-8b94-808c-8391-6b8eefe40745> ;
     cascade:version :newA3Version ; prov:wasDerivedFrom :newPullAfterTheMerger ;
-    prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:05Z"^^xsd:dateTime .

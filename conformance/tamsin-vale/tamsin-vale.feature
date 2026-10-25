@@ -41,8 +41,8 @@ Feature: Tamsin Vale's pod
         | status | completed |
 
   Rule: T3. A result pulled again unchanged writes nothing
-    CN-A1C-1 to CN-A1C-3 are in both pulls, each with the same content. Each arrives again under the source version its
-    revision already carries, so by A3 the second pull writes no revision of them, and each still dates from the first.
+    CN-A1C-1 to CN-A1C-3 are in both pulls, each with the same content. Each arrives again at the version its current
+    revision sets, so by A4 the second pull writes no revision of them, and each still dates from the first.
 
     Example: the results of the first pull each have one revision, from E2
       Then the records have these revisions:
