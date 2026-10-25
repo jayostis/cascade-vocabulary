@@ -8,9 +8,9 @@
 :dated a cascade:ProblemOrDiagnosis .
 :datedVersion prov:specializationOf :dated ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:onsetDate "2020-01-01"^^xsd:date .
 :datedRevision a cascade:Revision ; cascade:revisionOf :dated ; cascade:version :datedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :undated a cascade:ProblemOrDiagnosis .
 :undatedVersion prov:specializationOf :undated ; cascade:patient :subject ; cascade:conditionName "Asthma" .
 :undatedRevision a cascade:Revision ; cascade:revisionOf :undated ; cascade:version :undatedVersion ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .

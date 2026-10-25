@@ -1,0 +1,11 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+:matcher a prov:SoftwareAgent .
+
+:judgment a cascade:Judgment ;
+    cascade:verdict cascade:Before ;
+    prov:hadMember :earlier , :later ;
+    cascade:earlierMember :earlier ;
+    prov:wasAttributedTo :matcher .

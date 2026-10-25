@@ -10,27 +10,27 @@
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ; cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "active" ; cascade:medicationUseStartDate "2023-06-15"^^xsd:date .
 :prescribedRevision a cascade:Revision ; cascade:revisionOf :prescribed ; cascade:version :prescribedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :listed a cascade:PrescribedOrReportedMedication .
 :listedVersion prov:specializationOf :listed ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ; cascade:prescribedOrReported "reportedUse" .
 :listedRevision a cascade:Revision ; cascade:revisionOf :listed ; cascade:version :listedVersion ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :stopped a cascade:PrescribedOrReportedMedication .
 :stoppedVersion prov:specializationOf :stopped ; cascade:patient :subject ; cascade:drugName "metformin 500 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ; cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "stopped" ; cascade:medicationUseStartDate "2021-01-10"^^xsd:date ; cascade:medicationUseEndDate "2023-04-02"^^xsd:date .
 :stoppedRevision a cascade:Revision ; cascade:revisionOf :stopped ; cascade:version :stoppedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :completed a cascade:PrescribedOrReportedMedication .
 :completedVersion prov:specializationOf :completed ; cascade:patient :subject ; cascade:drugName "amoxicillin 500 MG Oral Capsule" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/308191> ; cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "completed" ; cascade:medicationUseStartDate "2022-09-01"^^xsd:date .
 :completedRevision a cascade:Revision ; cascade:revisionOf :completed ; cascade:version :completedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :chosen a cascade:PrescribedOrReportedMedication .
 :chosenVersion prov:specializationOf :chosen ; cascade:patient :subject ; cascade:drugName "amlodipine 5 MG Oral Tablet" ;
@@ -39,14 +39,14 @@
     cascade:userSelectedCode <https://ns.cascadeprotocol.org/codes/rxnorm/197361> ; cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "active" ; cascade:medicationUseStartDate "2024-02-01"^^xsd:date .
 :chosenRevision a cascade:Revision ; cascade:revisionOf :chosen ; cascade:version :chosenVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :unchosen a cascade:PrescribedOrReportedMedication .
 :unchosenVersion prov:specializationOf :unchosen ; cascade:patient :subject ; cascade:drugName "Lisinopril, two codes" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076>, <https://ns.cascadeprotocol.org/codes/rxnorm/29046> ;
     cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" .
 :unchosenRevision a cascade:Revision ; cascade:revisionOf :unchosen ; cascade:version :unchosenVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :fill a cascade:PrescribedOrReportedMedication .
 :fillVersion prov:specializationOf :fill ; cascade:patient :subject ; cascade:drugName "Amlodipine 5 mg tablet, pharmacy" ;
@@ -55,24 +55,24 @@
     cascade:userSelectedCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> ; cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "active" ; cascade:medicationUseStartDate "2024-03-01"^^xsd:date .
 :fillRevision a cascade:Revision ; cascade:revisionOf :fill ; cascade:version :fillVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :uncoded a cascade:PrescribedOrReportedMedication .
 :uncodedVersion prov:specializationOf :uncoded ; cascade:patient :subject ; cascade:drugName "Fish oil" ;
     cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" .
 :uncodedRevision a cascade:Revision ; cascade:revisionOf :uncoded ; cascade:version :uncodedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :paused a cascade:PrescribedOrReportedMedication .
 :pausedVersion prov:specializationOf :paused ; cascade:patient :subject ; cascade:drugName "atorvastatin 20 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/617310> ; cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "stopped" ; cascade:medicationUseStartDate "2020-05-01"^^xsd:date ; cascade:medicationUseEndDate "2021-05-01"^^xsd:date .
 :pausedRevision a cascade:Revision ; cascade:revisionOf :paused ; cascade:version :pausedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :resumed a cascade:PrescribedOrReportedMedication .
 :resumedVersion prov:specializationOf :resumed ; cascade:patient :subject ; cascade:drugName "Atorvastatin 20 mg tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/617310> ; cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "active" ; cascade:medicationUseStartDate "2022-08-01"^^xsd:date .
 :resumedRevision a cascade:Revision ; cascade:revisionOf :resumed ; cascade:version :resumedVersion ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .

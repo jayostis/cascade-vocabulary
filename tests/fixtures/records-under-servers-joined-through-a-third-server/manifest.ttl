@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "records-under-servers-joined-through-a-third-server" ;
+  rdfs:comment "A person's Same over a hospital's server at its old and its new address, another over the new address and a clinic's server, and an allergy a1 pulled from the old address and from the clinic, none from the new." ;
+  mf:entries (
+    <#same-records>
+  ) .
+
+<#same-records> a mf:QueryEvaluationTest ;
+  mf:name "same-records" ;
+  rdfs:comment "The old address and the clinic are the same through the new address, so the two a1 are one record, both ways." ;
+  mf:action [ qt:query <same-records.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <same-records.srj> .

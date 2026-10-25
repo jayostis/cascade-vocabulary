@@ -6,8 +6,8 @@
 :record a cascade:ProblemOrDiagnosis .
 :v1 prov:specializationOf :record ; cascade:conditionName "Back pain" ; cascade:clinicalStatus "active" .
 :v2 prov:specializationOf :record ; cascade:conditionName "Back pain" ; cascade:clinicalStatus "resolved" .
-:r1 a cascade:Revision ; cascade:revisionOf :record ; cascade:version :v1 ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:r1 a cascade:Revision ; cascade:revisionOf :record ; cascade:version :v1 ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :r2 a cascade:Revision ; cascade:revisionOf :record ; cascade:version :v2 ; prov:wasRevisionOf :r1 ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :r3 a cascade:Revision ; cascade:revisionOf :record ; cascade:version :v1 ; prov:wasRevisionOf :r2 ;
-    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:00Z"^^xsd:dateTime .

@@ -1,0 +1,26 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:northgate rdfs:label "Northgate" .
+:document prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] .
+:copy prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ,
+    [ prov:hadRole cascade:TransmitterRole ; prov:agent [ rdfs:label "Apple Health" ] ] .
+
+:record a cascade:AllergyOrIntolerance .
+:active prov:specializationOf :record ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:inactive prov:specializationOf :record ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "inactive" .
+:resolved prov:specializationOf :record ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "resolved" .
+:original a cascade:Revision ; cascade:revisionOf :record ; cascade:version :active ; prov:wasDerivedFrom :document ;
+    pav:lastUpdateOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:00Z"^^xsd:dateTime .
+:correction a cascade:Revision ; cascade:revisionOf :record ; cascade:version :inactive ; prov:wasDerivedFrom :document ;
+    prov:wasRevisionOf :original ; pav:lastUpdateOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-02T00:00:00Z"^^xsd:dateTime .
+:staleCopy a cascade:Revision ; cascade:revisionOf :record ; cascade:version :resolved ; prov:wasDerivedFrom :copy ;
+    prov:wasRevisionOf :correction ; pav:lastUpdateOn "2026-01-15T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-02T00:00:00Z"^^xsd:dateTime .

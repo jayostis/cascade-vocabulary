@@ -189,7 +189,7 @@ Feature: Syncs
   Rule: S6. An arrival after a sync revises each of the record's heads
     Two writers that each imported a record hold, once synced, two revisions of it that none revises: its heads. The
     next arrival that changes it writes one revision, prov:wasRevisionOf each head, as a git merge names each parent
-    (A5), and one whose version a head is at writes none (A4).
+    (A5), and one whose version is the record's current one writes none (A4).
 
     Example: an import after two writers imported one export writes one revision revising both
       Given a new pod for Ada on 2026-01-01 at 09:00

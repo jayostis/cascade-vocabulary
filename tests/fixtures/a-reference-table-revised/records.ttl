@@ -11,12 +11,12 @@
 :brand a cascade:AllergyOrIntolerance .
 :brandVersion prov:specializationOf :brand ; cascade:patient :subject ; cascade:allergenCode rxnorm:153010 .
 :brandRevision a cascade:Revision ; cascade:revisionOf :brand ; cascade:version :brandVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :ingredient a cascade:AllergyOrIntolerance .
 :ingredientVersion prov:specializationOf :ingredient ; cascade:patient :subject ; cascade:allergenCode rxnorm:5640 .
 :ingredientRevision a cascade:Revision ; cascade:revisionOf :ingredient ; cascade:version :ingredientVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :rules1 prov:specializationOf :rules ; pav:version "1" .

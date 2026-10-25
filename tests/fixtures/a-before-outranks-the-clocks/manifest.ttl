@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-before-outranks-the-clocks" ;
+  rdfs:comment "currency.md's example: A stamped by the server on 1 January, B on 1 February, and C Apple's copy of a third state with no stamp, observed before B arrived; the clocks pick B, and the person files B before A." ;
+  mf:entries (
+    <#the-current-revision>
+  ) .
+
+<#the-current-revision> a mf:QueryEvaluationTest ;
+  mf:name "the-current-revision" ;
+  rdfs:comment "The Before removes B before the clocks rank, so they cannot re-admit it; A stamped and C carrying no stamp both stay, and C, observed later, is current." ;
+  mf:action [ qt:query <the-current-revision.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-current-revision.srj> .

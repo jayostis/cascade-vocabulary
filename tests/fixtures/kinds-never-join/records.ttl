@@ -8,9 +8,9 @@
 :allergy a cascade:AllergyOrIntolerance .
 :allergyVersion prov:specializationOf :allergy ; cascade:patient :subject ; cascade:allergen "Penicillin" .
 :allergyRevision a cascade:Revision ; cascade:revisionOf :allergy ; cascade:version :allergyVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :condition a cascade:ProblemOrDiagnosis .
 :conditionVersion prov:specializationOf :condition ; cascade:patient :subject ; cascade:conditionName "Penicillin allergy" .
 :conditionRevision a cascade:Revision ; cascade:revisionOf :condition ; cascade:version :conditionVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

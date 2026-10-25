@@ -14,7 +14,7 @@
 
 <#what-it-shows> a mf:QueryEvaluationTest ;
   mf:name "what-it-shows" ;
-  rdfs:comment "Each statement of each allergy entry in its view, with the member it was taken from: the allergen and code from the latest member, the status from the latest derived from a document, and the highest criticality." ;
+  rdfs:comment "Each statement of each allergy entry in its view and each value its members state, with the member that states it and whether that member leads: the allergen and code from the lead, the member the person entered, the other member's allergen beside it, the status from the latest derived from a document, and the highest criticality." ;
   mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
               cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-it-shows.srj> .

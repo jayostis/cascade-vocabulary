@@ -1,5 +1,5 @@
-# Each entry takes the allergen and code of its latest member, the status of the member chosen for status, and the
-# highest criticality any member states.
+# Each entry takes the allergen and code of its lead, the status of the member chosen for status, and the highest
+# criticality any member states.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -9,15 +9,15 @@ CONSTRUCT {
     cascade:allergenCode ?code ;
     cascade:clinicalStatus ?status ;
     cascade:allergyCriticality ?criticality ;
-    cascade:latestMember ?latest ;
+    cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
 }
 WHERE {
   ?record a cascade:AllergyOrIntolerance ; cascade:inEntry ?entry .
-  ?entry cascade:latestMember ?latest .
-  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:allergen ?allergen }
-  OPTIONAL { ?latest pav:hasCurrentVersion/cascade:allergenCode ?code }
+  ?entry cascade:leadMember ?lead .
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergen ?allergen }
+  OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenCode ?code }
   OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
              ?statusFrom pav:hasCurrentVersion/cascade:clinicalStatus ?status }
   OPTIONAL { ?entry cascade:topCriticality ?criticality }

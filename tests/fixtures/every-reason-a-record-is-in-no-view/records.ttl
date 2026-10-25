@@ -10,73 +10,73 @@
 :inErrorVersion prov:specializationOf :inError ; cascade:patient :subject ; cascade:allergen "Peanut" ;
     cascade:verificationStatus "entered-in-error" .
 :inErrorRevision a cascade:Revision ; cascade:revisionOf :inError ; cascade:version :inErrorVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :immunizationInError a cascade:Vaccination .
 :immunizationInErrorVersion prov:specializationOf :immunizationInError ; cascade:patient :subject ; cascade:vaccineName "Influenza" ;
     cascade:workflowStatus "entered-in-error" .
 :immunizationInErrorRevision a cascade:Revision ; cascade:revisionOf :immunizationInError ; cascade:version :immunizationInErrorVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :labResultInError a cascade:LaboratoryTestResult .
 :labResultInErrorVersion prov:specializationOf :labResultInError ; cascade:patient :subject ; cascade:testName "Potassium" ;
     cascade:workflowStatus "entered-in-error" .
 :labResultInErrorRevision a cascade:Revision ; cascade:revisionOf :labResultInError ; cascade:version :labResultInErrorVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :procedureInError a cascade:MedicalProcedure .
 :procedureInErrorVersion prov:specializationOf :procedureInError ; cascade:patient :subject ; cascade:procedureName "Colonoscopy" ;
     cascade:workflowStatus "entered-in-error" .
 :procedureInErrorRevision a cascade:Revision ; cascade:revisionOf :procedureInError ; cascade:version :procedureInErrorVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :variantInError a cascade:GeneticVariantFinding .
 :variantInErrorVersion prov:specializationOf :variantInError ; cascade:patient :subject ;
     cascade:hgvsCodingDnaExpression "NM_000492.4:c.1521_1523del" ; cascade:workflowStatus "entered-in-error" .
 :variantInErrorRevision a cascade:Revision ; cascade:revisionOf :variantInError ; cascade:version :variantInErrorVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :interpretationInError a cascade:VariantInterpretation .
 :interpretationInErrorVersion prov:specializationOf :interpretationInError ; cascade:patient :subject ;
     cascade:interpretedDate "2025-05-01"^^xsd:date ; cascade:workflowStatus "entered-in-error" .
 :interpretationInErrorRevision a cascade:Revision ; cascade:revisionOf :interpretationInError ;
-    cascade:version :interpretationInErrorVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    cascade:version :interpretationInErrorVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :medicationInError a cascade:PrescribedOrReportedMedication .
 :medicationInErrorVersion prov:specializationOf :medicationInError ; cascade:patient :subject ; cascade:drugName "lisinopril 10 MG Oral Tablet" ; cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "entered-in-error" .
 :medicationInErrorRevision a cascade:Revision ; cascade:revisionOf :medicationInError ; cascade:version :medicationInErrorVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :refuted a cascade:AllergyOrIntolerance .
 :refutedVersion prov:specializationOf :refuted ; cascade:patient :subject ; cascade:allergen "Latex" ;
     cascade:verificationStatus "refuted" .
 :refutedRevision a cascade:Revision ; cascade:revisionOf :refuted ; cascade:version :refutedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :judged a cascade:AllergyOrIntolerance .
 :judgedVersion prov:specializationOf :judged ; cascade:patient :subject ; cascade:allergen "Egg" .
 :judgedRevision a cascade:Revision ; cascade:revisionOf :judged ; cascade:version :judgedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :fromTheImport a cascade:AllergyOrIntolerance .
 :fromTheImportVersion prov:specializationOf :fromTheImport ; cascade:patient :subject ; cascade:allergen "Soy" .
 :fromTheImportRevision a cascade:Revision ; cascade:revisionOf :fromTheImport ; cascade:version :fromTheImportVersion ;
-    prov:wasGeneratedBy :import ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:wasGeneratedBy :import ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :unclaimed a cascade:AllergyOrIntolerance .
 :unclaimedVersion prov:specializationOf :unclaimed ; cascade:patient :profile ; cascade:allergen "Wheat" .
 :unclaimedRevision a cascade:Revision ; cascade:revisionOf :unclaimed ; cascade:version :unclaimedVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :noPatient a cascade:AllergyOrIntolerance .
 :noPatientVersion prov:specializationOf :noPatient ; cascade:allergen "Fish" .
 :noPatientRevision a cascade:Revision ; cascade:revisionOf :noPatient ; cascade:version :noPatientVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :unrevised a cascade:AllergyOrIntolerance .
 
 :shown a cascade:AllergyOrIntolerance .
 :shownVersion prov:specializationOf :shown ; cascade:patient :subject ; cascade:allergen "Sesame" .
 :shownRevision a cascade:Revision ; cascade:revisionOf :shown ; cascade:version :shownVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

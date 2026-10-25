@@ -91,6 +91,13 @@
     cascade:tableKind cascade:VariantClassifications .
 
 [] a cascade:RuleListRow ;
+    cascade:matcherRule cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule ;
+    cascade:justifiedAs cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost ;
+    cascade:appliesToClass cascade:Server ;
+    cascade:queryPath "matcher/same-self-asserted-base-url-and-authorization-endpoint-on-one-host.rq" ;
+    cascade:queryHash <ni:///sha-256;laDRTR1v85XUYQ5MOxMrHlRYTti4qU1hOJfdwze_G5A> .
+
+[] a cascade:RuleListRow ;
     cascade:matcherRule cascade:SameResultOnOneDayRule ;
     cascade:justifiedAs cascade:SameResultOnOneDay ;
     cascade:appliesToClass cascade:LaboratoryTestResult ;

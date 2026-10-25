@@ -58,7 +58,8 @@ Feature: Naming
   Rule: N4. A revision is named the same way, from its own triples
     decisions/naming.md, row "revision". cascade:RevisionNamingRule. Its placeholder is urn:cascade:this-revision, and
     its triples are: rdf:type cascade:Revision, cascade:revisionOf, cascade:version, prov:generatedAtTime (the start of
-    the import, the session or the connect), prov:wasGeneratedBy (the import, the session or the connect),
+    the import, the session or the connect), cascade:observedAsOf (C1), prov:wasGeneratedBy (the import, the session or
+    the connect),
     prov:wasRevisionOf (each of the record's heads, if it has any), and every other statement on the arrival except
     bridge:arrivedAs and prov:wasGeneratedBy, oa:hasSource the document among them, its selector written as the
     revision's oa:hasSelector: a node of the revision, <revision>#selector, an oa:FragmentSelector for a JSON document,

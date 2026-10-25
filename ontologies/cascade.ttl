@@ -493,6 +493,12 @@ cascade:answeredAsOf a owl:DatatypeProperty ;
     rdfs:range xsd:dateTime ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc7089#section-2.1.1> .
 
+cascade:observedAsOf a owl:DatatypeProperty ;
+    rdfs:label "observed as of"@en ;
+    rdfs:comment "Of a revision, when its source was observed saying its state: the first there is of its document's cascade:answeredAsOf, the document's pav:retrievedOn, the source's own change time the revision carries as pav:lastUpdateOn, and the start of the act that generated it. For an entry, the session's start."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range xsd:dateTime .
+
 cascade:revisionOf a owl:ObjectProperty ;
     rdfs:label "revision of"@en ;
     rdfs:domain cascade:Revision .
@@ -527,7 +533,37 @@ cascade:displayDate a owl:DatatypeProperty ;
 
 cascade:currentRevision a owl:ObjectProperty ;
     rdfs:label "current revision"@en ;
-    rdfs:comment "Derived: the revision of a record no other revision follows. Never written to a pod file."@en ;
+    rdfs:comment "Derived: the revision of a record the ladder picks from its cascade:currentRevisionCandidate revisions: of those no other is cascade:laterInAncestryThan, the greatest cascade:observedAsOf, then the least IRI. Never written to a pod file."@en ;
+    rdfs:range cascade:Revision .
+
+cascade:laterInAncestryThan a owl:ObjectProperty ;
+    rdfs:label "later in ancestry than"@en ;
+    rdfs:comment "Derived: of two candidates for one record's current revision, both derived from live pulls of one source, this one's act's snapshot descends from that one's. A live pull is a document with a pav:retrievedOn and no cascade:answeredAsOf; two are of one source when both name one transmitter agent, or neither names one."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range cascade:Revision .
+
+cascade:currentRevisionCandidate a owl:ObjectProperty ;
+    rdfs:label "current revision candidate"@en ;
+    rdfs:comment "Derived: a revision of the record still in the running once the ladder's first three steps have removed what they remove: no Erroneous that stands names it (cascade:revisionJudgedErroneousBy); no Before that stands, outside a cycle among the record's revisions, places it before another revision of the record no such Erroneous names; and of what is left, it carries the latest source change time, pav:lastUpdateOn, or carries none."@en ;
+    rdfs:range cascade:Revision .
+
+cascade:revisionJudgedErroneousBy a owl:ObjectProperty ;
+    rdfs:label "revision judged erroneous by"@en ;
+    rdfs:comment "Derived: a person's Erroneous that stands names this revision: no activity invalidates it, and no judgment that stands replaces it."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range cascade:Judgment .
+
+cascade:judgedBefore a owl:ObjectProperty ;
+    rdfs:label "judged before"@en ;
+    rdfs:comment "Derived: a person's Before that stands places this revision before that one: no activity invalidates it, and no judgment that stands replaces it."@en ;
+    rdfs:domain cascade:Revision ;
+    rdfs:range cascade:Revision .
+
+cascade:judgedBeforeRevisionOfSameRecord a owl:ObjectProperty ;
+    rdfs:label "judged before revision of same record"@en ;
+    rdfs:comment "Derived: cascade:judgedBefore between two revisions of one record."@en ;
+    rdfs:subPropertyOf cascade:judgedBefore ;
+    rdfs:domain cascade:Revision ;
     rdfs:range cascade:Revision .
 
 cascade:Subject a owl:Class ;
@@ -638,9 +674,13 @@ cascade:inEntry a owl:ObjectProperty ;
     rdfs:label "in entry"@en ;
     rdfs:comment "Derived: the view entry the record belongs to in this build."@en .
 
-cascade:latestMember a owl:ObjectProperty ;
-    rdfs:label "latest member"@en ;
-    rdfs:comment "Derived: the entry's most recently received member."@en .
+cascade:leadMember a owl:ObjectProperty ;
+    rdfs:label "lead member"@en ;
+    rdfs:comment "Derived: the member an entry shows first: of its cascade:leadMemberCandidate members, the one whose current revision has the greatest cascade:observedAsOf, then the least IRI."@en .
+
+cascade:leadMemberCandidate a owl:ObjectProperty ;
+    rdfs:label "lead member candidate"@en ;
+    rdfs:comment "Derived: a member of the entry still in the running for its lead. Of the members, those the person entered if there are any; less each whose current revision a Before that stands, outside a cycle, places before another such member's; and of what is left, those whose current revision carries the latest source change time, pav:lastUpdateOn, or carries none."@en .
 
 cascade:statusFrom a owl:ObjectProperty ;
     rdfs:label "status from"@en ;
@@ -880,7 +920,7 @@ cascade:appliesToClass a owl:ObjectProperty ;
 
 cascade:matcherRule a owl:ObjectProperty ;
     rdfs:label "matcher rule"@en ;
-    rdfs:comment "The matcher rule a row of a rule list runs, or that a machine claim was made by: one of the rule terms R1 to R15 of runtime/matcher.feature. A claim's name takes it."@en ;
+    rdfs:comment "The matcher rule a row of a rule list runs, or that a machine claim was made by: one of the rule terms R1 to R16 of runtime/matcher.feature. A claim's name takes it."@en ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:RuleListRow cascade:Judgment ) ] .
 
 cascade:queryPath a owl:DatatypeProperty ;
@@ -1597,7 +1637,17 @@ cascade:Different a owl:NamedIndividual ;
 
 cascade:Erroneous a owl:NamedIndividual ;
     rdfs:label "erroneous"@en ;
-    rdfs:comment "The members, records or a whole activity, are left out of every view."@en .
+    rdfs:comment "The members, records or a whole activity, are left out of every view; a revision it names is never its record's current one."@en .
+
+cascade:Before a owl:NamedIndividual ;
+    rdfs:label "before"@en ;
+    rdfs:comment "A person's judgment that of its two members, revisions of one record or of two records a Same joins, the one it names as cascade:earlierMember is a state before the other: a counting Before outranks every clock. Never two versions, and never made by a machine."@en .
+
+cascade:earlierMember a owl:ObjectProperty ;
+    rdfs:label "earlier member"@en ;
+    rdfs:comment "Of a Before judgment, the member it places before its other member."@en ;
+    rdfs:domain cascade:Judgment ;
+    rdfs:range cascade:Revision .
 
 cascade:Acknowledged a owl:NamedIndividual ;
     rdfs:label "acknowledged"@en ;
@@ -1667,6 +1717,11 @@ cascade:SameVariationThroughTable a owl:NamedIndividual ;
     rdfs:comment "Both variant records find one row of a version of a variant classifications table: a version that carries a ClinVar VariationID finds the row of that variation, and one that carries none finds the row holding its HGVS expression. The classification plays no part. Rule M17 and decisions/variant-identity.md say why."@en ;
     skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
 
+cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost a owl:NamedIndividual ;
+    rdfs:label "same self-asserted base URL and authorization endpoint on one host"@en ;
+    rdfs:comment "Both server records have a version, each written by a connect made with one client id, reporting one self-asserted base URL and one authorization endpoint, and the base URLs the client used name one host. Rule M20 and decisions/republishing-sources.md, row \"two servers are one\", say why."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
 cascade:SameBrandGeneric a owl:NamedIndividual ;
     rdfs:label "same brand generic"@en ;
     rdfs:comment "One record's branded RxNorm product and the other's generic, or two brands of one generic, by a version of a brand generics table; the records share no code."@en ;
@@ -1725,7 +1780,7 @@ cascade:RuleListVersionMigration a owl:Class ;
 
 cascade:currentlySame a owl:ObjectProperty ;
     rdfs:label "currently same"@en ;
-    rdfs:comment "Derived: two records a counting Same joins and no counting Different separates."@en .
+    rdfs:comment "Derived: two records that a counting Same joins, or that are of one type and id under two servers a counting Same joins (queries/derivations/same-records-under-same-servers.rq), and that no counting Different separates."@en .
 
 cascade:currentlyDifferent a owl:ObjectProperty ;
     rdfs:label "currently different"@en ;
@@ -1756,7 +1811,7 @@ cascade:noLongerReachedUnderRuleListVersion a owl:ObjectProperty ;
 cascade:DifferentResultValuesAtOneInstant a skos:Concept ;
     skos:inScheme cascade:FindingForReviewKinds ;
     skos:prefLabel "different result values at one instant"@en ;
-    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant, whose values are of one kind and in one unit, their UCUM annotations aside, and differ: two numbers, a comparator on one and not the other, or coded answers sharing no code. The finding's prov:used are the two versions whose values differ. The body applies to its targets together: neither result is wrong alone, but both cannot be the one draw, and a correction should have come as a new version. The matcher never judges such a pair the same (R6); it files this finding by rule R15 instead, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
+    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant, whose values are of one kind and in one unit, their UCUM annotations aside, and differ: two numbers, a comparator on one and not the other, or coded answers sharing no code. The finding's prov:used are the two versions whose values differ. The body applies to its targets together: neither result is wrong alone, but both cannot be the one draw, and a correction should have come as a new version. The matcher never judges such a pair the same (R6); it files this finding by rule R16 instead, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
 
 # Naming rules: each name a runtime or an adapter mints follows one, and a changed recipe is a new rule
 
@@ -1970,13 +2025,17 @@ cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
     rdfs:label "R13, same variation through the table"@en ;
     rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
 
+cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule a owl:NamedIndividual ;
+    rdfs:label "R14, same self-asserted base URL and authorization endpoint on one host"@en ;
+    rdfs:comment "Rule R14 of runtime/matcher.feature; its judgments are justified cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost."@en .
+
 cascade:DifferentResultValuesRule a owl:NamedIndividual ;
-    rdfs:label "R15, different result values"@en ;
-    rdfs:comment "Rule R15 of runtime/matcher.feature; it files no judgment, but a finding for review of kind cascade:DifferentResultValuesAtOneInstant."@en .
+    rdfs:label "R16, different result values"@en ;
+    rdfs:comment "Rule R16 of runtime/matcher.feature; it files no judgment, but a finding for review of kind cascade:DifferentResultValuesAtOneInstant."@en .
 
 cascade:SameResultOnOneDayRule a owl:NamedIndividual ;
-    rdfs:label "R14, same result on one day"@en ;
-    rdfs:comment "Rule R14 of runtime/matcher.feature; its judgments are justified cascade:SameResultOnOneDay."@en .
+    rdfs:label "R15, same result on one day"@en ;
+    rdfs:comment "Rule R15 of runtime/matcher.feature; its judgments are justified cascade:SameResultOnOneDay."@en .
 
 # Servers and organizations
 

@@ -9,16 +9,16 @@
 :fluOldVersion prov:specializationOf :fluOld ; cascade:patient :subject ; cascade:vaccineName "Influenza" ; cascade:workflowStatus "completed" ;
     cascade:vaccinationOccurrenceTime "2025-10-01"^^xsd:date .
 :fluOldRevision a cascade:Revision ; cascade:revisionOf :fluOld ; cascade:version :fluOldVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :fluNew a cascade:Vaccination .
 :fluNewVersion prov:specializationOf :fluNew ; cascade:patient :subject ; cascade:vaccineName "Influenza, quadrivalent" ;
     cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/150> .
 :fluNewRevision a cascade:Revision ; cascade:revisionOf :fluNew ; cascade:version :fluNewVersion ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :tdap a cascade:Vaccination .
 :tdapVersion prov:specializationOf :tdap ; cascade:patient :subject ; cascade:vaccineName "Tdap" ; cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/115> ; cascade:workflowStatus "not-done" ;
     cascade:vaccinationOccurrenceTime "2015-01-01"^^xsd:date .
 :tdapRevision a cascade:Revision ; cascade:revisionOf :tdap ; cascade:version :tdapVersion ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

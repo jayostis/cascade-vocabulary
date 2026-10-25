@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "server-same-records-from-two-custodians-held-apart" ;
+  rdfs:comment "A person's Same over a server at its old and its new address, and two allergies pulled from each, every old pull's custodian a hospital: a1 again from the hospital; a2 from a clinic on the same server." ;
+  mf:entries (
+    <#same-records>
+  ) .
+
+<#same-records> a mf:QueryEvaluationTest ;
+  mf:name "same-records" ;
+  rdfs:comment "a1 is one record, both ways; a2, whose custodians are two organizations, is not." ;
+  mf:action [ qt:query <same-records.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <same-records.srj> .

@@ -1,0 +1,32 @@
+# Two servers that are currently the same, directly or through other servers, have one record wherever each has a record
+# of one type and id. A server's records are those with a revision derived from a document it served
+# (cascade:serverBaseUrl); a record's type and id are what its cascade:sourceUrl holds after that base URL and a /, and
+# its cascade:sourceRecordId is that id. The two are joined both ways, as a counting Same joins them, and only within one
+# organization: not when the documents their revisions come from name custodians that are neither one organization nor
+# currently the same, and not when a counting Different separates them.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT { ?a cascade:currentlySame ?b }
+WHERE {
+  ?one a cascade:Server ; cascade:serverBaseUrl ?oneBase ; cascade:currentlySame+ ?two .
+  ?two a cascade:Server ; cascade:serverBaseUrl ?twoBase .
+  ?aDocument cascade:serverBaseUrl ?oneBase .
+  ?aRevision prov:wasDerivedFrom ?aDocument ; cascade:revisionOf ?a .
+  ?a cascade:sourceRecordId ?id ; cascade:sourceUrl ?aUrl .
+  ?b cascade:sourceRecordId ?id ; cascade:sourceUrl ?bUrl .
+  ?bRevision cascade:revisionOf ?b ; prov:wasDerivedFrom ?bDocument .
+  ?bDocument cascade:serverBaseUrl ?twoBase .
+  FILTER (?one != ?two && STRAFTER(STR(?aUrl), CONCAT(?oneBase, "/")) = STRAFTER(STR(?bUrl), CONCAT(?twoBase, "/")))
+  FILTER NOT EXISTS { ?a cascade:currentlyDifferent ?b }
+  MINUS {
+    { SELECT ?aServer WHERE { ?aServer a cascade:Server ; cascade:currentlySame ?bServer . ?bServer a cascade:Server }
+      LIMIT 1 }
+    ?a cascade:sourceRecordId ?id ; ^cascade:revisionOf/prov:wasDerivedFrom/prov:qualifiedAttribution ?aCustody .
+    ?aCustody prov:hadRole cascade:CustodianRole ; prov:agent ?aOrganization .
+    ?b cascade:sourceRecordId ?id ; ^cascade:revisionOf/prov:wasDerivedFrom/prov:qualifiedAttribution ?bCustody .
+    ?bCustody prov:hadRole cascade:CustodianRole ; prov:agent ?bOrganization .
+    FILTER (?aOrganization != ?bOrganization)
+    FILTER NOT EXISTS { ?aOrganization cascade:currentlySame+ ?bOrganization }
+  }
+}

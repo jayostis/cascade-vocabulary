@@ -1,26 +1,42 @@
-# An entry takes its date from the member whose current revision arrived last, among those that state a date. A
-# medication entry takes its start of use and the day its prescription was written each the same way, among the members
-# that state that date, so it shows both when no one member states both.
+# An entry takes its date from a member that states one, chosen as the lead is from the members' current revisions: of
+# those at the latest source change time, with those carrying none, the greatest cascade:observedAsOf, then the least
+# IRI. A medication entry takes its start of use and the day its prescription was written each the same way, among the
+# members that state that date, so it shows both when no one member states both.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 CONSTRUCT { ?entry ?pointer ?from }
 WHERE {
   { SELECT ?entry ?pointer (IRI(MIN(STR(?r))) AS ?from)
     WHERE {
-      { SELECT ?entry ?pointer ?dateProperty (MAX(?t2) AS ?t)
+      { SELECT ?entry ?pointer ?dateProperty ?latest (MAX(?seen1) AS ?seen)
         WHERE {
-          VALUES (?dateProperty ?pointer) {
-            (cascade:displayDate             cascade:dateFrom)
-            (cascade:medicationUseStartDate  cascade:medicationUseStartDateFrom)
-            (cascade:prescriptionWrittenDate cascade:prescriptionWrittenDateFrom)
-          }
-          ?r2 cascade:inEntry ?entry ; cascade:currentRevision/prov:generatedAtTime ?t2 ; pav:hasCurrentVersion ?v2 .
-          ?v2 ?dateProperty [] . }
-        GROUP BY ?entry ?pointer ?dateProperty }
-      ?r cascade:inEntry ?entry ; cascade:currentRevision/prov:generatedAtTime ?t ; pav:hasCurrentVersion ?v .
+          { SELECT ?entry ?pointer ?dateProperty
+                   (MAX(COALESCE(?changed2, "0001-01-01T00:00:00Z"^^xsd:dateTime)) AS ?latest)
+            WHERE {
+              VALUES (?dateProperty ?pointer) {
+                (cascade:displayDate             cascade:dateFrom)
+                (cascade:medicationUseStartDate  cascade:medicationUseStartDateFrom)
+                (cascade:prescriptionWrittenDate cascade:prescriptionWrittenDateFrom)
+              }
+              ?r2 cascade:inEntry ?entry ; cascade:currentRevision ?rev2 ; pav:hasCurrentVersion ?v2 .
+              ?v2 ?dateProperty [] .
+              OPTIONAL { ?rev2 pav:lastUpdateOn ?changed2 }
+            }
+            GROUP BY ?entry ?pointer ?dateProperty }
+          ?r1 cascade:inEntry ?entry ; cascade:currentRevision ?rev1 ; pav:hasCurrentVersion ?v1 .
+          ?v1 ?dateProperty [] .
+          ?rev1 cascade:observedAsOf ?seen1 .
+          OPTIONAL { ?rev1 pav:lastUpdateOn ?changed1 }
+          FILTER (!BOUND(?changed1) || ?changed1 = ?latest)
+        }
+        GROUP BY ?entry ?pointer ?dateProperty ?latest }
+      ?r cascade:inEntry ?entry ; cascade:currentRevision ?rev ; pav:hasCurrentVersion ?v .
       ?v ?dateProperty [] .
+      ?rev cascade:observedAsOf ?seen .
+      OPTIONAL { ?rev pav:lastUpdateOn ?changed }
+      FILTER (!BOUND(?changed) || ?changed = ?latest)
     }
     GROUP BY ?entry ?pointer }
 }

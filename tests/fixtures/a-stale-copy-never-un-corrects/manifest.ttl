@@ -1,0 +1,18 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-stale-copy-never-un-corrects" ;
+  rdfs:comment "An allergy its source stamped active in January and corrected to inactive in February, then a copy by another path of a state the source stamped in between, observed last and revising the correction." ;
+  mf:entries (
+    <#the-current-revision>
+  ) .
+
+<#the-current-revision> a mf:QueryEvaluationTest ;
+  mf:name "the-current-revision" ;
+  rdfs:comment "The correction stays current: the latest source change time decides before any observation time, and the head the copy wrote is not current." ;
+  mf:action [ qt:query <the-current-revision.rq> ;
+              cascade:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-current-revision.srj> .

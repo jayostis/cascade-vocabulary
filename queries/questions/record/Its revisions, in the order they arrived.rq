@@ -1,22 +1,27 @@
 # A revision is one arrival: it carries a version, which is the content, and names the document it was derived from.
 # A version seen before is named again, not copied, and Current marks the revision the views read.
-# ?arrived is the pod's clock; a pull's document says the instant its source answered as of (?answeredAsOf).
+# ?arrived is the pod's clock; ?observed is when the source was observed saying the revision's state, and ?changed the
+# source's own change time, the two clocks the ladder ranks by; a pull's document says the instant its source answered
+# as of (?answeredAsOf).
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?record ?recordLabel ?arrived ?revision ?revisionLabel ?current ?previous ?previousLabel ?version ?versionLabel
-       ?change ?document ?documentLabel ?retrieved ?answeredAsOf ?hospital ?transmitter ?import ?importLabel ?started
+SELECT DISTINCT ?record ?recordLabel ?arrived ?observed ?changed ?revision ?revisionLabel ?current ?previous ?previousLabel
+       ?version ?versionLabel ?change ?document ?documentLabel ?retrieved ?answeredAsOf ?hospital ?transmitter ?import
+       ?importLabel ?started
 WHERE {
   { SELECT ?version (MIN(?received) AS ?first)
     WHERE { ?any cascade:version ?version ; prov:generatedAtTime ?received . }
     GROUP BY ?version }
   ?revision cascade:revisionOf ?record ; cascade:version ?version ; prov:generatedAtTime ?arrived .
-  ?record cascade:currentRevision ?now .
-  BIND (?revision = ?now AS ?current)
+  OPTIONAL { ?record cascade:currentRevision ?now }
+  BIND (COALESCE(?revision = ?now, false) AS ?current)
   BIND (IF(?arrived = ?first, "a new version", "an earlier version again") AS ?change)
+  OPTIONAL { ?revision cascade:observedAsOf ?observed }
+  OPTIONAL { ?revision pav:lastUpdateOn ?changed }
   OPTIONAL { ?revision rdfs:label ?revisionLabel }
   OPTIONAL { ?record rdfs:label ?recordLabel }
   OPTIONAL { ?version rdfs:label ?versionLabel }

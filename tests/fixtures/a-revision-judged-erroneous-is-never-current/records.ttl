@@ -1,0 +1,22 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:revised a cascade:AllergyOrIntolerance .
+:revisedRight prov:specializationOf :revised ; cascade:patient :subject ; cascade:allergen "Penicillin" ; cascade:clinicalStatus "active" .
+:revisedWrong prov:specializationOf :revised ; cascade:patient :subject ; cascade:allergen "Penicillin" ; cascade:clinicalStatus "resolved" .
+:revisedFirst a cascade:Revision ; cascade:revisionOf :revised ; cascade:version :revisedRight ;
+    pav:lastUpdateOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:00Z"^^xsd:dateTime .
+:revisedSecond a cascade:Revision ; cascade:revisionOf :revised ; cascade:version :revisedWrong ; prov:wasRevisionOf :revisedFirst ;
+    pav:lastUpdateOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-02T00:00:00Z"^^xsd:dateTime .
+
+:alone a cascade:AllergyOrIntolerance .
+:aloneVersion prov:specializationOf :alone ; cascade:patient :subject ; cascade:allergen "Latex" ; cascade:clinicalStatus "active" .
+:aloneRevision a cascade:Revision ; cascade:revisionOf :alone ; cascade:version :aloneVersion ;
+    prov:generatedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:00Z"^^xsd:dateTime .

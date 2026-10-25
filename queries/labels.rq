@@ -119,11 +119,11 @@ WHERE {
   UNION
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
-      GRAPH ?view { ?view a cascade:View . ?thing cascade:latestMember ?latest }
-      ?latest cascade:recordKind ?kind .
+      GRAPH ?view { ?view a cascade:View . ?thing cascade:leadMember ?lead }
+      ?lead cascade:recordKind ?kind .
       FILTER NOT EXISTS { ?thing rdfs:label [] }
-      OPTIONAL { ?latest pav:hasCurrentVersion/cascade:displayName ?name }
-      OPTIONAL { ?latest cascade:inEntry/cascade:dateFrom/pav:hasCurrentVersion/cascade:displayDate ?date }
+      OPTIONAL { ?lead pav:hasCurrentVersion/cascade:displayName ?name }
+      OPTIONAL { ?lead cascade:inEntry/cascade:dateFrom/pav:hasCurrentVersion/cascade:displayDate ?date }
       BIND (CONCAT(?kind, " entry", COALESCE(CONCAT(" · ", ?name), ""), COALESCE(CONCAT(" · ", STR(?date)), "")) AS ?l)
     }
     GROUP BY ?thing }

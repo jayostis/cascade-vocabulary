@@ -25,16 +25,16 @@
     org:identifier "urn:oid:2.16.840.1.113883.19.5.2"^^<urn:ietf:rfc:3986> .
 :clinicFirstRevision a cascade:Revision ; cascade:revisionOf :clinic ; cascade:version :clinicFirstVersion ;
     prov:wasDerivedFrom :firstDocument ; prov:wasGeneratedBy :firstImport ;
-    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
 :clinicSecondVersion prov:specializationOf :clinic ; foaf:name "Fernhill Family Clinic" ;
     org:identifier "urn:oid:2.16.840.1.113883.19.5.2"^^<urn:ietf:rfc:3986> .
 :clinicSecondRevision a cascade:Revision ; cascade:revisionOf :clinic ; cascade:version :clinicSecondVersion ;
     prov:wasRevisionOf :clinicFirstRevision ;
     prov:wasDerivedFrom :secondDocument ; prov:wasGeneratedBy :secondImport ;
-    prov:generatedAtTime "2026-01-02T00:00:05Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-02T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:05Z"^^xsd:dateTime .
 
 :asthma a cascade:ProblemOrDiagnosis .
 :asthmaVersion prov:specializationOf :asthma ; cascade:patient :subject ; cascade:conditionName "Asthma" .
 :asthmaRevision a cascade:Revision ; cascade:revisionOf :asthma ; cascade:version :asthmaVersion ;
     prov:wasDerivedFrom :firstDocument ; prov:wasGeneratedBy :firstImport ;
-    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime .
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
