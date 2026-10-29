@@ -486,10 +486,19 @@
   mf:action [ sht:dataGraph <document/two-server-base-urls.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
+<#document/answered-and-refused-for-one-class> a sht:Validate ;
+  mf:action [ sht:dataGraph <document/answered-and-refused-for-one-class.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
 <#document/base-url-not-a-string> a sht:Validate ;
   mf:action [ sht:dataGraph <document/base-url-not-a-string.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ServerBaseUrlShape ; sh:resultPath cascade:serverBaseUrl ] ] .
+
+<#document/answers-for-a-record-kind-word> a sht:Validate ;
+  mf:action [ sht:dataGraph <document/answers-for-a-record-kind-word.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DocumentScopeShape ; sh:resultPath cascade:answersForRecordClass ] ] .
 
 <#record-organization/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-organization/valid.ttl> ] ;
