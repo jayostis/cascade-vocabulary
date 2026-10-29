@@ -1,0 +1,24 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix medrt: <https://ns.cascadeprotocol.org/codes/medrt/> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rxnorm: <https://ns.cascadeprotocol.org/codes/rxnorm/> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+@prefix sssom: <https://w3id.org/sssom/> .
+
+:ingredients-1 {
+  :metformin a owl:Axiom ; owl:annotatedSource rxnorm:6809 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:6809 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :metforminHydrochloride a owl:Axiom ; owl:annotatedSource rxnorm:235743 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:6809 ; sssom:mapping_justification semapv:ManualMappingCuration .
+  :metforminTablet a owl:Axiom ; owl:annotatedSource rxnorm:861007 ; owl:annotatedProperty obo:RO_0002248 ;
+      owl:annotatedTarget rxnorm:6809 ; sssom:mapping_justification semapv:MappingChaining .
+  :metforminTabletPrecisely a owl:Axiom ; owl:annotatedSource rxnorm:861007 ; owl:annotatedProperty cascade:hasPreciseIngredient ;
+      owl:annotatedTarget rxnorm:235743 ; sssom:mapping_justification semapv:MappingChaining .
+}
+
+:classes-1 {
+  :metforminBiguanide a owl:Axiom ; owl:annotatedSource rxnorm:6809 ; owl:annotatedProperty cascade:establishedPharmacologicClass ;
+      owl:annotatedTarget medrt:N0000175565 ; sssom:mapping_justification semapv:ManualMappingCuration .
+}

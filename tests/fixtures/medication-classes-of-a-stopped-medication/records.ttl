@@ -1,0 +1,13 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rxnorm: <https://ns.cascadeprotocol.org/codes/rxnorm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:metformin a cascade:PrescribedOrReportedMedication .
+:metforminVersion prov:specializationOf :metformin ; cascade:patient :subject ; cascade:drugName "Metformin 500 MG Oral Tablet" ;
+    cascade:rxNormCode rxnorm:861007 ; cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "stopped" .
+:metforminRevision a cascade:Revision ; cascade:revisionOf :metformin ; cascade:version :metforminVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
