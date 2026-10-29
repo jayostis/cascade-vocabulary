@@ -1,0 +1,11 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:505048e9-dab6-8688-aeff-0bee14f4e9ba> a cascade:LaboratoryTestResult ;
+    cascade:sourceUrl <https://fhir.example/Observation/record-lab-result-other-system-code-loinc-by-its-oid> .
+
+:version prov:specializationOf <urn:uuid:505048e9-dab6-8688-aeff-0bee14f4e9ba> ;
+    cascade:patient :patient ;
+    cascade:testName "Potassium" ;
+    cascade:testCodeInOtherSystem "2823-3"^^<urn:oid:2.16.840.1.113883.6.1> .

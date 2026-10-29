@@ -1,6 +1,12 @@
 @prefix : <#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
 
 <urn:uuid:25e43c78-cf6a-8865-8770-1d52eccfc764> a cascade:ProblemOrDiagnosis ;
     cascade:sourceUrl <https://fhir.example/Condition/record-condition-valid> ;
     cascade:sourceRecordId "1" .
+
+:version prov:specializationOf <urn:uuid:25e43c78-cf6a-8865-8770-1d52eccfc764> ;
+    cascade:patient :patient ;
+    cascade:conditionName "Type 2 diabetes mellitus" ;
+    cascade:conditionCodeInOtherSystem "DM2-01"^^<urn:oid:2.16.840.1.113883.19.5.99999.9> .

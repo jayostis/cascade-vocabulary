@@ -1,6 +1,12 @@
 @prefix : <#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
 
 <urn:uuid:944e6d05-ba68-8d27-a5d5-1b0a310b48c6> a cascade:MedicalProcedure ;
     cascade:sourceUrl <https://fhir.example/Procedure/record-procedure-valid> ;
     cascade:sourceRecordId "1" .
+
+:version prov:specializationOf <urn:uuid:944e6d05-ba68-8d27-a5d5-1b0a310b48c6> ;
+    cascade:patient :patient ;
+    cascade:procedureName "Screening colonoscopy" ;
+    cascade:procedureCodeInOtherSystem "G0121"^^<http://www.cms.gov/Medicare/Coding/HCPCSReleaseCodeSets> .

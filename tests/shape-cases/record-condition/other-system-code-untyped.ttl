@@ -1,0 +1,11 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:cbbd7a6a-d440-8cbd-882b-47275003b656> a cascade:ProblemOrDiagnosis ;
+    cascade:sourceUrl <https://fhir.example/Condition/record-condition-other-system-code-untyped> .
+
+:version prov:specializationOf <urn:uuid:cbbd7a6a-d440-8cbd-882b-47275003b656> ;
+    cascade:patient :patient ;
+    cascade:conditionName "Type 2 diabetes mellitus" ;
+    cascade:conditionCodeInOtherSystem "DM2-01" .
