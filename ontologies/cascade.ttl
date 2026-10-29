@@ -78,6 +78,29 @@ foaf:name a owl:DatatypeProperty ;
     rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> ;
     dct:source <http://xmlns.com/foaf/spec/20140114.rdf> .
 
+# The person; decisions/the-person.md
+
+cascade:administrativeGender a owl:DatatypeProperty ;
+    rdfs:label "administrative gender"@en ;
+    rdfs:comment "Of a version of a patient profile, the gender the person is considered to have for administration and record keeping, as FHIR's Patient.gender holds it, or a C-CDA administrativeGenderCode as C-CDA on FHIR's concept map maps it into FHIR's codes. It is not the person's sex, which no term holds yet."@en ;
+    rdfs:domain cascade:PatientProfile ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/patient-definitions.html#Patient.gender> .
+
+cascade:deceased a owl:DatatypeProperty ;
+    rdfs:label "deceased"@en ;
+    rdfs:comment "Of a version of a patient profile, whether its source says the person has died: true where either element of FHIR's Patient.deceased[x], or C-CDA's sdtc:deceasedInd or sdtc:deceasedTime, says so; false where the source says they have not. Absent, the source says nothing either way."@en ;
+    rdfs:domain cascade:PatientProfile ;
+    rdfs:range xsd:boolean ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/patient-definitions.html#Patient.deceased_x_> .
+
+cascade:dateOfDeath a owl:DatatypeProperty ;
+    rdfs:label "date of death"@en ;
+    rdfs:comment "Of a version of a patient profile, when the person died, as FHIR's Patient.deceasedDateTime or C-CDA's sdtc:deceasedTime gives it."@en ;
+    rdfs:domain cascade:PatientProfile ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/patient-definitions.html#Patient.deceased_x_> .
+
 # Copied from the spec's health
 
 cascade:AllergyOrIntolerance a owl:Class ;
@@ -476,6 +499,13 @@ cascade:prescriptionWrittenDate a owl:DatatypeProperty ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.authoredOn> .
+
+cascade:medicationRequestIntent a owl:DatatypeProperty ;
+    rdfs:label "medication request intent"@en ;
+    rdfs:comment "Of a version of a prescribed medication, how far the source's request goes, as FHIR's MedicationRequest.intent: one of proposal, plan, order, original-order, reflex-order, filler-order, instance-order, option. Read only on a prescribed version; absent where the source gave none, as every C-CDA source does."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.intent> , <https://hl7.org/fhir/R4/valueset-medicationrequest-intent.html> .
 
 cascade:userSelectedCode a owl:ObjectProperty ;
     rdfs:label "user selected code"@en ;
