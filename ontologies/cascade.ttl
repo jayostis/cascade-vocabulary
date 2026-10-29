@@ -1095,6 +1095,18 @@ cascade:DrugClasses a cascade:TableKind ;
     cascade:foundBy owl:annotatedSource ;
     cascade:readByAppPages true .
 
+cascade:ValueSetExpansions a cascade:TableKind ;
+    rdfs:label "value set expansions"@en ;
+    rdfs:comment "An SSSOM mapping kind: a value set's expansion as its publisher gives it, one row for each code it contains, the code's IRI a member of (obo:RO_0002350) the value set named by its canonical URL as an IRI, as VSAC names one http://cts.nlm.nih.gov/fhir/ValueSet/<OID>. A version is one expansion of one value set, its pav:version the publisher's expansion version, so a rule cites the version it read. A code in a system with no code IRI is left out, and the version counts what was left out (cascade:expansionMembersWithoutCodeIriLeftOutCount). Read either way round: the value sets a code is in, and a value set's codes."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.expansion.contains> ;
+    cascade:foundBy owl:annotatedSource , owl:annotatedTarget .
+
+cascade:expansionMembersWithoutCodeIriLeftOutCount a owl:DatatypeProperty ;
+    rdfs:label "expansion members without code IRI left out count"@en ;
+    rdfs:comment "Of a version of a value set expansions series, how many codes the expansion contains that are in a system with no code IRI, and so have no row, as an eCQM expansion may list HCPCS codes. A version without it left none out."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.expansion.contains.system> ;
+    rdfs:range xsd:integer .
+
 cascade:panelSequence a owl:DatatypeProperty ;
     rdfs:label "panel sequence"@en ;
     rdfs:comment "Of a panel member row, the member's SEQUENCE in the panel, as LOINC gives it in its PanelsAndForms file."@en ;
