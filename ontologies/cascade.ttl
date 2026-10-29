@@ -500,6 +500,13 @@ cascade:prescriptionWrittenDate a owl:DatatypeProperty ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.authoredOn> .
 
+cascade:medicationRequestIntent a owl:DatatypeProperty ;
+    rdfs:label "medication request intent"@en ;
+    rdfs:comment "Of a version of a prescribed medication, how far the source's request goes, as FHIR's MedicationRequest.intent: one of proposal, plan, order, original-order, reflex-order, filler-order, instance-order, option. Read only on a prescribed version; absent where the source gave none, as every C-CDA source does."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.intent> , <https://hl7.org/fhir/R4/valueset-medicationrequest-intent.html> .
+
 cascade:userSelectedCode a owl:ObjectProperty ;
     rdfs:label "user selected code"@en ;
     rdfs:comment "The one code among the version's codes that the source marked as the one it chose, as FHIR's Coding.userSelected does; absent when the source marked none."@en ;
