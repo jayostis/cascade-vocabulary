@@ -470,7 +470,7 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
     sh:targetClass cascade:PrescribedOrReportedMedication ;
     sh:targetSubjectsOf cascade:drugName , cascade:rxNormCode , cascade:ndcCode , cascade:userSelectedCode ,
         cascade:prescribedOrReported , cascade:dosage , cascade:medicationUseStartDate , cascade:medicationUseEndDate ,
-        cascade:prescriptionWrittenDate ;
+        cascade:prescriptionWrittenDate , cascade:medicationRequestIntent ;
 
     sh:property [
         sh:path [ sh:inversePath prov:specializationOf ] ;
@@ -552,6 +552,15 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
         sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
         sh:message "A medication states at most one date its prescription was written, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en
+    ] ;
+
+    sh:property [
+        sh:path cascade:medicationRequestIntent ;
+        sh:datatype xsd:string ;
+        sh:in ("proposal" "plan" "order" "original-order" "reflex-order" "filler-order" "instance-order" "option") ;
+        sh:maxCount 1 ;
+        sh:message "A medication states at most one request intent, one of FHIR's MedicationRequest.intent codes: proposal, plan, order, original-order, reflex-order, filler-order, instance-order or option"@en ;
+        sh:severity sh:Warning
     ] ;
 
     sh:property [
