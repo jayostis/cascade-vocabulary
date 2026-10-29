@@ -72,8 +72,10 @@ saying why; a document an import must convert and has no saved output for is the
 - **`references.ttl`**, the index: each `cascade:ReferenceSeries` with its `rdfs:label`, the one `cascade:TableKind` its
   versions are (`cascade:tableKind`), if it is a table, and the version it `cascade:defaultTableVersion`, and each version, a
   `prov:Entity`, with its `prov:specializationOf` series, its `pav:version` and the version it `prov:wasRevisionOf`, if
-  any; a value set expansion (`cascade:ValueSetExpansions`) also with `cascade:expansionMembersWithoutCodeIriLeftOutCount`
-  when it left a member out. A version's description in the pod, and the file a reference step files, are what the index states about the
+  any; a value set expansion (`cascade:ValueSetExpansions`) also with the value set it expands
+  (`cascade:expandedValueSet`, every row's target), its `pav:version` the expansion's timestamp (or identifier), the
+  definition's version (`cascade:valueSetDefinitionVersion`) when the source gives one, and
+  `cascade:expansionMembersWithoutCodeIriLeftOutCount` when it left a member out. A version's description in the pod, and the file a reference step files, are what the index states about the
   series and the version, less `cascade:defaultTableVersion`.
 - **One file per version, holding its rows,** named from the version's name by N9. Each row conforms to its kind's
   `cascade:rowShape` in `records.shapes.ttl` and holds no blank node: a mapping row is an `owl:Axiom` named by N11 with

@@ -7,7 +7,7 @@ from functools import cache
 
 import pytest
 from pyshacl import validate
-from rdflib import Graph, Namespace, URIRef
+from rdflib import Dataset, Graph, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, SH, SKOS, XSD
 
@@ -254,8 +254,11 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER.replace('<http://snomed.info/id/1481000119100>', '<urn:x:G0108>')} ; {CURATED} .",
      "maps a code, an IRI of one of the code systems' forms"),
     (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER.replace('1001>', '1001#20220924>')} ; {CURATED} .", "named by its canonical URL"),
+    (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER.replace(DIABETES, '<urn:oid:2.16.840.1.113883.3.464.1003.103.12.1001>')} ; {CURATED} .",
+     "Cascade's rule, one value set one name"),
+    (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER.replace('1001>', '1001|20220924>')} ; {CURATED} .", "named by its canonical URL"),
     (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER.replace('obo:RO_0002350', 'skos:exactMatch')} ; {CURATED} .", "with obo:RO_0002350"),
-    (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER} ; {CHAINED} .", "justified as the publisher's curated row"),
+    (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER} ; {CHAINED} .", "justified as a manually curated mapping"),
     (CASCADE.CodeNames, f'<https://ns.cascadeprotocol.org/codes/medrt/N0000175722> skos:prefLabel "Beta-Adrenergic Blocker [EPC]" ; skos:notation "N0000175722" .', None),
     (CASCADE.CodeNames, f'{MESH} skos:prefLabel "Ibuprofen" ; skos:notation "M0006414" .', None),
     (CASCADE.CodeNames, '<http://id.nlm.nih.gov/mesh/D004095> skos:prefLabel "x" ; skos:notation "D004095" .', None),
@@ -331,3 +334,21 @@ def test_each_table_version_is_named_by_n12_from_its_series_the_version_it_revis
         named.append(table_version_name(case["series"], case["revises"] or None, rows))
     assert named == [case["name"] for case in cases]
     assert len(set(named)) == len(cases)
+
+
+def test_every_row_of_a_value_set_expansion_has_the_value_set_its_version_names_as_its_target():
+    checked = 0
+    for index_file in sorted((ROOT / "tests" / "fixtures").glob("*/references.ttl")):
+        if not (index_file.parent / "rows.trig").is_file():
+            continue
+        index = parsed(index_file)
+        rows = Dataset()
+        rows.parse(data=(index_file.parent / "rows.trig").read_text(encoding="utf-8"), format="trig")
+        for version, series in index.subject_objects(PROV.specializationOf):
+            if index.value(series, CASCADE.tableKind) != CASCADE.ValueSetExpansions:
+                continue
+            named = set(index.objects(version, CASCADE.expandedValueSet))
+            targets = set(rows.graph(version).objects(None, OWL.annotatedTarget))
+            assert len(named) == 1 and targets <= named, (index_file.parent.name, version)
+            checked += 1
+    assert checked

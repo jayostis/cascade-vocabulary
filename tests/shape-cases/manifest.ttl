@@ -644,3 +644,12 @@
   mf:action [ sht:dataGraph <finding/clock-behind-without-days.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ClockBehindShape ] ] .
+
+<#reference-series/expansion-valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <reference-series/expansion-valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#reference-series/expansion-without-value-set> a sht:Validate ;
+  mf:action [ sht:dataGraph <reference-series/expansion-without-value-set.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ReferenceSeriesShape ] ] .

@@ -5,6 +5,9 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 :diabetes a cascade:ReferenceSeries ; rdfs:label "Diabetes value set expansions" ; cascade:tableKind cascade:ValueSetExpansions .
-:diabetes-1 prov:specializationOf :diabetes ; pav:version "1" .
-:diabetes-2 prov:specializationOf :diabetes ; pav:version "2" ; prov:wasRevisionOf :diabetes-1 ;
+:diabetes-1 prov:specializationOf :diabetes ; pav:version "2022-09-24T11:00:00.000Z" ;
+    cascade:expandedValueSet <http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.103.12.1001> .
+:diabetes-2 prov:specializationOf :diabetes ; pav:version "2022-12-01T11:00:00.000Z" ; prov:wasRevisionOf :diabetes-1 ;
+    cascade:expandedValueSet <http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.103.12.1001> ;
+    cascade:valueSetDefinitionVersion "20220924" ;
     cascade:expansionMembersWithoutCodeIriLeftOutCount 1 .
