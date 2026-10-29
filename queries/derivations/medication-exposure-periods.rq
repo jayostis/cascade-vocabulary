@@ -1,0 +1,41 @@
+# Each medication record in an entry is given the exposure its own current version shows, as the eCQM library
+# CumulativeMedicationDuration 4.1.000 starts and ends a medication's period: from its start of use, else the day its
+# prescription was written, to its end of use. A start given only to the year or month is read as its last day and an
+# end as its first, and a time as its day, so exposure is never overstated. With no end, the exposure is ongoing when the
+# record's own lifecycle is active, and is neither ended nor ongoing otherwise. A record with no start, or whose end so
+# read falls before its start, has no exposure, as the library gives no period. Copies are never collapsed here: an
+# entry's exposure is a rule's, over every member.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?record cascade:medicationExposureStart ?start ; cascade:medicationExposureEnd ?end ;
+          cascade:medicationExposureOngoing ?ongoing .
+}
+WHERE {
+  ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry [] ; pav:hasCurrentVersion ?version .
+  OPTIONAL { ?version cascade:medicationUseStartDate ?useStart }
+  OPTIONAL { ?version cascade:prescriptionWrittenDate ?written }
+  OPTIONAL { ?version cascade:medicationUseEndDate ?useEnd }
+  OPTIONAL { ?record cascade:currentVersionStatusLifecycle ?lifecycle }
+  BIND (COALESCE(?useStart, ?written) AS ?from)
+  BIND (xsd:integer(SUBSTR(STR(?from), 1, 4)) AS ?year)
+  BIND (SUBSTR(STR(?from), 6, 2) AS ?month)
+  BIND (?year - 4 * FLOOR(?year / 4) = 0 && (?year - 100 * FLOOR(?year / 100) != 0 || ?year - 400 * FLOOR(?year / 400) = 0)
+        AS ?leap)
+  BIND (IF(BOUND(?from),
+           STRDT(IF(sameTerm(DATATYPE(?from), xsd:gYear), CONCAT(SUBSTR(STR(?from), 1, 4), "-12-31"),
+                 IF(sameTerm(DATATYPE(?from), xsd:gYearMonth),
+                    CONCAT(SUBSTR(STR(?from), 1, 7), "-",
+                           IF(?month IN ("04", "06", "09", "11"), "30", IF(?month = "02", IF(?leap, "29", "28"), "31"))),
+                    SUBSTR(STR(?from), 1, 10))), xsd:date),
+           1/0) AS ?start)
+  BIND (IF(BOUND(?useEnd),
+           STRDT(IF(sameTerm(DATATYPE(?useEnd), xsd:gYear), CONCAT(SUBSTR(STR(?useEnd), 1, 4), "-01-01"),
+                 IF(sameTerm(DATATYPE(?useEnd), xsd:gYearMonth), CONCAT(SUBSTR(STR(?useEnd), 1, 7), "-01"),
+                    SUBSTR(STR(?useEnd), 1, 10))), xsd:date),
+           1/0) AS ?end)
+  FILTER (BOUND(?start) && (!BOUND(?end) || ?end >= ?start))
+  BIND (IF(!BOUND(?useEnd) && sameTerm(?lifecycle, cascade:MedicationActive), true, 1/0) AS ?ongoing)
+}
