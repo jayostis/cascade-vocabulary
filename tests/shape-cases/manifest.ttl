@@ -456,6 +456,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ServerBaseUrlShape ; sh:resultPath cascade:serverBaseUrl ] ] .
 
+<#document/answers-for-a-record-kind-word> a sht:Validate ;
+  mf:action [ sht:dataGraph <document/answers-for-a-record-kind-word.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DocumentScopeShape ; sh:resultPath cascade:answersForRecordClass ] ] .
+
 <#record-organization/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-organization/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
