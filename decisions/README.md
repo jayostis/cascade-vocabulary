@@ -91,3 +91,8 @@ brought to it on 2026-10-22 under #202:
   tracking what changed rather than the square of the pod.
 - [`one-meaning-per-term.md`](one-meaning-per-term.md): which list a clinical status is from, and the clinical terms
   renamed so that none means something other than the FHIR element it is filled from.
+- [`quantities.md`](quantities.md): how a lab result's number, unit and comparator are held so a query can compare them.
+- [`partial-dates-and-absent-reasons.md`](partial-dates-and-absent-reasons.md): how a date a source gave only to the year or month, and a value a source left out for a reason, are held.
+- [`version-content.md`](version-content.md): what a version's clinical content is, what rules read, and what to borrow from FHIR for the care-gap epic.
+- [`clinical-terms-follow-fhir.md`](clinical-terms-follow-fhir.md): which standard a clinical term starts from, and what a departure costs.
+- [`readings-and-care-hypotheses.md`](readings-and-care-hypotheses.md): what a maker concludes that is not a verdict: readings of text, care hypotheses and the person's responses.
