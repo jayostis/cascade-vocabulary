@@ -223,7 +223,8 @@ cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
         <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:ProblemOrDiagnosis ;
-    sh:targetSubjectsOf cascade:conditionName , cascade:icd10Code , cascade:conditionCategory , cascade:abatementDate ;
+    sh:targetSubjectsOf cascade:conditionName , cascade:icd10Code , cascade:conditionCategory , cascade:abatementDate ,
+        cascade:conditionCodeInOtherSystem ;
 
     sh:property [
         sh:path cascade:conditionName ;
@@ -274,6 +275,14 @@ cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
         sh:in ("problem-list-item" "encounter-diagnosis") ;
         sh:message "Condition category should be one of the two FHIR R4 condition-category codes: problem-list-item, encounter-diagnosis (https://hl7.org/fhir/R4/valueset-condition-category.html). C-CDA section words such as \"diagnosis\" or \"problem\" are not members of this value set."@en ;
         sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:conditionCodeInOtherSystem ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:message "A condition code in another system is a non-empty literal typed by its system's URI, one per coding the source gave"@en ;
+        sh:severity sh:Violation
     ] ;
 
     sh:property [
@@ -370,7 +379,7 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:LaboratoryTestResult ;
-    sh:targetSubjectsOf cascade:testName , cascade:testCode , cascade:resultValue , cascade:resultUnit ,
+    sh:targetSubjectsOf cascade:testName , cascade:testCode , cascade:testCodeInOtherSystem , cascade:resultValue , cascade:resultUnit ,
         cascade:referenceRange , cascade:resultInterpretation , cascade:resultClinicallyRelevantTime ;
 
     sh:property [
@@ -384,8 +393,16 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
     sh:property [
         sh:path cascade:testCode ;
         sh:nodeKind sh:IRI ;
-        sh:message "A test code should be a LOINC IRI, for example http://loinc.org/rdf/2823-3, one per coding the source gave"@en ;
+        sh:message "A test code is a code IRI, one per coding the source gave"@en ;
         sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:testCodeInOtherSystem ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:message "A test code in another system is a non-empty literal typed by its system's URI, one per coding the source gave"@en ;
+        sh:severity sh:Violation
     ] ;
 
     sh:property [
@@ -455,7 +472,7 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:MedicalProcedure ;
-    sh:targetSubjectsOf cascade:procedureName , cascade:procedureDate , cascade:cptCode ;
+    sh:targetSubjectsOf cascade:procedureName , cascade:procedureDate , cascade:cptCode , cascade:procedureCodeInOtherSystem ;
 
     sh:property [
         sh:path cascade:procedureName ;
@@ -488,6 +505,14 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
     ] ;
 
     sh:property [
+        sh:path cascade:procedureCodeInOtherSystem ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:message "A procedure code in another system is a non-empty literal typed by its system's URI, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
         sh:path cascade:snomedCode ;
         sh:node cascade:SnomedCtCodeShape ;
         sh:message "A SNOMED CT code is SNOMED's own IRI, http://snomed.info/id/ and the concept id"@en ;
@@ -504,7 +529,7 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:PrescribedOrReportedMedication ;
-    sh:targetSubjectsOf cascade:drugName , cascade:rxNormCode , cascade:ndcCode , cascade:userSelectedCode ,
+    sh:targetSubjectsOf cascade:drugName , cascade:rxNormCode , cascade:ndcCode , cascade:medicationCodeInOtherSystem , cascade:userSelectedCode ,
         cascade:prescribedOrReported , cascade:dosage , cascade:medicationUseStartDate , cascade:medicationUseEndDate ,
         cascade:prescriptionWrittenDate , cascade:medicationRequestIntent ;
 
@@ -547,6 +572,14 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
         sh:nodeKind sh:IRI ;
         sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/ndc11/[0-9]{11}$" ;
         sh:message "An NDC is Cascade's 11-digit IRI, https://ns.cascadeprotocol.org/codes/ndc11/ and 11 digits; the 10-digit hyphenated form is normalised by the adapter, never kept"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:medicationCodeInOtherSystem ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:message "A medication code in another system is a non-empty literal typed by its system's URI, one per coding the source gave"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -1580,6 +1613,33 @@ cascade:CodeConversionFormShape a sh:NodeShape ;
     ) ;
     sh:message "A code conversion row says its code is replaced by the code it converts to, with dct:isReplacedBy, and gives its cardinality; a row of the earlier form pairs them with skos:exactMatch and gives none."@en ;
     sh:severity sh:Violation .
+
+cascade:CodeInOtherSystemShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:testCodeInOtherSystem , cascade:medicationCodeInOtherSystem , cascade:conditionCodeInOtherSystem ,
+        cascade:procedureCodeInOtherSystem ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A code in another system is typed by its system's URI, HL7 Terminology's preferred one where it registers one, else urn:oid: and the OID: {?value} is a plain string, an OID HL7 Terminology registers a URI for, or a code in a system its kind holds as a code IRI."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this ?path ?value WHERE {
+  $this ?path ?value .
+  FILTER (?path IN (<https://ns.cascadeprotocol.org/cascade#testCodeInOtherSystem>, <https://ns.cascadeprotocol.org/cascade#medicationCodeInOtherSystem>,
+                    <https://ns.cascadeprotocol.org/cascade#conditionCodeInOtherSystem>, <https://ns.cascadeprotocol.org/cascade#procedureCodeInOtherSystem>)
+          && ISLITERAL(?value))
+  BIND (STR(DATATYPE(?value)) AS ?system)
+  FILTER (STRSTARTS(?system, "http://www.w3.org/2001/XMLSchema#") || STRSTARTS(?system, "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+          || ?system IN ("urn:oid:2.16.840.1.113883.6.1", "urn:oid:2.16.840.1.113883.6.96", "urn:oid:2.16.840.1.113883.6.88",
+                         "urn:oid:2.16.840.1.113883.6.69", "urn:oid:2.16.840.1.113883.6.90", "urn:oid:2.16.840.1.113883.6.103",
+                         "urn:oid:2.16.840.1.113883.6.104", "urn:oid:2.16.840.1.113883.6.12", "urn:oid:2.16.840.1.113883.12.292",
+                         "urn:oid:2.16.840.1.113883.4.9", "urn:oid:2.16.840.1.113883.6.285", "urn:oid:2.16.840.1.113883.6.4",
+                         "urn:oid:2.16.840.1.113883.6.13")
+          || (?path = <https://ns.cascadeprotocol.org/cascade#testCodeInOtherSystem> && ?system IN ("http://loinc.org", "http://snomed.info/sct"))
+          || (?path = <https://ns.cascadeprotocol.org/cascade#medicationCodeInOtherSystem>
+              && ?system IN ("http://www.nlm.nih.gov/research/umls/rxnorm", "http://hl7.org/fhir/sid/ndc"))
+          || (?path = <https://ns.cascadeprotocol.org/cascade#conditionCodeInOtherSystem> && ?system IN ("http://hl7.org/fhir/sid/icd-10-cm", "http://snomed.info/sct"))
+          || (?path = <https://ns.cascadeprotocol.org/cascade#procedureCodeInOtherSystem> && ?system IN ("http://www.ama-assn.org/go/cpt", "http://snomed.info/sct")))
+}"""
+    ] .
 
 cascade:CodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
