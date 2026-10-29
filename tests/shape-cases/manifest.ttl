@@ -556,6 +556,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:QuantityShape ; sh:resultPath cascade:decimalValue ] ] .
 
+<#lab-result-value/interpretation-not-an-observation-interpretation-code> a sht:Validate ;
+  mf:action [ sht:dataGraph <lab-result-value/interpretation-not-an-observation-interpretation-code.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultValueShape ; sh:resultPath cascade:resultInterpretationCode ] ] .
+
 <#finding/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <finding/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

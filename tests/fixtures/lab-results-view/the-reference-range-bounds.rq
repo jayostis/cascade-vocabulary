@@ -1,0 +1,6 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT ?entry ?bound ?field ?value
+WHERE { GRAPH <https://pod.example/clinical/lab-results.ttl> {
+  ?entry cascade:mergedFrom [] ; ?bound ?node . ?node ?field ?value
+  FILTER (?bound IN (cascade:referenceRangeLow, cascade:referenceRangeHigh)) } }

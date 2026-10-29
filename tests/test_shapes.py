@@ -4,6 +4,7 @@ as the node shape that reported it, directly or through one of its properties, a
 
 import json
 from functools import cache
+from urllib.parse import quote
 
 import pyoxigraph
 import pytest
@@ -285,14 +286,18 @@ def test_no_absolute_subject_iri_is_the_subject_of_nodes_in_two_shape_case_files
     assert {str(node): sorted(names) for node, names in owners.items() if len(names) > 1} == {}
 
 
-def test_an_absent_reason_shape_lists_exactly_the_codes_of_its_hl7_code_system():
-    """HL7 Terminology's CodeSystems as published (tests/terminology/hl7-terminology/, CC0), every code at every depth."""
+def test_a_shape_of_an_hl7_code_systems_codes_lists_exactly_the_codes_a_coding_may_carry():
+    """HL7 Terminology's CodeSystems as published (tests/terminology/hl7-terminology/, CC0), every code at every depth
+    but an abstract one (notSelectable), each percent-encoded as ENCODE_FOR_URI does."""
     def codes(concepts):
         for concept in concepts:
-            yield concept["code"]
+            if not any(p["code"] == "notSelectable" and p.get("valueBoolean") for p in concept.get("property", [])):
+                yield quote(concept["code"], safe="")
             yield from codes(concept.get("concept", []))
     for shape, system, file in ((CASCADE.DataAbsentReasonCodeShape, CASCADE.DataAbsentReason, "CodeSystem-data-absent-reason.json"),
-                                (CASCADE.NullFlavorCodeShape, CASCADE.NullFlavor, "CodeSystem-v3-NullFlavor.json")):
+                                (CASCADE.NullFlavorCodeShape, CASCADE.NullFlavor, "CodeSystem-v3-NullFlavor.json"),
+                                (CASCADE.ObservationInterpretationCodeShape, CASCADE.ObservationInterpretation,
+                                 "CodeSystem-v3-ObservationInterpretation.json")):
         published = json.loads((ROOT / "tests" / "terminology" / "hl7-terminology" / file).read_text(encoding="utf-8"))
         assert published["url"] == str(ontology().value(system, CASCADE.codingSystemUri))
         stem = str(ontology().value(system, URIRef("http://rdfs.org/ns/void#uriSpace")))
