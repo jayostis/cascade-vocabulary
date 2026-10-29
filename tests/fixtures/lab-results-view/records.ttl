@@ -56,3 +56,18 @@
 <urn:x:urineVersion#range-high> cascade:decimalValue "5"^^xsd:decimal ; cascade:writtenValue "5" ; cascade:ucumUnit "/[HPF]" .
 :urineRevision a cascade:Revision ; cascade:revisionOf :urine ; cascade:version :urineVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:mcv a cascade:LaboratoryTestResult .
+:mcvVersion prov:specializationOf :mcv ; cascade:patient :subject ; cascade:testName "MCV" ;
+    cascade:testCode <http://loinc.org/rdf/787-2> ; cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:mcvVersion#value> ;
+    cascade:resultInterpretationCode <https://ns.cascadeprotocol.org/codes/observationinterpretation/H> ,
+        <https://ns.cascadeprotocol.org/codes/observationinterpretation/A> ;
+    cascade:referenceRange "80-100 fL" ;
+    cascade:referenceRangeLow <urn:x:mcvVersion#reference-low> ; cascade:referenceRangeHigh <urn:x:mcvVersion#reference-high> ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-04-13T09:00:00Z"^^xsd:dateTime .
+<urn:x:mcvVersion#value> cascade:decimalValue "101"^^xsd:decimal ; cascade:writtenValue "101" ; cascade:ucumUnit "fL" .
+<urn:x:mcvVersion#reference-low> cascade:decimalValue "80"^^xsd:decimal ; cascade:writtenValue "80" ; cascade:ucumUnit "fL" .
+<urn:x:mcvVersion#reference-high> cascade:decimalValue "100"^^xsd:decimal ; cascade:writtenValue "100" ; cascade:ucumUnit "fL" ;
+    cascade:unitText "fl" .
+:mcvRevision a cascade:Revision ; cascade:revisionOf :mcv ; cascade:version :mcvVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
