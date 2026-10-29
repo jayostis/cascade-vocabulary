@@ -99,6 +99,16 @@ cascade:PatientProfileShape a sh:NodeShape ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
         sh:severity sh:Violation
+    ] ;
+
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A time of death is a death: a version that holds a date of death does not say the person has not died."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this WHERE {
+  $this <https://ns.cascadeprotocol.org/cascade#dateOfDeath> ?time ;
+        <https://ns.cascadeprotocol.org/cascade#deceased> false .
+}"""
     ] .
 
 # Copied from the spec's health
@@ -1128,8 +1138,8 @@ cascade:ValueAbsentForReasonShape a sh:NodeShape ;
         sh:maxCount 1 ;
         sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
-                cascade:resultValueKind ) ;
-        sh:message "A value absent for a reason names the one property it stands for, a date or a lab result's value kind."@en ;
+                cascade:resultValueKind cascade:administrativeGender ) ;
+        sh:message "A value absent for a reason names the one property it stands for, a date, a lab result's value kind or an administrative gender."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:absentReasonCode ;

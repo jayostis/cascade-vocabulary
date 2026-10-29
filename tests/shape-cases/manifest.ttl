@@ -321,6 +321,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:PatientProfileShape ; sh:resultPath cascade:dateOfDeath ] ] .
 
+<#record-patient-profile/death-time-with-deceased-false> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-patient-profile/death-time-with-deceased-false.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PatientProfileShape ] ] .
+
 <#record-medication/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-medication/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
