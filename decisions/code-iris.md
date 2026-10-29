@@ -1,6 +1,7 @@
 # The IRI of every code
 
-Status: draft, 2026-10-22. Replaces `hgvs-and-clinvar-codes.md` (2026-10-13, brought to the `README.md` standard on
+Status: draft, 2026-10-22; row "a code in a system the vocabulary lists no form for" added 2026-10-29 under #290, a
+departure from FHIR RDF's `Coding` node, draft for the owner's ruling. Replaces `hgvs-and-clinvar-codes.md` (2026-10-13, brought to the `README.md` standard on
 2026-10-22 under #202), whose scope was HGVS and ClinVar: its rulings on encoding, the HGVS key's form and ClinVar's
 normal form stand and are carried here; its ruling that a stem without an HL7 Terminology registration is the
 `Coding.system` URI followed by a slash, "by the convention for CVX, RxNorm and ICD-10-CM", and that "the stems are not
@@ -243,6 +244,7 @@ rest by the steps listed under the Question. Until then M4, `rec:CodeSystem` and
 | HGNC | THO system URI; identifiers.org `hgnc` | no code IRI: a gene is its approved symbol, a literal (`ontologies/cascade.shapes.ttl`) | nothing to mint; Still open says which, if ever |
 | UCUM | UCUM none; SPHN UCUM classes; QUDT `ucumCode` (`quantities.md`) | no code IRI: `ucumUnit` is the source's string (`ontologies/cascade.shapes.ttl`) | borrowed from UCUM, as `quantities.md` ruled |
 | a code system's `Coding.system` | THO system URIs; GKS `Coding.system`; conformance-review C2 | `cascade:codingSystemUri`, an `xsd:anyURI`, is THO's preferred system URI; a reader writing FHIR takes `Coding.system` from it and `Coding.code` from the IRI's tail after `void:uriSpace`, percent-decoded; C1 writes the term and `rec:CodeSystem`'s comment, A1/A2 the adapters' rows (`ontologies/cascade.ttl`) | borrowed; replaces `skos:exactMatch` |
+| a code in a system the vocabulary lists no form for | SKOS Reference §6.5.1, `skos:notation` typed by a datatype for a system of notations; the business identifier's typed literal (`ontologies/cascade.shapes.ttl`); FHIR RDF's `fhir:system` and `fhir:code` node; SPHN's `sphn:Code`; GKS's `Coding` | a literal on its coded element's own property, `cascade:testCodeInOtherSystem`, `cascade:medicationCodeInOtherSystem`, `cascade:conditionCodeInOtherSystem`, `cascade:procedureCodeInOtherSystem`: the code as its lexical form, its datatype the IRI `cascade:codingSystemUri` would hold, HL7 Terminology's preferred system URI where it registers one (an OID or URI in the system table, `urn:oid:` in either case, is the URI the table gives it, and the shape refuses the other forms), else `urn:oid:` and the OID; one literal per coding, none for a coding with no system. A code in a listed system is that system's code IRI on the property its kind has; a listed system its kind has no property for (SNOMED CT on a medication, ICD-9-CM on a condition) stays a literal. Queries compare these with `sameTerm` or a shared variable, never `=`. A rule that finds, in its window, a record of its kind coded only so, from a source in scope, claims no absence for that source: it holds the question back (#290; `ontologies/cascade.ttl`; each kind's shape and `cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape`, the system table's other forms, in `ontologies/cascade.shapes.ttl`) | borrowed from SKOS; diverged from FHIR RDF's `Coding` node |
 | a stem registered later | none | THO registering a stem, or an owner publishing one, for a system here is recorded on the system beside its `void:uriSpace` and read as each code's `skos:exactMatch`; the code IRI is never renamed; C1 says so in `rec:CodeSystem`'s comment, and the term that records it is minted when a stem first exists (`ontologies/cascade.ttl`) | ours: a renamed IRI renames every version that holds it |
 | a literal joining as an IRI | `ENCODE_FOR_URI`; RFC 3986 §2.3 and §2.1; R2RML §7.3 | the stem, then the literal through `ENCODE_FOR_URI`: every character but `A-Z a-z 0-9 - _ . ~` as `%` and two upper-case hexadecimal digits of its UTF-8; `rec:CodeSystem` says so (M4) | borrowed from SPARQL; diverged from R2RML on `ucschar` (conformance-review C3), which no code here holds |
 | the pinned CVX comparisons | the settlement: rule lists and matcher queries rewritten in place, `published-bytes.json` regenerated (`settlements.md:89`, D3) | today `same-mapped-code-and-date.rq` and `same-vaccine-group-and-date.rq` join the unencoded literal, and a test checks that every query joining a stem to a literal encodes it unless a rule list pins it and its kind's code shape allows unreserved characters only (`tests/test_variants.py:213-236`, `PINNED`); C1 rewrites both in place with `ENCODE_FOR_URI` around the code and deletes `PINNED`, so every query encodes (`tests/test_variants.py`) | ours: the exception's reason, that a pinned query's bytes are its version's, ends at this re-mint, which rewrites every pinned query's bytes anyway |
@@ -315,6 +317,27 @@ hashes it; renaming it renames the version and every claim and judgment on it. A
 IRI under it is its `skos:exactMatch`, which SKOS allows between concepts, unlike exactMatch on a code system
 (conformance-review C2).
 
+**Why a code in another system is a typed literal.** (row "a code in a system the vocabulary lists no form for") A
+lab's local code, a formulary's code or a HCPCS procedure code was dropped, so a care-gap rule read "never checked" for
+a test that was done. SKOS already has the form: `skos:notation` "is only used with a typed literal ... where the
+datatype URI denotes a user-defined datatype corresponding to a particular system of notations or classification
+codes" (§6.5.1, https://www.w3.org/TR/skos-reference/#notations, read 2026-10-29). It is how the vocabulary already writes a business identifier, and every engine
+holds it: the FHIR adapter writes `STRDT(?value, IRI(?system))` for one, and the kits hold the result through Oxigraph
+JS, rdflib and pyshacl, and the Bridge, as `"99D0022061"^^<urn:oid:2.16.840.1.113883.4.7>`
+(`conformance/martin-okafor/scripted-input/martin/bridge/E3/bundle/graph.ttl`). One property per coded element, never
+one shared, because a version may hold two (a test and its answer). The datatype is the system's FHIR URI, with an OID
+or URI in the system table read as the URI the table gives, because otherwise one code from the FHIR and the C-CDA adapter
+is two terms that never join; the FHIR adapter already reads the NPI's OID so. A listed system its kind has no
+property for stays a literal for the matcher's sake: `cascade:snomedCode` has no domain, and a SNOMED CT medication
+code on it would join two medications through `queries/matcher/same-code-key-joined-first.rq` whatever their dates,
+which M16 forbids (`runtime/matcher.feature`). That choice follows M16 as it stands, unruled for this case (no note
+rules it; open on #286), and the M15/M16 note may reopen it. Two such literals that differ are a type error under `=`, so they are
+compared by `sameTerm`. Keeping the code does not by itself close the false gap: a B12 rule asks for LOINC codes, and
+`"B12-SER"^^<urn:oid:…>` matches none. So the row also says what a rule may claim: a record of its kind in its window
+coded only in another system means the source may have done the test, and the rule holds its question back for that
+source rather than claim the test was never done. When the kind gains a property for a system, the adapter writes the
+code IRI there, and the re-derived version has a new name; no code IRI is renamed.
+
 ## Alternatives that lost
 
 - **Keep `Coding.system` and a slash for every unregistered system.** The strongest case: one rule computes every stem
@@ -358,6 +381,17 @@ IRI under it is its `skos:exactMatch`, which SKOS allows between concepts, unlik
   page anchors, `CodeSystem-v3-NullFlavor.html#v3-NullFlavor-UNK`, are a page's layout with no persistence commitment,
   failing (c). Bioregistry's `hl7.v3codesystem` names HL7's code systems, not their codes, failing (b). HL7's ORIM
   RDF of the v3 RIM is unmaintained, failing (a). So both go in Cascade's space, as the Rubric's item 3 says.
+
+- **FHIR RDF's `Coding` node for a code in another system** (`fhir:system` and `fhir:code`), or SPHN's `sphn:Code`, or
+  GKS's `Coding`. The strongest case: FHIR's own RDF, and the system and code kept apart. Each needs two terms joined
+  for every comparison, and a node to name and hash inside the version, where the typed literal is one term.
+- **A Cascade IRI per unlisted system**, `https://ns.cascadeprotocol.org/codes/<encoded system>/<code>`. The strongest
+  case: every code an IRI, which Rubric item 3 allows. The day this note lists the system, one code would have two
+  IRIs, and row "a stem registered later" forbids renaming the first.
+- **A listed system's code on its system's property whatever the kind** (SNOMED CT on a medication as
+  `cascade:snomedCode`). The strongest case: one form per system. The matcher joins `snomedCode` with dates ignored,
+  which M16 as it stands forbids for medications; unruled for this case (open on #286), and the M15/M16 note may
+  reopen it.
 
 ## Still open
 
