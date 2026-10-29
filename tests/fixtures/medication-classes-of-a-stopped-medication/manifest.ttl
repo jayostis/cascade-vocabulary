@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "medication-classes-of-a-stopped-medication" ;
+  rdfs:comment "A version of a product ingredients table that states precise ingredients: it maps metformin 500 MG Oral Tablet (861007) to metformin (6809) and to its precise ingredient metformin hydrochloride (235743), a form of metformin, and metformin to itself. A version of a drug classes table holds FDA's established pharmacologic class Biguanide (N0000175565) on metformin only. A stopped medication for the tablet." ;
+  mf:entries (
+    <#medication-classes-of-every-medication-record>
+  ) .
+
+<#medication-classes-of-every-medication-record> a mf:QueryEvaluationTest ;
+  mf:name "medication-classes-of-every-medication-record" ;
+  rdfs:comment "The stopped metformin tablet is given Biguanide through metformin, the ingredient step reached though its precise ingredient bears no class, and the row names the record beside its entry." ;
+  mf:action [ qt:query <../../../queries/tables/medication-classes-of-every-medication-record.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <medication-classes-of-every-medication-record.srj> .
