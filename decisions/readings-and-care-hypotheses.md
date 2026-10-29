@@ -13,8 +13,8 @@ threshold and window cite.
 ## Question
 
 A pod's judgments today are verdicts: `cascade:Same`, `cascade:Different`, `cascade:Erroneous`, `cascade:Before`,
-`cascade:About`, `cascade:Acknowledged` and `cascade:ClockDiscounted` say what records are or how the person answers a
-finding, and once a lens counts one, a view or the review page changes (`ontologies/cascade.ttl`, "Judgments"). The
+`cascade:About`, `cascade:Acknowledged` and `cascade:ClockDiscounted` say what records are, what a record is about, when a
+clock is not to be trusted, or how the person answers a finding, and once a lens counts one, a view or the review page changes (`ontologies/cascade.ttl`, "Judgments"). The
 care-gap assistant (#287) adds three more kinds of conclusion:
 
 - **A reading of text:** a model quotes a visit note ("tingling in both feet") and says what concept it takes the
@@ -32,9 +32,12 @@ another vocabulary already defines?
 Two constraints make it harder. The words are taken: "finding" already names a Bridge finding
 (`cascade:BridgeFindingKinds`), a finding for review (`cascade:FindingForReview`, whose kinds include a source that
 reported older states and a clock behind, `currency.md`'s rollback and clock findings) and
-`cascade:GeneticVariantFinding`; "question" names a curated query under `queries/questions/`. And "recommendation" is
-the word FDA's clinical decision support guidance (January 2026) ties to device status for software that speaks to
-patients, so a term that says a pod recommends would claim what the assistant must not.
+`cascade:GeneticVariantFinding`; "question" names a curated query under `queries/questions/`. And the assistant
+must not claim to recommend: #287 draws the line FDA's "Policy for Device Software Functions and Mobile Medical
+Applications" draws, whose Appendix A lists, among software functions that are not devices, those that "help guide
+patients to ask appropriate questions to their physician relevant to their particular disease, condition, or concern"
+(https://www.fda.gov/media/80958/download, issued September 28, 2022; read 2026-10-29). A term that says a pod
+recommends would claim what that line excludes.
 
 ## What others do
 
@@ -115,18 +118,15 @@ is #287.
 
 ## Choice
 
-Accepted as leans: every row stands unless the search overturns it.
+Accepted as lean (c): every row stands unless the search overturns it. What goes beyond it (a shared superclass, the
+kind of claim and maker, confidence, names) is under Still open, as leans.
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | verdict | nanopub assertion; SSSOM row | `cascade:Judgment` as `judgments.md` has it, with its verdicts; unchanged (`ontologies/cascade.ttl`) | as `judgments.md` |
-| what every kind shares | PROV-O; nanopub | each kind is a `prov:Entity` with `prov:wasAttributedTo` its maker, `prov:wasDerivedFrom` what it rests on, and retraction as an activity that `prov:invalidated` it; lean: a common superclass for an attributed, retractable conclusion, with `cascade:Judgment` beneath it, so `naming.md`'s second test reads "an attributed, retractable conclusion" and the class `cascade:Judgment` stays the verdicts (#287) | borrowed from PROV; the superclass is ours if no search result names it |
 | reading of text | Web Annotation; OMOP `NOTE_NLP` | an `oa:Annotation`, as `cascade:FindingForReview` already is, whose target is the note's record with an `oa:TextQuoteSelector`, whose body is the concept the maker takes the quote to name, with an assertion status (asserted, negated, hypothetical) as `NOTE_NLP` keeps; it never enters a view as a record of its own, and counts only once the person confirms it (#287) | borrowed from Web Annotation, already imported; the status from `NOTE_NLP` |
 | care hypothesis | FHIR `DetectedIssue`, `GuidanceResponse`; DEQM; CDS Hooks | a kind of its own, its members the entries it rests on, with its rule or its guidance, and the scope of any absence it claims (which sources, answered as of when). A rule's is derived when the rule raises it and never stored, as a view is; a model's is minted once, with the query it ran and its model version, as `judgments.md` mints a model's judgment. It never changes a view. Over FHIR it is a `DetectedIssue` with a `GuidanceResponse` for the run, as `version-content.md`'s outputs table says (#287) | borrowed fields; ours as a pod term unless the search finds one |
 | response to a care hypothesis | FHIR `Task` owned by the Patient; `DetectedIssue.mitigation`; C-CDA concern status; CDS Hooks feedback | a `cascade:Judgment` by the person whose member is the hypothesis, with a verdict for accepted, dismissed or discussed with a clinician: the same move as `cascade:Acknowledged`, whose member is a finding (`judgments.md`, row "acknowledgement"). Over FHIR it is a `Task` with `for` and `owner` the Patient, never `DetectedIssue.mitigation`, whose author must be a Practitioner (#287) | ours, within `judgments.md`; borrowed at the interface |
-| kind of claim and kind of maker | Biolink knowledge level and agent type; ECO; `AIAST` | lean: borrow the distinction (an assertion copied from a source, a deterministic derivation, a model's prediction, a reading) if Biolink's or ECO's terms fit, rather than mint one (#287) | borrowed if the search confirms |
-| confidence of a model's reading or hypothesis | SSSOM `confidence`; FHIR `RiskAssessment` probability | lean: SSSOM `confidence`, the term `judgments.md` leaves open for a judgment and would give a model's judgment as a number; a rule's hypothesis has none, since it is true of the rows (#287) | borrowed |
-| names | | none chosen. "Finding" and "question" are taken, and "recommendation" claims what the assistant must not; each name says exactly what its thing is, longer when in doubt (#287) | |
 
 ## Why
 
@@ -144,17 +144,6 @@ text survives re-encoding, where FHIR's offset and length do not (#288). Kept as
 "tingling in both feet" is evidence a hypothesis may cite and a person may confirm, and never a condition in the
 conditions view.
 
-**Why the shared part is PROV and not `cascade:Judgment`.** (row "what every kind shares") What `naming.md`'s second
-test protects, that a belief can be wrong and be retracted without touching a name, is attribution and retraction,
-which PROV already gives every entity. Widening the class to hold every kind would make each lens and each view test
-which kind it is reading; a superclass for the shared part lets each kind keep its own rules.
-
-**Why the distinction matters most for a model.** (rows "kind of claim and kind of maker", "confidence of a model's
-reading or hypothesis") A model's output is the one that cannot be recomputed: a rule's hypothesis is true of the rows
-and rebuilt on every run, a model's is minted once and depends on its version. Marking what kind of claim each
-statement is, and what kind of maker made it, is what lets a lens leave a model's conclusions out until they count,
-and lets a model update re-run and compare.
-
 ## Alternatives that lost
 
 - **Every kind a `cascade:Judgment`, with new verdicts.** The strongest case: one mechanism, one retraction, one lens,
@@ -162,7 +151,8 @@ and lets a model update re-run and compare.
   reading or a hypothesis must not, so each lens and view would have to tell verdicts from the rest.
 - **A model's output stored as a record, marked as made by a model.** The strongest case: it is what cascade-cli's
   `cascade_write` tool does today (`cascade:dataProvenance cascade:AIExtracted`, in cascade-cli's
-  `src/lib/mcp/tools.ts`, a term this vocabulary does not define), and every existing view and query works on it
+  `src/lib/mcp/tools.ts`, a term this vocabulary does not define; #152 asks where a record came from beyond its import,
+  including self-reported, device and AI-extracted origin), and every existing view and query works on it
   unchanged. It lost because the default is then inclusion: every query must remember to filter, and a model's guess
   reaches views, rules and an export to a clinician as if a hospital had written it.
 - **Readings and hypotheses kept outside the pod, in the app.** The strongest case: the pod holds only what sources
@@ -175,6 +165,26 @@ and lets a model update re-run and compare.
 ## Still open
 
 - **The prior-art search above,** done and written into What others do; a row it overturns comes back to the owner.
+- **A shared superclass (lean).** Each kind is a `prov:Entity` with `prov:wasAttributedTo` its maker,
+  `prov:wasDerivedFrom` what it rests on, and retraction as an activity that `prov:invalidated` it; a common
+  superclass for an attributed, retractable conclusion, with `cascade:Judgment` beneath it, so `naming.md`'s second
+  test reads "an attributed, retractable conclusion" and `cascade:Judgment` stays the verdicts. Borrowed from PROV;
+  the superclass is ours if no search result names it. Why PROV and not `cascade:Judgment`: what `naming.md`'s second
+  test protects, that a belief can be wrong and be retracted without touching a name, is attribution and retraction,
+  which PROV already gives every entity, and widening the class to hold every kind would make each lens and view test
+  which kind it is reading.
+- **Kind of claim and kind of maker (lean).** Borrow the distinction (an assertion copied from a source, a
+  deterministic derivation, a model's prediction, a reading) from Biolink's knowledge level and agent type, ECO or
+  `AIAST` if their terms fit, rather than mint one. Each question is asked once: #152 already asks where a record came
+  from beyond its import (self-reported, device and AI-extracted origin), so this waits on #152's answer before any
+  term is added. It matters most for a model, whose output cannot be recomputed: a rule's hypothesis is true of the
+  rows and rebuilt on every run, a model's is minted once and depends on its version.
+- **Confidence (lean).** SSSOM `confidence`, the term `judgments.md` leaves open for a judgment, as a number for a
+  model's reading or hypothesis; a rule's hypothesis has none, since it is true of the rows. FHIR `RiskAssessment`
+  probability is the alternative.
+- **How a derived hypothesis is named.** A rule's hypothesis is derived and never stored, so a response Judgment that
+  points at it must still resolve after the rule stops raising it, and the hypothesis must be able to record that it
+  closed and why. How it is named so that both hold is open.
 - **The names,** for the shared superclass, the reading, the care hypothesis and its response verdicts. "Care
   hypothesis" is a working name: what the assistant raises is a reason to ask, not a proposed explanation, and the name
   should say which.
@@ -186,8 +196,8 @@ and lets a model update re-run and compare.
   are kinds of the same superclass, and whether `cascade:GeneticVariantFinding`, a source's own statement, should keep
   the word.
 - How a lens counts a model's reading or hypothesis: the trusted-makers list `judgments.md` describes, extended to
-  these kinds, or a person's acceptance only. Lean (#287): a person's acceptance only, with a model's shown as
-  unreviewed until then.
+  these kinds, or a person's acceptance only. Accepted, lean (g) of #287: a person's acceptance only, with a model's
+  shown as unreviewed until then.
 
 ## What would change our mind
 

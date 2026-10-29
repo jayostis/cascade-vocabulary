@@ -43,17 +43,19 @@ Read on 2026-10-29 by the research in #288 unless marked.
   provenance; W3C Web Annotation for selectors; nanopublications and SSSOM for judgments (`judgments.md`).
 - **openEHR and OMOP** keep their own models inside and exchange FHIR at the edge (memory, not re-read); neither is
   what sources send.
-- **Licences.** FHIR's specification is CC0 (memory, not re-read). Its code systems are not all free: LOINC,
-  SNOMED CT and others keep their own terms, which the reference tables already handle.
+- **Licences.** FHIR's code systems are not all free: LOINC, SNOMED CT and others keep their own terms, which the
+  reference tables already handle.
 - **This vocabulary.** #128 maps the 59 clinical terms to FHIR R4; `one-meaning-per-term.md` renamed the terms whose
-  meaning differed from the FHIR element they are filled from, and ruled that the FHIR pointer is a row in #128's
-  mapping table, never an `rdfs:seeAlso` on the term (its row 11). Concepts copied from a FHIR value set carry its
-  page as their `dct:source` (`cascade:MedicationLifecycle`, `ontologies/cascade.ttl`).
+  meaning differed from the FHIR element they are filled from. On main a term filled from a FHIR element points at
+  the element's definition with `rdfs:seeAlso` (`ontologies/cascade.ttl:478`, `:778`, `:792`, `:799`, `:891`, `:898`,
+  `:927`, `:1183`, `:1592`) and has a row in #128's mapping table. `dct:source` and `dct:license` are the copied-term
+  rule's, for a term copied from another vocabulary, as `cascade:MedicationLifecycle` copies a FHIR value set's
+  concepts. `one-meaning-per-term.md`'s row 11 removed a class's `rdfs:subClassOf fhir:Procedure`, an axiom that made
+  a FHIR RDF resource its superclass; it ruled nothing about `rdfs:seeAlso`.
 
 Sources: https://hl7.org/fhir/R4/, https://hl7.org/fhir/us/core/profiles-and-extensions.html,
 https://hl7.org/fhir/R5/medicationstatement.html, https://hl7.org/fhir/R4/rdf.html,
-https://hl7.org/fhir/R4/linkage.html, https://hl7.org/fhir/R4/resource.html, https://hl7.org/fhir/R4/license.html,
-https://www.w3.org/TR/prov-o/, https://pav-ontology.github.io/pav/, https://www.w3.org/TR/annotation-vocab/,
+https://hl7.org/fhir/R4/linkage.html, https://hl7.org/fhir/R4/resource.html, https://www.w3.org/TR/prov-o/, https://pav-ontology.github.io/pav/, https://www.w3.org/TR/annotation-vocab/,
 https://mapping-commons.github.io/sssom/spec-model/. The research is the evidence issue
 [#288](https://github.com/jayostis/cascade-vocabulary/issues/288) (the by-record-kind comparison and the cross-cutting
 concerns), and #128's mapping (https://github.com/jayostis/cascade-vocabulary/issues/128#issuecomment-6135264321).
@@ -66,9 +68,9 @@ concerns), and #128's mapping (https://github.com/jayostis/cascade-vocabulary/is
 | R5 | FHIR R5 | where R5 differs and the difference matters, the term follows R4 and US Core, because that is what sources send, and the area's note records the R5 change (first applied by #287) | borrowed from what sources send |
 | wire format | Bundles, references, extensions, `meta`, contained resources; FHIR RDF's per-resource `fhir:status` | not copied: meanings, not wire format. RDF and the pod already do those jobs (`runtime/pod-layout.ttl`) | diverged: those exist to move documents between servers |
 | reconciliation layer | PROV-O, PAV, Web Annotation, nanopub, SSSOM; FHIR `Linkage`, `meta.versionId`, `Provenance` | does not start from FHIR. Versions and arrivals, provenance, judgments, lenses, scoped absence, readings, care hypotheses and the person's responses start from PROV-O, PAV, W3C Web Annotation, nanopub and SSSOM, as `currency.md` and `judgments.md` do; the boundary is settled once, here, and is not argued term by term (`ontologies/cascade.ttl`) | borrowed from the web standards; diverged from FHIR, which is weak or silent there |
-| how a term says it follows | the copied-term rule; #128's mapping table | a term copied from a FHIR element carries that element's page as its `dct:source` and FHIR's licence as its `dct:license`, and #128's mapping table lists it as an exact or close match, naming the release. No `rdfs:seeAlso` on the term (`one-meaning-per-term.md`, row 11) and no note for it (#128) | borrowed |
-| a departure | deferring to a community scheme; `one-meaning-per-term.md` | a term that departs from FHIR is explained in the decision note for its area, as "looked here, failed because", grouped by area (medications, labs, …), never one note per term. The model case is the medication lifecycle, kept because it is computed per copy across sources where FHIR's status codes describe one server's order (`queries/derivations/medication-lifecycles.rq`) | ours |
-| the downstream cost | vocabulary first | the rewrite of adapters, the runtime, kits and tables is a cost, never a reason: they change to fit (#287) | ours |
+| how a term says it follows | the copied-term rule; #128's mapping table | a new `cascade:` term filled from a FHIR element points at the element's definition with `rdfs:seeAlso`, as main's terms do, and has a row in #128's mapping table, as an exact or close match naming the release. It carries no `dct:source` or `dct:license`: those are the copied-term rule's, for a term copied from another vocabulary. No note for it (#128) | borrowed |
+| a departure | deferring to a community scheme; `one-meaning-per-term.md` | a term that departs from FHIR is explained in the decision note for its area, as "looked here, failed because", grouped by area (medications, labs, …), never one note per term. The model case is the medication lifecycle, kept because it is computed across sources, per entry and keyed on the kind of resource, where FHIR's status codes describe one server's order. Computing it per copy is not built yet (`queries/derivations/medication-lifecycles.rq:13-17`) and is a phase 1 item of #287 | ours |
+| the downstream cost | | the rewrite of adapters, the runtime, kits and tables is a cost, never a reason: they change to fit (#287) | ours |
 
 ## Why
 
@@ -89,9 +91,10 @@ unordered on versions, without a Different or a retraction on identity, and opti
 of a pod that has no counterpart in any FHIR store. PROV-O, PAV, Web Annotation, nanopub and SSSOM already carry it.
 Settling the boundary once stops every reconciliation term from reopening "why not FHIR?".
 
-**Why the pointer is a copy's `dct:source` and a mapping row.** (row "how a term says it follows") The copied-term
-rule already says what a copied term carries, and `one-meaning-per-term.md` ruled the FHIR pointer into #128's table,
-which names the release a bare link does not. A term that follows FHIR needs no note: the copy is the reason.
+**Why the pointer is an `rdfs:seeAlso` and a mapping row.** (row "how a term says it follows") A term filled from a
+FHIR element is not copied from a vocabulary, so the copied-term rule's `dct:source` and `dct:license` are not its to
+carry; main's terms point at the element's definition with `rdfs:seeAlso`, and #128's table names the release a bare
+link does not. A term that follows FHIR needs no note: the element is the reason.
 
 **Why a departure costs a note, grouped by area.** (rows "a departure", "the downstream cost") A divergence is where
 the vocabulary costs every reader a translation, so it must be deliberate and findable, as `README.md`'s bar asks.

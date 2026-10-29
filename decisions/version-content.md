@@ -4,7 +4,7 @@ Status: accepted, 2026-10-29: the owner accepted lean (a) as phase 0 of the care
 ([#287](https://github.com/jayostis/cascade-vocabulary/issues/287)), on the research in
 [#288](https://github.com/jayostis/cascade-vocabulary/issues/288). Answers the draft RFC's lean to make FHIR the
 stored content of each version, with the `cascade:` clinical terms a rebuildable view (the maintainer's
-`starter-shape/medplum/5-design-challenge.md`, section 3). No feature rule applies it yet: each row names #287, or the
+`starter-shape/medplum/5-design-challenge.md`, section 3, kept outside any repository). No feature rule applies it yet: each row names #287, or the
 issue that will write its rule. Depends on `naming.md` (a version is named by its content), `currency.md`,
 `judgments.md`, `one-meaning-per-term.md`, `quantities.md`, `partial-dates-and-absent-reasons.md`,
 `clinical-terms-follow-fhir.md` (how each borrow below is made) and `readings-and-care-hypotheses.md` (what the
@@ -41,10 +41,11 @@ Read on 2026-10-29 by the research this note rests on (#288) unless marked.
   `alternate` and `historical`, and nothing for "different", a reason or a retraction; `Linkage.author` may not be a
   Patient or a Device. US Core has **no MedicationStatement profile**: a self-reported medication is a
   `MedicationRequest` with `reported[x]`. `Observation.interpretation` is 0..\* and Must Support in the lab profile.
-  US Core requires `DocumentReference` and `DiagnosticReport` for ten common note types.
+  US Core requires `DocumentReference` for its ten common note types and `DiagnosticReport` for Report and Note
+  exchange.
 - **FHIR R5** changes `MedicationStatement.status` to `recorded | entered-in-error | draft` and moves "not taking" to
   `adherence`. A rule over R4 and R5 sources needs a mapping from each status set to the same lifecycle.
-- **C-CDA.** It is half the sources. Making it FHIR takes a conversion (C-CDA on FHIR; Medplum's converter, Apache-2.0),
+- **C-CDA.** Making it FHIR takes a conversion (C-CDA on FHIR; Medplum's converter, Apache-2.0),
   and US Core "does not specify how to assign authorship" after a transformation.
 - **Clinical reasoning.** CQL 1.5 over FHIR, with FHIRHelpers, value-set retrieve, `Interval` and `collapse`, and the
   CMS eCQM `CumulativeMedicationDuration` library for exposure. Da Vinci DEQM Gaps in Care (STU5) reports a gap as a
@@ -62,8 +63,10 @@ Read on 2026-10-29 by the research this note rests on (#288) unless marked.
 - **openEHR, OMOP.** openEHR keeps its own reference model and archetypes and exchanges FHIR at the edge. OMOP keeps
   its own tables and is loaded from FHIR by ETL. Both are the pattern this note chooses: one's own model inside, FHIR
   outside (memory, not re-read).
-- **W3C Web Annotation** (`oa:TextQuoteSelector`, `refinedBy`) already supplies the vocabulary's selectors. A quote
-  located by its text survives re-encoding, where FHIR's offset and length do not.
+- **W3C Web Annotation** already supplies the vocabulary's selectors: main uses `oa:FragmentSelector` and
+  `oa:XPathSelector` (`runtime/naming.feature:68`). `oa:TextQuoteSelector` and `refinedBy` are new, proposed by
+  `readings-and-care-hypotheses.md`. A quote located by its text survives re-encoding, where FHIR's offset and length
+  do not.
 
 Sources: https://hl7.org/fhir/R4/resource.html, https://hl7.org/fhir/R4/provenance.html,
 https://hl7.org/fhir/R4/linkage.html, https://hl7.org/fhir/R4/medicationstatement.html,
@@ -78,7 +81,8 @@ https://docs.aws.amazon.com/healthlake/latest/devguide/resource-matching.html, h
 The research is the evidence issue [#288](https://github.com/jayostis/cascade-vocabulary/issues/288): a comparison by
 record kind; the cross-cutting concerns and prior art (with corrections for three claims made from a stale
 checkout); and both care-gap rules written twice, as SPARQL over a pod and as CQL over FHIR, and run on 15 cases, with
-the rule files inline. The runnable set (case generator, cases, runners) is kept by the maintainer.
+the rule files inline. The runnable set (case generator, cases, runners) and the draft RFC are inputs the maintainer
+keeps outside any repository; #288 inlines the two rules and the CQL library, and nothing else here depends on them.
 
 ## Choice
 
@@ -87,20 +91,23 @@ outputs are shown over FHIR; the fourth is the guardrails that keep the choice r
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| what a version holds | FHIR R4 resources in every shipped store; openEHR's and OMOP's own models | the `cascade:` clinical terms, as today, every one filled from one FHIR element (or C-CDA's mapping to it) and named for it, per `one-meaning-per-term.md`; the source's FHIR JSON or C-CDA XML stays as the kept document the version is derived from, reached by its revision's `oa:hasSelector` (`ontologies/cascade.ttl`) | diverged at the store, borrowed term by term: a FHIR store holds one server's latest resource, and a pod holds every source in two formats |
+| what a version holds | FHIR R4 resources in every shipped store; openEHR's and OMOP's own models | the `cascade:` clinical terms, as today, every one filled from one FHIR element (or C-CDA's mapping to it) and named as near to it as `naming.md` and descriptive naming allow, per `one-meaning-per-term.md` and `clinical-terms-follow-fhir.md`; the source's FHIR JSON or C-CDA XML stays as the kept document the version is derived from, reached by its revision's `oa:hasSelector` (`ontologies/cascade.ttl`) | diverged at the store, borrowed term by term: a FHIR store holds one server's latest resource, and a pod holds every source in two formats |
 | per kind | the by-kind comparison (#288) | one model for every kind, with no kind stored as FHIR while the rest are not. Medications, labs, conditions, allergies, immunizations, procedures, variants and the person keep the `cascade:` terms and gain the borrowed terms below. The one new kind, reports and documents, takes its terms from `DiagnosticReport` and `DocumentReference`, and its content is the kept bytes (#150, written under #287) | as the row above |
 | what rules read | CQL over FHIR; DEQM | three things, in this order. First, the lens's derived state: which records count, which copies are one entry, what a source or the person left out, and each source's `answeredAsOf`. Second, each member's own current version for codes, periods, statuses and values, never the entry's summary fields. Third, a small layer of derivations written for rules (exposure periods per member, value sets, classes) that defines exposure as `CumulativeMedicationDuration` does. The rules are SPARQL under `queries/`, and a rule's threshold, window and value set are data, each with its source (#287 writes the rules) | borrowed: the exposure definition from the eCQM library, value sets from VSAC; the record-keeping is ours |
-| what apps see | SMART on FHIR; US Core; DEQM; `Task` | a read-only FHIR R4 facade. Each entry is a resource. For a FHIR source the member's own resource is reached as the source sent it; for C-CDA, as converted. A Same group is a plain `Linkage`. Each pull is a `Provenance`. Different and Erroneous have already been applied, so a FHIR client sees the counted record and never a verdict. The MCP server returns the rows of curated questions, each citing its record, version and selector. The facade itself is out of #287's scope; its mapping is settled here | borrowed at the interface |
+| what apps see | SMART on FHIR; US Core; DEQM; `Task` | a read-only FHIR R4 facade. Each entry is a resource. For a FHIR source the member's own resource is reached as the source sent it; for C-CDA, as converted. A Same group is a plain `Linkage`. Each pull is a `Provenance`. Different and Erroneous have already been applied, so a FHIR client sees the counted record and never a verdict. The MCP server returns the rows of curated questions, each citing its record, version and selector. The facade itself is out of #287's scope; its mapping is a lean, whose home is #128 ("export a pod as FHIR RDF") | borrowed at the interface |
 | exactness of absence | `List.emptyReason`; `MeasureReport.evaluatedResource`; none first-class | a "never checked" claim is only as true as what the pod holds, so a source's codings in every system, and its reports, panels and documents, all become records before any rule claims an absence. Each pull records what it asked for as well as when (#287, phase 1) | ours: neither FHIR nor the vocabulary scopes an absence |
 
 What to borrow from FHIR, ranked by what the care-gap epic needs. Every borrow follows
-`clinical-terms-follow-fhir.md`: the term is copied with its `dct:source` and `dct:license`, its type, label, domain,
-range and superclasses, and nothing else. Adapter paths are in `cascade-bridge-adapter-fhir-r4` unless named.
+`clinical-terms-follow-fhir.md`: a new term filled from a FHIR element points at the element's definition with
+`rdfs:seeAlso` and has a row in #128's mapping table; it carries no `dct:source` or `dct:license`, which are for terms
+copied from another vocabulary. The ranking is the one in #288 comment 1, re-ranked for the care-gap epic: what
+causes a false "never checked" first (codings, then reports and documents), then the evidence of exposure; the three
+items the first draft dropped (a `not-performed` absent reason, the `onset[x]` forms, `bodySite`) close the table. Adapter paths are in `cascade-bridge-adapter-fhir-r4` unless named.
 
 | rank | borrow | FHIR element | the care-gap case that needs it |
 |---|---|---|---|
-| 1 | every coding a source gave, with its system, for every coded element: a code IRI where `code-iris.md` has a scheme, and the system and code otherwise | `Coding.system` + `code` on `Observation.code`, `Medication.code`, `Procedure.code` | uACR or B12 coded only with a lab's local code keeps no `testCode` (`vocab/fhir-gaps.ttl:123`): a false "never checked" |
-| 2 | a report or document kind, and a panel as a link between results rather than "no record" | `DiagnosticReport` (code, `result`, `conclusion`, `conclusionCode`, `presentedForm`), `DocumentReference` (type by LOINC note code, date, attachment), `Observation.hasMember` | a B12 inside a panel or a PDF report makes no record today (`vocab/fhir-gaps.ttl:80`; `cascade-bridge-adapter-ccda/docs/format.md:88`), which gives a false gap; and a reading of "tingling in both feet" has no note record to target |
+| 1 | every coding a source gave, with its system, for every coded element: a code IRI where `code-iris.md` has a scheme, and otherwise the system, held on a `cascade:CodeSystem` by the existing `cascade:codingSystemUri` (`ontologies/cascade.ttl:1178`, FHIR `Coding.system`), with the code | `Coding.system` + `code` on `Observation.code`, `Medication.code`, `Procedure.code` | uACR or B12 coded only with a lab's local code keeps no `testCode` (`vocab/fhir-gaps.ttl:123`): a false "never checked" |
+| 2 | a report or document kind, and a panel as a link between results rather than "no record", by the existing `obo:RO_0002351` "has member" (`ontologies/cascade.ttl:1589`, `rdfs:seeAlso` `Observation.hasMember`) before anything is minted | `DiagnosticReport` (code, `result`, `conclusion`, `conclusionCode`, `presentedForm`), `DocumentReference` (type by LOINC note code, date, attachment), `Observation.hasMember` | a B12 inside a panel or a PDF report makes no record today (`vocab/fhir-gaps.ttl:80`; `cascade-bridge-adapter-ccda/docs/format.md:88`), which gives a false gap; and a reading of "tingling in both feet" has no note record to target |
 | 3 | intent and self-report read into `prescribedOrReported` | `MedicationRequest.intent`, `reported[x]` | metformin evidence says "prescribed at Northgate" for a US Core self-reported medication (`in/sparql/medication.rq:77`); a `proposal` or `plan` would count as exposure |
 | 4 | the evidence that a medication was taken for a long time, and at what dose | `MedicationDispense` (`whenHandedOver`, `daysSupply`), `dispenseRequest` (`numberOfRepeatsAllowed`, `validityPeriod`), `courseOfTherapyType`, `Dosage` (`timing.repeat`, `doseAndRate.doseQuantity`, `route`) | "long-term" from a US Core source, whose `MedicationRequest` carries only `authoredOn`; dose as a B12 risk modifier |
 | 5 | interpretation as coded values, repeatable, with their system, shown in the lab view with the typed value and the reference range | `Observation.interpretation` (v3 ObservationInterpretation) | "high MCV" cited as the lab's own flag rather than the pod's inference. Today the flag is one string with no system, only the first is kept, and the view leaves it out (`ontologies/cascade.ttl:272`; `queries/views/lab-results.rq`) |
@@ -111,6 +118,9 @@ range and superclasses, and nothing else. Adapter paths are in `cascade-bridge-a
 | 10 | when a condition was recorded and asserted, and the `health-concern` category | `Condition.recordedDate`, `assertedDate`; US Core category | citing "known diabetic since"; a shape that lags US Core 9 (`ontologies/cascade.shapes.ttl:238`) |
 | 11 | why a procedure was done, and its period | `Procedure.reasonReference`, `performed[x]` | "retinal exam done for diabetes" |
 | 12 | more than one reference range, and the specimen | `referenceRange` with `appliesTo`, `age` and `type`; `Observation.specimen` | rarely needed: LOINC already names the specimen for both rules |
+| 13 | a lab result a source marks `not-performed`, read as a statement | the `not-performed` data-absent-reason on `Observation` (`ontologies/cascade.ttl:927`) | "the test was not done, and the source says so" is a statement about the test, where an absent value is not |
+| 14 | the other forms of when a condition began | `Condition.onset[x]` and `abatement[x]` as Age, Period, Range and string (US Core makes only the dateTime forms Must Support) | citing "known since" for a condition a source dates by age |
+| 15 | where on the body | `Condition.bodySite`, `Procedure.bodySite` | low: no first rule reads it |
 
 The borrows above are content. Two more borrows serve the rules and the outputs. **Value sets** come in as a table
 kind holding VSAC and eCQM expansions, cited by the version used; today the B12, uACR and diabetes codes would be
@@ -118,7 +128,8 @@ written into the queries, and descendants of 44054006 missed. **Code lists** com
 absent-unknown for "no known X" (#152), `AIAST` for content a model wrote, and CDS Hooks' `indicator`.
 
 How the epic's outputs are shown to a FHIR client. Each is stored in the pod in Cascade's terms, per
-`readings-and-care-hypotheses.md`.
+`readings-and-care-hypotheses.md`. This mapping is inferred from #288 section 7 (its "how each new claim would be
+exposed over FHIR" table is marked inference throughout), not settled; its home is #128.
 
 | claim | shown over FHIR as | lost on the way, and what carries it |
 |---|---|---|
@@ -131,10 +142,10 @@ The guardrails that keep the choice reversible during the care-gap epic:
 | guardrail | what it keeps open |
 |---|---|
 | G1. Every clinical term names the FHIR element it is filled from. A term with no FHIR element says, in its area's note, where it looked and why that failed (`clinical-terms-follow-fhir.md`) | the switch to FHIR content stays a mapping, not a redesign |
-| G2. A version can always be derived again from the kept document by the current adapter (a rule to write, #287) | storing FHIR later is one more re-derivation over bytes already held |
+| G2 (a lean; its home is #128). A version can always be derived again from the kept document by the current adapter (a rule to write, #287) | storing FHIR later is one more re-derivation over bytes already held |
 | G3. Rules read derived state, member versions and the rule-facing derivations, never an entry's summary fields and never an adapter's own terms | a change of content model rewrites the derivations, not the rules |
 | G4. Hypotheses, readings and responses cite records, versions, documents and selectors, never a clinical term's value | the outputs survive any change to what a version holds |
-| G5. A "counted" FHIR Bundle (counted resources, plain `Linkage`, one `Provenance` per pull) is built from the pod and checked round-trip on the fixtures | the CQL route is one translation away, and the round-trip check measures how far the terms have drifted from FHIR |
+| G5 (a lean; its home is #128). A "counted" FHIR Bundle (counted resources, plain `Linkage`, one `Provenance` per pull) is built from the pod and checked round-trip on the fixtures | the CQL route is one translation away, and the round-trip check measures how far the terms have drifted from FHIR |
 | G6. One content model for every kind during the epic | no half-switched pod with two clinical models |
 
 ## Why
@@ -144,17 +155,24 @@ research agrees that FHIR-as-content would change only the leaf, what one versio
 around the leaf untouched: revisions, currency, judgments, acts, lenses and findings stay Cascade's whatever the
 content is (verified against FHIR's own text: an unordered `versionId`, `Linkage` with no Different or retraction, and
 Provenance as an optional sidecar). So the question is narrow: which leaf, FHIR's resource or the `cascade:` terms
-filled from it, serves rules and views better. Four things decide it for the `cascade:` terms.
+filled from it, serves rules and views better.
 
-1. **C-CDA.** Half the sources are C-CDA, so for those a FHIR leaf would be a conversion, and the promise that "the
-   version is the source's statement" holds only for FHIR sources.
-2. **Versions disagree.** R4, R5 and C-CDA disagree inside a single kind: the medication status sets, and self-report
-   carried as a resource type in R4 but as `reported[x]` on `MedicationRequest` in US Core. Some layer must map each
-   to one lifecycle, and `cascade:MedicationLifecycle` is that layer, already built and tested.
-3. **Computability.** A rule cannot compare a FHIR decimal stored as JSON, and FHIR RDF types it by inspection
+The inputs did not agree. Two of the three leaned toward FHIR as content: the cross-cutting read (#288 comment 2) and the
+experiment (#288 comment 3), whose verdict is that the content a rule reasons over "could just as well be FHIR". The
+owner chose (a), the `cascade:` terms, on the arbiter's grounds. First, the exported Bundle is a projection of the
+pod, and a projection needs no FHIR content in the pod. Second, every C-CDA source would be a conversion anyway. Third,
+the CQL run covered `MedicationStatement` only, which US Core does not profile. The four reasons below are reasoning,
+not measurement, and carry #288's **[I]** mark.
+
+1. **C-CDA [I].** For a C-CDA source a FHIR leaf would be a conversion, and the promise that "the version is the
+   source's statement" would hold only for FHIR sources.
+2. **Versions disagree [I].** R4, R5 and C-CDA disagree inside a single kind: the medication status sets, and
+   self-report carried as a resource type in R4 but as `reported[x]` on `MedicationRequest` in US Core. Some layer must
+   map each to one lifecycle, and `cascade:MedicationLifecycle` is that layer, already built and tested.
+3. **Computability [I].** A rule cannot compare a FHIR decimal stored as JSON, and FHIR RDF types it by inspection
    (`quantities.md`). FHIR content would still need the typed RDF projection for every query.
-4. **Negation.** FHIR has "two accepted approaches" to it, so a FHIR leaf would import each source's choice, and the
-   view would still have to normalise them.
+4. **Negation [I].** FHIR has "two accepted approaches" to it, so a FHIR leaf would import each source's choice, and
+   the view would still have to normalise them.
 
 The case for FHIR content is mostly coverage: what the adapters drop and the vocabulary has no term for (the by-kind
 comparison's own reading). Coverage is fixed by borrowing terms, which deferring to a community scheme asks for
@@ -232,7 +250,9 @@ turns "is FHIR content better?" from an argument into a number that the epic's f
   hypothesis and a reading.
 - **The coding term.** Is it one general term for a coding (system and code) beside the per-system code IRI
   properties, or does the general term replace them? Lean: the code IRI wherever `code-iris.md` has a scheme, and the
-  system-and-code pair only for the rest. `cptCode` becomes one of the two, not a special case.
+  system-and-code pair only for the rest, the system by the existing `cascade:codingSystemUri`
+  (`ontologies/cascade.ttl:1178`) before anything is minted. `cptCode` becomes one of the two, not a special case. The panel link is the
+  existing `obo:RO_0002351` (`ontologies/cascade.ttl:1589`), likewise before anything is minted.
 - **The names**, under the rule on descriptive names: the report or document kind, the rule-facing derivations, and
   the term on a pull for what it asked.
 - **The derivation layer's interface.** Is it part of the vocabulary under `queries/derivations/`, or is it the
@@ -251,7 +271,7 @@ turns "is FHIR content better?" from an argument into a number that the epic's f
   borrows 1 to 6. That would show the borrowed terms cannot keep pace with the rules, and it reopens choice 1.
 - **The round-trip drifts.** G5's check fails on a term that has no FHIR element and no "looked here, failed because".
   That reopens choice 1 for that kind.
-- **C-CDA stops being a large share of the sources,** because most sources arrive by patient-access FHIR APIs. The
+- **C-CDA turns out to be a small share of the sources,** because most arrive by patient-access FHIR APIs. The
   conversion argument goes.
 - **A store computes over FHIR directly:** the persisted store indexes FHIR JSON with typed values, or FHIR RDF types
   its decimals and dates as `quantities.md` and `partial-dates-and-absent-reasons.md` do. The computability argument
