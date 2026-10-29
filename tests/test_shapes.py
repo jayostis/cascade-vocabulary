@@ -70,24 +70,46 @@ def cases():
     return found
 
 
+@cache
+def severity_pins():
+    """The severities a manifest pins for a result, by case, then by (node shape, path); a result pinning none is any."""
+    manifest = parsed(CASES / "manifest.ttl")
+    return {str(entry).rpartition("#")[2]: {
+                (shape, path_of(manifest, manifest.value(r, SH.resultPath))): set(manifest.objects(r, SH.resultSeverity))
+                for r in manifest.objects(manifest.value(entry, MF.result), SH.result)
+                for shape in manifest.objects(r, SH.sourceShape) if (r, SH.resultSeverity, None) in manifest}
+            for entry in manifest.subjects(RDF.type, SHT.Validate)}
+
+
 def node_shape(shape):
     return shape if (shape, RDF.type, SH.NodeShape) in shapes() else shapes().value(None, SH.property, shape)
 
 
 @cache
-def reported():
-    """What validating every case reports, by case, from one validation of all of them: each file's own nodes are its
-    alone, as its IRIs are relative to it."""
+def validated():
+    """One validation of every case: each file's own nodes are its alone, as its IRIs are relative to it."""
     data, owner = Graph(), {}
     for name, (file, _) in cases().items():
         data += parsed(file)
         owner |= {node: name for node in parsed(file).subjects()}
     _, report, _ = validate(data, shacl_graph=shapes())
-    found = {name: set() for name in cases()}
+    found, severity = {name: set() for name in cases()}, {name: {} for name in cases()}
     for result in report.objects(None, SH.result):
-        found[owner[report.value(result, SH.focusNode)]].add(
-            (node_shape(report.value(result, SH.sourceShape)), path_of(report, report.value(result, SH.resultPath))))
-    return found
+        name = owner[report.value(result, SH.focusNode)]
+        key = (node_shape(report.value(result, SH.sourceShape)), path_of(report, report.value(result, SH.resultPath)))
+        found[name].add(key)
+        severity[name].setdefault(key, set()).add(report.value(result, SH.resultSeverity))
+    return found, severity
+
+
+def reported():
+    """What validating every case reports, by case: the (node shape, path) of each result."""
+    return validated()[0]
+
+
+def severities():
+    """The severities each case's results carry, by case, then by (node shape, path)."""
+    return validated()[1]
 
 
 def test_each_valid_case_conforms_and_each_break_reports_its_shape_and_path_and_nothing_else():
@@ -99,6 +121,9 @@ def test_each_valid_case_conforms_and_each_break_reports_its_shape_and_path_and_
     wrong = {name: {"expected": sorted(map(str, expected)), "reported": sorted(map(str, reported()[name]))}
              for name, (_, expected) in cases().items() if reported()[name] != expected}
     assert wrong == {}
+    unpinned = {name: {str(key): sorted(map(str, severity)) for key, severity in pins.items()
+                       if severities()[name].get(key) != severity} for name, pins in severity_pins().items()}
+    assert {name: bad for name, bad in unpinned.items() if bad} == {}
 
 
 def targets(shape, data):

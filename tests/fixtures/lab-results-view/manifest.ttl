@@ -9,6 +9,7 @@
   mf:entries (
     <#the-lab-results-view>
     <#the-reference-range-bounds>
+    <#what-it-shows>
     <#my-lab-results>
   ) .
 
@@ -25,6 +26,13 @@
   mf:action [ qt:query <the-reference-range-bounds.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-reference-range-bounds.srj> .
+
+<#what-it-shows> a mf:QueryEvaluationTest ;
+  mf:name "what-it-shows" ;
+  rdfs:comment "The MCV's reference range is shown by its text alone: the view's two bound nodes are nodes of their own, so neither bound is a value of the entry, nor of the member as a row with no From." ;
+  mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-it-shows.srj> .
 
 <#my-lab-results> a mf:QueryEvaluationTest ;
   mf:name "my-lab-results" ;

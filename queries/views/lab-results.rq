@@ -5,10 +5,10 @@
 # text, else its UCUM unit, else the result's unit as text. Each member's current values are a node of the view of their
 # own, named after the entry and the member, which says the member they came from. A time its source wrote short of the
 # second keeps the node saying so (cascade:PaddedDateTime), named after the entry or the member's values and -padded-,
-# so the view never shows a padded time as exact. Every interpretation code the source gave is shown, never one inferred
-# from the value, with the reference range's text and its bounds: each bound a node of the view, named after the entry
-# or the member's values and -reference-low or -reference-high, holding the bound's number, as typed and as written,
-# and its units.
+# so the view never shows a padded time as exact. An entry's interpretation codes and reference range are its lead's, as its
+# value is: every code its source gave is shown, never one inferred from the value, with the range's text and its bounds, each bound a
+# node of the view, named after the entry or the member's values and -reference-low or -reference-high, holding the
+# bound's number, as typed and as written, and its units.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
