@@ -16,7 +16,7 @@ PEOPLE = ROOT / "people"
 SCHEMA = json.loads((PEOPLE / "person.schema.json").read_text(encoding="utf-8"))
 PIM = Namespace("http://www.w3.org/ns/pim/space#")
 HL7 = {"cda": "urn:hl7-org:v3"}
-CDA_GENDER = {"F": "female", "M": "male", "UN": "unknown"}
+CDA_GENDER = {"F": "female", "M": "male", "UN": "other"}
 FIELDS = ("name", "birthDate", "gender")
 
 
