@@ -281,7 +281,22 @@ cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
         sh:path cascade:conditionCodeInOtherSystem ;
         sh:nodeKind sh:Literal ;
         sh:minLength 1 ;
-        sh:message "A condition code in another system is a non-empty literal typed by its system's URI, one per coding the source gave"@en ;
+        sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
+        sh:message "A condition code in another system is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:conditionCodeInOtherSystem ;
+        sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
+        sh:message "A condition code in another system is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:conditionCodeInOtherSystem ;
+        sh:not [ sh:or ( [ sh:datatype <http://hl7.org/fhir/sid/icd-10-cm> ] [ sh:datatype <http://snomed.info/sct> ] ) ] ;
+        sh:message "An ICD-10-CM or SNOMED CT condition code is a cascade:icd10Code or cascade:snomedCode IRI, never a literal typed by http://hl7.org/fhir/sid/icd-10-cm or http://snomed.info/sct"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -401,7 +416,22 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
         sh:path cascade:testCodeInOtherSystem ;
         sh:nodeKind sh:Literal ;
         sh:minLength 1 ;
-        sh:message "A test code in another system is a non-empty literal typed by its system's URI, one per coding the source gave"@en ;
+        sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
+        sh:message "A test code in another system is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:testCodeInOtherSystem ;
+        sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
+        sh:message "A test code in another system is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:testCodeInOtherSystem ;
+        sh:not [ sh:or ( [ sh:datatype <http://loinc.org> ] [ sh:datatype <http://snomed.info/sct> ] ) ] ;
+        sh:message "A LOINC or SNOMED CT test code is a cascade:testCode IRI, never a literal typed by http://loinc.org or http://snomed.info/sct"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -508,7 +538,22 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
         sh:path cascade:procedureCodeInOtherSystem ;
         sh:nodeKind sh:Literal ;
         sh:minLength 1 ;
-        sh:message "A procedure code in another system is a non-empty literal typed by its system's URI, one per coding the source gave"@en ;
+        sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
+        sh:message "A procedure code in another system is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:procedureCodeInOtherSystem ;
+        sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
+        sh:message "A procedure code in another system is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:procedureCodeInOtherSystem ;
+        sh:not [ sh:or ( [ sh:datatype <http://www.ama-assn.org/go/cpt> ] [ sh:datatype <http://snomed.info/sct> ] ) ] ;
+        sh:message "A CPT or SNOMED CT procedure code is a cascade:cptCode or cascade:snomedCode, never a literal typed by http://www.ama-assn.org/go/cpt or http://snomed.info/sct"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -579,7 +624,22 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
         sh:path cascade:medicationCodeInOtherSystem ;
         sh:nodeKind sh:Literal ;
         sh:minLength 1 ;
-        sh:message "A medication code in another system is a non-empty literal typed by its system's URI, one per coding the source gave"@en ;
+        sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
+        sh:message "A medication code in another system is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:medicationCodeInOtherSystem ;
+        sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
+        sh:message "A medication code in another system is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:medicationCodeInOtherSystem ;
+        sh:not [ sh:or ( [ sh:datatype <http://www.nlm.nih.gov/research/umls/rxnorm> ] [ sh:datatype <http://hl7.org/fhir/sid/ndc> ] ) ] ;
+        sh:message "An RxNorm or NDC medication code is a cascade:rxNormCode or cascade:ndcCode IRI, never a literal typed by http://www.nlm.nih.gov/research/umls/rxnorm or http://hl7.org/fhir/sid/ndc"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -1614,32 +1674,90 @@ cascade:CodeConversionFormShape a sh:NodeShape ;
     sh:message "A code conversion row says its code is replaced by the code it converts to, with dct:isReplacedBy, and gives its cardinality; a row of the earlier form pairs them with skos:exactMatch and gives none."@en ;
     sh:severity sh:Violation .
 
-cascade:CodeInOtherSystemShape a sh:NodeShape ;
-    sh:targetSubjectsOf cascade:testCodeInOtherSystem , cascade:medicationCodeInOtherSystem , cascade:conditionCodeInOtherSystem ,
-        cascade:procedureCodeInOtherSystem ;
-    sh:sparql [
-        a sh:SPARQLConstraint ;
-        sh:message "A code in another system is typed by its system's URI, HL7 Terminology's preferred one where it registers one, else urn:oid: and the OID: {?value} is a plain string, an OID HL7 Terminology registers a URI for, or a code in a system its kind holds as a code IRI."@en ;
-        sh:severity sh:Violation ;
-        sh:select """SELECT $this ?path ?value WHERE {
-  $this ?path ?value .
-  FILTER (?path IN (<https://ns.cascadeprotocol.org/cascade#testCodeInOtherSystem>, <https://ns.cascadeprotocol.org/cascade#medicationCodeInOtherSystem>,
-                    <https://ns.cascadeprotocol.org/cascade#conditionCodeInOtherSystem>, <https://ns.cascadeprotocol.org/cascade#procedureCodeInOtherSystem>)
-          && ISLITERAL(?value))
-  BIND (STR(DATATYPE(?value)) AS ?system)
-  FILTER (STRSTARTS(?system, "http://www.w3.org/2001/XMLSchema#") || STRSTARTS(?system, "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-          || ?system IN ("urn:oid:2.16.840.1.113883.6.1", "urn:oid:2.16.840.1.113883.6.96", "urn:oid:2.16.840.1.113883.6.88",
-                         "urn:oid:2.16.840.1.113883.6.69", "urn:oid:2.16.840.1.113883.6.90", "urn:oid:2.16.840.1.113883.6.103",
-                         "urn:oid:2.16.840.1.113883.6.104", "urn:oid:2.16.840.1.113883.6.12", "urn:oid:2.16.840.1.113883.12.292",
-                         "urn:oid:2.16.840.1.113883.4.9", "urn:oid:2.16.840.1.113883.6.285", "urn:oid:2.16.840.1.113883.6.4",
-                         "urn:oid:2.16.840.1.113883.6.13")
-          || (?path = <https://ns.cascadeprotocol.org/cascade#testCodeInOtherSystem> && ?system IN ("http://loinc.org", "http://snomed.info/sct"))
-          || (?path = <https://ns.cascadeprotocol.org/cascade#medicationCodeInOtherSystem>
-              && ?system IN ("http://www.nlm.nih.gov/research/umls/rxnorm", "http://hl7.org/fhir/sid/ndc"))
-          || (?path = <https://ns.cascadeprotocol.org/cascade#conditionCodeInOtherSystem> && ?system IN ("http://hl7.org/fhir/sid/icd-10-cm", "http://snomed.info/sct"))
-          || (?path = <https://ns.cascadeprotocol.org/cascade#procedureCodeInOtherSystem> && ?system IN ("http://www.ama-assn.org/go/cpt", "http://snomed.info/sct")))
-}"""
-    ] .
+cascade:LiteralTypedByAnXsdOrRdfDatatypeShape a sh:NodeShape ;
+    sh:or (
+        [ sh:datatype xsd:string ]
+        [ sh:datatype xsd:boolean ]
+        [ sh:datatype xsd:decimal ]
+        [ sh:datatype xsd:integer ]
+        [ sh:datatype xsd:double ]
+        [ sh:datatype xsd:float ]
+        [ sh:datatype xsd:date ]
+        [ sh:datatype xsd:time ]
+        [ sh:datatype xsd:dateTime ]
+        [ sh:datatype xsd:dateTimeStamp ]
+        [ sh:datatype xsd:gYear ]
+        [ sh:datatype xsd:gMonth ]
+        [ sh:datatype xsd:gDay ]
+        [ sh:datatype xsd:gYearMonth ]
+        [ sh:datatype xsd:gMonthDay ]
+        [ sh:datatype xsd:duration ]
+        [ sh:datatype xsd:yearMonthDuration ]
+        [ sh:datatype xsd:dayTimeDuration ]
+        [ sh:datatype xsd:byte ]
+        [ sh:datatype xsd:short ]
+        [ sh:datatype xsd:int ]
+        [ sh:datatype xsd:long ]
+        [ sh:datatype xsd:unsignedByte ]
+        [ sh:datatype xsd:unsignedShort ]
+        [ sh:datatype xsd:unsignedInt ]
+        [ sh:datatype xsd:unsignedLong ]
+        [ sh:datatype xsd:positiveInteger ]
+        [ sh:datatype xsd:nonNegativeInteger ]
+        [ sh:datatype xsd:negativeInteger ]
+        [ sh:datatype xsd:nonPositiveInteger ]
+        [ sh:datatype xsd:hexBinary ]
+        [ sh:datatype xsd:base64Binary ]
+        [ sh:datatype xsd:anyURI ]
+        [ sh:datatype xsd:language ]
+        [ sh:datatype xsd:normalizedString ]
+        [ sh:datatype xsd:token ]
+        [ sh:datatype xsd:NMTOKEN ]
+        [ sh:datatype xsd:Name ]
+        [ sh:datatype xsd:NCName ]
+        [ sh:datatype rdf:langString ]
+        [ sh:datatype rdf:HTML ]
+        [ sh:datatype rdf:XMLLiteral ]
+    ) .
+
+cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape a sh:NodeShape ;
+    sh:or (
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.1> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.1> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.96> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.96> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.88> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.88> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.69> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.69> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.12> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.12> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.12.292> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.12.292> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.4.9> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.4.9> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.90> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.90> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.103> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.103> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.104> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.104> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.42> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.42> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.2> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.2> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.285> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.285> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.4> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.4> ]
+        [ sh:datatype <urn:oid:2.16.840.1.113883.6.13> ]
+        [ sh:datatype <URN:OID:2.16.840.1.113883.6.13> ]
+        [ sh:datatype <http://terminology.hl7.org/CodeSystem/icd10CM> ]
+        [ sh:datatype <http://terminology.hl7.org/CodeSystem/icd9cm> ]
+        [ sh:datatype <https://www.cms.gov/Medicare/Coding/HCPCSReleaseCodeSets> ]
+        [ sh:datatype <http://terminology.hl7.org/CodeSystem/icd10PCS> ]
+        [ sh:datatype <http://terminology.hl7.org/CodeSystem/CD2> ]
+    ) .
 
 cascade:CodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;

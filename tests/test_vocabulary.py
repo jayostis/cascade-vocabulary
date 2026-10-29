@@ -226,7 +226,7 @@ def test_each_kind_refuses_as_a_code_in_another_system_exactly_the_systems_it_ho
         return {
             datatype
             for shape in shapes.subjects(SH.path, path)
-            for negated in shapes.objects(shape, SH["not"])
+            for negated in shapes.objects(shape, SH["not"]) if isinstance(negated, BNode)
             for alternatives in shapes.objects(negated, SH["or"])
             for alternative in Collection(shapes, alternatives)
             for datatype in shapes.objects(alternative, SH.datatype)
