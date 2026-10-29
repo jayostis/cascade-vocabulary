@@ -302,6 +302,30 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:PatientProfileShape ; sh:resultPath cascade:dateOfBirth ] ] .
 
+<#record-patient-profile/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-patient-profile/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-patient-profile/administrative-gender-not-a-code> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-patient-profile/administrative-gender-not-a-code.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PatientProfileShape ; sh:resultPath cascade:administrativeGender ] ] .
+
+<#record-patient-profile/deceased-not-a-boolean> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-patient-profile/deceased-not-a-boolean.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PatientProfileShape ; sh:resultPath cascade:deceased ] ] .
+
+<#record-patient-profile/date-of-death-a-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-patient-profile/date-of-death-a-string.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PatientProfileShape ; sh:resultPath cascade:dateOfDeath ] ] .
+
+<#record-patient-profile/death-time-with-deceased-false> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-patient-profile/death-time-with-deceased-false.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PatientProfileShape ] ] .
+
 <#record-medication/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-medication/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

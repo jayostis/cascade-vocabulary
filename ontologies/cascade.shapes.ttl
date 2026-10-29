@@ -31,13 +31,39 @@ cascade:PatientProfileShape a sh:NodeShape ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.shapes.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:PatientProfile ;
-    sh:targetSubjectsOf cascade:dateOfBirth , foaf:givenName , foaf:familyName , foaf:name ;
+    sh:targetSubjectsOf cascade:dateOfBirth , foaf:givenName , foaf:familyName , foaf:name ,
+        cascade:administrativeGender , cascade:deceased , cascade:dateOfDeath ;
 
     sh:property [
         sh:path cascade:dateOfBirth ;
         sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
         sh:message "A date of birth is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as FHIR RDF types a date: a year or a month is never padded to a day, nor a day given a time; an untyped or xsd:string literal is none of them."@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:administrativeGender ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ( "male" "female" "other" "unknown" ) ;
+        sh:message "An administrative gender is one code of FHIR R4's AdministrativeGender: male, female, other or unknown. A C-CDA code is mapped into them by C-CDA on FHIR's concept map, never written as its source gave it."@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:deceased ;
+        sh:datatype xsd:boolean ;
+        sh:maxCount 1 ;
+        sh:message "Whether the person has died is one xsd:boolean."@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:dateOfDeath ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A date of death is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote, as a date of birth is."@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -73,6 +99,16 @@ cascade:PatientProfileShape a sh:NodeShape ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
         sh:severity sh:Violation
+    ] ;
+
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A time of death is a death: a version that holds a date of death does not say the person has not died."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this WHERE {
+  $this <https://ns.cascadeprotocol.org/cascade#dateOfDeath> ?time ;
+        <https://ns.cascadeprotocol.org/cascade#deceased> false .
+}"""
     ] .
 
 # Copied from the spec's health
@@ -1057,7 +1093,7 @@ cascade:PaddedDateTimeShape a sh:NodeShape ;
         sh:path cascade:paddedDateTimeProperty ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( cascade:dateOfBirth cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
+        sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate ) ;
         sh:message "A padded time names the one property that holds it, a property whose value may be a time."@en ;
         sh:severity sh:Violation
@@ -1100,10 +1136,10 @@ cascade:ValueAbsentForReasonShape a sh:NodeShape ;
         sh:nodeKind sh:IRI ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( cascade:dateOfBirth cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
+        sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
-                cascade:resultValueKind ) ;
-        sh:message "A value absent for a reason names the one property it stands for, a date or a lab result's value kind."@en ;
+                cascade:resultValueKind cascade:administrativeGender ) ;
+        sh:message "A value absent for a reason names the one property it stands for, a date, a lab result's value kind or an administrative gender."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:absentReasonCode ;
