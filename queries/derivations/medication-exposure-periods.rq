@@ -1,11 +1,14 @@
 # Each medication record in an entry is given the exposure its own current version shows, as the eCQM library
-# CumulativeMedicationDuration 4.1.000 starts a medication's period: from its start of use, else the day its
-# prescription was written, to its end of use (the library computes no end from use; it reads what the copy states, and
-# a rule filters intent and status, as the library's callers do). A start given only to the year or month is read as its last day and an
-# end as its first, and a time as its day, so exposure is never overstated. With no end, the exposure is ongoing when the
-# record's own lifecycle is active, and is neither ended nor ongoing otherwise. A record with no start, or whose end so
-# read falls before its start, has no exposure, as the library gives no period. Copies are never collapsed here: an
-# entry's exposure is a rule's, over every member.
+# CumulativeMedicationDuration 4.1.000 gives a medication's period: from its start of use, else its one dosage's
+# bounds' start, else the day its prescription was written, else the start of its dispensing window; to its end of use,
+# else its start plus its supply times one plus its repeats, less a day, in whole days, else its one dosage's bounds' end
+# (the library reads what the copy states, and a rule filters intent and status, as the library's callers do). A
+# version with several dosages has no one dosage, as the library's `singleton from` has none. A start given only to the
+# year or month is read as its last day and an end as its first, a time as its day, and a supply counted from the
+# start's first day, so exposure is never overstated; a supply that is a bound, or not in a UCUM unit of time, is not
+# read. With no end, the exposure is ongoing when the record's own lifecycle is active, and is neither ended nor ongoing
+# otherwise. A record with no start, or whose end so read falls before its start, has no exposure, as the library gives
+# no period. Copies are never collapsed here: an entry's exposure is a rule's, over every member.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -17,10 +20,18 @@ CONSTRUCT {
 WHERE {
   ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry [] ; pav:hasCurrentVersion ?version .
   OPTIONAL { ?version cascade:medicationUseStartDate ?useStart }
+  OPTIONAL { ?version cascade:structuredDosage ?startDosage . ?startDosage cascade:dosageBoundsPeriodStart ?boundsStart
+             FILTER NOT EXISTS { ?version cascade:structuredDosage ?otherStartDosage FILTER (!sameTerm(?otherStartDosage, ?startDosage)) } }
   OPTIONAL { ?version cascade:prescriptionWrittenDate ?written }
+  OPTIONAL { ?version cascade:dispenseValidityPeriodStart ?validFrom }
   OPTIONAL { ?version cascade:medicationUseEndDate ?useEnd }
+  OPTIONAL { ?version cascade:structuredDosage ?endDosage . ?endDosage cascade:dosageBoundsPeriodEnd ?boundsEnd
+             FILTER NOT EXISTS { ?version cascade:structuredDosage ?otherEndDosage FILTER (!sameTerm(?otherEndDosage, ?endDosage)) } }
+  OPTIONAL { ?version cascade:expectedSupplyDuration ?supply . ?supply cascade:decimalValue ?supplyValue ; cascade:ucumUnit ?supplyUnit
+             FILTER NOT EXISTS { ?supply cascade:quantityComparator ?supplyComparator } }
+  OPTIONAL { ?version cascade:numberOfRepeatsAllowed ?repeats }
   OPTIONAL { ?record cascade:currentVersionStatusLifecycle ?lifecycle }
-  BIND (COALESCE(?useStart, ?written) AS ?from)
+  BIND (COALESCE(?useStart, ?boundsStart, ?written, ?validFrom) AS ?from)
   BIND (xsd:integer(SUBSTR(STR(?from), 1, 4)) AS ?year)
   BIND (SUBSTR(STR(?from), 6, 2) AS ?month)
   BIND (?year - 4 * FLOOR(?year / 4) = 0 && (?year - 100 * FLOOR(?year / 100) != 0 || ?year - 400 * FLOOR(?year / 400) = 0)
@@ -32,11 +43,29 @@ WHERE {
                            IF(?month IN ("04", "06", "09", "11"), "30", IF(?month = "02", IF(?leap, "29", "28"), "31"))),
                     SUBSTR(STR(?from), 1, 10))), xsd:date),
            1/0) AS ?start)
-  BIND (IF(BOUND(?useEnd),
-           STRDT(IF(sameTerm(DATATYPE(?useEnd), xsd:gYear), CONCAT(SUBSTR(STR(?useEnd), 1, 4), "-01-01"),
-                 IF(sameTerm(DATATYPE(?useEnd), xsd:gYearMonth), CONCAT(SUBSTR(STR(?useEnd), 1, 7), "-01"),
-                    SUBSTR(STR(?useEnd), 1, 10))), xsd:date),
-           1/0) AS ?end)
+  BIND (IF(BOUND(?from),
+           STRDT(IF(sameTerm(DATATYPE(?from), xsd:gYear), CONCAT(SUBSTR(STR(?from), 1, 4), "-01-01"),
+                 IF(sameTerm(DATATYPE(?from), xsd:gYearMonth), CONCAT(SUBSTR(STR(?from), 1, 7), "-01"),
+                    SUBSTR(STR(?from), 1, 10))), xsd:date),
+           1/0) AS ?firstDayFrom)
+  BIND (IF(BOUND(?supplyValue),
+           IF(?supplyUnit = "d", ?supplyValue, IF(?supplyUnit = "wk", ?supplyValue * 7,
+           IF(?supplyUnit = "mo", ?supplyValue * 30.4375, IF(?supplyUnit = "a", ?supplyValue * 365.25,
+           IF(?supplyUnit = "h", ?supplyValue / 24, IF(?supplyUnit = "min", ?supplyValue / 1440,
+           IF(?supplyUnit = "s", ?supplyValue / 86400, 1/0))))))),
+           1/0) AS ?supplyDays)
+  BIND (IF(BOUND(?supplyDays),
+           xsd:integer(FLOOR(?supplyDays * (1 + IF(BOUND(?repeats), xsd:integer(STR(?repeats)), 0)))),
+           1/0) AS ?suppliedDays)
+  BIND (IF(BOUND(?suppliedDays) && ?suppliedDays >= 1, STRDT(CONCAT("P", STR(?suppliedDays - 1), "D"), xsd:dayTimeDuration), 1/0)
+        AS ?suppliedDaysAfterTheFirst)
+  BIND (IF(BOUND(?firstDayFrom) && BOUND(?suppliedDaysAfterTheFirst), ?firstDayFrom + ?suppliedDaysAfterTheFirst, 1/0) AS ?supplyEnd)
+  BIND (IF(BOUND(?useEnd), ?useEnd, IF(BOUND(?supplyEnd) || !BOUND(?boundsEnd), 1/0, ?boundsEnd)) AS ?statedEnd)
+  BIND (IF(BOUND(?statedEnd),
+           STRDT(IF(sameTerm(DATATYPE(?statedEnd), xsd:gYear), CONCAT(SUBSTR(STR(?statedEnd), 1, 4), "-01-01"),
+                 IF(sameTerm(DATATYPE(?statedEnd), xsd:gYearMonth), CONCAT(SUBSTR(STR(?statedEnd), 1, 7), "-01"),
+                    SUBSTR(STR(?statedEnd), 1, 10))), xsd:date),
+           IF(BOUND(?supplyEnd), ?supplyEnd, 1/0)) AS ?end)
   FILTER (BOUND(?start) && (!BOUND(?end) || ?end >= ?start))
-  BIND (IF(!BOUND(?useEnd) && sameTerm(?lifecycle, cascade:MedicationActive), true, 1/0) AS ?ongoing)
+  BIND (IF(!BOUND(?end) && sameTerm(?lifecycle, cascade:MedicationActive), true, 1/0) AS ?ongoing)
 }

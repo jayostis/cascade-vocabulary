@@ -40,7 +40,7 @@
     cascade:prescriptionWrittenDate "2024-12-20"^^xsd:date ;
     cascade:expectedSupplyDuration <urn:x:supplyAndBoundsVersion#expected-supply-duration> ;
     cascade:structuredDosage <urn:x:supplyAndBoundsVersion#dosage-1> .
-<urn:x:supplyAndBoundsVersion#expected-supply-duration> cascade:decimalValue 30.0 ; cascade:writtenValue "30" ; cascade:ucumUnit "d" .
+<urn:x:supplyAndBoundsVersion#expected-supply-duration> cascade:decimalValue "30"^^xsd:decimal ; cascade:writtenValue "30" ; cascade:ucumUnit "d" .
 <urn:x:supplyAndBoundsVersion#dosage-1> cascade:dosageBoundsPeriodStart "2025-01-01"^^xsd:date ;
     cascade:dosageBoundsPeriodEnd "2025-12-31"^^xsd:date .
 :supplyAndBoundsRevision a cascade:Revision ; cascade:revisionOf :supplyAndBounds ; cascade:version :supplyAndBoundsVersion ;

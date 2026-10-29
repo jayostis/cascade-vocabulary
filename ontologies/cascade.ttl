@@ -535,6 +535,108 @@ cascade:medicationRequestIntent a owl:DatatypeProperty ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.intent> , <https://hl7.org/fhir/R4/valueset-medicationrequest-intent.html> .
 
+cascade:courseOfTherapyType a owl:DatatypeProperty ;
+    rdfs:label "course of therapy type"@en ;
+    rdfs:comment "Of a version of a prescribed medication, the overall pattern of its use the source gave, as FHIR's MedicationRequest.courseOfTherapyType: continuous (expected to go on beyond this order unless explicitly stopped), acute (only for this order, not expected to be renewed) or seasonal, the code of http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy; absent where the source gave none or a code of another system."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.courseOfTherapyType> , <https://hl7.org/fhir/R4/codesystem-medicationrequest-course-of-therapy.html> .
+
+cascade:numberOfRepeatsAllowed a owl:DatatypeProperty ;
+    rdfs:label "number of repeats allowed"@en ;
+    rdfs:comment "Of a version of a prescribed medication, how many times it may be dispensed after the first, as FHIR's MedicationRequest.dispenseRequest.numberOfRepeatsAllowed (refills): 3 repeats is 4 fills, and 0 says no refill, which differs from none stated."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:nonNegativeInteger ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dispenseRequest.numberOfRepeatsAllowed> .
+
+cascade:expectedSupplyDuration a owl:ObjectProperty ;
+    rdfs:label "expected supply duration"@en ;
+    rdfs:comment "Of a version of a prescribed medication, how long one fill is expected to last, as FHIR's MedicationRequest.dispenseRequest.expectedSupplyDuration (the days' supply): a cascade:Quantity <version>#expected-supply-duration whose unit is a UCUM unit of time."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range cascade:Quantity ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dispenseRequest.expectedSupplyDuration> .
+
+cascade:dispenseValidityPeriodStart a owl:DatatypeProperty ;
+    rdfs:label "dispense validity period start"@en ;
+    rdfs:comment "Of a version of a prescribed medication, the earliest the prescription may first be filled, the start of FHIR's MedicationRequest.dispenseRequest.validityPeriod; never the start of use."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dispenseRequest.validityPeriod> .
+
+cascade:dispenseValidityPeriodEnd a owl:DatatypeProperty ;
+    rdfs:label "dispense validity period end"@en ;
+    rdfs:comment "Of a version of a prescribed medication, the last the prescription may be filled, the end of FHIR's MedicationRequest.dispenseRequest.validityPeriod (its stale date); never the end of use."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dispenseRequest.validityPeriod> .
+
+cascade:StructuredDosage a owl:Class ;
+    rdfs:label "structured dosage"@en ;
+    rdfs:comment "One of the dosages a medication's source gave as structured elements, as FHIR's Dosage, a node of the version that states it, <version>#dosage-n, n its 1-based position in the source, hashed with the version."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/dosage-definitions.html#Dosage> .
+
+cascade:structuredDosage a owl:ObjectProperty ;
+    rdfs:label "structured dosage"@en ;
+    rdfs:comment "Of a version of a medication, one dosage its source gave as structured elements, from FHIR's MedicationRequest.dosageInstruction or MedicationStatement.dosage, one per dosage; its text stays the version's cascade:dosage."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range cascade:StructuredDosage ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dosageInstruction> , <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.dosage> .
+
+cascade:dosageDoseQuantity a owl:ObjectProperty ;
+    rdfs:label "dosage dose quantity"@en ;
+    rdfs:comment "Of a structured dosage, the amount of the medication per dose, as FHIR's Dosage.doseAndRate.doseQuantity: a cascade:Quantity <version>#dosage-n-dose-quantity. A dose given as a range is not carried."@en ;
+    rdfs:domain cascade:StructuredDosage ;
+    rdfs:range cascade:Quantity ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/dosage-definitions.html#Dosage.doseAndRate.dose_x_> .
+
+cascade:dosageFrequency a owl:DatatypeProperty ;
+    rdfs:label "dosage frequency"@en ;
+    rdfs:comment "Of a structured dosage, how many times it is taken within each cascade:dosagePeriod, as FHIR's Dosage.timing.repeat.frequency: 3 in 1 day is three times a day."@en ;
+    rdfs:domain cascade:StructuredDosage ;
+    rdfs:range xsd:positiveInteger ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Timing.repeat.frequency> .
+
+cascade:dosagePeriod a owl:DatatypeProperty ;
+    rdfs:label "dosage period"@en ;
+    rdfs:comment "Of a structured dosage, the length of time over which its cascade:dosageFrequency repeats, in its cascade:dosagePeriodUnit, as FHIR's Dosage.timing.repeat.period."@en ;
+    rdfs:domain cascade:StructuredDosage ;
+    rdfs:range xsd:decimal ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Timing.repeat.period> .
+
+cascade:dosagePeriodUnit a owl:DatatypeProperty ;
+    rdfs:label "dosage period unit"@en ;
+    rdfs:comment "Of a structured dosage, the unit of its cascade:dosagePeriod, as FHIR's Dosage.timing.repeat.periodUnit: one of the UCUM units of time s, min, h, d, wk, mo and a."@en ;
+    rdfs:domain cascade:StructuredDosage ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Timing.repeat.periodUnit> , <https://hl7.org/fhir/R4/valueset-units-of-time.html> .
+
+cascade:dosageBoundsPeriodStart a owl:DatatypeProperty ;
+    rdfs:label "dosage bounds period start"@en ;
+    rdfs:comment "Of a structured dosage, the first day its schedule runs, the start of FHIR's Dosage.timing.repeat.boundsPeriod."@en ;
+    rdfs:domain cascade:StructuredDosage ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Timing.repeat.bounds_x_> .
+
+cascade:dosageBoundsPeriodEnd a owl:DatatypeProperty ;
+    rdfs:label "dosage bounds period end"@en ;
+    rdfs:comment "Of a structured dosage, the last day its schedule runs, the end of FHIR's Dosage.timing.repeat.boundsPeriod."@en ;
+    rdfs:domain cascade:StructuredDosage ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Timing.repeat.bounds_x_> .
+
+cascade:dosageRouteCode a owl:ObjectProperty ;
+    rdfs:label "dosage route code"@en ;
+    rdfs:comment "Of a structured dosage, how the medication enters the body, as FHIR's Dosage.route, a SNOMED CT code IRI, one for each SNOMED CT coding the source gave."@en ;
+    rdfs:domain cascade:StructuredDosage ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/dosage-definitions.html#Dosage.route> .
+
+cascade:dosageRouteCodeInOtherSystem a owl:DatatypeProperty ;
+    rdfs:label "dosage route code in another system"@en ;
+    rdfs:comment "Of a structured dosage, a route code the source gave in a system other than SNOMED CT, such as the NCI Thesaurus's SPL routes, as a literal typed by its Coding.system URI, as cascade:medicationCodeInOtherSystem is. A SNOMED CT route is a cascade:dosageRouteCode IRI instead."@en ;
+    rdfs:domain cascade:StructuredDosage ;
+    rdfs:range rdfs:Literal ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/dosage-definitions.html#Dosage.route> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
+
 cascade:userSelectedCode a owl:ObjectProperty ;
     rdfs:label "user selected code"@en ;
     rdfs:comment "The one code among the version's codes that the source marked as the one it chose, as FHIR's Coding.userSelected does; absent when the source marked none."@en ;
@@ -1754,7 +1856,7 @@ cascade:currentVersionStatusLifecycleStep a owl:DatatypeProperty ;
 
 cascade:medicationExposureStart a owl:DatatypeProperty ;
     rdfs:label "medication exposure start"@en ;
-    rdfs:comment "Derived: of a medication record in an entry, the first day its current version shows the medication taken, as the eCQM library CumulativeMedicationDuration starts a period: its start of use (MedicationStatement.effective[x]), else the day its prescription was written (MedicationRequest.authoredOn), as the derivation reads what the copy states: a rule filters cascade:medicationRequestIntent (a proposal or a plan is not an order) and status, as the library's callers do. A start given only to the year or month is its last day, so exposure is never overstated. A record whose start is not known, or whose end falls before its start, has no exposure."@en ;
+    rdfs:comment "Derived: of a medication record in an entry, the first day its current version shows the medication taken, as the eCQM library CumulativeMedicationDuration starts a period: its start of use (MedicationStatement.effective[x]), else the start of its one structured dosage's bounds (Dosage.timing.repeat.boundsPeriod), else the day its prescription was written (MedicationRequest.authoredOn), else the start of its dispensing window (MedicationRequest.dispenseRequest.validityPeriod), as the derivation reads what the copy states: a rule filters cascade:medicationRequestIntent (a proposal or a plan is not an order) and status, as the library's callers do. A start given only to the year or month is its last day, so exposure is never overstated. A record whose start is not known, or whose end falls before its start, has no exposure."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range xsd:date ;
     rdfs:seeAlso <https://github.com/cqframework/ecqm-content-qicore-2024/blob/07c68e5e76d96d167627469f0face771c702023f/input/cql/CumulativeMedicationDuration.cql> ,
@@ -1763,11 +1865,12 @@ cascade:medicationExposureStart a owl:DatatypeProperty ;
 
 cascade:medicationExposureEnd a owl:DatatypeProperty ;
     rdfs:label "medication exposure end"@en ;
-    rdfs:comment "Derived: of a medication record with a cascade:medicationExposureStart, the last day its current version shows the medication taken: its end of use (MedicationStatement.effective[x]). An end given only to the year or month is its first day, so exposure is never overstated."@en ;
+    rdfs:comment "Derived: of a medication record with a cascade:medicationExposureStart, the last day its current version shows the medication taken: its end of use (MedicationStatement.effective[x]), else, as CumulativeMedicationDuration ends a request's period, its start plus its expected supply duration times one plus its number of repeats allowed, less a day, in whole days, counted from the first day its start may be, else the end of its one structured dosage's bounds. An end given only to the year or month is its first day, so exposure is never overstated."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range xsd:date ;
     rdfs:seeAlso <https://github.com/cqframework/ecqm-content-qicore-2024/blob/07c68e5e76d96d167627469f0face771c702023f/input/cql/CumulativeMedicationDuration.cql> ,
-        <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.effective_x_> .
+        <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.effective_x_> ,
+        <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dispenseRequest.expectedSupplyDuration> .
 
 cascade:medicationExposureOngoing a owl:DatatypeProperty ;
     rdfs:label "medication exposure ongoing"@en ;
