@@ -4,7 +4,8 @@
 # rows. ?record is the record, ?entry the entry it is in, and the rest are as in that query: ?class, ?relation, ?origin,
 # ?through and ?stated. The codes are the RxNorm codes the version states, the one the source selected and each it
 # carries, a literal read as the IRI of that code. A record in no entry (one excluded) is not asked, as no question reads
-# it.
+# it. An entry's record entered in error stays in its entry and is classed: a rule filters it with the record's own lifecycle
+# (cascade:currentVersionStatusLifecycle).
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -16,9 +17,9 @@ WHERE {
   {
     { SELECT ?record ?entry ?code
       WHERE {
-        ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?version .
+        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:mergedFrom ?entry ; pav:hasCurrentVersion ?version .
         ?version (cascade:userSelectedCode | cascade:rxNormCode) ?written .
-        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
+        BIND (COALESCE(IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))), "") AS ?code)
         FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/rxnorm/"))
       } }
     ?origin prov:specializationOf/cascade:tableKind cascade:DrugClasses .
@@ -39,9 +40,9 @@ WHERE {
       GROUP BY ?product ?ingredient ?origin ?relation ?code }
     { SELECT ?record ?entry ?code
       WHERE {
-        ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?version .
+        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:mergedFrom ?entry ; pav:hasCurrentVersion ?version .
         ?version (cascade:userSelectedCode | cascade:rxNormCode) ?written .
-        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
+        BIND (COALESCE(IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))), "") AS ?code)
         FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/rxnorm/"))
       } }
     GRAPH ?product { ?mine owl:annotatedSource ?code ; owl:annotatedProperty cascade:hasPreciseIngredient ; owl:annotatedTarget ?via .
@@ -70,9 +71,9 @@ WHERE {
       GROUP BY ?product }
     { SELECT ?record ?entry ?code
       WHERE {
-        ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?version .
+        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:mergedFrom ?entry ; pav:hasCurrentVersion ?version .
         ?version (cascade:userSelectedCode | cascade:rxNormCode) ?written .
-        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?code)
+        BIND (COALESCE(IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))), "") AS ?code)
         FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/rxnorm/"))
       } }
     GRAPH ?origin { ?row owl:annotatedSource ?ingredient ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?class }
@@ -82,4 +83,4 @@ WHERE {
   }
 }
 GROUP BY ?record ?entry ?class ?relation ?origin
-ORDER BY ?entry ?record ?relation ?class
+ORDER BY ?entry ?record ?relation ?class ?origin
