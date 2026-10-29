@@ -5,7 +5,10 @@
 # text, else its UCUM unit, else the result's unit as text. Each member's current values are a node of the view of their
 # own, named after the entry and the member, which says the member they came from. A time its source wrote short of the
 # second keeps the node saying so (cascade:PaddedDateTime), named after the entry or the member's values and -padded-,
-# so the view never shows a padded time as exact.
+# so the view never shows a padded time as exact. Every interpretation code the source gave is shown, never one inferred
+# from the value, with the reference range's text and its bounds: each bound a node of the view, named after the entry
+# or the member's values and -reference-low or -reference-high, holding the bound's number, as typed and as written,
+# and its units.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -17,6 +20,10 @@ CONSTRUCT {
     cascade:resultUnit ?unit ;
     cascade:workflowStatus ?status ;
     cascade:resultClinicallyRelevantTime ?date ;
+    cascade:resultInterpretationCode ?interpretation ;
+    cascade:referenceRange ?range ;
+    cascade:referenceRangeLow ?rangeLow ;
+    cascade:referenceRangeHigh ?rangeHigh ;
     cascade:leadMember ?lead ;
     cascade:statusFrom ?statusFrom ;
     cascade:mergedFrom ?record .
@@ -27,7 +34,17 @@ CONSTRUCT {
     cascade:resultValue ?memberResultValue ;
     cascade:resultUnit ?memberResultUnit ;
     cascade:workflowStatus ?memberWorkflowStatus ;
-    cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime .
+    cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime ;
+    cascade:resultInterpretationCode ?memberInterpretation ;
+    cascade:referenceRange ?memberRange ;
+    cascade:referenceRangeLow ?memberRangeLow ;
+    cascade:referenceRangeHigh ?memberRangeHigh .
+  ?rangeLow cascade:decimalValue ?lowDecimal ; cascade:writtenValue ?lowWritten ; cascade:ucumUnit ?lowUcum ; cascade:unitText ?lowUnitText .
+  ?rangeHigh cascade:decimalValue ?highDecimal ; cascade:writtenValue ?highWritten ; cascade:ucumUnit ?highUcum ; cascade:unitText ?highUnitText .
+  ?memberRangeLow cascade:decimalValue ?memberLowDecimal ; cascade:writtenValue ?memberLowWritten ; cascade:ucumUnit ?memberLowUcum ;
+    cascade:unitText ?memberLowUnitText .
+  ?memberRangeHigh cascade:decimalValue ?memberHighDecimal ; cascade:writtenValue ?memberHighWritten ; cascade:ucumUnit ?memberHighUcum ;
+    cascade:unitText ?memberHighUnitText .
   ?entry cascade:paddedDateTime ?datePadded .
   ?datePadded cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ; cascade:writtenDate ?dateWritten .
   ?memberValues cascade:paddedDateTime ?memberPadded .
@@ -63,6 +80,18 @@ WHERE {
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultClinicallyRelevantTime ?date }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultInterpretationCode ?interpretation }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:referenceRange ?range }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:referenceRangeLow ?lowAt .
+               ?lowAt cascade:decimalValue ?lowDecimal ; cascade:writtenValue ?lowWritten .
+               OPTIONAL { ?lowAt cascade:ucumUnit ?lowUcum }
+               OPTIONAL { ?lowAt cascade:unitText ?lowUnitText } }
+    BIND (IF(BOUND(?lowAt), IRI(CONCAT(STR(?entry), "-reference-low")), 1/0) AS ?rangeLow)
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:referenceRangeHigh ?highAt .
+               ?highAt cascade:decimalValue ?highDecimal ; cascade:writtenValue ?highWritten .
+               OPTIONAL { ?highAt cascade:ucumUnit ?highUcum }
+               OPTIONAL { ?highAt cascade:unitText ?highUnitText } }
+    BIND (IF(BOUND(?highAt), IRI(CONCAT(STR(?entry), "-reference-high")), 1/0) AS ?rangeHigh)
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
                ?datePaddedAt cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ; cascade:writtenDate ?dateWritten }
     BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-resultClinicallyRelevantTime")), 1/0) AS ?datePadded) }
@@ -75,6 +104,18 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:resultUnit ?memberResultUnit }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime }
+    OPTIONAL { ?memberVersion cascade:resultInterpretationCode ?memberInterpretation }
+    OPTIONAL { ?memberVersion cascade:referenceRange ?memberRange }
+    OPTIONAL { ?memberVersion cascade:referenceRangeLow ?memberLowAt .
+               ?memberLowAt cascade:decimalValue ?memberLowDecimal ; cascade:writtenValue ?memberLowWritten .
+               OPTIONAL { ?memberLowAt cascade:ucumUnit ?memberLowUcum }
+               OPTIONAL { ?memberLowAt cascade:unitText ?memberLowUnitText } }
+    BIND (IF(BOUND(?memberLowAt), IRI(CONCAT(STR(?memberValues), "-reference-low")), 1/0) AS ?memberRangeLow)
+    OPTIONAL { ?memberVersion cascade:referenceRangeHigh ?memberHighAt .
+               ?memberHighAt cascade:decimalValue ?memberHighDecimal ; cascade:writtenValue ?memberHighWritten .
+               OPTIONAL { ?memberHighAt cascade:ucumUnit ?memberHighUcum }
+               OPTIONAL { ?memberHighAt cascade:unitText ?memberHighUnitText } }
+    BIND (IF(BOUND(?memberHighAt), IRI(CONCAT(STR(?memberValues), "-reference-high")), 1/0) AS ?memberRangeHigh)
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
                ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)

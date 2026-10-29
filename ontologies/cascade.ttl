@@ -937,6 +937,12 @@ cascade:referenceRangeHigh a owl:ObjectProperty ;
     rdfs:range cascade:Quantity ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.referenceRange.high> .
 
+cascade:resultInterpretationCode a owl:ObjectProperty ;
+    rdfs:label "result interpretation code"@en ;
+    rdfs:comment "Of a lab result, a flag its source gave it, such as high, low or abnormal, as a code IRI of cascade:ObservationInterpretation: one for each such coding the source gave, so a result flagged both H and A holds both. It is the source's flag, never one inferred from the value and the reference range."@en ;
+    rdfs:domain cascade:LaboratoryTestResult ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.interpretation> .
+
 # A time written short of the second, and a value absent for a stated reason; decisions/partial-dates-and-absent-reasons.md
 
 cascade:PaddedDateTime a owl:Class ;
@@ -1357,6 +1363,13 @@ cascade:NullFlavor a cascade:CodeSystem ;
     void:uriSpace "https://ns.cascadeprotocol.org/codes/nullflavor/" ;
     cascade:codingSystemUri "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"^^xsd:anyURI ;
     dct:source <https://terminology.hl7.org/CodeSystem-v3-NullFlavor.html> .
+
+cascade:ObservationInterpretation a cascade:CodeSystem ;
+    rdfs:label "HL7 v3 ObservationInterpretation"@en ;
+    rdfs:comment "The code as FHIR's Observation.interpretation and C-CDA's interpretationCode write it, case kept: H, A, LL, H>. A code holding < or > is percent-encoded, so H> is H%3E. C-CDA names the system by the OID 2.16.840.1.113883.5.83. Cascade's own space, as cascade:DataAbsentReason's is."@en ;
+    void:uriSpace "https://ns.cascadeprotocol.org/codes/observation-interpretation/" ;
+    cascade:codingSystemUri "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation"^^xsd:anyURI ;
+    dct:source <https://terminology.hl7.org/CodeSystem-v3-ObservationInterpretation.html> .
 
 cascade:ClinVarClassifications a skos:ConceptScheme ;
     rdfs:label "ClinVar classifications"@en ;

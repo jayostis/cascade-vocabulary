@@ -956,7 +956,7 @@ cascade:DocumentScopeShape a sh:NodeShape ;
 cascade:LaboratoryTestResultValueShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:resultValueKind , cascade:resultQuantity , cascade:resultRatioNumerator ,
         cascade:resultRatioDenominator , cascade:resultRangeLow , cascade:resultRangeHigh , cascade:resultCode ,
-        cascade:resultValue , cascade:referenceRangeLow , cascade:referenceRangeHigh ;
+        cascade:resultValue , cascade:referenceRangeLow , cascade:referenceRangeHigh , cascade:resultInterpretationCode ;
     sh:property [
         sh:path cascade:resultValueKind ;
         sh:maxCount 1 ;
@@ -1014,6 +1014,16 @@ cascade:LaboratoryTestResultValueShape a sh:NodeShape ;
         sh:node cascade:BoundQuantityShape ;
         sh:message "A reference range has at most one high bound, a quantity node of its version with no comparator: its bounds are inside it (FHIR SimpleQuantity, sqty-1)."@en ;
         sh:severity sh:Violation
+    ] , [
+        sh:path cascade:resultInterpretationCode ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A lab result's interpretation is a code IRI, one for each flag its source gave."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:resultInterpretationCode ;
+        sh:node cascade:ObservationInterpretationCodeShape ;
+        sh:message "A lab result's interpretation should be a code of HL7 v3 ObservationInterpretation, as its source gave it: H, L, A, N and the others HL7 Terminology lists."@en ;
+        sh:severity sh:Warning
     ] ;
     sh:sparql [
         a sh:SPARQLConstraint ;
@@ -1202,6 +1212,25 @@ cascade:NullFlavorCodeShape a sh:NodeShape ;
             <https://ns.cascadeprotocol.org/codes/nullflavor/UNK> <https://ns.cascadeprotocol.org/codes/nullflavor/NINF> <https://ns.cascadeprotocol.org/codes/nullflavor/PINF>
             <https://ns.cascadeprotocol.org/codes/nullflavor/ASKU> <https://ns.cascadeprotocol.org/codes/nullflavor/NASK> <https://ns.cascadeprotocol.org/codes/nullflavor/NAVU>
             <https://ns.cascadeprotocol.org/codes/nullflavor/QS> <https://ns.cascadeprotocol.org/codes/nullflavor/TRC> ) .
+
+cascade:ObservationInterpretationCodeShape a sh:NodeShape ;
+    sh:in ( <https://ns.cascadeprotocol.org/codes/observation-interpretation/EX> <https://ns.cascadeprotocol.org/codes/observation-interpretation/HM> <https://ns.cascadeprotocol.org/codes/observation-interpretation/OBX>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/CAR> <https://ns.cascadeprotocol.org/codes/observation-interpretation/Carrier> <https://ns.cascadeprotocol.org/codes/observation-interpretation/B>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/D> <https://ns.cascadeprotocol.org/codes/observation-interpretation/U> <https://ns.cascadeprotocol.org/codes/observation-interpretation/W>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/%3C> <https://ns.cascadeprotocol.org/codes/observation-interpretation/%3E> <https://ns.cascadeprotocol.org/codes/observation-interpretation/AC>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/IE> <https://ns.cascadeprotocol.org/codes/observation-interpretation/QCF> <https://ns.cascadeprotocol.org/codes/observation-interpretation/TOX>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/A> <https://ns.cascadeprotocol.org/codes/observation-interpretation/N> <https://ns.cascadeprotocol.org/codes/observation-interpretation/I>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/MS> <https://ns.cascadeprotocol.org/codes/observation-interpretation/NCL> <https://ns.cascadeprotocol.org/codes/observation-interpretation/NS>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/R> <https://ns.cascadeprotocol.org/codes/observation-interpretation/S> <https://ns.cascadeprotocol.org/codes/observation-interpretation/VS>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/AA> <https://ns.cascadeprotocol.org/codes/observation-interpretation/H> <https://ns.cascadeprotocol.org/codes/observation-interpretation/L>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/HH> <https://ns.cascadeprotocol.org/codes/observation-interpretation/LL> <https://ns.cascadeprotocol.org/codes/observation-interpretation/HX>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/LX> <https://ns.cascadeprotocol.org/codes/observation-interpretation/H%3E> <https://ns.cascadeprotocol.org/codes/observation-interpretation/HU>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/E> <https://ns.cascadeprotocol.org/codes/observation-interpretation/L%3C> <https://ns.cascadeprotocol.org/codes/observation-interpretation/LU>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/ND> <https://ns.cascadeprotocol.org/codes/observation-interpretation/IND> <https://ns.cascadeprotocol.org/codes/observation-interpretation/NEG>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/POS> <https://ns.cascadeprotocol.org/codes/observation-interpretation/EXP> <https://ns.cascadeprotocol.org/codes/observation-interpretation/UNE>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/DET> <https://ns.cascadeprotocol.org/codes/observation-interpretation/SYN-R> <https://ns.cascadeprotocol.org/codes/observation-interpretation/NR>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/RR> <https://ns.cascadeprotocol.org/codes/observation-interpretation/WR> <https://ns.cascadeprotocol.org/codes/observation-interpretation/SDD>
+            <https://ns.cascadeprotocol.org/codes/observation-interpretation/SYN-S> ) .
 
 cascade:PatientShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:patient ;
