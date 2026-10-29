@@ -1,0 +1,43 @@
+{
+  "head": { "vars": ["medication", "start", "end", "ongoing"] },
+  "results": {
+    "bindings": [
+      {
+        "medication": { "type": "literal", "value": "dates: a year to a year" },
+        "start": { "type": "literal", "value": "2020-12-31", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "end": { "type": "literal", "value": "2023-01-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" }
+      },
+      {
+        "medication": { "type": "literal", "value": "dates: a month of a leap year to a month" },
+        "start": { "type": "literal", "value": "2024-02-29", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "end": { "type": "literal", "value": "2024-11-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" }
+      },
+      {
+        "medication": { "type": "literal", "value": "dates: a month, still taken" },
+        "start": { "type": "literal", "value": "2023-02-28", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "ongoing": { "type": "literal", "value": "true", "datatype": "http://www.w3.org/2001/XMLSchema#boolean" }
+      },
+      {
+        "medication": { "type": "literal", "value": "dates: times" },
+        "start": { "type": "literal", "value": "2024-05-03", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "end": { "type": "literal", "value": "2024-06-30", "datatype": "http://www.w3.org/2001/XMLSchema#date" }
+      },
+      {
+        "medication": { "type": "literal", "value": "dates: written only, still taken" },
+        "start": { "type": "literal", "value": "2025-01-15", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "ongoing": { "type": "literal", "value": "true", "datatype": "http://www.w3.org/2001/XMLSchema#boolean" }
+      },
+      {
+        "medication": { "type": "literal", "value": "dates: started after it was written" },
+        "start": { "type": "literal", "value": "2024-08-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "ongoing": { "type": "literal", "value": "true", "datatype": "http://www.w3.org/2001/XMLSchema#boolean" }
+      },
+      {
+        "medication": { "type": "literal", "value": "dates: ended within the month it started" }
+      },
+      {
+        "medication": { "type": "literal", "value": "dates: none, still taken" }
+      }
+    ]
+  }
+}

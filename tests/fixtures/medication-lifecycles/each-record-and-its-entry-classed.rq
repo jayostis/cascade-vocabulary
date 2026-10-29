@@ -1,0 +1,9 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT ?medication ?recordLifecycle ?entryLifecycle
+WHERE {
+  ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry ;
+          cascade:currentVersionStatusLifecycle ?recordLifecycle .
+  ?entry cascade:statusLifecycle ?entryLifecycle .
+}

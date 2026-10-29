@@ -7,9 +7,17 @@
   rdfs:label "medication-lifecycles" ;
   rdfs:comment "One medication for each way a status reaches an entry: each FHIR R4 code the table needs, no status at all, the HL7 v3 ActStatus codes aborted and suspended as C-CDA writes them, a synonym, a fragment that a more conservative one outranks, text nothing matches, and the R4 code entered-in-error and the ActStatus code nullified." ;
   mf:entries (
+    <#each-record-and-its-entry-classed>
     <#my-active-medications>
     <#my-medication-history>
   ) .
+
+<#each-record-and-its-entry-classed> a mf:QueryEvaluationTest ;
+  mf:name "each-record-and-its-entry-classed" ;
+  rdfs:comment "Each record is classed by its own current version's status, and its entry, of which it is the one member, has the same class." ;
+  mf:action [ qt:query <each-record-and-its-entry-classed.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <each-record-and-its-entry-classed.srj> .
 
 <#my-active-medications> a mf:QueryEvaluationTest ;
   mf:name "my-active-medications" ;

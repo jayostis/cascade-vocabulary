@@ -1,0 +1,12 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT ?medication ?start ?end ?ongoing (COUNT(DISTINCT ?copy) AS ?copiesInEntry)
+WHERE {
+  ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
+  ?copy cascade:inEntry ?entry .
+  OPTIONAL { ?record cascade:medicationExposureStart ?start }
+  OPTIONAL { ?record cascade:medicationExposureEnd ?end }
+  OPTIONAL { ?record cascade:medicationExposureOngoing ?ongoing }
+}
+GROUP BY ?medication ?start ?end ?ongoing
