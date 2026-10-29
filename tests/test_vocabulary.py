@@ -2,7 +2,7 @@ import json
 
 import pytest
 from pyshacl import validate
-from rdflib import Graph, Namespace, URIRef
+from rdflib import BNode, Graph, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, XSD
 
@@ -191,3 +191,22 @@ def test_every_entity_in_the_crate_is_reached_from_its_metadata_descriptor():
             reached.add(found)
             todo.extend(references(entities[found]))
     assert sorted(set(entities) - reached) == []
+
+
+def test_every_property_ranging_over_the_partial_date_union_is_in_the_padded_and_the_absent_property_lists():
+    vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
+    partial_date = {XSD.gYear, XSD.gYearMonth, XSD.date, XSD.dateTime}
+
+    def listed(path):
+        (shape,) = shapes.subjects(SH.path, path)
+        return set(Collection(shapes, shapes.value(shape, SH["in"])))
+
+    padded = listed(URIRef(CASCADE + "cascade#paddedDateTimeProperty"))
+    absent = listed(URIRef(CASCADE + "cascade#absentValueProperty"))
+    dated = {
+        p
+        for p, range_ in vocabulary.subject_objects(RDFS.range)
+        if isinstance(range_, BNode) and vocabulary.value(range_, OWL.unionOf) is not None
+        and set(Collection(vocabulary, vocabulary.value(range_, OWL.unionOf))) == partial_date
+    }
+    assert dated and sorted(dated - padded) == [] and sorted(dated - absent) == []
