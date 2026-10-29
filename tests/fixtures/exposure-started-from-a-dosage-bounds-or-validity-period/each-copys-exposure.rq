@@ -1,0 +1,10 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT ?medication ?start ?end ?ongoing
+WHERE {
+  ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry [] .
+  OPTIONAL { ?record cascade:medicationExposureStart ?start }
+  OPTIONAL { ?record cascade:medicationExposureEnd ?end }
+  OPTIONAL { ?record cascade:medicationExposureOngoing ?ongoing }
+}

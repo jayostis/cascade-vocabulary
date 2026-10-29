@@ -1,0 +1,13 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:00000000-0000-8000-8000-000000000000> a cascade:PrescribedOrReportedMedication ;
+    cascade:sourceUrl <https://fhir.example/MedicationRequest/record-medication-dosage-route-snomed-ct-literal> .
+
+:version prov:specializationOf <urn:uuid:00000000-0000-8000-8000-000000000000> ;
+    cascade:patient :patient ;
+    cascade:prescribedOrReported "prescribed" ;
+    cascade:structuredDosage :dosage .
+
+:dosage cascade:dosageRouteCodeInOtherSystem "26643006"^^<http://snomed.info/sct> .

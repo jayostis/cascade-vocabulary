@@ -1,0 +1,74 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:repeats a cascade:PrescribedOrReportedMedication .
+:repeatsVersion prov:specializationOf :repeats ; cascade:patient :subject ; cascade:drugName "supply: 90 days and 3 repeats, written only" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-01-15"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:repeatsVersion#expected-supply-duration> ;
+    cascade:numberOfRepeatsAllowed "3"^^xsd:nonNegativeInteger .
+<urn:x:repeatsVersion#expected-supply-duration> cascade:decimalValue 90.0 ; cascade:writtenValue "90" ; cascade:ucumUnit "d" .
+:repeatsRevision a cascade:Revision ; cascade:revisionOf :repeats ; cascade:version :repeatsVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:noRepeats a cascade:PrescribedOrReportedMedication .
+:noRepeatsVersion prov:specializationOf :noRepeats ; cascade:patient :subject ; cascade:drugName "supply: 30 days, no repeats stated" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-03-01"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:noRepeatsVersion#expected-supply-duration> .
+<urn:x:noRepeatsVersion#expected-supply-duration> cascade:decimalValue 30.0 ; cascade:writtenValue "30" ; cascade:ucumUnit "d" .
+:noRepeatsRevision a cascade:Revision ; cascade:revisionOf :noRepeats ; cascade:version :noRepeatsVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:weeks a cascade:PrescribedOrReportedMedication .
+:weeksVersion prov:specializationOf :weeks ; cascade:patient :subject ; cascade:drugName "supply: 4 weeks and no repeats, written to the second" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-06-10T09:30:00-04:00"^^xsd:dateTime ;
+    cascade:expectedSupplyDuration <urn:x:weeksVersion#expected-supply-duration> ;
+    cascade:numberOfRepeatsAllowed "0"^^xsd:nonNegativeInteger .
+<urn:x:weeksVersion#expected-supply-duration> cascade:decimalValue 4.0 ; cascade:writtenValue "4" ; cascade:ucumUnit "wk" .
+:weeksRevision a cascade:Revision ; cascade:revisionOf :weeks ; cascade:version :weeksVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:months a cascade:PrescribedOrReportedMedication .
+:monthsVersion prov:specializationOf :months ; cascade:patient :subject ; cascade:drugName "supply: 3 months and 1 repeat, to the whole day" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "completed" ;
+    cascade:prescriptionWrittenDate "2024-01-31"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:monthsVersion#expected-supply-duration> ;
+    cascade:numberOfRepeatsAllowed "1"^^xsd:nonNegativeInteger .
+<urn:x:monthsVersion#expected-supply-duration> cascade:decimalValue 3.0 ; cascade:writtenValue "3" ; cascade:ucumUnit "mo" .
+:monthsRevision a cascade:Revision ; cascade:revisionOf :months ; cascade:version :monthsVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:statedEnd a cascade:PrescribedOrReportedMedication .
+:statedEndVersion prov:specializationOf :statedEnd ; cascade:patient :subject ; cascade:drugName "supply: an end of use stated" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "completed" ;
+    cascade:prescriptionWrittenDate "2025-01-01"^^xsd:date ;
+    cascade:medicationUseEndDate "2025-02-15"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:statedEndVersion#expected-supply-duration> .
+<urn:x:statedEndVersion#expected-supply-duration> cascade:decimalValue 90.0 ; cascade:writtenValue "90" ; cascade:ucumUnit "d" .
+:statedEndRevision a cascade:Revision ; cascade:revisionOf :statedEnd ; cascade:version :statedEndVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:writtenMonth a cascade:PrescribedOrReportedMedication .
+:writtenMonthVersion prov:specializationOf :writtenMonth ; cascade:patient :subject ; cascade:drugName "supply: 60 days, written to the month" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-04"^^xsd:gYearMonth ;
+    cascade:expectedSupplyDuration <urn:x:writtenMonthVersion#expected-supply-duration> .
+<urn:x:writtenMonthVersion#expected-supply-duration> cascade:decimalValue 60.0 ; cascade:writtenValue "60" ; cascade:ucumUnit "d" .
+:writtenMonthRevision a cascade:Revision ; cascade:revisionOf :writtenMonth ; cascade:version :writtenMonthVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:bound a cascade:PrescribedOrReportedMedication .
+:boundVersion prov:specializationOf :bound ; cascade:patient :subject ; cascade:drugName "supply: less than 90 days, still taken" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-05-01"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:boundVersion#expected-supply-duration> .
+<urn:x:boundVersion#expected-supply-duration> cascade:decimalValue 90.0 ; cascade:writtenValue "90" ; cascade:quantityComparator "<" ;
+    cascade:ucumUnit "d" .
+:boundRevision a cascade:Revision ; cascade:revisionOf :bound ; cascade:version :boundVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

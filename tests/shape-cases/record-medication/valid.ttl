@@ -14,4 +14,20 @@
     cascade:medicationCodeInOtherSystem "318859000"^^<http://snomed.info/sct> ;
     cascade:prescribedOrReported "prescribed" ;
     cascade:workflowStatus "active" ;
-    cascade:medicationUseStartDate "2023-06-15"^^xsd:date .
+    cascade:medicationUseStartDate "2023-06-15"^^xsd:date ;
+    cascade:courseOfTherapyType "continuous" ;
+    cascade:numberOfRepeatsAllowed "3"^^xsd:nonNegativeInteger ;
+    cascade:expectedSupplyDuration :supply ;
+    cascade:dispenseValidityPeriodStart "2023-06-15"^^xsd:date ;
+    cascade:dispenseValidityPeriodEnd "2024-06"^^xsd:gYearMonth ;
+    cascade:structuredDosage :dosage .
+:supply cascade:decimalValue "90"^^xsd:decimal ; cascade:writtenValue "90" ; cascade:ucumUnit "d" ; cascade:unitText "days" .
+:dosage cascade:dosageDoseQuantity :dose ;
+    cascade:dosageFrequency "1"^^xsd:positiveInteger ;
+    cascade:dosagePeriod "1"^^xsd:decimal ;
+    cascade:dosagePeriodUnit "d" ;
+    cascade:dosageRouteCode <http://snomed.info/id/26643006> ;
+    cascade:dosageRouteCodeInOtherSystem "C38288"^^<http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl> ;
+    cascade:dosageBoundsPeriodStart "2023-06-15"^^xsd:date ;
+    cascade:dosageBoundsPeriodEnd "2023-09-13"^^xsd:date .
+:dose cascade:decimalValue "1"^^xsd:decimal ; cascade:writtenValue "1" ; cascade:ucumUnit "{tbl}" ; cascade:unitText "tablet" .
