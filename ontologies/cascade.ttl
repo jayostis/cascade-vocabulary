@@ -493,6 +493,16 @@ cascade:answeredAsOf a owl:DatatypeProperty ;
     rdfs:range xsd:dateTime ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc7089#section-2.1.1> .
 
+cascade:answersForRecordClass a owl:ObjectProperty ;
+    rdfs:label "answers for record class"@en ;
+    rdfs:comment "Of a document, a class of record its source answered a search for, for the document's patient: the document holds every record that search returned, as of its cascade:answeredAsOf, else its pav:retrievedOn. A document that states neither this nor cascade:refusedForRecordClass for a class does not say where it looked for records of it."@en ;
+    rdfs:range owl:Class .
+
+cascade:refusedForRecordClass a owl:ObjectProperty ;
+    rdfs:label "refused for record class"@en ;
+    rdfs:comment "Of a document, a class of record its source refused a search for, for the document's patient: the document holds none of what that search would have returned."@en ;
+    rdfs:range owl:Class .
+
 cascade:observedAsOf a owl:DatatypeProperty ;
     rdfs:label "observed as of"@en ;
     rdfs:comment "Of a revision, when its source was observed saying its state: the first there is of its document's cascade:answeredAsOf, the document's pav:retrievedOn, the source's own change time the revision carries as pav:lastUpdateOn, and the start of the act that generated it. For an entry, the session's start."@en ;

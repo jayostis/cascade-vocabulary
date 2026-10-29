@@ -893,6 +893,21 @@ cascade:AnsweredAsOfShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+cascade:DocumentScopeShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:answersForRecordClass , cascade:refusedForRecordClass ;
+    sh:property [
+        sh:path cascade:answersForRecordClass ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A document names each class of record its source answered a search for by the class's IRI."@en ;
+        sh:severity sh:Violation
+    ] ;
+    sh:property [
+        sh:path cascade:refusedForRecordClass ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A document names each class of record its source refused a search for by the class's IRI."@en ;
+        sh:severity sh:Violation
+    ] .
+
 cascade:LaboratoryTestResultValueShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:resultValueKind , cascade:resultQuantity , cascade:resultRatioNumerator ,
         cascade:resultRatioDenominator , cascade:resultRangeLow , cascade:resultRangeHigh , cascade:resultCode ,
