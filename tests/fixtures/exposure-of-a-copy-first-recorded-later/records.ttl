@@ -1,0 +1,20 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:generic a cascade:PrescribedOrReportedMedication .
+:genericVersion prov:specializationOf :generic ; cascade:patient :subject ; cascade:drugName "metformin hydrochloride 500 MG Oral Tablet" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:medicationUseStartDate "2022-03-01"^^xsd:date .
+:genericRevision a cascade:Revision ; cascade:revisionOf :generic ; cascade:version :genericVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:brand a cascade:PrescribedOrReportedMedication .
+:brandVersion prov:specializationOf :brand ; cascade:patient :subject ; cascade:drugName "Glucophage 500 MG Oral Tablet" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:medicationUseStartDate "2025-06-01"^^xsd:date .
+:brandRevision a cascade:Revision ; cascade:revisionOf :brand ; cascade:version :brandVersion ;
+    prov:generatedAtTime "2026-10-15T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-15T00:00:00Z"^^xsd:dateTime .
