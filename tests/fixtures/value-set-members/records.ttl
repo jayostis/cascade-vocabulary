@@ -1,0 +1,24 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:retinopathyChecked a cascade:ProblemOrDiagnosis .
+:retinopathyCheckedVersion prov:specializationOf :retinopathyChecked ; cascade:patient :subject ;
+    cascade:conditionName "Diabetes mellitus type 2 without retinopathy" ; cascade:snomedCode <http://snomed.info/id/1481000119100> .
+:retinopathyCheckedRevision a cascade:Revision ; cascade:revisionOf :retinopathyChecked ; cascade:version :retinopathyCheckedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:uncomplicated a cascade:ProblemOrDiagnosis .
+:uncomplicatedVersion prov:specializationOf :uncomplicated ; cascade:patient :subject ;
+    cascade:conditionName "Type 2 diabetes mellitus without complications" ; cascade:icd10Code <https://ns.cascadeprotocol.org/codes/icd10cm/E11.9> .
+:uncomplicatedRevision a cascade:Revision ; cascade:revisionOf :uncomplicated ; cascade:version :uncomplicatedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:hypertension a cascade:ProblemOrDiagnosis .
+:hypertensionVersion prov:specializationOf :hypertension ; cascade:patient :subject ;
+    cascade:conditionName "Essential (primary) hypertension" ; cascade:icd10Code <https://ns.cascadeprotocol.org/codes/icd10cm/I10> .
+:hypertensionRevision a cascade:Revision ; cascade:revisionOf :hypertension ; cascade:version :hypertensionVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
