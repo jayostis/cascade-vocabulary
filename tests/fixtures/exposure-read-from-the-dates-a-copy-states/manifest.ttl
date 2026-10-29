@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "exposure-read-from-the-dates-a-copy-states" ;
+  rdfs:comment "Medications each alone in its entry, stating their dates to the year, the month, the day or the second, a prescription stating only the day it was written, one stating both that and its start of use, one ending within the month it started, and one stating no date." ;
+  mf:entries (
+    <#each-copys-exposure>
+  ) .
+
+<#each-copys-exposure> a mf:QueryEvaluationTest ;
+  mf:name "each-copys-exposure" ;
+  rdfs:comment "A start given to the year or month is read as its last day and an end as its first, a time as its day; with no start of use the exposure starts on the day the prescription was written; an end before the start so read, or no start, gives no exposure at all." ;
+  mf:action [ qt:query <each-copys-exposure.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <each-copys-exposure.srj> .

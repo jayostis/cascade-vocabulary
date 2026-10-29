@@ -1,0 +1,20 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:stoppedCopy a cascade:PrescribedOrReportedMedication .
+:stoppedCopyVersion prov:specializationOf :stoppedCopy ; cascade:patient :subject ; cascade:drugName "metformin 500 MG, completed with no end date" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:medicationUseStartDate "2023-01-01"^^xsd:date .
+:stoppedCopyRevision a cascade:Revision ; cascade:revisionOf :stoppedCopy ; cascade:version :stoppedCopyVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:activeCopy a cascade:PrescribedOrReportedMedication .
+:activeCopyVersion prov:specializationOf :activeCopy ; cascade:patient :subject ; cascade:drugName "metformin 500 MG, active" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:medicationUseStartDate "2025-01-01"^^xsd:date .
+:activeCopyRevision a cascade:Revision ; cascade:revisionOf :activeCopy ; cascade:version :activeCopyVersion ;
+    prov:generatedAtTime "2026-10-15T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-15T00:00:00Z"^^xsd:dateTime .

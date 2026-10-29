@@ -1,0 +1,66 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:years a cascade:PrescribedOrReportedMedication .
+:yearsVersion prov:specializationOf :years ; cascade:patient :subject ; cascade:drugName "dates: a year to a year" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:medicationUseStartDate "2020"^^xsd:gYear ;
+    cascade:medicationUseEndDate "2023"^^xsd:gYear .
+:yearsRevision a cascade:Revision ; cascade:revisionOf :years ; cascade:version :yearsVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:leapMonth a cascade:PrescribedOrReportedMedication .
+:leapMonthVersion prov:specializationOf :leapMonth ; cascade:patient :subject ; cascade:drugName "dates: a month of a leap year to a month" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:medicationUseStartDate "2024-02"^^xsd:gYearMonth ;
+    cascade:medicationUseEndDate "2024-11"^^xsd:gYearMonth .
+:leapMonthRevision a cascade:Revision ; cascade:revisionOf :leapMonth ; cascade:version :leapMonthVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:month a cascade:PrescribedOrReportedMedication .
+:monthVersion prov:specializationOf :month ; cascade:patient :subject ; cascade:drugName "dates: a month, still taken" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:medicationUseStartDate "2023-02"^^xsd:gYearMonth .
+:monthRevision a cascade:Revision ; cascade:revisionOf :month ; cascade:version :monthVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:times a cascade:PrescribedOrReportedMedication .
+:timesVersion prov:specializationOf :times ; cascade:patient :subject ; cascade:drugName "dates: times" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:medicationUseStartDate "2024-05-03T22:00:00-05:00"^^xsd:dateTime ;
+    cascade:medicationUseEndDate "2024-06-30T08:15:00Z"^^xsd:dateTime .
+:timesRevision a cascade:Revision ; cascade:revisionOf :times ; cascade:version :timesVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:writtenOnly a cascade:PrescribedOrReportedMedication .
+:writtenOnlyVersion prov:specializationOf :writtenOnly ; cascade:patient :subject ; cascade:drugName "dates: written only, still taken" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-01-15"^^xsd:date .
+:writtenOnlyRevision a cascade:Revision ; cascade:revisionOf :writtenOnly ; cascade:version :writtenOnlyVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:startedAndWritten a cascade:PrescribedOrReportedMedication .
+:startedAndWrittenVersion prov:specializationOf :startedAndWritten ; cascade:patient :subject ; cascade:drugName "dates: started after it was written" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:medicationUseStartDate "2024-08-01"^^xsd:date ;
+    cascade:prescriptionWrittenDate "2024-07-20"^^xsd:date .
+:startedAndWrittenRevision a cascade:Revision ; cascade:revisionOf :startedAndWritten ; cascade:version :startedAndWrittenVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:endedWithinItsMonth a cascade:PrescribedOrReportedMedication .
+:endedWithinItsMonthVersion prov:specializationOf :endedWithinItsMonth ; cascade:patient :subject ; cascade:drugName "dates: ended within the month it started" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:medicationUseStartDate "2024-03"^^xsd:gYearMonth ;
+    cascade:medicationUseEndDate "2024-03-15"^^xsd:date .
+:endedWithinItsMonthRevision a cascade:Revision ; cascade:revisionOf :endedWithinItsMonth ; cascade:version :endedWithinItsMonthVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:none a cascade:PrescribedOrReportedMedication .
+:noneVersion prov:specializationOf :none ; cascade:patient :subject ; cascade:drugName "dates: none, still taken" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" .
+:noneRevision a cascade:Revision ; cascade:revisionOf :none ; cascade:version :noneVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

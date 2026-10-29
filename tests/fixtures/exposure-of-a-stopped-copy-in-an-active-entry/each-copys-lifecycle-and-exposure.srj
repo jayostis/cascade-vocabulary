@@ -1,0 +1,20 @@
+{
+  "head": { "vars": ["medication", "recordLifecycle", "entryLifecycle", "start", "end", "ongoing"] },
+  "results": {
+    "bindings": [
+      {
+        "medication": { "type": "literal", "value": "metformin 500 MG, completed with no end date" },
+        "recordLifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationStopped" },
+        "entryLifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
+        "start": { "type": "literal", "value": "2023-01-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" }
+      },
+      {
+        "medication": { "type": "literal", "value": "metformin 500 MG, active" },
+        "recordLifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
+        "entryLifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
+        "start": { "type": "literal", "value": "2025-01-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "ongoing": { "type": "literal", "value": "true", "datatype": "http://www.w3.org/2001/XMLSchema#boolean" }
+      }
+    ]
+  }
+}
