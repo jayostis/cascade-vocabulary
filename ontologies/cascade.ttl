@@ -1099,6 +1099,7 @@ cascade:ValueSetExpansions a cascade:TableKind ;
     rdfs:label "value set expansions"@en ;
     rdfs:comment "An SSSOM mapping kind: a value set's expansion as its publisher gives it, one row for each code it contains, the code's IRI a member of (obo:RO_0002350) the value set named by its canonical URL as an IRI, as VSAC names one http://cts.nlm.nih.gov/fhir/ValueSet/<OID>. A version is one expansion of one value set, its pav:version the publisher's expansion version, so a rule cites the version it read. A code in a system with no code IRI is left out, and the version counts what was left out (cascade:expansionMembersWithoutCodeIriLeftOutCount). Read either way round: the value sets a code is in, and a value set's codes."@en ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.expansion.contains> ;
+    cascade:rowShape cascade:ValueSetExpansionRowShape ;
     cascade:foundBy owl:annotatedSource , owl:annotatedTarget .
 
 cascade:expansionMembersWithoutCodeIriLeftOutCount a owl:DatatypeProperty ;

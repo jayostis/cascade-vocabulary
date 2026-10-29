@@ -395,6 +395,12 @@
               sh:result [ sh:sourceShape cascade:ReferenceSeriesShape ;
                           sh:resultPath [ sh:inversePath prov:specializationOf ] ] ] .
 
+<#reference-series/expansion-left-out-count-negative> a sht:Validate ;
+  mf:action [ sht:dataGraph <reference-series/expansion-left-out-count-negative.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ReferenceSeriesShape ;
+                          sh:resultPath [ sh:inversePath prov:specializationOf ] ] ] .
+
 <#derived-current-revision/two-answered-as-of> a sht:Validate ;
   mf:action [ sht:dataGraph <derived-current-revision/two-answered-as-of.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;

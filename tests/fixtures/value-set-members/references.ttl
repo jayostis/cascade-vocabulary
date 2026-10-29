@@ -1,0 +1,10 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+:diabetes a cascade:ReferenceSeries ; rdfs:label "Diabetes value set expansions" ; cascade:tableKind cascade:ValueSetExpansions .
+:diabetes-1 prov:specializationOf :diabetes ; pav:version "1" .
+:diabetes-2 prov:specializationOf :diabetes ; pav:version "2" ; prov:wasRevisionOf :diabetes-1 ;
+    cascade:expansionMembersWithoutCodeIriLeftOutCount 1 .

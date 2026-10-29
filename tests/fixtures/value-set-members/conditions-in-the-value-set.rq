@@ -1,0 +1,14 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?record ?code ?origin ?expansion
+WHERE {
+  VALUES ?valueSet { <http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.103.12.1001> }
+  VALUES ?coded { cascade:snomedCode cascade:icd10Code }
+  ?origin prov:specializationOf/cascade:tableKind cascade:ValueSetExpansions ; pav:version ?expansion .
+  GRAPH ?origin { ?row owl:annotatedTarget ?valueSet ; owl:annotatedSource ?code }
+  ?record a cascade:ProblemOrDiagnosis ; pav:hasCurrentVersion ?current .
+  ?current ?coded ?code .
+}

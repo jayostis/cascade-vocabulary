@@ -1245,7 +1245,7 @@ cascade:ReferenceSeriesShape a sh:NodeShape ;
         sh:severity sh:Violation
     ], [
         sh:path cascade:tableKind ;
-        sh:in ( cascade:VaccineGroups cascade:CodeNames cascade:RetiredCodes cascade:SubstanceIngredients cascade:ProductIngredients cascade:BrandGenerics cascade:DrugProducts cascade:CodeConversions cascade:VariantClassifications cascade:PanelMembers cascade:DrugClasses ) ;
+        sh:in ( cascade:VaccineGroups cascade:CodeNames cascade:RetiredCodes cascade:SubstanceIngredients cascade:ProductIngredients cascade:BrandGenerics cascade:DrugProducts cascade:CodeConversions cascade:VariantClassifications cascade:PanelMembers cascade:DrugClasses cascade:ValueSetExpansions ) ;
         sh:maxCount 1 ;
         sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
         sh:severity sh:Violation
@@ -1255,7 +1255,9 @@ cascade:ReferenceVersionShape a sh:NodeShape ;
     sh:property [ sh:path pav:version ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ,
                 [ sh:path prov:wasRevisionOf ; sh:nodeKind sh:IRI ; sh:maxCount 1 ] ,
                 [ sh:path cascade:coversGene ; sh:datatype xsd:string ; sh:minLength 1 ;
-                  sh:message "A version covers genes by their symbols, each a non-empty plain string"@en ] .
+                  sh:message "A version covers genes by their symbols, each a non-empty plain string"@en ] ,
+                [ sh:path cascade:expansionMembersWithoutCodeIriLeftOutCount ; sh:datatype xsd:integer ; sh:minInclusive 0 ; sh:maxCount 1 ;
+                  sh:message "A version counts the members it left out for having no code IRI once, a non-negative xsd:integer"@en ] .
 
 cascade:MappingRowShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
@@ -1424,6 +1426,31 @@ cascade:DrugClassRowShape a sh:NodeShape ;
         sh:path sssom:mapping_justification ;
         sh:hasValue semapv:ManualMappingCuration ;
         sh:message "A drug class row is justified as the publisher's curated row."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:ValueSetExpansionRowShape a sh:NodeShape ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.expansion.contains> , <https://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.url> ;
+    sh:node cascade:MappingRowShape ;
+    sh:property [
+        sh:path owl:annotatedSource ;
+        sh:node cascade:CodeShape ;
+        sh:message "A value set expansion row maps a code, an IRI of one of the code systems' forms."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedProperty ;
+        sh:hasValue obo:RO_0002350 ;
+        sh:message "A value set expansion row puts its code in its value set with obo:RO_0002350, member of."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path owl:annotatedTarget ;
+        sh:pattern "^https?://[^#|]+$" ;
+        sh:message "A value set is named by its canonical URL, an http or https IRI holding neither # nor |, as FHIR's cnl-1 asks of one."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path sssom:mapping_justification ;
+        sh:hasValue semapv:ManualMappingCuration ;
+        sh:message "A value set expansion row is justified as the publisher's curated row."@en ;
         sh:severity sh:Violation
     ] .
 

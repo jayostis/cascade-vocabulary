@@ -51,6 +51,8 @@ PANEL = ("a owl:Axiom ; owl:annotatedSource <http://loinc.org/rdf/24318-8> ; owl
 CLASSIFIED_DRUG = ("a owl:Axiom ; owl:annotatedSource rxnorm:5640 ; owl:annotatedProperty cascade:establishedPharmacologicClass ; "
                    "owl:annotatedTarget <https://ns.cascadeprotocol.org/codes/medrt/N0000175722>")
 MESH = "<http://id.nlm.nih.gov/mesh/M0006414>"
+DIABETES = "<http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.103.12.1001>"
+MEMBER = f"a owl:Axiom ; owl:annotatedSource <http://snomed.info/id/1481000119100> ; owl:annotatedProperty obo:RO_0002350 ; owl:annotatedTarget {DIABETES}"
 
 
 @cache
@@ -248,6 +250,12 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     (CASCADE.DrugClasses, f"<urn:x:r> {CLASSIFIED_DRUG.replace('cascade:establishedPharmacologicClass', 'skos:broadMatch')} ; {CURATED} .",
      "with cascade:establishedPharmacologicClass, cascade:mechanismOfActionClass"),
     (CASCADE.DrugClasses, f"<urn:x:r> {CLASSIFIED_DRUG} ; {CHAINED} .", "justified as the publisher's curated row"),
+    (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER} ; {CURATED} .", None),
+    (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER.replace('<http://snomed.info/id/1481000119100>', '<urn:x:G0108>')} ; {CURATED} .",
+     "maps a code, an IRI of one of the code systems' forms"),
+    (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER.replace('1001>', '1001#20220924>')} ; {CURATED} .", "named by its canonical URL"),
+    (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER.replace('obo:RO_0002350', 'skos:exactMatch')} ; {CURATED} .", "with obo:RO_0002350"),
+    (CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER} ; {CHAINED} .", "justified as the publisher's curated row"),
     (CASCADE.CodeNames, f'<https://ns.cascadeprotocol.org/codes/medrt/N0000175722> skos:prefLabel "Beta-Adrenergic Blocker [EPC]" ; skos:notation "N0000175722" .', None),
     (CASCADE.CodeNames, f'{MESH} skos:prefLabel "Ibuprofen" ; skos:notation "M0006414" .', None),
     (CASCADE.CodeNames, '<http://id.nlm.nih.gov/mesh/D004095> skos:prefLabel "x" ; skos:notation "D004095" .', None),
