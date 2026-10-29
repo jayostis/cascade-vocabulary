@@ -101,15 +101,12 @@ cascade:PatientProfileShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] ;
 
-    sh:sparql [
-        a sh:SPARQLConstraint ;
-        sh:message "A time of death is a death: a version that holds a date of death does not say the person has not died."@en ;
-        sh:severity sh:Violation ;
-        sh:select """SELECT $this WHERE {
-  $this <https://ns.cascadeprotocol.org/cascade#dateOfDeath> ?time ;
-        <https://ns.cascadeprotocol.org/cascade#deceased> false .
-}"""
-    ] .
+    sh:or (
+        [ sh:path cascade:dateOfDeath ; sh:maxCount 0 ]
+        [ sh:path cascade:deceased ; sh:not [ sh:hasValue false ] ]
+    ) ;
+    sh:message "A time of death is a death: a version that holds a date of death does not say the person has not died."@en ;
+    sh:severity sh:Violation .
 
 # Copied from the spec's health
 
@@ -1339,16 +1336,13 @@ cascade:ReferenceSeriesShape a sh:NodeShape ;
         sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
         sh:severity sh:Violation
     ] ;
-    sh:sparql [
-        a sh:SPARQLConstraint ;
-        sh:message "Each version of a value set expansions series names the value set it expands with cascade:expandedValueSet, so a version with no member still says what it checked."@en ;
-        sh:severity sh:Violation ;
-        sh:select """SELECT $this WHERE {
-  $this <https://ns.cascadeprotocol.org/cascade#tableKind> <https://ns.cascadeprotocol.org/cascade#ValueSetExpansions> .
-  ?version <http://www.w3.org/ns/prov#specializationOf> $this .
-  FILTER NOT EXISTS { ?version <https://ns.cascadeprotocol.org/cascade#expandedValueSet> ?valueSet }
-}"""
-    ] .
+    sh:or (
+        [ sh:path cascade:tableKind ; sh:not [ sh:hasValue cascade:ValueSetExpansions ] ]
+        [ sh:path [ sh:inversePath prov:specializationOf ] ;
+          sh:node [ sh:property [ sh:path cascade:expandedValueSet ; sh:minCount 1 ] ] ]
+    ) ;
+    sh:message "Each version of a value set expansions series names the value set it expands with cascade:expandedValueSet, so a version with no member still says what it checked."@en ;
+    sh:severity sh:Violation .
 
 cascade:ReferenceVersionShape a sh:NodeShape ;
     sh:property [ sh:path pav:version ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ,
