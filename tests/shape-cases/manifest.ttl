@@ -40,12 +40,22 @@
 <#record-condition/other-system-code-untyped> a sht:Validate ;
   mf:action [ sht:dataGraph <record-condition/other-system-code-untyped.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:CodeInOtherSystemShape ; sh:resultPath cascade:conditionCodeInOtherSystem ] ] .
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCodeInOtherSystem ] ] .
 
 <#record-condition/other-system-code-snomed-ct> a sht:Validate ;
   mf:action [ sht:dataGraph <record-condition/other-system-code-snomed-ct.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:CodeInOtherSystemShape ; sh:resultPath cascade:conditionCodeInOtherSystem ] ] .
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCodeInOtherSystem ] ] .
+
+<#record-condition/other-system-code-language-tagged> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/other-system-code-language-tagged.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCodeInOtherSystem ] ] .
+
+<#record-condition/other-system-code-oid-upper-case> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/other-system-code-oid-upper-case.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCodeInOtherSystem ] ] .
 
 <#record-immunization/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-immunization/valid.ttl> ] ;
@@ -70,10 +80,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:snomedCode ] ] .
 
-<#record-procedure/other-system-code-untyped> a sht:Validate ;
-  mf:action [ sht:dataGraph <record-procedure/other-system-code-untyped.ttl> ] ;
+<#record-procedure/other-system-code-cpt> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/other-system-code-cpt.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:CodeInOtherSystemShape ; sh:resultPath cascade:procedureCodeInOtherSystem ] ] .
+              sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:procedureCodeInOtherSystem ] ] .
+
+<#record-procedure/other-system-code-hcpcs-https> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/other-system-code-hcpcs-https.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:procedureCodeInOtherSystem ] ] .
 
 <#version/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <version/valid.ttl> ] ;
@@ -379,10 +394,10 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:PrescribedOrReportedMedicationShape ; sh:resultPath cascade:medicationRequestIntent ] ] .
 
-<#record-medication/other-system-code-untyped> a sht:Validate ;
-  mf:action [ sht:dataGraph <record-medication/other-system-code-untyped.ttl> ] ;
+<#record-medication/other-system-code-rxnorm> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/other-system-code-rxnorm.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:CodeInOtherSystemShape ; sh:resultPath cascade:medicationCodeInOtherSystem ] ] .
+              sh:result [ sh:sourceShape cascade:PrescribedOrReportedMedicationShape ; sh:resultPath cascade:medicationCodeInOtherSystem ] ] .
 
 <#record-lab-result/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-lab-result/valid.ttl> ] ;
@@ -403,15 +418,15 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:LaboratoryTestResultShape ; sh:resultPath dct:identifier ] ] .
 
-<#record-lab-result/other-system-code-untyped> a sht:Validate ;
-  mf:action [ sht:dataGraph <record-lab-result/other-system-code-untyped.ttl> ] ;
+<#record-lab-result/other-system-code-snomed-ct> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-lab-result/other-system-code-snomed-ct.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:CodeInOtherSystemShape ; sh:resultPath cascade:testCodeInOtherSystem ] ] .
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultShape ; sh:resultPath cascade:testCodeInOtherSystem ] ] .
 
 <#record-lab-result/other-system-code-loinc-by-its-oid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-lab-result/other-system-code-loinc-by-its-oid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:CodeInOtherSystemShape ; sh:resultPath cascade:testCodeInOtherSystem ] ] .
+              sh:result [ sh:sourceShape cascade:LaboratoryTestResultShape ; sh:resultPath cascade:testCodeInOtherSystem ] ] .
 
 <#record-variant/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-variant/valid.ttl> ] ;

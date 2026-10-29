@@ -1,0 +1,12 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:fbd2e47d-2912-82fb-b1d6-69bfda28703e> a cascade:PrescribedOrReportedMedication ;
+    cascade:sourceUrl <https://fhir.example/MedicationRequest/record-medication-other-system-code-rxnorm> .
+
+:version prov:specializationOf <urn:uuid:fbd2e47d-2912-82fb-b1d6-69bfda28703e> ;
+    cascade:patient :patient ;
+    cascade:drugName "lisinopril 10 MG Oral Tablet" ;
+    cascade:medicationCodeInOtherSystem "314076"^^<http://www.nlm.nih.gov/research/umls/rxnorm> ;
+    cascade:prescribedOrReported "prescribed" .

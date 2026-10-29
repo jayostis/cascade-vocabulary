@@ -210,3 +210,30 @@ def test_every_property_ranging_over_the_partial_date_union_is_in_the_padded_and
         and set(Collection(vocabulary, vocabulary.value(range_, OWL.unionOf))) == partial_date
     }
     assert dated and sorted(dated - padded) == [] and sorted(dated - absent) == []
+
+
+def test_each_kind_refuses_as_a_code_in_another_system_exactly_the_systems_it_holds_as_code_iris():
+    vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
+    cascade = Namespace(CASCADE + "cascade#")
+    held = {
+        cascade.testCodeInOtherSystem: {cascade.testCode: (cascade.LOINC, cascade.SNOMEDCT)},
+        cascade.medicationCodeInOtherSystem: {cascade.rxNormCode: (cascade.RxNorm,), cascade.ndcCode: (cascade.NDC,)},
+        cascade.conditionCodeInOtherSystem: {cascade.icd10Code: (cascade.ICD10CM,), cascade.snomedCode: (cascade.SNOMEDCT,)},
+        cascade.procedureCodeInOtherSystem: {cascade.cptCode: (cascade.CPT,), cascade.snomedCode: (cascade.SNOMEDCT,)},
+    }
+
+    def refused(path):
+        return {
+            datatype
+            for shape in shapes.subjects(SH.path, path)
+            for negated in shapes.objects(shape, SH["not"])
+            for alternatives in shapes.objects(negated, SH["or"])
+            for alternative in Collection(shapes, alternatives)
+            for datatype in shapes.objects(alternative, SH.datatype)
+        }
+
+    expected = {
+        path: {URIRef(vocabulary.value(system, cascade.codingSystemUri)) for systems in by_property.values() for system in systems}
+        for path, by_property in held.items()
+    }
+    assert {path: refused(path) for path in held} == expected

@@ -1,0 +1,11 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:132a5dc2-2794-8309-a8f5-3697273d536c> a cascade:LaboratoryTestResult ;
+    cascade:sourceUrl <https://fhir.example/Observation/record-lab-result-other-system-code-snomed-ct> .
+
+:version prov:specializationOf <urn:uuid:132a5dc2-2794-8309-a8f5-3697273d536c> ;
+    cascade:patient :patient ;
+    cascade:testName "Potassium" ;
+    cascade:testCodeInOtherSystem "59573005"^^<http://snomed.info/sct> .
