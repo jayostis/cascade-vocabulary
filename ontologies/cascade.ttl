@@ -1669,7 +1669,7 @@ cascade:currentVersionStatusLifecycleStep a owl:DatatypeProperty ;
 
 cascade:medicationExposureStart a owl:DatatypeProperty ;
     rdfs:label "medication exposure start"@en ;
-    rdfs:comment "Derived: of a medication record in an entry, the first day its current version shows the medication taken, as the eCQM library CumulativeMedicationDuration starts a period: its start of use (MedicationStatement.effective[x]), else the day its prescription was written (MedicationRequest.authoredOn). A start given only to the year or month is its last day, so exposure is never overstated. A record whose start is not known, or whose end falls before its start, has no exposure."@en ;
+    rdfs:comment "Derived: of a medication record in an entry, the first day its current version shows the medication taken, as the eCQM library CumulativeMedicationDuration starts a period: its start of use (MedicationStatement.effective[x]), else the day its prescription was written (MedicationRequest.authoredOn), as the derivation reads what the copy states: a rule filters cascade:medicationRequestIntent (a proposal or a plan is not an order) and status, as the library's callers do. A start given only to the year or month is its last day, so exposure is never overstated. A record whose start is not known, or whose end falls before its start, has no exposure."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range xsd:date ;
     rdfs:seeAlso <https://github.com/cqframework/ecqm-content-qicore-2024/blob/07c68e5e76d96d167627469f0face771c702023f/input/cql/CumulativeMedicationDuration.cql> ,
@@ -1686,7 +1686,7 @@ cascade:medicationExposureEnd a owl:DatatypeProperty ;
 
 cascade:medicationExposureOngoing a owl:DatatypeProperty ;
     rdfs:label "medication exposure ongoing"@en ;
-    rdfs:comment "Derived: true of a medication record with a cascade:medicationExposureStart and no end whose own cascade:currentVersionStatusLifecycle is active, so its exposure runs to the day a rule asks. A record with no end that is not active has neither an end nor this, and its exposure is not known to have lasted past its start."@en ;
+    rdfs:comment "Derived: true of a medication record with a cascade:medicationExposureStart and no end whose own cascade:currentVersionStatusLifecycle is active, so its exposure is known through its current revision's cascade:observedAsOf, the last instant a source said the copy was active; a rule closes it at the earlier of that and the day it asks. Never written false: absent means not known. A record with no end that is not active has neither an end nor this, and its exposure is not known to have lasted past its start."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range xsd:boolean ;
     rdfs:seeAlso <https://github.com/cqframework/ecqm-content-qicore-2024/blob/07c68e5e76d96d167627469f0face771c702023f/input/cql/CumulativeMedicationDuration.cql> .
