@@ -3,29 +3,31 @@
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;7-XCGsQSiUeCRKJeHFQUVbV0qnwdCmGJ4uolA6XE10Q> cascade:prescribedOrReported "prescribed" ;
+<ni:///sha-256;iEaSRj6FdZgiUXr-6Jo42K1Bn_8AReszukoM5Y5nOE0> cascade:prescribedOrReported "prescribed" ;
 	cascade:drugName "amlodipine 5 MG Oral Tablet" ;
 	cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/197361> ;
 	cascade:workflowStatus "active" ;
+	cascade:medicationRequestIntent "order" ;
 	cascade:prescriptionWrittenDate "2025-04-01"^^xsd:date ;
 	cascade:dosage "Take 1 tablet by mouth once daily." .
-_:3dc63bde54f385e7bba092d27fb38a64 pav:lastUpdateOn "2025-04-01T16:20:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;7-XCGsQSiUeCRKJeHFQUVbV0qnwdCmGJ4uolA6XE10Q> .
-<ni:///sha-256;7-XCGsQSiUeCRKJeHFQUVbV0qnwdCmGJ4uolA6XE10Q> cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> ;
-	prov:specializationOf <urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> .
-<urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> cascade:sourceRecordId "medrx-amlodipine-1" ;
+<urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> a cascade:PrescribedOrReportedMedication ;
 	cascade:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-amlodipine-1> ;
-	a cascade:PrescribedOrReportedMedication .
-_:3dc63bde54f385e7bba092d27fb38a64 oa:hasSelector _:e362432dfaaa292a010da09e53be3d6c ;
+	cascade:sourceRecordId "medrx-amlodipine-1" .
+<ni:///sha-256;iEaSRj6FdZgiUXr-6Jo42K1Bn_8AReszukoM5Y5nOE0> prov:specializationOf <urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> ;
+	cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> .
+_:4eeb993ae292bea2ff695ac3acb78f6f bridge:arrivedAs <ni:///sha-256;iEaSRj6FdZgiUXr-6Jo42K1Bn_8AReszukoM5Y5nOE0> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2025-04-01T16:20:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:f704ca166dc7f2a5385125e95f6de5f9 ;
 	oa:hasSource <ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> ;
 	prov:wasDerivedFrom <ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> ;
 	prov:wasGeneratedBy _:1f8425fa914aa54b49c0b7b8501fe6c9 .
-_:e362432dfaaa292a010da09e53be3d6c a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+_:f704ca166dc7f2a5385125e95f6de5f9 a oa:FragmentSelector ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "" .
 _:1f8425fa914aa54b49c0b7b8501fe6c9 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2025-06-15T08:05:04Z"^^xsd:dateTime .
