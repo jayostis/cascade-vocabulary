@@ -1795,6 +1795,8 @@ cascade:CodeConversionFormShape a sh:NodeShape ;
     sh:message "A code conversion row says its code is replaced by the code it converts to, with dct:isReplacedBy, and gives its cardinality; a row of the earlier form pairs them with skos:exactMatch and gives none."@en ;
     sh:severity sh:Violation .
 
+# Core SHACL tests a literal's datatype IRI only: it cannot refuse an XSD-typed literal whose lexical form is ill-formed
+# for its datatype, such as "A12"^^xsd:integer, which no adapter writes.
 cascade:LiteralTypedByAnXsdOrRdfDatatypeShape a sh:NodeShape ;
     sh:or (
         [ sh:datatype xsd:string ]
@@ -1836,9 +1838,17 @@ cascade:LiteralTypedByAnXsdOrRdfDatatypeShape a sh:NodeShape ;
         [ sh:datatype xsd:NMTOKEN ]
         [ sh:datatype xsd:Name ]
         [ sh:datatype xsd:NCName ]
+        [ sh:datatype xsd:NMTOKENS ]
+        [ sh:datatype xsd:ID ]
+        [ sh:datatype xsd:IDREF ]
+        [ sh:datatype xsd:ENTITY ]
+        [ sh:datatype xsd:QName ]
+        [ sh:datatype xsd:NOTATION ]
         [ sh:datatype rdf:langString ]
         [ sh:datatype rdf:HTML ]
         [ sh:datatype rdf:XMLLiteral ]
+        [ sh:datatype rdf:JSON ]
+        [ sh:datatype rdf:PlainLiteral ]
     ) .
 
 cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape a sh:NodeShape ;
