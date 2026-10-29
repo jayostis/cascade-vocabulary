@@ -335,6 +335,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:PrescribedOrReportedMedicationShape ; sh:resultPath cascade:prescriptionWrittenDate ] ] .
 
+<#record-medication/intent-not-a-code> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/intent-not-a-code.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PrescribedOrReportedMedicationShape ; sh:resultPath cascade:medicationRequestIntent ] ] .
+
 <#record-lab-result/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-lab-result/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
