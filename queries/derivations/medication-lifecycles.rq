@@ -1,8 +1,10 @@
-# An entry's status, however its source wrote it, is classed by the first step of runtime rule L1 that holds, and the step
-# is recorded. The key is the status lower-cased, each run of other characters than a-z and 0-9 made one space, trimmed.
+# The status of each medication record's current version, however its source wrote it, is classed by the first step of
+# runtime rule L1 that holds, and the step is recorded; an entry has the class and step of the record it takes its status
+# from, and one no member gives a status to is unknown at step 2. The key is the status lower-cased, each run of other
+# characters than a-z and 0-9 made one space, trimmed.
 # A step-2 to step-4 row holds when it equals the key, or equals it with the spaces of both removed ('d/c' is dc). A
 # step-5 row, a fragment, holds when the compact key contains the fragment with its spaces removed (so NotActive is read as not active), and the class among those that do is the most conservative: the
-# lowest precedence. Step 6 holds always, so every entry has a class and 'unmatched' is step 6. The FHIR rows are the codes
+# lowest precedence. Step 6 holds always, so every record has a class and 'unmatched' is step 6. The FHIR rows are the codes
 # of R4's MedicationRequest.status and MedicationStatement.status (a code in both has one row), 'aborted' and 'nullified'
 # are HL7 v3 ActStatus codes mapped by the C-CDA on FHIR ConceptMap CF-MedicationStatus 2.0.0, and the rest are
 # cascade-knowledge's medication-status-synonym rows. A negated hold ('no longer on hold') is a reader's job, not a row's.
@@ -10,12 +12,15 @@ PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-CONSTRUCT { ?entry cascade:statusLifecycle ?class ; cascade:statusLifecycleStep ?step }
+CONSTRUCT {
+  ?record cascade:currentVersionStatusLifecycle ?class ; cascade:currentVersionStatusLifecycleStep ?step .
+  ?shown cascade:statusLifecycle ?shownClass ; cascade:statusLifecycleStep ?shownStep .
+}
 WHERE {
-  { SELECT ?entry (MIN(?score) AS ?best)
+  { { SELECT ?record (MIN(?score) AS ?best)
     WHERE {
-      ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry .
-      OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:workflowStatus ?stated }
+      ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry [] .
+      OPTIONAL { ?record pav:hasCurrentVersion/cascade:workflowStatus ?stated }
       BIND (REPLACE(REPLACE(LCASE(STR(COALESCE(?stated, ""))), "[^a-z0-9]+", " "), "^ +| +$", "") AS ?key)
       BIND (REPLACE(?key, " ", "") AS ?compact)
       VALUES (?by ?text ?kind) {
@@ -98,11 +103,19 @@ WHERE {
       FILTER (?by = 6 || IF(?by = 5, CONTAINS(?compact, REPLACE(?text, " ", "")), ?compact = REPLACE(?text, " ", "")))
       BIND (?by * 10 + ?precedence AS ?score)
     }
-    GROUP BY ?entry }
+    GROUP BY ?record }
   BIND (xsd:integer(FLOOR(?best / 10)) AS ?step)
   VALUES (?class ?held) {
     (cascade:MedicationEnteredInError 0) (cascade:MedicationStopped 1) (cascade:MedicationPaused 2)
     (cascade:MedicationUnknown 3) (cascade:MedicationActive 4)
   }
   FILTER (?held = ?best - 10 * ?step)
+  OPTIONAL { ?shown cascade:statusFrom ?record }
+  BIND (?class AS ?shownClass)
+  BIND (?step AS ?shownStep) }
+  UNION
+  { ?record a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?shown .
+    FILTER NOT EXISTS { ?shown cascade:statusFrom [] }
+    BIND (cascade:MedicationUnknown AS ?shownClass)
+    BIND (2 AS ?shownStep) }
 }

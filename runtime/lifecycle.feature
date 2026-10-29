@@ -5,11 +5,14 @@ Feature: Medication lifecycle
   blank one, FHIR codes, the HL7 v3 ActStatus codes a C-CDA medication activity carries, a synonym, phrases, run-together text and text
   nothing matches.
 
-  Rule: L1. A medication entry's status is classed active, stopped, paused, unknown or entered-in-error by the first step of this order that holds
-    decisions/one-meaning-per-term.md, rows "3. a medication's status" and "5. one status for every kind".
-    The entry's status is the one of the member it takes its status from. The class is the concept of cascade:MedicationLifecycle
-    the entry shows as cascade:lifecycle (derived as cascade:statusLifecycle), and the step that gave it as
-    cascade:statusLifecycleStep. The rows each step reads, and the
+  Rule: L1. A medication record's status, and so its entry's, is classed active, stopped, paused, unknown or entered-in-error by the first step of this order that holds
+    decisions/one-meaning-per-term.md, rows "3. a medication's status" and "5. one status for every kind", and
+    decisions/medications.md, row "a copy's own lifecycle".
+    Each record in an entry is classed by the status of its own current version, derived as
+    cascade:currentVersionStatusLifecycle and cascade:currentVersionStatusLifecycleStep, which a rule reads. The entry
+    has the class and step of the member it takes its status from, and is unknown at step 2 when no member gives one.
+    The class is the concept of cascade:MedicationLifecycle the entry shows as cascade:lifecycle (derived as
+    cascade:statusLifecycle), and the step that gave it as cascade:statusLifecycleStep. The rows each step reads, and the
     precedence of step 5, are in queries/derivations/medication-lifecycles.rq.
 
     1. The key is the status lower-cased, each run of other characters than a-z and 0-9 made one space, and trimmed. A

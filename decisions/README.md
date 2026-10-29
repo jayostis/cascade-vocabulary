@@ -97,4 +97,5 @@ brought to it on 2026-10-22 under #202:
 - [`clinical-terms-follow-fhir.md`](clinical-terms-follow-fhir.md): which standard a clinical term starts from, and what a departure costs.
 - [`readings-and-care-hypotheses.md`](readings-and-care-hypotheses.md): what a maker concludes that is not a verdict: readings of text, care hypotheses and the person's responses.
 - [`scoped-absence.md`](scoped-absence.md): which kinds of record a pull's source answered for and which it refused, so that "not found" can say where it looked.
+- [`medications.md`](medications.md): each copy of a medication's own lifecycle, and how long it was taken, as `CumulativeMedicationDuration` defines exposure.
 - [`the-person.md`](the-person.md): what a version of the person's profile holds for gender and death, and why sex waits for the rule that reads it.

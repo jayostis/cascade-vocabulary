@@ -1135,6 +1135,30 @@ cascade:DrugClasses a cascade:TableKind ;
     cascade:foundBy owl:annotatedSource ;
     cascade:readByAppPages true .
 
+cascade:ValueSetExpansions a cascade:TableKind ;
+    rdfs:label "value set expansions"@en ;
+    rdfs:comment "An SSSOM mapping kind: a value set's expansion as its publisher gives it, one row for each code it contains, the code's IRI a member of (obo:RO_0002350) the value set named by its canonical URL as an IRI, as VSAC names one http://cts.nlm.nih.gov/fhir/ValueSet/<OID>. A version is one expansion of one value set and names that value set (cascade:expandedValueSet), every row's target being it, so a rule cites \"checked this value set at this version, no member\" from the version alone, even when every code the expansion contains was left out. Its pav:version is the expansion's timestamp, or its identifier where the publisher gives no timestamp; the value set definition's own version is cascade:valueSetDefinitionVersion. The code systems' versions each member was listed under (contains.version) are not kept. A code in a system with no code IRI is left out, and the version counts what was left out (cascade:expansionMembersWithoutCodeIriLeftOutCount). A row is found by its code, which is how a pod's codes reach the value sets they are in."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.expansion.contains> ;
+    cascade:rowShape cascade:ValueSetExpansionRowShape ;
+    cascade:foundBy owl:annotatedSource .
+
+cascade:expandedValueSet a owl:ObjectProperty ;
+    rdfs:label "expanded value set"@en ;
+    rdfs:comment "Of a version of a value set expansions series, the value set it expands, by its canonical URL as an IRI exactly as the source's ValueSet.url gives it. Each row of the version has it as its target, so a version with no row still says which value set it checked."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.url> .
+
+cascade:valueSetDefinitionVersion a owl:DatatypeProperty ;
+    rdfs:label "value set definition version"@en ;
+    rdfs:comment "Of a version of a value set expansions series, the version of the value set's definition the expansion was computed from, as the source gives ValueSet.version. A version without it is of a value set whose source gives none."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.version> ;
+    rdfs:range xsd:string .
+
+cascade:expansionMembersWithoutCodeIriLeftOutCount a owl:DatatypeProperty ;
+    rdfs:label "expansion members without code IRI left out count"@en ;
+    rdfs:comment "Of a version of a value set expansions series, how many codes the expansion contains that are in a system with no code IRI, and so have no row, as an eCQM expansion may list HCPCS codes. A version without it left none out."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.expansion.contains.system> ;
+    rdfs:range xsd:integer .
+
 cascade:panelSequence a owl:DatatypeProperty ;
     rdfs:label "panel sequence"@en ;
     rdfs:comment "Of a panel member row, the member's SEQUENCE in the panel, as LOINC gives it in its PanelsAndForms file."@en ;
@@ -1678,7 +1702,7 @@ cascade:lifecycle a owl:ObjectProperty ;
 
 cascade:statusLifecycle a owl:ObjectProperty ;
     rdfs:label "status lifecycle"@en ;
-    rdfs:comment "Derived: the lifecycle class of the status the entry shows. The medications view says it as cascade:lifecycle, a name of its own because a query reading both the derived state and the view would otherwise find each triple twice."@en ;
+    rdfs:comment "Derived: the lifecycle class of the status the entry shows, the cascade:currentVersionStatusLifecycle of the member it takes its status from. The medications view says it as cascade:lifecycle, a name of its own because a query reading both the derived state and the view would otherwise find each triple twice."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range skos:Concept .
 
@@ -1687,6 +1711,42 @@ cascade:statusLifecycleStep a owl:DatatypeProperty ;
     rdfs:comment "Derived: which step of the matching order in runtime rule L1 classified the entry: 2 for an absent or blank status, 3 for a FHIR status code, 4 for a synonym, 5 for a fragment, 6 for none of them, which leaves the class unknown and unmatched."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range xsd:integer .
+
+cascade:currentVersionStatusLifecycle a owl:ObjectProperty ;
+    rdfs:label "current version status lifecycle"@en ;
+    rdfs:comment "Derived: of a medication record in an entry, the lifecycle class of its own current version's status, by runtime rule L1. A rule reads a copy's own class, never its entry's, which is the class of the one member the entry takes its status from."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range skos:Concept .
+
+cascade:currentVersionStatusLifecycleStep a owl:DatatypeProperty ;
+    rdfs:label "current version status lifecycle step"@en ;
+    rdfs:comment "Derived: which step of the matching order in runtime rule L1 classified the record's current version's status, numbered as cascade:statusLifecycleStep."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:integer .
+
+cascade:medicationExposureStart a owl:DatatypeProperty ;
+    rdfs:label "medication exposure start"@en ;
+    rdfs:comment "Derived: of a medication record in an entry, the first day its current version shows the medication taken, as the eCQM library CumulativeMedicationDuration starts a period: its start of use (MedicationStatement.effective[x]), else the day its prescription was written (MedicationRequest.authoredOn), as the derivation reads what the copy states: a rule filters cascade:medicationRequestIntent (a proposal or a plan is not an order) and status, as the library's callers do. A start given only to the year or month is its last day, so exposure is never overstated. A record whose start is not known, or whose end falls before its start, has no exposure."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:date ;
+    rdfs:seeAlso <https://github.com/cqframework/ecqm-content-qicore-2024/blob/07c68e5e76d96d167627469f0face771c702023f/input/cql/CumulativeMedicationDuration.cql> ,
+        <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.effective_x_> ,
+        <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.authoredOn> .
+
+cascade:medicationExposureEnd a owl:DatatypeProperty ;
+    rdfs:label "medication exposure end"@en ;
+    rdfs:comment "Derived: of a medication record with a cascade:medicationExposureStart, the last day its current version shows the medication taken: its end of use (MedicationStatement.effective[x]). An end given only to the year or month is its first day, so exposure is never overstated."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:date ;
+    rdfs:seeAlso <https://github.com/cqframework/ecqm-content-qicore-2024/blob/07c68e5e76d96d167627469f0face771c702023f/input/cql/CumulativeMedicationDuration.cql> ,
+        <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.effective_x_> .
+
+cascade:medicationExposureOngoing a owl:DatatypeProperty ;
+    rdfs:label "medication exposure ongoing"@en ;
+    rdfs:comment "Derived: true of a medication record with a cascade:medicationExposureStart and no end whose own cascade:currentVersionStatusLifecycle is active, so its exposure is known through its current revision's cascade:observedAsOf, the last instant a source said the copy was active; a rule closes it at the earlier of that and the day it asks. Never written false: absent means not known. A record with no end that is not active has neither an end nor this, and its exposure is not known to have lasted past its start."@en ;
+    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:range xsd:boolean ;
+    rdfs:seeAlso <https://github.com/cqframework/ecqm-content-qicore-2024/blob/07c68e5e76d96d167627469f0face771c702023f/input/cql/CumulativeMedicationDuration.cql> .
 
 cascade:MedicationLifecycle a skos:ConceptScheme ;
     rdfs:label "Medication lifecycle"@en ;

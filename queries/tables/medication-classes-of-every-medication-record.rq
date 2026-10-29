@@ -1,0 +1,86 @@
+# Each class of each medication record in an entry, whatever its lifecycle: the three steps of
+# medication-classes-through-precise-ingredients.rq over the codes of the record's current version, so a medication
+# stopped, paused or entered in error is classed as an active one is, and an entry joining two records gives each its own
+# rows. ?record is the record, ?entry the entry it is in, and the rest are as in that query: ?class, ?relation, ?origin,
+# ?through and ?stated. The codes are the RxNorm codes the version states, the one the source selected and each it
+# carries, a literal read as the IRI of that code. A record in no entry (one excluded) is not asked, as no question reads
+# it. An entry's record entered in error stays in its entry and is classed: a rule filters it with the record's own lifecycle
+# (cascade:currentVersionStatusLifecycle).
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?record ?entry ?class ?relation ?origin (SUBSTR(MIN(CONCAT(?step, STR(?on))), 2) AS ?through) (STRSTARTS(MIN(CONCAT(?step, STR(?on))), "0") AS ?stated)
+WHERE {
+  {
+    { SELECT ?record ?entry ?code
+      WHERE {
+        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:mergedFrom ?entry ; pav:hasCurrentVersion ?version .
+        ?version (cascade:userSelectedCode | cascade:rxNormCode) ?written .
+        BIND (COALESCE(IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))), "") AS ?code)
+        FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/rxnorm/"))
+      } }
+    ?origin prov:specializationOf/cascade:tableKind cascade:DrugClasses .
+    GRAPH ?origin { ?row owl:annotatedSource ?code ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?class }
+    BIND (?code AS ?on)
+    BIND ("0" AS ?step)
+  } UNION {
+    { SELECT ?product ?ingredient ?origin ?relation ?code
+        (SUM(IF(?held = ?code, 1, 0)) AS ?owned) (SUM(IF(BOUND(?precise), 1, 0)) AS ?precisely)
+      WHERE {
+        ?product prov:specializationOf/cascade:tableKind cascade:ProductIngredients .
+        ?origin prov:specializationOf/cascade:tableKind cascade:DrugClasses .
+        GRAPH ?product { ?member owl:annotatedSource ?code ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedTarget ?ingredient .
+                         ?left owl:annotatedTarget ?ingredient ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedSource ?held
+                         OPTIONAL { ?precise owl:annotatedSource ?code ; owl:annotatedProperty cascade:hasPreciseIngredient ; owl:annotatedTarget ?held } }
+        GRAPH ?origin { ?by owl:annotatedSource ?held ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?given }
+      }
+      GROUP BY ?product ?ingredient ?origin ?relation ?code }
+    { SELECT ?record ?entry ?code
+      WHERE {
+        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:mergedFrom ?entry ; pav:hasCurrentVersion ?version .
+        ?version (cascade:userSelectedCode | cascade:rxNormCode) ?written .
+        BIND (COALESCE(IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))), "") AS ?code)
+        FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/rxnorm/"))
+      } }
+    GRAPH ?product { ?mine owl:annotatedSource ?code ; owl:annotatedProperty cascade:hasPreciseIngredient ; owl:annotatedTarget ?via .
+                     ?form owl:annotatedSource ?via ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedTarget ?ingredient }
+    GRAPH ?origin { ?row owl:annotatedSource ?via ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?class }
+    FILTER (?owned = 0 && ?precisely > 0)
+    BIND (?via AS ?on)
+    BIND ("1" AS ?step)
+  } UNION {
+    { SELECT ?product ?ingredient ?origin ?relation ?code
+        (SUM(IF(?held = ?code, 1, 0)) AS ?owned) (SUM(IF(BOUND(?precise), 1, 0)) AS ?precisely)
+      WHERE {
+        ?product prov:specializationOf/cascade:tableKind cascade:ProductIngredients .
+        ?origin prov:specializationOf/cascade:tableKind cascade:DrugClasses .
+        GRAPH ?product { ?member owl:annotatedSource ?code ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedTarget ?ingredient .
+                         ?left owl:annotatedTarget ?ingredient ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedSource ?held
+                         OPTIONAL { ?precise owl:annotatedSource ?code ; owl:annotatedProperty cascade:hasPreciseIngredient ; owl:annotatedTarget ?held } }
+        GRAPH ?origin { ?by owl:annotatedSource ?held ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?given }
+      }
+      GROUP BY ?product ?ingredient ?origin ?relation ?code }
+    { SELECT ?product (COUNT(?some) AS ?stating)
+      WHERE {
+        ?product prov:specializationOf/cascade:tableKind cascade:ProductIngredients .
+        GRAPH ?product { OPTIONAL { ?some owl:annotatedProperty cascade:hasPreciseIngredient } }
+      }
+      GROUP BY ?product }
+    { SELECT ?record ?entry ?code
+      WHERE {
+        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:mergedFrom ?entry ; pav:hasCurrentVersion ?version .
+        ?version (cascade:userSelectedCode | cascade:rxNormCode) ?written .
+        BIND (COALESCE(IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))), "") AS ?code)
+        FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/rxnorm/"))
+      } }
+    GRAPH ?origin { ?row owl:annotatedSource ?ingredient ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?class }
+    FILTER (?owned = 0 && ?precisely = 0 && ?stating > 0)
+    BIND (?ingredient AS ?on)
+    BIND ("2" AS ?step)
+  }
+}
+GROUP BY ?record ?entry ?class ?relation ?origin
+ORDER BY ?entry ?record ?relation ?class ?origin
