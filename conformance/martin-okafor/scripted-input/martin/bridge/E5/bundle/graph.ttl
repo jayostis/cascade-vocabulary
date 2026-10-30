@@ -2,6 +2,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix dct: <http://purl.org/dc/terms/> .
@@ -22,6 +23,23 @@ _:6661e0d4f2998d84e588f8879fd6eb68 bridge:arrivedAs <ni:///sha-256;8SBK1XgjzRbWB
 _:d0e0df785c008423051c5ffb4359260 a oa:FragmentSelector ;
 	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/0" .
+<urn:uuid:47fbf4ba-a0bb-8cfb-85ea-d76b6ee4e815> a cascade:DiagnosticReport .
+<ni:///sha-256;Ks0W8b5Cn7aYfhgUbi5lLAID57n5_VvzD-HDzng2pSM> prov:specializationOf <urn:uuid:47fbf4ba-a0bb-8cfb-85ea-d76b6ee4e815> ;
+	cascade:patient <urn:uuid:62c7bb5a-1d8d-81b1-aed2-3770124e6ef2> .
+_:3d4c7d5778165c319f67567d6332fd14 bridge:arrivedAs <ni:///sha-256;Ks0W8b5Cn7aYfhgUbi5lLAID57n5_VvzD-HDzng2pSM> .
+<ni:///sha-256;Ks0W8b5Cn7aYfhgUbi5lLAID57n5_VvzD-HDzng2pSM> obo:RO_0002351 <urn:uuid:6a64c805-d9e2-8b71-8103-4d0368fe2237> , <urn:uuid:96b382c9-a0bc-82ff-a931-ffbee8395738> , <urn:uuid:8ed6f6f0-0688-8b25-a07c-25ecf407c6fc> , <urn:uuid:fc1d7f00-c8a8-8992-af16-5f59353f232a> , <urn:uuid:02f828b3-58c4-8a7a-b0b2-749ee5c3cd08> , <urn:uuid:c75afec8-08d6-8438-893f-da794ec0a1ca> ;
+	cascade:reportName "Genetic analysis report" ;
+	cascade:reportIssuedTime "2024-03-21T14:20:00Z"^^xsd:dateTime ;
+	cascade:workflowStatus "final" ;
+	cascade:reportCode <http://loinc.org/rdf/51969-4> ;
+	cascade:reportCategory "GE"^^<http://terminology.hl7.org/CodeSystem/v2-0074> .
+_:3d4c7d5778165c319f67567d6332fd14 oa:hasSelector _:556caa6f15528b98a81532510b464edf ;
+	oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ;
+	prov:wasDerivedFrom <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ;
+	prov:wasGeneratedBy _:b4af91f2081a04731ca20f2cd5a91134 .
+_:556caa6f15528b98a81532510b464edf a oa:FragmentSelector ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/1" .
 <urn:uuid:c75afec8-08d6-8438-893f-da794ec0a1ca> a cascade:GeneticVariantFinding .
 <ni:///sha-256;1nhA04w5iNXmJL0dYeOg2ECktuJZQF9ZxOliLUIpJlg> prov:specializationOf <urn:uuid:c75afec8-08d6-8438-893f-da794ec0a1ca> ;
 	cascade:patient <urn:uuid:62c7bb5a-1d8d-81b1-aed2-3770124e6ef2> .
