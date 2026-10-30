@@ -697,7 +697,7 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
         sh:in ("continuous" "acute" "seasonal") ;
         sh:maxCount 1 ;
         sh:message "A medication states at most one course of therapy, a code of FHIR's medicationrequest-course-of-therapy: continuous, acute or seasonal"@en ;
-        sh:severity sh:Violation
+        sh:severity sh:Warning
     ] ;
 
     sh:property [
@@ -1315,7 +1315,7 @@ cascade:DurationQuantityShape a sh:NodeShape ;
         sh:path cascade:ucumUnit ;
         sh:minCount 1 ;
         sh:in ("s" "min" "h" "d" "wk" "mo" "a") ;
-        sh:message "A duration's unit is a UCUM unit of time, s, min, h, d, wk, mo or a, as FHIR's Duration requires (drt-1)"@en ;
+        sh:message "A duration's unit is one of the seven codes of FHIR Timing's UnitsOfTime, s, min, h, d, wk, mo or a, each a UCUM expression of time, as FHIR's Duration requires (drt-1)"@en ;
         sh:severity sh:Violation
     ] .
 
@@ -1401,13 +1401,13 @@ cascade:VersionWithValueAbsentForReasonShape a sh:NodeShape ;
     ] ;
     sh:sparql [
         a sh:SPARQLConstraint ;
-        sh:message "A value absent for a reason is the version's node <version>#absent- and its property's local name, and stands only where the version holds no value for that property: {?node} is not."@en ;
+        sh:message "A value absent for a reason is the node <version>#absent- and its property's local name, or, of a node whose IRI has a fragment already, such as a structured dosage, <node>-absent- and the local name; and stands only where its subject holds no value for that property: {?node} is not."@en ;
         sh:severity sh:Violation ;
         sh:select """SELECT $this ?node WHERE {
   $this <https://ns.cascadeprotocol.org/cascade#valueAbsentForReason> ?node .
   OPTIONAL { ?node <https://ns.cascadeprotocol.org/cascade#absentValueProperty> ?property }
   FILTER (!BOUND(?property)
-          || STR(?node) != CONCAT(STR($this), "#absent-", REPLACE(STR(?property), "^.*[#/]", ""))
+          || STR(?node) != CONCAT(STR($this), IF(CONTAINS(STR($this), "#"), "-absent-", "#absent-"), REPLACE(STR(?property), "^.*[#/]", ""))
           || EXISTS { $this ?property ?value })
 }"""
     ] .
@@ -1824,8 +1824,9 @@ cascade:CodeConversionFormShape a sh:NodeShape ;
     sh:message "A code conversion row says its code is replaced by the code it converts to, with dct:isReplacedBy, and gives its cardinality; a row of the earlier form pairs them with skos:exactMatch and gives none."@en ;
     sh:severity sh:Violation .
 
-# Core SHACL tests a literal's datatype IRI only: it cannot refuse an XSD-typed literal whose lexical form is ill-formed
-# for its datatype, such as "A12"^^xsd:integer, which no adapter writes.
+# sh:datatype also checks the lexical form, so a literal ill-formed for its datatype, such as "A12"^^xsd:integer or a
+# code led by a digit typed xsd:Name, xsd:NCName, xsd:ID, xsd:IDREF, xsd:ENTITY, xsd:QName or xsd:NOTATION, fails the
+# sh:or and passes the sh:not that uses it; core SHACL cannot refuse it, and no adapter writes one.
 cascade:LiteralTypedByAnXsdOrRdfDatatypeShape a sh:NodeShape ;
     sh:or (
         [ sh:datatype xsd:string ]
@@ -1873,6 +1874,10 @@ cascade:LiteralTypedByAnXsdOrRdfDatatypeShape a sh:NodeShape ;
         [ sh:datatype xsd:ENTITY ]
         [ sh:datatype xsd:QName ]
         [ sh:datatype xsd:NOTATION ]
+        [ sh:datatype xsd:IDREFS ]
+        [ sh:datatype xsd:ENTITIES ]
+        [ sh:datatype xsd:anyAtomicType ]
+        [ sh:datatype xsd:anySimpleType ]
         [ sh:datatype rdf:langString ]
         [ sh:datatype rdf:HTML ]
         [ sh:datatype rdf:XMLLiteral ]
