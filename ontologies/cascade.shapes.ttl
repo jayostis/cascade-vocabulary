@@ -747,7 +747,7 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
     ] .
 
 cascade:StructuredDosageShape a sh:NodeShape ;
-    sh:targetSubjectsOf cascade:dosageDoseQuantity , cascade:dosageFrequency , cascade:dosagePeriod , cascade:dosagePeriodUnit ,
+    sh:targetSubjectsOf cascade:dosageDoseQuantity , cascade:dosageRepeatFrequency , cascade:dosageRepeatPeriod , cascade:dosageRepeatPeriodUnit ,
         cascade:dosageBoundsPeriodStart , cascade:dosageBoundsPeriodEnd , cascade:dosageRouteCode , cascade:dosageRouteCodeInOtherSystem ;
     sh:property [
         sh:path cascade:dosageDoseQuantity ;
@@ -756,19 +756,19 @@ cascade:StructuredDosageShape a sh:NodeShape ;
         sh:message "A dosage states at most one dose quantity, a quantity node of its version"@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:dosageFrequency ;
+        sh:path cascade:dosageRepeatFrequency ;
         sh:datatype xsd:positiveInteger ;
         sh:maxCount 1 ;
         sh:message "A dosage states at most one frequency, an xsd:positiveInteger"@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:dosagePeriod ;
+        sh:path cascade:dosageRepeatPeriod ;
         sh:datatype xsd:decimal ;
         sh:maxCount 1 ;
         sh:message "A dosage states at most one period, an xsd:decimal"@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:dosagePeriodUnit ;
+        sh:path cascade:dosageRepeatPeriodUnit ;
         sh:datatype xsd:string ;
         sh:in ("s" "min" "h" "d" "wk" "mo" "a") ;
         sh:maxCount 1 ;

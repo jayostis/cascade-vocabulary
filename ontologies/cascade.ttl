@@ -589,23 +589,23 @@ cascade:dosageDoseQuantity a owl:ObjectProperty ;
     rdfs:range cascade:Quantity ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/dosage-definitions.html#Dosage.doseAndRate.dose_x_> .
 
-cascade:dosageFrequency a owl:DatatypeProperty ;
-    rdfs:label "dosage frequency"@en ;
-    rdfs:comment "Of a structured dosage, how many times it is taken within each cascade:dosagePeriod, as FHIR's Dosage.timing.repeat.frequency: 3 in 1 day is three times a day."@en ;
+cascade:dosageRepeatFrequency a owl:DatatypeProperty ;
+    rdfs:label "dosage repeat frequency"@en ;
+    rdfs:comment "Of a structured dosage, how many times it is taken within each cascade:dosageRepeatPeriod, as FHIR's Dosage.timing.repeat.frequency: 3 in 1 day is three times a day."@en ;
     rdfs:domain cascade:StructuredDosage ;
     rdfs:range xsd:positiveInteger ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Timing.repeat.frequency> .
 
-cascade:dosagePeriod a owl:DatatypeProperty ;
-    rdfs:label "dosage period"@en ;
-    rdfs:comment "Of a structured dosage, the length of time over which its cascade:dosageFrequency repeats, in its cascade:dosagePeriodUnit, as FHIR's Dosage.timing.repeat.period."@en ;
+cascade:dosageRepeatPeriod a owl:DatatypeProperty ;
+    rdfs:label "dosage repeat period"@en ;
+    rdfs:comment "Of a structured dosage, the length of time over which its cascade:dosageRepeatFrequency repeats, in its cascade:dosageRepeatPeriodUnit, as FHIR's Dosage.timing.repeat.period."@en ;
     rdfs:domain cascade:StructuredDosage ;
     rdfs:range xsd:decimal ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Timing.repeat.period> .
 
-cascade:dosagePeriodUnit a owl:DatatypeProperty ;
-    rdfs:label "dosage period unit"@en ;
-    rdfs:comment "Of a structured dosage, the unit of its cascade:dosagePeriod, as FHIR's Dosage.timing.repeat.periodUnit: one of the UCUM units of time s, min, h, d, wk, mo and a."@en ;
+cascade:dosageRepeatPeriodUnit a owl:DatatypeProperty ;
+    rdfs:label "dosage repeat period unit"@en ;
+    rdfs:comment "Of a structured dosage, the unit of its cascade:dosageRepeatPeriod, as FHIR's Dosage.timing.repeat.periodUnit: one of the seven codes of FHIR's UnitsOfTime, s, min, h, d, wk, mo and a, each a UCUM unit of time."@en ;
     rdfs:domain cascade:StructuredDosage ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Timing.repeat.periodUnit> , <https://hl7.org/fhir/R4/valueset-units-of-time.html> .
