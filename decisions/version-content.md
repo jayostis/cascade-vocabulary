@@ -9,8 +9,9 @@ issue that will write its rule. Depends on `naming.md` (a version is named by it
 `judgments.md`, `one-meaning-per-term.md`, `quantities.md`, `partial-dates-and-absent-reasons.md`,
 `clinical-terms-follow-fhir.md` (how each borrow below is made) and `readings-and-care-hypotheses.md` (what the
 outputs table shows over FHIR). Still open in phase 0: the decision note for the medication matching rules M15 and
-M16, on which "long-term metformin" rests; the guideline the B12 rule's threshold and window cite; and
-`readings-and-care-hypotheses.md`'s prior-art search.
+M16, on which "long-term metformin" rests, and `readings-and-care-hypotheses.md`'s prior-art search. Amended
+2026-10-30 by `medical-knowledge-in-the-model.md`: no care rules, so row "what rules read" and the outputs row "care
+hypothesis" no longer apply to a rule, and the Still open item on the B12 rule's guideline is closed.
 
 ## Question
 
@@ -244,7 +245,7 @@ turns "is FHIR content better?" from an argument into a number that the epic's f
 
 - **The medication matching rules M15 and M16 need their decision note** (open on #286). "Long-term metformin" rests
   on which copies of a medication are one entry, so phase 1's matcher item on #287 is sequenced last until it lands.
-- **The B12 rule's threshold and window cite a guideline.** ADA 2025 Section 9 says "long-term" with no number; the
+- **The B12 rule's threshold and window cite a guideline.** Closed 2026-10-30: no care rules (`medical-knowledge-in-the-model.md`). ADA 2025 Section 9 says "long-term" with no number; the
   experiment used 2 years. The rule's parameters are data, and the guideline is chosen before the rule ships.
 - **`readings-and-care-hypotheses.md`'s prior-art search,** which may change how the outputs table shows a care
   hypothesis and a reading.
