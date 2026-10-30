@@ -45,3 +45,13 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:matcherRule cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule ; cascade:queryHash :grownQuery .
 :rules1SameNoteTypeAndTextRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameNoteTypeAndTextRule ;
     cascade:queryHash :sameTextQuery .
+:sameDocument a cascade:Judgment ; cascade:verdict cascade:Same ;
+    cascade:justification cascade:SameNoteOrDocumentMasterIdentifier ; prov:hadMember :note1 , :note3 ;
+    prov:used :note1Version , :note3Version ;
+    cascade:matcherRule cascade:SameNoteOrDocumentMasterIdentifierRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:sameDocumentUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameDocument ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:rules1SameNoteOrDocumentMasterIdentifierRule cascade:rowOfRuleListVersion :rules1 ;
+    cascade:matcherRule cascade:SameNoteOrDocumentMasterIdentifierRule ; cascade:queryHash :sameDocumentQuery .

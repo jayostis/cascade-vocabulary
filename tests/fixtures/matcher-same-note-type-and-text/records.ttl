@@ -102,3 +102,21 @@
     prov:wasDerivedFrom :pull ;
     prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-22T09:00:00-05:00"^^xsd:dateTime .
 
+:localCourseAtTheHospital a cascade:ClinicalNoteOrDocument .
+<urn:x:localCourseAtTheHospitalVersion> prov:specializationOf :localCourseAtTheHospital ;
+    cascade:noteOrDocumentTypeInOtherSystem "HC"^^<urn:oid:2.16.840.1.113883.19.5.99999.30> ;
+    cascade:narrativeText "Admitted on October 2, 2026 with dizziness and a sodium of 123 mmol/L. Hydrochlorothiazide was stopped and fluids restricted; the sodium rose to 134 mmol/L by discharge.\nDischarged home on October 5, 2026 to follow up with her primary care provider within one week." ;
+    cascade:noteOrDocumentDate "2026-10-05T12:00:00-05:00"^^xsd:dateTime .
+:localCourseAtTheHospitalRevision a cascade:Revision ; cascade:revisionOf :localCourseAtTheHospital ; cascade:version <urn:x:localCourseAtTheHospitalVersion> ;
+    prov:wasDerivedFrom :hospitalSummary ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00-05:00"^^xsd:dateTime .
+
+:localCourseAtTheClinic a cascade:ClinicalNoteOrDocument .
+<urn:x:localCourseAtTheClinicVersion> prov:specializationOf :localCourseAtTheClinic ;
+    cascade:noteOrDocumentTypeInOtherSystem "HC"^^<urn:oid:2.16.840.1.113883.19.5.99999.30> ;
+    cascade:narrativeText "Admitted on October 2, 2026 with dizziness and a sodium of 123 mmol/L. Hydrochlorothiazide was stopped and fluids restricted; the sodium rose to 134 mmol/L by discharge.\nDischarged home on October 5, 2026 to follow up with her primary care provider within one week." ;
+    cascade:noteOrDocumentDate "2026-10-20T09:00:00-05:00"^^xsd:dateTime .
+:localCourseAtTheClinicRevision a cascade:Revision ; cascade:revisionOf :localCourseAtTheClinic ; cascade:version <urn:x:localCourseAtTheClinicVersion> ;
+    prov:wasDerivedFrom :clinicSummary ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-20T09:00:00-05:00"^^xsd:dateTime .
+

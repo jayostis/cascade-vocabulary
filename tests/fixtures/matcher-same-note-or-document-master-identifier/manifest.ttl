@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-note-or-document-master-identifier" ;
+  rdfs:comment "A hospital's unstructured C-CDA document as the note it makes, and as two pulled DocumentReferences whose master identifier is that document's id, one typed as a discharge summary; a pulled note of that identifier value in another system; one of the next document's identifier; two pulled notes sharing an identifier with no system; and one with none." ;
+  mf:entries (
+    <#same-note-or-document-master-identifier>
+  ) .
+
+<#same-note-or-document-master-identifier> a mf:QueryEvaluationTest ;
+  mf:name "same-note-or-document-master-identifier" ;
+  rdfs:comment "Notes whose current versions carry one master identifier typed by its system match from any sources, whatever their types and texts: the C-CDA note and both DocumentReferences. Not matched: the value in another system, the next document's, the two whose identifier names no system, and the note with none." ;
+  mf:action [ qt:query <../../../queries/matcher/same-note-or-document-master-identifier.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:fromCcda> ,
+                                  <urn:x:fromFhir> ,
+                                  <urn:x:fromFhirTypedOtherwise> ,
+                                  <urn:x:nextVersion> ,
+                                  <urn:x:noIdentifier> ,
+                                  <urn:x:noSystemFirst> ,
+                                  <urn:x:noSystemSecond> ,
+                                  <urn:x:otherSystem> ] ;
+  mf:result <same-note-or-document-master-identifier.srj> .

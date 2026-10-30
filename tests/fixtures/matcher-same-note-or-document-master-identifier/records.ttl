@@ -1,0 +1,75 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:hospital a cascade:Organization .
+
+:unstructured a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+:pull a prov:Entity ; cascade:serverBaseUrl "https://fhir.hospital.example/r4" .
+:otherPull a prov:Entity ; cascade:serverBaseUrl "https://fhir.hospital.example/r4" .
+
+:fromCcda a cascade:ClinicalNoteOrDocument .
+<urn:x:fromCcdaVersion> prov:specializationOf :fromCcda ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentMasterIdentifier "CCD-2026-1005"^^<urn:oid:2.16.840.1.113883.19.5.99999.1> .
+:fromCcdaRevision a cascade:Revision ; cascade:revisionOf :fromCcda ; cascade:version <urn:x:fromCcdaVersion> ;
+    prov:wasDerivedFrom :unstructured ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+
+:fromFhir a cascade:ClinicalNoteOrDocument .
+<urn:x:fromFhirVersion> prov:specializationOf :fromFhir ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentMasterIdentifier "CCD-2026-1005"^^<urn:oid:2.16.840.1.113883.19.5.99999.1> .
+:fromFhirRevision a cascade:Revision ; cascade:revisionOf :fromFhir ; cascade:version <urn:x:fromFhirVersion> ;
+    prov:wasDerivedFrom :pull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+
+:fromFhirTypedOtherwise a cascade:ClinicalNoteOrDocument .
+<urn:x:fromFhirTypedOtherwiseVersion> prov:specializationOf :fromFhirTypedOtherwise ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18842-5> ;
+    cascade:noteOrDocumentMasterIdentifier "CCD-2026-1005"^^<urn:oid:2.16.840.1.113883.19.5.99999.1> .
+:fromFhirTypedOtherwiseRevision a cascade:Revision ; cascade:revisionOf :fromFhirTypedOtherwise ; cascade:version <urn:x:fromFhirTypedOtherwiseVersion> ;
+    prov:wasDerivedFrom :otherPull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+
+:otherSystem a cascade:ClinicalNoteOrDocument .
+<urn:x:otherSystemVersion> prov:specializationOf :otherSystem ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentMasterIdentifier "CCD-2026-1005"^^<urn:oid:2.16.840.1.113883.19.5.99999.9> .
+:otherSystemRevision a cascade:Revision ; cascade:revisionOf :otherSystem ; cascade:version <urn:x:otherSystemVersion> ;
+    prov:wasDerivedFrom :pull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+
+:nextVersion a cascade:ClinicalNoteOrDocument .
+<urn:x:nextVersionVersion> prov:specializationOf :nextVersion ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentMasterIdentifier "CCD-2026-1006"^^<urn:oid:2.16.840.1.113883.19.5.99999.1> .
+:nextVersionRevision a cascade:Revision ; cascade:revisionOf :nextVersion ; cascade:version <urn:x:nextVersionVersion> ;
+    prov:wasDerivedFrom :pull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+
+:noSystemFirst a cascade:ClinicalNoteOrDocument .
+<urn:x:noSystemFirstVersion> prov:specializationOf :noSystemFirst ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentMasterIdentifier "DOC-77" .
+:noSystemFirstRevision a cascade:Revision ; cascade:revisionOf :noSystemFirst ; cascade:version <urn:x:noSystemFirstVersion> ;
+    prov:wasDerivedFrom :pull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+
+:noSystemSecond a cascade:ClinicalNoteOrDocument .
+<urn:x:noSystemSecondVersion> prov:specializationOf :noSystemSecond ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentMasterIdentifier "DOC-77" .
+:noSystemSecondRevision a cascade:Revision ; cascade:revisionOf :noSystemSecond ; cascade:version <urn:x:noSystemSecondVersion> ;
+    prov:wasDerivedFrom :otherPull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+
+:noIdentifier a cascade:ClinicalNoteOrDocument .
+<urn:x:noIdentifierVersion> prov:specializationOf :noIdentifier ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> .
+:noIdentifierRevision a cascade:Revision ; cascade:revisionOf :noIdentifier ; cascade:version <urn:x:noIdentifierVersion> ;
+    prov:wasDerivedFrom :otherPull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+
