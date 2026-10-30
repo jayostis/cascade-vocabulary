@@ -2,9 +2,9 @@
 # neither has a LOINC code, the documents their revisions come from name, as custodian or author, one organization
 # record, or two that are currently the same organization, and the shorter one's text begins or ends the longer one's
 # as whole lines: a note its source sends again as it grows, as a clinic's plan of treatment that keeps every visit's
-# paragraph and adds the latest after them, or before them, newest first. A text is read as lines, the white space
-# inside each line made one space and trimmed at both ends, and blank lines dropped, so a source that indents or spaces
-# its text anew still matches; the lines are compared as written otherwise, in their order. A note held in the middle
+# paragraph and adds the latest after them, or before them, newest first. A text is read as lines, as
+# cascade:narrativeTextAsTrimmedLines holds it, the white space inside each line one space, each line trimmed and blank
+# lines dropped, so a source that indents or spaces its text anew still matches; the lines are compared as written otherwise, in their order. A note held in the middle
 # of another is no match: growth adds at an end, and text in the middle of other lines is a template's. Pairs are found
 # by the first and the last 200 characters of a text. The shorter text holds at least 200 characters, since a short
 # plan such as "Return in 3 months." is held whole by many later notes it is not part of. The longer one is dated no
@@ -31,9 +31,8 @@ WHERE {
                 ?record pav:hasCurrentVersion ?version .
                 ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                 FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
-                ?version cascade:narrativeText ?written .
+                ?version cascade:narrativeTextAsTrimmedLines ?text .
                 OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
-                BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?text)
                 BIND (STRLEN(?text) AS ?length)
                 FILTER (?length >= 200)
                 BIND (COALESCE(SUBSTR(?text, 1, 200), "") AS ?start)
@@ -49,9 +48,8 @@ WHERE {
                 ?other pav:hasCurrentVersion ?otherVersion .
                 ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                 FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
-                ?otherVersion cascade:narrativeText ?otherWritten .
+                ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                 OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
-                BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?otherWritten), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?otherText)
                 BIND (STRLEN(?otherText) AS ?otherLength)
                 FILTER (?otherLength >= 200)
                 BIND (COALESCE(SUBSTR(?otherText, 1, 200), "") AS ?start)
@@ -78,9 +76,8 @@ WHERE {
                 ?record pav:hasCurrentVersion ?version .
                 ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                 FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
-                ?version cascade:narrativeText ?written .
+                ?version cascade:narrativeTextAsTrimmedLines ?text .
                 OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
-                BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?text)
                 BIND (STRLEN(?text) AS ?length)
                 FILTER (?length >= 200)
                 BIND (COALESCE(SUBSTR(?text, ?length - 199), "") AS ?end)
@@ -96,9 +93,8 @@ WHERE {
                 ?other pav:hasCurrentVersion ?otherVersion .
                 ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                 FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
-                ?otherVersion cascade:narrativeText ?otherWritten .
+                ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                 OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
-                BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?otherWritten), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?otherText)
                 BIND (STRLEN(?otherText) AS ?otherLength)
                 FILTER (?otherLength >= 200)
                 BIND (COALESCE(SUBSTR(?otherText, ?otherLength - 199), "") AS ?end)
@@ -132,9 +128,8 @@ WHERE {
                           ?record pav:hasCurrentVersion ?version .
                           ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                           FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
-                          ?version cascade:narrativeText ?written .
+                          ?version cascade:narrativeTextAsTrimmedLines ?text .
                           OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
-                          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?text)
                           BIND (STRLEN(?text) AS ?length)
                           FILTER (?length >= 200)
                           BIND (COALESCE(SUBSTR(?text, 1, 200), "") AS ?start)
@@ -150,9 +145,8 @@ WHERE {
                           ?other pav:hasCurrentVersion ?otherVersion .
                           ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                           FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
-                          ?otherVersion cascade:narrativeText ?otherWritten .
+                          ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                           OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
-                          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?otherWritten), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?otherText)
                           BIND (STRLEN(?otherText) AS ?otherLength)
                           FILTER (?otherLength >= 200)
                           BIND (COALESCE(SUBSTR(?otherText, 1, 200), "") AS ?start)
@@ -179,9 +173,8 @@ WHERE {
                           ?record pav:hasCurrentVersion ?version .
                           ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                           FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
-                          ?version cascade:narrativeText ?written .
+                          ?version cascade:narrativeTextAsTrimmedLines ?text .
                           OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
-                          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?text)
                           BIND (STRLEN(?text) AS ?length)
                           FILTER (?length >= 200)
                           BIND (COALESCE(SUBSTR(?text, ?length - 199), "") AS ?end)
@@ -197,9 +190,8 @@ WHERE {
                           ?other pav:hasCurrentVersion ?otherVersion .
                           ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                           FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
-                          ?otherVersion cascade:narrativeText ?otherWritten .
+                          ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                           OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
-                          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?otherWritten), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?otherText)
                           BIND (STRLEN(?otherText) AS ?otherLength)
                           FILTER (?otherLength >= 200)
                           BIND (COALESCE(SUBSTR(?otherText, ?otherLength - 199), "") AS ?end)
@@ -230,9 +222,8 @@ WHERE {
                     ?witness1 pav:hasCurrentVersion ?witness1Version .
                     ?witness1Version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                     FILTER (isIRI(?type) || NOT EXISTS { ?witness1Version cascade:noteOrDocumentType ?loincOfWitness1Version })
-                    ?witness1Version cascade:narrativeText ?witness1Written .
+                    ?witness1Version cascade:narrativeTextAsTrimmedLines ?witness1Text .
                     OPTIONAL { ?witness1Version cascade:noteOrDocumentDate ?witness1Date }
-                    BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?witness1Written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?witness1Text)
                     BIND (STRLEN(?witness1Text) AS ?witness1Length)
                     FILTER (?witness1Length >= 200)
                     BIND (COALESCE(SUBSTR(?witness1Text, 1, 200), "") AS ?shorterStart)
@@ -264,9 +255,8 @@ WHERE {
                           ?record pav:hasCurrentVersion ?version .
                           ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                           FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
-                          ?version cascade:narrativeText ?written .
+                          ?version cascade:narrativeTextAsTrimmedLines ?text .
                           OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
-                          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?text)
                           BIND (STRLEN(?text) AS ?length)
                           FILTER (?length >= 200)
                           BIND (COALESCE(SUBSTR(?text, 1, 200), "") AS ?start)
@@ -282,9 +272,8 @@ WHERE {
                           ?other pav:hasCurrentVersion ?otherVersion .
                           ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                           FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
-                          ?otherVersion cascade:narrativeText ?otherWritten .
+                          ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                           OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
-                          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?otherWritten), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?otherText)
                           BIND (STRLEN(?otherText) AS ?otherLength)
                           FILTER (?otherLength >= 200)
                           BIND (COALESCE(SUBSTR(?otherText, 1, 200), "") AS ?start)
@@ -311,9 +300,8 @@ WHERE {
                           ?record pav:hasCurrentVersion ?version .
                           ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                           FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
-                          ?version cascade:narrativeText ?written .
+                          ?version cascade:narrativeTextAsTrimmedLines ?text .
                           OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
-                          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?text)
                           BIND (STRLEN(?text) AS ?length)
                           FILTER (?length >= 200)
                           BIND (COALESCE(SUBSTR(?text, ?length - 199), "") AS ?end)
@@ -329,9 +317,8 @@ WHERE {
                           ?other pav:hasCurrentVersion ?otherVersion .
                           ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                           FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
-                          ?otherVersion cascade:narrativeText ?otherWritten .
+                          ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                           OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
-                          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?otherWritten), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?otherText)
                           BIND (STRLEN(?otherText) AS ?otherLength)
                           FILTER (?otherLength >= 200)
                           BIND (COALESCE(SUBSTR(?otherText, ?otherLength - 199), "") AS ?end)
@@ -362,9 +349,8 @@ WHERE {
                     ?witness2 pav:hasCurrentVersion ?witness2Version .
                     ?witness2Version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
                     FILTER (isIRI(?type) || NOT EXISTS { ?witness2Version cascade:noteOrDocumentType ?loincOfWitness2Version })
-                    ?witness2Version cascade:narrativeText ?witness2Written .
+                    ?witness2Version cascade:narrativeTextAsTrimmedLines ?witness2Text .
                     OPTIONAL { ?witness2Version cascade:noteOrDocumentDate ?witness2Date }
-                    BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?witness2Written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "") AS ?witness2Text)
                     BIND (STRLEN(?witness2Text) AS ?witness2Length)
                     FILTER (?witness2Length >= 200)
                     BIND (COALESCE(SUBSTR(?witness2Text, ?witness2Length - 199), "") AS ?shorterEnd)

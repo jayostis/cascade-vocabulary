@@ -601,6 +601,12 @@ cascade:noteOrDocumentDate a owl:DatatypeProperty ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.date> .
 
+cascade:narrativeTextAsTrimmedLines a owl:DatatypeProperty ;
+    rdfs:label "narrative text as trimmed lines"@en ;
+    rdfs:comment "Derived: of the current version of a note or document, its cascade:narrativeText as lines, each run of spaces, tabs and carriage returns in a line one space, each line trimmed and blank lines dropped, the lines joined by a line feed: the text the matcher's note rules compare, worked out once per version rather than in every comparison."@en ;
+    rdfs:domain cascade:ClinicalNoteOrDocument ;
+    rdfs:range xsd:string .
+
 cascade:noteOrDocumentMasterIdentifier a owl:DatatypeProperty ;
     rdfs:label "note or document master identifier"@en ;
     rdfs:comment "Of a version of a note or document, the identifier of the one version of the one document it is, as FHIR's DocumentReference.masterIdentifier, which FHIR maps to a CDA document's ClinicalDocument/id: a literal of the identifier's value typed by its system URI, by HL7's CDA-to-FHIR identifier mapping, as dct:identifier is for a lab result, or a plain string when no system is stated. A C-CDA note carries it only when it is the whole document, an unstructured document's body, never a section or a Note Activity, which are parts of one. Not dct:identifier, which holds a record's business identifiers, as DocumentReference.identifier would."@en ;
