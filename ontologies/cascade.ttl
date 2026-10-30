@@ -189,7 +189,8 @@ cascade:clinicalStatus a owl:DatatypeProperty ;
 cascade:workflowStatus a owl:DatatypeProperty ;
     rdfs:label "Workflow Status"@en ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:Vaccination cascade:MedicalProcedure cascade:LaboratoryTestResult
-        cascade:PrescribedOrReportedMedication cascade:GeneticVariantFinding cascade:VariantInterpretation ) ] ;
+        cascade:PrescribedOrReportedMedication cascade:GeneticVariantFinding cascade:VariantInterpretation
+        cascade:DiagnosticReport cascade:ClinicalNoteOrDocument ) ] ;
     rdfs:range xsd:string ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> , <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
@@ -490,6 +491,141 @@ cascade:acmgEvidenceCode a owl:DatatypeProperty ;
     rdfs:domain cascade:VariantInterpretation ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://github.com/ga4gh/va-spec/blob/9d60508c0a7a1ccd79a6312a45b3618ee0121aec/schema/va-spec/acmg-2015-profile-source.yaml> .
+
+# Reports, notes and documents; decisions/reports-and-notes.md
+
+cascade:DiagnosticReport a owl:Class ;
+    rdfs:label "diagnostic report"@en ;
+    rdfs:comment "A report a source issued on a set of results, images or a study, as FHIR's DiagnosticReport, or a C-CDA Result Organizer as C-CDA on FHIR maps it to one: its code, its results as the result records' IRIs, its conclusion and its presented form. A report sent only as a document, such as a PDF, is a report all the same."@en ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport> .
+
+cascade:reportCode a owl:ObjectProperty ;
+    rdfs:label "report code"@en ;
+    rdfs:comment "Of a version of a report, what the report is, as FHIR's DiagnosticReport.code: a LOINC or SNOMED CT code IRI, one for each such coding the source gave."@en ;
+    rdfs:domain cascade:DiagnosticReport ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.code> .
+
+cascade:reportCodeInOtherSystem a owl:DatatypeProperty ;
+    rdfs:label "report code in another system"@en ;
+    rdfs:comment "Of a version of a report, a code the source gave for it in a system other than LOINC and SNOMED CT, such as CPT or a lab's own, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. A LOINC or SNOMED CT code is a cascade:reportCode IRI instead."@en ;
+    rdfs:domain cascade:DiagnosticReport ;
+    rdfs:range rdfs:Literal ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.code> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
+
+cascade:reportName a owl:DatatypeProperty ;
+    rdfs:label "report name"@en ;
+    rdfs:comment "Of a version of a report, its name as the source wrote it: the text of FHIR's DiagnosticReport.code, else its first coding's display."@en ;
+    rdfs:domain cascade:DiagnosticReport ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.code> .
+
+cascade:reportCategory a owl:DatatypeProperty ;
+    rdfs:label "report category"@en ;
+    rdfs:comment "Of a version of a report, the service or discipline that made it, as FHIR's DiagnosticReport.category: one literal for each coding the source gave, its code typed by its Coding.system URI, as \"LAB\"^^<http://terminology.hl7.org/CodeSystem/v2-0074>, a LOINC category included, since no table joins a category."@en ;
+    rdfs:domain cascade:DiagnosticReport ;
+    rdfs:range rdfs:Literal ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.category> .
+
+cascade:reportEffectiveTime a owl:DatatypeProperty ;
+    rdfs:label "report effective time"@en ;
+    rdfs:comment "Of a version of a report, the time its results are about, as FHIR's DiagnosticReport.effective[x]: the effectiveDateTime, or the start of the effectivePeriod; never when it was issued."@en ;
+    rdfs:domain cascade:DiagnosticReport ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.effective_x_> .
+
+cascade:reportConclusion a owl:DatatypeProperty ;
+    rdfs:label "report conclusion"@en ;
+    rdfs:comment "Of a version of a report, its summary or interpretation as the source wrote it, as FHIR's DiagnosticReport.conclusion."@en ;
+    rdfs:domain cascade:DiagnosticReport ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.conclusion> .
+
+cascade:reportConclusionCode a owl:ObjectProperty ;
+    rdfs:label "report conclusion code"@en ;
+    rdfs:comment "Of a version of a report, a code for its conclusion, as FHIR's DiagnosticReport.conclusionCode: a code IRI, one for each coding of a listed system the source gave."@en ;
+    rdfs:domain cascade:DiagnosticReport ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.conclusionCode> .
+
+cascade:ClinicalNoteOrDocument a owl:Class ;
+    rdfs:label "clinical note or document"@en ;
+    rdfs:comment "A note or document a source wrote about the person, as FHIR's DocumentReference, a C-CDA Note Activity, or a narrative-only C-CDA section whose code is a note type: its type, date and text. Not the kept source file, which is a prov:Entity under provenance/documents/."@en ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference> .
+
+cascade:noteOrDocumentType a owl:ObjectProperty ;
+    rdfs:label "note or document type"@en ;
+    rdfs:comment "Of a version of a note or document, what kind of note it is, as FHIR's DocumentReference.type, a C-CDA Note Activity's or section's code: a LOINC code IRI, one for each LOINC coding the source gave."@en ;
+    rdfs:domain cascade:ClinicalNoteOrDocument ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.type> .
+
+cascade:noteOrDocumentTypeInOtherSystem a owl:DatatypeProperty ;
+    rdfs:label "note or document type in another system"@en ;
+    rdfs:comment "Of a version of a note or document, a type the source gave in a system other than LOINC, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. A LOINC type is a cascade:noteOrDocumentType IRI instead."@en ;
+    rdfs:domain cascade:ClinicalNoteOrDocument ;
+    rdfs:range rdfs:Literal ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.type> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
+
+cascade:noteOrDocumentTypeName a owl:DatatypeProperty ;
+    rdfs:label "note or document type name"@en ;
+    rdfs:comment "Of a version of a note or document, the name of its type as the source wrote it: the text of FHIR's DocumentReference.type, else its first coding's display, or a C-CDA code's displayName."@en ;
+    rdfs:domain cascade:ClinicalNoteOrDocument ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.type> .
+
+cascade:noteOrDocumentTitle a owl:DatatypeProperty ;
+    rdfs:label "note or document title"@en ;
+    rdfs:comment "Of a version of a note or document, its title as the source wrote it: FHIR's DocumentReference.description, or a C-CDA section's title."@en ;
+    rdfs:domain cascade:ClinicalNoteOrDocument ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.description> .
+
+cascade:noteOrDocumentDate a owl:DatatypeProperty ;
+    rdfs:label "note or document date"@en ;
+    rdfs:comment "Of a version of a note or document, when it was written, as FHIR's DocumentReference.date, a C-CDA Note Activity's author time, or, for a narrative-only section, its document's effectiveTime."@en ;
+    rdfs:domain cascade:ClinicalNoteOrDocument ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.date> .
+
+cascade:narrativeText a owl:DatatypeProperty ;
+    rdfs:label "narrative text"@en ;
+    rdfs:comment "Of a version of a note, document or report, the note's text as its source wrote it, markup removed, in document order: a C-CDA section's text, FHIR's text.div with its tags stripped, or an inline text attachment's decoded text. A PDF's text is not read."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:DiagnosticReport cascade:ClinicalNoteOrDocument ) ] ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/domainresource-definitions.html#DomainResource.text> .
+
+cascade:Attachment a owl:Class ;
+    rdfs:label "attachment"@en ;
+    rdfs:comment "One of the files a report or a note's source gave inline or by address, as FHIR's Attachment, a node of the version that states it, <version>#attachment-n, n its 1-based position in the source, hashed with the version. Its bytes stay in the kept document."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Attachment> .
+
+cascade:attachment a owl:ObjectProperty ;
+    rdfs:label "attachment"@en ;
+    rdfs:comment "Of a version of a report or a note, one file its source gave: FHIR's DiagnosticReport.presentedForm or DocumentReference.content.attachment, or a C-CDA ED, one node per attachment."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:DiagnosticReport cascade:ClinicalNoteOrDocument ) ] ;
+    rdfs:range cascade:Attachment ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.presentedForm> , <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.content.attachment> .
+
+cascade:attachmentContentType a owl:DatatypeProperty ;
+    rdfs:label "attachment content type"@en ;
+    rdfs:comment "Of an attachment, its media type as the source gave it, as FHIR's Attachment.contentType or a C-CDA ED's mediaType: application/pdf, text/plain."@en ;
+    rdfs:domain cascade:Attachment ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Attachment.contentType> .
+
+cascade:attachmentTitle a owl:DatatypeProperty ;
+    rdfs:label "attachment title"@en ;
+    rdfs:comment "Of an attachment, the label the source gave it, as FHIR's Attachment.title."@en ;
+    rdfs:domain cascade:Attachment ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Attachment.title> .
+
+cascade:attachmentUrl a owl:DatatypeProperty ;
+    rdfs:label "attachment URL"@en ;
+    rdfs:comment "Of an attachment, the address the source gave its bytes at, as FHIR's Attachment.url or a C-CDA ED's reference value, as written; absent for one given inline."@en ;
+    rdfs:domain cascade:Attachment ;
+    rdfs:range xsd:anyURI ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Attachment.url> .
 
 # Records
 

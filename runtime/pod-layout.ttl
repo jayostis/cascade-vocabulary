@@ -16,6 +16,8 @@
 [] a cascade:Placement ; solid:forClass cascade:LaboratoryTestResult ; solid:instanceContainer <records/lab-results/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:GeneticVariantFinding ; solid:instanceContainer <records/variants/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:VariantInterpretation ; solid:instanceContainer <records/variant-interpretations/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:DiagnosticReport ; solid:instanceContainer <records/reports/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:ClinicalNoteOrDocument ; solid:instanceContainer <records/notes-and-documents/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:PatientProfile ; solid:instanceContainer <records/patient-profile/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:Organization ; solid:instanceContainer <records/organizations/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:Server ; solid:instanceContainer <records/servers/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
@@ -53,6 +55,10 @@ cascade:SyncFromAnotherWriter rdfs:subClassOf prov:Activity .
    cascade:writtenByQueryPath "views/variants.rq" ; dct:title "Variants" .
 [] a cascade:Placement ; solid:forClass cascade:VariantInterpretation ; solid:instance <clinical/variant-interpretations.ttl> ;
    cascade:writtenByQueryPath "views/variant-interpretations.rq" ; dct:title "Variant interpretations" .
+[] a cascade:Placement ; solid:forClass cascade:DiagnosticReport ; solid:instance <clinical/reports.ttl> ;
+   cascade:writtenByQueryPath "views/reports.rq" ; dct:title "Reports" .
+[] a cascade:Placement ; solid:forClass cascade:ClinicalNoteOrDocument ; solid:instance <clinical/notes-and-documents.ttl> ;
+   cascade:writtenByQueryPath "views/notes-and-documents.rq" ; dct:title "Notes and documents" .
 [] a cascade:Placement ; solid:forClass cascade:PatientProfile ; solid:instance <clinical/patient-profile.ttl> ;
    cascade:writtenByQueryPath "views/patient-profile.rq" ; cascade:writtenAlways true ; dct:title "Patient profile" .
 [] a cascade:Placement ; solid:instance <clinical/labels.ttl> ; cascade:writtenByQueryPath "labels.rq" .

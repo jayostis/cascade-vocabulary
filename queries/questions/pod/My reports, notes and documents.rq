@@ -1,0 +1,62 @@
+# Read from the views as an app would, so a model reads what a report or a note says in its first answer: one row for
+# each report and each note or document entry, newest first, with its kind, type code and name, date, title, status,
+# conclusion and text, and the lead record they came from with the document it was derived from, each hospital that
+# wrote or keeps that document and when it was retrieved, a row for each hospital; and one row for each result a report
+# names, with the result's entry, test, value and unit as the lab results view gives them. A day and a time are not
+# comparable, so entries are ordered by their day first, then by the time as written.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?date ?kind ?code ?name ?title ?status ?conclusion ?text ?result ?resultTest ?resultValue ?resultUnit
+       ?entry ?entryLabel ?record ?document ?documentLabel ?hospital ?retrieved
+WHERE {
+  { ?entry a cascade:DiagnosticReport ; cascade:leadMember ?record .
+    ?record cascade:recordKind ?kind ; cascade:currentRevision ?revision .
+    OPTIONAL { ?entry cascade:reportEffectiveTime ?date }
+    OPTIONAL { ?entry cascade:reportCode ?code }
+    OPTIONAL { ?entry cascade:reportName ?name }
+    OPTIONAL { ?entry cascade:workflowStatus ?status }
+    OPTIONAL { ?entry cascade:reportConclusion ?conclusion }
+    OPTIONAL { ?entry cascade:narrativeText ?text }
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?revision prov:wasDerivedFrom ?document .
+               OPTIONAL { ?document rdfs:label ?documentLabel }
+               OPTIONAL { ?document pav:retrievedOn ?retrieved }
+               OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                          ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                          FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                          OPTIONAL { ?agent rdfs:label ?agentLabel }
+                          OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                          BIND (COALESCE(?agentLabel, ?agentName) AS ?hospital) } } }
+  UNION
+  { ?entry a cascade:ClinicalNoteOrDocument ; cascade:leadMember ?record .
+    ?record cascade:recordKind ?kind ; cascade:currentRevision ?revision .
+    OPTIONAL { ?entry cascade:noteOrDocumentDate ?date }
+    OPTIONAL { ?entry cascade:noteOrDocumentType ?code }
+    OPTIONAL { ?entry cascade:noteOrDocumentTypeName ?name }
+    OPTIONAL { ?entry cascade:noteOrDocumentTitle ?title }
+    OPTIONAL { ?entry cascade:workflowStatus ?status }
+    OPTIONAL { ?entry cascade:narrativeText ?text }
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?revision prov:wasDerivedFrom ?document .
+               OPTIONAL { ?document rdfs:label ?documentLabel }
+               OPTIONAL { ?document pav:retrievedOn ?retrieved }
+               OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                          ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                          FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                          OPTIONAL { ?agent rdfs:label ?agentLabel }
+                          OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                          BIND (COALESCE(?agentLabel, ?agentName) AS ?hospital) } } }
+  UNION
+  { ?entry a cascade:DiagnosticReport ; obo:RO_0002351 ?result .
+    OPTIONAL { ?entry cascade:reportEffectiveTime ?date }
+    OPTIONAL { ?entry rdfs:label ?entryLabel }
+    OPTIONAL { ?result cascade:testName ?resultTest }
+    OPTIONAL { ?result cascade:resultValue ?resultValue }
+    OPTIONAL { ?result cascade:resultUnit ?resultUnit } }
+}
+ORDER BY DESC(COALESCE(SUBSTR(STR(?date), 1, 10), "")) DESC(COALESCE(STR(?date), "")) ?entry ?result ?code ?document ?hospital
