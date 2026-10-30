@@ -74,7 +74,7 @@ https://hl7.org/cda/us/ccda/StructureDefinition-HospitalCourseSection.html; the 
 | an attachment | FHIR `Attachment` | a node of the version, `<version>#attachment-n`, with its media type, title and address; its bytes stay in the kept document (`ontologies/cascade.ttl`) | borrowed |
 | the text | `DomainResource.text`; C-CDA `section/text` | one `cascade:narrativeText` per version, the whole text in document order with the markup removed; a PDF is not read (`ontologies/cascade.ttl`) | borrowed; one string where FHIR keeps XHTML |
 | a narrative-only section | C-CDA on FHIR maps sections into `Composition.section` | a C-CDA section whose code is a note type and which holds no entries is one note record, its type the section's code, its date the document's `effectiveTime` (#291) | diverged: a reading needs a record of note size, and `Composition` is exchange machinery |
-| joining | the matcher's rules | kinds never join (`tests/fixtures/kinds-never-join`); two notes of one type, LOINC or another system's, join when, from one organization, the shorter text is a run of whole lines of the longer, dated no earlier (R19), or, from any sources, the texts are equal once white space is one space (R20), either text of at least 200 characters; and two notes of one document master identifier join from any sources (R21) (`queries/matcher/same-note-type-and-text-grown-within-one-organization.rq`, `queries/matcher/same-note-type-and-text.rq`, `queries/matcher/same-note-or-document-master-identifier.rq`, rule M24) | ours |
+| joining | the matcher's rules | kinds never join (`tests/fixtures/kinds-never-join`); two notes of one type, LOINC or, when neither has LOINC, another system's, join when, from one organization, the shorter text begins or ends the longer as whole lines, dated no earlier, and no two notes grew apart from it (R19), or, from any sources, the texts are equal once white space is one space (R20), either text of at least 200 characters; and two notes of one document master identifier join from any sources (R21) (`queries/matcher/same-note-type-and-text-grown-within-one-organization.rq`, `queries/matcher/same-note-type-and-text.rq`, `queries/matcher/same-note-or-document-master-identifier.rq`, rule M24) | ours |
 
 ## Why
 
@@ -116,9 +116,12 @@ in row "a narrative-only section" holds only if its repeats join. Counted on the
 downloads, converted with the C-CDA adapter's note sections; the counts, lines and timings are posted at
 https://github.com/jayostis/cascade-vocabulary/issues/321#issuecomment-6533857683): 10 note sections made 9 records, identical re-sends
 already one record; Fernhill's 5 cumulative plans of treatment, each keeping every visit's paragraph and adding the
-latest, made 4 records and 4 entries. A grown note's earlier text is a run of whole lines of its later one, so R19
+latest, made 4 records and 4 entries. A grown note's earlier text begins (or, newest first, ends) its later one, so R19
 joins them, within one organization, since another organization's note that holds a note whole is quoting it; the
-later must be dated no earlier, or a note cut down to its latest paragraph would lead and hide the rest. With R19
+later must be dated no earlier, by instant when both are times, or a note cut down to its latest paragraph would lead
+and hide the rest. Growth is a chain: a plan of four generic lines passes the 200-character guard, and two visits'
+plans written from it each hold it; joining both to it would put the two visits in one entry behind one lead, so a
+note two notes grew apart from joins neither, and the entries R19 makes are chains whose lead holds every line. With R19
 Fernhill's 4 records are 1 entry and `priya_l`'s 9 note records are 6 entries; every other note there is distinct.
 R20 joins one note two sources sent (a hospital course in the hospital's and the clinic's summaries), compared with
 white space read as one space because two adapters break lines differently. The 200-character guard comes from the
@@ -161,6 +164,12 @@ supersede the last. One document can reach the pod twice, as an unstructured C-C
   The kit inputs hold no edited section (0 pairs of one source and type that share a line without one holding the
   other), so no threshold could be measured. Lean: a likeness rule once a source is measured sending edits, filed as
   likely for review.
+- R20 compares no date: one templated text of 200 characters or more that two organizations wrote at two visits is
+  taken for one note with two copies. A date guard would break the case R20 exists for, a hospital course whose two
+  copies carry the hospital's and the clinic's document dates. Lean: none until a source is measured sending such a
+  template.
+- An undated note cut down from a dated one, or the other way round, passes R19's date guard, so an undated copy can
+  lead the entry; the lead rule, not R19, would have to say what an undated revision weighs.
 - R21 waits on the adapters writing `cascade:noteOrDocumentMasterIdentifier` (the FHIR adapter from
   `DocumentReference.masterIdentifier`, the C-CDA adapter on an unstructured document's note); until then it joins
   nothing they convert, and rule M24 has no example of it.

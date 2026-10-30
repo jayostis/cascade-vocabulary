@@ -347,7 +347,7 @@ Feature: The matcher's procedure
     - R19, cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule, justified
       cascade:SameNoteTypeAndTextGrownWithinOneOrganization:
       queries/matcher/same-note-type-and-text-grown-within-one-organization.rq, for notes only. Two notes of one
-      type from documents of one organization, the shorter one's text a run of whole lines of the longer one's.
+      type from documents of one organization, the shorter one's text beginning or ending the longer one's, as a chain.
     - R20, cascade:SameNoteTypeAndTextRule, justified cascade:SameNoteTypeAndText: queries/matcher/same-note-type-and-text.rq,
       for notes only. Two notes of one type and one text, from any sources.
     - R21, cascade:SameNoteOrDocumentMasterIdentifierRule, justified cascade:SameNoteOrDocumentMasterIdentifier:
@@ -1295,25 +1295,30 @@ Feature: The matcher's procedure
     section again as it was names the same record, and one that sends it grown, as a clinic's plan of treatment that
     keeps each visit's paragraph and adds the latest, names another; and two custodians' copies of one note are two
     records in two scopes. From the rule list's version 17, R19 joins two notes whose current versions share a note
-    type, a LOINC code (cascade:noteOrDocumentType) or a code of another system
-    (cascade:noteOrDocumentTypeInOtherSystem), from documents naming one organization record, or two currently the same
+    type, a LOINC code (cascade:noteOrDocumentType), or a code of another system (cascade:noteOrDocumentTypeInOtherSystem)
+    when neither has a LOINC code, from documents naming one organization record, or two currently the same
     organization, as custodian or author, as R18 reads them, when the shorter one's text, read as lines with the white
-    space in each line made one space and trimmed, and blank lines dropped, is a run of whole lines of the longer one's,
-    and the longer one is dated no earlier (cascade:noteOrDocumentDate, compared by day) when both are dated: the entry
-    leads with the latest, which holds every line of the others. R20 joins two notes of one LOINC type whose texts are
-    the same once every run of white space is one space and the ends are trimmed, from any sources, one note with two
-    copies, R20 reading the type as R19 does; it never joins a text that holds another and more, since a note of another organization that holds a note
-    whole quotes it, and a quoting note leading the entry would show the quoter as its organization. Either rule needs
-    the text, the shorter one's for R19, to hold at least 200 characters: in the vocabulary's inputs every plan short
-    enough to recur in unrelated notes ("Return in 3 months.", "Follow-up in 2 months.") is under 45 characters, the
-    longest generic line, an emergency department's warning to come back, is 106, and the shortest note that grew holds
-    271, so the guard sits between them. A note whose later version rewrites a line, as an edited section, is joined by
-    neither. R21 joins two notes whose current versions carry one master identifier
-    (cascade:noteOrDocumentMasterIdentifier), the identifier of one version of one document, FHIR's
-    DocumentReference.masterIdentifier and a C-CDA document's ClinicalDocument/id, typed by its system as R18 reads an
-    identifier, whatever their types and texts and from any sources: an unstructured document imported as C-CDA and
-    pulled as a DocumentReference to it is one note. A plain string, an identifier with no system, joins nothing. Its
-    example comes with the adapters' next regeneration, which writes the term.
+    space in each line made one space and trimmed, and blank lines dropped, begins or ends the longer one's as whole
+    lines, and the longer one is dated no earlier (cascade:noteOrDocumentDate), by instant when both are times and by
+    day otherwise, when both are dated. A note grows at an end, after its last visit or before its first, newest first;
+    a text held in the middle of another is a template's, not a growth. Growth is a chain: a shorter note that two notes
+    of its type and organization hold, dated no earlier, neither of which holds the other, joins neither, since two notes
+    grown apart from one text are two visits written from one template. So the notes R19 joins into one entry are a
+    chain, each holding the one before it, and the entry leads with the latest, which holds every line of the others. R20
+    joins two notes of one type, read as R19 reads it, whose texts are the same once every run of white space is one
+    space and the ends are trimmed, from any sources and whatever their dates, one note with two copies; it never joins
+    a text that holds another and more, since a note of another organization that holds a note whole quotes it, and a
+    quoting note leading the entry would show the quoter as its organization. Either rule needs the text, the shorter
+    one's for R19, to hold at least 200 characters: in the vocabulary's inputs every plan short enough to recur in
+    unrelated notes ("Return in 3 months.", "Follow-up in 2 months.") is under 45 characters, the longest generic line,
+    an emergency department's warning to come back, is 106, and the shortest note that grew holds 271, so the guard sits
+    between them; a plan of several generic lines can pass it, and the chain rule keeps two visits grown from it apart.
+    A note whose later version rewrites a line, as an edited section, is joined by neither. R21 joins two notes whose
+    current versions carry one master identifier (cascade:noteOrDocumentMasterIdentifier), the identifier of one version
+    of one document, FHIR's DocumentReference.masterIdentifier and a C-CDA document's ClinicalDocument/id, typed by its
+    system as R18 reads an identifier, whatever their types and texts and from any sources: an unstructured document
+    imported as C-CDA and pulled as a DocumentReference to it is one note. A plain string, an identifier with no system,
+    joins nothing. Its example comes with the adapters' next regeneration, which writes the term.
 
     Background:
       Given a new pod for Gus on 2026-11-01 at 09:00

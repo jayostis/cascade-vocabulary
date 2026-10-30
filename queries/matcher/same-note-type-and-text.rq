@@ -1,5 +1,5 @@
-# Two notes match when their current versions share a note type, a LOINC code or a code of
-# another system, and give one text once every run of white space
+# Two notes match when their current versions share a note type, a LOINC code, or a code of another system when
+# neither has a LOINC code, and give one text once every run of white space
 # in it is one space and its two ends are trimmed, so line breaks and indentation, which two adapters write differently,
 # are not compared; whatever their sources: a hospital's note sent again in a clinic's summary, or pulled from its
 # server, is one note with two copies. A text of under 200 characters, such as "Return in 3 months.", is written alike in
@@ -15,7 +15,9 @@ WHERE {
     # bound: ?record
     WHERE {
       ?record pav:hasCurrentVersion ?version .
-      ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type ; cascade:narrativeText ?written .
+      ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+      FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+      ?version cascade:narrativeText ?written .
       BIND (COALESCE(REPLACE(REPLACE(STR(?written), "\\s+", " "), "^ | $", ""), "") AS ?text)
       FILTER (STRLEN(?text) >= 200)
     } }
@@ -23,9 +25,13 @@ WHERE {
     WHERE {
       { SELECT DISTINCT ?type
         # bound: ?record
-        WHERE { ?record pav:hasCurrentVersion/(cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem) ?type } }
-      ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type ; cascade:narrativeText ?otherWritten .
+        WHERE { ?record pav:hasCurrentVersion ?runVersion .
+                ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
       ?other pav:hasCurrentVersion ?otherVersion .
+      ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+      FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+      ?otherVersion cascade:narrativeText ?otherWritten .
       BIND (COALESCE(REPLACE(REPLACE(STR(?otherWritten), "\\s+", " "), "^ | $", ""), "") AS ?text)
     } }
   ?record pav:hasCurrentVersion ?version .
