@@ -7,7 +7,16 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;mmDmMFang9eWcOXYvZ8cGy087yp0g9Qk0v_kGhpnXfU> cascade:prescribedOrReported "prescribed" ;
+<ni:///sha-256;m6g3roanUyeq0_8GuuZ6fT9qwHWPXuDpjculLwe_b5A> cascade:structuredDosage <ni:///sha-256;m6g3roanUyeq0_8GuuZ6fT9qwHWPXuDpjculLwe_b5A#dosage-1> .
+<ni:///sha-256;m6g3roanUyeq0_8GuuZ6fT9qwHWPXuDpjculLwe_b5A#dosage-1> cascade:dosageRepeatFrequency 1 ;
+	cascade:dosageRepeatPeriodUnit "d" ;
+	cascade:dosageRouteCode <http://snomed.info/id/26643006> ;
+	cascade:dosageDoseQuantity <ni:///sha-256;m6g3roanUyeq0_8GuuZ6fT9qwHWPXuDpjculLwe_b5A#dosage-1-dose-quantity> .
+<ni:///sha-256;m6g3roanUyeq0_8GuuZ6fT9qwHWPXuDpjculLwe_b5A#dosage-1-dose-quantity> cascade:decimalValue "1"^^xsd:decimal ;
+	cascade:writtenValue "1" ;
+	cascade:unitText "tablet" .
+<ni:///sha-256;m6g3roanUyeq0_8GuuZ6fT9qwHWPXuDpjculLwe_b5A#dosage-1> cascade:dosageRepeatPeriod "1"^^xsd:decimal .
+<ni:///sha-256;m6g3roanUyeq0_8GuuZ6fT9qwHWPXuDpjculLwe_b5A> cascade:prescribedOrReported "prescribed" ;
 	cascade:drugName "lisinopril 10 MG Oral Tablet" ;
 	cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;
 	cascade:workflowStatus "active" ;
@@ -17,16 +26,16 @@
 <urn:uuid:62afa632-0672-8e62-b160-02d3a96f6c5b> a cascade:PrescribedOrReportedMedication ;
 	cascade:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-lisinopril-1> ;
 	cascade:sourceRecordId "medrx-lisinopril-1" .
-<ni:///sha-256;mmDmMFang9eWcOXYvZ8cGy087yp0g9Qk0v_kGhpnXfU> prov:specializationOf <urn:uuid:62afa632-0672-8e62-b160-02d3a96f6c5b> ;
+<ni:///sha-256;m6g3roanUyeq0_8GuuZ6fT9qwHWPXuDpjculLwe_b5A> prov:specializationOf <urn:uuid:62afa632-0672-8e62-b160-02d3a96f6c5b> ;
 	cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> .
-_:ab69ade829036b4795cd9c545704c052 bridge:arrivedAs <ni:///sha-256;mmDmMFang9eWcOXYvZ8cGy087yp0g9Qk0v_kGhpnXfU> ;
+_:bad78dba5ec5d870ef4b65141a462724 bridge:arrivedAs <ni:///sha-256;m6g3roanUyeq0_8GuuZ6fT9qwHWPXuDpjculLwe_b5A> ;
 	pav:version "1" ;
 	pav:lastUpdateOn "2023-06-15T17:05:00Z"^^xsd:dateTime ;
-	oa:hasSelector _:47bed13c1c61b1a49bd64558a76b17ce ;
+	oa:hasSelector _:e629c1845b5e727fabafac48a9618f2 ;
 	oa:hasSource <ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> ;
 	prov:wasDerivedFrom <ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> ;
 	prov:wasGeneratedBy _:b10aaa5662122a23188393c8fb5d422d .
-_:47bed13c1c61b1a49bd64558a76b17ce a oa:FragmentSelector ;
+_:e629c1845b5e727fabafac48a9618f2 a oa:FragmentSelector ;
 	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "" .
 _:b10aaa5662122a23188393c8fb5d422d <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;

@@ -80,6 +80,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:snomedCode ] ] .
 
+<#record-procedure/cpt-code-a-literal> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/cpt-code-a-literal.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:cptCode ] ] .
+
 <#record-procedure/other-system-code-cpt> a sht:Validate ;
   mf:action [ sht:dataGraph <record-procedure/other-system-code-cpt.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;

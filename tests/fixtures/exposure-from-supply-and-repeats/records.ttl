@@ -10,7 +10,7 @@
     cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
     cascade:prescriptionWrittenDate "2025-01-15"^^xsd:date ;
     cascade:expectedSupplyDuration <urn:x:repeatsVersion#expected-supply-duration> ;
-    cascade:numberOfRepeatsAllowed "3"^^xsd:nonNegativeInteger .
+    cascade:numberOfRepeatsAllowed "3"^^xsd:integer .
 <urn:x:repeatsVersion#expected-supply-duration> cascade:decimalValue "90"^^xsd:decimal ; cascade:writtenValue "90" ; cascade:ucumUnit "d" .
 :repeatsRevision a cascade:Revision ; cascade:revisionOf :repeats ; cascade:version :repeatsVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
@@ -29,7 +29,7 @@
     cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
     cascade:prescriptionWrittenDate "2025-06-10T09:30:00-04:00"^^xsd:dateTime ;
     cascade:expectedSupplyDuration <urn:x:weeksVersion#expected-supply-duration> ;
-    cascade:numberOfRepeatsAllowed "0"^^xsd:nonNegativeInteger .
+    cascade:numberOfRepeatsAllowed "0"^^xsd:integer .
 <urn:x:weeksVersion#expected-supply-duration> cascade:decimalValue "4"^^xsd:decimal ; cascade:writtenValue "4" ; cascade:ucumUnit "wk" .
 :weeksRevision a cascade:Revision ; cascade:revisionOf :weeks ; cascade:version :weeksVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
@@ -39,7 +39,7 @@
     cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "completed" ;
     cascade:prescriptionWrittenDate "2024-01-31"^^xsd:date ;
     cascade:expectedSupplyDuration <urn:x:monthsVersion#expected-supply-duration> ;
-    cascade:numberOfRepeatsAllowed "1"^^xsd:nonNegativeInteger .
+    cascade:numberOfRepeatsAllowed "1"^^xsd:integer .
 <urn:x:monthsVersion#expected-supply-duration> cascade:decimalValue "3"^^xsd:decimal ; cascade:writtenValue "3" ; cascade:ucumUnit "mo" .
 :monthsRevision a cascade:Revision ; cascade:revisionOf :months ; cascade:version :monthsVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

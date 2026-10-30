@@ -392,7 +392,7 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:LaboratoryTestResult ;
     sh:targetSubjectsOf cascade:testName , cascade:testCode , cascade:testCodeInOtherSystem , cascade:resultValue , cascade:resultUnit ,
-        cascade:referenceRange , cascade:resultInterpretation , cascade:resultClinicallyRelevantTime ;
+        cascade:referenceRange , cascade:resultClinicallyRelevantTime ;
 
     sh:property [
         sh:path cascade:testName ;
@@ -447,12 +447,6 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:referenceRange ;
-        sh:datatype xsd:string ;
-        sh:maxCount 1
-    ] ;
-
-    sh:property [
-        sh:path cascade:resultInterpretation ;
         sh:datatype xsd:string ;
         sh:maxCount 1
     ] ;
@@ -525,10 +519,10 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:cptCode ;
-        sh:datatype xsd:string ;
+        sh:nodeKind sh:IRI ;
         sh:maxCount 1 ;
-        sh:pattern "^[0-9]{4}[0-9FTU]$" ;
-        sh:message "CPT code must be five characters: five digits (Category I), or four digits followed by F (Category II), T (Category III) or U (Proprietary Laboratory Analyses)"@en
+        sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cpt/[0-9]{4}[0-9FTU]$" ;
+        sh:message "A CPT code is Cascade's IRI, https://ns.cascadeprotocol.org/codes/cpt/ and the five-character code: five digits (Category I), or four digits followed by F (Category II), T (Category III) or U (Proprietary Laboratory Analyses)"@en
     ] ;
 
     sh:property [
@@ -702,9 +696,10 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:numberOfRepeatsAllowed ;
-        sh:datatype xsd:nonNegativeInteger ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
         sh:maxCount 1 ;
-        sh:message "A medication states at most one number of repeats allowed, an xsd:nonNegativeInteger"@en ;
+        sh:message "A medication states at most one number of repeats allowed, an xsd:integer of 0 or more"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -757,9 +752,10 @@ cascade:StructuredDosageShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:dosageRepeatFrequency ;
-        sh:datatype xsd:positiveInteger ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
         sh:maxCount 1 ;
-        sh:message "A dosage states at most one frequency, an xsd:positiveInteger"@en ;
+        sh:message "A dosage states at most one frequency, an xsd:integer of 1 or more"@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:dosageRepeatPeriod ;
