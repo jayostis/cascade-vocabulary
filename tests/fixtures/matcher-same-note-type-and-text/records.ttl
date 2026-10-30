@@ -10,6 +10,8 @@
     prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
 :clinicSummary a prov:Entity ;
     prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+:clinicUnstructured a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
 :pull a prov:Entity ; cascade:serverBaseUrl "https://fhir.hospital.example/r4" .
 
 :hospitalCourse a cascade:ClinicalNoteOrDocument .
@@ -73,4 +75,30 @@
 :shortPlanAtTheClinicRevision a cascade:Revision ; cascade:revisionOf :shortPlanAtTheClinic ; cascade:version <urn:x:shortPlanAtTheClinicVersion> ;
     prov:wasDerivedFrom :clinicSummary ;
     prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-20T09:00:00-05:00"^^xsd:dateTime .
+
+:unstructuredFromCcda a cascade:ClinicalNoteOrDocument .
+<urn:x:unstructuredFromCcdaVersion> prov:specializationOf :unstructuredFromCcda ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:narrativeText "Progress note, October 22, 2026. Seen for follow-up of low sodium after a hospital stay. Sodium today 136 mmol/L. No dizziness. Hydrochlorothiazide stays stopped; recheck the sodium in one month and see me in three months." ;
+    cascade:noteOrDocumentDate "2026-10-22T09:00:00-05:00"^^xsd:dateTime .
+:unstructuredFromCcdaRevision a cascade:Revision ; cascade:revisionOf :unstructuredFromCcda ; cascade:version <urn:x:unstructuredFromCcdaVersion> ;
+    prov:wasDerivedFrom :clinicUnstructured ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-22T09:00:00-05:00"^^xsd:dateTime .
+
+:unstructuredFromFhir a cascade:ClinicalNoteOrDocument .
+<urn:x:unstructuredFromFhirVersion> prov:specializationOf :unstructuredFromFhir ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentDate "2026-10-22T09:00:00-05:00"^^xsd:dateTime .
+:unstructuredFromFhirRevision a cascade:Revision ; cascade:revisionOf :unstructuredFromFhir ; cascade:version <urn:x:unstructuredFromFhirVersion> ;
+    prov:wasDerivedFrom :pull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-22T09:00:00-05:00"^^xsd:dateTime .
+
+:unstructuredWithTextFromFhir a cascade:ClinicalNoteOrDocument .
+<urn:x:unstructuredWithTextFromFhirVersion> prov:specializationOf :unstructuredWithTextFromFhir ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:narrativeText "Progress note, October 22, 2026.\nSeen for follow-up of low sodium after a hospital stay.\nSodium today 136 mmol/L.\nNo dizziness.\nHydrochlorothiazide stays stopped; recheck the sodium in one month and see me in three months." ;
+    cascade:noteOrDocumentDate "2026-10-22T09:00:00-05:00"^^xsd:dateTime .
+:unstructuredWithTextFromFhirRevision a cascade:Revision ; cascade:revisionOf :unstructuredWithTextFromFhir ; cascade:version <urn:x:unstructuredWithTextFromFhirVersion> ;
+    prov:wasDerivedFrom :pull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-22T09:00:00-05:00"^^xsd:dateTime .
 

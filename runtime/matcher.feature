@@ -18,7 +18,9 @@ Feature: The matcher's procedure
   units and times differ by a little, under the rule list's version 12, and imports a hospital's summary, an exchange's
   that names the hospital as its author, and a clinic's, each holding a potassium of one business identifier, under the
   rule list's version 13. Hana, with the vocabulary's rule list of an app, enters conditions, flu
-  shots and lab results whose dates are a year, a month or a time to the hour, under the rule list's version 14.
+  shots and lab results whose dates are a year, a month or a time to the hour, under the rule list's version 14. Gus,
+  with the vocabulary's rule list of an app, imports his clinic's summaries, whose plan of treatment grows, and the
+  hospital course his hospital and his clinic each send, under the rule list's version 17.
 
   Rule: M1. A step's records are those with at least one first revision from that step's import, entry session or connect, the servers its connect wrote any revision for, or all from acts its sync names
     decisions/republishing-sources.md, row "what a run compares"; decisions/performance.md, row "runs bound to arrivals, scoped within an organisation".
@@ -340,6 +342,15 @@ Feature: The matcher's procedure
       queries/matcher/same-variation-through-current-tables-key-joined-first.rq, with cascade:VariantClassifications,
       for variants only.
 
+    Version 17 of the vocabulary's list adds two rows, whose examples are under M24:
+
+    - R19, cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule, justified
+      cascade:SameNoteTypeAndTextGrownWithinOneOrganization:
+      queries/matcher/same-note-type-and-text-grown-within-one-organization.rq, for notes only. Two notes of one LOINC
+      type from documents of one organization, the shorter one's text a run of whole lines of the longer one's.
+    - R20, cascade:SameNoteTypeAndTextRule, justified cascade:SameNoteTypeAndText: queries/matcher/same-note-type-and-text.rq,
+      for notes only. Two notes of one LOINC type and one text, from any sources.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
@@ -347,8 +358,8 @@ Feature: The matcher's procedure
     R4's changed queries in its version 9, R11's and R13's in its version 10, R14 as well in its version 11, and R6's
     changed query, R15, R16 and R17 in its version 12, R18 as well in its version 13, and R2's, R4's, R6's, R8's,
     R15's, R16's and R17's changed queries in its version 14, R6's, R15's, R16's, R17's and R18's queries bound
-    per side in its version 15, and R1's, R2's, R3's, R4's, R5's, R7's, R10's, R11's, R12's and R13's queries joined
-    on the code first in its version 16.
+    per side in its version 15, R1's, R2's, R3's, R4's, R5's, R7's, R10's, R11's, R12's and R13's queries joined
+    on the code first in its version 16, and R19 and R20 as well in its version 17.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -1274,3 +1285,48 @@ Feature: The matcher's procedure
       Then the matcher's judgments holding lab result LOINC 2823-3 "Potassium, at two", lab result LOINC 2823-3 "Potassium, other lab at two", lab result LOINC 2823-3 "Potassium, in 2025" and lab result LOINC 2823-3 "Potassium, not reported" are:
         | justification          | members                                                                                          | used                                                                                                                       |
         | same result on one day | lab result LOINC 2823-3 "Potassium, at two", lab result LOINC 2823-3 "Potassium, other lab at two" | version 1 of lab result LOINC 2823-3 "Potassium, at two", version 1 of lab result LOINC 2823-3 "Potassium, other lab at two" |
+
+  Rule: M24. A note its source sent again as it grew, and one note two sources sent, are one note
+    decisions/reports-and-notes.md, rows "a narrative-only section" and "joining".
+    A C-CDA section is named by its code and its text, since it has no id (naming.feature), so a source that sends a
+    section again as it was names the same record, and one that sends it grown, as a clinic's plan of treatment that
+    keeps each visit's paragraph and adds the latest, names another; and two custodians' copies of one note are two
+    records in two scopes. From the rule list's version 17, R19 joins two notes whose current versions carry one LOINC
+    note type (cascade:noteOrDocumentType), from documents naming one organization record, or two currently the same
+    organization, as custodian or author, as R18 reads them, when the shorter one's text, read as lines with the white
+    space in each line made one space and trimmed, and blank lines dropped, is a run of whole lines of the longer one's,
+    and the longer one is dated no earlier (cascade:noteOrDocumentDate, compared by day) when both are dated: the entry
+    leads with the latest, which holds every line of the others. R20 joins two notes of one LOINC type whose texts are
+    the same once every run of white space is one space and the ends are trimmed, from any sources, one note with two
+    copies; it never joins a text that holds another and more, since a note of another organization that holds a note
+    whole quotes it, and a quoting note leading the entry would show the quoter as its organization. Either rule needs
+    the text, the shorter one's for R19, to hold at least 200 characters: in the vocabulary's inputs every plan short
+    enough to recur in unrelated notes ("Return in 3 months.", "Follow-up in 2 months.") is under 45 characters, the
+    longest generic line, an emergency department's warning to come back, is 106, and the shortest note that grew holds
+    271, so the guard sits between them. A note whose later version rewrites a line, as an edited section, is joined by
+    neither, and neither is a note typed only in another system than LOINC.
+
+    Background:
+      Given a new pod for Gus on 2026-11-01 at 09:00
+      And the pod is opened with the tables "app-notes" on 2026-11-01 at 09:01
+      And Gus files the judgment "about-the-notes" on 2026-11-01 at 09:05
+
+    Example: a plan of treatment the clinic sent again with two more lines is one note, the grown one leading, and a short plan it holds joins neither
+      Given the download "clinic-plan-may.xml" is imported on 2026-11-02 at 09:00
+      And the download "clinic-plan-june.xml" is imported on 2026-11-02 at 09:10
+      And the download "clinic-plan-august.xml" is imported on 2026-11-02 at 09:20
+      When the matcher runs on the records of that import on 2026-11-02 at 09:25
+      Then the matcher's judgments holding note "Plan of treatment, May 20", note "Plan of treatment, June 15" and note "Plan of treatment, August 12" are:
+        | justification                                          | members                                                         |
+        | same note type and text grown within one organization  | note "Plan of treatment, August 12", note "Plan of treatment, May 20" |
+      And the entry of note "Plan of treatment, May 20" shows:
+        | field       | value                               |
+        | lead member | note "Plan of treatment, August 12" |
+
+    Example: the hospital course the hospital and the clinic each sent is one note with two copies
+      Given the download "hospital-course.xml" is imported on 2026-11-02 at 09:00
+      And the download "clinic-hospital-course.xml" is imported on 2026-11-02 at 09:10
+      When the matcher runs on the records of that import on 2026-11-02 at 09:15
+      Then the matcher's judgments holding note "Hospital course" and note "Hospital course, as the clinic holds it" are:
+        | justification           | members                                                            |
+        | same note type and text | note "Hospital course", note "Hospital course, as the clinic holds it" |

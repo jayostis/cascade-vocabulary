@@ -123,14 +123,14 @@ A record is named by what a person reads in it, never by its IRI, except where a
 
 - **`<kind> <system> <code> "<name>"`**, as `allergy RxNorm 1191 "Ecotrin"`, with the code, the name or both: the
   record of that kind whose version gives them. The kinds are `allergy`, `condition`, `immunization`, `procedure`,
-  `medication`, `lab result`, `variant` and `variant interpretation`; the systems `SNOMED` (an `http://snomed.info/id/` IRI, or a `cascade:snomedCode`),
+  `medication`, `lab result`, `note`, `variant` and `variant interpretation`; the systems `SNOMED` (an `http://snomed.info/id/` IRI, or a `cascade:snomedCode`),
   `RxNorm` (an `https://ns.cascadeprotocol.org/codes/rxnorm/` IRI), `NDC` (an
   `https://ns.cascadeprotocol.org/codes/ndc11/` IRI, a medication's `cascade:ndcCode`), `ICD-10-CM` (an
   `https://ns.cascadeprotocol.org/codes/icd10cm/` IRI), `LOINC` (an `http://loinc.org/rdf/` IRI) and `CVX`
   (a `cascade:vaccineCode`), `HGVS` (a variant's `cascade:hgvsCodingDnaExpression`, the expression as written, as in
   `variant HGVS NM_000249.4:c.2042C>T`) and `ClinVar` (a variant's `cascade:clinvarVariationId`, the digits, as in
-  `variant ClinVar 90011`); the name is the version's allergen, condition, vaccine, procedure, drug or test name, or a
-  variant's HGVS expression. A `variant interpretation` has neither a code nor a name, so no step names one: a step
+  `variant ClinVar 90011`); the name is the version's allergen, condition, vaccine, procedure, drug or test name, a note's
+  title, or a variant's HGVS expression. A `variant interpretation` has neither a code nor a name, so no step names one: a step
   names the variant it interprets, and the interpretation is read by its place in the view. Each
   draft of an entry has a name of its own, so no record is named by its position.
 - **`… from <source>`**, where two imported records share code and name: `from codeine-1` is the record whose
@@ -156,8 +156,9 @@ A judgment a person makes is named by its handle in a kit (`J21`) or by its file
 judgment is named `the matcher's <justification> of <records>`, the justification in words: `same code`,
 `same code and date`, `same mapped code`, `same mapped code and date`, `same medication code`, `same result`,
 `same converted code`, `same code and period`, `same brand generic`, `same product code`, `same variation`,
-`same variation through the table`, `same self-asserted base URL and authorization endpoint on one host` or
-`same business identifier and test code within one organization`. A
+`same variation through the table`, `same self-asserted base URL and authorization endpoint on one host`,
+`same business identifier and test code within one organization`,
+`same note type and text grown within one organization` or `same note type and text`. A
 reference series is named by its `rdfs:label` in `references/` or any of the person's `tables/` folders, one series per label, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
 name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5. An entry of a view is

@@ -1,0 +1,62 @@
+# Two notes match when their current versions share a LOINC note type, the documents their revisions come from name,
+# as custodian or author, one organization record, or two that are currently the same organization, and the shorter
+# one's text is a run of whole lines of the longer one's: a note its source sends again as it grows, as a clinic's
+# plan of treatment that keeps every visit's paragraph and adds the latest. A text is read as lines, the white space
+# inside each line made one space and trimmed at both ends, and blank lines dropped, so a source that indents or spaces
+# its text anew still matches; the lines are compared as written otherwise, in their order. The shorter text holds at
+# least 200 characters, since a short plan such as "Return in 3 months." is held whole by many later notes it is not
+# part of; and the longer one is dated no earlier, by day, when both are dated, since a note holding a later one whole
+# was cut down, not grown, and its lines would be hidden behind the later lead. Two texts that are the same lines are
+# same-note-type-and-text.rq's. An agent that is no organization record, and a record whose documents name none, as a
+# pull from a server does, match nothing here. A note typed only in another system than LOINC is not compared. Each
+# ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  { SELECT ?record ?other
+    WHERE {
+      { SELECT ?record ?type ?lines ?length ?day
+        # bound: ?record
+        WHERE {
+          ?record pav:hasCurrentVersion ?version .
+          ?version cascade:noteOrDocumentType ?type ; cascade:narrativeText ?written .
+          OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
+          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "")
+                AS ?text)
+          BIND (CONCAT("\n", ?text, "\n") AS ?lines)
+          BIND (STRLEN(?text) AS ?length)
+          BIND (COALESCE(SUBSTR(STR(?date), 1, 10), "") AS ?day)
+        } }
+      { SELECT ?other ?type ?otherLines ?otherLength ?otherDay
+        WHERE {
+          { SELECT DISTINCT ?type
+            # bound: ?record
+            WHERE { ?record pav:hasCurrentVersion/cascade:noteOrDocumentType ?type } }
+          ?otherVersion cascade:noteOrDocumentType ?type ; cascade:narrativeText ?otherWritten .
+          ?other pav:hasCurrentVersion ?otherVersion .
+          OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
+          BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?otherWritten), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "")
+                AS ?otherText)
+          BIND (CONCAT("\n", ?otherText, "\n") AS ?otherLines)
+          BIND (STRLEN(?otherText) AS ?otherLength)
+          BIND (COALESCE(SUBSTR(STR(?otherDate), 1, 10), "") AS ?otherDay)
+        } }
+      FILTER (?other != ?record
+              && ((?length >= 200 && ?length < ?otherLength && CONTAINS(?otherLines, ?lines)
+                   && (?day = "" || ?otherDay = "" || ?otherDay >= ?day))
+                  || (?otherLength >= 200 && ?otherLength < ?length && CONTAINS(?lines, ?otherLines)
+                      && (?day = "" || ?otherDay = "" || ?day >= ?otherDay))))
+    } }
+  ?revision cascade:revisionOf ?record ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+  ?attribution prov:hadRole ?role ; prov:agent ?organization .
+  ?organization a cascade:Organization .
+  ?otherRevision cascade:revisionOf ?other ; prov:wasDerivedFrom/prov:qualifiedAttribution ?otherAttribution .
+  ?otherAttribution prov:hadRole ?otherRole ; prov:agent ?otherOrganization .
+  ?otherOrganization a cascade:Organization .
+  FILTER (?role IN (cascade:CustodianRole, cascade:AuthorRole) && ?otherRole IN (cascade:CustodianRole, cascade:AuthorRole)
+          && (?organization = ?otherOrganization
+              || EXISTS { ?organization cascade:currentlySameOrganization+ ?otherOrganization }))
+}

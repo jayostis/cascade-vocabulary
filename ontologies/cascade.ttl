@@ -2198,6 +2198,16 @@ cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization a owl:NamedIndivi
     rdfs:comment "Both lab results carry one business identifier of a named system and one test code, and one clinically relevant time, or one of them none, and documents they came from name one organization record, or two currently the same organization, as custodian or author: a certain join, ahead of every other rule for lab results. Rule M22 and decisions/quantities.md, row \"matcher\", say why."@en ;
     skos:broadMatch semapv:LexicalMatching .
 
+cascade:SameNoteTypeAndTextGrownWithinOneOrganization a owl:NamedIndividual ;
+    rdfs:label "same note type and text grown within one organization"@en ;
+    rdfs:comment "Both notes carry one LOINC note type, documents they came from name one organization record, or two currently the same organization, as custodian or author, and the shorter one's text, of at least 200 characters, is a run of whole lines of the longer one's, which is dated no earlier: one note its source sent again as it grew. Rule M24 and decisions/reports-and-notes.md, row \"joining\", say why."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
+cascade:SameNoteTypeAndText a owl:NamedIndividual ;
+    rdfs:label "same note type and text"@en ;
+    rdfs:comment "Both notes carry one LOINC note type and one text of at least 200 characters, every run of white space read as one space, from any sources: one note with two copies. Rule M24 and decisions/reports-and-notes.md, row \"joining\", say why."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
 cascade:SameResultOnOneDay a owl:NamedIndividual ;
     rdfs:label "same result on one day"@en ;
     rdfs:comment "Both lab results carry one test code, one value of one kind in one unit, and one day, at least one of them a day with no time, so two draws that day cannot be told apart: a likely join, which the review page lists."@en ;
@@ -2541,6 +2551,14 @@ cascade:SameResultOnOneDayRule a owl:NamedIndividual ;
 cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule a owl:NamedIndividual ;
     rdfs:label "R18, same business identifier and test code within one organization"@en ;
     rdfs:comment "Rule R18 of runtime/matcher.feature; its judgments are justified cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization."@en .
+
+cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule a owl:NamedIndividual ;
+    rdfs:label "R19, same note type and text grown within one organization"@en ;
+    rdfs:comment "Rule R19 of runtime/matcher.feature; its judgments are justified cascade:SameNoteTypeAndTextGrownWithinOneOrganization."@en .
+
+cascade:SameNoteTypeAndTextRule a owl:NamedIndividual ;
+    rdfs:label "R20, same note type and text"@en ;
+    rdfs:comment "Rule R20 of runtime/matcher.feature; its judgments are justified cascade:SameNoteTypeAndText."@en .
 
 # Servers and organizations
 

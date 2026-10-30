@@ -1,0 +1,71 @@
+@prefix bridge: <https://ns.cascadeprotocol.org/bridge/v1-draft#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+<urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> a cascade:Organization .
+<ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> prov:qualifiedAttribution _:d5ddf9085f6d874ead6de9e9609a13d2 .
+_:d5ddf9085f6d874ead6de9e9609a13d2 prov:agent <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> ;
+	prov:hadRole cascade:CustodianRole .
+<ni:///sha-256;5rNG4N2I8C9jutyJj32NuTX-8YIs3kBrMJiGS8dJV9I> prov:specializationOf <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> .
+_:96c46d7e7ca85790d6b07e90d5626748 bridge:arrivedAs <ni:///sha-256;5rNG4N2I8C9jutyJj32NuTX-8YIs3kBrMJiGS8dJV9I> ;
+	oa:hasSelector _:ecadbf924e4177284406280d39ce72cb .
+_:ecadbf924e4177284406280d39ce72cb a oa:XPathSelector ;
+	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='custodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='assignedCustodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='representedCustodianOrganization' and namespace-uri()='urn:hl7-org:v3'][1]" .
+<ni:///sha-256;5rNG4N2I8C9jutyJj32NuTX-8YIs3kBrMJiGS8dJV9I> foaf:name "Kestrel Harbor Hospital" ;
+	org:identifier "1234567893"^^<http://hl7.org/fhir/sid/us-npi> .
+<ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> prov:qualifiedAttribution _:a87c49e856c4ecccca0bb7c872ceb9a2 .
+_:a87c49e856c4ecccca0bb7c872ceb9a2 prov:agent <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> ;
+	prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;0ROnGrsB6S2xIzOtoj0wL0Hy7GxjIN1tlfB8Od5ij1I> cascade:narrativeText "Admitted on October 2, 2026 with dizziness and a sodium of 123 mmol/L. Hydrochlorothiazide was stopped and fluids restricted; the sodium rose to 134 mmol/L by discharge.\nDischarged home on October 5, 2026 to follow up with his primary care provider within one week." ;
+	cascade:noteOrDocumentTitle "Hospital course" ;
+	cascade:workflowStatus "current" ;
+	cascade:noteOrDocumentDate "2026-10-05T12:00:00-05:00"^^xsd:dateTime ;
+	cascade:noteOrDocumentTypeName "Hospital course Narrative" ;
+	cascade:noteOrDocumentType <http://loinc.org/rdf/8648-8> .
+<ni:///sha-256;4l2KVqupIfCj7X_GuPRHzG-Uc36L5zaQ1kP2TavEiJU> foaf:givenName "Gus" ;
+	foaf:familyName "Lindqvist" ;
+	cascade:dateOfBirth "1971-03-18"^^xsd:date ;
+	cascade:administrativeGender "male" .
+<urn:uuid:56e875f6-e008-8222-9c87-fac86fea8647> a cascade:PatientProfile ;
+	cascade:sourceUrl <urn:hl7ii:2.16.840.1.113883.19.5.99999.4:MRN-771204> ;
+	cascade:sourceRecordId "2.16.840.1.113883.19.5.99999.4:MRN-771204" .
+<ni:///sha-256;4l2KVqupIfCj7X_GuPRHzG-Uc36L5zaQ1kP2TavEiJU> prov:specializationOf <urn:uuid:56e875f6-e008-8222-9c87-fac86fea8647> .
+_:c95cef07ff3737899f9f7030a7bf5a7d a oa:XPathSelector ;
+	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='recordTarget' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='patientRole' and namespace-uri()='urn:hl7-org:v3'][1]" .
+_:19080809ddb43183cc31ac1f43ee3f8d bridge:arrivedAs <ni:///sha-256;4l2KVqupIfCj7X_GuPRHzG-Uc36L5zaQ1kP2TavEiJU> ;
+	oa:hasSelector _:c95cef07ff3737899f9f7030a7bf5a7d .
+<urn:uuid:82e30aca-0b45-84f5-bd63-a476791f31cd> a cascade:ClinicalNoteOrDocument .
+<ni:///sha-256;0ROnGrsB6S2xIzOtoj0wL0Hy7GxjIN1tlfB8Od5ij1I> prov:specializationOf <urn:uuid:82e30aca-0b45-84f5-bd63-a476791f31cd> ;
+	cascade:patient <urn:uuid:56e875f6-e008-8222-9c87-fac86fea8647> .
+_:f6a9633ee60f76a6574c4ead43377397 a oa:XPathSelector ;
+	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='structuredBody' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='component' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='section' and namespace-uri()='urn:hl7-org:v3'][1]" .
+_:b84eb0fd341f108f888e1109876544bf bridge:arrivedAs <ni:///sha-256;0ROnGrsB6S2xIzOtoj0wL0Hy7GxjIN1tlfB8Od5ij1I> ;
+	oa:hasSelector _:f6a9633ee60f76a6574c4ead43377397 .
+_:19080809ddb43183cc31ac1f43ee3f8d oa:hasSource <ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> ;
+	prov:wasDerivedFrom <ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> ;
+	prov:wasGeneratedBy _:ac2952e031d7e3650b4542a1d8d469c .
+_:b84eb0fd341f108f888e1109876544bf oa:hasSource <ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> ;
+	prov:wasDerivedFrom <ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> ;
+	prov:wasGeneratedBy _:ac2952e031d7e3650b4542a1d8d469c .
+_:96c46d7e7ca85790d6b07e90d5626748 oa:hasSource <ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> ;
+	prov:wasDerivedFrom <ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> ;
+	prov:wasGeneratedBy _:ac2952e031d7e3650b4542a1d8d469c .
+_:ac2952e031d7e3650b4542a1d8d469c <http://www.w3.org/2000/01/rdf-schema#label> "C-CDA download" ;
+	prov:startedAtTime "2026-11-02T09:00:00Z"^^xsd:dateTime .
+<ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> cascade:sourceFormatVersion "2015-08-01" ;
+	a prov:Entity .
+_:ac2952e031d7e3650b4542a1d8d469c a prov:Activity ;
+	prov:used <ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> ;
+	prov:qualifiedAssociation _:2510494fcb9a8576842934e61eb4e98c .
+_:2510494fcb9a8576842934e61eb4e98c prov:hadPlan _:6079d1c4e2d291061628bef3df7f4c38 .
+_:6079d1c4e2d291061628bef3df7f4c38 a prov:Plan ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "ccda" ;
+	<http://purl.org/pav/version> "0.1.0" .
+_:2510494fcb9a8576842934e61eb4e98c prov:agent _:e9e5d495b7b9ea7b7acc682ab0758ca3 .
+_:e9e5d495b7b9ea7b7acc682ab0758ca3 a prov:SoftwareAgent ;
+	<http://www.w3.org/2000/01/rdf-schema#label> "Cascade Bridge for Rust" ;
+	<http://purl.org/pav/version> "0.1.0" .
