@@ -22,3 +22,21 @@
     cascade:vaccinationOccurrenceTime "2025-10-01"^^xsd:date .
 :flu3Revision a cascade:Revision ; cascade:revisionOf :flu3 ; cascade:version :flu3Version ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:note1 a cascade:ClinicalNoteOrDocument .
+:note1Version prov:specializationOf :note1 ; cascade:patient :subject ; cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:noteOrDocumentTitle "Plan of treatment 1" .
+:note1Revision a cascade:Revision ; cascade:revisionOf :note1 ; cascade:version :note1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:note2 a cascade:ClinicalNoteOrDocument .
+:note2Version prov:specializationOf :note2 ; cascade:patient :subject ; cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:noteOrDocumentTitle "Plan of treatment 2" .
+:note2Revision a cascade:Revision ; cascade:revisionOf :note2 ; cascade:version :note2Version ;
+    prov:generatedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:00Z"^^xsd:dateTime .
+
+:note3 a cascade:ClinicalNoteOrDocument .
+:note3Version prov:specializationOf :note3 ; cascade:patient :subject ; cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:noteOrDocumentTitle "Plan of treatment 3" .
+:note3Revision a cascade:Revision ; cascade:revisionOf :note3 ; cascade:version :note3Version ;
+    prov:generatedAtTime "2026-01-03T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-03T00:00:00Z"^^xsd:dateTime .

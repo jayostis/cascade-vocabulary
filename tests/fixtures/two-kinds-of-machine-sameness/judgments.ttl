@@ -26,3 +26,22 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:queryHash :sameCodeAndDateQuery .
 :rules1SameMappedCodeAndDateRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameMappedCodeAndDateRule ;
     cascade:queryHash :sameMappedCodeAndDateQuery .
+
+:grown a cascade:Judgment ; cascade:verdict cascade:Same ;
+    cascade:justification cascade:SameNoteTypeAndTextGrownWithinOneOrganization ; prov:hadMember :note1 , :note2 ;
+    prov:used :note1Version , :note2Version ;
+    cascade:matcherRule cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:sameText a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameNoteTypeAndText ;
+    prov:hadMember :note2 , :note3 ; prov:used :note2Version , :note3Version ;
+    cascade:matcherRule cascade:SameNoteTypeAndTextRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:grownUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :grown ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:sameTextUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameText ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:rules1SameNoteTypeAndTextGrownWithinOneOrganizationRule cascade:rowOfRuleListVersion :rules1 ;
+    cascade:matcherRule cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule ; cascade:queryHash :grownQuery .
+:rules1SameNoteTypeAndTextRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameNoteTypeAndTextRule ;
+    cascade:queryHash :sameTextQuery .

@@ -17,6 +17,8 @@
     prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
 :clinicAugustAgain a prov:Entity ;
     prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+:clinicJuly a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
 :hospitalSummary a prov:Entity ;
     prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
 :exchangeSummary a prov:Entity ;
@@ -40,6 +42,15 @@
 :planJuneRevision a cascade:Revision ; cascade:revisionOf :planJune ; cascade:version <urn:x:planJuneVersion> ;
     prov:wasDerivedFrom :clinicJune ;
     prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-06-15T09:00:00-05:00"^^xsd:dateTime .
+
+:planMayEdited a cascade:ClinicalNoteOrDocument .
+<urn:x:planMayEditedVersion> prov:specializationOf :planMayEdited ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:narrativeText "Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in 4 weeks to go over the results with Elena Marsh, MD." ;
+    cascade:noteOrDocumentDate "2026-07-01T09:00:00-05:00"^^xsd:dateTime .
+:planMayEditedRevision a cascade:Revision ; cascade:revisionOf :planMayEdited ; cascade:version <urn:x:planMayEditedVersion> ;
+    prov:wasDerivedFrom :clinicJuly ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-07-01T09:00:00-05:00"^^xsd:dateTime .
 
 :planAugust a cascade:ClinicalNoteOrDocument .
 <urn:x:planAugustVersion> prov:specializationOf :planAugust ;
