@@ -1,0 +1,5 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT ?holder ?node ?property ?written
+WHERE { GRAPH <https://pod.example/clinical/reports.ttl> { ?holder cascade:paddedDateTime ?node .
+                                                            ?node cascade:paddedDateTimeProperty ?property ; cascade:writtenDate ?written } }

@@ -55,3 +55,15 @@
     cascade:interpretedDate "2024-03-12"^^xsd:date ; cascade:workflowStatus "final" .
 :interpretationRevision a cascade:Revision ; cascade:revisionOf :interpretation ; cascade:version :interpretationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:report a cascade:DiagnosticReport .
+:reportVersion prov:specializationOf :report ; cascade:reportName "Cobalamin" ; cascade:workflowStatus "final" ;
+    cascade:reportEffectiveTime "2025-04-02"^^xsd:date .
+:reportRevision a cascade:Revision ; cascade:revisionOf :report ; cascade:version :reportVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:note a cascade:ClinicalNoteOrDocument .
+:noteVersion prov:specializationOf :note ; cascade:noteOrDocumentTypeName "Progress note" ; cascade:workflowStatus "current" ;
+    cascade:noteOrDocumentDate "2025-05-06"^^xsd:date .
+:noteRevision a cascade:Revision ; cascade:revisionOf :note ; cascade:version :noteVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

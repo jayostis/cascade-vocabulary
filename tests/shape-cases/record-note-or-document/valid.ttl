@@ -1,0 +1,20 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:65ed0f37-5495-8cf5-aebf-1b08b831c7c8> a cascade:ClinicalNoteOrDocument ;
+    cascade:sourceUrl <https://fhir.example/DocumentReference/note-valid> .
+
+<ni:///sha-256;note-valid> prov:specializationOf <urn:uuid:65ed0f37-5495-8cf5-aebf-1b08b831c7c8> ;
+    cascade:patient :patient ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentTypeInOtherSystem "PROG"^^<urn:oid:2.16.840.1.113883.19.5.99999.8> ;
+    cascade:noteOrDocumentTypeName "Progress note" ;
+    cascade:noteOrDocumentTitle "Follow-up visit" ;
+    cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ;
+    cascade:workflowStatus "current" ;
+    cascade:narrativeText "Lung nodule, 6 mm." ;
+    prov:wasAttributedTo <urn:uuid:801785a3-066b-86fb-84c1-2119dc670fce> ;
+    cascade:attachment <ni:///sha-256;note-valid#attachment-1> .
+<ni:///sha-256;note-valid#attachment-1> cascade:attachmentContentType "text/plain" .

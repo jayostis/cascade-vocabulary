@@ -756,3 +756,36 @@
   mf:action [ sht:dataGraph <reference-series/expansion-without-value-set.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ReferenceSeriesShape ] ] .
+
+<#record-report/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-report/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-report/two-names> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-report/two-names.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DiagnosticReportShape ; sh:resultPath cascade:reportName ] ] .
+
+<#record-report/category-a-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-report/category-a-string.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DiagnosticReportShape ; sh:resultPath cascade:reportCategory ] ] .
+
+<#record-report/two-texts> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-report/two-texts.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:NarrativeTextShape ; sh:resultPath cascade:narrativeText ] ] .
+
+<#record-report/two-media-types> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-report/two-media-types.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:AttachmentShape ; sh:resultPath cascade:attachmentContentType ] ] .
+
+<#record-note-or-document/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-note-or-document/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-note-or-document/type-snomed-ct> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-note-or-document/type-snomed-ct.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ClinicalNoteOrDocumentShape ; sh:resultPath cascade:noteOrDocumentType ] ] .

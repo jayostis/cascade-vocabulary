@@ -1,0 +1,34 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "reports-view" ;
+  rdfs:comment "A blood count report naming two lab result records and a third the pod does not hold, with its category, conclusion, text and lab; and a vitamin B12 report sent only as a PDF, coded in LOINC and in a lab's own system, its time written short of the second." ;
+  mf:entries (
+    <#the-reports-view>
+    <#the-padded-time>
+    <#what-it-shows>
+  ) .
+
+<#the-reports-view> a mf:QueryEvaluationTest ;
+  mf:name "the-reports-view" ;
+  rdfs:comment "Each entry takes the name, codes, category, time, conclusion, text and lab of its lead and the status of the member chosen for status; the blood count names the entries of its two held results and nothing for the one the pod does not hold; the PDF-only report is an entry with no text, its attachment no value of the view." ;
+  mf:action [ qt:query <the-reports-view.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-reports-view.srj> .
+
+<#the-padded-time> a mf:QueryEvaluationTest ;
+  mf:name "the-padded-time" ;
+  rdfs:comment "The PDF-only report's time, written to the hour, keeps a node saying so, of the entry and of its member's values." ;
+  mf:action [ qt:query <the-padded-time.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-padded-time.srj> .
+
+<#what-it-shows> a mf:QueryEvaluationTest ;
+  mf:name "what-it-shows" ;
+  rdfs:comment "Each report's member values are shown with the member they came from; a result is shown as its entry on the report's entry and as its record on the member's values." ;
+  mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-it-shows.srj> .
