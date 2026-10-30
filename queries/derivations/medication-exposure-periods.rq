@@ -3,10 +3,13 @@
 # bounds' start, else the day its prescription was written, else the start of its dispensing window; to its end of use,
 # else its start plus its supply times one plus its repeats, less a day, in whole days, else its one dosage's bounds' end
 # (the library reads what the copy states, and a rule filters intent and status, as the library's callers do). A
-# version with several dosages has no one dosage, as the library's `singleton from` has none. A start given only to the
+# version with several dosages is read from its own dates and supply without any dosage's bounds, where the library's
+# `singleton from` raises an error and gives no period. A supply under a day ends on its start. A start given only to the
 # year or month is read as its last day and an end as its first, a time as its day, and a supply counted from the
 # start's first day, so exposure is never overstated; a supply that is a bound, or not in a UCUM unit of time, is not
-# read. With no end, the exposure is ongoing when the record's own lifecycle is active, and is neither ended nor ongoing
+# read. The supply end is added twice because the two Oxigraph builds disagree on adding a computed duration to a date:
+# pyoxigraph adds it only once bound to a variable, Oxigraph JS only written inline; rdflib adds both.
+# With no end, the exposure is ongoing when the record's own lifecycle is active, and is neither ended nor ongoing
 # otherwise. A record with no start, or whose end so read falls before its start, has no exposure, as the library gives
 # no period. Copies are never collapsed here: an entry's exposure is a rule's, over every member.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
@@ -57,9 +60,12 @@ WHERE {
   BIND (IF(BOUND(?supplyDays),
            xsd:integer(FLOOR(?supplyDays * (1 + IF(BOUND(?repeats), xsd:integer(STR(?repeats)), 0)))),
            1/0) AS ?suppliedDays)
-  BIND (IF(BOUND(?suppliedDays) && ?suppliedDays >= 1, STRDT(CONCAT("P", STR(?suppliedDays - 1), "D"), xsd:dayTimeDuration), 1/0)
+  BIND (IF(BOUND(?suppliedDays), IF(?suppliedDays >= 1, ?suppliedDays - 1, 0), 1/0) AS ?daysAfterTheFirst)
+  BIND (IF(BOUND(?daysAfterTheFirst), STRDT(CONCAT("P", STR(?daysAfterTheFirst), "D"), xsd:dayTimeDuration), 1/0)
         AS ?suppliedDaysAfterTheFirst)
-  BIND (IF(BOUND(?firstDayFrom) && BOUND(?suppliedDaysAfterTheFirst), ?firstDayFrom + ?suppliedDaysAfterTheFirst, 1/0) AS ?supplyEnd)
+  BIND (COALESCE(?firstDayFrom + ?suppliedDaysAfterTheFirst,
+                 IF(BOUND(?suppliedDaysAfterTheFirst),
+                    ?firstDayFrom + STRDT(CONCAT("P", STR(?daysAfterTheFirst), "D"), xsd:dayTimeDuration), 1/0)) AS ?supplyEnd)
   BIND (IF(BOUND(?useEnd), ?useEnd, IF(BOUND(?supplyEnd) || !BOUND(?boundsEnd), 1/0, ?boundsEnd)) AS ?statedEnd)
   BIND (IF(BOUND(?statedEnd),
            STRDT(IF(sameTerm(DATATYPE(?statedEnd), xsd:gYear), CONCAT(SUBSTR(STR(?statedEnd), 1, 4), "-01-01"),
