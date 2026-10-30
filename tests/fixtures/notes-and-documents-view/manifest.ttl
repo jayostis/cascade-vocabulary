@@ -5,22 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "notes-and-documents-view" ;
-  rdfs:comment "A progress note with its title, text and clinic, from a summary its clinic wrote; a plan of care note the person entered, its type coded in LOINC and in a clinic's own system; and a blood count report from the same summary naming one lab result record." ;
+  rdfs:comment "A final progress note with its title, text and clinic, from a summary its clinic wrote; and a plan of care note the person entered, its type coded in LOINC and in a clinic's own system." ;
   mf:entries (
     <#the-notes-and-documents-view>
-    <#my-reports-notes-and-documents>
   ) .
 
 <#the-notes-and-documents-view> a mf:QueryEvaluationTest ;
   mf:name "the-notes-and-documents-view" ;
-  rdfs:comment "Each entry takes the type, type name, title, date, text and clinic of its lead and the status of the member chosen for status." ;
+  rdfs:comment "Each entry takes the type, type name, title, date, content status, text and clinic of its lead and the status of the member chosen for status." ;
   mf:action [ qt:query <the-notes-and-documents-view.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-notes-and-documents-view.srj> .
-
-<#my-reports-notes-and-documents> a mf:QueryEvaluationTest ;
-  mf:name "my-reports-notes-and-documents" ;
-  rdfs:comment "One row for each note and report entry, newest first, with what it says, its lead record, the summary it came from, the clinic that wrote it and when it was retrieved, and none of those for the note the person entered; then a row for the report's result, its entry, test, value and unit." ;
-  mf:action [ qt:query <../../../queries/questions/pod/My%20reports,%20notes%20and%20documents.rq> ;
-              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
-  mf:result <my-reports-notes-and-documents.srj> .

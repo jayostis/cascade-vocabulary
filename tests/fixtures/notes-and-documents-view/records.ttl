@@ -1,7 +1,6 @@
 @prefix : <urn:x:> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -19,7 +18,8 @@
 :progress a cascade:ClinicalNoteOrDocument .
 :progressVersion prov:specializationOf :progress ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;
     cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ; cascade:noteOrDocumentTitle "Follow-up visit" ;
-    cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ; cascade:workflowStatus "current" ;
+    cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ; cascade:noteOrDocumentContentStatus "final" ;
+    cascade:workflowStatus "current" ;
     cascade:narrativeText "Lung nodule, 6 mm, right upper lobe.\nRepeat chest CT in 12 months." ; prov:wasAttributedTo :clinic .
 :progressRevision a cascade:Revision ; cascade:revisionOf :progress ; cascade:version :progressVersion ; prov:wasDerivedFrom :summary ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
@@ -32,15 +32,3 @@
 :planRevision a cascade:Revision ; cascade:revisionOf :plan ; cascade:version :planVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
-:hemoglobin a cascade:LaboratoryTestResult .
-:hemoglobinVersion prov:specializationOf :hemoglobin ; cascade:patient :subject ; cascade:testName "Hemoglobin" ;
-    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "13.9" ; cascade:resultUnit "g/dL" .
-:hemoglobinRevision a cascade:Revision ; cascade:revisionOf :hemoglobin ; cascade:version :hemoglobinVersion ; prov:wasDerivedFrom :summary ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
-
-:cbc a cascade:DiagnosticReport .
-:cbcVersion prov:specializationOf :cbc ; cascade:patient :subject ; cascade:reportName "CBC panel - Blood by Automated count" ;
-    cascade:reportCode <http://loinc.org/rdf/58410-2> ; cascade:reportEffectiveTime "2025-04-02T08:30:00Z"^^xsd:dateTime ;
-    cascade:reportConclusion "Normal blood count." ; cascade:workflowStatus "final" ; obo:RO_0002351 :hemoglobin .
-:cbcRevision a cascade:Revision ; cascade:revisionOf :cbc ; cascade:version :cbcVersion ; prov:wasDerivedFrom :summary ;
-    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

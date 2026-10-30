@@ -27,7 +27,8 @@
 :cbc a cascade:DiagnosticReport .
 :cbcVersion prov:specializationOf :cbc ; cascade:patient :subject ; cascade:reportName "CBC panel - Blood by Automated count" ;
     cascade:reportCode <http://loinc.org/rdf/58410-2> ; cascade:reportCategory "LAB"^^<http://terminology.hl7.org/CodeSystem/v2-0074> ;
-    cascade:reportEffectiveTime "2025-04-02T08:30:00Z"^^xsd:dateTime ; cascade:reportConclusion "Normal blood count." ;
+    cascade:reportEffectiveTime "2025-04-02T08:30:00Z"^^xsd:dateTime ; cascade:reportIssuedTime "2025-04-02T12:00:00Z"^^xsd:dateTime ;
+    cascade:reportConclusion "Normal blood count." ;
     cascade:narrativeText "Hemoglobin 13.9 g/dL\nLeukocytes 6.1 10*3/uL" ; cascade:workflowStatus "final" ;
     obo:RO_0002351 :hemoglobin , :leukocytes , :notHeld ; prov:wasAttributedTo :lab .
 :cbcRevision a cascade:Revision ; cascade:revisionOf :cbc ; cascade:version :cbcVersion ;

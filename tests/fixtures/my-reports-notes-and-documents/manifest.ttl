@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "my-reports-notes-and-documents" ;
+  rdfs:comment "A final progress note sent twice, from a summary a clinic wrote and an exchange keeps and from a hospital's visit record, which the person judged one; a preliminary plan of care note the person entered, typed in LOINC and in a clinic's own system; a blood count report from the summary, coded in LOINC and in the lab's own system, naming a low hemoglobin with its reference range and an MCV flagged high and abnormal; and a vitamin B12 report sent only as a PDF, with the time it was issued and no other date." ;
+  mf:entries (
+    <#my-reports-notes-and-documents>
+  ) .
+
+<#my-reports-notes-and-documents> a mf:QueryEvaluationTest ;
+  mf:name "my-reports-notes-and-documents" ;
+  rdfs:comment "One row for each entry, its text once, newest first, the B12 report placed by the time it was issued: every code it states, the IRI or the code in its system; the PDF as the attachment the pod does not read; the blood count's results with their test, value, unit and range, and their flags; and both records of the note, both documents, all three hospitals and both retrieval times." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20reports,%20notes%20and%20documents.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-reports-notes-and-documents.srj> .

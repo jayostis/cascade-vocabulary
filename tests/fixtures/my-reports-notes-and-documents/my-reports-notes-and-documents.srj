@@ -2,23 +2,23 @@
   "head": {
     "vars": [
       "date",
+      "issued",
       "kind",
-      "code",
+      "codes",
       "name",
       "title",
       "status",
+      "contentStatus",
       "conclusion",
       "text",
-      "result",
-      "resultTest",
-      "resultValue",
-      "resultUnit",
+      "attachments",
+      "results",
+      "flags",
       "entry",
       "entryLabel",
-      "record",
-      "document",
-      "documentLabel",
-      "hospital",
+      "records",
+      "documents",
+      "hospitals",
       "retrieved"
     ]
   },
@@ -34,8 +34,8 @@
           "type": "literal",
           "value": "Note or document"
         },
-        "code": {
-          "type": "uri",
+        "codes": {
+          "type": "literal",
           "value": "http://loinc.org/rdf/11506-3"
         },
         "name": {
@@ -50,6 +50,10 @@
           "type": "literal",
           "value": "current"
         },
+        "contentStatus": {
+          "type": "literal",
+          "value": "final"
+        },
         "text": {
           "type": "literal",
           "value": "Lung nodule, 6 mm, right upper lobe.\nRepeat chest CT in 12 months."
@@ -62,26 +66,21 @@
           "type": "literal",
           "value": "Note or document entry · Progress note · 2025-05-06T10:00:00Z"
         },
-        "record": {
-          "type": "uri",
-          "value": "urn:x:progress"
-        },
-        "document": {
-          "type": "uri",
-          "value": "urn:x:summary"
-        },
-        "documentLabel": {
+        "records": {
           "type": "literal",
-          "value": "Document · Fernhill Clinic · retrieved 2026-01-01"
+          "value": "urn:x:progress; urn:x:progressCopy"
         },
-        "hospital": {
+        "documents": {
           "type": "literal",
-          "value": "Fernhill Clinic"
+          "value": "urn:x:summary; urn:x:visit"
+        },
+        "hospitals": {
+          "type": "literal",
+          "value": "Bay Area Health Exchange; Fernhill Clinic; Kestrel Harbor Hospital"
         },
         "retrieved": {
           "type": "literal",
-          "value": "2026-01-01T00:00:00Z",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
+          "value": "2026-01-01T00:00:00Z; 2026-02-01T00:00:00Z"
         }
       },
       {
@@ -90,13 +89,18 @@
           "value": "2025-04-02T08:30:00Z",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
         },
+        "issued": {
+          "type": "literal",
+          "value": "2025-04-02T12:00:00Z",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
+        },
         "kind": {
           "type": "literal",
           "value": "Report"
         },
-        "code": {
-          "type": "uri",
-          "value": "http://loinc.org/rdf/58410-2"
+        "codes": {
+          "type": "literal",
+          "value": "http://loinc.org/rdf/58410-2; CBC in urn:oid:2.16.840.1.113883.19.5"
         },
         "name": {
           "type": "literal",
@@ -108,7 +112,15 @@
         },
         "conclusion": {
           "type": "literal",
-          "value": "Normal blood count."
+          "value": "Mild anaemia, large red cells."
+        },
+        "results": {
+          "type": "literal",
+          "value": "https://pod.example/clinical/lab-results.ttl#5d2294f8048478b9395c4d1271598d09b987764556d51fc3fc8c4421247600cc MCV 101 fL; https://pod.example/clinical/lab-results.ttl#ff9206c9f44bd8e61b396a902a6b644a8774b1e4bc406ee2178c437737da0be9 Hemoglobin 12.9 g/dL, reference range 13.5-17.5 g/dL"
+        },
+        "flags": {
+          "type": "literal",
+          "value": "MCV A; MCV H; Hemoglobin L"
         },
         "entry": {
           "type": "uri",
@@ -118,57 +130,60 @@
           "type": "literal",
           "value": "Report entry · CBC panel - Blood by Automated count · 2025-04-02T08:30:00Z"
         },
-        "record": {
-          "type": "uri",
+        "records": {
+          "type": "literal",
           "value": "urn:x:cbc"
         },
-        "document": {
-          "type": "uri",
+        "documents": {
+          "type": "literal",
           "value": "urn:x:summary"
         },
-        "documentLabel": {
+        "hospitals": {
           "type": "literal",
-          "value": "Document · Fernhill Clinic · retrieved 2026-01-01"
-        },
-        "hospital": {
-          "type": "literal",
-          "value": "Fernhill Clinic"
+          "value": "Bay Area Health Exchange; Fernhill Clinic"
         },
         "retrieved": {
           "type": "literal",
-          "value": "2026-01-01T00:00:00Z",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
+          "value": "2026-01-01T00:00:00Z"
         }
       },
       {
-        "date": {
+        "issued": {
           "type": "literal",
-          "value": "2025-04-02T08:30:00Z",
+          "value": "2025-03-15T09:00:00Z",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
         },
-        "result": {
-          "type": "uri",
-          "value": "https://pod.example/clinical/lab-results.ttl#ff9206c9f44bd8e61b396a902a6b644a8774b1e4bc406ee2178c437737da0be9"
-        },
-        "resultTest": {
+        "kind": {
           "type": "literal",
-          "value": "Hemoglobin"
+          "value": "Report"
         },
-        "resultValue": {
+        "codes": {
           "type": "literal",
-          "value": "13.9"
+          "value": "http://loinc.org/rdf/2132-9"
         },
-        "resultUnit": {
+        "name": {
           "type": "literal",
-          "value": "g/dL"
+          "value": "Cobalamin"
+        },
+        "status": {
+          "type": "literal",
+          "value": "final"
+        },
+        "attachments": {
+          "type": "literal",
+          "value": "application/pdf Vitamin B12 report"
         },
         "entry": {
           "type": "uri",
-          "value": "https://pod.example/clinical/reports.ttl#c5d07662d21adc2a6deb2042e6d05073435947dfffc67d3ee5c09e5a9a5e3c74"
+          "value": "https://pod.example/clinical/reports.ttl#ee44c212ef3e36d0f1a3e21da49b6982ec60732fab50f059ea07f70092673844"
         },
         "entryLabel": {
           "type": "literal",
-          "value": "Report entry · CBC panel - Blood by Automated count · 2025-04-02T08:30:00Z"
+          "value": "Report entry · Cobalamin"
+        },
+        "records": {
+          "type": "literal",
+          "value": "urn:x:cobalamin"
         }
       },
       {
@@ -181,9 +196,9 @@
           "type": "literal",
           "value": "Note or document"
         },
-        "code": {
-          "type": "uri",
-          "value": "http://loinc.org/rdf/18776-5"
+        "codes": {
+          "type": "literal",
+          "value": "http://loinc.org/rdf/18776-5; PLAN in urn:oid:2.16.840.1.113883.19.6"
         },
         "name": {
           "type": "literal",
@@ -193,6 +208,10 @@
           "type": "literal",
           "value": "current"
         },
+        "contentStatus": {
+          "type": "literal",
+          "value": "preliminary"
+        },
         "entry": {
           "type": "uri",
           "value": "https://pod.example/clinical/notes-and-documents.ttl#8daee9bb47ab8892901cf7405a3640be96a76f231a0cf8570a8ae7850e4406d9"
@@ -201,8 +220,8 @@
           "type": "literal",
           "value": "Note or document entry · Plan of care note · 2025-02-01"
         },
-        "record": {
-          "type": "uri",
+        "records": {
+          "type": "literal",
           "value": "urn:x:plan"
         }
       }
