@@ -67,8 +67,8 @@ https://hl7.org/cda/us/ccda/StructureDefinition-HospitalCourseSection.html; the 
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| report | FHIR `DiagnosticReport`; C-CDA on FHIR's Result Organizer | a record kind `cascade:DiagnosticReport`, word "Report": code, name, category, effective time, conclusion, conclusion code, status, performer, attachments (`ontologies/cascade.ttl`, `queries/derivations/records.rq`) | borrowed |
-| note or document | FHIR `DocumentReference`; C-CDA on FHIR's Note Activity | a record kind `cascade:ClinicalNoteOrDocument`, word "Note or document", not "Document", which is the kept source file: type, type name, title, date, status, author, attachments; `docStatus` is not carried yet (`ontologies/cascade.ttl`) | borrowed; the class name is ours |
+| report | FHIR `DiagnosticReport`; C-CDA on FHIR's Result Organizer | a record kind `cascade:DiagnosticReport`, word "Report": code, name, category, effective time, the time it was issued, conclusion, conclusion code, status, performer, attachments (`ontologies/cascade.ttl`, `queries/derivations/records.rq`) | borrowed |
+| note or document | FHIR `DocumentReference`; C-CDA on FHIR's Note Activity | a record kind `cascade:ClinicalNoteOrDocument`, word "Note or document", not "Document", which is the kept source file: type, type name, title, date, status, the status of its content (`docStatus`, apart from the reference's own status), author, attachments (`ontologies/cascade.ttl`) | borrowed; the class name is ours |
 | a report's results | `DiagnosticReport.result`; `Observation.hasMember` | each result record's IRI on the report's version, by RO's "has member" (`obo:RO_0002351`), as the panel members table already uses it, with no class constraint (`ontologies/cascade.shapes.ttl`) | borrowed from RO |
 | a code | `code-iris.md` | a report's LOINC or SNOMED CT code and a note's LOINC type are code IRIs; any other system's is a literal typed by its system; a report's category is always such a literal, since no table joins a category (`ontologies/cascade.ttl`) | borrowed |
 | an attachment | FHIR `Attachment` | a node of the version, `<version>#attachment-n`, with its media type, title and address; its bytes stay in the kept document (`ontologies/cascade.ttl`) | borrowed |
@@ -122,7 +122,9 @@ report sent as a `DocumentReference` are one; joining them by code and date woul
 
 ## Still open
 
-- `docStatus`, a note's category and a report's `issued` time are not carried; lean: add each when a question reads it.
+- A note's category is not carried; lean: add it when a question reads it. `docStatus` and a report's `issued` time
+  waited for the same and are carried: `pod/My reports, notes and documents` reads them, so a preliminary note and a
+  report with no effective time are told apart.
 - Whether a `DocumentReference` whose attachment is a C-CDA document makes a note: the FHIR adapter's step for #291
   settles it.
 - A rule joining one report sent both ways.

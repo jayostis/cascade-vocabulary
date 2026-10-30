@@ -1,5 +1,5 @@
-# Each entry takes the name, codes, categories, time, conclusion, conclusion codes, text and organization of its lead,
-# the status of the member chosen for status, and the entry of each result the lead names: its version names result
+# Each entry takes the name, codes, categories, time, time issued, conclusion, conclusion codes, text and organization
+# of its lead, the status of the member chosen for status, and the entry of each result the lead names: its version names result
 # records, and each result's entry is the one that record is in, none when the record is in no entry. The organization is
 # the record itself, not an entry. Each member's current values are a node of the view of their own, named after the
 # entry and the member, which says the member they came from and names its results by their records. A time its source
@@ -17,6 +17,7 @@ CONSTRUCT {
     cascade:reportCodeInOtherSystem ?otherCode ;
     cascade:reportCategory ?category ;
     cascade:reportEffectiveTime ?date ;
+    cascade:reportIssuedTime ?issued ;
     cascade:reportConclusion ?conclusion ;
     cascade:reportConclusionCode ?conclusionCode ;
     cascade:narrativeText ?text ;
@@ -33,6 +34,7 @@ CONSTRUCT {
     cascade:reportCodeInOtherSystem ?memberReportCodeInOtherSystem ;
     cascade:reportCategory ?memberReportCategory ;
     cascade:reportEffectiveTime ?memberReportEffectiveTime ;
+    cascade:reportIssuedTime ?memberReportIssuedTime ;
     cascade:reportConclusion ?memberReportConclusion ;
     cascade:reportConclusionCode ?memberReportConclusionCode ;
     cascade:narrativeText ?memberNarrativeText ;
@@ -52,6 +54,7 @@ WHERE {
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportCodeInOtherSystem ?otherCode }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportCategory ?category }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportEffectiveTime ?date }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportIssuedTime ?issued }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportConclusion ?conclusion }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportConclusionCode ?conclusionCode }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:narrativeText ?text }
@@ -70,6 +73,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:reportCodeInOtherSystem ?memberReportCodeInOtherSystem }
     OPTIONAL { ?memberVersion cascade:reportCategory ?memberReportCategory }
     OPTIONAL { ?memberVersion cascade:reportEffectiveTime ?memberReportEffectiveTime }
+    OPTIONAL { ?memberVersion cascade:reportIssuedTime ?memberReportIssuedTime }
     OPTIONAL { ?memberVersion cascade:reportConclusion ?memberReportConclusion }
     OPTIONAL { ?memberVersion cascade:reportConclusionCode ?memberReportConclusionCode }
     OPTIONAL { ?memberVersion cascade:narrativeText ?memberNarrativeText }

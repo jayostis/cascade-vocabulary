@@ -1,5 +1,5 @@
-# Each entry takes the type, type name, title, date, text and organization of its lead and the status of the member
-# chosen for status. The organization is the record itself, not an entry. Each member's current values are a node of the
+# Each entry takes the type, type name, title, date, content status, text and organization of its lead and the status
+# of the member chosen for status. The organization is the record itself, not an entry. Each member's current values are a node of the
 # view of their own, named after the entry and the member, which says the member they came from. A time its source wrote
 # short of the second keeps the node saying so (cascade:PaddedDateTime), named after the entry or the member's values and
 # -padded-, so the view never shows a padded time as exact. An attachment stays a node of its version.
@@ -14,6 +14,7 @@ CONSTRUCT {
     cascade:noteOrDocumentTypeInOtherSystem ?otherType ;
     cascade:noteOrDocumentTitle ?title ;
     cascade:noteOrDocumentDate ?date ;
+    cascade:noteOrDocumentContentStatus ?contentStatus ;
     cascade:narrativeText ?text ;
     prov:wasAttributedTo ?organization ;
     cascade:workflowStatus ?status ;
@@ -27,6 +28,7 @@ CONSTRUCT {
     cascade:noteOrDocumentTypeInOtherSystem ?memberNoteOrDocumentTypeInOtherSystem ;
     cascade:noteOrDocumentTitle ?memberNoteOrDocumentTitle ;
     cascade:noteOrDocumentDate ?memberNoteOrDocumentDate ;
+    cascade:noteOrDocumentContentStatus ?memberNoteOrDocumentContentStatus ;
     cascade:narrativeText ?memberNarrativeText ;
     prov:wasAttributedTo ?memberWasAttributedTo ;
     cascade:workflowStatus ?memberWorkflowStatus .
@@ -43,6 +45,7 @@ WHERE {
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTypeInOtherSystem ?otherType }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTitle ?title }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentDate ?date }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentContentStatus ?contentStatus }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:narrativeText ?text }
     OPTIONAL { ?lead pav:hasCurrentVersion/prov:wasAttributedTo ?organization }
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
@@ -58,6 +61,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:noteOrDocumentTypeInOtherSystem ?memberNoteOrDocumentTypeInOtherSystem }
     OPTIONAL { ?memberVersion cascade:noteOrDocumentTitle ?memberNoteOrDocumentTitle }
     OPTIONAL { ?memberVersion cascade:noteOrDocumentDate ?memberNoteOrDocumentDate }
+    OPTIONAL { ?memberVersion cascade:noteOrDocumentContentStatus ?memberNoteOrDocumentContentStatus }
     OPTIONAL { ?memberVersion cascade:narrativeText ?memberNarrativeText }
     OPTIONAL { ?memberVersion prov:wasAttributedTo ?memberWasAttributedTo }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }

@@ -941,8 +941,14 @@ cascade:VariantInterpretationShape a sh:NodeShape ;
 cascade:DiagnosticReportShape a sh:NodeShape ;
     sh:targetClass cascade:DiagnosticReport ;
     sh:targetSubjectsOf cascade:reportCode , cascade:reportCodeInOtherSystem , cascade:reportName , cascade:reportCategory ,
-        cascade:reportEffectiveTime , cascade:reportConclusion , cascade:reportConclusionCode ;
+        cascade:reportEffectiveTime , cascade:reportIssuedTime , cascade:reportConclusion , cascade:reportConclusionCode ;
     sh:property [
+        sh:path cascade:reportIssuedTime ;
+        sh:datatype xsd:dateTime ;
+        sh:maxCount 1 ;
+        sh:message "A report states at most one time it was issued, an xsd:dateTime, as FHIR's instant is"@en ;
+        sh:severity sh:Violation
+    ] , [
         sh:path cascade:reportCode ;
         sh:nodeKind sh:IRI ;
         sh:or ( cascade:LoincCodeShape cascade:SnomedCtCodeShape ) ;
@@ -1031,8 +1037,15 @@ cascade:DiagnosticReportShape a sh:NodeShape ;
 cascade:ClinicalNoteOrDocumentShape a sh:NodeShape ;
     sh:targetClass cascade:ClinicalNoteOrDocument ;
     sh:targetSubjectsOf cascade:noteOrDocumentType , cascade:noteOrDocumentTypeInOtherSystem , cascade:noteOrDocumentTypeName ,
-        cascade:noteOrDocumentTitle , cascade:noteOrDocumentDate ;
+        cascade:noteOrDocumentTitle , cascade:noteOrDocumentDate , cascade:noteOrDocumentContentStatus ;
     sh:property [
+        sh:path cascade:noteOrDocumentContentStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("preliminary" "final" "amended" "entered-in-error") ;
+        sh:message "A note or document's content status should be one of the FHIR R4 CompositionStatus codes: preliminary, final, amended, entered-in-error"@en ;
+        sh:severity sh:Warning
+    ] , [
         sh:path cascade:noteOrDocumentType ;
         sh:nodeKind sh:IRI ;
         sh:node cascade:LoincCodeShape ;

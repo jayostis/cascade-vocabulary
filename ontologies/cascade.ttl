@@ -534,6 +534,13 @@ cascade:reportEffectiveTime a owl:DatatypeProperty ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.effective_x_> .
 
+cascade:reportIssuedTime a owl:DatatypeProperty ;
+    rdfs:label "report issued time"@en ;
+    rdfs:comment "Of a version of a report, when its source made this version of it available, as FHIR's DiagnosticReport.issued, an instant; never the time its results are about. A C-CDA Result Organizer states none."@en ;
+    rdfs:domain cascade:DiagnosticReport ;
+    rdfs:range xsd:dateTime ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.issued> .
+
 cascade:reportConclusion a owl:DatatypeProperty ;
     rdfs:label "report conclusion"@en ;
     rdfs:comment "Of a version of a report, its summary or interpretation as the source wrote it, as FHIR's DiagnosticReport.conclusion."@en ;
@@ -579,6 +586,13 @@ cascade:noteOrDocumentTitle a owl:DatatypeProperty ;
     rdfs:domain cascade:ClinicalNoteOrDocument ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.description> .
+
+cascade:noteOrDocumentContentStatus a owl:DatatypeProperty ;
+    rdfs:label "note or document content status"@en ;
+    rdfs:comment "Of a version of a note or document, how far its content is finished, as FHIR's DocumentReference.docStatus: one of CompositionStatus's preliminary, final, amended and entered-in-error. Not cascade:workflowStatus, which says whether the reference itself is current. A C-CDA note states none."@en ;
+    rdfs:domain cascade:ClinicalNoteOrDocument ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.docStatus> , <https://hl7.org/fhir/R4/valueset-composition-status.html> .
 
 cascade:noteOrDocumentDate a owl:DatatypeProperty ;
     rdfs:label "note or document date"@en ;

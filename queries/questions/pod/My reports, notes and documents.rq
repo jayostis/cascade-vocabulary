@@ -1,9 +1,13 @@
 # Read from the views as an app would, so a model reads what a report or a note says in its first answer: one row for
-# each report and each note or document entry, newest first, with its kind, type code and name, date, title, status,
-# conclusion and text, and the lead record they came from with the document it was derived from, each hospital that
-# wrote or keeps that document and when it was retrieved, a row for each hospital; and one row for each result a report
-# names, with the result's entry, test, value and unit as the lab results view gives them. A day and a time are not
-# comparable, so entries are ordered by their day first, then by the time as written.
+# each report and each note or document entry, newest first, never more, so its text is given once. Each row holds the
+# entry's kind, date, time issued, name, title, status, content status, conclusion and text; every code it states,
+# an IRI or, in another system, the code and its system; each attachment its records' current versions hold, by media
+# type and title, a file the pod keeps but does not read, so a report sent only as a PDF says so; each result a report
+# names, by its entry in the lab results view, with its test, value, unit and reference range, and each result's
+# interpretation flags; and, for every record the entry joins, the record, the document it was derived from, each
+# hospital that wrote or keeps that document and when it was retrieved. A list holds its values in order, each ended
+# by "; " but the last, and a list with nothing in it is unbound. A day and a time are not comparable, so entries are
+# ordered by their day first, then by the time as written; an entry with no date by the time it was issued.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
@@ -11,52 +15,79 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?date ?kind ?code ?name ?title ?status ?conclusion ?text ?result ?resultTest ?resultValue ?resultUnit
-       ?entry ?entryLabel ?record ?document ?documentLabel ?hospital ?retrieved
+SELECT ?date ?issued ?kind ?codes ?name ?title ?status ?contentStatus ?conclusion ?text ?attachments ?results ?flags
+       ?entry ?entryLabel ?records ?documents ?hospitals ?retrieved
 WHERE {
-  { ?entry a cascade:DiagnosticReport ; cascade:leadMember ?record .
-    ?record cascade:recordKind ?kind ; cascade:currentRevision ?revision .
-    OPTIONAL { ?entry cascade:reportEffectiveTime ?date }
-    OPTIONAL { ?entry cascade:reportCode ?code }
-    OPTIONAL { ?entry cascade:reportName ?name }
-    OPTIONAL { ?entry cascade:workflowStatus ?status }
-    OPTIONAL { ?entry cascade:reportConclusion ?conclusion }
-    OPTIONAL { ?entry cascade:narrativeText ?text }
-    OPTIONAL { ?entry rdfs:label ?entryLabel }
-    OPTIONAL { ?revision prov:wasDerivedFrom ?document .
-               OPTIONAL { ?document rdfs:label ?documentLabel }
-               OPTIONAL { ?document pav:retrievedOn ?retrieved }
-               OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
-                          ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
-                          FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
-                          OPTIONAL { ?agent rdfs:label ?agentLabel }
-                          OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
-                          BIND (COALESCE(?agentLabel, ?agentName) AS ?hospital) } } }
-  UNION
-  { ?entry a cascade:ClinicalNoteOrDocument ; cascade:leadMember ?record .
-    ?record cascade:recordKind ?kind ; cascade:currentRevision ?revision .
-    OPTIONAL { ?entry cascade:noteOrDocumentDate ?date }
-    OPTIONAL { ?entry cascade:noteOrDocumentType ?code }
-    OPTIONAL { ?entry cascade:noteOrDocumentTypeName ?name }
-    OPTIONAL { ?entry cascade:noteOrDocumentTitle ?title }
-    OPTIONAL { ?entry cascade:workflowStatus ?status }
-    OPTIONAL { ?entry cascade:narrativeText ?text }
-    OPTIONAL { ?entry rdfs:label ?entryLabel }
-    OPTIONAL { ?revision prov:wasDerivedFrom ?document .
-               OPTIONAL { ?document rdfs:label ?documentLabel }
-               OPTIONAL { ?document pav:retrievedOn ?retrieved }
-               OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
-                          ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
-                          FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
-                          OPTIONAL { ?agent rdfs:label ?agentLabel }
-                          OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
-                          BIND (COALESCE(?agentLabel, ?agentName) AS ?hospital) } } }
-  UNION
-  { ?entry a cascade:DiagnosticReport ; obo:RO_0002351 ?result .
-    OPTIONAL { ?entry cascade:reportEffectiveTime ?date }
-    OPTIONAL { ?entry rdfs:label ?entryLabel }
-    OPTIONAL { ?result cascade:testName ?resultTest }
-    OPTIONAL { ?result cascade:resultValue ?resultValue }
-    OPTIONAL { ?result cascade:resultUnit ?resultUnit } }
+  { SELECT ?entry ?entryLabel ?kind ?date ?issued ?name ?title ?status ?contentStatus ?conclusion ?text
+           (REPLACE(CONCAT(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?reportCode), "; "), ""); separator=""),
+                           GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?reportOther), " in ", STR(DATATYPE(?reportOther)), "; "), ""); separator=""),
+                           GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?noteType), "; "), ""); separator=""),
+                           GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?noteOther), " in ", STR(DATATYPE(?noteOther)), "; "), ""); separator="")),
+                    "; $", "") AS ?allCodes)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?attachment, "; "), ""); separator=""), "; $", "") AS ?allAttachments)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?resultText, "; "), ""); separator=""), "; $", "") AS ?allResults)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?flag, "; "), ""); separator=""), "; $", "") AS ?allFlags)
+           (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(STR(?record), "; "); separator=""), "; $", "") AS ?allRecords)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?document), "; "), ""); separator=""), "; $", "") AS ?allDocuments)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, "; "), ""); separator=""), "; $", "") AS ?allHospitals)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?retrievedOn), "; "), ""); separator=""), "; $", "") AS ?allRetrieved)
+    WHERE {
+      { SELECT ?entry ?entryLabel ?kind ?date ?issued ?name ?title ?status ?contentStatus ?conclusion ?text ?reportCode ?reportOther
+               ?noteType ?noteOther ?attachment ?resultText ?flag ?record ?document ?hospital ?retrievedOn
+        WHERE {
+          VALUES ?type { cascade:DiagnosticReport cascade:ClinicalNoteOrDocument }
+          ?entry a ?type ; cascade:leadMember ?lead ; cascade:mergedFrom ?record .
+          ?lead cascade:recordKind ?kind .
+          OPTIONAL { ?entry rdfs:label ?entryLabel }
+          OPTIONAL { ?entry cascade:reportEffectiveTime ?reportDate }
+          OPTIONAL { ?entry cascade:noteOrDocumentDate ?noteDate }
+          BIND (COALESCE(?reportDate, ?noteDate) AS ?date)
+          OPTIONAL { ?entry cascade:reportIssuedTime ?issued }
+          OPTIONAL { ?entry cascade:reportName ?reportName }
+          OPTIONAL { ?entry cascade:noteOrDocumentTypeName ?noteName }
+          BIND (COALESCE(?reportName, ?noteName) AS ?name)
+          OPTIONAL { ?entry cascade:noteOrDocumentTitle ?title }
+          OPTIONAL { ?entry cascade:workflowStatus ?status }
+          OPTIONAL { ?entry cascade:noteOrDocumentContentStatus ?contentStatus }
+          OPTIONAL { ?entry cascade:reportConclusion ?conclusion }
+          OPTIONAL { ?entry cascade:narrativeText ?text }
+          OPTIONAL { ?entry cascade:reportCode ?reportCode }
+          OPTIONAL { ?entry cascade:reportCodeInOtherSystem ?reportOther }
+          OPTIONAL { ?entry cascade:noteOrDocumentType ?noteType }
+          OPTIONAL { ?entry cascade:noteOrDocumentTypeInOtherSystem ?noteOther }
+          OPTIONAL { ?record pav:hasCurrentVersion/cascade:attachment ?attached .
+                     ?attached cascade:attachmentContentType ?contentType .
+                     OPTIONAL { ?attached cascade:attachmentTitle ?attachmentTitle }
+                     BIND (CONCAT(?contentType, COALESCE(CONCAT(" ", ?attachmentTitle), "")) AS ?attachment) }
+          OPTIONAL { ?entry obo:RO_0002351 ?result .
+                     OPTIONAL { ?result cascade:testName ?test }
+                     OPTIONAL { ?result cascade:resultValue ?value }
+                     OPTIONAL { ?result cascade:resultUnit ?unit }
+                     OPTIONAL { ?result cascade:referenceRange ?range }
+                     OPTIONAL { ?result cascade:resultInterpretationCode ?interpretation }
+                     BIND (CONCAT(STR(?result), COALESCE(CONCAT(" ", ?test), ""), COALESCE(CONCAT(" ", ?value), ""),
+                                  COALESCE(CONCAT(" ", ?unit), ""), COALESCE(CONCAT(", reference range ", ?range), "")) AS ?resultText)
+                     BIND (CONCAT(COALESCE(?test, STR(?result)), " ", REPLACE(STR(?interpretation), "^.*/", "")) AS ?flag) }
+          OPTIONAL { ?record cascade:currentRevision/prov:wasDerivedFrom ?document .
+                     OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
+                     OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                                ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                                FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                                OPTIONAL { ?agent rdfs:label ?agentLabel }
+                                OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                                BIND (COALESCE(?agentLabel, ?agentName) AS ?hospital) } }
+        }
+        ORDER BY ?entry ?reportCode ?reportOther ?noteType ?noteOther ?attachment ?resultText ?flag ?record ?document ?hospital
+                 ?retrievedOn }
+    }
+    GROUP BY ?entry ?entryLabel ?kind ?date ?issued ?name ?title ?status ?contentStatus ?conclusion ?text }
+  BIND (IF(?allCodes = "", 1/0, ?allCodes) AS ?codes)
+  BIND (IF(?allAttachments = "", 1/0, ?allAttachments) AS ?attachments)
+  BIND (IF(?allResults = "", 1/0, ?allResults) AS ?results)
+  BIND (IF(?allFlags = "", 1/0, ?allFlags) AS ?flags)
+  BIND (?allRecords AS ?records)
+  BIND (IF(?allDocuments = "", 1/0, ?allDocuments) AS ?documents)
+  BIND (IF(?allHospitals = "", 1/0, ?allHospitals) AS ?hospitals)
+  BIND (IF(?allRetrieved = "", 1/0, ?allRetrieved) AS ?retrieved)
 }
-ORDER BY DESC(COALESCE(SUBSTR(STR(?date), 1, 10), "")) DESC(COALESCE(STR(?date), "")) ?entry ?result ?code ?document ?hospital
+ORDER BY DESC(COALESCE(SUBSTR(STR(COALESCE(?date, ?issued)), 1, 10), "")) DESC(COALESCE(STR(COALESCE(?date, ?issued)), "")) ?entry

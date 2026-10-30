@@ -1,6 +1,7 @@
 # A record whose current version its source marks entered in error or refuted is left out of every view: by its
 # verification status, or, for an immunization, a lab result, a procedure, a variant, a variant interpretation, a report
-# or a note or document, which state entered in error as their status, by its workflow status.
+# or a note or document, which state entered in error as their status, by its workflow status, and a note or
+# document also by the status of its content.
 # The table is the one place that lists those statuses, each with the reason it gives.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
@@ -17,6 +18,7 @@ WHERE {
     (cascade:workflowStatus     "entered-in-error" "Variant interpretation" cascade:EnteredInErrorAtSource)
     (cascade:workflowStatus     "entered-in-error" "Report"       cascade:EnteredInErrorAtSource)
     (cascade:workflowStatus     "entered-in-error" "Note or document" cascade:EnteredInErrorAtSource)
+    (cascade:noteOrDocumentContentStatus "entered-in-error" "Note or document" cascade:EnteredInErrorAtSource)
   }
   ?record cascade:recordKind ?recordKind ; pav:hasCurrentVersion ?version .
   ?version ?property ?status .
