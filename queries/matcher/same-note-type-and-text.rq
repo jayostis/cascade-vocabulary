@@ -1,11 +1,11 @@
-# Two notes match when their current versions share a LOINC note type and give one text once every run of white space
+# Two notes match when their current versions share a note type, a LOINC code or a code of
+# another system, and give one text once every run of white space
 # in it is one space and its two ends are trimmed, so line breaks and indentation, which two adapters write differently,
 # are not compared; whatever their sources: a hospital's note sent again in a clinic's summary, or pulled from its
 # server, is one note with two copies. A text of under 200 characters, such as "Return in 3 months.", is written alike in
 # many notes of one type, so it joins nothing. A text that holds the other's and more is no match here, from one source
 # or from two: a note of another organization that holds a note whole quotes it, and within one organization
-# same-note-type-and-text-grown-within-one-organization.rq joins a note to the one it grew from. A note typed only in
-# another system than LOINC is not compared. Each ordered pair is a row.
+# same-note-type-and-text-grown-within-one-organization.rq joins a note to the one it grew from. Each ordered pair is a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -15,7 +15,7 @@ WHERE {
     # bound: ?record
     WHERE {
       ?record pav:hasCurrentVersion ?version .
-      ?version cascade:noteOrDocumentType ?type ; cascade:narrativeText ?written .
+      ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type ; cascade:narrativeText ?written .
       BIND (COALESCE(REPLACE(REPLACE(STR(?written), "\\s+", " "), "^ | $", ""), "") AS ?text)
       FILTER (STRLEN(?text) >= 200)
     } }
@@ -23,8 +23,8 @@ WHERE {
     WHERE {
       { SELECT DISTINCT ?type
         # bound: ?record
-        WHERE { ?record pav:hasCurrentVersion/cascade:noteOrDocumentType ?type } }
-      ?otherVersion cascade:noteOrDocumentType ?type ; cascade:narrativeText ?otherWritten .
+        WHERE { ?record pav:hasCurrentVersion/(cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem) ?type } }
+      ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type ; cascade:narrativeText ?otherWritten .
       ?other pav:hasCurrentVersion ?otherVersion .
       BIND (COALESCE(REPLACE(REPLACE(STR(?otherWritten), "\\s+", " "), "^ | $", ""), "") AS ?text)
     } }

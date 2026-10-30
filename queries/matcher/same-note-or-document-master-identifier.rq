@@ -1,0 +1,19 @@
+# Two notes match when their current versions carry one master identifier, the identifier of one version of one
+# document, as FHIR's DocumentReference.masterIdentifier and a C-CDA document's ClinicalDocument/id give it: an
+# unstructured document imported as C-CDA and pulled as a DocumentReference to it is one note, whatever the two are
+# typed and whether either holds text. An identifier is compared as the term it is, its value typed by its system, as
+# same-business-identifier-and-test-code-within-one-organization.rq compares one; an identifier with no system, a plain
+# string, is never compared, since nothing says who issued it. From any sources. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record pav:hasCurrentVersion ?version .
+  ?version cascade:noteOrDocumentMasterIdentifier ?identifier .
+  FILTER (isLiteral(?identifier) && DATATYPE(?identifier) != xsd:string)
+  ?otherVersion cascade:noteOrDocumentMasterIdentifier ?identifier .
+  ?other pav:hasCurrentVersion ?otherVersion .
+  FILTER (?other != ?record)
+}

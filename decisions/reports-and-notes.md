@@ -74,7 +74,7 @@ https://hl7.org/cda/us/ccda/StructureDefinition-HospitalCourseSection.html; the 
 | an attachment | FHIR `Attachment` | a node of the version, `<version>#attachment-n`, with its media type, title and address; its bytes stay in the kept document (`ontologies/cascade.ttl`) | borrowed |
 | the text | `DomainResource.text`; C-CDA `section/text` | one `cascade:narrativeText` per version, the whole text in document order with the markup removed; a PDF is not read (`ontologies/cascade.ttl`) | borrowed; one string where FHIR keeps XHTML |
 | a narrative-only section | C-CDA on FHIR maps sections into `Composition.section` | a C-CDA section whose code is a note type and which holds no entries is one note record, its type the section's code, its date the document's `effectiveTime` (#291) | diverged: a reading needs a record of note size, and `Composition` is exchange machinery |
-| joining | the matcher's rules | kinds never join (`tests/fixtures/kinds-never-join`); two notes of one LOINC type join when, from one organization, the shorter text is a run of whole lines of the longer, dated no earlier (R19), or, from any sources, the texts are equal once white space is one space (R20), either text of at least 200 characters (`queries/matcher/same-note-type-and-text-grown-within-one-organization.rq`, `queries/matcher/same-note-type-and-text.rq`, rule M24) | ours |
+| joining | the matcher's rules | kinds never join (`tests/fixtures/kinds-never-join`); two notes of one type, LOINC or another system's, join when, from one organization, the shorter text is a run of whole lines of the longer, dated no earlier (R19), or, from any sources, the texts are equal once white space is one space (R20), either text of at least 200 characters; and two notes of one document master identifier join from any sources (R21) (`queries/matcher/same-note-type-and-text-grown-within-one-organization.rq`, `queries/matcher/same-note-type-and-text.rq`, `queries/matcher/same-note-or-document-master-identifier.rq`, rule M24) | ours |
 
 ## Why
 
@@ -125,7 +125,12 @@ white space read as one space because two adapters break lines differently. The 
 same inputs: every generic plan line there, the kind that recurs in unrelated notes, is under 45 characters ("Follow-up in 2 months."),
 the longest generic line, an emergency department's warning to come back, is 106, and the shortest note that grew is
 271. A note's text stays in its name: keyed on its code alone, each visit's history of present illness would
-supersede the last.
+supersede the last. One document can reach the pod twice, as an unstructured C-CDA document's note and as a FHIR
+`DocumentReference` to it, which holds no text when its attachment is the C-CDA document; FHIR R4 maps
+`DocumentReference.masterIdentifier` to CDA's `ClinicalDocument/id`
+(https://hl7.org/fhir/R4/documentreference-mappings.html), so R21 joins them by that identifier, a term of its own,
+`cascade:noteOrDocumentMasterIdentifier`, since `dct:identifier` holds a record's business identifiers, which
+`DocumentReference.identifier` is. A section or a Note Activity is part of a document and never carries it.
 
 ## Alternatives that lost
 
@@ -144,22 +149,21 @@ supersede the last.
   settles it.
 - A rule joining one report sent both ways.
 - An edited note: a source that sends a section again with a line reworded or a typo fixed names a new record, and
-  neither R19 nor R20 joins it, so the pod holds two current notes. No safe rule was found: a typo in a one-paragraph
-  section changes its only line, so line overlap cannot see it, and a word-level likeness cannot be computed in the
-  plain SPARQL a matcher runs; the visits it must not join look alike (Kestrel's three plans in `priya_l`, each "Most
-  recent visit, <date> (Susan Park, MD): …" and an "Annual physical due …" line, share no line). The kit inputs hold
-  no edited section (0 pairs of one source and type that share a line without one holding the other), so no threshold
-  could be measured. Lean: a likeness rule once a source is measured sending edits, filed as likely for review.
-- One unstructured document reaching the pod twice, as a C-CDA `nonXMLBody` note and as a FHIR `DocumentReference`
-  whose content is that document: two records, joined by R20 only when both versions carry the same text, which the
-  FHIR one does not when its attachment is the C-CDA document itself, and never when the body is a PDF
-  (`tests/fixtures/matcher-same-note-type-and-text`, `unstructuredFromFhir`). FHIR R4 maps
-  `DocumentReference.masterIdentifier` to CDA's `ClinicalDocument/id`
-  (https://hl7.org/fhir/R4/documentreference-mappings.html), so the document's own id is the key; neither adapter
-  writes it on the note's version yet. Lean: both adapters write it as `dct:identifier`, typed by its system as R18's
-  identifiers are, and a rule joins two notes of one document identifier from any sources.
-- A note typed only in another system than LOINC is joined by neither rule; lean: compare
-  `cascade:noteOrDocumentTypeInOtherSystem` when a source is measured sending one.
+  no rule joins it, so the pod holds two current notes. A C-CDA document that says it replaces another, by one
+  `setId` and a higher `versionNumber` (with a `relatedDocument` of type `RPLC`), lets the C-CDA adapter make its
+  sections new versions of the replaced document's records, each section matched by its code: that covers an
+  amendment the source sends as a new version of the same document. It does not cover the common portal case, where
+  each download is a new document with a new `setId` that replaces nothing, a section edited between two such
+  summaries; nor a document holding two sections of one code. For those no safe rule was found: a typo in a
+  one-paragraph section changes its only line, so line overlap cannot see it, and a word-level likeness cannot be
+  computed in the plain SPARQL a matcher runs; the visits it must not join look alike (Kestrel's three plans in
+  `priya_l`, each "Most recent visit, <date> (Susan Park, MD): …" and an "Annual physical due …" line, share no line).
+  The kit inputs hold no edited section (0 pairs of one source and type that share a line without one holding the
+  other), so no threshold could be measured. Lean: a likeness rule once a source is measured sending edits, filed as
+  likely for review.
+- R21 waits on the adapters writing `cascade:noteOrDocumentMasterIdentifier` (the FHIR adapter from
+  `DocumentReference.masterIdentifier`, the C-CDA adapter on an unstructured document's note); until then it joins
+  nothing they convert, and rule M24 has no example of it.
 
 ## What would change our mind
 

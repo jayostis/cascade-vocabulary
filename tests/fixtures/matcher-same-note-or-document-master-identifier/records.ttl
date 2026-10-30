@@ -73,3 +73,19 @@
     prov:wasDerivedFrom :otherPull ;
     prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
 
+:rootAloneFromCcda a cascade:ClinicalNoteOrDocument .
+<urn:x:rootAloneFromCcdaVersion> prov:specializationOf :rootAloneFromCcda ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentMasterIdentifier "urn:uuid:5b1f7c2e-8d3a-4e6b-9f10-2a7c4d8e6b31"^^<urn:ietf:rfc:3986> .
+:rootAloneFromCcdaRevision a cascade:Revision ; cascade:revisionOf :rootAloneFromCcda ; cascade:version <urn:x:rootAloneFromCcdaVersion> ;
+    prov:wasDerivedFrom :unstructured ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+
+:rootAloneFromFhir a cascade:ClinicalNoteOrDocument .
+<urn:x:rootAloneFromFhirVersion> prov:specializationOf :rootAloneFromFhir ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentMasterIdentifier "urn:uuid:5b1f7c2e-8d3a-4e6b-9f10-2a7c4d8e6b31"^^<urn:ietf:rfc:3986> .
+:rootAloneFromFhirRevision a cascade:Revision ; cascade:revisionOf :rootAloneFromFhir ; cascade:version <urn:x:rootAloneFromFhirVersion> ;
+    prov:wasDerivedFrom :pull ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00Z"^^xsd:dateTime .
+

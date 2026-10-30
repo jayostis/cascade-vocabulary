@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-note-or-document-master-identifier" ;
-  rdfs:comment "A hospital's unstructured C-CDA document as the note it makes, and as two pulled DocumentReferences whose master identifier is that document's id, one typed as a discharge summary; a pulled note of that identifier value in another system; one of the next document's identifier; two pulled notes sharing an identifier with no system; and one with none." ;
+  rdfs:comment "A hospital's unstructured C-CDA document as the note it makes, and as two pulled DocumentReferences whose master identifier is that document's id, one typed as a discharge summary; a pulled note of that identifier value in another system; one of the next document's identifier; two pulled notes sharing an identifier with no system; and one with none. A second unstructured document whose id is a UUID root alone, as the C-CDA note and as a DocumentReference whose master identifier has system urn:ietf:rfc:3986 and that UUID's URN as its value." ;
   mf:entries (
     <#same-note-or-document-master-identifier>
   ) .
 
 <#same-note-or-document-master-identifier> a mf:QueryEvaluationTest ;
   mf:name "same-note-or-document-master-identifier" ;
-  rdfs:comment "Notes whose current versions carry one master identifier typed by its system match from any sources, whatever their types and texts: the C-CDA note and both DocumentReferences. Not matched: the value in another system, the next document's, the two whose identifier names no system, and the note with none." ;
+  rdfs:comment "Notes whose current versions carry one master identifier typed by its system match from any sources, whatever their types and texts: the C-CDA note and both DocumentReferences, and the two of the UUID root. Not matched: the value in another system, the next document's, the two whose identifier names no system, and the note with none." ;
   mf:action [ qt:query <../../../queries/matcher/same-note-or-document-master-identifier.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               ctm:boundRecord <urn:x:fromCcda> ,
@@ -22,5 +22,7 @@
                                   <urn:x:noIdentifier> ,
                                   <urn:x:noSystemFirst> ,
                                   <urn:x:noSystemSecond> ,
-                                  <urn:x:otherSystem> ] ;
+                                  <urn:x:otherSystem> ,
+                                  <urn:x:rootAloneFromCcda> ,
+                                  <urn:x:rootAloneFromFhir> ] ;
   mf:result <same-note-or-document-master-identifier.srj> .

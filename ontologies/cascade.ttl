@@ -601,6 +601,13 @@ cascade:noteOrDocumentDate a owl:DatatypeProperty ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.date> .
 
+cascade:noteOrDocumentMasterIdentifier a owl:DatatypeProperty ;
+    rdfs:label "note or document master identifier"@en ;
+    rdfs:comment "Of a version of a note or document, the identifier of the one version of the one document it is, as FHIR's DocumentReference.masterIdentifier, which FHIR maps to a CDA document's ClinicalDocument/id: a literal of the identifier's value typed by its system URI, by HL7's CDA-to-FHIR identifier mapping, as dct:identifier is for a lab result, or a plain string when no system is stated. A C-CDA note carries it only when it is the whole document, an unstructured document's body, never a section or a Note Activity, which are parts of one. Not dct:identifier, which holds a record's business identifiers, as DocumentReference.identifier would."@en ;
+    rdfs:domain cascade:ClinicalNoteOrDocument ;
+    rdfs:range rdfs:Literal ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.masterIdentifier> .
+
 cascade:narrativeText a owl:DatatypeProperty ;
     rdfs:label "narrative text"@en ;
     rdfs:comment "Of a version of a note, document or report, the note's text as its source wrote it, markup removed, in document order: a C-CDA section's text, FHIR's text.div with its tags stripped, or an inline text attachment's decoded text. A PDF's text is not read."@en ;
@@ -2209,6 +2216,11 @@ cascade:SameNoteTypeAndText a owl:NamedIndividual ;
     rdfs:comment "Both notes carry one LOINC note type and one text of at least 200 characters, every run of white space read as one space, from any sources: one note with two copies. Rule M24 and decisions/reports-and-notes.md, row \"joining\", say why."@en ;
     skos:broadMatch semapv:LexicalMatching .
 
+cascade:SameNoteOrDocumentMasterIdentifier a owl:NamedIndividual ;
+    rdfs:label "same note or document master identifier"@en ;
+    rdfs:comment "Both notes carry one master identifier typed by its system, the identifier of one version of one document, from any sources, whatever their types and texts: one document reached twice. Rule M24 and decisions/reports-and-notes.md, row \"joining\", say why."@en ;
+    skos:broadMatch semapv:LexicalMatching .
+
 cascade:SameResultOnOneDay a owl:NamedIndividual ;
     rdfs:label "same result on one day"@en ;
     rdfs:comment "Both lab results carry one test code, one value of one kind in one unit, and one day, at least one of them a day with no time, so two draws that day cannot be told apart: a likely join, which the review page lists."@en ;
@@ -2560,6 +2572,10 @@ cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule a owl:NamedIndividual 
 cascade:SameNoteTypeAndTextRule a owl:NamedIndividual ;
     rdfs:label "R20, same note type and text"@en ;
     rdfs:comment "Rule R20 of runtime/matcher.feature; its judgments are justified cascade:SameNoteTypeAndText."@en .
+
+cascade:SameNoteOrDocumentMasterIdentifierRule a owl:NamedIndividual ;
+    rdfs:label "R21, same note or document master identifier"@en ;
+    rdfs:comment "Rule R21 of runtime/matcher.feature; its judgments are justified cascade:SameNoteOrDocumentMasterIdentifier."@en .
 
 # Servers and organizations
 

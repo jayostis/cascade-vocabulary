@@ -342,14 +342,17 @@ Feature: The matcher's procedure
       queries/matcher/same-variation-through-current-tables-key-joined-first.rq, with cascade:VariantClassifications,
       for variants only.
 
-    Version 17 of the vocabulary's list adds two rows, whose examples are under M24:
+    Version 17 of the vocabulary's list adds three rows, whose examples are under M24:
 
     - R19, cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule, justified
       cascade:SameNoteTypeAndTextGrownWithinOneOrganization:
-      queries/matcher/same-note-type-and-text-grown-within-one-organization.rq, for notes only. Two notes of one LOINC
+      queries/matcher/same-note-type-and-text-grown-within-one-organization.rq, for notes only. Two notes of one
       type from documents of one organization, the shorter one's text a run of whole lines of the longer one's.
     - R20, cascade:SameNoteTypeAndTextRule, justified cascade:SameNoteTypeAndText: queries/matcher/same-note-type-and-text.rq,
-      for notes only. Two notes of one LOINC type and one text, from any sources.
+      for notes only. Two notes of one type and one text, from any sources.
+    - R21, cascade:SameNoteOrDocumentMasterIdentifierRule, justified cascade:SameNoteOrDocumentMasterIdentifier:
+      queries/matcher/same-note-or-document-master-identifier.rq, for notes only. Two notes of one master identifier
+      typed by its system, from any sources.
 
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
@@ -359,7 +362,7 @@ Feature: The matcher's procedure
     changed query, R15, R16 and R17 in its version 12, R18 as well in its version 13, and R2's, R4's, R6's, R8's,
     R15's, R16's and R17's changed queries in its version 14, R6's, R15's, R16's, R17's and R18's queries bound
     per side in its version 15, R1's, R2's, R3's, R4's, R5's, R7's, R10's, R11's, R12's and R13's queries joined
-    on the code first in its version 16, and R19 and R20 as well in its version 17.
+    on the code first in its version 16, and R19, R20 and R21 as well in its version 17.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -1291,20 +1294,26 @@ Feature: The matcher's procedure
     A C-CDA section is named by its code and its text, since it has no id (naming.feature), so a source that sends a
     section again as it was names the same record, and one that sends it grown, as a clinic's plan of treatment that
     keeps each visit's paragraph and adds the latest, names another; and two custodians' copies of one note are two
-    records in two scopes. From the rule list's version 17, R19 joins two notes whose current versions carry one LOINC
-    note type (cascade:noteOrDocumentType), from documents naming one organization record, or two currently the same
+    records in two scopes. From the rule list's version 17, R19 joins two notes whose current versions share a note
+    type, a LOINC code (cascade:noteOrDocumentType) or a code of another system
+    (cascade:noteOrDocumentTypeInOtherSystem), from documents naming one organization record, or two currently the same
     organization, as custodian or author, as R18 reads them, when the shorter one's text, read as lines with the white
     space in each line made one space and trimmed, and blank lines dropped, is a run of whole lines of the longer one's,
     and the longer one is dated no earlier (cascade:noteOrDocumentDate, compared by day) when both are dated: the entry
     leads with the latest, which holds every line of the others. R20 joins two notes of one LOINC type whose texts are
     the same once every run of white space is one space and the ends are trimmed, from any sources, one note with two
-    copies; it never joins a text that holds another and more, since a note of another organization that holds a note
+    copies, R20 reading the type as R19 does; it never joins a text that holds another and more, since a note of another organization that holds a note
     whole quotes it, and a quoting note leading the entry would show the quoter as its organization. Either rule needs
     the text, the shorter one's for R19, to hold at least 200 characters: in the vocabulary's inputs every plan short
     enough to recur in unrelated notes ("Return in 3 months.", "Follow-up in 2 months.") is under 45 characters, the
     longest generic line, an emergency department's warning to come back, is 106, and the shortest note that grew holds
     271, so the guard sits between them. A note whose later version rewrites a line, as an edited section, is joined by
-    neither, and neither is a note typed only in another system than LOINC.
+    neither. R21 joins two notes whose current versions carry one master identifier
+    (cascade:noteOrDocumentMasterIdentifier), the identifier of one version of one document, FHIR's
+    DocumentReference.masterIdentifier and a C-CDA document's ClinicalDocument/id, typed by its system as R18 reads an
+    identifier, whatever their types and texts and from any sources: an unstructured document imported as C-CDA and
+    pulled as a DocumentReference to it is one note. A plain string, an identifier with no system, joins nothing. Its
+    example comes with the adapters' next regeneration, which writes the term.
 
     Background:
       Given a new pod for Gus on 2026-11-01 at 09:00

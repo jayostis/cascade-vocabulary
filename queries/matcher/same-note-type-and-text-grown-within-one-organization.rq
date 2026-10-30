@@ -1,4 +1,5 @@
-# Two notes match when their current versions share a LOINC note type, the documents their revisions come from name,
+# Two notes match when their current versions share a note type, a LOINC code or a code of another
+# system, the documents their revisions come from name,
 # as custodian or author, one organization record, or two that are currently the same organization, and the shorter
 # one's text is a run of whole lines of the longer one's: a note its source sends again as it grows, as a clinic's
 # plan of treatment that keeps every visit's paragraph and adds the latest. A text is read as lines, the white space
@@ -8,8 +9,7 @@
 # part of; and the longer one is dated no earlier, by day, when both are dated, since a note holding a later one whole
 # was cut down, not grown, and its lines would be hidden behind the later lead. Two texts that are the same lines are
 # same-note-type-and-text.rq's. An agent that is no organization record, and a record whose documents name none, as a
-# pull from a server does, match nothing here. A note typed only in another system than LOINC is not compared. Each
-# ordered pair is a row.
+# pull from a server does, match nothing here. Each ordered pair is a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -22,7 +22,7 @@ WHERE {
         # bound: ?record
         WHERE {
           ?record pav:hasCurrentVersion ?version .
-          ?version cascade:noteOrDocumentType ?type ; cascade:narrativeText ?written .
+          ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type ; cascade:narrativeText ?written .
           OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
           BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "")
                 AS ?text)
@@ -34,8 +34,8 @@ WHERE {
         WHERE {
           { SELECT DISTINCT ?type
             # bound: ?record
-            WHERE { ?record pav:hasCurrentVersion/cascade:noteOrDocumentType ?type } }
-          ?otherVersion cascade:noteOrDocumentType ?type ; cascade:narrativeText ?otherWritten .
+            WHERE { ?record pav:hasCurrentVersion/(cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem) ?type } }
+          ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type ; cascade:narrativeText ?otherWritten .
           ?other pav:hasCurrentVersion ?otherVersion .
           OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
           BIND (COALESCE(REPLACE(REPLACE(REPLACE(STR(?otherWritten), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", ""), "")
