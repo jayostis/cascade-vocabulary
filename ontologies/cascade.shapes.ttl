@@ -573,7 +573,9 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
     sh:targetClass cascade:PrescribedOrReportedMedication ;
     sh:targetSubjectsOf cascade:drugName , cascade:rxNormCode , cascade:ndcCode , cascade:medicationCodeInOtherSystem , cascade:userSelectedCode ,
         cascade:prescribedOrReported , cascade:dosage , cascade:medicationUseStartDate , cascade:medicationUseEndDate ,
-        cascade:prescriptionWrittenDate , cascade:medicationRequestIntent ;
+        cascade:prescriptionWrittenDate , cascade:medicationRequestIntent , cascade:courseOfTherapyType ,
+        cascade:numberOfRepeatsAllowed , cascade:expectedSupplyDuration , cascade:dispenseValidityPeriodStart ,
+        cascade:dispenseValidityPeriodEnd , cascade:structuredDosage ;
 
     sh:property [
         sh:path [ sh:inversePath prov:specializationOf ] ;
@@ -690,9 +692,123 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
     ] ;
 
     sh:property [
+        sh:path cascade:courseOfTherapyType ;
+        sh:datatype xsd:string ;
+        sh:in ("continuous" "acute" "seasonal") ;
+        sh:maxCount 1 ;
+        sh:message "A medication states at most one course of therapy, a code of FHIR's medicationrequest-course-of-therapy: continuous, acute or seasonal"@en ;
+        sh:severity sh:Warning
+    ] ;
+
+    sh:property [
+        sh:path cascade:numberOfRepeatsAllowed ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:maxCount 1 ;
+        sh:message "A medication states at most one number of repeats allowed, an xsd:nonNegativeInteger"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:expectedSupplyDuration ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:node cascade:DurationQuantityShape ;
+        sh:message "A medication states at most one expected supply duration, a quantity node of its version in a UCUM unit of time"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:dispenseValidityPeriodStart ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A medication states at most one start of its dispensing window, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:dispenseValidityPeriodEnd ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A medication states at most one end of its dispensing window, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:structuredDosage ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A medication's structured dosage is a node of its version, <version>#dosage-n"@en ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
         sh:path cascade:sourceRecordId ;
         sh:datatype xsd:string ;
         sh:maxCount 1
+    ] .
+
+cascade:StructuredDosageShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:dosageDoseQuantity , cascade:dosageRepeatFrequency , cascade:dosageRepeatPeriod , cascade:dosageRepeatPeriodUnit ,
+        cascade:dosageBoundsPeriodStart , cascade:dosageBoundsPeriodEnd , cascade:dosageRouteCode , cascade:dosageRouteCodeInOtherSystem ;
+    sh:property [
+        sh:path cascade:dosageDoseQuantity ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A dosage states at most one dose quantity, a quantity node of its version"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dosageRepeatFrequency ;
+        sh:datatype xsd:positiveInteger ;
+        sh:maxCount 1 ;
+        sh:message "A dosage states at most one frequency, an xsd:positiveInteger"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dosageRepeatPeriod ;
+        sh:datatype xsd:decimal ;
+        sh:maxCount 1 ;
+        sh:message "A dosage states at most one period, an xsd:decimal"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dosageRepeatPeriodUnit ;
+        sh:datatype xsd:string ;
+        sh:in ("s" "min" "h" "d" "wk" "mo" "a") ;
+        sh:maxCount 1 ;
+        sh:message "A dosage states at most one period unit, one of FHIR's units of time: s, min, h, d, wk, mo or a"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dosageBoundsPeriodStart ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A dosage states at most one start of its bounds, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dosageBoundsPeriodEnd ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A dosage states at most one end of its bounds, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dosageRouteCode ;
+        sh:nodeKind sh:IRI ;
+        sh:node cascade:SnomedCtCodeShape ;
+        sh:message "A dosage's route code is a SNOMED CT code IRI, http://snomed.info/id/ and the concept id"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dosageRouteCodeInOtherSystem ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
+        sh:message "A route code in another system is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dosageRouteCodeInOtherSystem ;
+        sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
+        sh:message "A route code in another system is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dosageRouteCodeInOtherSystem ;
+        sh:not [ sh:or ( [ sh:datatype <http://snomed.info/sct> ] ) ] ;
+        sh:message "A SNOMED CT route code is a cascade:dosageRouteCode IRI, never a literal typed by http://snomed.info/sct"@en ;
+        sh:severity sh:Violation
     ] .
 
 # Copied from the spec's genomics
@@ -1194,6 +1310,15 @@ cascade:QuantityShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+cascade:DurationQuantityShape a sh:NodeShape ;
+    sh:property [
+        sh:path cascade:ucumUnit ;
+        sh:minCount 1 ;
+        sh:in ("s" "min" "h" "d" "wk" "mo" "a") ;
+        sh:message "A duration's unit is one of the seven codes of FHIR Timing's UnitsOfTime, s, min, h, d, wk, mo or a, each a UCUM expression of time, as FHIR's Duration requires (drt-1)"@en ;
+        sh:severity sh:Violation
+    ] .
+
 cascade:BoundQuantityShape a sh:NodeShape ;
     sh:property [
         sh:path cascade:quantityComparator ;
@@ -1209,7 +1334,8 @@ cascade:PaddedDateTimeShape a sh:NodeShape ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
-                cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate ) ;
+                cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
+                cascade:dispenseValidityPeriodStart cascade:dispenseValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd ) ;
         sh:message "A padded time names the one property that holds it, a property whose value may be a time."@en ;
         sh:severity sh:Violation
     ] , [
@@ -1253,6 +1379,7 @@ cascade:ValueAbsentForReasonShape a sh:NodeShape ;
         sh:maxCount 1 ;
         sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
+                cascade:dispenseValidityPeriodStart cascade:dispenseValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
                 cascade:resultValueKind cascade:administrativeGender ) ;
         sh:message "A value absent for a reason names the one property it stands for, a date, a lab result's value kind or an administrative gender."@en ;
         sh:severity sh:Violation
@@ -1274,13 +1401,13 @@ cascade:VersionWithValueAbsentForReasonShape a sh:NodeShape ;
     ] ;
     sh:sparql [
         a sh:SPARQLConstraint ;
-        sh:message "A value absent for a reason is the version's node <version>#absent- and its property's local name, and stands only where the version holds no value for that property: {?node} is not."@en ;
+        sh:message "A value absent for a reason is the node <version>#absent- and its property's local name, or, of a node whose IRI has a fragment already, such as a structured dosage, <node>-absent- and the local name; and stands only where its subject holds no value for that property: {?node} is not."@en ;
         sh:severity sh:Violation ;
         sh:select """SELECT $this ?node WHERE {
   $this <https://ns.cascadeprotocol.org/cascade#valueAbsentForReason> ?node .
   OPTIONAL { ?node <https://ns.cascadeprotocol.org/cascade#absentValueProperty> ?property }
   FILTER (!BOUND(?property)
-          || STR(?node) != CONCAT(STR($this), "#absent-", REPLACE(STR(?property), "^.*[#/]", ""))
+          || STR(?node) != CONCAT(STR($this), IF(CONTAINS(STR($this), "#"), "-absent-", "#absent-"), REPLACE(STR(?property), "^.*[#/]", ""))
           || EXISTS { $this ?property ?value })
 }"""
     ] .
@@ -1697,6 +1824,9 @@ cascade:CodeConversionFormShape a sh:NodeShape ;
     sh:message "A code conversion row says its code is replaced by the code it converts to, with dct:isReplacedBy, and gives its cardinality; a row of the earlier form pairs them with skos:exactMatch and gives none."@en ;
     sh:severity sh:Violation .
 
+# sh:datatype also checks the lexical form, so a literal ill-formed for its datatype, such as "A12"^^xsd:integer or a
+# code led by a digit typed xsd:Name, xsd:NCName, xsd:ID, xsd:IDREF, xsd:ENTITY, xsd:QName or xsd:NOTATION, fails the
+# sh:or and passes the sh:not that uses it; core SHACL cannot refuse it, and no adapter writes one.
 cascade:LiteralTypedByAnXsdOrRdfDatatypeShape a sh:NodeShape ;
     sh:or (
         [ sh:datatype xsd:string ]
@@ -1738,9 +1868,21 @@ cascade:LiteralTypedByAnXsdOrRdfDatatypeShape a sh:NodeShape ;
         [ sh:datatype xsd:NMTOKEN ]
         [ sh:datatype xsd:Name ]
         [ sh:datatype xsd:NCName ]
+        [ sh:datatype xsd:NMTOKENS ]
+        [ sh:datatype xsd:ID ]
+        [ sh:datatype xsd:IDREF ]
+        [ sh:datatype xsd:ENTITY ]
+        [ sh:datatype xsd:QName ]
+        [ sh:datatype xsd:NOTATION ]
+        [ sh:datatype xsd:IDREFS ]
+        [ sh:datatype xsd:ENTITIES ]
+        [ sh:datatype xsd:anyAtomicType ]
+        [ sh:datatype xsd:anySimpleType ]
         [ sh:datatype rdf:langString ]
         [ sh:datatype rdf:HTML ]
         [ sh:datatype rdf:XMLLiteral ]
+        [ sh:datatype rdf:JSON ]
+        [ sh:datatype rdf:PlainLiteral ]
     ) .
 
 cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape a sh:NodeShape ;

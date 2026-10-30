@@ -399,6 +399,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:PrescribedOrReportedMedicationShape ; sh:resultPath cascade:medicationCodeInOtherSystem ] ] .
 
+<#record-medication/dosage-route-snomed-ct-literal> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/dosage-route-snomed-ct-literal.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:StructuredDosageShape ; sh:resultPath cascade:dosageRouteCodeInOtherSystem ] ] .
+
 <#record-lab-result/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <record-lab-result/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
@@ -696,6 +701,10 @@
   mf:action [ sht:dataGraph <dates-and-absent-values/absent-misnamed.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:VersionWithValueAbsentForReasonShape ] ] .
+
+<#dates-and-absent-values/absent-dosage-bound> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/absent-dosage-bound.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
 <#dates-and-absent-values/absent-property-not-a-date> a sht:Validate ;
   mf:action [ sht:dataGraph <dates-and-absent-values/absent-property-not-a-date.ttl> ] ;

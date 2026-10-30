@@ -1,0 +1,47 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:bounds a cascade:PrescribedOrReportedMedication .
+:boundsVersion prov:specializationOf :bounds ; cascade:patient :subject ; cascade:drugName "bounds: one dosage's, starting after it was written" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-01-10"^^xsd:date ;
+    cascade:structuredDosage <urn:x:boundsVersion#dosage-1> .
+<urn:x:boundsVersion#dosage-1> cascade:dosageBoundsPeriodStart "2025-01-20"^^xsd:date ;
+    cascade:dosageBoundsPeriodEnd "2025-04-20"^^xsd:date .
+:boundsRevision a cascade:Revision ; cascade:revisionOf :bounds ; cascade:version :boundsVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:twoDosages a cascade:PrescribedOrReportedMedication .
+:twoDosagesVersion prov:specializationOf :twoDosages ; cascade:patient :subject ; cascade:drugName "bounds: two dosages', read from neither" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-02-01"^^xsd:date ;
+    cascade:structuredDosage <urn:x:twoDosagesVersion#dosage-1> , <urn:x:twoDosagesVersion#dosage-2> .
+<urn:x:twoDosagesVersion#dosage-1> cascade:dosageBoundsPeriodStart "2025-02-10"^^xsd:date ;
+    cascade:dosageBoundsPeriodEnd "2025-02-28"^^xsd:date .
+<urn:x:twoDosagesVersion#dosage-2> cascade:dosageBoundsPeriodStart "2025-03-01"^^xsd:date .
+:twoDosagesRevision a cascade:Revision ; cascade:revisionOf :twoDosages ; cascade:version :twoDosagesVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:validity a cascade:PrescribedOrReportedMedication .
+:validityVersion prov:specializationOf :validity ; cascade:patient :subject ; cascade:drugName "validity: only a dispensing window" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:dispenseValidityPeriodStart "2025-03-05"^^xsd:date ;
+    cascade:dispenseValidityPeriodEnd "2025-09-05"^^xsd:date .
+:validityRevision a cascade:Revision ; cascade:revisionOf :validity ; cascade:version :validityVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:supplyAndBounds a cascade:PrescribedOrReportedMedication .
+:supplyAndBoundsVersion prov:specializationOf :supplyAndBounds ; cascade:patient :subject ; cascade:drugName "bounds: ending after its supply" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2024-12-20"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:supplyAndBoundsVersion#expected-supply-duration> ;
+    cascade:structuredDosage <urn:x:supplyAndBoundsVersion#dosage-1> .
+<urn:x:supplyAndBoundsVersion#expected-supply-duration> cascade:decimalValue "30"^^xsd:decimal ; cascade:writtenValue "30" ; cascade:ucumUnit "d" .
+<urn:x:supplyAndBoundsVersion#dosage-1> cascade:dosageBoundsPeriodStart "2025-01-01"^^xsd:date ;
+    cascade:dosageBoundsPeriodEnd "2025-12-31"^^xsd:date .
+:supplyAndBoundsRevision a cascade:Revision ; cascade:revisionOf :supplyAndBounds ; cascade:version :supplyAndBoundsVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
