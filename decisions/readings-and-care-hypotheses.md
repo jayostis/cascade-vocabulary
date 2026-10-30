@@ -1,6 +1,6 @@
 # Readings, care hypotheses and verdicts: what a maker concludes that is not a verdict
 
-Status: accepted, 2026-10-29: the owner accepted lean (c) as phase 0 of the care-gap epic
+Status: accepted, 2026-10-29; amended 2026-10-30 by `medical-knowledge-in-the-model.md` (no care rule raises a hypothesis: row "care hypothesis" keeps only the model's, and the Still open items about a rule's hypothesis and the B12 rule's guideline close). the owner accepted lean (c) as phase 0 of the care-gap epic
 ([#287](https://github.com/jayostis/cascade-vocabulary/issues/287)), on the research in
 [#288](https://github.com/jayostis/cascade-vocabulary/issues/288), **to stand once the prior-art search below is
 done**: a row that search overturns comes back to the owner, and the rest are built as written. Drafted 2026-10-28.

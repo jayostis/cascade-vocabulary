@@ -1,6 +1,6 @@
 # What a version's clinical content is
 
-Status: accepted, 2026-10-29: the owner accepted lean (a) as phase 0 of the care-gap epic
+Status: accepted, 2026-10-29; amended 2026-10-30 by `medical-knowledge-in-the-model.md` (no care rules: row "what rules read" and the outputs row "care hypothesis" no longer apply to a rule, and the B12 rule's guideline closes). the owner accepted lean (a) as phase 0 of the care-gap epic
 ([#287](https://github.com/jayostis/cascade-vocabulary/issues/287)), on the research in
 [#288](https://github.com/jayostis/cascade-vocabulary/issues/288). Answers the draft RFC's lean to make FHIR the
 stored content of each version, with the `cascade:` clinical terms a rebuildable view (the maintainer's
