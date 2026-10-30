@@ -5,18 +5,34 @@
 
 <> a mf:Manifest ;
   rdfs:label "lab-results-view" ;
-  rdfs:comment "A potassium entry of two members, the earlier written 4.10, the later stating another name, a unit text beside its UCUM unit, and no status or time; a glucose at a time, its value and unit as text; a hemoglobin A1c on that day, as a day, below 5.7; a titre 1:64; and a urine count of 0 to 5." ;
+  rdfs:comment "A potassium entry of two members, the earlier written 4.10, the later stating another name, a unit text beside its UCUM unit, and no status or time; a glucose at a time, its value and unit as text; a hemoglobin A1c on that day, as a day, below 5.7; a titre 1:64; a urine count of 0 to 5; and an MCV of 101 fL flagged both H and A, its reference range 80-100 fL as text and as two bounds, the high one with a unit text." ;
   mf:entries (
     <#the-lab-results-view>
+    <#the-reference-range-bounds>
+    <#what-it-shows>
     <#my-lab-results>
   ) .
 
 <#the-lab-results-view> a mf:QueryEvaluationTest ;
   mf:name "the-lab-results-view" ;
-  rdfs:comment "Each entry takes the test, code, value, unit and time of its lead, so the potassium shows no time and its unit text, and the status of the member chosen for status; a bound shows its comparator, a ratio its two parts and a range its two bounds." ;
+  rdfs:comment "Each entry takes the test, code, value, unit and time of its lead, so the potassium shows no time and its unit text, and the status of the member chosen for status; a bound shows its comparator, a ratio its two parts and a range its two bounds. The MCV shows both flags its source gave, as codes, and its reference range's text and bounds." ;
   mf:action [ qt:query <the-lab-results-view.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-lab-results-view.srj> .
+
+<#the-reference-range-bounds> a mf:QueryEvaluationTest ;
+  mf:name "the-reference-range-bounds" ;
+  rdfs:comment "Each bound of the MCV's reference range is a node of the view holding its lead's number as typed and as written and its units, so an app reads the range from the view alone." ;
+  mf:action [ qt:query <the-reference-range-bounds.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-reference-range-bounds.srj> .
+
+<#what-it-shows> a mf:QueryEvaluationTest ;
+  mf:name "what-it-shows" ;
+  rdfs:comment "The MCV's reference range is shown by its text alone: the view's two bound nodes are nodes of their own, so neither bound is a value of the entry, nor of the member as a row with no From." ;
+  mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-it-shows.srj> .
 
 <#my-lab-results> a mf:QueryEvaluationTest ;
   mf:name "my-lab-results" ;

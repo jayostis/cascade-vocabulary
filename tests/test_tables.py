@@ -133,7 +133,7 @@ def test_every_code_system_has_one_iri_stem_ending_in_a_slash_or_a_colon_and_one
     systems = set(kinds().subjects(RDF.type, CASCADE.CodeSystem))
     assert {system.removeprefix(str(CASCADE)) for system in systems} == {
         "CVX", "RxNorm", "NDC", "ICD10CM", "SNOMEDCT", "LOINC", "UNII", "CPT", "ICD9CM", "HGVS", "ClinVar", "MEDRT", "MeSH",
-        "DataAbsentReason", "NullFlavor"}
+        "DataAbsentReason", "NullFlavor", "ObservationInterpretation"}
     for system in systems:
         stems, uris = list(kinds().objects(system, VOID.uriSpace)), list(kinds().objects(system, CASCADE.codingSystemUri))
         assert len(stems) == 1 and str(stems[0]).endswith(("/", ":")), system
