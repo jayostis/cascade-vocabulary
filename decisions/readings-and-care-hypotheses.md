@@ -6,9 +6,10 @@ Status: accepted, 2026-10-29: the owner accepted lean (c) as phase 0 of the care
 done**: a row that search overturns comes back to the owner, and the rest are built as written. Drafted 2026-10-28.
 Amends `judgments.md` and asks how `naming.md`'s second test reads; depends on `judgments.md`, `naming.md`,
 `currency.md`, and `version-content.md`, whose outputs table says how each kind here is shown over FHIR. No feature
-rule applies it yet: phase 4 of #287 stores readings, hypotheses and responses. Still open in phase 0: this note's
-prior-art search; the decision note for the medication matching rules M15 and M16; and the guideline the B12 rule's
-threshold and window cite.
+rule applies it yet: phase 5 of #287 stores readings, hypotheses and responses. Still open in phase 0: this note's
+prior-art search, and the decision note for the medication matching rules M15 and M16. Amended 2026-10-30 by
+`medical-knowledge-in-the-model.md`: no care rule raises a hypothesis, so row "care hypothesis" keeps only the
+model's, and the Still open items about a rule's hypothesis and the B12 rule's guideline are closed.
 
 ## Question
 
@@ -182,13 +183,13 @@ conditions view.
 - **Confidence (lean).** SSSOM `confidence`, the term `judgments.md` leaves open for a judgment, as a number for a
   model's reading or hypothesis; a rule's hypothesis has none, since it is true of the rows. FHIR `RiskAssessment`
   probability is the alternative.
-- **How a derived hypothesis is named.** A rule's hypothesis is derived and never stored, so a response Judgment that
+- **How a derived hypothesis is named.** Closed 2026-10-30: no care rule raises a hypothesis (`medical-knowledge-in-the-model.md`). A rule's hypothesis is derived and never stored, so a response Judgment that
   points at it must still resolve after the rule stops raising it, and the hypothesis must be able to record that it
   closed and why. How it is named so that both hold is open.
 - **The names,** for the shared superclass, the reading, the care hypothesis and its response verdicts. "Care
   hypothesis" is a working name: what the assistant raises is a reason to ask, not a proposed explanation, and the name
   should say which.
-- Whether a rule's care hypothesis needs a term at all, or is only the rows of a curated query under
+- Closed 2026-10-30: no care rule raises a hypothesis (`medical-knowledge-in-the-model.md`). Whether a rule's care hypothesis needs a term at all, or is only the rows of a curated query under
   `queries/questions/`, keyed as cascade-runtime-js's `find_changes` tool keys its findings, with only the person's
   response stored.
 - Whether a reading's body is a code IRI only, or may be free text where no code fits.

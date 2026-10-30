@@ -369,6 +369,19 @@ only the vocabulary; vectors are cross-checked because an implementation that mi
 - Two writers whose pods differ when each first runs under a rule list version, one having retracted or replaced a
   claim the other has not, file two findings of the claims it no longer reaches (M18): whether a sync merges them,
   or the review page lists their claims as one line.
+- **Random record ids looked up in the pod, as a FHIR server's conditional create does.** Not yet weighed against the
+  rubric. The strongest case: it is FHIR's settled answer to a repeated import, a create conditional on what
+  identifies the record, done by Medplum (`packages/fhir-router/src/batch.ts`, `ifNoneExist`) and every FHIR
+  server; the pod is its own server of record, so a lookup by server, type and id finds the record an earlier import
+  wrote, a replay reads the minted ids back from its steps, and tests seed them through `IdsAndTime`. The hash and
+  the record vectors would go, and no record name could be confirmed by guessing its inputs; normalising the base URL
+  and escaping the key stay, since the lookup matches on them.
+  Versions and documents keep their content names either way. What it costs: the adapter, which mints names in SPARQL with no access to the pod, would need the pod's
+  index to look in; two writers that import one record with
+  nothing between them mint two ids, and since X1 rewrites neither, their union holds two records joined only by a
+  judgment per record, where the rows "sync" and "snapshot" rest on two writers writing one file by name. That sync
+  is designed in this note and built nowhere: no feature file and no runtime implements it. One question decides it:
+  must two copies of a pod take writes with nothing between them, and merge after?
 - Which nested element of a C-CDA entry carries the stable id: the networks' SHALL does not say, and the measured
   pairs show the inner statement stable and its wrapper re-minted.
 - The test by which a record is "from a server" or "from a document": bundle type, input format, Apple's optional
@@ -384,6 +397,8 @@ only the vocabulary; vectors are cross-checked because an implementation that mi
 
 ## What would change our mind
 
+A pod that takes writes in one place, or syncs through a hub asked at write time, would make random record ids looked
+up in the pod the simpler choice, and FHIR's.
 A generator that guaranteed deterministic ids across documents would make trusting them right for that generator. A
 C-CDA sender measured re-minting its inner statements' ids per export, or reusing ids across documents at any real
 rate, would move C-CDA to per-document names.
