@@ -74,3 +74,26 @@
     cascade:workflowStatus "final" ; cascade:attachment <urn:x:cobalaminVersion#attachment-1> .
 <urn:x:cobalaminVersion#attachment-1> cascade:attachmentContentType "application/pdf" ; cascade:attachmentTitle "Vitamin B12 report" .
 :cobalaminRevision a cascade:Revision ; cascade:revisionOf :cobalamin ; cascade:version :cobalaminVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:glucose0 a cascade:LaboratoryTestResult .
+:glucose0Version prov:specializationOf :glucose0 ; cascade:patient :subject ; cascade:testName "Glucose" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "95" ; cascade:resultUnit "mg/dL" .
+:glucose0Revision a cascade:Revision ; cascade:revisionOf :glucose0 ; cascade:version :glucose0Version ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:glucose1 a cascade:LaboratoryTestResult .
+:glucose1Version prov:specializationOf :glucose1 ; cascade:patient :subject ; cascade:testName "Glucose" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "180" ; cascade:resultUnit "mg/dL" ;
+    cascade:resultInterpretationCode <https://ns.cascadeprotocol.org/codes/observationinterpretation/H> .
+:glucose1Revision a cascade:Revision ; cascade:revisionOf :glucose1 ; cascade:version :glucose1Version ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:glucose2 a cascade:LaboratoryTestResult .
+:glucose2Version prov:specializationOf :glucose2 ; cascade:patient :subject ; cascade:testName "Glucose" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "181" ; cascade:resultUnit "mg/dL" ;
+    cascade:resultInterpretationCode <https://ns.cascadeprotocol.org/codes/observationinterpretation/H> .
+:glucose2Revision a cascade:Revision ; cascade:revisionOf :glucose2 ; cascade:version :glucose2Version ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:tolerance a cascade:DiagnosticReport .
+:toleranceVersion prov:specializationOf :tolerance ; cascade:patient :subject ; cascade:reportName "Glucose tolerance, 2 hours" ;
+    cascade:reportEffectiveTime "2025-04-20T07:00:00Z"^^xsd:dateTime ; cascade:workflowStatus "final" ;
+    obo:RO_0002351 :glucose0 , :glucose1 , :glucose2 .
+:toleranceRevision a cascade:Revision ; cascade:revisionOf :tolerance ; cascade:version :toleranceVersion ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
