@@ -538,7 +538,7 @@ cascade:numberOfRepeatsAllowed a owl:DatatypeProperty ;
     rdfs:label "number of repeats allowed"@en ;
     rdfs:comment "Of a version of a prescribed medication, how many times it may be dispensed after the first, as FHIR's MedicationRequest.dispenseRequest.numberOfRepeatsAllowed (refills): 3 repeats is 4 fills, and 0 says no refill, which differs from none stated."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
-    rdfs:range xsd:nonNegativeInteger ;
+    rdfs:range xsd:integer ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dispenseRequest.numberOfRepeatsAllowed> .
 
 cascade:expectedSupplyDuration a owl:ObjectProperty ;
@@ -585,7 +585,7 @@ cascade:dosageRepeatFrequency a owl:DatatypeProperty ;
     rdfs:label "dosage repeat frequency"@en ;
     rdfs:comment "Of a structured dosage, how many times it is taken within each cascade:dosageRepeatPeriod, as FHIR's Dosage.timing.repeat.frequency: 3 in 1 day is three times a day."@en ;
     rdfs:domain cascade:StructuredDosage ;
-    rdfs:range xsd:positiveInteger ;
+    rdfs:range xsd:integer ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Timing.repeat.frequency> .
 
 cascade:dosageRepeatPeriod a owl:DatatypeProperty ;

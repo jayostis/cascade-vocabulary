@@ -696,9 +696,10 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:numberOfRepeatsAllowed ;
-        sh:datatype xsd:nonNegativeInteger ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
         sh:maxCount 1 ;
-        sh:message "A medication states at most one number of repeats allowed, an xsd:nonNegativeInteger"@en ;
+        sh:message "A medication states at most one number of repeats allowed, an xsd:integer of 0 or more"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -751,9 +752,10 @@ cascade:StructuredDosageShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:dosageRepeatFrequency ;
-        sh:datatype xsd:positiveInteger ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
         sh:maxCount 1 ;
-        sh:message "A dosage states at most one frequency, an xsd:positiveInteger"@en ;
+        sh:message "A dosage states at most one frequency, an xsd:integer of 1 or more"@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:dosageRepeatPeriod ;
