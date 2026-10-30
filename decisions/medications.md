@@ -1,6 +1,6 @@
 # Medications: each copy's own lifecycle, and how long it was taken
 
-Status: draft, 2026-10-29, written with #292 (phase 1 of #287), which applies it; #299 adds a request's supply, its dosage's bounds and its dispensing window (rows "exposure start", "exposure end", "a supply"). Acceptance waits on the departures: rows "no end", "a partial date" and "a supply". Depends on `version-content.md`
+Status: draft, 2026-10-29, written with #292 (phase 1 of #287), which applies it; #299 adds a request's supply, its dosage's bounds and its dispensing window (rows "exposure start", "exposure end", "a supply"). Acceptance waits on the departures: rows "exposure start", "exposure end", "no end", "a partial date" and "a supply". Depends on `version-content.md`
 (row "what rules read": rules read each member's own version and a small layer of derivations that defines exposure as
 `CumulativeMedicationDuration` does), `clinical-terms-follow-fhir.md` (a departure from FHIR is explained in its area's
 note, and this is the medications area's), `one-meaning-per-term.md` (the lifecycle classes, rule L1) and
@@ -59,9 +59,9 @@ CDM 5.4 (https://ohdsi.github.io/CommonDataModel/cdm54.html); the experiment
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | a copy's own lifecycle | FHIR's status on each resource; `one-meaning-per-term.md`'s classes | each medication record in an entry is classed by L1 from its own current version's status (`cascade:currentVersionStatusLifecycle` and its step), and the entry has the class of the member it takes its status from, or unknown where none gives one, so L1's table is written once; a rule reads the copy's class, never the entry's; rule L1 | ours, as the lifecycle is (`clinical-terms-follow-fhir.md`, row "a departure") |
-| exposure start | CMD: start of `boundsPeriod`, else `authoredOn`, else start of `dispenseRequest.validityPeriod`, of the request's `singleton from` dosage; FHIR `MedicationStatement.effective[x]` | the start of use (`effective[x]`, C-CDA `effectiveTime/low`), else the start of the bounds of the version's one structured dosage (`cascade:dosageBoundsPeriodStart`), else the day the prescription was written (`authoredOn`), else the start of its dispensing window (`cascade:dispenseValidityPeriodStart`); a version with several dosages has no one dosage's bounds; `cascade:medicationExposureStart` (`queries/derivations/medication-exposure-periods.rq`) | borrowed from CMD's request start; a statement's start is FHIR's, since CMD has no statement function |
-| exposure end | CMD: start plus days' supply times one plus refills, less one day, or the end of `boundsPeriod`; FHIR `effective[x]` | the end of use (`effective[x]`, C-CDA `effectiveTime/high`), else the start plus the supply (`cascade:expectedSupplyDuration`) times one plus the repeats (`cascade:numberOfRepeatsAllowed`, none stated read as 0), less one day, else the end of the one dosage's bounds (`cascade:dosageBoundsPeriodEnd`); a dispensing window's end is never an end; dispenses wait on #300; `cascade:medicationExposureEnd` (`queries/derivations/medication-exposure-periods.rq`) | borrowed; diverged where a request states an end of use as well, which no FHIR request does |
-| a supply | CMD: `convert expectedSupplyDuration to days`, else `quantity.value / (dose.value * dosesPerDay)`; UCUM's units of time; FHIR Duration drt-1 | the supply in a UCUM unit of time, read in days (a week 7, a month 30.4375, a year 365.25, UCUM's mean Julian month and year), times one plus the repeats, rounded down to whole days, counted from the first day the start may be; a supply with a comparator, or with no UCUM unit, is not read; a supply from the quantity dispensed and the dose is not computed (`queries/derivations/medication-exposure-periods.rq`; `ontologies/cascade.shapes.ttl`, `DurationQuantityShape`) | borrowed from CMD's arithmetic; diverged in rounding down and in counting from the earliest start, so exposure is never overstated, and in leaving out the quantity's fallback, whose quantity term is not carried |
+| exposure start | CMD: start of `boundsPeriod`, else `authoredOn`, else start of `dispenseRequest.validityPeriod`, of the request's `singleton from` dosage; FHIR `MedicationStatement.effective[x]` | the start of use (`effective[x]`, C-CDA `effectiveTime/low`), else the start of the bounds of the version's one structured dosage (`cascade:dosageBoundsPeriodStart`), else the day the prescription was written (`authoredOn`), else the start of its dispensing window (`cascade:dispenseValidityPeriodStart`); a version with several dosages is read from these without any dosage's bounds; `cascade:medicationExposureStart` (`queries/derivations/medication-exposure-periods.rq`) | borrowed from CMD's request start; diverged for a version with several dosages, where CQL's `singleton from` over more than one element is a run-time error and CMD gives no period: we read its start and its supply as for one dosage and leave out only the bounds, which belong to one dosage each; a statement's start is FHIR's, since CMD has no statement function |
+| exposure end | CMD: start plus days' supply times one plus refills, less one day, or the end of `boundsPeriod`; FHIR `effective[x]` | the end of use (`effective[x]`, C-CDA `effectiveTime/high`), else the start plus the supply (`cascade:expectedSupplyDuration`) times one plus the repeats (`cascade:numberOfRepeatsAllowed`, none stated read as 0), less one day, else the end of the one dosage's bounds (`cascade:dosageBoundsPeriodEnd`); a dispensing window's end is never an end; dispenses wait on #300; `cascade:medicationExposureEnd` (`queries/derivations/medication-exposure-periods.rq`) | borrowed; diverged where a request states an end of use as well, which no FHIR request does, and for a version with several dosages, as in row "exposure start" |
+| a supply | CMD: `convert expectedSupplyDuration to days`, else `quantity.value / (dose.value * dosesPerDay)`, and `startDate + Quantity(totalDaysSupplied - 1, 'day')`, where CQL ignores the decimal portion of a quantity of days; UCUM's units of time; FHIR Duration drt-1; Timing's UnitsOfTime | the supply in one of the seven codes of Timing's UnitsOfTime, read in days (a week 7, a month 30.4375, a year 365.25, UCUM's mean Julian month and year), times one plus the repeats, rounded down to whole days, counted from the first day the start may be; a supply under a day ends on its start; a supply with a comparator, or with no UCUM unit, is not read; a supply from the quantity dispensed and the dose is not computed (`queries/derivations/medication-exposure-periods.rq`; `ontologies/cascade.shapes.ttl`, `DurationQuantityShape`) | borrowed from CMD's arithmetic, its rounding and its end for a supply under a day among it; diverged in counting from the earliest start, so exposure is never overstated, and in leaving out the quantity's fallback, whose quantity term is not carried |
 | no end | CMD: null; OMOP: an imputed end | with no end, `cascade:medicationExposureOngoing true` when the copy's own lifecycle is active, and neither an end nor the flag otherwise (`queries/derivations/medication-exposure-periods.rq`) | diverged: CMD measures closed periods inside a measurement period, a pod asks about today, and an active status says the period has not closed, known through the current revision's `cascade:observedAsOf` |
 | a partial date | `partial-dates-and-absent-reasons.md` row "1. datatype"; CMD's `date from` | a start given to the year or month is its last day, an end its first, and a time its day, so exposure is never overstated (`queries/derivations/medication-exposure-periods.rq`) | borrowed from FHIR search's implied range (as row 3 of `partial-dates-and-absent-reasons.md` does; `queries/matcher/same-code-and-period-read-as-ranges.rq`), taking the range's inner edge; diverged from reading the day a source gave: CQL's `date from` keeps the source's precision, so a year stays a year |
 | no period | CMD: "else null"; CQL's interval needs its low at or before its high | a copy with no start, or whose end so read falls before its start, has no exposure (`queries/derivations/medication-exposure-periods.rq`) | borrowed |
@@ -83,8 +83,11 @@ the entry its status member's class, keeps one table and one meaning; a second t
 **Why CMD's definition.** (rows "exposure start", "exposure end", "no period") CMD is what the CMS FHIR measures run,
 so a rule built on it counts exposure as a quality measure does, and a reviewer can check it against published logic.
 A request's start falls back from its one dosage's bounds to `authoredOn` and then to its dispensing window exactly as
-CMD's does, and with no end of use its end is CMD's supply end, else its bounds' end; a version with several dosages has
-no one dosage, as `singleton from` has none, so their bounds are not read. Where CMD has no answer, a statement, FHIR's own definition of
+CMD's does, and with no end of use its end is CMD's supply end, else its bounds' end. A version with several dosages
+is a departure: CQL's `singleton from` over more than one element is a run-time error, so CMD gives such a request no
+period at all. A taper or a split dose states several dosages and was still written on a day and supplied for a time,
+so its start and supply end are read as for any request; only the dosages' bounds are left out, since each belongs to
+one dosage and none is the request's. Where CMD has no answer, a statement, FHIR's own definition of
 `effective[x]` is the period, the same element CMD would read if it had the function.
 
 **Why an ongoing flag and not an end.** (row "no end") A rule asking "taken for two years" needs to know a period runs
@@ -97,20 +100,27 @@ an active copy: a copy with no end that is stopped, paused or unknown is not kno
 neither an end nor a flag is written, and a rule cannot overstate it.
 
 **Why the supply is read as it is.** (row "a supply") CMD converts the supply to days and adds days to a date, so a
-supply in weeks, months or years is read in days by UCUM's own definitions of its units of time, the ones FHIR's Duration
-must use (drt-1); a fraction of a day is dropped, since adding it would end the period on a day no supply reaches. The
+supply in weeks, months or years is read in days by UCUM's own definitions of its units of time; FHIR's Duration must
+be a UCUM expression of time (drt-1), and the seven read are the codes of Timing's UnitsOfTime. A fraction of a day is
+dropped, as CQL drops it when it adds days to a date, since adding it would end the period on a day no supply reaches;
+a supply under a day so ends on its start, the one day it covers. The
 supply is counted from the first day the start may be: a prescription written in "April 2025" with 60 days' supply ran
 out by 30 May at the latest, and counting from 30 April would credit a month no supply covered. A comparator makes the
 supply a bound, which says nothing certain about its length in the direction that matters, and a supply with no UCUM
 unit cannot be converted, so neither is read. CMD's other supply, the quantity dispensed over the daily dose, needs
-`dispenseRequest.quantity`, which no term carries yet. With a supply end, an active order is no longer ongoing: the
-supply says when it ran out, and a stale order is capped at it, not at its last `observedAsOf`.
+`dispenseRequest.quantity`, which no term carries yet. A supply end is an inner bound, as a partial date's is: the
+supply covers the days to it, and an order may be renewed, or the medication taken from another supply, after it. With
+a supply end an active order is not flagged ongoing, so a rule asking how long it was taken never counts past it; a rule
+asking about absence reads the copy's lifecycle and its current revision's `cascade:observedAsOf`, never a
+supply-capped end.
 
 **Why the conservative bounds.** (row "a partial date") A start written "2022" may be any day of 2022; reading it as
 1 January would credit up to a year of exposure no source stated, and a rule asking "at least two years" would fire on
 a guess. Reading the start as the last day and the end as the first gives the shortest period the source allows: these are the
-dates the medication was certainly taken, the inner bounds. So a rule asking about absence ("no statin") must not read
-missing exposure triples as "not taken": a course stated within one month or one year can have no exposure. A time is
+dates the medication was certainly taken, the inner bounds, and a supply end is one too (row "a supply"). So a rule
+asking about absence ("no statin") must not read missing exposure triples, or an end before today, as "not taken": a
+course stated within one month or one year can have no exposure, and a supply runs out while the order stays active. It
+reads the copy's own lifecycle and its `cascade:observedAsOf` instead. A time is
 read as its day in its own zone, as CMD's `date from` does.
 
 **Why no collapse here.** (row "no collapse") Two copies of one course overlap and two courses of one entry do not;
