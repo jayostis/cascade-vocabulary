@@ -39,7 +39,7 @@ What makes it hard for a pod:
 - **This project's own comparison** (2026-10-30,
   [posted on #287](https://github.com/jayostis/cascade-vocabulary/issues/287#issuecomment-6529455264)): the same model
   found the planted gaps as well, or better, from pasted records as from today's pod. The pod's errors had three causes:
-  - what it does not hold (note and report text; an "entered from an outside result" label);
+  - what it does not hold (note and report text; a "historical result" label);
   - facts it holds one question deeper than the views a model asks first;
   - a few plain misreadings.
 
@@ -50,7 +50,7 @@ Sources: FHIR R4 Clinical Reasoning (https://hl7.org/fhir/R4/clinicalreasoning-m
 WHO SMART Guidelines (https://smart.who.int/), C-CDA (https://www.hl7.org/ccdasearch/), OMOP CDM 5.4
 (https://ohdsi.github.io/CommonDataModel/cdm54.html), openEHR GDL2
 (https://specifications.openehr.org/releases/CDS/latest/GDL2.html), ChronoEvo (https://arxiv.org/abs/2610.30631). The
-comparison: #287, comment of 2026-10-30.
+comparison: https://github.com/jayostis/cascade-vocabulary/issues/287#issuecomment-6529455264.
 
 ## Choice
 
