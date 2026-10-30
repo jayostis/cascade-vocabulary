@@ -13,13 +13,9 @@
       "text",
       "attachments",
       "results",
-      "flags",
       "entry",
       "entryLabel",
-      "records",
-      "documents",
-      "hospitals",
-      "retrieved"
+      "sources"
     ]
   },
   "results": {
@@ -66,21 +62,44 @@
           "type": "literal",
           "value": "Note or document entry · Progress note · 2025-05-06T10:00:00Z"
         },
-        "records": {
+        "sources": {
           "type": "literal",
-          "value": "urn:x:progress; urn:x:progressCopy"
+          "value": "urn:x:progress from urn:x:summary, retrieved 2026-01-01T00:00:00Z, kept by Bay Area Health Exchange, written by Fernhill Clinic; urn:x:progressCopy from urn:x:visit, retrieved 2026-02-01T00:00:00Z, written by Kestrel Harbor Hospital"
+        }
+      },
+      {
+        "date": {
+          "type": "literal",
+          "value": "2025-04-20T07:00:00Z",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
         },
-        "documents": {
+        "kind": {
           "type": "literal",
-          "value": "urn:x:summary; urn:x:visit"
+          "value": "Report"
         },
-        "hospitals": {
+        "name": {
           "type": "literal",
-          "value": "Bay Area Health Exchange; Fernhill Clinic; Kestrel Harbor Hospital"
+          "value": "Glucose tolerance, 2 hours"
         },
-        "retrieved": {
+        "status": {
           "type": "literal",
-          "value": "2026-01-01T00:00:00Z; 2026-02-01T00:00:00Z"
+          "value": "final"
+        },
+        "results": {
+          "type": "literal",
+          "value": "https://pod.example/clinical/lab-results.ttl#0a7a425e7f30311d369112a95d54e3295d7ab91e286e73a8a5ae19967d821d67 Glucose 181 mg/dL, flagged H; https://pod.example/clinical/lab-results.ttl#8a35fa0a9743d855c69d58f3f01e5770ffabcf6885a050eba47a6ab028314f5e Glucose 95 mg/dL; https://pod.example/clinical/lab-results.ttl#d9a0aa1e1d9dd66a82827bd8cbbecd152bd86c1e23debbda0abfec78667e3e6a Glucose 180 mg/dL, flagged H"
+        },
+        "entry": {
+          "type": "uri",
+          "value": "https://pod.example/clinical/reports.ttl#508382c9402e009dd94698f190a87059e32a3e4fc3f2f8d9385bc83b6800a6ad"
+        },
+        "entryLabel": {
+          "type": "literal",
+          "value": "Report entry · Glucose tolerance, 2 hours · 2025-04-20T07:00:00Z"
+        },
+        "sources": {
+          "type": "literal",
+          "value": "urn:x:tolerance from urn:x:summary, retrieved 2026-01-01T00:00:00Z, kept by Bay Area Health Exchange, written by Fernhill Clinic"
         }
       },
       {
@@ -116,11 +135,7 @@
         },
         "results": {
           "type": "literal",
-          "value": "https://pod.example/clinical/lab-results.ttl#5d2294f8048478b9395c4d1271598d09b987764556d51fc3fc8c4421247600cc MCV 101 fL; https://pod.example/clinical/lab-results.ttl#ff9206c9f44bd8e61b396a902a6b644a8774b1e4bc406ee2178c437737da0be9 Hemoglobin 12.9 g/dL, reference range 13.5-17.5 g/dL"
-        },
-        "flags": {
-          "type": "literal",
-          "value": "MCV A; MCV H; Hemoglobin L"
+          "value": "https://pod.example/clinical/lab-results.ttl#5d2294f8048478b9395c4d1271598d09b987764556d51fc3fc8c4421247600cc MCV 101 fL, flagged A, H; https://pod.example/clinical/lab-results.ttl#ff9206c9f44bd8e61b396a902a6b644a8774b1e4bc406ee2178c437737da0be9 Hemoglobin 12.9 g/dL, reference range 13.5-17.5 g/dL, flagged L"
         },
         "entry": {
           "type": "uri",
@@ -130,21 +145,9 @@
           "type": "literal",
           "value": "Report entry · CBC panel - Blood by Automated count · 2025-04-02T08:30:00Z"
         },
-        "records": {
+        "sources": {
           "type": "literal",
-          "value": "urn:x:cbc"
-        },
-        "documents": {
-          "type": "literal",
-          "value": "urn:x:summary"
-        },
-        "hospitals": {
-          "type": "literal",
-          "value": "Bay Area Health Exchange; Fernhill Clinic"
-        },
-        "retrieved": {
-          "type": "literal",
-          "value": "2026-01-01T00:00:00Z"
+          "value": "urn:x:cbc from urn:x:summary, retrieved 2026-01-01T00:00:00Z, kept by Bay Area Health Exchange, written by Fernhill Clinic"
         }
       },
       {
@@ -181,7 +184,7 @@
           "type": "literal",
           "value": "Report entry · Cobalamin"
         },
-        "records": {
+        "sources": {
           "type": "literal",
           "value": "urn:x:cobalamin"
         }
@@ -220,7 +223,7 @@
           "type": "literal",
           "value": "Note or document entry · Plan of care note · 2025-02-01"
         },
-        "records": {
+        "sources": {
           "type": "literal",
           "value": "urn:x:plan"
         }

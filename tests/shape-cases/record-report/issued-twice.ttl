@@ -1,0 +1,26 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:0f49531e-d43e-89ea-8847-83ef8a82b9d8> a cascade:DiagnosticReport ;
+    cascade:sourceUrl <https://fhir.example/DiagnosticReport/report-issued-twice> .
+
+<ni:///sha-256;report-issued-twice> prov:specializationOf <urn:uuid:0f49531e-d43e-89ea-8847-83ef8a82b9d8> ;
+    cascade:patient :patient ;
+    cascade:reportCode <http://loinc.org/rdf/2132-9> ;
+    cascade:reportCodeInOtherSystem "B12-SER"^^<urn:oid:2.16.840.1.113883.19.5.99999.7> ;
+    cascade:reportEffectiveTime "2025-03-01T08:00:00Z"^^xsd:dateTime ;
+    cascade:reportIssuedTime "2025-03-01T14:00:00Z"^^xsd:dateTime , "2025-03-02T09:00:00Z"^^xsd:dateTime ;
+    cascade:reportConclusion "Low." ;
+    cascade:reportConclusionCode <http://snomed.info/id/190634004> ;
+    cascade:workflowStatus "final" ;
+    obo:RO_0002351 <urn:uuid:5b1f2c3e-7a4d-4e8b-9c60-1d2e3f4a5b6c> ;
+    prov:wasAttributedTo <urn:uuid:801785a3-066b-86fb-84c1-2119dc670fce> ;
+    cascade:reportName "Cobalamin" ;
+    cascade:reportCategory "LAB"^^<http://terminology.hl7.org/CodeSystem/v2-0074> ;
+    cascade:narrativeText "Vitamin B12 180 pg/mL, low." ;
+    cascade:attachment <ni:///sha-256;report-issued-twice#attachment-1> .
+<ni:///sha-256;report-issued-twice#attachment-1> cascade:attachmentContentType "application/pdf" ; cascade:attachmentTitle "Vitamin B12 report" ;
+    cascade:attachmentUrl "Binary/b12"^^xsd:anyURI .

@@ -711,6 +711,10 @@
   mf:action [ sht:dataGraph <dates-and-absent-values/absent-dosage-bound.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
+<#dates-and-absent-values/absent-report-issued> a sht:Validate ;
+  mf:action [ sht:dataGraph <dates-and-absent-values/absent-report-issued.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
 <#dates-and-absent-values/absent-property-not-a-date> a sht:Validate ;
   mf:action [ sht:dataGraph <dates-and-absent-values/absent-property-not-a-date.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
@@ -789,3 +793,13 @@
   mf:action [ sht:dataGraph <record-note-or-document/type-snomed-ct.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ClinicalNoteOrDocumentShape ; sh:resultPath cascade:noteOrDocumentType ] ] .
+
+<#record-report/issued-twice> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-report/issued-twice.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DiagnosticReportShape ; sh:resultPath cascade:reportIssuedTime ] ] .
+
+<#record-note-or-document/content-status-a-guess> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-note-or-document/content-status-a-guess.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ClinicalNoteOrDocumentShape ; sh:resultPath cascade:noteOrDocumentContentStatus ] ] .
