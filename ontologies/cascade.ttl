@@ -809,7 +809,7 @@ cascade:answersForRecordClass a owl:ObjectProperty ;
 
 cascade:refusedForRecordClass a owl:ObjectProperty ;
     rdfs:label "refused for record class"@en ;
-    rdfs:comment "Of a document, a class of record its source refused a search for, for the document's patient: the source answered the search, or a later page of it, with no rows it stands behind, as FHIR's failed search (a 400, 403, 404 or 410 with its OperationOutcome). The document may hold only part of what that search would have returned (a refusal after the first page keeps the earlier pages), and says nothing of the rest."@en ;
+    rdfs:comment "Of a document, a class of record its source refused a search for, for the document's patient: the source answered the search with no rows it stands behind: a page answered 400, 403 or 404, as FHIR's failed search; a page after the first answered 410, an expired paging link; or a page holding a record that is not the patient's, or names no patient, of which nothing is kept. Any other failure ends the pull instead of refusing the search. The document may hold only part of what that search would have returned (a refusal after the first page keeps the earlier pages), and says nothing of the rest."@en ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/http.html#search> ;
     rdfs:range owl:Class .
 
