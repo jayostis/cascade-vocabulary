@@ -1,0 +1,10 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<ni:///sha-256;dates-absent-report-issued> prov:specializationOf <urn:uuid:5a0b1c2d-0000-4000-8000-00000000000d> ;
+    cascade:reportName "Cobalamin" ;
+    cascade:reportEffectiveTime "2025-03-01"^^xsd:date ;
+    cascade:valueAbsentForReason <ni:///sha-256;dates-absent-report-issued#absent-reportIssuedTime> .
+<ni:///sha-256;dates-absent-report-issued#absent-reportIssuedTime> cascade:absentValueProperty cascade:reportIssuedTime ;
+    cascade:absentReasonCode <https://ns.cascadeprotocol.org/codes/data-absent-reason/unknown> .
