@@ -1,0 +1,25 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-note-type-and-text" ;
+  rdfs:comment "A hospital course from a hospital's summary; the same text in a clinic's summary, with more white space and blank lines, and from a pull, its lines run together; the same text as the hospital's discharge summary; the clinic's hospital course quoting the hospital's and adding a line; and a short plan, the same at the hospital and the clinic." ;
+  mf:entries (
+    <#same-note-type-and-text>
+  ) .
+
+<#same-note-type-and-text> a mf:QueryEvaluationTest ;
+  mf:name "same-note-type-and-text" ;
+  rdfs:comment "Notes of one type whose texts are the same once every run of white space is one space and the ends are trimmed, and at least 200 characters long, match whatever their sources: the three hospital courses. Not matched: the discharge summary, of another type; the clinic's quoting course, whose text holds the hospital's and more; and the two short plans, too short to say they are one note." ;
+  mf:action [ qt:query <../../../queries/matcher/same-note-type-and-text.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:clinicCopy> ,
+                                  <urn:x:clinicCourseQuoted> ,
+                                  <urn:x:dischargeSummary> ,
+                                  <urn:x:hospitalCourse> ,
+                                  <urn:x:pulledCopy> ,
+                                  <urn:x:shortPlanAtTheClinic> ,
+                                  <urn:x:shortPlanAtTheHospital> ] ;
+  mf:result <same-note-type-and-text.srj> .

@@ -1,0 +1,97 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:clinic a cascade:Organization .
+:hospital a cascade:Organization .
+:exchange a cascade:Organization .
+
+:clinicMay a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+:clinicJune a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+:clinicAugust a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+:clinicApril a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+:clinicAugustAgain a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+:hospitalSummary a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+:exchangeSummary a prov:Entity ;
+    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :exchange ] ,
+                              [ prov:hadRole cascade:AuthorRole ; prov:agent :clinic ] .
+
+:planMay a cascade:ClinicalNoteOrDocument .
+<urn:x:planMayVersion> prov:specializationOf :planMay ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:narrativeText "Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in four weeks to go over the results with Elena Marsh, MD." ;
+    cascade:noteOrDocumentDate "2026-05-20T09:00:00-05:00"^^xsd:dateTime .
+:planMayRevision a cascade:Revision ; cascade:revisionOf :planMay ; cascade:version <urn:x:planMayVersion> ;
+    prov:wasDerivedFrom :clinicMay ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-05-20T09:00:00-05:00"^^xsd:dateTime .
+
+:planJune a cascade:ClinicalNoteOrDocument .
+<urn:x:planJuneVersion> prov:specializationOf :planJune ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:narrativeText "Return in 3 months." ;
+    cascade:noteOrDocumentDate "2026-06-15T09:00:00-05:00"^^xsd:dateTime .
+:planJuneRevision a cascade:Revision ; cascade:revisionOf :planJune ; cascade:version <urn:x:planJuneVersion> ;
+    prov:wasDerivedFrom :clinicJune ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-06-15T09:00:00-05:00"^^xsd:dateTime .
+
+:planAugust a cascade:ClinicalNoteOrDocument .
+<urn:x:planAugustVersion> prov:specializationOf :planAugust ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:narrativeText "Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in four weeks to go over the results with Elena Marsh, MD.\nAugust 12, 2026 (follow-up, Elena Marsh, MD): vitamin B12 low at 180 pg/mL. Start cyanocobalamin 1000 mcg by mouth daily and recheck the level in three months.\nReturn in 3 months." ;
+    cascade:noteOrDocumentDate "2026-08-12T09:00:00-05:00"^^xsd:dateTime .
+:planAugustRevision a cascade:Revision ; cascade:revisionOf :planAugust ; cascade:version <urn:x:planAugustVersion> ;
+    prov:wasDerivedFrom :clinicAugust ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-08-12T09:00:00-05:00"^^xsd:dateTime .
+
+:planAugustSentAgain a cascade:ClinicalNoteOrDocument .
+<urn:x:planAugustSentAgainVersion> prov:specializationOf :planAugustSentAgain ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:narrativeText "Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in four weeks to go over the results with Elena Marsh, MD.\nAugust 12, 2026 (follow-up, Elena Marsh, MD): vitamin B12 low at 180 pg/mL. Start cyanocobalamin 1000 mcg by mouth daily and recheck the level in three months.\nReturn in 3 months." ;
+    cascade:noteOrDocumentDate "2026-08-12T09:00:00-05:00"^^xsd:dateTime .
+:planAugustSentAgainRevision a cascade:Revision ; cascade:revisionOf :planAugustSentAgain ; cascade:version <urn:x:planAugustSentAgainVersion> ;
+    prov:wasDerivedFrom :clinicAugustAgain ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-08-12T09:00:00-05:00"^^xsd:dateTime .
+
+:assessmentAugust a cascade:ClinicalNoteOrDocument .
+<urn:x:assessmentAugustVersion> prov:specializationOf :assessmentAugust ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/51848-0> ;
+    cascade:narrativeText "Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in four weeks to go over the results with Elena Marsh, MD.\nAugust 12, 2026 (follow-up, Elena Marsh, MD): vitamin B12 low at 180 pg/mL. Start cyanocobalamin 1000 mcg by mouth daily and recheck the level in three months." ;
+    cascade:noteOrDocumentDate "2026-08-12T09:00:00-05:00"^^xsd:dateTime .
+:assessmentAugustRevision a cascade:Revision ; cascade:revisionOf :assessmentAugust ; cascade:version <urn:x:assessmentAugustVersion> ;
+    prov:wasDerivedFrom :clinicAugust ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-08-12T09:00:00-05:00"^^xsd:dateTime .
+
+:planApril a cascade:ClinicalNoteOrDocument .
+<urn:x:planAprilVersion> prov:specializationOf :planApril ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:narrativeText "April 1, 2026: annual visit.\n  Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in four weeks to go over the results with Elena Marsh, MD. " ;
+    cascade:noteOrDocumentDate "2026-04-01T09:00:00-05:00"^^xsd:dateTime .
+:planAprilRevision a cascade:Revision ; cascade:revisionOf :planApril ; cascade:version <urn:x:planAprilVersion> ;
+    prov:wasDerivedFrom :clinicApril ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-04-01T09:00:00-05:00"^^xsd:dateTime .
+
+:hospitalPlan a cascade:ClinicalNoteOrDocument .
+<urn:x:hospitalPlanVersion> prov:specializationOf :hospitalPlan ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:narrativeText "Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in four weeks to go over the results with Elena Marsh, MD.\nSeen at the hospital after a fall; no fracture." ;
+    cascade:noteOrDocumentDate "2026-09-01T09:00:00-05:00"^^xsd:dateTime .
+:hospitalPlanRevision a cascade:Revision ; cascade:revisionOf :hospitalPlan ; cascade:version <urn:x:hospitalPlanVersion> ;
+    prov:wasDerivedFrom :hospitalSummary ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-09-01T09:00:00-05:00"^^xsd:dateTime .
+
+:exchangePlan a cascade:ClinicalNoteOrDocument .
+<urn:x:exchangePlanVersion> prov:specializationOf :exchangePlan ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:narrativeText "Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in four weeks to go over the results with Elena Marsh, MD.\n\nAugust 12, 2026 (follow-up, Elena Marsh, MD): vitamin B12 low at 180 pg/mL. Start cyanocobalamin 1000 mcg by mouth daily and recheck the level in three months.\nReturn in 3 months.\nSeen at the hospital after a fall; no fracture." ;
+    cascade:noteOrDocumentDate "2026-09-01T09:00:00-05:00"^^xsd:dateTime .
+:exchangePlanRevision a cascade:Revision ; cascade:revisionOf :exchangePlan ; cascade:version <urn:x:exchangePlanVersion> ;
+    prov:wasDerivedFrom :exchangeSummary ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-09-01T09:00:00-05:00"^^xsd:dateTime .
+

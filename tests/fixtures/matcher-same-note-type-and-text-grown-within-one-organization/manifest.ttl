@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-note-type-and-text-grown-within-one-organization" ;
+  rdfs:comment "Plans of treatment of one clinic: in May, a long plan; in June, a short one; in August, the May plan grown by two lines, the short plan's among them, sent twice under two names; in April, a plan whose second line is the May plan's, set off by blank space; and an assessment in August holding the May plan. From an exchange's summary naming the clinic as author, in September, the August plan grown by a line after a blank one; from a hospital, in September, the May plan and a line of its own." ;
+  mf:entries (
+    <#same-note-type-and-text-grown-within-one-organization>
+  ) .
+
+<#same-note-type-and-text-grown-within-one-organization> a mf:QueryEvaluationTest ;
+  mf:name "same-note-type-and-text-grown-within-one-organization" ;
+  rdfs:comment "A note matches each note of its type from documents of one organization whose text, read as lines with the white space inside each line and blank lines dropped, is a run of whole lines of its own, longer, dated no earlier, and at least 200 characters long, and so do the two the other way round: May with the August plans and the exchange's, and the August plans with the exchange's. Not matched: the June plan, too short to say it is one note though the August plan holds it; the two August plans with each other, whose texts are equal; the April plan, dated before the May plan it holds; the assessment, of another type; and the hospital's plan, of another organization." ;
+  mf:action [ qt:query <../../../queries/matcher/same-note-type-and-text-grown-within-one-organization.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:assessmentAugust> ,
+                                  <urn:x:exchangePlan> ,
+                                  <urn:x:hospitalPlan> ,
+                                  <urn:x:planApril> ,
+                                  <urn:x:planAugust> ,
+                                  <urn:x:planAugustSentAgain> ,
+                                  <urn:x:planJune> ,
+                                  <urn:x:planMay> ] ;
+  mf:result <same-note-type-and-text-grown-within-one-organization.srj> .
