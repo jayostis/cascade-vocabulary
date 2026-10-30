@@ -1,0 +1,10 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<ni:///sha-256;dates-absent-dosage-bound> prov:specializationOf <urn:uuid:5a0b1c2d-0000-4000-8000-00000000000c> ;
+    cascade:structuredDosage <ni:///sha-256;dates-absent-dosage-bound#dosage-1> .
+<ni:///sha-256;dates-absent-dosage-bound#dosage-1> cascade:dosageBoundsPeriodStart "2023-06-15"^^xsd:date ;
+    cascade:valueAbsentForReason <ni:///sha-256;dates-absent-dosage-bound#dosage-1-absent-dosageBoundsPeriodEnd> .
+<ni:///sha-256;dates-absent-dosage-bound#dosage-1-absent-dosageBoundsPeriodEnd> cascade:absentValueProperty cascade:dosageBoundsPeriodEnd ;
+    cascade:absentReasonCode <https://ns.cascadeprotocol.org/codes/data-absent-reason/unknown> .

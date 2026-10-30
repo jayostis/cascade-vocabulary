@@ -72,3 +72,30 @@
     cascade:ucumUnit "d" .
 :boundRevision a cascade:Revision ; cascade:revisionOf :bound ; cascade:version :boundVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:hours a cascade:PrescribedOrReportedMedication .
+:hoursVersion prov:specializationOf :hours ; cascade:patient :subject ; cascade:drugName "supply: 12 hours, under a day" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-08-01"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:hoursVersion#expected-supply-duration> .
+<urn:x:hoursVersion#expected-supply-duration> cascade:decimalValue "12"^^xsd:decimal ; cascade:writtenValue "12" ; cascade:ucumUnit "h" .
+:hoursRevision a cascade:Revision ; cascade:revisionOf :hours ; cascade:version :hoursVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:year a cascade:PrescribedOrReportedMedication .
+:yearVersion prov:specializationOf :year ; cascade:patient :subject ; cascade:drugName "supply: 1 year, across a leap day" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2024-03-01"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:yearVersion#expected-supply-duration> .
+<urn:x:yearVersion#expected-supply-duration> cascade:decimalValue "1"^^xsd:decimal ; cascade:writtenValue "1" ; cascade:ucumUnit "a" .
+:yearRevision a cascade:Revision ; cascade:revisionOf :year ; cascade:version :yearVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:writtenYear a cascade:PrescribedOrReportedMedication .
+:writtenYearVersion prov:specializationOf :writtenYear ; cascade:patient :subject ; cascade:drugName "supply: 90 days, written only to the year" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2024"^^xsd:gYear ;
+    cascade:expectedSupplyDuration <urn:x:writtenYearVersion#expected-supply-duration> .
+<urn:x:writtenYearVersion#expected-supply-duration> cascade:decimalValue "90"^^xsd:decimal ; cascade:writtenValue "90" ; cascade:ucumUnit "d" .
+:writtenYearRevision a cascade:Revision ; cascade:revisionOf :writtenYear ; cascade:version :writtenYearVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
