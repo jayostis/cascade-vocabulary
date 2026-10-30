@@ -7,7 +7,16 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;iEaSRj6FdZgiUXr-6Jo42K1Bn_8AReszukoM5Y5nOE0> cascade:prescribedOrReported "prescribed" ;
+<ni:///sha-256;AF2jk3TDeS_gQfXY3PFeEfQRX07Z6Z20OcMAFvHcTek> cascade:structuredDosage <ni:///sha-256;AF2jk3TDeS_gQfXY3PFeEfQRX07Z6Z20OcMAFvHcTek#dosage-1> .
+<ni:///sha-256;AF2jk3TDeS_gQfXY3PFeEfQRX07Z6Z20OcMAFvHcTek#dosage-1> cascade:dosageRepeatFrequency 1 ;
+	cascade:dosageRepeatPeriodUnit "d" ;
+	cascade:dosageRouteCode <http://snomed.info/id/26643006> ;
+	cascade:dosageDoseQuantity <ni:///sha-256;AF2jk3TDeS_gQfXY3PFeEfQRX07Z6Z20OcMAFvHcTek#dosage-1-dose-quantity> .
+<ni:///sha-256;AF2jk3TDeS_gQfXY3PFeEfQRX07Z6Z20OcMAFvHcTek#dosage-1-dose-quantity> cascade:decimalValue "1"^^xsd:decimal ;
+	cascade:writtenValue "1" ;
+	cascade:unitText "tablet" .
+<ni:///sha-256;AF2jk3TDeS_gQfXY3PFeEfQRX07Z6Z20OcMAFvHcTek#dosage-1> cascade:dosageRepeatPeriod "1"^^xsd:decimal .
+<ni:///sha-256;AF2jk3TDeS_gQfXY3PFeEfQRX07Z6Z20OcMAFvHcTek> cascade:prescribedOrReported "prescribed" ;
 	cascade:drugName "amlodipine 5 MG Oral Tablet" ;
 	cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/197361> ;
 	cascade:workflowStatus "active" ;
@@ -17,16 +26,16 @@
 <urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> a cascade:PrescribedOrReportedMedication ;
 	cascade:sourceUrl <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-amlodipine-1> ;
 	cascade:sourceRecordId "medrx-amlodipine-1" .
-<ni:///sha-256;iEaSRj6FdZgiUXr-6Jo42K1Bn_8AReszukoM5Y5nOE0> prov:specializationOf <urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> ;
+<ni:///sha-256;AF2jk3TDeS_gQfXY3PFeEfQRX07Z6Z20OcMAFvHcTek> prov:specializationOf <urn:uuid:eb08288e-0f3c-86f1-9e2e-98c0721a59e4> ;
 	cascade:patient <urn:uuid:abf9a03f-8e23-8fca-8afb-ab51f2daa6f7> .
-_:4eeb993ae292bea2ff695ac3acb78f6f bridge:arrivedAs <ni:///sha-256;iEaSRj6FdZgiUXr-6Jo42K1Bn_8AReszukoM5Y5nOE0> ;
+_:4709966f5a0ee5c12be7b8dd6720406e bridge:arrivedAs <ni:///sha-256;AF2jk3TDeS_gQfXY3PFeEfQRX07Z6Z20OcMAFvHcTek> ;
 	pav:version "1" ;
 	pav:lastUpdateOn "2025-04-01T16:20:00Z"^^xsd:dateTime ;
-	oa:hasSelector _:f704ca166dc7f2a5385125e95f6de5f9 ;
+	oa:hasSelector _:c47838f7b75c12b01d414b52465097bb ;
 	oa:hasSource <ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> ;
 	prov:wasDerivedFrom <ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> ;
 	prov:wasGeneratedBy _:1f8425fa914aa54b49c0b7b8501fe6c9 .
-_:f704ca166dc7f2a5385125e95f6de5f9 a oa:FragmentSelector ;
+_:c47838f7b75c12b01d414b52465097bb a oa:FragmentSelector ;
 	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "" .
 _:1f8425fa914aa54b49c0b7b8501fe6c9 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
