@@ -392,7 +392,7 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:LaboratoryTestResult ;
     sh:targetSubjectsOf cascade:testName , cascade:testCode , cascade:testCodeInOtherSystem , cascade:resultValue , cascade:resultUnit ,
-        cascade:referenceRange , cascade:resultInterpretation , cascade:resultClinicallyRelevantTime ;
+        cascade:referenceRange , cascade:resultClinicallyRelevantTime ;
 
     sh:property [
         sh:path cascade:testName ;
@@ -447,12 +447,6 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:referenceRange ;
-        sh:datatype xsd:string ;
-        sh:maxCount 1
-    ] ;
-
-    sh:property [
-        sh:path cascade:resultInterpretation ;
         sh:datatype xsd:string ;
         sh:maxCount 1
     ] ;
