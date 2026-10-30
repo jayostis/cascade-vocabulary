@@ -120,3 +120,23 @@
     prov:wasDerivedFrom :clinicSummary ;
     prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-20T09:00:00-05:00"^^xsd:dateTime .
 
+:progressCodedAsPn a cascade:ClinicalNoteOrDocument .
+<urn:x:progressCodedAsPnVersion> prov:specializationOf :progressCodedAsPn ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ;
+    cascade:noteOrDocumentTypeInOtherSystem "PN"^^<urn:oid:2.16.840.1.113883.19.5.99999.30> ;
+    cascade:narrativeText "Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in four weeks to go over the results with Elena Marsh, MD." ;
+    cascade:noteOrDocumentDate "2026-10-05T12:00:00-05:00"^^xsd:dateTime .
+:progressCodedAsPnRevision a cascade:Revision ; cascade:revisionOf :progressCodedAsPn ; cascade:version <urn:x:progressCodedAsPnVersion> ;
+    prov:wasDerivedFrom :hospitalSummary ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-05T12:00:00-05:00"^^xsd:dateTime .
+
+:consultCodedAsPn a cascade:ClinicalNoteOrDocument .
+<urn:x:consultCodedAsPnVersion> prov:specializationOf :consultCodedAsPn ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11488-4> ;
+    cascade:noteOrDocumentTypeInOtherSystem "PN"^^<urn:oid:2.16.840.1.113883.19.5.99999.30> ;
+    cascade:narrativeText "Fatigue for two months and pale skin on examination. Check a vitamin B12 level, a folate level and a complete blood count today; keep a food diary, and return in four weeks to go over the results with Elena Marsh, MD." ;
+    cascade:noteOrDocumentDate "2026-10-20T09:00:00-05:00"^^xsd:dateTime .
+:consultCodedAsPnRevision a cascade:Revision ; cascade:revisionOf :consultCodedAsPn ; cascade:version <urn:x:consultCodedAsPnVersion> ;
+    prov:wasDerivedFrom :clinicSummary ;
+    prov:generatedAtTime "2026-11-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-20T09:00:00-05:00"^^xsd:dateTime .
+
