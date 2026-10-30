@@ -525,10 +525,10 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:cptCode ;
-        sh:datatype xsd:string ;
+        sh:nodeKind sh:IRI ;
         sh:maxCount 1 ;
-        sh:pattern "^[0-9]{4}[0-9FTU]$" ;
-        sh:message "CPT code must be five characters: five digits (Category I), or four digits followed by F (Category II), T (Category III) or U (Proprietary Laboratory Analyses)"@en
+        sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cpt/[0-9]{4}[0-9FTU]$" ;
+        sh:message "A CPT code is Cascade's IRI, https://ns.cascadeprotocol.org/codes/cpt/ and the five-character code: five digits (Category I), or four digits followed by F (Category II), T (Category III) or U (Proprietary Laboratory Analyses)"@en
     ] ;
 
     sh:property [
