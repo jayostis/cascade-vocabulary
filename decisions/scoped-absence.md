@@ -58,7 +58,7 @@ review, correction 8 (on #287).
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | answered | `Bundle.link` `self`, `Bundle.total`, `$export` `output`: one search's answer, no coverage | a document states `cascade:answersForRecordClass` for the class of record each search its source answered returns: the document holds every record that search returned as of its `cascade:answeredAsOf`, else its `pav:retrievedOn` (`ontologies/cascade.ttl`) | ours: nothing states coverage |
-| refused | an HTTP 403 to the search; `$export` `error`; `List.emptyReason` `withheld` (a list, not a search) | a document states `cascade:refusedForRecordClass` for the class of each search its source refused (`ontologies/cascade.ttl`) | ours |
+| refused | FHIR R4's search failure, "the return value SHALL be a status code 4xx or 5xx with an OperationOutcome", among them 400 "search could not be processed", 403 and 404 "resource type not supported" (https://hl7.org/fhir/R4/http.html#search), and 410 for a later page no longer found; `$export` `error`; `List.emptyReason` `withheld` (a list, not a search) | a search is refused when its server answered it, or a later page of it, with no rows it stands behind: a 400, 403, 404 or 410. A 401 or a 5xx that retries do not cure ends the pull instead, since it says nothing of the search. A document states `cascade:refusedForRecordClass` for the class of each search its source refused (`ontologies/cascade.ttl`; jayostis/cascade-runtime-js#559) | ours |
 | by class | `AuditEvent.entity.query`, `$export` `request`: the search itself | the value is a record class, `cascade:LaboratoryTestResult`, never the search string or the kind's word (`ontologies/cascade.shapes.ttl`) | diverged: a rule's scope is per kind |
 | who writes them | | the FHIR pull, from the searches `pull.json` lists and the ones it was denied (`runtime/steps.md`) | ours |
 | not stated | | a document stating neither term for a class is "scope not stated", and a rule says so rather than claim an absence; a C-CDA document always is, in phase 1 (#287) | ours |
@@ -112,8 +112,6 @@ dropped the C-CDA half.
 - The claim "no prescription" is lost under class granularity: `cascade:PrescribedOrReportedMedication` covers a
   `MedicationRequest` and a `MedicationStatement`, so a class answered by only one cannot say which half was seen. Lean:
   state it when the rule that needs it (phase 3) shows the cost.
-- A refused search of a type with no record class (a `DiagnosticReport`) states nothing, until #291 gives that type a
-  class: a rule that needs labs from reports reads "scope not stated".
 
 ## What would change our mind
 
