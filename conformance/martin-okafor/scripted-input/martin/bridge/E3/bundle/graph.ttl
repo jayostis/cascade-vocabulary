@@ -2,8 +2,10 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix org: <http://www.w3.org/ns/org#> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
@@ -19,8 +21,25 @@ _:fed4fedffaed4864d3f57b31667ace99 bridge:arrivedAs <ni:///sha-256;gMvKTYj93qWqB
 	prov:wasDerivedFrom <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
 	prov:wasGeneratedBy _:29751bd9911c5aec569d5f0a0b73a94 .
 _:81375104bc6b67e3b4b91c284e059ae a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/0" .
+<urn:uuid:71cc8310-b341-84b1-bd87-ab95c1e23f1f> a cascade:DiagnosticReport .
+<ni:///sha-256;i6mpsq7at9W7DgRmK1jmt2bfhQ74j1r3VMeZqrdcilI> prov:specializationOf <urn:uuid:71cc8310-b341-84b1-bd87-ab95c1e23f1f> ;
+	cascade:patient <urn:uuid:e92ce3a3-3394-8f1e-8aac-eaf036a95638> .
+_:6c13d3d3e3255e23bf73d7292220a658 bridge:arrivedAs <ni:///sha-256;i6mpsq7at9W7DgRmK1jmt2bfhQ74j1r3VMeZqrdcilI> .
+<ni:///sha-256;i6mpsq7at9W7DgRmK1jmt2bfhQ74j1r3VMeZqrdcilI> obo:RO_0002351 <urn:uuid:268320ba-ca47-8d7e-9e03-9b346a57c604> , <urn:uuid:f737af56-cb3c-831a-9339-6b618f429b98> , <urn:uuid:55a4a593-3ada-8f4d-bc07-d6ce0209fb38> , <urn:uuid:072bc795-3e58-8761-9c95-fda460ca7b1b> , <urn:uuid:8edb977f-1f25-8754-ba66-3092516ca403> , <urn:uuid:f15c3e70-dda1-8b63-bf74-cdeeba5ffe3b> ;
+	cascade:reportName "Genetic analysis report" ;
+	cascade:reportIssuedTime "2022-06-14T10:15:00-07:00"^^xsd:dateTime ;
+	cascade:workflowStatus "final" ;
+	cascade:reportCode <http://loinc.org/rdf/51969-4> ;
+	cascade:reportCategory "GE"^^<http://terminology.hl7.org/CodeSystem/v2-0074> .
+_:6c13d3d3e3255e23bf73d7292220a658 oa:hasSelector _:e9e0c20c4272ceb1f8ce5e327c742f25 ;
+	oa:hasSource <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
+	prov:wasDerivedFrom <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
+	prov:wasGeneratedBy _:29751bd9911c5aec569d5f0a0b73a94 .
+_:e9e0c20c4272ceb1f8ce5e327c742f25 a oa:FragmentSelector ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	rdf:value "/entry/1" .
 <urn:uuid:f15c3e70-dda1-8b63-bf74-cdeeba5ffe3b> a cascade:GeneticVariantFinding .
 <ni:///sha-256;wTzAe9P0W46P254wipb3uuNZLSALw9TSfA4vtaRqSBs> prov:specializationOf <urn:uuid:f15c3e70-dda1-8b63-bf74-cdeeba5ffe3b> ;
 	cascade:patient <urn:uuid:e92ce3a3-3394-8f1e-8aac-eaf036a95638> .
@@ -33,7 +52,7 @@ _:bfe34db1935a41aaaea379936ec4aa06 oa:hasSelector _:203467700594c9199576b10b5000
 	prov:wasDerivedFrom <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
 	prov:wasGeneratedBy _:29751bd9911c5aec569d5f0a0b73a94 .
 _:203467700594c9199576b10b5000c2dd a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/2" .
 <urn:uuid:8edb977f-1f25-8754-ba66-3092516ca403> a cascade:VariantInterpretation .
 <ni:///sha-256;kzWQ7eha4GkF4Xks3AWHKKu7_WMAZhZY-TO_7oFLJlw> prov:specializationOf <urn:uuid:8edb977f-1f25-8754-ba66-3092516ca403> ;
@@ -49,7 +68,7 @@ _:623aecb1af7d21800566bb7c46052d83 oa:hasSelector _:b927428ef42234c50a0327e284cf
 	prov:wasDerivedFrom <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
 	prov:wasGeneratedBy _:29751bd9911c5aec569d5f0a0b73a94 .
 _:b927428ef42234c50a0327e284cf5f52 a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/3" .
 <urn:uuid:072bc795-3e58-8761-9c95-fda460ca7b1b> a cascade:GeneticVariantFinding .
 <ni:///sha-256;mUZp_gTjD60foBOt0UsAXzxq87RSQiOCO0jWur2msEQ> prov:specializationOf <urn:uuid:072bc795-3e58-8761-9c95-fda460ca7b1b> ;
@@ -64,7 +83,7 @@ _:59b84449bbda91d3e83b949cdf2d9519 oa:hasSelector _:daf437d46f4a847a16a34d9f84a6
 	prov:wasDerivedFrom <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
 	prov:wasGeneratedBy _:29751bd9911c5aec569d5f0a0b73a94 .
 _:daf437d46f4a847a16a34d9f84a67576 a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/4" .
 <urn:uuid:55a4a593-3ada-8f4d-bc07-d6ce0209fb38> a cascade:VariantInterpretation .
 <ni:///sha-256;FXR3OW3jAk42o5J9iLPJeL0d0ePNSQPPIJOzKTHDfFg> prov:specializationOf <urn:uuid:55a4a593-3ada-8f4d-bc07-d6ce0209fb38> ;
@@ -80,7 +99,7 @@ _:c2dc8e35d8b16579b6ac4c6f66564d8 oa:hasSelector _:7eaf82ac621583f5a3a0d7eb3cf65
 	prov:wasDerivedFrom <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
 	prov:wasGeneratedBy _:29751bd9911c5aec569d5f0a0b73a94 .
 _:7eaf82ac621583f5a3a0d7eb3cf65c1e a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/5" .
 <urn:uuid:f737af56-cb3c-831a-9339-6b618f429b98> a cascade:GeneticVariantFinding .
 <ni:///sha-256;ICz7K0BKVTv4ZDTLkDb51vaoDpRqvPDS8sSPhqgKJ1k> prov:specializationOf <urn:uuid:f737af56-cb3c-831a-9339-6b618f429b98> ;
@@ -94,7 +113,7 @@ _:47da203aeba519888b48fa4e5aecb8e3 oa:hasSelector _:eb196df34a602356a3b5e0b99e8f
 	prov:wasDerivedFrom <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
 	prov:wasGeneratedBy _:29751bd9911c5aec569d5f0a0b73a94 .
 _:eb196df34a602356a3b5e0b99e8fc983 a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/6" .
 <urn:uuid:268320ba-ca47-8d7e-9e03-9b346a57c604> a cascade:VariantInterpretation .
 <ni:///sha-256;qohoxaJF2IV9U0oWiFNnxS3FZZMBHowH32m_IVdfx14> prov:specializationOf <urn:uuid:268320ba-ca47-8d7e-9e03-9b346a57c604> ;
@@ -110,7 +129,7 @@ _:a5838448bdaa1d75247102321aeaeab4 oa:hasSelector _:79fd5e10cccd9a773f5d2200d0bf
 	prov:wasDerivedFrom <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
 	prov:wasGeneratedBy _:29751bd9911c5aec569d5f0a0b73a94 .
 _:79fd5e10cccd9a773f5d2200d0bf4b9f a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/7" .
 <urn:uuid:b110c83f-9061-882c-abda-6cee63b93c1f> a cascade:Organization .
 <ni:///sha-256;VGqPY2nBN0SuUGPf4ziq9H88L7uermTOF3h2SO963E4> prov:specializationOf <urn:uuid:b110c83f-9061-882c-abda-6cee63b93c1f> .
@@ -122,7 +141,7 @@ _:17028fc94586399448c6083c7fd8a87a oa:hasSelector _:7dae453f568462123f3bbd328999
 	prov:wasDerivedFrom <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;
 	prov:wasGeneratedBy _:29751bd9911c5aec569d5f0a0b73a94 .
 _:7dae453f568462123f3bbd32899916b2 a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "/entry/8" .
 _:29751bd9911c5aec569d5f0a0b73a94 <http://www.w3.org/2000/01/rdf-schema#label> "FHIR pull" ;
 	prov:startedAtTime "2026-10-13T09:10:04Z"^^xsd:dateTime .
