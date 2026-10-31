@@ -5,9 +5,11 @@
       "code",
       "started",
       "written",
+      "statuses",
       "records",
       "entry",
-      "entryLabel"
+      "entryLabel",
+      "sources"
     ]
   },
   "results": {
@@ -26,6 +28,10 @@
           "value": "2024-03-01",
           "datatype": "http://www.w3.org/2001/XMLSchema#date"
         },
+        "statuses": {
+          "type": "literal",
+          "value": "urn:x:fill active"
+        },
         "records": {
           "type": "literal",
           "value": "1",
@@ -37,13 +43,57 @@
         },
         "entryLabel": {
           "type": "literal",
-          "value": "Medication entry \u00b7 Amlodipine 5 mg tablet, pharmacy \u00b7 2024-03-01"
+          "value": "Medication entry · Amlodipine 5 mg tablet, pharmacy · 2024-03-01"
+        },
+        "sources": {
+          "type": "literal",
+          "value": "urn:x:fill"
+        }
+      },
+      {
+        "medication": {
+          "type": "literal",
+          "value": "Atorvastatin 20 mg tablet"
+        },
+        "code": {
+          "type": "uri",
+          "value": "https://ns.cascadeprotocol.org/codes/rxnorm/617310"
+        },
+        "started": {
+          "type": "literal",
+          "value": "2022-08-01",
+          "datatype": "http://www.w3.org/2001/XMLSchema#date"
+        },
+        "statuses": {
+          "type": "literal",
+          "value": "urn:x:paused stopped, ended 2021-05-01; urn:x:resumed active"
+        },
+        "records": {
+          "type": "literal",
+          "value": "2",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "entry": {
+          "type": "uri",
+          "value": "https://pod.example/clinical/medications.ttl#bc339db651b7faa3f257bb0a3549aa940e631510aa0e405794e500676da731eb"
+        },
+        "entryLabel": {
+          "type": "literal",
+          "value": "Medication entry · Atorvastatin 20 mg tablet · 2022-08-01"
+        },
+        "sources": {
+          "type": "literal",
+          "value": "urn:x:paused; urn:x:resumed"
         }
       },
       {
         "medication": {
           "type": "literal",
           "value": "Fish oil"
+        },
+        "statuses": {
+          "type": "literal",
+          "value": "urn:x:uncoded active"
         },
         "records": {
           "type": "literal",
@@ -56,7 +106,11 @@
         },
         "entryLabel": {
           "type": "literal",
-          "value": "Medication entry \u00b7 Fish oil"
+          "value": "Medication entry · Fish oil"
+        },
+        "sources": {
+          "type": "literal",
+          "value": "urn:x:uncoded"
         }
       },
       {
@@ -73,6 +127,10 @@
           "value": "2023-06-15",
           "datatype": "http://www.w3.org/2001/XMLSchema#date"
         },
+        "statuses": {
+          "type": "literal",
+          "value": "urn:x:listed with no status; urn:x:prescribed active"
+        },
         "records": {
           "type": "literal",
           "value": "2",
@@ -84,13 +142,21 @@
         },
         "entryLabel": {
           "type": "literal",
-          "value": "Medication entry \u00b7 Lisinopril 10 mg tablet \u00b7 2023-06-15"
+          "value": "Medication entry · Lisinopril 10 mg tablet · 2023-06-15"
+        },
+        "sources": {
+          "type": "literal",
+          "value": "urn:x:listed; urn:x:prescribed"
         }
       },
       {
         "medication": {
           "type": "literal",
           "value": "Lisinopril, two codes"
+        },
+        "statuses": {
+          "type": "literal",
+          "value": "urn:x:unchosen active"
         },
         "records": {
           "type": "literal",
@@ -103,7 +169,11 @@
         },
         "entryLabel": {
           "type": "literal",
-          "value": "Medication entry \u00b7 Lisinopril, two codes"
+          "value": "Medication entry · Lisinopril, two codes"
+        },
+        "sources": {
+          "type": "literal",
+          "value": "urn:x:unchosen"
         }
       },
       {
@@ -120,6 +190,10 @@
           "value": "2024-02-01",
           "datatype": "http://www.w3.org/2001/XMLSchema#date"
         },
+        "statuses": {
+          "type": "literal",
+          "value": "urn:x:chosen active"
+        },
         "records": {
           "type": "literal",
           "value": "1",
@@ -131,16 +205,12 @@
         },
         "entryLabel": {
           "type": "literal",
-          "value": "Medication entry \u00b7 amlodipine 5 MG Oral Tablet \u00b7 2024-02-01"
+          "value": "Medication entry · amlodipine 5 MG Oral Tablet · 2024-02-01"
+        },
+        "sources": {
+          "type": "literal",
+          "value": "urn:x:chosen"
         }
-      },
-      {
-        "medication": { "type": "literal", "value": "Atorvastatin 20 mg tablet" },
-        "code": { "type": "uri", "value": "https://ns.cascadeprotocol.org/codes/rxnorm/617310" },
-        "started": { "type": "literal", "value": "2022-08-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
-        "records": { "type": "literal", "value": "2", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
-        "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#bc339db651b7faa3f257bb0a3549aa940e631510aa0e405794e500676da731eb" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · Atorvastatin 20 mg tablet · 2022-08-01" }
       }
     ]
   }

@@ -1,6 +1,6 @@
-# Each entry takes the allergen and code of its lead, the status of the member chosen for status, and the highest
-# criticality any member states. Each member's current values are a node of the view of their own, named after the entry
-# and the member, which says the member they came from.
+# Each entry takes the allergen, code, reactions and severity of its lead, the status of the member chosen for status, and
+# the highest criticality any member states. Each member's current values are a node of the view of their own, named
+# after the entry and the member, which says the member they came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -8,6 +8,9 @@ CONSTRUCT {
   ?entry a cascade:AllergyOrIntolerance ;
     cascade:allergen ?allergen ;
     cascade:allergenCode ?code ;
+    cascade:reactionManifestationText ?reaction ;
+    cascade:reactionManifestationCode ?reactionCode ;
+    cascade:allergySeverity ?severity ;
     cascade:clinicalStatus ?status ;
     cascade:allergyCriticality ?criticality ;
     cascade:leadMember ?lead ;
@@ -17,6 +20,9 @@ CONSTRUCT {
   ?memberValues cascade:valuesOfMember ?member ;
     cascade:allergen ?memberAllergen ;
     cascade:allergenCode ?memberAllergenCode ;
+    cascade:reactionManifestationText ?memberReaction ;
+    cascade:reactionManifestationCode ?memberReactionCode ;
+    cascade:allergySeverity ?memberSeverity ;
     cascade:clinicalStatus ?memberClinicalStatus ;
     cascade:allergyCriticality ?memberAllergyCriticality .
 }
@@ -25,6 +31,9 @@ WHERE {
     ?entry cascade:leadMember ?lead .
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergen ?allergen }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenCode ?code }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reactionManifestationText ?reaction }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reactionManifestationCode ?reactionCode }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergySeverity ?severity }
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:clinicalStatus ?status }
     OPTIONAL { ?entry cascade:topCriticality ?criticality } }
@@ -33,6 +42,9 @@ WHERE {
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
     OPTIONAL { ?memberVersion cascade:allergen ?memberAllergen }
     OPTIONAL { ?memberVersion cascade:allergenCode ?memberAllergenCode }
+    OPTIONAL { ?memberVersion cascade:reactionManifestationText ?memberReaction }
+    OPTIONAL { ?memberVersion cascade:reactionManifestationCode ?memberReactionCode }
+    OPTIONAL { ?memberVersion cascade:allergySeverity ?memberSeverity }
     OPTIONAL { ?memberVersion cascade:clinicalStatus ?memberClinicalStatus }
     OPTIONAL { ?memberVersion cascade:allergyCriticality ?memberAllergyCriticality } }
 }

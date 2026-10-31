@@ -1,20 +1,59 @@
 # Read from the view alone, as an app would: one row for each variant entry and each code it states, the codes a page
 # looks a variant up by. ?variant is the entry's IRI, as the other pod questions give theirs; ?gene, ?hgvs and ?variation
 # are the literals as the entry states them, an HGVS expression or a ClinVar VariationID on a row of its own. An entry
-# that states no code has one row without either. The page turns a literal into its code system's IRI (rule M4).
+# that states no code has one row without either. The page turns a literal into its code system's IRI (rule M4). Each
+# row names each record the entry joins with the document it was derived from, when that was retrieved, and the
+# hospitals that wrote it and that keep it, in order, each ended by "; " but the last, its own parts by ", ".
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?variant ?gene ?hgvs ?variation
+SELECT DISTINCT ?variant ?gene ?hgvs ?variation ?sources
 WHERE {
-  { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:hgvsCodingDnaExpression ?hgvs .
-    OPTIONAL { ?variant cascade:geneSymbol ?gene } }
-  UNION
-  { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:clinvarVariationId ?variation .
-    OPTIONAL { ?variant cascade:geneSymbol ?gene } }
-  UNION
-  { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] .
-    OPTIONAL { ?variant cascade:geneSymbol ?gene }
-    FILTER NOT EXISTS { ?variant cascade:hgvsCodingDnaExpression [] }
-    FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] } }
+  { SELECT ?variant ?gene ?hgvs ?variation
+    WHERE {
+      { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:hgvsCodingDnaExpression ?hgvs .
+        OPTIONAL { ?variant cascade:geneSymbol ?gene } }
+      UNION
+      { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:clinvarVariationId ?variation .
+        OPTIONAL { ?variant cascade:geneSymbol ?gene } }
+      UNION
+      { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] .
+        OPTIONAL { ?variant cascade:geneSymbol ?gene }
+        FILTER NOT EXISTS { ?variant cascade:hgvsCodingDnaExpression [] }
+        FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] } }
+    } }
+  { SELECT ?variant (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+    WHERE {
+      { SELECT ?variant ?sourceText
+        WHERE {
+          { SELECT ?variant ?sourceRecord ?document ?retrievedOn
+                   (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, ", "), ""); separator=""), ", $", "") AS ?hospitals)
+            WHERE {
+              { SELECT ?variant ?sourceRecord ?document ?retrievedOn ?hospital
+                WHERE {
+                  ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom ?sourceRecord .
+                  OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
+                             OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
+                             OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                                        ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                                        OPTIONAL { ?agent rdfs:label ?agentLabel }
+                                        OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                                        BIND (CONCAT(IF(?hospitalRole = cascade:AuthorRole, "written by ", "kept by "),
+                                                     COALESCE(?agentLabel, ?agentName)) AS ?hospital) } }
+                }
+                ORDER BY ?variant ?sourceRecord ?document ?hospital }
+            }
+            GROUP BY ?variant ?sourceRecord ?document ?retrievedOn }
+          BIND (CONCAT(STR(?sourceRecord), COALESCE(CONCAT(" from ", STR(?document)), ""),
+                       COALESCE(CONCAT(", retrieved ", STR(?retrievedOn)), ""),
+                       IF(?hospitals = "", "", CONCAT(", ", ?hospitals))) AS ?sourceText)
+        }
+        ORDER BY ?variant ?sourceText }
+    }
+    GROUP BY ?variant }
 }
 ORDER BY ?variant ?hgvs ?variation

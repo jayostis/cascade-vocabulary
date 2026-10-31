@@ -1,12 +1,46 @@
 # Read from the view alone, as an app would, newest first by the date as written, so a year follows its months and
-# days, with how many records each entry joins, and SNOMED CT's IRI for each procedure. Times written with a zone are
-# ordered by their wall time as written, not as instants: 23:00-05:00 sorts before 01:00Z the next day, though it is
-# later.
+# days, with how many records each entry joins, SNOMED CT's IRI for each procedure, and each record it joins with the
+# document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it, in order, each
+# ended by "; " but the last, its own parts by ", ". Times written with a zone are ordered by their wall time as written,
+# not as instants: 23:00-05:00 sorts before 01:00Z the next day, though it is later.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?performed ?procedure ?snomed ?status (COUNT(?record) AS ?records) ?entry ?entryLabel
+SELECT ?performed ?procedure ?snomed ?status (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+    WHERE {
+      { SELECT ?entry ?sourceText
+        WHERE {
+          { SELECT ?entry ?sourceRecord ?document ?retrievedOn
+                   (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, ", "), ""); separator=""), ", $", "") AS ?hospitals)
+            WHERE {
+              { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
+                WHERE {
+                  ?entry a cascade:MedicalProcedure ; cascade:mergedFrom ?sourceRecord .
+                  OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
+                             OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
+                             OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                                        ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                                        OPTIONAL { ?agent rdfs:label ?agentLabel }
+                                        OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                                        BIND (CONCAT(IF(?hospitalRole = cascade:AuthorRole, "written by ", "kept by "),
+                                                     COALESCE(?agentLabel, ?agentName)) AS ?hospital) } }
+                }
+                ORDER BY ?entry ?sourceRecord ?document ?hospital }
+            }
+            GROUP BY ?entry ?sourceRecord ?document ?retrievedOn }
+          BIND (CONCAT(STR(?sourceRecord), COALESCE(CONCAT(" from ", STR(?document)), ""),
+                       COALESCE(CONCAT(", retrieved ", STR(?retrievedOn)), ""),
+                       IF(?hospitals = "", "", CONCAT(", ", ?hospitals))) AS ?sourceText)
+        }
+        ORDER BY ?entry ?sourceText }
+    }
+    GROUP BY ?entry }
   ?entry a cascade:MedicalProcedure ; cascade:mergedFrom ?record .
   OPTIONAL { ?entry cascade:procedureDate ?performed }
   OPTIONAL { ?entry cascade:procedureName ?procedure }
@@ -14,5 +48,5 @@ WHERE {
   OPTIONAL { ?entry cascade:workflowStatus ?status }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
 }
-GROUP BY ?entry ?performed ?procedure ?snomed ?status ?entryLabel
+GROUP BY ?entry ?performed ?procedure ?snomed ?status ?entryLabel ?sources
 ORDER BY DESC(COALESCE(STR(?performed), "")) ?procedure ?entry

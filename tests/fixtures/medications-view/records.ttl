@@ -25,6 +25,13 @@
 :stoppedRevision a cascade:Revision ; cascade:revisionOf :stopped ; cascade:version :stoppedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+:stillListed a cascade:PrescribedOrReportedMedication .
+:stillListedVersion prov:specializationOf :stillListed ; cascade:patient :subject ; cascade:drugName "Metformin 500 mg tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ; cascade:prescribedOrReported "reportedUse" ;
+    cascade:workflowStatus "active" .
+:stillListedRevision a cascade:Revision ; cascade:revisionOf :stillListed ; cascade:version :stillListedVersion ;
+    prov:generatedAtTime "2025-12-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2025-12-01T00:00:00Z"^^xsd:dateTime .
+
 :completed a cascade:PrescribedOrReportedMedication .
 :completedVersion prov:specializationOf :completed ; cascade:patient :subject ; cascade:drugName "amoxicillin 500 MG Oral Capsule" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/308191> ; cascade:prescribedOrReported "prescribed" ;

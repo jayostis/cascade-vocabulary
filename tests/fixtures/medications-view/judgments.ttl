@@ -9,6 +9,10 @@
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
 
+:stoppedSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :stillListed, :stopped ;
+    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+
 :resumedSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :paused, :resumed ;
     prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .

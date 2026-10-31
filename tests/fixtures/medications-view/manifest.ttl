@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "medications-view" ;
-  rdfs:comment "A medication entry joining a prescription and, later, a list entry stating no status and no date; and a stopped medication with its end, a completed one without, and a stopped member followed by a newer active one, which takes no end." ;
+  rdfs:comment "A medication entry joining a prescription and, later, a list entry stating no status and no date; a stopped medication with its end, joined to an older list entry still saying it is active; a completed one without an end; and a stopped member followed by a newer active one, which takes no end." ;
   mf:entries (
     <#the-medications-view>
     <#my-active-medications>
@@ -21,14 +21,14 @@
 
 <#my-active-medications> a mf:QueryEvaluationTest ;
   mf:name "my-active-medications" ;
-  rdfs:comment "Only the active entry, with its code, its start and how many records it joins." ;
+  rdfs:comment "Only the active entries, with each code, start, how many records each joins, each record's own status and end, so the atorvastatin shows the stop its older record states, and each record, none from a document; not the metformin, whose stop was chosen over its list entry's active." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-active-medications.srj> .
 
 <#my-medication-history> a mf:QueryEvaluationTest ;
   mf:name "my-medication-history" ;
-  rdfs:comment "Every entry whatever its status; the end date on the stopped entry alone, none on the completed one that states no stop." ;
+  rdfs:comment "Every entry whatever its status, with each record's own status and end: the metformin stopped, its list entry's active beside the stop; the end date on the stopped entry alone, none on the completed one that states no stop." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20medication%20history.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-medication-history.srj> .

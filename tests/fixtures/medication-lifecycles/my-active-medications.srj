@@ -1,12 +1,14 @@
 {
-  "head": { "vars": ["medication", "code", "started", "written", "records", "entry", "entryLabel"] },
+  "head": { "vars": ["medication", "code", "started", "written", "statuses", "records", "entry", "entryLabel", "sources"] },
   "results": {
     "bindings": [
       {
         "medication": { "type": "literal", "value": "status: active" },
+        "statuses": { "type": "literal", "value": "urn:x:active active" },
         "records": { "type": "literal", "value": "1", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
         "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#45c4a51b3bbeaba863123723578c1720f85a9f4ab153a68bed1dbd2ac6f209ce" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · status: active" }
+        "entryLabel": { "type": "literal", "value": "Medication entry · status: active" },
+        "sources": { "type": "literal", "value": "urn:x:active" }
       }
     ]
   }

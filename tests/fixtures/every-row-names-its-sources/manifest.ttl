@@ -1,0 +1,74 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "every-row-names-its-sources" ;
+  rdfs:comment "A record of each kind a pod question lists, from a summary a clinic wrote and an exchange keeps or from a hospital's visit record: a lisinopril prescription from the summary joined to a list entry the person entered, and a glucose from the summary joined to its copy from the visit." ;
+  mf:entries (
+    <#my-active-allergies>
+    <#my-active-conditions>
+    <#my-active-medications>
+    <#my-medication-history>
+    <#my-immunizations>
+    <#my-lab-results>
+    <#my-procedures>
+    <#my-genetic-variants>
+  ) .
+
+<#my-active-allergies> a mf:QueryEvaluationTest ;
+  mf:name "my-active-allergies" ;
+  rdfs:comment "The allergy names its record, the summary, when that was retrieved, the exchange that keeps it and the clinic that wrote it, the clinic by its organization record's name." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20allergies.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-allergies.srj> .
+
+<#my-active-conditions> a mf:QueryEvaluationTest ;
+  mf:name "my-active-conditions" ;
+  rdfs:comment "The condition names its record and the summary, with its retrieval time and both hospitals." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20conditions.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-conditions.srj> .
+
+<#my-active-medications> a mf:QueryEvaluationTest ;
+  mf:name "my-active-medications" ;
+  rdfs:comment "The lisinopril names both its records: the list entry the person entered, from no document, and the prescription, from the summary." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-medications.srj> .
+
+<#my-medication-history> a mf:QueryEvaluationTest ;
+  mf:name "my-medication-history" ;
+  rdfs:comment "The lisinopril names both its records, as the active medications do." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20medication%20history.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-medication-history.srj> .
+
+<#my-immunizations> a mf:QueryEvaluationTest ;
+  mf:name "my-immunizations" ;
+  rdfs:comment "The flu shot names its record, the visit, when that was retrieved and the hospital that wrote it." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20immunizations.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-immunizations.srj> .
+
+<#my-lab-results> a mf:QueryEvaluationTest ;
+  mf:name "my-lab-results" ;
+  rdfs:comment "The glucose names each of its two records with its own document, retrieval time and hospitals." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20lab%20results.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-lab-results.srj> .
+
+<#my-procedures> a mf:QueryEvaluationTest ;
+  mf:name "my-procedures" ;
+  rdfs:comment "The colonoscopy names its record, the visit, its retrieval time and the hospital that wrote it." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20procedures.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-procedures.srj> .
+
+<#my-genetic-variants> a mf:QueryEvaluationTest ;
+  mf:name "my-genetic-variants" ;
+  rdfs:comment "The variant names its record and the summary, with its retrieval time and both hospitals." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20genetic%20variants.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-genetic-variants.srj> .

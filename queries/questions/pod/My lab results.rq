@@ -1,10 +1,59 @@
-# Read from the view alone, as an app would, newest first, with how many records each entry joins. A day and a time are
-# not comparable, so entries are ordered by their day first, then by the time as written.
+# Read from the view alone, as an app would, newest first, with the interpretation flags its source gave each entry, each
+# the code of HL7's ObservationInterpretation, its reference range as text and each bound as written, with its unit,
+# how many records each entry joins, and each record it joins, with the document it was derived from, when that was
+# retrieved, and the hospitals that wrote it and that keep it. A list holds its values in order, each ended by "; " but
+# the last, and a list with nothing in it is unbound; a value's own parts are ended by ", ". A day and a time are not
+# comparable, so entries are ordered by their day first, then by the time as written.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?performed ?test ?code ?value ?unit ?status (COUNT(?record) AS ?records) ?entry ?entryLabel
+SELECT ?performed ?test ?code ?value ?unit ?status ?interpretations ?referenceRange ?referenceRangeLow ?referenceRangeHigh
+       (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?flag, "; "), ""); separator=""), "; $", "") AS ?flags)
+    WHERE {
+      { SELECT ?entry ?flag
+        WHERE {
+          ?entry a cascade:LaboratoryTestResult .
+          OPTIONAL { ?entry cascade:resultInterpretationCode ?interpretation }
+          BIND (REPLACE(STR(?interpretation), "^.*/", "") AS ?flag)
+        }
+        ORDER BY ?entry ?flag }
+    }
+    GROUP BY ?entry }
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+    WHERE {
+      { SELECT ?entry ?sourceText
+        WHERE {
+          { SELECT ?entry ?sourceRecord ?document ?retrievedOn
+                   (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, ", "), ""); separator=""), ", $", "") AS ?hospitals)
+            WHERE {
+              { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
+                WHERE {
+                  ?entry a cascade:LaboratoryTestResult ; cascade:mergedFrom ?sourceRecord .
+                  OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
+                             OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
+                             OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                                        ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                                        OPTIONAL { ?agent rdfs:label ?agentLabel }
+                                        OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                                        BIND (CONCAT(IF(?hospitalRole = cascade:AuthorRole, "written by ", "kept by "),
+                                                     COALESCE(?agentLabel, ?agentName)) AS ?hospital) } }
+                }
+                ORDER BY ?entry ?sourceRecord ?document ?hospital }
+            }
+            GROUP BY ?entry ?sourceRecord ?document ?retrievedOn }
+          BIND (CONCAT(STR(?sourceRecord), COALESCE(CONCAT(" from ", STR(?document)), ""),
+                       COALESCE(CONCAT(", retrieved ", STR(?retrievedOn)), ""),
+                       IF(?hospitals = "", "", CONCAT(", ", ?hospitals))) AS ?sourceText)
+        }
+        ORDER BY ?entry ?sourceText }
+    }
+    GROUP BY ?entry }
   ?entry a cascade:LaboratoryTestResult ; cascade:mergedFrom ?record .
   OPTIONAL { ?entry cascade:resultClinicallyRelevantTime ?performed }
   OPTIONAL { ?entry cascade:testName ?test }
@@ -12,7 +61,20 @@ WHERE {
   OPTIONAL { ?entry cascade:resultValue ?value }
   OPTIONAL { ?entry cascade:resultUnit ?unit }
   OPTIONAL { ?entry cascade:workflowStatus ?status }
+  OPTIONAL { ?entry cascade:referenceRange ?referenceRange }
+  OPTIONAL { ?entry cascade:referenceRangeLow ?low .
+             ?low cascade:writtenValue ?lowWritten .
+             OPTIONAL { ?low cascade:unitText ?lowUnitText }
+             OPTIONAL { ?low cascade:ucumUnit ?lowUcum } }
+  OPTIONAL { ?entry cascade:referenceRangeHigh ?high .
+             ?high cascade:writtenValue ?highWritten .
+             OPTIONAL { ?high cascade:unitText ?highUnitText }
+             OPTIONAL { ?high cascade:ucumUnit ?highUcum } }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
+  BIND (IF(?flags = "", 1/0, ?flags) AS ?interpretations)
+  BIND (CONCAT(?lowWritten, COALESCE(CONCAT(" ", COALESCE(?lowUnitText, ?lowUcum)), "")) AS ?referenceRangeLow)
+  BIND (CONCAT(?highWritten, COALESCE(CONCAT(" ", COALESCE(?highUnitText, ?highUcum)), "")) AS ?referenceRangeHigh)
 }
-GROUP BY ?entry ?performed ?test ?code ?value ?unit ?status ?entryLabel
+GROUP BY ?entry ?performed ?test ?code ?value ?unit ?status ?interpretations ?referenceRange ?referenceRangeLow
+         ?referenceRangeHigh ?entryLabel ?sources
 ORDER BY DESC(COALESCE(SUBSTR(STR(?performed), 1, 10), "")) DESC(COALESCE(STR(?performed), "")) ?test ?entry

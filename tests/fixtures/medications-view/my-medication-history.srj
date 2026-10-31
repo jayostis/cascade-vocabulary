@@ -1,5 +1,5 @@
 {
-  "head": { "vars": ["medication", "code", "status", "lifecycle", "started", "written", "ended", "records", "entry", "entryLabel"] },
+  "head": { "vars": ["medication", "code", "status", "lifecycle", "started", "written", "ended", "statuses", "records", "entry", "entryLabel", "sources"] },
   "results": {
     "bindings": [
       {
@@ -8,17 +8,33 @@
         "status": { "type": "literal", "value": "active" },
         "lifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
         "started": { "type": "literal", "value": "2024-03-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "statuses": { "type": "literal", "value": "urn:x:fill active" },
         "records": { "type": "literal", "value": "1", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
         "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#f4cc2e7f35ed7595f7076ec3d1af58ef913d2474509e9ed1e76cba57be3187ee" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · Amlodipine 5 mg tablet, pharmacy · 2024-03-01" }
+        "entryLabel": { "type": "literal", "value": "Medication entry · Amlodipine 5 mg tablet, pharmacy · 2024-03-01" },
+        "sources": { "type": "literal", "value": "urn:x:fill" }
+      },
+      {
+        "medication": { "type": "literal", "value": "Atorvastatin 20 mg tablet" },
+        "code": { "type": "uri", "value": "https://ns.cascadeprotocol.org/codes/rxnorm/617310" },
+        "status": { "type": "literal", "value": "active" },
+        "lifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
+        "started": { "type": "literal", "value": "2022-08-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "statuses": { "type": "literal", "value": "urn:x:paused stopped, ended 2021-05-01; urn:x:resumed active" },
+        "records": { "type": "literal", "value": "2", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
+        "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#bc339db651b7faa3f257bb0a3549aa940e631510aa0e405794e500676da731eb" },
+        "entryLabel": { "type": "literal", "value": "Medication entry · Atorvastatin 20 mg tablet · 2022-08-01" },
+        "sources": { "type": "literal", "value": "urn:x:paused; urn:x:resumed" }
       },
       {
         "medication": { "type": "literal", "value": "Fish oil" },
         "status": { "type": "literal", "value": "active" },
         "lifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
+        "statuses": { "type": "literal", "value": "urn:x:uncoded active" },
         "records": { "type": "literal", "value": "1", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
         "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#5d6a5df3405d59ed3c1023386339b3e022547a5f5440c6ba7ca3aaba39a4801f" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · Fish oil" }
+        "entryLabel": { "type": "literal", "value": "Medication entry · Fish oil" },
+        "sources": { "type": "literal", "value": "urn:x:uncoded" }
       },
       {
         "medication": { "type": "literal", "value": "Lisinopril 10 mg tablet" },
@@ -26,17 +42,21 @@
         "status": { "type": "literal", "value": "active" },
         "lifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
         "started": { "type": "literal", "value": "2023-06-15", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "statuses": { "type": "literal", "value": "urn:x:listed with no status; urn:x:prescribed active" },
         "records": { "type": "literal", "value": "2", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
         "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#ba3f3b3fd0a55b6316de9976fc45bd9472c1301690703de81363c0b305fb5eb8" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · Lisinopril 10 mg tablet · 2023-06-15" }
+        "entryLabel": { "type": "literal", "value": "Medication entry · Lisinopril 10 mg tablet · 2023-06-15" },
+        "sources": { "type": "literal", "value": "urn:x:listed; urn:x:prescribed" }
       },
       {
         "medication": { "type": "literal", "value": "Lisinopril, two codes" },
         "status": { "type": "literal", "value": "active" },
         "lifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
+        "statuses": { "type": "literal", "value": "urn:x:unchosen active" },
         "records": { "type": "literal", "value": "1", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
         "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#ea4fdcfc983d60df89f7cdcfdb31adc38733d008f3932699b318f371f1f98774" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · Lisinopril, two codes" }
+        "entryLabel": { "type": "literal", "value": "Medication entry · Lisinopril, two codes" },
+        "sources": { "type": "literal", "value": "urn:x:unchosen" }
       },
       {
         "medication": { "type": "literal", "value": "amlodipine 5 MG Oral Tablet" },
@@ -44,9 +64,11 @@
         "status": { "type": "literal", "value": "active" },
         "lifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
         "started": { "type": "literal", "value": "2024-02-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "statuses": { "type": "literal", "value": "urn:x:chosen active" },
         "records": { "type": "literal", "value": "1", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
         "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#225d769114ffb3cd572054c7b1cd29d6455c5ad95c9f6f0b4dc67d5008728b99" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · amlodipine 5 MG Oral Tablet · 2024-02-01" }
+        "entryLabel": { "type": "literal", "value": "Medication entry · amlodipine 5 MG Oral Tablet · 2024-02-01" },
+        "sources": { "type": "literal", "value": "urn:x:chosen" }
       },
       {
         "medication": { "type": "literal", "value": "amoxicillin 500 MG Oral Capsule" },
@@ -54,9 +76,11 @@
         "status": { "type": "literal", "value": "completed" },
         "lifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationStopped" },
         "started": { "type": "literal", "value": "2022-09-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "statuses": { "type": "literal", "value": "urn:x:completed completed" },
         "records": { "type": "literal", "value": "1", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
         "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#9b2c711bace315cf70a44eb672831aa1aab5ac58779806f941784a9518083b6e" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · amoxicillin 500 MG Oral Capsule · 2022-09-01" }
+        "entryLabel": { "type": "literal", "value": "Medication entry · amoxicillin 500 MG Oral Capsule · 2022-09-01" },
+        "sources": { "type": "literal", "value": "urn:x:completed" }
       },
       {
         "medication": { "type": "literal", "value": "metformin 500 MG Oral Tablet" },
@@ -65,19 +89,11 @@
         "lifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationStopped" },
         "started": { "type": "literal", "value": "2021-01-10", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
         "ended": { "type": "literal", "value": "2023-04-02", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
-        "records": { "type": "literal", "value": "1", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
-        "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#577c4c0ba84c47b42cea21fbd6db4951c91b93a7bd08babe76f38f425a47914f" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · metformin 500 MG Oral Tablet · 2021-01-10" }
-      },
-      {
-        "medication": { "type": "literal", "value": "Atorvastatin 20 mg tablet" },
-        "code": { "type": "uri", "value": "https://ns.cascadeprotocol.org/codes/rxnorm/617310" },
-        "status": { "type": "literal", "value": "active" },
-        "lifecycle": { "type": "uri", "value": "https://ns.cascadeprotocol.org/cascade#MedicationActive" },
-        "started": { "type": "literal", "value": "2022-08-01", "datatype": "http://www.w3.org/2001/XMLSchema#date" },
+        "statuses": { "type": "literal", "value": "urn:x:stillListed active; urn:x:stopped stopped, ended 2023-04-02" },
         "records": { "type": "literal", "value": "2", "datatype": "http://www.w3.org/2001/XMLSchema#integer" },
-        "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#bc339db651b7faa3f257bb0a3549aa940e631510aa0e405794e500676da731eb" },
-        "entryLabel": { "type": "literal", "value": "Medication entry · Atorvastatin 20 mg tablet · 2022-08-01" }
+        "entry": { "type": "uri", "value": "https://pod.example/clinical/medications.ttl#4259c0aa09b36fd7e55c53f5251142f7446eb5b7f726dab313ecc6d56b778d35" },
+        "entryLabel": { "type": "literal", "value": "Medication entry · metformin 500 MG Oral Tablet · 2021-01-10" },
+        "sources": { "type": "literal", "value": "urn:x:stillListed; urn:x:stopped" }
       }
     ]
   }

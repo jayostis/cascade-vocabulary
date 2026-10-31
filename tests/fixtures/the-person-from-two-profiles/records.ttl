@@ -1,0 +1,37 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:northSummary a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:agent [ rdfs:label "North Hospital" ] ; prov:hadRole cascade:AuthorRole ] .
+:southSummary a prov:Entity ; pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:agent [ rdfs:label "South Clinic" ] ; prov:hadRole cascade:AuthorRole ] .
+
+:north a cascade:PatientProfile .
+:northVersion prov:specializationOf :north ; foaf:name "Priya Natarajan" ; cascade:dateOfBirth "1968-11-04"^^xsd:date ;
+    cascade:administrativeGender "female" ; cascade:deceased false .
+:northRevision a cascade:Revision ; cascade:revisionOf :north ; cascade:version :northVersion ; prov:wasDerivedFrom :northSummary ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:south a cascade:PatientProfile .
+:southVersion prov:specializationOf :south ; foaf:name "P. Natarajan" ; cascade:dateOfBirth "1968-11"^^xsd:gYearMonth ;
+    cascade:administrativeGender "unknown" ; cascade:deceased true ; cascade:dateOfDeath "2026-01-15"^^xsd:date .
+:southRevision a cascade:Revision ; cascade:revisionOf :south ; cascade:version :southVersion ; prov:wasDerivedFrom :southSummary ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:silent a cascade:PatientProfile .
+:silentVersion prov:specializationOf :silent ; foaf:name "Priya Natarajan" .
+:silentRevision a cascade:Revision ; cascade:revisionOf :silent ; cascade:version :silentVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:stranger a cascade:PatientProfile .
+:strangerVersion prov:specializationOf :stranger ; foaf:name "Sam Natarajan" ; cascade:dateOfBirth "1999-03-03"^^xsd:date ;
+    cascade:administrativeGender "male" .
+:strangerRevision a cascade:Revision ; cascade:revisionOf :stranger ; cascade:version :strangerVersion ; prov:wasDerivedFrom :southSummary ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
