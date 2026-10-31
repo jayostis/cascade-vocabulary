@@ -603,8 +603,8 @@ cascade:noteOrDocumentDate a owl:DatatypeProperty ;
 
 cascade:narrativeTextAsTrimmedLines a owl:DatatypeProperty ;
     rdfs:label "narrative text as trimmed lines"@en ;
-    rdfs:comment "Derived: of the current version of a note or document, its cascade:narrativeText as lines, each run of spaces, tabs and carriage returns in a line one space, each line trimmed and blank lines dropped, the lines joined by a line feed: the text the matcher's note rules compare, worked out once per version rather than in every comparison."@en ;
-    rdfs:domain cascade:ClinicalNoteOrDocument ;
+    rdfs:comment "Derived: of the current version of a note, document or report, its cascade:narrativeText as lines, each run of spaces, tabs and carriage returns in a line one space, each line trimmed and blank lines dropped, the lines joined by a line feed: the text the matcher's note rules compare, worked out once per version rather than in every comparison."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:DiagnosticReport cascade:ClinicalNoteOrDocument ) ] ;
     rdfs:range xsd:string .
 
 cascade:noteOrDocumentMasterIdentifier a owl:DatatypeProperty ;

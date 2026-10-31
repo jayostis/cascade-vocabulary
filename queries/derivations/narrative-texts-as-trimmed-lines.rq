@@ -1,0 +1,13 @@
+# The current version of each record with a narrative text, a note, a document or a report, gives its text as trimmed
+# lines: each run of spaces, tabs and carriage returns in a line one space, each line trimmed, and blank lines dropped.
+# The matcher's note rules compare these, so the text is worked out once per version and not again in every
+# comparison, bound or not.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+CONSTRUCT { ?version cascade:narrativeTextAsTrimmedLines ?lines }
+WHERE {
+  ?record pav:hasCurrentVersion ?version .
+  ?version cascade:narrativeText ?written .
+  BIND (REPLACE(REPLACE(REPLACE(STR(?written), "[ \t\r]+", " "), " ?\n[ \n]*", "\n"), "^[ \n]+|[ \n]+$", "") AS ?lines)
+}
