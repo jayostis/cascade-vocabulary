@@ -3,22 +3,24 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+:subject a cascade:Subject .
+
 :march a cascade:PrescribedOrReportedMedication .
-:marchVersion prov:specializationOf :march ; cascade:prescribedOrReported "prescribed" ;
+:marchVersion prov:specializationOf :march ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Lisinopril 10 mg, March" ;
     cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
 :marchRevision a cascade:Revision ; cascade:revisionOf :march ; cascade:version :marchVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :april a cascade:PrescribedOrReportedMedication .
-:aprilVersion prov:specializationOf :april ; cascade:prescribedOrReported "prescribed" ;
+:aprilVersion prov:specializationOf :april ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Lisinopril 10 mg, April" ;
     cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
 :aprilRevision a cascade:Revision ; cascade:revisionOf :april ; cascade:version :aprilVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :refill a cascade:PrescribedOrReportedMedication .
-:refillVersion prov:specializationOf :refill ; cascade:prescribedOrReported "prescribed" ;
+:refillVersion prov:specializationOf :refill ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Amlodipine 5 mg, refill" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/197361> ;
     cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> .
@@ -26,35 +28,35 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :fill a cascade:PrescribedOrReportedMedication .
-:fillVersion prov:specializationOf :fill ; cascade:prescribedOrReported "prescribed" ;
+:fillVersion prov:specializationOf :fill ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Amlodipine 5 mg, fill" ;
     cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> .
 :fillRevision a cascade:Revision ; cascade:revisionOf :fill ; cascade:version :fillVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :listed a cascade:PrescribedOrReportedMedication .
-:listedVersion prov:specializationOf :listed ; cascade:prescribedOrReported "prescribed" ;
+:listedVersion prov:specializationOf :listed ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "metformin 500 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> .
 :listedRevision a cascade:Revision ; cascade:revisionOf :listed ; cascade:version :listedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :reported a cascade:PrescribedOrReportedMedication .
-:reportedVersion prov:specializationOf :reported ; cascade:prescribedOrReported "prescribed" ;
+:reportedVersion prov:specializationOf :reported ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Metformin 500 mg" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> .
 :reportedRevision a cascade:Revision ; cascade:revisionOf :reported ; cascade:version :reportedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :sameDrug a cascade:PrescribedOrReportedMedication .
-:sameDrugVersion prov:specializationOf :sameDrug ; cascade:prescribedOrReported "prescribed" ;
+:sameDrugVersion prov:specializationOf :sameDrug ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "amlodipine 5 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/197361> .
 :sameDrugRevision a cascade:Revision ; cascade:revisionOf :sameDrug ; cascade:version :sameDrugVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :other a cascade:PrescribedOrReportedMedication .
-:otherVersion prov:specializationOf :other ; cascade:prescribedOrReported "prescribed" ;
+:otherVersion prov:specializationOf :other ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Metformin 500 mg, other NDC" ;
     cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> .
 :otherRevision a cascade:Revision ; cascade:revisionOf :other ; cascade:version :otherVersion ;

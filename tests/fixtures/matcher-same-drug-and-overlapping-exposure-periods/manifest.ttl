@@ -1,0 +1,48 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-drug-and-overlapping-exposure-periods" ;
+  rdfs:comment "Courses of one NDC: one from 2019 to 2021, one active since 2026, one within the first, one from the first's last day for a month, one the day after that with no end and not active, one active since 2025, one in June 2025 with no end and not active, and one with no date. Courses of one product a drug products version lists: 2019 to 2021, the second half of 2021, and active since 2026. A brand from 2019 to 2021, and its generic in 2020 and active since 2026, which a brand generics version joins." ;
+  mf:entries (
+    <#same-ndc-code-and-overlapping-exposure-periods>
+    <#same-product-code-in-current-tables-and-overlapping-exposure-periods>
+    <#same-brand-generic-and-overlapping-exposure-periods>
+  ) .
+
+<#same-ndc-code-and-overlapping-exposure-periods> a mf:QueryEvaluationTest ;
+  mf:name "same-ndc-code-and-overlapping-exposure-periods" ;
+  rdfs:comment "Courses that share a day match, a last day shared counting: the 2019 course with the one within it and the one from its last day, the course active since 2025 with the one since 2026 and the June 2025 day. The 2019 and 2026 courses never match, nor two a day apart, nor a course with no end that is not active past its start day, nor one with no date." ;
+  mf:action [ qt:query <../../../queries/matcher/same-ndc-code-and-overlapping-exposure-periods.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:dayAfter> ,
+                                  <urn:x:dayInOngoing> ,
+                                  <urn:x:firstCourse> ,
+                                  <urn:x:fromLastDay> ,
+                                  <urn:x:ongoingEarlier> ,
+                                  <urn:x:secondCourse> ,
+                                  <urn:x:undated> ,
+                                  <urn:x:withinFirst> ] ;
+  mf:result <same-ndc-code-and-overlapping-exposure-periods.srj> .
+
+<#same-product-code-in-current-tables-and-overlapping-exposure-periods> a mf:QueryEvaluationTest ;
+  mf:name "same-product-code-in-current-tables-and-overlapping-exposure-periods" ;
+  rdfs:comment "The 2019 course of the product matches the one in the second half of 2021, with the drug products version, and neither matches the course since 2026." ;
+  mf:action [ qt:query <../../../queries/matcher/same-product-code-in-current-tables-and-overlapping-exposure-periods.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:metforminFirst> ,
+                                  <urn:x:metforminOverlapping> ,
+                                  <urn:x:metforminSince2026> ] ;
+  mf:result <same-product-code-in-current-tables-and-overlapping-exposure-periods.srj> .
+
+<#same-brand-generic-and-overlapping-exposure-periods> a mf:QueryEvaluationTest ;
+  mf:name "same-brand-generic-and-overlapping-exposure-periods" ;
+  rdfs:comment "The brand from 2019 matches its generic of 2020, with the brand generics version, and not its generic since 2026." ;
+  mf:action [ qt:query <../../../queries/matcher/same-brand-generic-and-overlapping-exposure-periods.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:amlodipineOverlapping> ,
+                                  <urn:x:amlodipineSince2026> ,
+                                  <urn:x:norvascFirst> ] ;
+  mf:result <same-brand-generic-and-overlapping-exposure-periods.srj> .
