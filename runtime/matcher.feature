@@ -853,7 +853,9 @@ Feature: The matcher's procedure
     least one day as well, so two courses of one drug years apart are two medications. A period runs from the record's
     cascade:medicationExposureStart to its cascade:medicationExposureEnd, both days counting; with no end it runs on
     while cascade:medicationExposureOngoing holds, and is its start day alone otherwise. A record with no exposure start
-    joins no other medication, and a break of one day keeps two apart. The examples here and under M16 that give no
+    joins no other medication, and a break of one day keeps two apart. A start given to the year or month counts as its
+    last day and an end as its first, unlike M14 and M23, which read a partial date as every day it covers, so two
+    records join only when the overlap is certain. The examples here and under M16 that give no
     dates run under versions 6 and 7; M16 has one under version 18.
 
     Gus's pharmacy entry holds medications whose codes pair in no more than twos, so no judgment depends on M3's order.

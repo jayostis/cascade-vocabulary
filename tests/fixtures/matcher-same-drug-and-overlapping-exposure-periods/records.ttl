@@ -110,3 +110,35 @@
     cascade:medicationUseStartDate "2020-01-01"^^xsd:date ; cascade:medicationUseEndDate "2020-12-31"^^xsd:date .
 :amlodipineOverlappingRevision a cascade:Revision ; cascade:revisionOf :amlodipineOverlapping ; cascade:version :amlodipineOverlappingVersion ;
     prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:firstHalfOf2019 a cascade:PrescribedOrReportedMedication .
+:firstHalfOf2019Version prov:specializationOf :firstHalfOf2019 ; cascade:patient :subject ; cascade:drugName "Atorvastatin 20 mg, first half of 2019" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00071015523> ;
+    cascade:medicationUseStartDate "2019-01-10"^^xsd:date ; cascade:medicationUseEndDate "2019-06-30"^^xsd:date .
+:firstHalfOf2019Revision a cascade:Revision ; cascade:revisionOf :firstHalfOf2019 ; cascade:version :firstHalfOf2019Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:since2019 a cascade:PrescribedOrReportedMedication .
+:since2019Version prov:specializationOf :since2019 ; cascade:patient :subject ; cascade:drugName "Atorvastatin 20 mg, since 2019" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00071015523> ;
+    cascade:medicationUseStartDate "2019"^^xsd:gYear .
+:since2019Revision a cascade:Revision ; cascade:revisionOf :since2019 ; cascade:version :since2019Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:endsMarch2020 a cascade:PrescribedOrReportedMedication .
+:endsMarch2020Version prov:specializationOf :endsMarch2020 ; cascade:patient :subject ; cascade:drugName "Warfarin 5 mg, to March 2020" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00056017270> ;
+    cascade:medicationUseStartDate "2019-11-01"^^xsd:date ; cascade:medicationUseEndDate "2020-03"^^xsd:gYearMonth .
+:endsMarch2020Revision a cascade:Revision ; cascade:revisionOf :endsMarch2020 ; cascade:version :endsMarch2020Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:startsMid2020 a cascade:PrescribedOrReportedMedication .
+:startsMid2020Version prov:specializationOf :startsMid2020 ; cascade:patient :subject ; cascade:drugName "Warfarin 5 mg, from 15 March 2020" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00056017270> ;
+    cascade:medicationUseStartDate "2020-03-15"^^xsd:date .
+:startsMid2020Revision a cascade:Revision ; cascade:revisionOf :startsMid2020 ; cascade:version :startsMid2020Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
