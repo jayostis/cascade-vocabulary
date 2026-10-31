@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "allergies-view" ;
-  rdfs:comment "An active allergy entry of two members, the later one entered by the person and stating no status; and an inactive allergy." ;
+  rdfs:comment "An active allergy entry of two members, the later one entered by the person, stating urticaria and itching, moderate, and no status, the other anaphylaxis, severe; and an inactive allergy." ;
   mf:entries (
     <#what-it-shows>
     <#where-it-came-from>
@@ -14,7 +14,7 @@
 
 <#what-it-shows> a mf:QueryEvaluationTest ;
   mf:name "what-it-shows" ;
-  rdfs:comment "Each statement of each allergy entry in its view and each value its members state, with the member that states it and whether that member leads: the allergen and code from the lead, the member the person entered, the other member's allergen beside it, the status from the latest derived from a document, and the highest criticality." ;
+  rdfs:comment "Each statement of each allergy entry in its view and each value its members state, with the member that states it and whether that member leads: the allergen, code, reactions and severity from the lead, the member the person entered, the other member's allergen, reaction and severity beside them, the status from the latest derived from a document, and the highest criticality." ;
   mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-it-shows.srj> .
@@ -28,7 +28,7 @@
 
 <#my-active-allergies> a mf:QueryEvaluationTest ;
   mf:name "my-active-allergies" ;
-  rdfs:comment "Only the active entry, with its code, its highest criticality and how many records it joins." ;
+  rdfs:comment "Only the active entry, with its code, its highest criticality, its lead's reactions, as text and as codes, and severity, how many records it joins, and each of them with its document, when that was retrieved and the hospital that wrote it; the one the person entered has none." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20active%20allergies.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-active-allergies.srj> .

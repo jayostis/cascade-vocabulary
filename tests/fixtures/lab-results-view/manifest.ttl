@@ -36,7 +36,7 @@
 
 <#my-lab-results> a mf:QueryEvaluationTest ;
   mf:name "my-lab-results" ;
-  rdfs:comment "Every entry, newest first by day and then by time as written, so the glucose comes before the A1c of its day, with how many records it joins." ;
+  rdfs:comment "Every entry, newest first by day and then by time as written, so the glucose comes before the A1c of its day, with how many records it joins and each of them, none from a document; the MCV with both its flags, as codes, its reference range's text, and each bound as written with its unit, the high one's unit text before its UCUM unit." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20lab%20results.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-lab-results.srj> .

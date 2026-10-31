@@ -1,0 +1,73 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:clinic a cascade:Organization .
+:clinicVersion prov:specializationOf :clinic ; foaf:name "Fernhill Clinic" .
+:clinicRevision a cascade:Revision ; cascade:revisionOf :clinic ; cascade:version :clinicVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:hospital a cascade:Organization .
+:hospitalVersion prov:specializationOf :hospital ; foaf:name "Kestrel Harbor Hospital" .
+:hospitalRevision a cascade:Revision ; cascade:revisionOf :hospital ; cascade:version :hospitalVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:summary a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:agent :clinic ; prov:hadRole cascade:AuthorRole ] ,
+                              [ prov:agent [ rdfs:label "Bay Area Health Exchange" ] ; prov:hadRole cascade:CustodianRole ] .
+:visit a prov:Entity ; pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:agent :hospital ; prov:hadRole cascade:AuthorRole ] .
+
+:peanut a cascade:AllergyOrIntolerance .
+:peanutVersion prov:specializationOf :peanut ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:peanutRevision a cascade:Revision ; cascade:revisionOf :peanut ; cascade:version :peanutVersion ; prov:wasDerivedFrom :summary ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:asthma a cascade:ProblemOrDiagnosis .
+:asthmaVersion prov:specializationOf :asthma ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .
+:asthmaRevision a cascade:Revision ; cascade:revisionOf :asthma ; cascade:version :asthmaVersion ; prov:wasDerivedFrom :summary ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:prescribed a cascade:PrescribedOrReportedMedication .
+:prescribedVersion prov:specializationOf :prescribed ; cascade:patient :subject ; cascade:drugName "lisinopril 10 MG Oral Tablet" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" .
+:prescribedRevision a cascade:Revision ; cascade:revisionOf :prescribed ; cascade:version :prescribedVersion ; prov:wasDerivedFrom :summary ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:listed a cascade:PrescribedOrReportedMedication .
+:listedVersion prov:specializationOf :listed ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg tablet" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" .
+:listedRevision a cascade:Revision ; cascade:revisionOf :listed ; cascade:version :listedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:flu a cascade:Vaccination .
+:fluVersion prov:specializationOf :flu ; cascade:patient :subject ; cascade:vaccineName "Influenza" ; cascade:workflowStatus "completed" .
+:fluRevision a cascade:Revision ; cascade:revisionOf :flu ; cascade:version :fluVersion ; prov:wasDerivedFrom :visit ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:glucose a cascade:LaboratoryTestResult .
+:glucoseVersion prov:specializationOf :glucose ; cascade:patient :subject ; cascade:testName "Glucose" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "95" ; cascade:resultUnit "mg/dL" .
+:glucoseRevision a cascade:Revision ; cascade:revisionOf :glucose ; cascade:version :glucoseVersion ; prov:wasDerivedFrom :summary ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:glucoseCopy a cascade:LaboratoryTestResult .
+:glucoseCopyVersion prov:specializationOf :glucoseCopy ; cascade:patient :subject ; cascade:testName "Glucose" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "95" ; cascade:resultUnit "mg/dL" .
+:glucoseCopyRevision a cascade:Revision ; cascade:revisionOf :glucoseCopy ; cascade:version :glucoseCopyVersion ; prov:wasDerivedFrom :visit ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:colonoscopy a cascade:MedicalProcedure .
+:colonoscopyVersion prov:specializationOf :colonoscopy ; cascade:patient :subject ; cascade:procedureName "Colonoscopy" ; cascade:workflowStatus "completed" .
+:colonoscopyRevision a cascade:Revision ; cascade:revisionOf :colonoscopy ; cascade:version :colonoscopyVersion ; prov:wasDerivedFrom :visit ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:variant a cascade:GeneticVariantFinding .
+:variantVersion prov:specializationOf :variant ; cascade:patient :subject ; cascade:geneSymbol "MLH1" ;
+    cascade:hgvsCodingDnaExpression "NM_000249.3:c.2042C>T" .
+:variantRevision a cascade:Revision ; cascade:revisionOf :variant ; cascade:version :variantVersion ; prov:wasDerivedFrom :summary ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
