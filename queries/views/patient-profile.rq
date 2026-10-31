@@ -1,11 +1,20 @@
 # One entry for the person, joining every patient profile a counting About judgment ties to them, named as every entry
-# is, from its least member.
+# is, from its least member. Profiles are joined by About, not by Same, so the entry has no lead and states no value of
+# its own: each profile's current values are a node of the view of their own, named after the entry and the profile,
+# which says the profile they came from, so each source's date of birth, gender and death stand beside the others'.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT {
   ?entry a cascade:PatientProfile ;
     cascade:mergedFrom ?profile .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?profile ;
+    cascade:dateOfBirth ?memberDateOfBirth ;
+    cascade:administrativeGender ?memberAdministrativeGender ;
+    cascade:deceased ?memberDeceased ;
+    cascade:dateOfDeath ?memberDateOfDeath .
 }
 WHERE {
   { SELECT ?s (IRI(CONCAT("urn:cascade:entry:", SHA256(MIN(STR(?member))))) AS ?entry)
@@ -13,4 +22,10 @@ WHERE {
                    cascade:subject ?s . }
     GROUP BY ?s }
   ?j cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?s .
+  OPTIONAL { ?profile pav:hasCurrentVersion ?memberVersion .
+             OPTIONAL { ?memberVersion cascade:dateOfBirth ?memberDateOfBirth }
+             OPTIONAL { ?memberVersion cascade:administrativeGender ?memberAdministrativeGender }
+             OPTIONAL { ?memberVersion cascade:deceased ?memberDeceased }
+             OPTIONAL { ?memberVersion cascade:dateOfDeath ?memberDateOfDeath } }
+  BIND (IF(BOUND(?memberVersion), IRI(CONCAT(STR(?entry), "-", SHA256(STR(?profile)))), 1/0) AS ?memberValues)
 }

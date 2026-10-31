@@ -1,11 +1,15 @@
 # Read from the view alone, as an app would, newest first by the date as written, so a year follows its months and
-# days, with how many records each entry joins, and each CVX code the entry states, a row for each. Times written with
-# a zone are ordered by their wall time as written, not as instants: 23:00-05:00 sorts before 01:00Z the next day,
-# though it is later.
+# days, with how many records each entry joins, each CVX code the entry states, a row for each, and each record it joins
+# with the document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it, in
+# order, each ended by "; " but the last, its own parts by ", ". Times written with a zone are ordered by their wall time
+# as written, not as instants: 23:00-05:00 sorts before 01:00Z the next day, though it is later.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?given ?vaccine ?code ?status (COUNT(?record) AS ?records) ?entry ?entryLabel
+SELECT ?given ?vaccine ?code ?status (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
   ?entry a cascade:Vaccination ; cascade:mergedFrom ?record .
   OPTIONAL { ?entry cascade:vaccinationOccurrenceTime ?given }
@@ -13,6 +17,36 @@ WHERE {
   OPTIONAL { ?entry cascade:vaccineCode ?code }
   OPTIONAL { ?entry cascade:workflowStatus ?status }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+    WHERE {
+      { SELECT ?entry ?sourceText
+        WHERE {
+          { SELECT ?entry ?sourceRecord ?document ?retrievedOn
+                   (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, ", "), ""); separator=""), ", $", "") AS ?hospitals)
+            WHERE {
+              { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
+                WHERE {
+                  ?entry a cascade:Vaccination ; cascade:mergedFrom ?sourceRecord .
+                  OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
+                             OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
+                             OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                                        ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                                        OPTIONAL { ?agent rdfs:label ?agentLabel }
+                                        OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                                        BIND (CONCAT(IF(?hospitalRole = cascade:AuthorRole, "written by ", "kept by "),
+                                                     COALESCE(?agentLabel, ?agentName)) AS ?hospital) } }
+                }
+                ORDER BY ?entry ?sourceRecord ?document ?hospital }
+            }
+            GROUP BY ?entry ?sourceRecord ?document ?retrievedOn }
+          BIND (CONCAT(STR(?sourceRecord), COALESCE(CONCAT(" from ", STR(?document)), ""),
+                       COALESCE(CONCAT(", retrieved ", STR(?retrievedOn)), ""),
+                       IF(?hospitals = "", "", CONCAT(", ", ?hospitals))) AS ?sourceText)
+        }
+        ORDER BY ?entry ?sourceText }
+    }
+    GROUP BY ?entry }
 }
-GROUP BY ?entry ?given ?vaccine ?code ?status ?entryLabel
+GROUP BY ?entry ?given ?vaccine ?code ?status ?entryLabel ?sources
 ORDER BY DESC(COALESCE(STR(?given), "")) ?vaccine ?entry

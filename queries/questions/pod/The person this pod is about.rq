@@ -1,11 +1,84 @@
 # Each hospital knows the person by a patient profile of its own, and About judgments tie those profiles to one
-# subject, whom every record in a view is about.
+# subject, whom every record in a view is about. Read from the patient-profile view, as an app would: what each profile
+# a counting About ties to the subject says of the person's date of birth, administrative gender, whether they have died
+# and when, each value after the profile that states it, so sources that disagree are told apart and none is chosen; and
+# each profile with the document it was derived from, when that was retrieved, and the hospitals that wrote it and that
+# keep it. A list holds its values in order, each ended by "; " but the last, and a list with nothing in it is unbound;
+# a value's own parts are ended by ", ".
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?subject ?subjectLabel
+SELECT ?subject ?subjectLabel ?dateOfBirth ?administrativeGender ?deceased ?dateOfDeath ?sources
 WHERE {
   ?subject a cascade:Subject .
   OPTIONAL { ?subject rdfs:label ?subjectLabel }
+  { SELECT ?subject
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?birthText, "; "), ""); separator=""), "; $", "") AS ?births)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?genderText, "; "), ""); separator=""), "; $", "") AS ?genders)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?deceasedText, "; "), ""); separator=""), "; $", "") AS ?deaths)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?deathDateText, "; "), ""); separator=""), "; $", "") AS ?deathDates)
+    WHERE {
+      { SELECT ?subject ?birthText ?genderText ?deceasedText ?deathDateText
+        WHERE {
+          ?subject a cascade:Subject .
+          OPTIONAL {
+            ?about cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile ;
+                   cascade:subject ?subject .
+            ?entry a cascade:PatientProfile ; cascade:memberCurrentValues ?values .
+            ?values cascade:valuesOfMember ?profile .
+            OPTIONAL { ?values cascade:dateOfBirth ?birth }
+            OPTIONAL { ?values cascade:administrativeGender ?gender }
+            OPTIONAL { ?values cascade:deceased ?dead }
+            OPTIONAL { ?values cascade:dateOfDeath ?died }
+          }
+          BIND (CONCAT(STR(?profile), " ", STR(?birth)) AS ?birthText)
+          BIND (CONCAT(STR(?profile), " ", ?gender) AS ?genderText)
+          BIND (CONCAT(STR(?profile), " ", STR(?dead)) AS ?deceasedText)
+          BIND (CONCAT(STR(?profile), " ", STR(?died)) AS ?deathDateText)
+        }
+        ORDER BY ?subject ?profile }
+    }
+    GROUP BY ?subject }
+  OPTIONAL {
+    { SELECT ?subject (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+      WHERE {
+        { SELECT ?subject ?sourceText
+          WHERE {
+            { SELECT ?subject ?sourceRecord ?document ?retrievedOn
+                     (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, ", "), ""); separator=""), ", $", "") AS ?hospitals)
+              WHERE {
+                { SELECT ?subject ?sourceRecord ?document ?retrievedOn ?hospital
+                  WHERE {
+                    ?about cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?sourceRecord ;
+                           cascade:subject ?subject .
+                    ?entry a cascade:PatientProfile ; cascade:mergedFrom ?sourceRecord .
+                    OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
+                               OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
+                               OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                                          ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                                          FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                                          OPTIONAL { ?agent rdfs:label ?agentLabel }
+                                          OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                                          BIND (CONCAT(IF(?hospitalRole = cascade:AuthorRole, "written by ", "kept by "),
+                                                       COALESCE(?agentLabel, ?agentName)) AS ?hospital) } }
+                  }
+                  ORDER BY ?subject ?sourceRecord ?document ?hospital }
+              }
+              GROUP BY ?subject ?sourceRecord ?document ?retrievedOn }
+            BIND (CONCAT(STR(?sourceRecord), COALESCE(CONCAT(" from ", STR(?document)), ""),
+                         COALESCE(CONCAT(", retrieved ", STR(?retrievedOn)), ""),
+                         IF(?hospitals = "", "", CONCAT(", ", ?hospitals))) AS ?sourceText)
+          }
+          ORDER BY ?subject ?sourceText }
+      }
+      GROUP BY ?subject }
+  }
+  BIND (IF(?births = "", 1/0, ?births) AS ?dateOfBirth)
+  BIND (IF(?genders = "", 1/0, ?genders) AS ?administrativeGender)
+  BIND (IF(?deaths = "", 1/0, ?deaths) AS ?deceased)
+  BIND (IF(?deathDates = "", 1/0, ?deathDates) AS ?dateOfDeath)
 }
 ORDER BY ?subject

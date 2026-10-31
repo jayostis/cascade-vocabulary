@@ -1,15 +1,76 @@
-# Read from the view alone, as an app would: each entry whose status is active, with its code, its criticality,
-# and how many records it joins.
+# Read from the view alone, as an app would: each entry whose status is active, with its code, its criticality, the
+# reactions and the severity its lead states, each reaction as its text and as its code, how many records it joins, and
+# each record it joins, with the document it was derived from, when that was retrieved, and the hospitals that wrote it
+# and that keep it. A list holds its values in order, each ended by "; " but the last, and a list with nothing in it is
+# unbound; a value's own parts are ended by ", ".
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?allergen ?code ?criticality (COUNT(?record) AS ?records) ?entry ?entryLabel
+SELECT ?allergen ?code ?criticality ?reactions ?reactionCodes ?severity (COUNT(?record) AS ?records) ?entry ?entryLabel
+       ?sources
 WHERE {
   ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" ;
          cascade:allergen ?allergen ; cascade:mergedFrom ?record .
   OPTIONAL { ?entry cascade:allergenCode ?code }
   OPTIONAL { ?entry cascade:allergyCriticality ?criticality }
+  OPTIONAL { ?entry cascade:allergySeverity ?severity }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?reaction, "; "), ""); separator=""), "; $", "") AS ?allReactions)
+    WHERE {
+      { SELECT ?entry ?reaction
+        WHERE {
+          ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" .
+          OPTIONAL { ?entry cascade:reactionManifestationText ?reaction }
+        }
+        ORDER BY ?entry ?reaction }
+    }
+    GROUP BY ?entry }
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?reactionCode), "; "), ""); separator=""), "; $", "")
+                   AS ?allReactionCodes)
+    WHERE {
+      { SELECT ?entry ?reactionCode
+        WHERE {
+          ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" .
+          OPTIONAL { ?entry cascade:reactionManifestationCode ?reactionCode }
+        }
+        ORDER BY ?entry ?reactionCode }
+    }
+    GROUP BY ?entry }
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+    WHERE {
+      { SELECT ?entry ?sourceText
+        WHERE {
+          { SELECT ?entry ?sourceRecord ?document ?retrievedOn
+                   (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, ", "), ""); separator=""), ", $", "") AS ?hospitals)
+            WHERE {
+              { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
+                WHERE {
+                  ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" ; cascade:mergedFrom ?sourceRecord .
+                  OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
+                             OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
+                             OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                                        ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                                        OPTIONAL { ?agent rdfs:label ?agentLabel }
+                                        OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                                        BIND (CONCAT(IF(?hospitalRole = cascade:AuthorRole, "written by ", "kept by "),
+                                                     COALESCE(?agentLabel, ?agentName)) AS ?hospital) } }
+                }
+                ORDER BY ?entry ?sourceRecord ?document ?hospital }
+            }
+            GROUP BY ?entry ?sourceRecord ?document ?retrievedOn }
+          BIND (CONCAT(STR(?sourceRecord), COALESCE(CONCAT(" from ", STR(?document)), ""),
+                       COALESCE(CONCAT(", retrieved ", STR(?retrievedOn)), ""),
+                       IF(?hospitals = "", "", CONCAT(", ", ?hospitals))) AS ?sourceText)
+        }
+        ORDER BY ?entry ?sourceText }
+    }
+    GROUP BY ?entry }
+  BIND (IF(?allReactions = "", 1/0, ?allReactions) AS ?reactions)
+  BIND (IF(?allReactionCodes = "", 1/0, ?allReactionCodes) AS ?reactionCodes)
 }
-GROUP BY ?entry ?allergen ?code ?criticality ?entryLabel
+GROUP BY ?entry ?allergen ?code ?criticality ?reactions ?reactionCodes ?severity ?entryLabel ?sources
 ORDER BY ?allergen ?entry
