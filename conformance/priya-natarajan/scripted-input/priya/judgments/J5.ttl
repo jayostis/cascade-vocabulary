@@ -1,0 +1,17 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:82c1f644-09b4-46db-ae0c-feea56ba0e28> a cascade:Judgment ;
+    cascade:verdict cascade:Same ;
+    prov:hadMember <urn:uuid:acf3f318-ce80-8c57-b247-632d6648bafc> ,
+                   <urn:uuid:9497431c-48fd-877f-9d90-cb6b2e16cd37> ;
+    prov:used <ni:///sha-256;_Ew9ppSJPLgx7k6AKaBNX3EEbf_tuOyLKnwlQ8Zra5E> ,
+              <ni:///sha-256;kGhUQ946nrTECxP48AFgENrT3QxZb4rT4Nn9ltIcQ3U> ;
+    prov:wasAttributedTo <https://pod.priya-natarajan.example/profile/card.ttl#me> ;
+    prov:qualifiedAttribution [ a prov:Attribution ;
+        prov:agent <https://pod.priya-natarajan.example/profile/card.ttl#me> ;
+        prov:hadRole cascade:PatientRole ] ;
+    prov:generatedAtTime "2025-08-12T19:08:00Z"^^xsd:dateTime .
+
+<https://pod.priya-natarajan.example/profile/card.ttl#me> a prov:Person .

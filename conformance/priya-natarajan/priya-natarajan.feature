@@ -4,10 +4,13 @@ Feature: Priya Natarajan's pod
   FHIR, through Apple Health, and as a C-CDA from its patient portal; Fernhill Family Clinic sends only a C-CDA. Each
   planted case P1 to P17 is a rule, and each example reads the pod at the smallest set of steps and lenses at which it
   can fail for its own reason. A record, a profile and a person's judgment are named by the handle expected/handles.json
-  gives it: KHF is Kestrel Harbor's FHIR, KHC its C-CDA, FFC Fernhill's C-CDA and APP Priya's own entry.
+  gives it: KHF is Kestrel Harbor's FHIR, KHC its C-CDA, FFC Fernhill's C-CDA and APP Priya's own entry. Her app opens
+  her pod as it creates it, with the vocabulary's rule list version 18 and the drug products table her medications are
+  in (app-drug-products), so every matcher run of her story is the app's.
 
   Background: Priya's story
     Given a new pod for Priya on 2025-03-29 at 18:40 (E1)
+    And the pod is opened with the tables "app-drug-products" on 2025-03-29 at 18:41
     And the export "x-e2" is imported on 2025-03-29 at 18:45:04 (E2)
     And Priya files the judgment "J1" on 2025-03-29 at 18:45:30
     And the matcher runs on the records of "E2" on 2025-03-29 at 18:46 (M1)
@@ -28,6 +31,7 @@ Feature: Priya Natarajan's pod
     And the matcher runs on the records of "E8" on 2025-06-15 at 08:05:04 (M7)
     And the download "fernhill-family-clinic-summary-2.xml" is imported on 2025-08-12 at 19:05:04 (E9)
     And the matcher runs on the records of "E9" on 2025-08-12 at 19:05:04 (M8)
+    And Priya files the judgment "J5" on 2025-08-12 at 19:08
     And the download "export_cda.xml" is imported on 2025-08-12 at 19:10 (E10)
     And the download "kestrel-harbor-health-summary-4.xml" is imported on 2025-08-12 at 19:12 (E11)
 
@@ -56,17 +60,18 @@ Feature: Priya Natarajan's pod
   Rule: P2. The same medication from FHIR and from C-CDA
     Lisinopril is a prescription in Kestrel Harbor's FHIR, KHF-MED-LISINOPRIL, RxNorm 314076 in its coding, and an entry
     on the list of what Priya takes in its C-CDA, KHC-MED-LISINOPRIL, whose code is the portal's own with RxNorm 314076
-    in a translation. The matcher joins them by the same medication code.
+    in a translation. The drug products table her app holds names 314076 a clinical drug, one product, so the matcher
+    joins them by the same product code (M16).
 
-    Example: the matcher joins the prescription and the list entry by the same medication code
+    Example: the matcher joins the prescription and the list entry by the same product code
       When the pod is read as it stood after "M2"
       Then these records have:
         | record             | field | value      |
         | KHF-MED-LISINOPRIL | kind  | medication |
         | KHC-MED-LISINOPRIL | kind  | medication |
       And the matcher's judgments holding KHF-MED-LISINOPRIL are:
-        | justification        | members                                |
-        | same medication code | KHF-MED-LISINOPRIL, KHC-MED-LISINOPRIL |
+        | justification     | members                                |
+        | same product code | KHF-MED-LISINOPRIL, KHC-MED-LISINOPRIL |
       And the medications view holds these entries:
         | members                                |
         | KHF-MED-LISINOPRIL, KHC-MED-LISINOPRIL |
@@ -191,26 +196,42 @@ Feature: Priya Natarajan's pod
   Rule: P10. An entry whose id repeats in its document is named by its document and its place in it
     decisions/naming.md, row "record from C-CDA": Fernhill writes one id for Claritin and fluticasone, so each is
     named by its download and its place, and the adapter says the source broke its own definition. Claritin in the
-    second download, FFC-MED-CLARITIN-2, is a record of its own, and the matcher joins it to FFC-MED-CLARITIN by the same
-    medication code.
+    second download, FFC-MED-CLARITIN-2, is a record of its own. Neither Claritin states a start (P13), and a record
+    with no start joins no other medication (decisions/medication-matching.md, row "no dates"; M15), so under the rule
+    list's version 18 the matcher keeps the two apart, although they share a product code. "What needs review" lists
+    the pair as possibly the same medication (M16), and Priya joins it with a Same, J5, which outranks the matcher
+    (P15).
 
-    Example: the second download's Claritin is a record of its own, joined to the first
+    Example: the second download's Claritin is a record of its own
       Then the records have these revisions:
         | record             | arrived                | version | after |
         | FFC-MED-CLARITIN   | 2025-05-20 at 18:50:04 | 1       |       |
         | FFC-MED-CLARITIN-2 | 2025-08-12 at 19:05:04 | 1       |       |
-      And the matcher's judgments holding FFC-MED-CLARITIN-2 are:
-        | justification        | members                              |
-        | same medication code | FFC-MED-CLARITIN, FFC-MED-CLARITIN-2 |
+
+    Example: the matcher keeps it apart from the first, since neither states a start
+      When the pod is read as it stood after "M8"
+      Then the matcher has no judgment holding FFC-MED-CLARITIN-2
+      And the medications view holds these entries:
+        | members                              |
+        | APP-MED-LORATADINE, FFC-MED-CLARITIN |
+        | FFC-MED-CLARITIN-2                   |
+
+    Example: "What needs review" lists the pair as possibly the same medication, until Priya joins it
+      When the pod is read as it stood after "M8"
+      And the query "questions/entry/What needs review.rq" is asked
+      Then it answers:
+        | entry                         | entryLabel                                        | needs                          | finding | judgment | judgmentLabel | record           | recordLabel                                                | otherRecord        | otherRecordLabel                                           |
+        | the entry of FFC-MED-CLARITIN | "Medication entry · loratadine 10 MG Oral Tablet" | "possibly the same medication" |         |          |               | FFC-MED-CLARITIN | "Medication · Claritin 10 MG Oral Tablet · unknown source" | FFC-MED-CLARITIN-2 | "Medication · Claritin 10 MG Oral Tablet · unknown source" |
 
   Rule: P11. A repeated id with its status changed is a new record, joined to the old one
     In the second Fernhill download fluticasone's status is completed, and, named by its download as P10 says,
-    FFC-MED-FLUTICASONE-2 is a record of its own, and the matcher joins it to FFC-MED-FLUTICASONE-1.
+    FFC-MED-FLUTICASONE-2 is a record of its own. Both state the same start, 2024-10-15, so their periods share that
+    day, and the matcher joins it to FFC-MED-FLUTICASONE-1 by the same product code (M15, M16).
 
-    Example: the matcher joins the two fluticasone records by the same medication code
+    Example: the matcher joins the two fluticasone records by the same product code
       Then the matcher's judgments holding FFC-MED-FLUTICASONE-2 are:
-        | justification        | members                                      |
-        | same medication code | FFC-MED-FLUTICASONE-1, FFC-MED-FLUTICASONE-2 |
+        | justification     | members                                      |
+        | same product code | FFC-MED-FLUTICASONE-1, FFC-MED-FLUTICASONE-2 |
       And the medications view holds these entries:
         | members                                      |
         | FFC-MED-FLUTICASONE-1, FFC-MED-FLUTICASONE-2 |
@@ -281,18 +302,24 @@ Feature: Priya Natarajan's pod
 
   Rule: P15. A person joins what the matcher does not
     Priya enters loratadine she takes, APP-MED-LORATADINE (RxNorm 311372); Fernhill lists its brand, FFC-MED-CLARITIN
-    (RxNorm 206805). The matcher finds no same code; her Same, J4, joins them, and the second download's Claritin joins
-    them by the matcher (P10). Her own record leads the entry, as a record the person entered leads any it is in (C6).
+    (RxNorm 206805). The matcher finds no same code; her Same, J4, joins them. The matcher keeps the second download's
+    Claritin apart from the first (P10), and her Same, J5, joins it to them. Her own record leads the entry, as a record
+    the person entered leads any it is in (C6).
 
     Example: the matcher does not join her loratadine
       When the pod is read as it stood after "M6"
       Then the matcher has no judgment holding APP-MED-LORATADINE
 
-    Example: J4 joins her loratadine and Fernhill's Claritin in one entry
+    Example: J4 joins her loratadine and Fernhill's Claritin, and J5 the second download's Claritin, in one entry
       Then the medications view holds these entries:
         | members                                                  |
         | APP-MED-LORATADINE, FFC-MED-CLARITIN, FFC-MED-CLARITIN-2 |
       And J4 counts
+      And J5 counts
+
+    Example: with J5, "What needs review" lists the Claritin pair no more
+      When the query "questions/entry/What needs review.rq" is asked
+      Then it answers nothing
 
     Example: her loratadine leads the entry, since she entered it
       Then the entry of APP-MED-LORATADINE shows:
@@ -327,18 +354,17 @@ Feature: Priya Natarajan's pod
   Rule: The tables an app holds name her potassium and class her lisinopril
     An app opens her pod with tables of its own (app-names-classes): the published LOINC names, RxNorm product
     ingredients, MED-RT drug classes and MED-RT names, each only the rows her potassium and her lisinopril need, and the
-    vocabulary's rule list version 12. Which names an app shows is its own choice, so the example asks only that her
+    vocabulary's rule list version 18. Which names an app shows is its own choice, so the example asks only that her
     potassium's code, LOINC 2823-3, joins the held names version. Lisinopril 10 MG Oral Tablet (RxNorm 314076) bears no
     class row: it maps to lisinopril (29046), and FDA classes lisinopril anhydrous (1546022), which maps to lisinopril
     too, as an angiotensin converting enzyme inhibitor (N0000175562) acting by that mechanism (N0000000181).
 
-    Opening writes seven files, by O1: her pod names no version of the vocabulary's rule list, so version 12 judges every
-    pair it joins, four Sames, the open describes that list and its version, and the run's act holds its snapshot (N7,
-    N14).
+    Opening writes no file, by O1: her pod has named the vocabulary's rule list version 18 since her app opened it, and
+    these tables join no pair that version had not joined, so there is nothing to file or to describe.
 
     Example: her potassium's code joins the names version the app holds
       When the pod is opened with the tables "app-names-classes" on 2025-08-13 at 09:00
-      Then "app-names-classes" wrote 7 files
+      Then "app-names-classes" wrote no file
       When the query is:
         """
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -377,16 +403,16 @@ Feature: Priya Natarajan's pod
 
   Rule: Her lab results in a LOINC panel she names
     An app opens her pod with tables of its own (app-panels): the published LOINC panel members rows of the Electrolytes
-    1998 panel (24326-1), and the vocabulary's rule list version 12. LOINC lists sodium (2951-2), potassium (2823-3) and
+    1998 panel (24326-1), and the vocabulary's rule list version 18. LOINC lists sodium (2951-2), potassium (2823-3) and
     chloride (2075-0) in it, in that order and required (R), bicarbonate (1963-8) and carbon dioxide (2028-9) as
     alternatives (R-a), and the anion gap (33037-3) as optional. Her two potassium entries are in it, and she has no
     sodium and no chloride: the panel is hers to pick, and nothing says her potassium was drawn in it.
 
-    Opening writes seven files, by O1, as it does for app-names-classes: the same rule list judges the same pairs.
+    Opening writes no file, by O1, as it does for app-names-classes: the same rule list judges the same pairs.
 
     Example: her potassium is in the electrolytes panel, which misses her sodium and chloride
       When the pod is opened with the tables "app-panels" on 2025-08-13 at 09:00
-      Then "app-panels" wrote 7 files
+      Then "app-panels" wrote no file
       When the query "tables/panel-results.rq" is asked
       Then it answers:
         | panel                          | member                        | sequence | required | via                            | origin                                                                  | entry                       |
@@ -398,7 +424,7 @@ Feature: Priya Natarajan's pod
   Rule: An estradiol tablet is an estrogen, told from a product of fluoroestradiol F-18 by its precise ingredient
     Priya enters estradiol 1 MG Oral Tablet (RxNorm 197658) she takes. An app opens her pod with tables of its own
     (app-precise): RxNorm product ingredients that state precise ingredients, MED-RT drug classes and MED-RT names, each
-    only the rows her estradiol needs, and the vocabulary's rule list version 12. Estradiol (4083) and its precise
+    only the rows her estradiol needs, and the vocabulary's rule list version 18. Estradiol (4083) and its precise
     ingredient fluoroestradiol F-18 (2372221) are classed differently: FDA gives estradiol Estrogen [EPC] (N0000175825)
     and Estrogen Receptor Agonists [MoA] (N0000000100), and fluoroestradiol F-18 Radioactive Diagnostic Agent [EPC] and
     Positron Emitting Activity [MoA]. The version gives her tablet no precise ingredient, and it states precise
@@ -409,7 +435,7 @@ Feature: Priya Natarajan's pod
     Example: her estradiol is an estrogen through estradiol
       Given Priya enters "estradiol" on 2025-08-13 at 08:00
       When the pod is opened with the tables "app-precise" on 2025-08-13 at 09:00
-      Then "app-precise" wrote 7 files
+      Then "app-precise" wrote no file
       When the query "tables/medication-classes-through-precise-ingredients.rq" is asked
       Then it answers:
         | entry                                                              | medication                   | class                                                    | relation                              | origin                                                                            | through                                            | stated |
