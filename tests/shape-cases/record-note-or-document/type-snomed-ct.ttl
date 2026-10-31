@@ -1,0 +1,20 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:eb4b7536-6050-8c7d-9477-44aceb55e7e0> a cascade:ClinicalNoteOrDocument ;
+    cascade:sourceUrl <https://fhir.example/DocumentReference/note-type-snomed-ct> .
+
+<ni:///sha-256;note-type-snomed-ct> prov:specializationOf <urn:uuid:eb4b7536-6050-8c7d-9477-44aceb55e7e0> ;
+    cascade:patient :patient ;
+    cascade:noteOrDocumentType <http://snomed.info/id/371532007> ;
+    cascade:noteOrDocumentTypeInOtherSystem "PROG"^^<urn:oid:2.16.840.1.113883.19.5.99999.8> ;
+    cascade:noteOrDocumentTypeName "Progress note" ;
+    cascade:noteOrDocumentTitle "Follow-up visit" ;
+    cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ;
+    cascade:workflowStatus "current" ;
+    cascade:narrativeText "Lung nodule, 6 mm." ;
+    prov:wasAttributedTo <urn:uuid:801785a3-066b-86fb-84c1-2119dc670fce> ;
+    cascade:attachment <ni:///sha-256;note-type-snomed-ct#attachment-1> .
+<ni:///sha-256;note-type-snomed-ct#attachment-1> cascade:attachmentContentType "text/plain" .

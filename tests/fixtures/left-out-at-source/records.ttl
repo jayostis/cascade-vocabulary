@@ -24,3 +24,22 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :correctedSecond a cascade:Revision ; cascade:revisionOf :corrected ; cascade:version :correctedAfter ;
     prov:wasRevisionOf :correctedFirst ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:reportInError a cascade:DiagnosticReport .
+:reportInErrorVersion prov:specializationOf :reportInError ; cascade:patient :subject ; cascade:reportName "Cobalamin" ;
+    cascade:workflowStatus "entered-in-error" .
+:reportInErrorRevision a cascade:Revision ; cascade:revisionOf :reportInError ; cascade:version :reportInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:noteInError a cascade:ClinicalNoteOrDocument .
+:noteInErrorVersion prov:specializationOf :noteInError ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;
+    cascade:workflowStatus "entered-in-error" .
+:noteInErrorRevision a cascade:Revision ; cascade:revisionOf :noteInError ; cascade:version :noteInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:noteContentInError a cascade:ClinicalNoteOrDocument .
+:noteContentInErrorVersion prov:specializationOf :noteContentInError ; cascade:patient :subject ;
+    cascade:noteOrDocumentTypeName "Discharge summary" ; cascade:workflowStatus "current" ;
+    cascade:noteOrDocumentContentStatus "entered-in-error" .
+:noteContentInErrorRevision a cascade:Revision ; cascade:revisionOf :noteContentInError ; cascade:version :noteContentInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

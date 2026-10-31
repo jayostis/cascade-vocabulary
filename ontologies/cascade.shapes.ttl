@@ -936,6 +936,214 @@ cascade:VariantInterpretationShape a sh:NodeShape ;
         sh:message "A variant interpretation's version is attributed to at most one lab, named by the IRI of its cascade:Organization record"@en
     ] .
 
+# Reports, notes and documents
+
+cascade:DiagnosticReportShape a sh:NodeShape ;
+    sh:targetClass cascade:DiagnosticReport ;
+    sh:targetSubjectsOf cascade:reportCode , cascade:reportCodeInOtherSystem , cascade:reportName , cascade:reportCategory ,
+        cascade:reportEffectiveTime , cascade:reportIssuedTime , cascade:reportConclusion , cascade:reportConclusionCode ;
+    sh:property [
+        sh:path cascade:reportIssuedTime ;
+        sh:datatype xsd:dateTime ;
+        sh:maxCount 1 ;
+        sh:message "A report states at most one time it was issued, an xsd:dateTime, as FHIR's instant is"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportCode ;
+        sh:nodeKind sh:IRI ;
+        sh:or ( cascade:LoincCodeShape cascade:SnomedCtCodeShape ) ;
+        sh:message "A report code is a LOINC or SNOMED CT code IRI, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportCodeInOtherSystem ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
+        sh:message "A report code in another system is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportCodeInOtherSystem ;
+        sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
+        sh:message "A report code in another system is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportCodeInOtherSystem ;
+        sh:not [ sh:or ( [ sh:datatype <http://loinc.org> ] [ sh:datatype <http://snomed.info/sct> ] ) ] ;
+        sh:message "A LOINC or SNOMED CT report code is a cascade:reportCode IRI, never a literal typed by http://loinc.org or http://snomed.info/sct"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A report states at most one non-empty name"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportCategory ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
+        sh:message "A report category is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportCategory ;
+        sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
+        sh:message "A report category is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportEffectiveTime ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A report's effective time is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportConclusion ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A report states at most one non-empty conclusion"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reportConclusionCode ;
+        sh:node cascade:CodeShape ;
+        sh:message "A report's conclusion code is a code IRI of one of the code systems' forms, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path obo:RO_0002351 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A report's result is named by the result record's IRI (its urn:uuid: record name, resolved like cascade:patient), never a version"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:workflowStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("registered" "partial" "preliminary" "final" "amended" "corrected" "appended" "cancelled" "entered-in-error" "unknown") ;
+        sh:message "A report's status should be one of the FHIR R4 DiagnosticReportStatus codes: registered, partial, preliminary, final, amended, corrected, appended, cancelled, entered-in-error, unknown"@en ;
+        sh:severity sh:Warning
+    ] , [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A report's version is attributed to at most one organization, the one its performer names, by the IRI of its cascade:Organization record"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:attachment ;
+        sh:nodeKind sh:IRI ;
+        sh:pattern "#attachment-[1-9][0-9]*$" ;
+        sh:message "A report's attachment is the node <version>#attachment-n of its version, n its 1-based position in the source"@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:ClinicalNoteOrDocumentShape a sh:NodeShape ;
+    sh:targetClass cascade:ClinicalNoteOrDocument ;
+    sh:targetSubjectsOf cascade:noteOrDocumentType , cascade:noteOrDocumentTypeInOtherSystem , cascade:noteOrDocumentTypeName ,
+        cascade:noteOrDocumentTitle , cascade:noteOrDocumentDate , cascade:noteOrDocumentContentStatus ;
+    sh:property [
+        sh:path cascade:noteOrDocumentContentStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("preliminary" "final" "amended" "entered-in-error") ;
+        sh:message "A note or document's content status should be one of the FHIR R4 CompositionStatus codes: preliminary, final, amended, entered-in-error"@en ;
+        sh:severity sh:Warning
+    ] , [
+        sh:path cascade:noteOrDocumentType ;
+        sh:nodeKind sh:IRI ;
+        sh:node cascade:LoincCodeShape ;
+        sh:message "A note or document's type is a LOINC code IRI, one per LOINC coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:noteOrDocumentTypeInOtherSystem ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
+        sh:message "A note or document's type in another system is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:noteOrDocumentTypeInOtherSystem ;
+        sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
+        sh:message "A note or document's type in another system is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:noteOrDocumentTypeInOtherSystem ;
+        sh:not [ sh:or ( [ sh:datatype <http://loinc.org> ] ) ] ;
+        sh:message "A LOINC note type is a cascade:noteOrDocumentType IRI, never a literal typed by http://loinc.org"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:noteOrDocumentTypeName ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A note or document states at most one non-empty type name"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:noteOrDocumentTitle ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A note or document states at most one non-empty title"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:noteOrDocumentDate ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A note or document's date is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:workflowStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in ("current" "superseded" "entered-in-error") ;
+        sh:message "A note or document's status should be one of the FHIR R4 DocumentReferenceStatus codes: current, superseded, entered-in-error"@en ;
+        sh:severity sh:Warning
+    ] , [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A note or document's version is attributed to at most one organization, the one its author names, by the IRI of its cascade:Organization record"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:attachment ;
+        sh:nodeKind sh:IRI ;
+        sh:pattern "#attachment-[1-9][0-9]*$" ;
+        sh:message "A note or document's attachment is the node <version>#attachment-n of its version, n its 1-based position in the source"@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:AttachmentShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:attachmentContentType , cascade:attachmentTitle , cascade:attachmentUrl ;
+    sh:property [
+        sh:path cascade:attachmentContentType ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "An attachment states at most one non-empty media type"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:attachmentTitle ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "An attachment states at most one non-empty title"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:attachmentUrl ;
+        sh:datatype xsd:anyURI ;
+        sh:maxCount 1 ;
+        sh:message "An attachment states at most one address, an xsd:anyURI as its source wrote it"@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:NarrativeTextShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:narrativeText ;
+    sh:property [
+        sh:path cascade:narrativeText ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:minLength 1 ;
+        sh:message "A version states at most one narrative text, a non-empty string: the note's whole text in document order"@en ;
+        sh:severity sh:Violation
+    ] .
+
 # Records
 
 cascade:SourceUrlShape a sh:NodeShape ;
@@ -1331,7 +1539,8 @@ cascade:PaddedDateTimeShape a sh:NodeShape ;
         sh:maxCount 1 ;
         sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
-                cascade:dispenseValidityPeriodStart cascade:dispenseValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd ) ;
+                cascade:dispenseValidityPeriodStart cascade:dispenseValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
+                cascade:reportEffectiveTime cascade:noteOrDocumentDate ) ;
         sh:message "A padded time names the one property that holds it, a property whose value may be a time."@en ;
         sh:severity sh:Violation
     ] , [
@@ -1376,6 +1585,7 @@ cascade:ValueAbsentForReasonShape a sh:NodeShape ;
         sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
                 cascade:dispenseValidityPeriodStart cascade:dispenseValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
+                cascade:reportEffectiveTime cascade:reportIssuedTime cascade:noteOrDocumentDate
                 cascade:resultValueKind cascade:administrativeGender ) ;
         sh:message "A value absent for a reason names the one property it stands for, a date, a lab result's value kind or an administrative gender."@en ;
         sh:severity sh:Violation

@@ -1,0 +1,72 @@
+# Each entry takes the type, type name, title, date, content status, text and organization of its lead and the status
+# of the member chosen for status. The organization is the record itself, not an entry. Each member's current values are a node of the
+# view of their own, named after the entry and the member, which says the member they came from. A time its source wrote
+# short of the second keeps the node saying so (cascade:PaddedDateTime), named after the entry or the member's values and
+# -padded-, so the view never shows a padded time as exact. An attachment stays a node of its version.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT {
+  ?entry a cascade:ClinicalNoteOrDocument ;
+    cascade:noteOrDocumentTypeName ?name ;
+    cascade:noteOrDocumentType ?type ;
+    cascade:noteOrDocumentTypeInOtherSystem ?otherType ;
+    cascade:noteOrDocumentTitle ?title ;
+    cascade:noteOrDocumentDate ?date ;
+    cascade:noteOrDocumentContentStatus ?contentStatus ;
+    cascade:narrativeText ?text ;
+    prov:wasAttributedTo ?organization ;
+    cascade:workflowStatus ?status ;
+    cascade:leadMember ?lead ;
+    cascade:statusFrom ?statusFrom ;
+    cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:noteOrDocumentTypeName ?memberNoteOrDocumentTypeName ;
+    cascade:noteOrDocumentType ?memberNoteOrDocumentType ;
+    cascade:noteOrDocumentTypeInOtherSystem ?memberNoteOrDocumentTypeInOtherSystem ;
+    cascade:noteOrDocumentTitle ?memberNoteOrDocumentTitle ;
+    cascade:noteOrDocumentDate ?memberNoteOrDocumentDate ;
+    cascade:noteOrDocumentContentStatus ?memberNoteOrDocumentContentStatus ;
+    cascade:narrativeText ?memberNarrativeText ;
+    prov:wasAttributedTo ?memberWasAttributedTo ;
+    cascade:workflowStatus ?memberWorkflowStatus .
+  ?entry cascade:paddedDateTime ?datePadded .
+  ?datePadded cascade:paddedDateTimeProperty cascade:noteOrDocumentDate ; cascade:writtenDate ?dateWritten .
+  ?memberValues cascade:paddedDateTime ?memberPadded .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
+}
+WHERE {
+  { ?record a cascade:ClinicalNoteOrDocument ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTypeName ?name }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentType ?type }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTypeInOtherSystem ?otherType }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTitle ?title }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentDate ?date }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentContentStatus ?contentStatus }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:narrativeText ?text }
+    OPTIONAL { ?lead pav:hasCurrentVersion/prov:wasAttributedTo ?organization }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
+               ?datePaddedAt cascade:paddedDateTimeProperty cascade:noteOrDocumentDate ; cascade:writtenDate ?dateWritten }
+    BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-noteOrDocumentDate")), 1/0) AS ?datePadded) }
+  UNION
+  { ?member a cascade:ClinicalNoteOrDocument ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:noteOrDocumentTypeName ?memberNoteOrDocumentTypeName }
+    OPTIONAL { ?memberVersion cascade:noteOrDocumentType ?memberNoteOrDocumentType }
+    OPTIONAL { ?memberVersion cascade:noteOrDocumentTypeInOtherSystem ?memberNoteOrDocumentTypeInOtherSystem }
+    OPTIONAL { ?memberVersion cascade:noteOrDocumentTitle ?memberNoteOrDocumentTitle }
+    OPTIONAL { ?memberVersion cascade:noteOrDocumentDate ?memberNoteOrDocumentDate }
+    OPTIONAL { ?memberVersion cascade:noteOrDocumentContentStatus ?memberNoteOrDocumentContentStatus }
+    OPTIONAL { ?memberVersion cascade:narrativeText ?memberNarrativeText }
+    OPTIONAL { ?memberVersion prov:wasAttributedTo ?memberWasAttributedTo }
+    OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
+    OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+    BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
+          AS ?memberPadded) }
+}

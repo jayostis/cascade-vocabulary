@@ -221,6 +221,8 @@ def test_each_kind_refuses_as_a_code_in_another_system_exactly_the_systems_it_ho
         cascade.conditionCodeInOtherSystem: {cascade.icd10Code: (cascade.ICD10CM,), cascade.snomedCode: (cascade.SNOMEDCT,)},
         cascade.procedureCodeInOtherSystem: {cascade.cptCode: (cascade.CPT,), cascade.snomedCode: (cascade.SNOMEDCT,)},
         cascade.dosageRouteCodeInOtherSystem: {cascade.dosageRouteCode: (cascade.SNOMEDCT,)},
+        cascade.reportCodeInOtherSystem: {cascade.reportCode: (cascade.LOINC, cascade.SNOMEDCT)},
+        cascade.noteOrDocumentTypeInOtherSystem: {cascade.noteOrDocumentType: (cascade.LOINC,)},
     }
 
     def refused(path):

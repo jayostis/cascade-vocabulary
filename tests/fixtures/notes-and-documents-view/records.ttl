@@ -1,0 +1,34 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:clinic a cascade:Organization .
+:clinicVersion prov:specializationOf :clinic ; foaf:name "Fernhill Clinic" .
+:clinicRevision a cascade:Revision ; cascade:revisionOf :clinic ; cascade:version :clinicVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:summary a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:agent :clinic ; prov:hadRole cascade:AuthorRole ] .
+
+:progress a cascade:ClinicalNoteOrDocument .
+:progressVersion prov:specializationOf :progress ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ; cascade:noteOrDocumentTitle "Follow-up visit" ;
+    cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ; cascade:noteOrDocumentContentStatus "final" ;
+    cascade:workflowStatus "current" ;
+    cascade:narrativeText "Lung nodule, 6 mm, right upper lobe.\nRepeat chest CT in 12 months." ; prov:wasAttributedTo :clinic .
+:progressRevision a cascade:Revision ; cascade:revisionOf :progress ; cascade:version :progressVersion ; prov:wasDerivedFrom :summary ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:plan a cascade:ClinicalNoteOrDocument .
+:planVersion prov:specializationOf :plan ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Plan of care note" ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:noteOrDocumentTypeInOtherSystem "PLAN"^^<urn:oid:2.16.840.1.113883.19.6> ;
+    cascade:noteOrDocumentDate "2025-02-01"^^xsd:date ; cascade:workflowStatus "current" .
+:planRevision a cascade:Revision ; cascade:revisionOf :plan ; cascade:version :planVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+

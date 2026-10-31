@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "notes-and-documents-view" ;
+  rdfs:comment "A final progress note with its title, text and clinic, from a summary its clinic wrote; and a plan of care note the person entered, its type coded in LOINC and in a clinic's own system." ;
+  mf:entries (
+    <#the-notes-and-documents-view>
+  ) .
+
+<#the-notes-and-documents-view> a mf:QueryEvaluationTest ;
+  mf:name "the-notes-and-documents-view" ;
+  rdfs:comment "Each entry takes the type, type name, title, date, content status, text and clinic of its lead and the status of the member chosen for status." ;
+  mf:action [ qt:query <the-notes-and-documents-view.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-notes-and-documents-view.srj> .

@@ -96,6 +96,7 @@ brought to it on 2026-10-22 under #202:
 - [`version-content.md`](version-content.md): what a version's clinical content is, what rules read, and what to borrow from FHIR for the care-gap epic.
 - [`clinical-terms-follow-fhir.md`](clinical-terms-follow-fhir.md): which standard a clinical term starts from, and what a departure costs.
 - [`readings-and-care-hypotheses.md`](readings-and-care-hypotheses.md): what a maker concludes that is not a verdict: readings of text, care hypotheses and the person's responses.
+- [`reports-and-notes.md`](reports-and-notes.md): which records a diagnostic report and a clinical note or document make, from FHIR and C-CDA, and what each version holds.
 - [`medical-knowledge-in-the-model.md`](medical-knowledge-in-the-model.md): why no care rule is in the vocabulary, and what a pod gives a model looking for care gaps instead.
 - [`scoped-absence.md`](scoped-absence.md): which kinds of record a pull's source answered for and which it refused, so that "not found" can say where it looked.
 - [`medications.md`](medications.md): each copy of a medication's own lifecycle, and how long it was taken, as `CumulativeMedicationDuration` defines exposure.

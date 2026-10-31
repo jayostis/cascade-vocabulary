@@ -1,0 +1,99 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:clinic a cascade:Organization .
+:clinicVersion prov:specializationOf :clinic ; foaf:name "Fernhill Clinic" .
+:clinicRevision a cascade:Revision ; cascade:revisionOf :clinic ; cascade:version :clinicVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:exchange a cascade:Organization .
+:exchangeVersion prov:specializationOf :exchange ; foaf:name "Bay Area Health Exchange" .
+:exchangeRevision a cascade:Revision ; cascade:revisionOf :exchange ; cascade:version :exchangeVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:hospital a cascade:Organization .
+:hospitalVersion prov:specializationOf :hospital ; foaf:name "Kestrel Harbor Hospital" .
+:hospitalRevision a cascade:Revision ; cascade:revisionOf :hospital ; cascade:version :hospitalVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:summary a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:agent :clinic ; prov:hadRole cascade:AuthorRole ] ,
+                              [ prov:agent :exchange ; prov:hadRole cascade:CustodianRole ] .
+:visit a prov:Entity ; pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAttribution [ prov:agent :hospital ; prov:hadRole cascade:AuthorRole ] .
+
+:progress a cascade:ClinicalNoteOrDocument .
+:progressVersion prov:specializationOf :progress ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ; cascade:noteOrDocumentTitle "Follow-up visit" ;
+    cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ; cascade:workflowStatus "current" ;
+    cascade:noteOrDocumentContentStatus "final" ; cascade:narrativeText "Lung nodule, 6 mm, right upper lobe.\nRepeat chest CT in 12 months." .
+:progressRevision a cascade:Revision ; cascade:revisionOf :progress ; cascade:version :progressVersion ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:progressCopy a cascade:ClinicalNoteOrDocument .
+:progressCopyVersion prov:specializationOf :progressCopy ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ; cascade:noteOrDocumentTitle "Follow-up visit" ;
+    cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ; cascade:workflowStatus "current" ;
+    cascade:noteOrDocumentContentStatus "final" ; cascade:narrativeText "Lung nodule, 6 mm, right upper lobe.\nRepeat chest CT in 12 months." .
+:progressCopyRevision a cascade:Revision ; cascade:revisionOf :progressCopy ; cascade:version :progressCopyVersion ; prov:wasDerivedFrom :visit ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:plan a cascade:ClinicalNoteOrDocument .
+:planVersion prov:specializationOf :plan ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Plan of care note" ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
+    cascade:noteOrDocumentTypeInOtherSystem "PLAN"^^<urn:oid:2.16.840.1.113883.19.6> ;
+    cascade:noteOrDocumentDate "2025-02-01"^^xsd:date ; cascade:workflowStatus "current" ; cascade:noteOrDocumentContentStatus "preliminary" .
+:planRevision a cascade:Revision ; cascade:revisionOf :plan ; cascade:version :planVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:hemoglobin a cascade:LaboratoryTestResult .
+:hemoglobinVersion prov:specializationOf :hemoglobin ; cascade:patient :subject ; cascade:testName "Hemoglobin" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "12.9" ; cascade:resultUnit "g/dL" ;
+    cascade:referenceRange "13.5-17.5 g/dL" ;
+    cascade:resultInterpretationCode <https://ns.cascadeprotocol.org/codes/observationinterpretation/L> .
+:hemoglobinRevision a cascade:Revision ; cascade:revisionOf :hemoglobin ; cascade:version :hemoglobinVersion ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:mcv a cascade:LaboratoryTestResult .
+:mcvVersion prov:specializationOf :mcv ; cascade:patient :subject ; cascade:testName "MCV" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "101" ; cascade:resultUnit "fL" ;
+    cascade:resultInterpretationCode <https://ns.cascadeprotocol.org/codes/observationinterpretation/H> ,
+                                     <https://ns.cascadeprotocol.org/codes/observationinterpretation/A> .
+:mcvRevision a cascade:Revision ; cascade:revisionOf :mcv ; cascade:version :mcvVersion ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:cbc a cascade:DiagnosticReport .
+:cbcVersion prov:specializationOf :cbc ; cascade:patient :subject ; cascade:reportName "CBC panel - Blood by Automated count" ;
+    cascade:reportCode <http://loinc.org/rdf/58410-2> ; cascade:reportCodeInOtherSystem "CBC"^^<urn:oid:2.16.840.1.113883.19.5> ;
+    cascade:reportEffectiveTime "2025-04-02T08:30:00Z"^^xsd:dateTime ; cascade:reportIssuedTime "2025-04-02T12:00:00Z"^^xsd:dateTime ;
+    cascade:reportConclusion "Mild anaemia, large red cells." ; cascade:workflowStatus "final" ; obo:RO_0002351 :hemoglobin , :mcv .
+:cbcRevision a cascade:Revision ; cascade:revisionOf :cbc ; cascade:version :cbcVersion ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:cobalamin a cascade:DiagnosticReport .
+:cobalaminVersion prov:specializationOf :cobalamin ; cascade:patient :subject ; cascade:reportName "Cobalamin" ;
+    cascade:reportCode <http://loinc.org/rdf/2132-9> ; cascade:reportIssuedTime "2025-03-15T09:00:00Z"^^xsd:dateTime ;
+    cascade:workflowStatus "final" ; cascade:attachment <urn:x:cobalaminVersion#attachment-1> .
+<urn:x:cobalaminVersion#attachment-1> cascade:attachmentContentType "application/pdf" ; cascade:attachmentTitle "Vitamin B12 report" .
+:cobalaminRevision a cascade:Revision ; cascade:revisionOf :cobalamin ; cascade:version :cobalaminVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:glucose0 a cascade:LaboratoryTestResult .
+:glucose0Version prov:specializationOf :glucose0 ; cascade:patient :subject ; cascade:testName "Glucose" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "95" ; cascade:resultUnit "mg/dL" .
+:glucose0Revision a cascade:Revision ; cascade:revisionOf :glucose0 ; cascade:version :glucose0Version ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:glucose1 a cascade:LaboratoryTestResult .
+:glucose1Version prov:specializationOf :glucose1 ; cascade:patient :subject ; cascade:testName "Glucose" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "180" ; cascade:resultUnit "mg/dL" ;
+    cascade:resultInterpretationCode <https://ns.cascadeprotocol.org/codes/observationinterpretation/H> .
+:glucose1Revision a cascade:Revision ; cascade:revisionOf :glucose1 ; cascade:version :glucose1Version ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:glucose2 a cascade:LaboratoryTestResult .
+:glucose2Version prov:specializationOf :glucose2 ; cascade:patient :subject ; cascade:testName "Glucose" ;
+    cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "181" ; cascade:resultUnit "mg/dL" ;
+    cascade:resultInterpretationCode <https://ns.cascadeprotocol.org/codes/observationinterpretation/H> .
+:glucose2Revision a cascade:Revision ; cascade:revisionOf :glucose2 ; cascade:version :glucose2Version ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:tolerance a cascade:DiagnosticReport .
+:toleranceVersion prov:specializationOf :tolerance ; cascade:patient :subject ; cascade:reportName "Glucose tolerance, 2 hours" ;
+    cascade:reportEffectiveTime "2025-04-20T07:00:00Z"^^xsd:dateTime ; cascade:workflowStatus "final" ;
+    obo:RO_0002351 :glucose0 , :glucose1 , :glucose2 .
+:toleranceRevision a cascade:Revision ; cascade:revisionOf :tolerance ; cascade:version :toleranceVersion ; prov:wasDerivedFrom :summary ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

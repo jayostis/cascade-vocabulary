@@ -1,0 +1,87 @@
+# Each entry takes the name, codes, categories, time, time issued, conclusion, conclusion codes, text and organization
+# of its lead, the status of the member chosen for status, and the entry of each result the lead names: its version names result
+# records, and each result's entry is the one that record is in, none when the record is in no entry. The organization is
+# the record itself, not an entry. Each member's current values are a node of the view of their own, named after the
+# entry and the member, which says the member they came from and names its results by their records. A time its source
+# wrote short of the second keeps the node saying so (cascade:PaddedDateTime), named after the entry or the member's
+# values and -padded-, so the view never shows a padded time as exact. An attachment stays a node of its version.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT {
+  ?entry a cascade:DiagnosticReport ;
+    cascade:reportName ?name ;
+    cascade:reportCode ?code ;
+    cascade:reportCodeInOtherSystem ?otherCode ;
+    cascade:reportCategory ?category ;
+    cascade:reportEffectiveTime ?date ;
+    cascade:reportIssuedTime ?issued ;
+    cascade:reportConclusion ?conclusion ;
+    cascade:reportConclusionCode ?conclusionCode ;
+    cascade:narrativeText ?text ;
+    obo:RO_0002351 ?resultEntry ;
+    prov:wasAttributedTo ?organization ;
+    cascade:workflowStatus ?status ;
+    cascade:leadMember ?lead ;
+    cascade:statusFrom ?statusFrom ;
+    cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:reportName ?memberReportName ;
+    cascade:reportCode ?memberReportCode ;
+    cascade:reportCodeInOtherSystem ?memberReportCodeInOtherSystem ;
+    cascade:reportCategory ?memberReportCategory ;
+    cascade:reportEffectiveTime ?memberReportEffectiveTime ;
+    cascade:reportIssuedTime ?memberReportIssuedTime ;
+    cascade:reportConclusion ?memberReportConclusion ;
+    cascade:reportConclusionCode ?memberReportConclusionCode ;
+    cascade:narrativeText ?memberNarrativeText ;
+    obo:RO_0002351 ?memberResult ;
+    prov:wasAttributedTo ?memberWasAttributedTo ;
+    cascade:workflowStatus ?memberWorkflowStatus .
+  ?entry cascade:paddedDateTime ?datePadded .
+  ?datePadded cascade:paddedDateTimeProperty cascade:reportEffectiveTime ; cascade:writtenDate ?dateWritten .
+  ?memberValues cascade:paddedDateTime ?memberPadded .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
+}
+WHERE {
+  { ?record a cascade:DiagnosticReport ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportName ?name }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportCode ?code }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportCodeInOtherSystem ?otherCode }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportCategory ?category }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportEffectiveTime ?date }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportIssuedTime ?issued }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportConclusion ?conclusion }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reportConclusionCode ?conclusionCode }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:narrativeText ?text }
+    OPTIONAL { ?lead pav:hasCurrentVersion/obo:RO_0002351/cascade:inEntry ?resultEntry }
+    OPTIONAL { ?lead pav:hasCurrentVersion/prov:wasAttributedTo ?organization }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
+               ?datePaddedAt cascade:paddedDateTimeProperty cascade:reportEffectiveTime ; cascade:writtenDate ?dateWritten }
+    BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-reportEffectiveTime")), 1/0) AS ?datePadded) }
+  UNION
+  { ?member a cascade:DiagnosticReport ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:reportName ?memberReportName }
+    OPTIONAL { ?memberVersion cascade:reportCode ?memberReportCode }
+    OPTIONAL { ?memberVersion cascade:reportCodeInOtherSystem ?memberReportCodeInOtherSystem }
+    OPTIONAL { ?memberVersion cascade:reportCategory ?memberReportCategory }
+    OPTIONAL { ?memberVersion cascade:reportEffectiveTime ?memberReportEffectiveTime }
+    OPTIONAL { ?memberVersion cascade:reportIssuedTime ?memberReportIssuedTime }
+    OPTIONAL { ?memberVersion cascade:reportConclusion ?memberReportConclusion }
+    OPTIONAL { ?memberVersion cascade:reportConclusionCode ?memberReportConclusionCode }
+    OPTIONAL { ?memberVersion cascade:narrativeText ?memberNarrativeText }
+    OPTIONAL { ?memberVersion obo:RO_0002351 ?memberResult }
+    OPTIONAL { ?memberVersion prov:wasAttributedTo ?memberWasAttributedTo }
+    OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
+    OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+    BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
+          AS ?memberPadded) }
+}

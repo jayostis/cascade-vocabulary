@@ -19,6 +19,8 @@ WHERE {
     (cascade:LaboratoryTestResult           "Lab result"   cascade:testName                false cascade:resultClinicallyRelevantTime UNDEF)
     (cascade:GeneticVariantFinding          "Variant"      cascade:hgvsCodingDnaExpression false UNDEF UNDEF)
     (cascade:VariantInterpretation "Variant interpretation" UNDEF                          false cascade:interpretedDate UNDEF)
+    (cascade:DiagnosticReport               "Report"       cascade:reportName              false cascade:reportEffectiveTime UNDEF)
+    (cascade:ClinicalNoteOrDocument "Note or document" cascade:noteOrDocumentTypeName      false cascade:noteOrDocumentDate UNDEF)
   }
   ?record a ?type .
   OPTIONAL { ?version prov:specializationOf ?record }
