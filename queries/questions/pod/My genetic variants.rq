@@ -12,16 +12,19 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT DISTINCT ?variant ?gene ?hgvs ?variation ?sources
 WHERE {
-  { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:hgvsCodingDnaExpression ?hgvs .
-    OPTIONAL { ?variant cascade:geneSymbol ?gene } }
-  UNION
-  { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:clinvarVariationId ?variation .
-    OPTIONAL { ?variant cascade:geneSymbol ?gene } }
-  UNION
-  { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] .
-    OPTIONAL { ?variant cascade:geneSymbol ?gene }
-    FILTER NOT EXISTS { ?variant cascade:hgvsCodingDnaExpression [] }
-    FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] } }
+  { SELECT ?variant ?gene ?hgvs ?variation
+    WHERE {
+      { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:hgvsCodingDnaExpression ?hgvs .
+        OPTIONAL { ?variant cascade:geneSymbol ?gene } }
+      UNION
+      { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:clinvarVariationId ?variation .
+        OPTIONAL { ?variant cascade:geneSymbol ?gene } }
+      UNION
+      { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] .
+        OPTIONAL { ?variant cascade:geneSymbol ?gene }
+        FILTER NOT EXISTS { ?variant cascade:hgvsCodingDnaExpression [] }
+        FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] } }
+    } }
   { SELECT ?variant (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
     WHERE {
       { SELECT ?variant ?sourceText

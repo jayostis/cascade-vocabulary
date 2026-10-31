@@ -13,28 +13,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?condition ?snomed ?icd10 ?onset (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
-  ?entry a cascade:ProblemOrDiagnosis ; cascade:clinicalStatus "active" ;
-         cascade:conditionName ?condition ; cascade:mergedFrom ?record .
-  OPTIONAL {
-    ?entry cascade:snomedCode ?writtenSnomed .
-    FILTER NOT EXISTS {
-      ?entry cascade:snomedCode ?earlierSnomed .
-      FILTER (STR(?earlierSnomed) < STR(?writtenSnomed))
-    }
-    BIND (IF(isIRI(?writtenSnomed), ?writtenSnomed,
-             IRI(CONCAT("http://snomed.info/id/", ENCODE_FOR_URI(STR(?writtenSnomed))))) AS ?snomed)
-  }
-  OPTIONAL {
-    ?entry cascade:icd10Code ?writtenIcd10 .
-    FILTER NOT EXISTS {
-      ?entry cascade:icd10Code ?earlierIcd10 .
-      FILTER (STR(?earlierIcd10) < STR(?writtenIcd10))
-    }
-    BIND (IF(isIRI(?writtenIcd10), ?writtenIcd10,
-             IRI(CONCAT("https://ns.cascadeprotocol.org/codes/icd10cm/", ENCODE_FOR_URI(STR(?writtenIcd10))))) AS ?icd10)
-  }
-  OPTIONAL { ?entry cascade:onsetDate ?onset }
-  OPTIONAL { ?entry rdfs:label ?entryLabel }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
     WHERE {
       { SELECT ?entry ?sourceText
@@ -65,6 +43,28 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
+  ?entry a cascade:ProblemOrDiagnosis ; cascade:clinicalStatus "active" ;
+         cascade:conditionName ?condition ; cascade:mergedFrom ?record .
+  OPTIONAL {
+    ?entry cascade:snomedCode ?writtenSnomed .
+    FILTER NOT EXISTS {
+      ?entry cascade:snomedCode ?earlierSnomed .
+      FILTER (STR(?earlierSnomed) < STR(?writtenSnomed))
+    }
+    BIND (IF(isIRI(?writtenSnomed), ?writtenSnomed,
+             IRI(CONCAT("http://snomed.info/id/", ENCODE_FOR_URI(STR(?writtenSnomed))))) AS ?snomed)
+  }
+  OPTIONAL {
+    ?entry cascade:icd10Code ?writtenIcd10 .
+    FILTER NOT EXISTS {
+      ?entry cascade:icd10Code ?earlierIcd10 .
+      FILTER (STR(?earlierIcd10) < STR(?writtenIcd10))
+    }
+    BIND (IF(isIRI(?writtenIcd10), ?writtenIcd10,
+             IRI(CONCAT("https://ns.cascadeprotocol.org/codes/icd10cm/", ENCODE_FOR_URI(STR(?writtenIcd10))))) AS ?icd10)
+  }
+  OPTIONAL { ?entry cascade:onsetDate ?onset }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
 }
 GROUP BY ?entry ?condition ?snomed ?icd10 ?onset ?entryLabel ?sources
 ORDER BY ?condition ?entry

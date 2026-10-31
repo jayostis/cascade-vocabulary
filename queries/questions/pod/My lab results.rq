@@ -13,23 +13,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?performed ?test ?code ?value ?unit ?status ?interpretations ?referenceRange ?referenceRangeLow ?referenceRangeHigh
        (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
-  ?entry a cascade:LaboratoryTestResult ; cascade:mergedFrom ?record .
-  OPTIONAL { ?entry cascade:resultClinicallyRelevantTime ?performed }
-  OPTIONAL { ?entry cascade:testName ?test }
-  OPTIONAL { ?entry cascade:testCode ?code }
-  OPTIONAL { ?entry cascade:resultValue ?value }
-  OPTIONAL { ?entry cascade:resultUnit ?unit }
-  OPTIONAL { ?entry cascade:workflowStatus ?status }
-  OPTIONAL { ?entry cascade:referenceRange ?referenceRange }
-  OPTIONAL { ?entry cascade:referenceRangeLow ?low .
-             ?low cascade:writtenValue ?lowWritten .
-             OPTIONAL { ?low cascade:unitText ?lowUnitText }
-             OPTIONAL { ?low cascade:ucumUnit ?lowUcum } }
-  OPTIONAL { ?entry cascade:referenceRangeHigh ?high .
-             ?high cascade:writtenValue ?highWritten .
-             OPTIONAL { ?high cascade:unitText ?highUnitText }
-             OPTIONAL { ?high cascade:ucumUnit ?highUcum } }
-  OPTIONAL { ?entry rdfs:label ?entryLabel }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?flag, "; "), ""); separator=""), "; $", "") AS ?flags)
     WHERE {
       { SELECT ?entry ?flag
@@ -71,6 +54,23 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
+  ?entry a cascade:LaboratoryTestResult ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:resultClinicallyRelevantTime ?performed }
+  OPTIONAL { ?entry cascade:testName ?test }
+  OPTIONAL { ?entry cascade:testCode ?code }
+  OPTIONAL { ?entry cascade:resultValue ?value }
+  OPTIONAL { ?entry cascade:resultUnit ?unit }
+  OPTIONAL { ?entry cascade:workflowStatus ?status }
+  OPTIONAL { ?entry cascade:referenceRange ?referenceRange }
+  OPTIONAL { ?entry cascade:referenceRangeLow ?low .
+             ?low cascade:writtenValue ?lowWritten .
+             OPTIONAL { ?low cascade:unitText ?lowUnitText }
+             OPTIONAL { ?low cascade:ucumUnit ?lowUcum } }
+  OPTIONAL { ?entry cascade:referenceRangeHigh ?high .
+             ?high cascade:writtenValue ?highWritten .
+             OPTIONAL { ?high cascade:unitText ?highUnitText }
+             OPTIONAL { ?high cascade:ucumUnit ?highUcum } }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
   BIND (IF(?flags = "", 1/0, ?flags) AS ?interpretations)
   BIND (CONCAT(?lowWritten, COALESCE(CONCAT(" ", COALESCE(?lowUnitText, ?lowUcum)), "")) AS ?referenceRangeLow)
   BIND (CONCAT(?highWritten, COALESCE(CONCAT(" ", COALESCE(?highUnitText, ?highUcum)), "")) AS ?referenceRangeHigh)

@@ -13,8 +13,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?subject ?subjectLabel ?dateOfBirth ?administrativeGender ?deceased ?dateOfDeath ?sources
 WHERE {
-  ?subject a cascade:Subject .
-  OPTIONAL { ?subject rdfs:label ?subjectLabel }
   { SELECT ?subject
            (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?birthText, "; "), ""); separator=""), "; $", "") AS ?births)
            (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?genderText, "; "), ""); separator=""), "; $", "") AS ?genders)
@@ -42,16 +40,18 @@ WHERE {
         ORDER BY ?subject ?profile }
     }
     GROUP BY ?subject }
-  OPTIONAL {
-    { SELECT ?subject (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
-      WHERE {
-        { SELECT ?subject ?sourceText
-          WHERE {
-            { SELECT ?subject ?sourceRecord ?document ?retrievedOn
-                     (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, ", "), ""); separator=""), ", $", "") AS ?hospitals)
-              WHERE {
-                { SELECT ?subject ?sourceRecord ?document ?retrievedOn ?hospital
-                  WHERE {
+  { SELECT ?subject (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?sourceText, "; "), ""); separator=""), "; $", "")
+                     AS ?allSources)
+    WHERE {
+      { SELECT ?subject ?sourceText
+        WHERE {
+          { SELECT ?subject ?sourceRecord ?document ?retrievedOn
+                   (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, ", "), ""); separator=""), ", $", "") AS ?hospitals)
+            WHERE {
+              { SELECT ?subject ?sourceRecord ?document ?retrievedOn ?hospital
+                WHERE {
+                  ?subject a cascade:Subject .
+                  OPTIONAL {
                     ?about cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?sourceRecord ;
                            cascade:subject ?subject .
                     ?entry a cascade:PatientProfile ; cascade:mergedFrom ?sourceRecord .
@@ -65,20 +65,23 @@ WHERE {
                                           BIND (CONCAT(IF(?hospitalRole = cascade:AuthorRole, "written by ", "kept by "),
                                                        COALESCE(?agentLabel, ?agentName)) AS ?hospital) } }
                   }
-                  ORDER BY ?subject ?sourceRecord ?document ?hospital }
-              }
-              GROUP BY ?subject ?sourceRecord ?document ?retrievedOn }
-            BIND (CONCAT(STR(?sourceRecord), COALESCE(CONCAT(" from ", STR(?document)), ""),
-                         COALESCE(CONCAT(", retrieved ", STR(?retrievedOn)), ""),
-                         IF(?hospitals = "", "", CONCAT(", ", ?hospitals))) AS ?sourceText)
-          }
-          ORDER BY ?subject ?sourceText }
-      }
-      GROUP BY ?subject }
-  }
+                }
+                ORDER BY ?subject ?sourceRecord ?document ?hospital }
+            }
+            GROUP BY ?subject ?sourceRecord ?document ?retrievedOn }
+          BIND (CONCAT(STR(?sourceRecord), COALESCE(CONCAT(" from ", STR(?document)), ""),
+                       COALESCE(CONCAT(", retrieved ", STR(?retrievedOn)), ""),
+                       IF(?hospitals = "", "", CONCAT(", ", ?hospitals))) AS ?sourceText)
+        }
+        ORDER BY ?subject ?sourceText }
+    }
+    GROUP BY ?subject }
+  ?subject a cascade:Subject .
+  OPTIONAL { ?subject rdfs:label ?subjectLabel }
   BIND (IF(?births = "", 1/0, ?births) AS ?dateOfBirth)
   BIND (IF(?genders = "", 1/0, ?genders) AS ?administrativeGender)
   BIND (IF(?deaths = "", 1/0, ?deaths) AS ?deceased)
   BIND (IF(?deathDates = "", 1/0, ?deathDates) AS ?dateOfDeath)
+  BIND (IF(?allSources = "", 1/0, ?allSources) AS ?sources)
 }
 ORDER BY ?subject

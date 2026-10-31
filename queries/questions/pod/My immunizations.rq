@@ -11,12 +11,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?given ?vaccine ?code ?status (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
-  ?entry a cascade:Vaccination ; cascade:mergedFrom ?record .
-  OPTIONAL { ?entry cascade:vaccinationOccurrenceTime ?given }
-  OPTIONAL { ?entry cascade:vaccineName ?vaccine }
-  OPTIONAL { ?entry cascade:vaccineCode ?code }
-  OPTIONAL { ?entry cascade:workflowStatus ?status }
-  OPTIONAL { ?entry rdfs:label ?entryLabel }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
     WHERE {
       { SELECT ?entry ?sourceText
@@ -47,6 +41,12 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
+  ?entry a cascade:Vaccination ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:vaccinationOccurrenceTime ?given }
+  OPTIONAL { ?entry cascade:vaccineName ?vaccine }
+  OPTIONAL { ?entry cascade:vaccineCode ?code }
+  OPTIONAL { ?entry cascade:workflowStatus ?status }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
 }
 GROUP BY ?entry ?given ?vaccine ?code ?status ?entryLabel ?sources
 ORDER BY DESC(COALESCE(STR(?given), "")) ?vaccine ?entry

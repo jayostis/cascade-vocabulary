@@ -12,12 +12,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?allergen ?code ?criticality ?reactions ?reactionCodes ?severity (COUNT(?record) AS ?records) ?entry ?entryLabel
        ?sources
 WHERE {
-  ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" ;
-         cascade:allergen ?allergen ; cascade:mergedFrom ?record .
-  OPTIONAL { ?entry cascade:allergenCode ?code }
-  OPTIONAL { ?entry cascade:allergyCriticality ?criticality }
-  OPTIONAL { ?entry cascade:allergySeverity ?severity }
-  OPTIONAL { ?entry rdfs:label ?entryLabel }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?reaction, "; "), ""); separator=""), "; $", "") AS ?allReactions)
     WHERE {
       { SELECT ?entry ?reaction
@@ -69,6 +63,12 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
+  ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" ;
+         cascade:allergen ?allergen ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:allergenCode ?code }
+  OPTIONAL { ?entry cascade:allergyCriticality ?criticality }
+  OPTIONAL { ?entry cascade:allergySeverity ?severity }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
   BIND (IF(?allReactions = "", 1/0, ?allReactions) AS ?reactions)
   BIND (IF(?allReactionCodes = "", 1/0, ?allReactionCodes) AS ?reactionCodes)
 }

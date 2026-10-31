@@ -17,25 +17,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?medication ?code ?started ?written ?statuses (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
-  {
-    SELECT ?entry (COUNT(DISTINCT ?candidate) AS ?candidates) (SAMPLE(?candidate) AS ?only)
-    WHERE {
-      ?entry a cascade:PrescribedOrReportedMedication .
-      OPTIONAL {
-        ?entry cascade:rxNormCode ?written .
-        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?candidate)
-      }
-    }
-    GROUP BY ?entry
-  }
-  ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
-         cascade:drugName ?medication ; cascade:mergedFrom ?record .
-  OPTIONAL { ?entry cascade:userSelectedCode ?chosen }
-  OPTIONAL { ?entry cascade:medicationUseStartDate ?started }
-  OPTIONAL { ?entry cascade:prescriptionWrittenDate ?written }
-  OPTIONAL { ?entry rdfs:label ?entryLabel }
-  BIND (COALESCE(IF(STRSTARTS(STR(?chosen), "https://ns.cascadeprotocol.org/codes/rxnorm/"), ?chosen, ?nothing),
-                 IF(?candidates = 1, ?only, ?nothing)) AS ?code)
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "; "); separator=""), "; $", "") AS ?statuses)
     WHERE {
       { SELECT ?entry ?statusText
@@ -82,6 +63,25 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
+  {
+    SELECT ?entry (COUNT(DISTINCT ?candidate) AS ?candidates) (SAMPLE(?candidate) AS ?only)
+    WHERE {
+      ?entry a cascade:PrescribedOrReportedMedication .
+      OPTIONAL {
+        ?entry cascade:rxNormCode ?written .
+        BIND (IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))) AS ?candidate)
+      }
+    }
+    GROUP BY ?entry
+  }
+  ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
+         cascade:drugName ?medication ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:userSelectedCode ?chosen }
+  OPTIONAL { ?entry cascade:medicationUseStartDate ?started }
+  OPTIONAL { ?entry cascade:prescriptionWrittenDate ?written }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+  BIND (COALESCE(IF(STRSTARTS(STR(?chosen), "https://ns.cascadeprotocol.org/codes/rxnorm/"), ?chosen, ?nothing),
+                 IF(?candidates = 1, ?only, ?nothing)) AS ?code)
 }
 GROUP BY ?entry ?medication ?code ?started ?written ?entryLabel ?statuses ?sources
 ORDER BY ?medication ?entry
