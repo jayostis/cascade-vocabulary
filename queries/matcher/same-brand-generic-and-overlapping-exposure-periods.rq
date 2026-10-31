@@ -1,9 +1,12 @@
 # Two records of one kind match when their current versions give two different RxNorm codes that one version of a brand
-# generics table joins: a brand and its generic, either way round, or two brands of one generic. The table holds only
-# branded products mapped to their generics (SBD to SCD, BPCK to GPCK), so no ingredient is read as a generic. Records
-# that share a code are left out, so no pair is judged by this rule and by the rule that joins records by a shared code.
-# Each ordered pair is a row, with the version whose rows joined it; a graph that is not a version of a brand generics
-# table is never read for rows.
+# generics table joins, a brand and its generic, either way round, or two brands of one generic, and their exposure
+# periods share at least one day, so a brand taken in one year and its generic years later stay two medications
+# (decisions/medication-matching.md). The table holds only branded products mapped to their generics (SBD to SCD, BPCK
+# to GPCK), so no ingredient is read as a generic. A period runs from cascade:medicationExposureStart to
+# cascade:medicationExposureEnd, both days included; with no end it runs on when the record's exposure is ongoing, and
+# is its start day alone otherwise. A record with no exposure start matches nothing. Records that share a code are left
+# out, so no pair is judged by this rule and by a rule that joins records by a shared code. Each ordered pair is a row,
+# with the version whose rows joined it; a graph that is not a version of a brand generics table is never read for rows.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX pav: <http://purl.org/pav/>
@@ -12,7 +15,7 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 SELECT DISTINCT ?record ?other ?origin
 WHERE {
   ?origin prov:specializationOf/cascade:tableKind cascade:BrandGenerics .
-  ?record pav:hasCurrentVersion ?version .
+  ?record pav:hasCurrentVersion ?version ; cascade:medicationExposureStart ?start .
   ?version cascade:rxNormCode ?code .
   GRAPH ?origin {
     ?code ^owl:annotatedSource/owl:annotatedTarget
@@ -21,7 +24,7 @@ WHERE {
   }
   FILTER (!sameTerm(?code, ?otherCode))
   ?otherVersion cascade:rxNormCode ?otherCode .
-  ?other pav:hasCurrentVersion ?otherVersion .
+  ?other pav:hasCurrentVersion ?otherVersion ; cascade:medicationExposureStart ?otherStart .
   ?record cascade:recordKind ?kind .
   ?other cascade:recordKind ?otherKind .
   FILTER (?record != ?other && sameTerm(?kind, ?otherKind))
@@ -29,4 +32,10 @@ WHERE {
     ?version cascade:rxNormCode|cascade:ndcCode ?shared .
     ?otherVersion cascade:rxNormCode|cascade:ndcCode ?shared
   }
+  OPTIONAL { ?record cascade:medicationExposureEnd ?end }
+  OPTIONAL { ?record cascade:medicationExposureOngoing ?ongoing }
+  OPTIONAL { ?other cascade:medicationExposureEnd ?otherEnd }
+  OPTIONAL { ?other cascade:medicationExposureOngoing ?otherOngoing }
+  FILTER (STR(?start) <= COALESCE(STR(?otherEnd), IF(BOUND(?otherOngoing), "9999-12-31", STR(?otherStart)))
+          && STR(?otherStart) <= COALESCE(STR(?end), IF(BOUND(?ongoing), "9999-12-31", STR(?start))))
 }

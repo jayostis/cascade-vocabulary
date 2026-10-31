@@ -1,6 +1,10 @@
 # Two records of one kind match when their current versions share an RxNorm code that a version of a drug products table
-# lists, so the code names one drug product (SCD, SBD, GPCK or BPCK). Codings are equals: any shared product code
-# joins, and cascade:userSelectedCode plays no part. A retired product code still joins, since RxNorm never reuses a code.
+# lists, so the code names one drug product (SCD, SBD, GPCK or BPCK), and their exposure periods share at least one day,
+# so two courses of one product years apart stay two medications (decisions/medication-matching.md). A period runs from
+# cascade:medicationExposureStart to cascade:medicationExposureEnd, both days included; with no end it runs on when the
+# record's exposure is ongoing, and is its start day alone otherwise. A record with no exposure start matches nothing.
+# Codings are equals: any shared product code joins, and cascade:userSelectedCode plays no part. A retired product code
+# still joins, since RxNorm never reuses a code.
 # Left alone: a shared ingredient, strength, dose form, brand name or salt (IN, MIN, PIN, BN, SCDC, SCDF, SCDG and
 # their branded forms); a code no current version knows, which is every RxNorm code when no drug products table is
 # held; and a pair that shares an NDC, which the rule that joins by NDC has, so no pair is judged by both. A version
@@ -48,4 +52,12 @@ WHERE {
     ?version cascade:ndcCode ?shared .
     ?otherVersion cascade:ndcCode ?shared
   }
+  ?record cascade:medicationExposureStart ?start .
+  ?other cascade:medicationExposureStart ?otherStart .
+  OPTIONAL { ?record cascade:medicationExposureEnd ?end }
+  OPTIONAL { ?record cascade:medicationExposureOngoing ?ongoing }
+  OPTIONAL { ?other cascade:medicationExposureEnd ?otherEnd }
+  OPTIONAL { ?other cascade:medicationExposureOngoing ?otherOngoing }
+  FILTER (STR(?start) <= COALESCE(STR(?otherEnd), IF(BOUND(?otherOngoing), "9999-12-31", STR(?otherStart)))
+          && STR(?otherStart) <= COALESCE(STR(?end), IF(BOUND(?ongoing), "9999-12-31", STR(?start))))
 }
