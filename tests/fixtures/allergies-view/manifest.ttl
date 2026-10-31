@@ -28,7 +28,7 @@
 
 <#my-active-allergies> a mf:QueryEvaluationTest ;
   mf:name "my-active-allergies" ;
-  rdfs:comment "Only the active entry, with its code, its highest criticality, its lead's reactions, as text and as codes, and severity, how many records it joins, and each of them with its document, when that was retrieved and the hospital that wrote it; the one the person entered has none." ;
+  rdfs:comment "Only the active entry, with its code, its highest criticality, what each record it joins states of the reaction (texts, codes, severity), how many records it joins, and each of them with its document, when that was retrieved and the hospital that wrote it; the one the person entered has none." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20active%20allergies.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-active-allergies.srj> .
