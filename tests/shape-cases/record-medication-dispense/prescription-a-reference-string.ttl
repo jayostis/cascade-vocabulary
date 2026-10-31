@@ -1,0 +1,20 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:7a1d2c3e-1b0f-8d5e-9a41-0c6f2b8e4d14> a cascade:MedicationDispense .
+
+<ni:///sha-256;dispense-prescription-a-reference-string> prov:specializationOf <urn:uuid:7a1d2c3e-1b0f-8d5e-9a41-0c6f2b8e4d14> ;
+    cascade:patient :patient ;
+    cascade:drugName "metformin hydrochloride 500 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> ;
+    cascade:workflowStatus "completed" ;
+    cascade:dispenseHandedOverTime "2026-01-12T09:30:00Z"^^xsd:dateTime ;
+    cascade:dispensePreparedTime "2026-01-11T16:00:00Z"^^xsd:dateTime ;
+    cascade:authorizingPrescription "MedicationRequest/rx-1" ;
+    cascade:dispenseQuantity <ni:///sha-256;dispense-prescription-a-reference-string#dispense-quantity> ;
+    cascade:dispenseDaysSupply <ni:///sha-256;dispense-prescription-a-reference-string#dispense-days-supply> .
+<ni:///sha-256;dispense-prescription-a-reference-string#dispense-quantity> cascade:decimalValue "30"^^xsd:decimal ; cascade:writtenValue "30" ; cascade:unitText "tablets" .
+<ni:///sha-256;dispense-prescription-a-reference-string#dispense-days-supply> cascade:decimalValue "30"^^xsd:decimal ; cascade:writtenValue "30" ; cascade:ucumUnit "d" .

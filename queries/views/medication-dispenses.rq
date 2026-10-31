@@ -1,0 +1,78 @@
+# Each entry takes the name, every RxNorm code, every NDC code, every code in another system and the code the source
+# chose of its lead, the times it was prepared and handed over, and the entry of each prescription the lead names: its
+# version names medication records, and each prescription's entry is the one that record is in, none when the record is
+# in no entry. It takes the status of the member chosen for status and the lifecycle class of that status
+# (cascade:lifecycle), so an app reads whether it was handed over without reading the status. The quantity dispensed and
+# the days' supply stay nodes of the version. Each member's current values are a node of the view of their own, named
+# after the entry and the member, which says the member they came from and names its prescriptions by their records. A
+# time its source wrote short of the second keeps the node saying so (cascade:PaddedDateTime), named after the entry or
+# the member's values and -padded-, so the view never shows a padded time as exact.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+CONSTRUCT {
+  ?entry a cascade:MedicationDispense ;
+    cascade:drugName ?name ;
+    cascade:rxNormCode ?code ;
+    cascade:ndcCode ?ndc ;
+    cascade:medicationCodeInOtherSystem ?otherCode ;
+    cascade:userSelectedCode ?selected ;
+    cascade:dispensePreparedTime ?prepared ;
+    cascade:dispenseHandedOverTime ?handedOver ;
+    cascade:authorizingPrescription ?prescriptionEntry ;
+    cascade:workflowStatus ?status ;
+    cascade:lifecycle ?lifecycle ;
+    cascade:leadMember ?lead ;
+    cascade:statusFrom ?statusFrom ;
+    cascade:mergedFrom ?record .
+  ?entry cascade:memberCurrentValues ?memberValues .
+  ?memberValues cascade:valuesOfMember ?member ;
+    cascade:drugName ?memberDrugName ;
+    cascade:rxNormCode ?memberRxNormCode ;
+    cascade:ndcCode ?memberNdcCode ;
+    cascade:medicationCodeInOtherSystem ?memberMedicationCodeInOtherSystem ;
+    cascade:userSelectedCode ?memberUserSelectedCode ;
+    cascade:dispensePreparedTime ?memberDispensePreparedTime ;
+    cascade:dispenseHandedOverTime ?memberDispenseHandedOverTime ;
+    cascade:authorizingPrescription ?memberAuthorizingPrescription ;
+    cascade:workflowStatus ?memberWorkflowStatus .
+  ?entry cascade:paddedDateTime ?leadPadded .
+  ?leadPadded cascade:paddedDateTimeProperty ?leadPaddedProperty ; cascade:writtenDate ?leadWritten .
+  ?memberValues cascade:paddedDateTime ?memberPadded .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
+}
+WHERE {
+  { ?record a cascade:MedicationDispense ; cascade:inEntry ?entry .
+    ?entry cascade:leadMember ?lead .
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:drugName ?name }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:rxNormCode ?code }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:ndcCode ?ndc }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:medicationCodeInOtherSystem ?otherCode }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:userSelectedCode ?selected }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:dispensePreparedTime ?prepared }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:dispenseHandedOverTime ?handedOver }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:authorizingPrescription/cascade:inEntry ?prescriptionEntry }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
+               ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
+    OPTIONAL { ?entry cascade:statusLifecycle ?lifecycle }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?leadPaddedAt .
+               ?leadPaddedAt cascade:paddedDateTimeProperty ?leadPaddedProperty ; cascade:writtenDate ?leadWritten }
+    BIND (IF(BOUND(?leadWritten), IRI(CONCAT(STR(?entry), "-padded-", STRAFTER(STR(?leadPaddedProperty), "#"))), 1/0)
+          AS ?leadPadded) }
+  UNION
+  { ?member a cascade:MedicationDispense ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
+    BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
+    OPTIONAL { ?memberVersion cascade:drugName ?memberDrugName }
+    OPTIONAL { ?memberVersion cascade:rxNormCode ?memberRxNormCode }
+    OPTIONAL { ?memberVersion cascade:ndcCode ?memberNdcCode }
+    OPTIONAL { ?memberVersion cascade:medicationCodeInOtherSystem ?memberMedicationCodeInOtherSystem }
+    OPTIONAL { ?memberVersion cascade:userSelectedCode ?memberUserSelectedCode }
+    OPTIONAL { ?memberVersion cascade:dispensePreparedTime ?memberDispensePreparedTime }
+    OPTIONAL { ?memberVersion cascade:dispenseHandedOverTime ?memberDispenseHandedOverTime }
+    OPTIONAL { ?memberVersion cascade:authorizingPrescription ?memberAuthorizingPrescription }
+    OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
+    OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+    BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
+          AS ?memberPadded) }
+}

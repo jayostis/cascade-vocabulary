@@ -1117,6 +1117,53 @@ cascade:ClinicalNoteOrDocumentShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+cascade:MedicationDispenseShape a sh:NodeShape ;
+    sh:targetClass cascade:MedicationDispense ;
+    sh:targetSubjectsOf cascade:authorizingPrescription , cascade:dispensePreparedTime , cascade:dispenseHandedOverTime ,
+        cascade:dispenseQuantity , cascade:dispenseDaysSupply ;
+    sh:property [
+        sh:path cascade:workflowStatus ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:message "A medication dispense states at most one status"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:workflowStatus ;
+        sh:in ("preparation" "in-progress" "cancelled" "on-hold" "completed" "entered-in-error" "stopped" "declined" "unknown") ;
+        sh:message "A medication dispense's status should be a code of FHIR R4's MedicationDispense.status"@en ;
+        sh:severity sh:Warning
+    ] , [
+        sh:path cascade:authorizingPrescription ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A medication dispense names the prescription it fills by the IRI of that prescription's medication record"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dispensePreparedTime ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A medication dispense states at most one time it was prepared, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dispenseHandedOverTime ;
+        sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
+        sh:maxCount 1 ;
+        sh:message "A medication dispense states at most one time it was handed over, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dispenseQuantity ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:message "A medication dispense states at most one quantity dispensed, a quantity node of its version"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:dispenseDaysSupply ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:node cascade:DurationQuantityShape ;
+        sh:message "A medication dispense states at most one days' supply, a quantity node of its version in a UCUM unit of time"@en ;
+        sh:severity sh:Violation
+    ] .
+
 cascade:AttachmentShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:attachmentContentType , cascade:attachmentTitle , cascade:attachmentUrl ;
     sh:property [
@@ -1548,7 +1595,7 @@ cascade:PaddedDateTimeShape a sh:NodeShape ;
         sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
                 cascade:dispenseValidityPeriodStart cascade:dispenseValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
-                cascade:reportEffectiveTime cascade:noteOrDocumentDate ) ;
+                cascade:reportEffectiveTime cascade:noteOrDocumentDate cascade:dispensePreparedTime cascade:dispenseHandedOverTime ) ;
         sh:message "A padded time names the one property that holds it, a property whose value may be a time."@en ;
         sh:severity sh:Violation
     ] , [
@@ -1593,7 +1640,7 @@ cascade:ValueAbsentForReasonShape a sh:NodeShape ;
         sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
                 cascade:dispenseValidityPeriodStart cascade:dispenseValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
-                cascade:reportEffectiveTime cascade:reportIssuedTime cascade:noteOrDocumentDate
+                cascade:reportEffectiveTime cascade:reportIssuedTime cascade:noteOrDocumentDate cascade:dispensePreparedTime cascade:dispenseHandedOverTime
                 cascade:resultValueKind cascade:administrativeGender ) ;
         sh:message "A value absent for a reason names the one property it stands for, a date, a lab result's value kind or an administrative gender."@en ;
         sh:severity sh:Violation

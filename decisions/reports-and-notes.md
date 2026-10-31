@@ -1,13 +1,14 @@
 # Reports, notes and documents
 
-Status: draft, 2026-10-30, written with the terms it rules under phase 1 of the care-gap epic
+Status: accepted, 2026-10-31: the owner accepted the departure in row "a narrative-only section". Written 2026-10-30
+with the terms it rules under phase 1 of the care-gap epic
 ([#287](https://github.com/jayostis/cascade-vocabulary/issues/287), item 2,
 [#291](https://github.com/jayostis/cascade-vocabulary/issues/291), and the narrative text of
 [jayostis/cascade-bridge-adapter-ccda#50](https://github.com/jayostis/cascade-bridge-adapter-ccda/issues/50)). It is
 the area note `clinical-terms-follow-fhir.md` asks for: what a report and a note borrow from FHIR, and the one place they
 depart. Rows "report", "note or document", "a report's results", "a code", "an attachment" and "the text" only apply
-accepted rule (b) of `clinical-terms-follow-fhir.md`; row "a narrative-only section" is a departure from FHIR, which
-stays draft for the owner's ruling. It depends on `clinical-terms-follow-fhir.md`, `code-iris.md` (a coding in a system
+accepted rule (b) of `clinical-terms-follow-fhir.md`; row "a narrative-only section" is a departure from FHIR, accepted by
+the owner. It depends on `clinical-terms-follow-fhir.md`, `code-iris.md` (a coding in a system
 with no property of its own is a literal typed by its system), `naming.md` (row "version": a node inside a version is a
 fragment of it by role) and `partial-dates-and-absent-reasons.md` (how a source date is typed, padded and left absent).
 
