@@ -221,7 +221,7 @@ Feature: Priya Natarajan's pod
       And the query "questions/entry/What needs review.rq" is asked
       Then it answers:
         | entry                         | entryLabel                                        | needs                          | finding | judgment | judgmentLabel | record           | recordLabel                                                | otherRecord        | otherRecordLabel                                           |
-        | the entry of FFC-MED-CLARITIN | "Medication entry · loratadine 10 MG Oral Tablet" | "possibly the same medication" |         |          |               | FFC-MED-CLARITIN | "Medication · Claritin 10 MG Oral Tablet · unknown source" | FFC-MED-CLARITIN-2 | "Medication · Claritin 10 MG Oral Tablet · unknown source" |
+        | the entry of FFC-MED-CLARITIN | "Medication entry · loratadine 10 MG Oral Tablet" | "possibly the same medication" |         |          |               | FFC-MED-CLARITIN | "Medication · Claritin 10 MG Oral Tablet · Fernhill Family Clinic · received 2025-05-20" | FFC-MED-CLARITIN-2 | "Medication · Claritin 10 MG Oral Tablet · Fernhill Family Clinic · received 2025-08-12" |
 
   Rule: P11. A repeated id with its status changed is a new record, joined to the old one
     In the second Fernhill download fluticasone's status is completed, and, named by its download as P10 says,

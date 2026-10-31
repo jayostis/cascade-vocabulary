@@ -18,11 +18,14 @@ WHERE {
       OPTIONAL { ?v cascade:displayName ?name }
       OPTIONAL { ?r prov:wasDerivedFrom ?doc }
       OPTIONAL { ?r prov:wasDerivedFrom/pav:retrievedFrom ?from }
-      OPTIONAL { ?r prov:wasDerivedFrom/prov:qualifiedAttribution ?a .
-                 ?a prov:hadRole ?authorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?author
-                 FILTER (?authorRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
+      OPTIONAL { ?r prov:wasDerivedFrom/prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?authorName ] }
+      OPTIONAL { ?r prov:wasDerivedFrom/prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?custodianName ] }
+      BIND (COALESCE(?authorName, ?custodianName) AS ?author)
+      OPTIONAL { ?r prov:generatedAtTime ?t }
       BIND (CONCAT(?kind, " · ", COALESCE(?name, "no name"), " · ",
                    COALESCE(CONCAT(?author, " · ", REPLACE(STR(?from), "^.*/", "")),
+                            CONCAT(?author, " · received ", SUBSTR(STR(?t), 1, 10)),
+                            ?author,
                             IF(BOUND(?doc), "unknown source", "own entry"))) AS ?l)
     }
     GROUP BY ?thing }
@@ -39,9 +42,12 @@ WHERE {
       OPTIONAL { ?thing cascade:displayDate ?date }
       OPTIONAL { ?revision prov:wasDerivedFrom ?doc }
       OPTIONAL { ?revision prov:wasDerivedFrom/pav:retrievedFrom ?from }
+      OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?authorName ] }
+      OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?custodianName ] }
+      BIND (COALESCE(?authorName, ?custodianName) AS ?author)
       BIND (CONCAT(?kind, " version · ", COALESCE(?name, "no name"), " · ",
                    COALESCE(?status, ?verification, CONCAT("criticality ", ?c), STR(?date), "nothing stated"), " · ",
-                   COALESCE(REPLACE(STR(?from), "^.*/", ""), IF(BOUND(?doc), "unknown source", "own entry")),
+                   COALESCE(REPLACE(STR(?from), "^.*/", ""), ?author, IF(BOUND(?doc), "unknown source", "own entry")),
                    " · first received ", SUBSTR(STR(?t), 1, 10)) AS ?l)
     }
     GROUP BY ?thing }
@@ -53,8 +59,11 @@ WHERE {
       OPTIONAL { ?v cascade:displayName ?name }
       OPTIONAL { ?thing prov:wasDerivedFrom ?doc }
       OPTIONAL { ?thing prov:wasDerivedFrom/pav:retrievedFrom ?from }
+      OPTIONAL { ?thing prov:wasDerivedFrom/prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?authorName ] }
+      OPTIONAL { ?thing prov:wasDerivedFrom/prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?custodianName ] }
+      BIND (COALESCE(?authorName, ?custodianName) AS ?author)
       BIND (CONCAT("Revision · ", COALESCE(?name, "no name"), " · ",
-                   COALESCE(REPLACE(STR(?from), "^.*/", ""), IF(BOUND(?doc), "unknown source", "own entry")),
+                   COALESCE(REPLACE(STR(?from), "^.*/", ""), ?author, IF(BOUND(?doc), "unknown source", "own entry")),
                    " · received ", SUBSTR(STR(?t), 1, 10)) AS ?l)
     }
     GROUP BY ?thing }
@@ -63,9 +72,9 @@ WHERE {
     WHERE {
       ?revision a cascade:Revision ; prov:wasDerivedFrom ?thing .
       FILTER NOT EXISTS { ?thing rdfs:label [] }
-      OPTIONAL { ?thing prov:qualifiedAttribution ?a .
-                 ?a prov:hadRole ?authorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?author
-                 FILTER (?authorRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
+      OPTIONAL { ?thing prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?authorName ] }
+      OPTIONAL { ?thing prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?custodianName ] }
+      BIND (COALESCE(?authorName, ?custodianName) AS ?author)
       OPTIONAL { ?thing pav:retrievedFrom ?from }
       OPTIONAL { ?thing pav:retrievedOn ?on }
       BIND (CONCAT("Document · ", COALESCE(?author, "unknown source"),
@@ -147,9 +156,9 @@ WHERE {
       ?revision cascade:version ?version ; prov:generatedAtTime ?t .
       FILTER NOT EXISTS { ?thing a cascade:Subject }
       FILTER NOT EXISTS { ?thing rdfs:label [] }
-      OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution ?a .
-                 ?a prov:hadRole ?authorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?author
-                 FILTER (?authorRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
+      OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?authorName ] }
+      OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?custodianName ] }
+      BIND (COALESCE(?authorName, ?custodianName) AS ?author)
       BIND (CONCAT("Patient profile · ", COALESCE(?author, "unknown source"),
                    " · first received ", SUBSTR(STR(?t), 1, 10)) AS ?l)
     }
