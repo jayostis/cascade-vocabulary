@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-drug-and-overlapping-exposure-periods" ;
-  rdfs:comment "Courses of one NDC: one from 2019 to 2021, one active since 2026, one within the first, one from the first's last day for a month, one the day after that with no end and not active, one active since 2025, one in June 2025 with no end and not active, and one with no date. Courses of one product a drug products version lists: 2019 to 2021, the second half of 2021, and active since 2026. A brand from 2019 to 2021, and its generic in 2020 and active since 2026, which a brand generics version joins. Two records of one NDC, from 10 January to 30 June 2019 and since 2019; two of another, ending in March 2020 and starting 15 March 2020." ;
+  rdfs:comment "Courses of one NDC: one from 2019 to 2021, one active since 2026, one within the first, one from the first's last day for a month, one the day after that with no end and not active, one active since 2025, one in June 2025 with no end and not active, and one with no date. Courses of one product a drug products version lists: 2019 to 2021, the second half of 2021, and active since 2026. A brand from 2019 to 2021, and its generic in 2020 and active since 2026, which a brand generics version joins. Two records of one NDC, from 10 January to 30 June 2019 and active since 2019; two of another, ending in March 2020 and starting 15 March 2020." ;
   mf:entries (
     <#same-ndc-code-and-overlapping-exposure-periods>
     <#same-product-code-in-current-tables-and-overlapping-exposure-periods>
@@ -51,7 +51,7 @@
 
 <#same-ndc-code-and-a-start-given-to-the-year> a mf:QueryEvaluationTest ;
   mf:name "same-ndc-code-and-a-start-given-to-the-year" ;
-  rdfs:comment "A start given to the year is read as its last day, 31 December 2019, so the course since 2019 does not match the one from 10 January to 30 June 2019: a join needs the overlap to be certain." ;
+  rdfs:comment "A start given to the year is read as its last day, 31 December 2019, so the course active since 2019 does not match the one from 10 January to 30 June 2019: a join needs the overlap to be certain." ;
   mf:action [ qt:query <../../../queries/matcher/same-ndc-code-and-overlapping-exposure-periods.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               ctm:boundRecord <urn:x:firstHalfOf2019> ,
