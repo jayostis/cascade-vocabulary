@@ -28,6 +28,7 @@ Feature: Priya Natarajan's pod
     And the matcher runs on the records of "E8" on 2025-06-15 at 08:05:04 (M7)
     And the download "fernhill-family-clinic-summary-2.xml" is imported on 2025-08-12 at 19:05:04 (E9)
     And the matcher runs on the records of "E9" on 2025-08-12 at 19:05:04 (M8)
+    And Priya files the judgment "J5" on 2025-08-12 at 19:08
     And the download "export_cda.xml" is imported on 2025-08-12 at 19:10 (E10)
     And the download "kestrel-harbor-health-summary-4.xml" is imported on 2025-08-12 at 19:12 (E11)
 
@@ -191,17 +192,32 @@ Feature: Priya Natarajan's pod
   Rule: P10. An entry whose id repeats in its document is named by its document and its place in it
     decisions/naming.md, row "record from C-CDA": Fernhill writes one id for Claritin and fluticasone, so each is
     named by its download and its place, and the adapter says the source broke its own definition. Claritin in the
-    second download, FFC-MED-CLARITIN-2, is a record of its own, and the matcher joins it to FFC-MED-CLARITIN by the same
-    medication code.
+    second download, FFC-MED-CLARITIN-2, is a record of its own. Neither Claritin states a start (P13), and a record
+    with no start joins no other medication (decisions/medication-matching.md, row "no dates"; M15), so under the rule
+    list's version 18 the matcher keeps the two apart, although they share a product code. "What needs review" lists
+    the pair as possibly the same medication (M16), and Priya joins it with a Same, J5, which outranks the matcher
+    (P15).
 
-    Example: the second download's Claritin is a record of its own, joined to the first
+    Example: the second download's Claritin is a record of its own
       Then the records have these revisions:
         | record             | arrived                | version | after |
         | FFC-MED-CLARITIN   | 2025-05-20 at 18:50:04 | 1       |       |
         | FFC-MED-CLARITIN-2 | 2025-08-12 at 19:05:04 | 1       |       |
-      And the matcher's judgments holding FFC-MED-CLARITIN-2 are:
-        | justification        | members                              |
-        | same medication code | FFC-MED-CLARITIN, FFC-MED-CLARITIN-2 |
+
+    Example: the matcher keeps it apart from the first, since neither states a start
+      When the pod is read as it stood after "M8"
+      Then the matcher has no judgment holding FFC-MED-CLARITIN-2
+      And the medications view holds these entries:
+        | members                              |
+        | APP-MED-LORATADINE, FFC-MED-CLARITIN |
+        | FFC-MED-CLARITIN-2                   |
+
+    Example: "What needs review" lists the pair as possibly the same medication, until Priya joins it
+      When the pod is read as it stood after "M8"
+      And the query "questions/entry/What needs review.rq" is asked
+      Then it answers:
+        | entry                         | entryLabel                                        | needs                          | finding | judgment | judgmentLabel | record           | recordLabel                                                | otherRecord        | otherRecordLabel                                           |
+        | the entry of FFC-MED-CLARITIN | "Medication entry · loratadine 10 MG Oral Tablet" | "possibly the same medication" |         |          |               | FFC-MED-CLARITIN | "Medication · Claritin 10 MG Oral Tablet · unknown source" | FFC-MED-CLARITIN-2 | "Medication · Claritin 10 MG Oral Tablet · unknown source" |
 
   Rule: P11. A repeated id with its status changed is a new record, joined to the old one
     In the second Fernhill download fluticasone's status is completed, and, named by its download as P10 says,
@@ -281,18 +297,24 @@ Feature: Priya Natarajan's pod
 
   Rule: P15. A person joins what the matcher does not
     Priya enters loratadine she takes, APP-MED-LORATADINE (RxNorm 311372); Fernhill lists its brand, FFC-MED-CLARITIN
-    (RxNorm 206805). The matcher finds no same code; her Same, J4, joins them, and the second download's Claritin joins
-    them by the matcher (P10). Her own record leads the entry, as a record the person entered leads any it is in (C6).
+    (RxNorm 206805). The matcher finds no same code; her Same, J4, joins them. The matcher keeps the second download's
+    Claritin apart from the first (P10), and her Same, J5, joins it to them. Her own record leads the entry, as a record
+    the person entered leads any it is in (C6).
 
     Example: the matcher does not join her loratadine
       When the pod is read as it stood after "M6"
       Then the matcher has no judgment holding APP-MED-LORATADINE
 
-    Example: J4 joins her loratadine and Fernhill's Claritin in one entry
+    Example: J4 joins her loratadine and Fernhill's Claritin, and J5 the second download's Claritin, in one entry
       Then the medications view holds these entries:
         | members                                                  |
         | APP-MED-LORATADINE, FFC-MED-CLARITIN, FFC-MED-CLARITIN-2 |
       And J4 counts
+      And J5 counts
+
+    Example: with J5, "What needs review" lists the Claritin pair no more
+      When the query "questions/entry/What needs review.rq" is asked
+      Then it answers nothing
 
     Example: her loratadine leads the entry, since she entered it
       Then the entry of APP-MED-LORATADINE shows:
