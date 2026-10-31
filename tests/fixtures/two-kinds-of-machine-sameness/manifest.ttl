@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "two-kinds-of-machine-sameness" ;
-  rdfs:comment "An immunization entry the machine joined through SameCodeAndDate and SameMappedCodeAndDate." ;
+  rdfs:comment "An immunization entry the machine joined through SameCodeAndDate and SameMappedCodeAndDate, and a note entry it joined through SameNoteTypeAndTextGrownWithinOneOrganization, SameNoteTypeAndText and SameNoteOrDocumentMasterIdentifier." ;
   mf:entries (
     <#two-kinds-under-everyday>
     <#one-kind-under-export>
@@ -13,7 +13,7 @@
 
 <#two-kinds-under-everyday> a mf:QueryEvaluationTest ;
   mf:name "two-kinds-under-everyday" ;
-  rdfs:comment "Under everyday both judgments count, and the entry they join is listed for review." ;
+  rdfs:comment "Under everyday every judgment counts, and the immunization entry is listed for review; the note entry is not, since a grown note, one note sent twice and one document identifier are one kind of sameness, one note." ;
   mf:action [ qt:query <../../../queries/questions/entry/What%20needs%20review.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <two-kinds-under-everyday.srj> .

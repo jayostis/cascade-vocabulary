@@ -18,7 +18,8 @@
 # code no held table knows, which is every shared RxNorm code when no drug products table is held. A pair is listed once,
 # from the entry of its smaller record, unless a person judged it different or a lapsed Same of it is listed already.
 # An entry joined by an NDC (R5) and a product code (R11) alone is joined through one kind of sameness, since both are
-# exact identity; any other two justifications are two kinds, with either of these included. A join by a shared
+# exact identity, and so is an entry joined by a grown note (R19), one note sent twice (R20) and one document
+# identifier (R21) alone, since each says the members are one note; any other two justifications are two kinds, with any of these included. A join by a shared
 # business identifier within one organization (R18) is certain, so it adds no kind: an entry it joins with one other
 # rule is joined through that rule's kind alone. An entry the matcher
 # joined by the same result on one day (R15) is listed with that Same: at least one of the two results was stamped with
@@ -61,7 +62,9 @@ WHERE {
       }
       GROUP BY ?entry
       HAVING (COUNT(DISTINCT ?why) > 1
-              && SUM(IF(?why IN (cascade:SameMedicationCode, cascade:SameProductCode), 0, 1)) > 0) }
+              && SUM(IF(?why IN (cascade:SameMedicationCode, cascade:SameProductCode), 0, 1)) > 0
+              && SUM(IF(?why IN (cascade:SameNoteTypeAndTextGrownWithinOneOrganization, cascade:SameNoteTypeAndText,
+                                   cascade:SameNoteOrDocumentMasterIdentifier), 0, 1)) > 0) }
     BIND ("joined through two kinds of machine sameness" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel } }
   UNION

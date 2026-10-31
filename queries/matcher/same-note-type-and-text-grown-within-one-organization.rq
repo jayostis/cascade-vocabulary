@@ -1,0 +1,386 @@
+# Two notes match when their current versions share a note type, a LOINC code, or a code of another system when
+# neither has a LOINC code, the documents their revisions come from name, as custodian or author, one organization
+# record, or two that are currently the same organization, and the shorter one's text begins or ends the longer one's
+# as whole lines: a note its source sends again as it grows, as a clinic's plan of treatment that keeps every visit's
+# paragraph and adds the latest after them, or before them, newest first. A text is read as lines, as
+# cascade:narrativeTextAsTrimmedLines holds it, the white space inside each line one space, each line trimmed and blank
+# lines dropped, so a source that indents or spaces its text anew still matches; the lines are compared as written otherwise, in their order. A note held in the middle
+# of another is no match: growth adds at an end, and text in the middle of other lines is a template's. Pairs are found
+# by the first and the last 200 characters of a text. The shorter text holds at least 200 characters, since a short
+# plan such as "Return in 3 months." is held whole by many later notes it is not part of. The longer one is dated no
+# earlier, by instant when both are times and by day otherwise, when both are dated, since a note holding a later one
+# whole was cut down, not grown, and its lines would be hidden behind the later lead. Growth is a chain: a shorter note
+# that another note of its type and organization also holds, dated no earlier, which neither holds the longer nor is
+# held by it, matches neither, since two notes growing apart from one text are two visits' plans written from one
+# template, and joining both to it would join them, the entry's lead hiding the other's lines. Two texts that are the
+# same lines are same-note-type-and-text.rq's. An agent that is no organization record, and a record whose documents
+# name none, as a pull from a server does, match nothing here. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  { SELECT ?record ?other
+    WHERE {
+      { SELECT ?record ?other ?type ?shorter ?shorterText ?longerText ?shorterDay ?shorterDate ?shorterStart ?shorterEnd
+        WHERE {
+          { { SELECT ?record ?type ?text ?length ?start ?day ?date
+              # bound: ?record
+              WHERE {
+                ?record pav:hasCurrentVersion ?version .
+                ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                ?version cascade:narrativeTextAsTrimmedLines ?text .
+                OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
+                BIND (STRLEN(?text) AS ?length)
+                FILTER (?length >= 200)
+                BIND (COALESCE(SUBSTR(?text, 1, 200), "") AS ?start)
+                BIND (COALESCE(SUBSTR(STR(?date), 1, 10), "") AS ?day)
+              } }
+            { SELECT ?other ?type ?otherText ?otherLength ?start ?otherDay ?otherDate
+              WHERE {
+                { SELECT DISTINCT ?type
+                  # bound: ?record
+                  WHERE { ?record pav:hasCurrentVersion ?runVersion .
+                          ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                ?other pav:hasCurrentVersion ?otherVersion .
+                ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
+                OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
+                BIND (STRLEN(?otherText) AS ?otherLength)
+                FILTER (?otherLength >= 200)
+                BIND (COALESCE(SUBSTR(?otherText, 1, 200), "") AS ?start)
+                BIND (COALESCE(SUBSTR(STR(?otherDate), 1, 10), "") AS ?otherDay)
+              } }
+            FILTER (?other != ?record)
+            BIND (?length < ?otherLength AS ?recordShorter)
+            BIND (IF(?recordShorter, ?record, ?other) AS ?shorter)
+            BIND (IF(?recordShorter, ?text, ?otherText) AS ?shorterText)
+            BIND (IF(?recordShorter, ?otherText, ?text) AS ?longerText)
+            BIND (IF(?recordShorter, ?day, ?otherDay) AS ?shorterDay)
+            BIND (IF(?recordShorter, ?otherDay, ?day) AS ?longerDay)
+            BIND (IF(?recordShorter, ?date, ?otherDate) AS ?shorterDate)
+            BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
+            BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
+            BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
+            FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                    && (!BOUND(?shorterDate) || !BOUND(?longerDate)
+                        || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
+          UNION
+          { { SELECT ?record ?type ?text ?length ?end ?day ?date
+              # bound: ?record
+              WHERE {
+                ?record pav:hasCurrentVersion ?version .
+                ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                ?version cascade:narrativeTextAsTrimmedLines ?text .
+                OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
+                BIND (STRLEN(?text) AS ?length)
+                FILTER (?length >= 200)
+                BIND (COALESCE(SUBSTR(?text, ?length - 199), "") AS ?end)
+                BIND (COALESCE(SUBSTR(STR(?date), 1, 10), "") AS ?day)
+              } }
+            { SELECT ?other ?type ?otherText ?otherLength ?end ?otherDay ?otherDate
+              WHERE {
+                { SELECT DISTINCT ?type
+                  # bound: ?record
+                  WHERE { ?record pav:hasCurrentVersion ?runVersion .
+                          ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                ?other pav:hasCurrentVersion ?otherVersion .
+                ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
+                OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
+                BIND (STRLEN(?otherText) AS ?otherLength)
+                FILTER (?otherLength >= 200)
+                BIND (COALESCE(SUBSTR(?otherText, ?otherLength - 199), "") AS ?end)
+                BIND (COALESCE(SUBSTR(STR(?otherDate), 1, 10), "") AS ?otherDay)
+              } }
+            FILTER (?other != ?record)
+            BIND (?length < ?otherLength AS ?recordShorter)
+            BIND (IF(?recordShorter, ?record, ?other) AS ?shorter)
+            BIND (IF(?recordShorter, ?text, ?otherText) AS ?shorterText)
+            BIND (IF(?recordShorter, ?otherText, ?text) AS ?longerText)
+            BIND (IF(?recordShorter, ?day, ?otherDay) AS ?shorterDay)
+            BIND (IF(?recordShorter, ?otherDay, ?day) AS ?longerDay)
+            BIND (IF(?recordShorter, ?date, ?otherDate) AS ?shorterDate)
+            BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
+            BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
+            BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
+            FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                    && (!BOUND(?shorterDate) || !BOUND(?longerDate)
+                        || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
+        } }
+      MINUS {
+        { SELECT ?record ?other
+          WHERE {
+            { { SELECT ?record ?other ?shorter ?witness1
+                WHERE {
+                { SELECT ?record ?other ?type ?shorter ?shorterText ?longerText ?shorterDay ?shorterDate ?shorterStart ?shorterEnd
+                  WHERE {
+                    { { SELECT ?record ?type ?text ?length ?start ?day ?date
+                        # bound: ?record
+                        WHERE {
+                          ?record pav:hasCurrentVersion ?version .
+                          ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                          ?version cascade:narrativeTextAsTrimmedLines ?text .
+                          OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
+                          BIND (STRLEN(?text) AS ?length)
+                          FILTER (?length >= 200)
+                          BIND (COALESCE(SUBSTR(?text, 1, 200), "") AS ?start)
+                          BIND (COALESCE(SUBSTR(STR(?date), 1, 10), "") AS ?day)
+                        } }
+                      { SELECT ?other ?type ?otherText ?otherLength ?start ?otherDay ?otherDate
+                        WHERE {
+                          { SELECT DISTINCT ?type
+                            # bound: ?record
+                            WHERE { ?record pav:hasCurrentVersion ?runVersion .
+                                    ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                          ?other pav:hasCurrentVersion ?otherVersion .
+                          ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                          ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
+                          OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
+                          BIND (STRLEN(?otherText) AS ?otherLength)
+                          FILTER (?otherLength >= 200)
+                          BIND (COALESCE(SUBSTR(?otherText, 1, 200), "") AS ?start)
+                          BIND (COALESCE(SUBSTR(STR(?otherDate), 1, 10), "") AS ?otherDay)
+                        } }
+                      FILTER (?other != ?record)
+                      BIND (?length < ?otherLength AS ?recordShorter)
+                      BIND (IF(?recordShorter, ?record, ?other) AS ?shorter)
+                      BIND (IF(?recordShorter, ?text, ?otherText) AS ?shorterText)
+                      BIND (IF(?recordShorter, ?otherText, ?text) AS ?longerText)
+                      BIND (IF(?recordShorter, ?day, ?otherDay) AS ?shorterDay)
+                      BIND (IF(?recordShorter, ?otherDay, ?day) AS ?longerDay)
+                      BIND (IF(?recordShorter, ?date, ?otherDate) AS ?shorterDate)
+                      BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
+                      BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
+                      BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
+                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                              && (!BOUND(?shorterDate) || !BOUND(?longerDate)
+                                  || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
+                    UNION
+                    { { SELECT ?record ?type ?text ?length ?end ?day ?date
+                        # bound: ?record
+                        WHERE {
+                          ?record pav:hasCurrentVersion ?version .
+                          ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                          ?version cascade:narrativeTextAsTrimmedLines ?text .
+                          OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
+                          BIND (STRLEN(?text) AS ?length)
+                          FILTER (?length >= 200)
+                          BIND (COALESCE(SUBSTR(?text, ?length - 199), "") AS ?end)
+                          BIND (COALESCE(SUBSTR(STR(?date), 1, 10), "") AS ?day)
+                        } }
+                      { SELECT ?other ?type ?otherText ?otherLength ?end ?otherDay ?otherDate
+                        WHERE {
+                          { SELECT DISTINCT ?type
+                            # bound: ?record
+                            WHERE { ?record pav:hasCurrentVersion ?runVersion .
+                                    ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                          ?other pav:hasCurrentVersion ?otherVersion .
+                          ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                          ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
+                          OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
+                          BIND (STRLEN(?otherText) AS ?otherLength)
+                          FILTER (?otherLength >= 200)
+                          BIND (COALESCE(SUBSTR(?otherText, ?otherLength - 199), "") AS ?end)
+                          BIND (COALESCE(SUBSTR(STR(?otherDate), 1, 10), "") AS ?otherDay)
+                        } }
+                      FILTER (?other != ?record)
+                      BIND (?length < ?otherLength AS ?recordShorter)
+                      BIND (IF(?recordShorter, ?record, ?other) AS ?shorter)
+                      BIND (IF(?recordShorter, ?text, ?otherText) AS ?shorterText)
+                      BIND (IF(?recordShorter, ?otherText, ?text) AS ?longerText)
+                      BIND (IF(?recordShorter, ?day, ?otherDay) AS ?shorterDay)
+                      BIND (IF(?recordShorter, ?otherDay, ?day) AS ?longerDay)
+                      BIND (IF(?recordShorter, ?date, ?otherDate) AS ?shorterDate)
+                      BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
+                      BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
+                      BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
+                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                              && (!BOUND(?shorterDate) || !BOUND(?longerDate)
+                                  || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
+                  } }
+                { SELECT ?witness1 ?type ?witness1Text ?witness1Length ?shorterStart ?witness1Day ?witness1Date
+                  WHERE {
+                    { SELECT DISTINCT ?type
+                      # bound: ?record
+                      WHERE { ?record pav:hasCurrentVersion ?runVersion .
+                              ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                              FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                    ?witness1 pav:hasCurrentVersion ?witness1Version .
+                    ?witness1Version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                    FILTER (isIRI(?type) || NOT EXISTS { ?witness1Version cascade:noteOrDocumentType ?loincOfWitness1Version })
+                    ?witness1Version cascade:narrativeTextAsTrimmedLines ?witness1Text .
+                    OPTIONAL { ?witness1Version cascade:noteOrDocumentDate ?witness1Date }
+                    BIND (STRLEN(?witness1Text) AS ?witness1Length)
+                    FILTER (?witness1Length >= 200)
+                    BIND (COALESCE(SUBSTR(?witness1Text, 1, 200), "") AS ?shorterStart)
+                    BIND (COALESCE(SUBSTR(STR(?witness1Date), 1, 10), "") AS ?witness1Day)
+                  } }
+                FILTER (?witness1Text != ?longerText && (STRSTARTS(?witness1Text, CONCAT(?shorterText, "\n")) || STRENDS(?witness1Text, CONCAT("\n", ?shorterText)))
+                        && (!BOUND(?shorterDate) || !BOUND(?witness1Date)
+                              || COALESCE(?witness1Date >= ?shorterDate, ?witness1Day >= ?shorterDay))
+                        && !(STRSTARTS(?longerText, CONCAT(?witness1Text, "\n")) || STRENDS(?longerText, CONCAT("\n", ?witness1Text))) && !(STRSTARTS(?witness1Text, CONCAT(?longerText, "\n")) || STRENDS(?witness1Text, CONCAT("\n", ?longerText))))
+                } }
+              ?witness1Revision cascade:revisionOf ?witness1 ; prov:wasDerivedFrom/prov:qualifiedAttribution ?witness1Attribution .
+              ?witness1Attribution prov:hadRole ?witness1Role ; prov:agent ?witness1Organization .
+              ?witness1Organization a cascade:Organization .
+              ?witness1ShorterRevision cascade:revisionOf ?shorter ;
+                prov:wasDerivedFrom/prov:qualifiedAttribution ?witness1ShorterAttribution .
+              ?witness1ShorterAttribution prov:hadRole ?witness1ShorterRole ; prov:agent ?witness1ShorterOrganization .
+              FILTER (?witness1Role IN (cascade:CustodianRole, cascade:AuthorRole)
+                      && ?witness1ShorterRole IN (cascade:CustodianRole, cascade:AuthorRole)
+                      && (?witness1Organization = ?witness1ShorterOrganization
+                          || EXISTS { ?witness1Organization cascade:currentlySameOrganization+ ?witness1ShorterOrganization })) }
+            UNION
+            { { SELECT ?record ?other ?shorter ?witness2
+                WHERE {
+                { SELECT ?record ?other ?type ?shorter ?shorterText ?longerText ?shorterDay ?shorterDate ?shorterStart ?shorterEnd
+                  WHERE {
+                    { { SELECT ?record ?type ?text ?length ?start ?day ?date
+                        # bound: ?record
+                        WHERE {
+                          ?record pav:hasCurrentVersion ?version .
+                          ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                          ?version cascade:narrativeTextAsTrimmedLines ?text .
+                          OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
+                          BIND (STRLEN(?text) AS ?length)
+                          FILTER (?length >= 200)
+                          BIND (COALESCE(SUBSTR(?text, 1, 200), "") AS ?start)
+                          BIND (COALESCE(SUBSTR(STR(?date), 1, 10), "") AS ?day)
+                        } }
+                      { SELECT ?other ?type ?otherText ?otherLength ?start ?otherDay ?otherDate
+                        WHERE {
+                          { SELECT DISTINCT ?type
+                            # bound: ?record
+                            WHERE { ?record pav:hasCurrentVersion ?runVersion .
+                                    ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                          ?other pav:hasCurrentVersion ?otherVersion .
+                          ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                          ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
+                          OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
+                          BIND (STRLEN(?otherText) AS ?otherLength)
+                          FILTER (?otherLength >= 200)
+                          BIND (COALESCE(SUBSTR(?otherText, 1, 200), "") AS ?start)
+                          BIND (COALESCE(SUBSTR(STR(?otherDate), 1, 10), "") AS ?otherDay)
+                        } }
+                      FILTER (?other != ?record)
+                      BIND (?length < ?otherLength AS ?recordShorter)
+                      BIND (IF(?recordShorter, ?record, ?other) AS ?shorter)
+                      BIND (IF(?recordShorter, ?text, ?otherText) AS ?shorterText)
+                      BIND (IF(?recordShorter, ?otherText, ?text) AS ?longerText)
+                      BIND (IF(?recordShorter, ?day, ?otherDay) AS ?shorterDay)
+                      BIND (IF(?recordShorter, ?otherDay, ?day) AS ?longerDay)
+                      BIND (IF(?recordShorter, ?date, ?otherDate) AS ?shorterDate)
+                      BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
+                      BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
+                      BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
+                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                              && (!BOUND(?shorterDate) || !BOUND(?longerDate)
+                                  || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
+                    UNION
+                    { { SELECT ?record ?type ?text ?length ?end ?day ?date
+                        # bound: ?record
+                        WHERE {
+                          ?record pav:hasCurrentVersion ?version .
+                          ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                          ?version cascade:narrativeTextAsTrimmedLines ?text .
+                          OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
+                          BIND (STRLEN(?text) AS ?length)
+                          FILTER (?length >= 200)
+                          BIND (COALESCE(SUBSTR(?text, ?length - 199), "") AS ?end)
+                          BIND (COALESCE(SUBSTR(STR(?date), 1, 10), "") AS ?day)
+                        } }
+                      { SELECT ?other ?type ?otherText ?otherLength ?end ?otherDay ?otherDate
+                        WHERE {
+                          { SELECT DISTINCT ?type
+                            # bound: ?record
+                            WHERE { ?record pav:hasCurrentVersion ?runVersion .
+                                    ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                          ?other pav:hasCurrentVersion ?otherVersion .
+                          ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                          ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
+                          OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
+                          BIND (STRLEN(?otherText) AS ?otherLength)
+                          FILTER (?otherLength >= 200)
+                          BIND (COALESCE(SUBSTR(?otherText, ?otherLength - 199), "") AS ?end)
+                          BIND (COALESCE(SUBSTR(STR(?otherDate), 1, 10), "") AS ?otherDay)
+                        } }
+                      FILTER (?other != ?record)
+                      BIND (?length < ?otherLength AS ?recordShorter)
+                      BIND (IF(?recordShorter, ?record, ?other) AS ?shorter)
+                      BIND (IF(?recordShorter, ?text, ?otherText) AS ?shorterText)
+                      BIND (IF(?recordShorter, ?otherText, ?text) AS ?longerText)
+                      BIND (IF(?recordShorter, ?day, ?otherDay) AS ?shorterDay)
+                      BIND (IF(?recordShorter, ?otherDay, ?day) AS ?longerDay)
+                      BIND (IF(?recordShorter, ?date, ?otherDate) AS ?shorterDate)
+                      BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
+                      BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
+                      BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
+                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                              && (!BOUND(?shorterDate) || !BOUND(?longerDate)
+                                  || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
+                  } }
+                { SELECT ?witness2 ?type ?witness2Text ?witness2Length ?shorterEnd ?witness2Day ?witness2Date
+                  WHERE {
+                    { SELECT DISTINCT ?type
+                      # bound: ?record
+                      WHERE { ?record pav:hasCurrentVersion ?runVersion .
+                              ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                              FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                    ?witness2 pav:hasCurrentVersion ?witness2Version .
+                    ?witness2Version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
+                    FILTER (isIRI(?type) || NOT EXISTS { ?witness2Version cascade:noteOrDocumentType ?loincOfWitness2Version })
+                    ?witness2Version cascade:narrativeTextAsTrimmedLines ?witness2Text .
+                    OPTIONAL { ?witness2Version cascade:noteOrDocumentDate ?witness2Date }
+                    BIND (STRLEN(?witness2Text) AS ?witness2Length)
+                    FILTER (?witness2Length >= 200)
+                    BIND (COALESCE(SUBSTR(?witness2Text, ?witness2Length - 199), "") AS ?shorterEnd)
+                    BIND (COALESCE(SUBSTR(STR(?witness2Date), 1, 10), "") AS ?witness2Day)
+                  } }
+                FILTER (?witness2Text != ?longerText && (STRSTARTS(?witness2Text, CONCAT(?shorterText, "\n")) || STRENDS(?witness2Text, CONCAT("\n", ?shorterText)))
+                        && (!BOUND(?shorterDate) || !BOUND(?witness2Date)
+                              || COALESCE(?witness2Date >= ?shorterDate, ?witness2Day >= ?shorterDay))
+                        && !(STRSTARTS(?longerText, CONCAT(?witness2Text, "\n")) || STRENDS(?longerText, CONCAT("\n", ?witness2Text))) && !(STRSTARTS(?witness2Text, CONCAT(?longerText, "\n")) || STRENDS(?witness2Text, CONCAT("\n", ?longerText))))
+                } }
+              ?witness2Revision cascade:revisionOf ?witness2 ; prov:wasDerivedFrom/prov:qualifiedAttribution ?witness2Attribution .
+              ?witness2Attribution prov:hadRole ?witness2Role ; prov:agent ?witness2Organization .
+              ?witness2Organization a cascade:Organization .
+              ?witness2ShorterRevision cascade:revisionOf ?shorter ;
+                prov:wasDerivedFrom/prov:qualifiedAttribution ?witness2ShorterAttribution .
+              ?witness2ShorterAttribution prov:hadRole ?witness2ShorterRole ; prov:agent ?witness2ShorterOrganization .
+              FILTER (?witness2Role IN (cascade:CustodianRole, cascade:AuthorRole)
+                      && ?witness2ShorterRole IN (cascade:CustodianRole, cascade:AuthorRole)
+                      && (?witness2Organization = ?witness2ShorterOrganization
+                          || EXISTS { ?witness2Organization cascade:currentlySameOrganization+ ?witness2ShorterOrganization })) }
+          } }
+      }
+    } }
+  ?revision cascade:revisionOf ?record ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
+  ?attribution prov:hadRole ?role ; prov:agent ?organization .
+  ?organization a cascade:Organization .
+  ?otherRevision cascade:revisionOf ?other ; prov:wasDerivedFrom/prov:qualifiedAttribution ?otherAttribution .
+  ?otherAttribution prov:hadRole ?otherRole ; prov:agent ?otherOrganization .
+  ?otherOrganization a cascade:Organization .
+  FILTER (?role IN (cascade:CustodianRole, cascade:AuthorRole) && ?otherRole IN (cascade:CustodianRole, cascade:AuthorRole)
+          && (?organization = ?otherOrganization
+              || EXISTS { ?organization cascade:currentlySameOrganization+ ?otherOrganization }))
+}

@@ -1,0 +1,32 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-note-type-and-text" ;
+  rdfs:comment "A hospital course from a hospital's summary; the same text in a clinic's summary, with more white space and blank lines, and from a pull, its lines run together; the same text as the hospital's discharge summary; the clinic's hospital course quoting the hospital's and adding a line; a short plan, the same at the hospital and the clinic; and a clinic's progress note sent as an unstructured C-CDA document, its plain text decoded, pulled twice as a DocumentReference: once holding only an attachment, as one whose content is that C-CDA document does, and once with the same text inline, its lines broken at each sentence; and the hospital course again, typed only by a local code at the hospital and at the clinic; and one plan text as a hospital's progress note and a clinic's consultation note, each also coded PN in one local system." ;
+  mf:entries (
+    <#same-note-type-and-text>
+  ) .
+
+<#same-note-type-and-text> a mf:QueryEvaluationTest ;
+  mf:name "same-note-type-and-text" ;
+  rdfs:comment "Notes of one type whose texts are the same once every run of white space is one space and the ends are trimmed, and at least 200 characters long, match whatever their sources: the three hospital courses. Not matched: the discharge summary, of another type; the clinic's quoting course, whose text holds the hospital's and more; the two short plans, too short to say they are one note; and the pulled progress note that holds no text, though it is the same document: nothing of it but its type and date is compared. The one pulled with its text matches the C-CDA one. The two locally typed courses match each other, sharing a type of another system, and no LOINC-typed course. The progress and consultation notes do not: their LOINC types differ, and a local code is compared only between notes with no LOINC type." ;
+  mf:action [ qt:query <../../../queries/matcher/same-note-type-and-text.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:clinicCopy> ,
+                                  <urn:x:clinicCourseQuoted> ,
+                                  <urn:x:consultCodedAsPn> ,
+                                  <urn:x:dischargeSummary> ,
+                                  <urn:x:hospitalCourse> ,
+                                  <urn:x:localCourseAtTheClinic> ,
+                                  <urn:x:localCourseAtTheHospital> ,
+                                  <urn:x:progressCodedAsPn> ,
+                                  <urn:x:pulledCopy> ,
+                                  <urn:x:shortPlanAtTheClinic> ,
+                                  <urn:x:shortPlanAtTheHospital> ,
+                                  <urn:x:unstructuredFromCcda> ,
+                                  <urn:x:unstructuredFromFhir> ,
+                                  <urn:x:unstructuredWithTextFromFhir> ] ;
+  mf:result <same-note-type-and-text.srj> .

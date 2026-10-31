@@ -1037,7 +1037,8 @@ cascade:DiagnosticReportShape a sh:NodeShape ;
 cascade:ClinicalNoteOrDocumentShape a sh:NodeShape ;
     sh:targetClass cascade:ClinicalNoteOrDocument ;
     sh:targetSubjectsOf cascade:noteOrDocumentType , cascade:noteOrDocumentTypeInOtherSystem , cascade:noteOrDocumentTypeName ,
-        cascade:noteOrDocumentTitle , cascade:noteOrDocumentDate , cascade:noteOrDocumentContentStatus ;
+        cascade:noteOrDocumentTitle , cascade:noteOrDocumentDate , cascade:noteOrDocumentContentStatus ,
+        cascade:noteOrDocumentMasterIdentifier ;
     sh:property [
         sh:path cascade:noteOrDocumentContentStatus ;
         sh:datatype xsd:string ;
@@ -1067,6 +1068,13 @@ cascade:ClinicalNoteOrDocumentShape a sh:NodeShape ;
         sh:path cascade:noteOrDocumentTypeInOtherSystem ;
         sh:not [ sh:or ( [ sh:datatype <http://loinc.org> ] ) ] ;
         sh:message "A LOINC note type is a cascade:noteOrDocumentType IRI, never a literal typed by http://loinc.org"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:noteOrDocumentMasterIdentifier ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:maxCount 1 ;
+        sh:message "A note or document states at most one master identifier, a non-empty literal whose datatype names the identifier's system, or a plain string when no system is stated"@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:noteOrDocumentTypeName ;
@@ -2402,8 +2410,8 @@ cascade:JudgmentShape a sh:NodeShape ;
     ] , [
         sh:path cascade:justification ;
         sh:maxCount 1 ;
-        sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost cascade:SameResultOnOneDay cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization ) ;
-        sh:message "A judgment gives at most one justification: cascade:SameCode, cascade:SameCodeAndDate, cascade:SameMappedCode, cascade:SameMappedCodeAndDate, cascade:SameMedicationCode, cascade:SameProductCode, cascade:SameResult, cascade:SameConvertedCode, cascade:SameCodeAndPeriod, cascade:SameBrandGeneric, cascade:SameVariation, cascade:SameVariationThroughTable, cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost, cascade:SameResultOnOneDay or cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization."@en ;
+        sh:in ( cascade:SameCode cascade:SameCodeAndDate cascade:SameMappedCode cascade:SameMappedCodeAndDate cascade:SameMedicationCode cascade:SameProductCode cascade:SameResult cascade:SameConvertedCode cascade:SameCodeAndPeriod cascade:SameBrandGeneric cascade:SameVariation cascade:SameVariationThroughTable cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost cascade:SameResultOnOneDay cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization cascade:SameNoteTypeAndTextGrownWithinOneOrganization cascade:SameNoteTypeAndText cascade:SameNoteOrDocumentMasterIdentifier ) ;
+        sh:message "A judgment gives at most one justification: cascade:SameCode, cascade:SameCodeAndDate, cascade:SameMappedCode, cascade:SameMappedCodeAndDate, cascade:SameMedicationCode, cascade:SameProductCode, cascade:SameResult, cascade:SameConvertedCode, cascade:SameCodeAndPeriod, cascade:SameBrandGeneric, cascade:SameVariation, cascade:SameVariationThroughTable, cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost, cascade:SameResultOnOneDay, cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization, cascade:SameNoteTypeAndTextGrownWithinOneOrganization, cascade:SameNoteTypeAndText or cascade:SameNoteOrDocumentMasterIdentifier."@en ;
         sh:severity sh:Violation
     ] .
 

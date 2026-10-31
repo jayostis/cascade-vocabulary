@@ -74,7 +74,7 @@ https://hl7.org/cda/us/ccda/StructureDefinition-HospitalCourseSection.html; the 
 | an attachment | FHIR `Attachment` | a node of the version, `<version>#attachment-n`, with its media type, title and address; its bytes stay in the kept document (`ontologies/cascade.ttl`) | borrowed |
 | the text | `DomainResource.text`; C-CDA `section/text` | one `cascade:narrativeText` per version, the whole text in document order with the markup removed; a PDF is not read (`ontologies/cascade.ttl`) | borrowed; one string where FHIR keeps XHTML |
 | a narrative-only section | C-CDA on FHIR maps sections into `Composition.section` | a C-CDA section whose code is a note type and which holds no entries is one note record, its type the section's code, its date the document's `effectiveTime` (#291) | diverged: a reading needs a record of note size, and `Composition` is exchange machinery |
-| joining | the matcher's rules | none: kinds never join, so each report and note is its own entry (`tests/fixtures/kinds-never-join`) | ours |
+| joining | the matcher's rules | kinds never join (`tests/fixtures/kinds-never-join`); two notes of one type, LOINC or, when neither has LOINC, another system's, join when, from one organization, the shorter text begins or ends the longer as whole lines, dated no earlier, and no two notes grew apart from it (R19), or, from any sources, the texts are equal once white space is one space (R20), either text of at least 200 characters; and two notes of one document master identifier join from any sources (R21) (`queries/matcher/same-note-type-and-text-grown-within-one-organization.rq`, `queries/matcher/same-note-type-and-text.rq`, `queries/matcher/same-note-or-document-master-identifier.rq`, rule M24) | ours |
 
 ## Why
 
@@ -109,8 +109,31 @@ assemble a document for exchange; the pod keeps the document itself, and a readi
 target and cite. Looked at FHIR's `Composition` and C-CDA on FHIR's notes page: failed because neither gives a section
 an identity of its own apart from its document.
 
-**Why kinds never join.** (row "joining") No rule yet says when a report sent as a `DiagnosticReport` and the same
-report sent as a `DocumentReference` are one; joining them by code and date would join two notes of one day.
+**Why kinds never join, and how two notes do.** (row "joining") No rule yet says when a report sent as a
+`DiagnosticReport` and the same report sent as a `DocumentReference` are one; joining them by code and date would join
+two notes of one day. A narrative-only section has no id, so it is named by its code and its text, and the departure
+in row "a narrative-only section" holds only if its repeats join. Counted on the comparison person `priya_l` (19
+downloads, converted with the C-CDA adapter's note sections; the counts, lines and timings are posted at
+https://github.com/jayostis/cascade-vocabulary/issues/321#issuecomment-6533857683): 10 note sections made 9 records, identical re-sends
+already one record; Fernhill's 5 cumulative plans of treatment, each keeping every visit's paragraph and adding the
+latest, made 4 records and 4 entries. A grown note's earlier text begins (or, newest first, ends) its later one, so R19
+joins them, within one organization, since another organization's note that holds a note whole is quoting it; the
+later must be dated no earlier, by instant when both are times, or a note cut down to its latest paragraph would lead
+and hide the rest. Growth is a chain: a plan of four generic lines passes the 200-character guard, and two visits'
+plans written from it each hold it; joining both to it would put the two visits in one entry behind one lead, so a
+note two notes grew apart from joins neither, and the entries R19 makes are chains whose lead holds every line. With R19
+Fernhill's 4 records are 1 entry and `priya_l`'s 9 note records are 6 entries; every other note there is distinct.
+R20 joins one note two sources sent (a hospital course in the hospital's and the clinic's summaries), compared with
+white space read as one space because two adapters break lines differently. The 200-character guard comes from the
+same inputs: every generic plan line there, the kind that recurs in unrelated notes, is under 45 characters ("Follow-up in 2 months."),
+the longest generic line, an emergency department's warning to come back, is 106, and the shortest note that grew is
+271. A note's text stays in its name: keyed on its code alone, each visit's history of present illness would
+supersede the last. One document can reach the pod twice, as an unstructured C-CDA document's note and as a FHIR
+`DocumentReference` to it, which holds no text when its attachment is the C-CDA document; FHIR R4 maps
+`DocumentReference.masterIdentifier` to CDA's `ClinicalDocument/id`
+(https://hl7.org/fhir/R4/documentreference-mappings.html), so R21 joins them by that identifier, a term of its own,
+`cascade:noteOrDocumentMasterIdentifier`, since `dct:identifier` holds a record's business identifiers, which
+`DocumentReference.identifier` is. A section or a Note Activity is part of a document and never carries it.
 
 ## Alternatives that lost
 
@@ -128,6 +151,28 @@ report sent as a `DocumentReference` are one; joining them by code and date woul
 - Whether a `DocumentReference` whose attachment is a C-CDA document makes a note: the FHIR adapter's step for #291
   settles it.
 - A rule joining one report sent both ways.
+- An edited note: a source that sends a section again with a line reworded or a typo fixed names a new record, and
+  no rule joins it, so the pod holds two current notes. A C-CDA document that says it replaces another, by one
+  `setId` and a higher `versionNumber` (with a `relatedDocument` of type `RPLC`), lets the C-CDA adapter make its
+  sections new versions of the replaced document's records, each section matched by its code: that covers an
+  amendment the source sends as a new version of the same document. It does not cover the common portal case, where
+  each download is a new document with a new `setId` that replaces nothing, a section edited between two such
+  summaries; nor a document holding two sections of one code. For those no safe rule was found: a typo in a
+  one-paragraph section changes its only line, so line overlap cannot see it, and a word-level likeness cannot be
+  computed in the plain SPARQL a matcher runs; the visits it must not join look alike (Kestrel's three plans in
+  `priya_l`, each "Most recent visit, <date> (Susan Park, MD): …" and an "Annual physical due …" line, share no line).
+  The kit inputs hold no edited section (0 pairs of one source and type that share a line without one holding the
+  other), so no threshold could be measured. Lean: a likeness rule once a source is measured sending edits, filed as
+  likely for review.
+- R20 compares no date: one templated text of 200 characters or more that two organizations wrote at two visits is
+  taken for one note with two copies. A date guard would break the case R20 exists for, a hospital course whose two
+  copies carry the hospital's and the clinic's document dates. Lean: none until a source is measured sending such a
+  template.
+- An undated note cut down from a dated one, or the other way round, passes R19's date guard, so an undated copy can
+  lead the entry; the lead rule, not R19, would have to say what an undated revision weighs.
+- R21 waits on the adapters writing `cascade:noteOrDocumentMasterIdentifier` (the FHIR adapter from
+  `DocumentReference.masterIdentifier`, the C-CDA adapter on an unstructured document's note); until then it joins
+  nothing they convert, and rule M24 has no example of it.
 
 ## What would change our mind
 
