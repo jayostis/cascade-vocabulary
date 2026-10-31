@@ -1,0 +1,32 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:import a prov:Activity ; prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:shellfish a cascade:AllergyOrIntolerance .
+:shellfishVersion prov:specializationOf :shellfish ; cascade:patient :subject ; cascade:allergen "Shellfish" ;
+    cascade:reactionManifestationText "Anaphylaxis" ; cascade:allergySeverity "severe" .
+:shellfishRevision a cascade:Revision ; cascade:revisionOf :shellfish ; cascade:version :shellfishVersion ;
+    prov:wasDerivedFrom :summary ; prov:wasGeneratedBy :import ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
+
+:dust a cascade:AllergyOrIntolerance .
+:dustVersion prov:specializationOf :dust ; cascade:patient :subject ; cascade:allergen "Dust" .
+:dustRevision a cascade:Revision ; cascade:revisionOf :dust ; cascade:version :dustVersion ;
+    prov:wasDerivedFrom :summary ; prov:wasGeneratedBy :import ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
+
+:latex a cascade:AllergyOrIntolerance .
+:latexVersion prov:specializationOf :latex ; cascade:patient :subject ; cascade:allergen "Latex" ; cascade:clinicalStatus "inactive" .
+:latexRevision a cascade:Revision ; cascade:revisionOf :latex ; cascade:version :latexVersion ;
+    prov:wasDerivedFrom :summary ; prov:wasGeneratedBy :import ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
+
+:pollen a cascade:AllergyOrIntolerance .
+:pollenVersion prov:specializationOf :pollen ; cascade:patient :subject ; cascade:allergen "Pollen" ; cascade:clinicalStatus "resolved" .
+:pollenRevision a cascade:Revision ; cascade:revisionOf :pollen ; cascade:version :pollenVersion ;
+    prov:wasDerivedFrom :summary ; prov:wasGeneratedBy :import ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .

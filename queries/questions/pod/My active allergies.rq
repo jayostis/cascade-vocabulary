@@ -1,18 +1,19 @@
-# Read from the view alone, as an app would: each entry whose status is active, with its code, its criticality, how many
+# Read from the view alone, as an app would: each entry whose status is active, or that no document gives a status
+# (its status then reads "not stated"), with its code, its criticality, how many
 # records it joins, what each record states of the reaction, and each record it joins, with the document it was derived
 # from, when that was retrieved, and the hospitals that wrote it and that keep it. A record's reactions are its
 # reaction texts, then its reaction codes in parentheses, then its severity, each as the record's current values state
 # them, so a record that is not the entry's lead is read as much as the lead. A list holds its values in order, each
-# ended by "; " but the last, and a list with nothing in it is unbound; a value's own parts are ended by ", ".
+# ended by "; " but the last, a record stating none of them is left out, and a list with nothing in it is unbound; a value's own parts are ended by ", ".
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?allergen ?code ?criticality ?reactionsByRecord (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
+SELECT ?allergen ?code ?criticality ?status ?reactionsByRecord (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?memberText, "; "); separator=""), "; $", "") AS ?allReactions)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?memberText, "; "), ""); separator=""), "; $", "") AS ?allReactions)
     WHERE {
       { SELECT ?entry ?memberText
         WHERE {
@@ -20,7 +21,8 @@ WHERE {
             WHERE {
               { SELECT ?entry ?member ?reactionText
                 WHERE {
-                  ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" ; cascade:memberCurrentValues ?textValues .
+                  ?entry a cascade:AllergyOrIntolerance ; cascade:memberCurrentValues ?textValues .
+                  FILTER NOT EXISTS { ?entry cascade:clinicalStatus ?other FILTER (?other != "active") }
                   ?textValues cascade:valuesOfMember ?member .
                   OPTIONAL { ?textValues cascade:reactionManifestationText ?reactionText }
                 }
@@ -31,7 +33,8 @@ WHERE {
             WHERE {
               { SELECT ?entry ?member ?memberCode
                 WHERE {
-                  ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" ; cascade:memberCurrentValues ?codeValues .
+                  ?entry a cascade:AllergyOrIntolerance ; cascade:memberCurrentValues ?codeValues .
+                  FILTER NOT EXISTS { ?entry cascade:clinicalStatus ?other FILTER (?other != "active") }
                   ?codeValues cascade:valuesOfMember ?member .
                   OPTIONAL { ?codeValues cascade:reactionManifestationCode ?memberCode }
                 }
@@ -41,10 +44,11 @@ WHERE {
           ?entry cascade:memberCurrentValues ?severityValues .
           ?severityValues cascade:valuesOfMember ?member .
           OPTIONAL { ?severityValues cascade:allergySeverity ?memberSeverity }
-          BIND (CONCAT(STR(?member),
-                       IF(?texts = "", "", CONCAT(" ", ?texts)),
-                       IF(?codes = "", "", CONCAT(" (", ?codes, ")")),
-                       COALESCE(CONCAT(", ", ?memberSeverity), "")) AS ?memberText)
+          BIND (IF(?texts = "" && ?codes = "" && !BOUND(?memberSeverity), 1/0,
+                   CONCAT(STR(?member),
+                          IF(?texts = "", "", CONCAT(" ", ?texts)),
+                          IF(?codes = "", "", CONCAT(" (", ?codes, ")")),
+                          COALESCE(CONCAT(", ", ?memberSeverity), ""))) AS ?memberText)
         }
         ORDER BY ?entry ?memberText }
     }
@@ -58,7 +62,8 @@ WHERE {
             WHERE {
               { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
-                  ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" ; cascade:mergedFrom ?sourceRecord .
+                  ?entry a cascade:AllergyOrIntolerance ; cascade:mergedFrom ?sourceRecord .
+                  FILTER NOT EXISTS { ?entry cascade:clinicalStatus ?other FILTER (?other != "active") }
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                              OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
@@ -79,12 +84,15 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
-  ?entry a cascade:AllergyOrIntolerance ; cascade:clinicalStatus "active" ;
+  ?entry a cascade:AllergyOrIntolerance ;
          cascade:allergen ?allergen ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:clinicalStatus ?stated }
+  FILTER (!BOUND(?stated) || ?stated = "active")
   OPTIONAL { ?entry cascade:allergenCode ?code }
   OPTIONAL { ?entry cascade:allergyCriticality ?criticality }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
+  BIND (COALESCE(?stated, "not stated") AS ?status)
   BIND (IF(?allReactions = "", 1/0, ?allReactions) AS ?reactionsByRecord)
 }
-GROUP BY ?entry ?allergen ?code ?criticality ?reactionsByRecord ?entryLabel ?sources
+GROUP BY ?entry ?allergen ?code ?criticality ?status ?reactionsByRecord ?entryLabel ?sources
 ORDER BY ?allergen ?entry
