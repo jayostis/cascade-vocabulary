@@ -43,3 +43,9 @@
     cascade:noteOrDocumentContentStatus "entered-in-error" .
 :noteContentInErrorRevision a cascade:Revision ; cascade:revisionOf :noteContentInError ; cascade:version :noteContentInErrorVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:dispenseInError a cascade:MedicationDispense .
+:dispenseInErrorVersion prov:specializationOf :dispenseInError ; cascade:patient :subject ; cascade:drugName "metformin 500 MG Oral Tablet" ;
+    cascade:workflowStatus "entered-in-error" .
+:dispenseInErrorRevision a cascade:Revision ; cascade:revisionOf :dispenseInError ; cascade:version :dispenseInErrorVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

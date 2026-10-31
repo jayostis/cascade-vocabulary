@@ -1,0 +1,11 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+:products a cascade:ReferenceSeries ; rdfs:label "Drug products" ; cascade:tableKind cascade:DrugProducts .
+:products-1 prov:specializationOf :products ; pav:version "1" .
+
+:generics a cascade:ReferenceSeries ; rdfs:label "Brand generics" ; cascade:tableKind cascade:BrandGenerics .
+:generics-1 prov:specializationOf :generics ; pav:version "1" .

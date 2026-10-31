@@ -1,0 +1,144 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rxnorm: <https://ns.cascadeprotocol.org/codes/rxnorm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:firstCourse a cascade:PrescribedOrReportedMedication .
+:firstCourseVersion prov:specializationOf :firstCourse ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg, 2019 to 2021" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+    cascade:medicationUseStartDate "2019-01-10"^^xsd:date ; cascade:medicationUseEndDate "2021-07-30"^^xsd:date .
+:firstCourseRevision a cascade:Revision ; cascade:revisionOf :firstCourse ; cascade:version :firstCourseVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:secondCourse a cascade:PrescribedOrReportedMedication .
+:secondCourseVersion prov:specializationOf :secondCourse ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg, since 2026" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+    cascade:medicationUseStartDate "2026-09-20"^^xsd:date .
+:secondCourseRevision a cascade:Revision ; cascade:revisionOf :secondCourse ; cascade:version :secondCourseVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:withinFirst a cascade:PrescribedOrReportedMedication .
+:withinFirstVersion prov:specializationOf :withinFirst ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg, spring 2020" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+    cascade:medicationUseStartDate "2020-03-01"^^xsd:date ; cascade:medicationUseEndDate "2020-06-01"^^xsd:date .
+:withinFirstRevision a cascade:Revision ; cascade:revisionOf :withinFirst ; cascade:version :withinFirstVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:fromLastDay a cascade:PrescribedOrReportedMedication .
+:fromLastDayVersion prov:specializationOf :fromLastDay ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg, from the first course's last day" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+    cascade:medicationUseStartDate "2021-07-30"^^xsd:date ; cascade:medicationUseEndDate "2021-08-30"^^xsd:date .
+:fromLastDayRevision a cascade:Revision ; cascade:revisionOf :fromLastDay ; cascade:version :fromLastDayVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:dayAfter a cascade:PrescribedOrReportedMedication .
+:dayAfterVersion prov:specializationOf :dayAfter ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg, the day after, no end" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+    cascade:medicationUseStartDate "2021-08-31"^^xsd:date .
+:dayAfterRevision a cascade:Revision ; cascade:revisionOf :dayAfter ; cascade:version :dayAfterVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:ongoingEarlier a cascade:PrescribedOrReportedMedication .
+:ongoingEarlierVersion prov:specializationOf :ongoingEarlier ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg, since 2025" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+    cascade:medicationUseStartDate "2025-01-01"^^xsd:date .
+:ongoingEarlierRevision a cascade:Revision ; cascade:revisionOf :ongoingEarlier ; cascade:version :ongoingEarlierVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:dayInOngoing a cascade:PrescribedOrReportedMedication .
+:dayInOngoingVersion prov:specializationOf :dayInOngoing ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg, June 2025, no end" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+    cascade:medicationUseStartDate "2025-06-01"^^xsd:date .
+:dayInOngoingRevision a cascade:Revision ; cascade:revisionOf :dayInOngoing ; cascade:version :dayInOngoingVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:undated a cascade:PrescribedOrReportedMedication .
+:undatedVersion prov:specializationOf :undated ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg, undated" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
+:undatedRevision a cascade:Revision ; cascade:revisionOf :undated ; cascade:version :undatedVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:metforminFirst a cascade:PrescribedOrReportedMedication .
+:metforminFirstVersion prov:specializationOf :metforminFirst ; cascade:patient :subject ; cascade:drugName "metformin 500 MG, 2019 to 2021" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ; cascade:rxNormCode rxnorm:861007 ;
+    cascade:medicationUseStartDate "2019-01-10"^^xsd:date ; cascade:medicationUseEndDate "2021-07-30"^^xsd:date .
+:metforminFirstRevision a cascade:Revision ; cascade:revisionOf :metforminFirst ; cascade:version :metforminFirstVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:metforminSince2026 a cascade:PrescribedOrReportedMedication .
+:metforminSince2026Version prov:specializationOf :metforminSince2026 ; cascade:patient :subject ; cascade:drugName "metformin 500 MG, since 2026" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ; cascade:rxNormCode rxnorm:861007 ;
+    cascade:medicationUseStartDate "2026-09-20"^^xsd:date .
+:metforminSince2026Revision a cascade:Revision ; cascade:revisionOf :metforminSince2026 ; cascade:version :metforminSince2026Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:metforminOverlapping a cascade:PrescribedOrReportedMedication .
+:metforminOverlappingVersion prov:specializationOf :metforminOverlapping ; cascade:patient :subject ; cascade:drugName "metformin 500 MG, second half of 2021" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ; cascade:rxNormCode rxnorm:861007 ;
+    cascade:medicationUseStartDate "2021-06-01"^^xsd:date ; cascade:medicationUseEndDate "2021-12-31"^^xsd:date .
+:metforminOverlappingRevision a cascade:Revision ; cascade:revisionOf :metforminOverlapping ; cascade:version :metforminOverlappingVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:norvascFirst a cascade:PrescribedOrReportedMedication .
+:norvascFirstVersion prov:specializationOf :norvascFirst ; cascade:patient :subject ; cascade:drugName "Norvasc 5 MG, 2019 to 2021" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ; cascade:rxNormCode rxnorm:212549 ;
+    cascade:medicationUseStartDate "2019-01-10"^^xsd:date ; cascade:medicationUseEndDate "2021-07-30"^^xsd:date .
+:norvascFirstRevision a cascade:Revision ; cascade:revisionOf :norvascFirst ; cascade:version :norvascFirstVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:amlodipineSince2026 a cascade:PrescribedOrReportedMedication .
+:amlodipineSince2026Version prov:specializationOf :amlodipineSince2026 ; cascade:patient :subject ; cascade:drugName "amlodipine 5 MG, since 2026" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ; cascade:rxNormCode rxnorm:197361 ;
+    cascade:medicationUseStartDate "2026-09-20"^^xsd:date .
+:amlodipineSince2026Revision a cascade:Revision ; cascade:revisionOf :amlodipineSince2026 ; cascade:version :amlodipineSince2026Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:amlodipineOverlapping a cascade:PrescribedOrReportedMedication .
+:amlodipineOverlappingVersion prov:specializationOf :amlodipineOverlapping ; cascade:patient :subject ; cascade:drugName "amlodipine 5 MG, 2020" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ; cascade:rxNormCode rxnorm:197361 ;
+    cascade:medicationUseStartDate "2020-01-01"^^xsd:date ; cascade:medicationUseEndDate "2020-12-31"^^xsd:date .
+:amlodipineOverlappingRevision a cascade:Revision ; cascade:revisionOf :amlodipineOverlapping ; cascade:version :amlodipineOverlappingVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:firstHalfOf2019 a cascade:PrescribedOrReportedMedication .
+:firstHalfOf2019Version prov:specializationOf :firstHalfOf2019 ; cascade:patient :subject ; cascade:drugName "Atorvastatin 20 mg, first half of 2019" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00071015523> ;
+    cascade:medicationUseStartDate "2019-01-10"^^xsd:date ; cascade:medicationUseEndDate "2019-06-30"^^xsd:date .
+:firstHalfOf2019Revision a cascade:Revision ; cascade:revisionOf :firstHalfOf2019 ; cascade:version :firstHalfOf2019Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:since2019 a cascade:PrescribedOrReportedMedication .
+:since2019Version prov:specializationOf :since2019 ; cascade:patient :subject ; cascade:drugName "Atorvastatin 20 mg, since 2019" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00071015523> ;
+    cascade:medicationUseStartDate "2019"^^xsd:gYear .
+:since2019Revision a cascade:Revision ; cascade:revisionOf :since2019 ; cascade:version :since2019Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:endsMarch2020 a cascade:PrescribedOrReportedMedication .
+:endsMarch2020Version prov:specializationOf :endsMarch2020 ; cascade:patient :subject ; cascade:drugName "Warfarin 5 mg, to March 2020" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00056017270> ;
+    cascade:medicationUseStartDate "2019-11-01"^^xsd:date ; cascade:medicationUseEndDate "2020-03"^^xsd:gYearMonth .
+:endsMarch2020Revision a cascade:Revision ; cascade:revisionOf :endsMarch2020 ; cascade:version :endsMarch2020Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:startsMid2020 a cascade:PrescribedOrReportedMedication .
+:startsMid2020Version prov:specializationOf :startsMid2020 ; cascade:patient :subject ; cascade:drugName "Warfarin 5 mg, from 15 March 2020" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00056017270> ;
+    cascade:medicationUseStartDate "2020-03-15"^^xsd:date .
+:startsMid2020Revision a cascade:Revision ; cascade:revisionOf :startsMid2020 ; cascade:version :startsMid2020Version ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .

@@ -141,3 +141,19 @@
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000011> .
 :genericTwoRevision a cascade:Revision ; cascade:revisionOf :genericTwo ; cascade:version :genericTwoVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:ndcFirstCourse a cascade:PrescribedOrReportedMedication .
+:ndcFirstCourseVersion prov:specializationOf :ndcFirstCourse ; cascade:patient :subject ; cascade:prescribedOrReported "reportedUse" ;
+    cascade:drugName "Lisinopril 10 mg, 2019 to 2021" ; cascade:workflowStatus "completed" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+    cascade:medicationUseStartDate "2019-01-10"^^xsd:date ; cascade:medicationUseEndDate "2021-07-30"^^xsd:date .
+:ndcFirstCourseRevision a cascade:Revision ; cascade:revisionOf :ndcFirstCourse ; cascade:version :ndcFirstCourseVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:ndcSecondCourse a cascade:PrescribedOrReportedMedication .
+:ndcSecondCourseVersion prov:specializationOf :ndcSecondCourse ; cascade:patient :subject ; cascade:prescribedOrReported "reportedUse" ;
+    cascade:drugName "Lisinopril 10 mg, since 2026" ; cascade:workflowStatus "active" ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> ;
+    cascade:medicationUseStartDate "2026-09-20"^^xsd:date .
+:ndcSecondCourseRevision a cascade:Revision ; cascade:revisionOf :ndcSecondCourse ; cascade:version :ndcSecondCourseVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

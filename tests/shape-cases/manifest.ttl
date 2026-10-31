@@ -803,3 +803,22 @@
   mf:action [ sht:dataGraph <record-note-or-document/content-status-a-guess.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ClinicalNoteOrDocumentShape ; sh:resultPath cascade:noteOrDocumentContentStatus ] ] .
+
+<#record-medication-dispense/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication-dispense/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-medication-dispense/handed-over-twice> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication-dispense/handed-over-twice.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicationDispenseShape ; sh:resultPath cascade:dispenseHandedOverTime ] ] .
+
+<#record-medication-dispense/days-supply-in-tablets> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication-dispense/days-supply-in-tablets.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicationDispenseShape ; sh:resultPath cascade:dispenseDaysSupply ] ] .
+
+<#record-medication-dispense/prescription-a-reference-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication-dispense/prescription-a-reference-string.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicationDispenseShape ; sh:resultPath cascade:authorizingPrescription ] ] .

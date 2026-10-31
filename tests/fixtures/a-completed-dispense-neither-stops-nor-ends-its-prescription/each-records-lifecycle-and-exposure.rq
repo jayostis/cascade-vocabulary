@@ -1,0 +1,14 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT ?medication ?kind ?recordLifecycle ?entryLifecycle ?membersOfItsEntry ?fills ?start ?end ?ongoing
+WHERE {
+  ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:recordKind ?kind ; cascade:inEntry ?entry ;
+          cascade:currentVersionStatusLifecycle ?recordLifecycle .
+  ?entry cascade:statusLifecycle ?entryLifecycle .
+  { SELECT ?entry (COUNT(?member) AS ?membersOfItsEntry) WHERE { ?member cascade:inEntry ?entry } GROUP BY ?entry }
+  OPTIONAL { ?record pav:hasCurrentVersion/cascade:authorizingPrescription/pav:hasCurrentVersion/cascade:drugName ?fills }
+  OPTIONAL { ?record cascade:medicationExposureStart ?start }
+  OPTIONAL { ?record cascade:medicationExposureEnd ?end }
+  OPTIONAL { ?record cascade:medicationExposureOngoing ?ongoing }
+}

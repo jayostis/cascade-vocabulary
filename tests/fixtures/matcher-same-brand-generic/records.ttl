@@ -4,62 +4,64 @@
 @prefix rxnorm: <https://ns.cascadeprotocol.org/codes/rxnorm/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+:subject a cascade:Subject .
+
 :brand a cascade:PrescribedOrReportedMedication .
-:brandVersion prov:specializationOf :brand ; cascade:prescribedOrReported "prescribed" ;
+:brandVersion prov:specializationOf :brand ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:rxNormCode rxnorm:212549 .
 :brandRevision a cascade:Revision ; cascade:revisionOf :brand ; cascade:version :brandVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :generic a cascade:PrescribedOrReportedMedication .
-:genericVersion prov:specializationOf :generic ; cascade:prescribedOrReported "prescribed" ;
+:genericVersion prov:specializationOf :generic ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:rxNormCode rxnorm:197361 .
 :genericRevision a cascade:Revision ; cascade:revisionOf :generic ; cascade:version :genericVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :both a cascade:PrescribedOrReportedMedication .
-:bothVersion prov:specializationOf :both ; cascade:prescribedOrReported "prescribed" ;
+:bothVersion prov:specializationOf :both ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:rxNormCode rxnorm:212549, rxnorm:197361 .
 :bothRevision a cascade:Revision ; cascade:revisionOf :both ; cascade:version :bothVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :lisinopril a cascade:PrescribedOrReportedMedication .
-:lisinoprilVersion prov:specializationOf :lisinopril ; cascade:prescribedOrReported "prescribed" ;
+:lisinoprilVersion prov:specializationOf :lisinopril ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:rxNormCode rxnorm:314076 .
 :lisinoprilRevision a cascade:Revision ; cascade:revisionOf :lisinopril ; cascade:version :lisinoprilVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :brandOne a cascade:PrescribedOrReportedMedication .
-:brandOneVersion prov:specializationOf :brandOne ; cascade:prescribedOrReported "prescribed" ;
+:brandOneVersion prov:specializationOf :brandOne ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:rxNormCode rxnorm:1000001 .
 :brandOneRevision a cascade:Revision ; cascade:revisionOf :brandOne ; cascade:version :brandOneVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :brandTwo a cascade:PrescribedOrReportedMedication .
-:brandTwoVersion prov:specializationOf :brandTwo ; cascade:prescribedOrReported "prescribed" ;
+:brandTwoVersion prov:specializationOf :brandTwo ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:rxNormCode rxnorm:1000002 .
 :brandTwoRevision a cascade:Revision ; cascade:revisionOf :brandTwo ; cascade:version :brandTwoVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :theirGeneric a cascade:PrescribedOrReportedMedication .
-:theirGenericVersion prov:specializationOf :theirGeneric ; cascade:prescribedOrReported "prescribed" ;
+:theirGenericVersion prov:specializationOf :theirGeneric ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:rxNormCode rxnorm:1000003 .
 :theirGenericRevision a cascade:Revision ; cascade:revisionOf :theirGeneric ; cascade:version :theirGenericVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :strayA a cascade:PrescribedOrReportedMedication .
-:strayAVersion prov:specializationOf :strayA ; cascade:prescribedOrReported "prescribed" ;
+:strayAVersion prov:specializationOf :strayA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:rxNormCode rxnorm:2670 .
 :strayARevision a cascade:Revision ; cascade:revisionOf :strayA ; cascade:version :strayAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :strayB a cascade:PrescribedOrReportedMedication .
-:strayBVersion prov:specializationOf :strayB ; cascade:prescribedOrReported "prescribed" ;
+:strayBVersion prov:specializationOf :strayB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:rxNormCode rxnorm:1191 .
 :strayBRevision a cascade:Revision ; cascade:revisionOf :strayB ; cascade:version :strayBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :fill a cascade:PrescribedOrReportedMedication .
-:fillVersion prov:specializationOf :fill ; cascade:prescribedOrReported "prescribed" ;
+:fillVersion prov:specializationOf :fill ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00378520905> .
 :fillRevision a cascade:Revision ; cascade:revisionOf :fill ; cascade:version :fillVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

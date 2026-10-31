@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-completed-dispense-neither-stops-nor-ends-its-prescription" ;
+  rdfs:comment "An active prescription with no end and no supply, and a pharmacy's completed dispense of it, handed over two days after it was written, with thirty days' supply." ;
+  mf:entries (
+    <#each-records-lifecycle-and-exposure>
+  ) .
+
+<#each-records-lifecycle-and-exposure> a mf:QueryEvaluationTest ;
+  mf:name "each-records-lifecycle-and-exposure" ;
+  rdfs:comment "The dispense is a record of its own kind in an entry of its own, classed completed by its own lifecycle and naming the prescription it fills; the prescription stays active, its exposure ongoing from the day it was written with no end." ;
+  mf:action [ qt:query <each-records-lifecycle-and-exposure.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <each-records-lifecycle-and-exposure.srj> .

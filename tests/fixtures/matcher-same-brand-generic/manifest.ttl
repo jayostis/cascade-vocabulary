@@ -8,12 +8,28 @@
   rdfs:comment "A version of a brand generics table mapping a brand to its generic, and two brands to another generic (the codes of those two brands and their generic are not RxNorm's), and a version of a product ingredient table mapping a code of another medication; medications of each brand and generic, one of both a brand and its generic, one of an unrelated product, one NDC, and two of codes only a version of another kind and a pod file map." ;
   mf:entries (
     <#same-brand-generic>
+    <#same-brand-generic-and-overlapping-exposure-periods>
   ) .
 
 <#same-brand-generic> a mf:QueryEvaluationTest ;
   mf:name "same-brand-generic" ;
   rdfs:comment "A brand and its generic match, either way round, and so do two brands of one generic, with the brand generics table's version; a record that shares a code with either, one of an unrelated product, an NDC, or codes only another kind's version or a pod file maps, do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-brand-generic.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:both> ,
+                                  <urn:x:brandTwo> ,
+                                  <urn:x:fill> ,
+                                  <urn:x:generic> ,
+                                  <urn:x:lisinopril> ,
+                                  <urn:x:strayA> ,
+                                  <urn:x:strayB> ,
+                                  <urn:x:theirGeneric> ] ;
+  mf:result <same-brand-generic.srj> .
+
+<#same-brand-generic-and-overlapping-exposure-periods> a mf:QueryEvaluationTest ;
+  mf:name "same-brand-generic-and-overlapping-exposure-periods" ;
+  rdfs:comment "As same-brand-generic, every record exposed from one day: the period test leaves the drug test's rows as they are." ;
+  mf:action [ qt:query <../../../queries/matcher/same-brand-generic-and-overlapping-exposure-periods.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               ctm:boundRecord <urn:x:both> ,
                                   <urn:x:brandTwo> ,

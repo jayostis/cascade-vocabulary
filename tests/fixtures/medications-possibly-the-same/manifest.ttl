@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "medications-possibly-the-same" ;
-  rdfs:comment "Pairs of medications in two entries: two of one ingredient, two sharing a form that is no product, one pair that three records with two products make, one a Same of the shared product code joined, one judged different, and one whose Same lapsed; an entry joined by an NDC and a product code, and one joined by a product code and a brand generic." ;
+  rdfs:comment "Pairs of medications in two entries: two of one ingredient, two sharing a form that is no product, one pair that three records with two products make, one a Same of the shared product code joined, one judged different, and one whose Same lapsed; two courses of one NDC years apart; an entry joined by an NDC and a product code, and one joined by a product code and a brand generic." ;
   mf:entries (
     <#listed-for-review>
   ) .
 
 <#listed-for-review> a mf:QueryEvaluationTest ;
   mf:name "listed-for-review" ;
-  rdfs:comment "Each pair that shares an RxNorm code in two entries is listed once, from the entry of its smaller record, with no judgment: the ingredient pair, the pair sharing a form, and A-B and B-C of the three records with two products (A and C share nothing). Not listed: the pair already in one entry, the pair judged different, nor the pair whose Same lapsed, which the lapsed reason lists with its judgment. The entry of an NDC and a product code is not joined through two kinds of sameness, and the entry of a product code and a brand generic is." ;
+  rdfs:comment "Each pair that shares an RxNorm code or an NDC in two entries is listed once, from the entry of its smaller record, with no judgment: the ingredient pair, the pair sharing a form, and A-B and B-C of the three records with two products (A and C share nothing), and the two courses of one NDC. Not listed: the pair already in one entry, the pair judged different, nor the pair whose Same lapsed, which the lapsed reason lists with its judgment. The entry of an NDC and a product code is not joined through two kinds of sameness, and the entry of a product code and a brand generic is." ;
   mf:action [ qt:query <../../../queries/questions/entry/What%20needs%20review.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <listed-for-review.srj> .
