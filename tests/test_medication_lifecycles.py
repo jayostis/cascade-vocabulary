@@ -100,3 +100,15 @@ def test_every_fhir_dispense_status_code_has_the_class_l2_gives_it_and_an_absent
                 "MedicationDispenseUnknown", "MedicationDispenseUnknown"]
     assert [record for record, _ in found.values()] == [URIRef(CASCADE + name) for name in expected]
     assert all(record == entry for record, entry in found.values())
+
+
+@pytest.mark.parametrize("engine", sorted(ENGINES))
+def test_a_dispense_with_no_status_and_no_status_source_is_unknown_and_so_is_its_entry(engine):
+    store = ENGINES[engine]()
+    record, entry = URIRef("urn:x:record"), URIRef("urn:x:entry")
+    store.add({(record, RDF.type, URIRef(CASCADE + "MedicationDispense")), (record, URIRef(CASCADE + "inEntry"), entry),
+               (record, URIRef(PAV + "hasCurrentVersion"), URIRef("urn:x:version"))})
+    found = store.construct(query(DISPENSE_DERIVATION))
+    unknown = URIRef(CASCADE + "MedicationDispenseUnknown")
+    assert (record, URIRef(CASCADE + "currentVersionStatusLifecycle"), unknown) in found
+    assert (entry, URIRef(CASCADE + "statusLifecycle"), unknown) in found
