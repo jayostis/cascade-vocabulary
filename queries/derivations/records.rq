@@ -1,7 +1,8 @@
 # The table is the one place that says which types are records and, for each kind, the word for it, the properties
 # that hold its name and date, and whether its status comes only from documents. Every record becomes a
 # cascade:Record, and every version of one gets cascade:displayName and cascade:displayDate, so later steps read any
-# record alike. A medication's date is its start of use, else the day its prescription was written.
+# record alike. A medication's date is its start of use, else the day its prescription was written, and a dispense's
+# the time it was handed over, else the time it was prepared.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
@@ -21,6 +22,7 @@ WHERE {
     (cascade:VariantInterpretation "Variant interpretation" UNDEF                          false cascade:interpretedDate UNDEF)
     (cascade:DiagnosticReport               "Report"       cascade:reportName              false cascade:reportEffectiveTime UNDEF)
     (cascade:ClinicalNoteOrDocument "Note or document" cascade:noteOrDocumentTypeName      false cascade:noteOrDocumentDate UNDEF)
+    (cascade:MedicationDispense "Medication dispense" cascade:drugName               false cascade:dispenseHandedOverTime cascade:dispensePreparedTime)
   }
   ?record a ?type .
   OPTIONAL { ?version prov:specializationOf ?record }

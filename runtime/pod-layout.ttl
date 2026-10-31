@@ -13,6 +13,7 @@
 [] a cascade:Placement ; solid:forClass cascade:Vaccination ; solid:instanceContainer <records/immunizations/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:MedicalProcedure ; solid:instanceContainer <records/procedures/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:PrescribedOrReportedMedication ; solid:instanceContainer <records/medications/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
+[] a cascade:Placement ; solid:forClass cascade:MedicationDispense ; solid:instanceContainer <records/medication-dispenses/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:LaboratoryTestResult ; solid:instanceContainer <records/lab-results/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:GeneticVariantFinding ; solid:instanceContainer <records/variants/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:VariantInterpretation ; solid:instanceContainer <records/variant-interpretations/> ; cascade:holdsRecords true ; cascade:subfolderPrefixLength 2 .
@@ -49,6 +50,8 @@ cascade:SyncFromAnotherWriter rdfs:subClassOf prov:Activity .
    cascade:writtenByQueryPath "views/procedures.rq" ; dct:title "Procedures" .
 [] a cascade:Placement ; solid:forClass cascade:PrescribedOrReportedMedication ; solid:instance <clinical/medications.ttl> ;
    cascade:writtenByQueryPath "views/medications.rq" ; dct:title "Medications" .
+[] a cascade:Placement ; solid:forClass cascade:MedicationDispense ; solid:instance <clinical/medication-dispenses.ttl> ;
+   cascade:writtenByQueryPath "views/medication-dispenses.rq" ; dct:title "Medication dispenses" .
 [] a cascade:Placement ; solid:forClass cascade:LaboratoryTestResult ; solid:instance <clinical/lab-results.ttl> ;
    cascade:writtenByQueryPath "views/lab-results.rq" ; dct:title "Lab results" .
 [] a cascade:Placement ; solid:forClass cascade:GeneticVariantFinding ; solid:instance <clinical/variants.ttl> ;

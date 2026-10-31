@@ -1,0 +1,31 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<urn:uuid:5b0e3f6a-2c4d-4e8f-9a1b-7c3d5e9f1a24> a prov:Activity ;
+  rdfs:label "entered in the Cascade app" ;
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole cascade:PatientRole ] .
+<urn:cascade:output-0> a <https://ns.cascadeprotocol.org/cascade#MedicationDispense> .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
+  <https://ns.cascadeprotocol.org/cascade#drugName> "dispense: completed" ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "completed" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:7c2d9e41-5a8b-4f36-b0e2-9d1a4c6f8e53> .
+<urn:cascade:output-1> a <https://ns.cascadeprotocol.org/cascade#MedicationDispense> .
+<urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
+  <https://ns.cascadeprotocol.org/cascade#drugName> "dispense: In Progress" ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "In Progress" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:7c2d9e41-5a8b-4f36-b0e2-9d1a4c6f8e53> .
+<urn:cascade:output-2> a <https://ns.cascadeprotocol.org/cascade#MedicationDispense> .
+<urn:cascade:output-2-version> prov:specializationOf <urn:cascade:output-2> ;
+  <https://ns.cascadeprotocol.org/cascade#drugName> "dispense: stopped" ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "stopped" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:7c2d9e41-5a8b-4f36-b0e2-9d1a4c6f8e53> .
+<urn:cascade:output-3> a <https://ns.cascadeprotocol.org/cascade#MedicationDispense> .
+<urn:cascade:output-3-version> prov:specializationOf <urn:cascade:output-3> ;
+  <https://ns.cascadeprotocol.org/cascade#drugName> "dispense: none" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:7c2d9e41-5a8b-4f36-b0e2-9d1a4c6f8e53> .
+<urn:cascade:output-4> a <https://ns.cascadeprotocol.org/cascade#MedicationDispense> .
+<urn:cascade:output-4-version> prov:specializationOf <urn:cascade:output-4> ;
+  <https://ns.cascadeprotocol.org/cascade#drugName> "dispense: picked up" ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "picked up" ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:7c2d9e41-5a8b-4f36-b0e2-9d1a4c6f8e53> .

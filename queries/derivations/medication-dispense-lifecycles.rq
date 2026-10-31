@@ -1,0 +1,28 @@
+# The status of each medication dispense's current version is classed by runtime rule L2, and an entry has the class of
+# the record it takes its status from, or unknown when no member gives one. The key is the status lower-cased with every
+# character other than a-z and 0-9 removed, so "in-progress", "In Progress" and "inprogress" are one key. The rows are the
+# codes of FHIR R4's MedicationDispense.status: completed is completed; preparation, in-progress and on-hold are in
+# progress; cancelled, declined and stopped are not completed; entered-in-error is entered-in-error; unknown, an absent
+# status and any other are unknown. A dispense is never classed by L1's table: completed means picked up, not stopped.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+CONSTRUCT {
+  ?record cascade:currentVersionStatusLifecycle ?class .
+  ?shown cascade:statusLifecycle ?shownClass .
+}
+WHERE {
+  { ?record a cascade:MedicationDispense ; cascade:inEntry [] .
+    OPTIONAL { ?record pav:hasCurrentVersion/cascade:workflowStatus ?stated }
+    BIND (REPLACE(LCASE(STR(COALESCE(?stated, ""))), "[^a-z0-9]", "") AS ?key)
+    BIND (IF(?key = "completed", cascade:MedicationDispenseCompleted,
+          IF(?key IN ("preparation", "inprogress", "onhold"), cascade:MedicationDispenseInProgress,
+          IF(?key IN ("cancelled", "declined", "stopped"), cascade:MedicationDispenseNotCompleted,
+          IF(?key = "enteredinerror", cascade:MedicationDispenseEnteredInError, cascade:MedicationDispenseUnknown)))) AS ?class)
+    OPTIONAL { ?shown cascade:statusFrom ?record }
+    BIND (?class AS ?shownClass) }
+  UNION
+  { ?record a cascade:MedicationDispense ; cascade:inEntry ?shown .
+    MINUS { ?shown cascade:statusFrom [] }
+    BIND (cascade:MedicationDispenseUnknown AS ?shownClass) }
+}
