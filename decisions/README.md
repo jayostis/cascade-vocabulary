@@ -101,3 +101,4 @@ brought to it on 2026-10-22 under #202:
 - [`scoped-absence.md`](scoped-absence.md): which kinds of record a pull's source answered for and which it refused, so that "not found" can say where it looked.
 - [`medications.md`](medications.md): each copy of a medication's own lifecycle, and how long it was taken, as `CumulativeMedicationDuration` defines exposure.
 - [`the-person.md`](the-person.md): what a version of the person's profile holds for gender and death, and why sex waits for the rule that reads it.
+- [`allergy-status-from-the-person.md`](allergy-status-from-the-person.md): how a person sets an allergy's status, which status the entry shows, and how a document that disagrees is listed for review.
