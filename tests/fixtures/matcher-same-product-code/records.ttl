@@ -3,15 +3,17 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+:subject a cascade:Subject .
+
 :productA a cascade:PrescribedOrReportedMedication .
-:productAVersion prov:specializationOf :productA ; cascade:prescribedOrReported "prescribed" ;
+:productAVersion prov:specializationOf :productA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "metformin 500 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> .
 :productARevision a cascade:Revision ; cascade:revisionOf :productA ; cascade:version :productAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :productB a cascade:PrescribedOrReportedMedication .
-:productBVersion prov:specializationOf :productB ; cascade:prescribedOrReported "prescribed" ;
+:productBVersion prov:specializationOf :productB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Metformin 500 mg, refill" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/29046> .
@@ -19,7 +21,7 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :strengthA a cascade:PrescribedOrReportedMedication .
-:strengthAVersion prov:specializationOf :strengthA ; cascade:prescribedOrReported "prescribed" ;
+:strengthAVersion prov:specializationOf :strengthA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "amlodipine 5 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/197361> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/370573> .
@@ -27,7 +29,7 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :strengthB a cascade:PrescribedOrReportedMedication .
-:strengthBVersion prov:specializationOf :strengthB ; cascade:prescribedOrReported "prescribed" ;
+:strengthBVersion prov:specializationOf :strengthB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "amlodipine 10 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/308135> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/370573> .
@@ -35,7 +37,7 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :combination a cascade:PrescribedOrReportedMedication .
-:combinationVersion prov:specializationOf :combination ; cascade:prescribedOrReported "prescribed" ;
+:combinationVersion prov:specializationOf :combination ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "amlodipine 2.5 MG / benazepril hydrochloride 10 MG Oral Capsule" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/898350> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/104416> .
@@ -43,7 +45,7 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :single a cascade:PrescribedOrReportedMedication .
-:singleVersion prov:specializationOf :single ; cascade:prescribedOrReported "prescribed" ;
+:singleVersion prov:specializationOf :single ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "amlodipine 2.5 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/308136> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/104416> .
@@ -51,7 +53,7 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :brandFive a cascade:PrescribedOrReportedMedication .
-:brandFiveVersion prov:specializationOf :brandFive ; cascade:prescribedOrReported "prescribed" ;
+:brandFiveVersion prov:specializationOf :brandFive ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Norvasc 5 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/212549> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/58927> .
@@ -59,7 +61,7 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :brandTen a cascade:PrescribedOrReportedMedication .
-:brandTenVersion prov:specializationOf :brandTen ; cascade:prescribedOrReported "prescribed" ;
+:brandTenVersion prov:specializationOf :brandTen ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Norvasc 10 MG Oral Tablet" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/212575> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/58927> .
@@ -67,21 +69,21 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :ingredientA a cascade:PrescribedOrReportedMedication .
-:ingredientAVersion prov:specializationOf :ingredientA ; cascade:prescribedOrReported "prescribed" ;
+:ingredientAVersion prov:specializationOf :ingredientA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Lisinopril" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/29046> .
 :ingredientARevision a cascade:Revision ; cascade:revisionOf :ingredientA ; cascade:version :ingredientAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :ingredientB a cascade:PrescribedOrReportedMedication .
-:ingredientBVersion prov:specializationOf :ingredientB ; cascade:prescribedOrReported "prescribed" ;
+:ingredientBVersion prov:specializationOf :ingredientB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Lisinopril tablets" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/29046> .
 :ingredientBRevision a cascade:Revision ; cascade:revisionOf :ingredientB ; cascade:version :ingredientBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :fillA a cascade:PrescribedOrReportedMedication .
-:fillAVersion prov:specializationOf :fillA ; cascade:prescribedOrReported "prescribed" ;
+:fillAVersion prov:specializationOf :fillA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Lisinopril 10 mg, March" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;
     cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
@@ -89,7 +91,7 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :fillB a cascade:PrescribedOrReportedMedication .
-:fillBVersion prov:specializationOf :fillB ; cascade:prescribedOrReported "prescribed" ;
+:fillBVersion prov:specializationOf :fillB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Lisinopril 10 mg, April" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/314076> ;
     cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093111310> .
@@ -97,14 +99,14 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :bridgeA a cascade:PrescribedOrReportedMedication .
-:bridgeAVersion prov:specializationOf :bridgeA ; cascade:prescribedOrReported "prescribed" ;
+:bridgeAVersion prov:specializationOf :bridgeA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Product X" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000001> .
 :bridgeARevision a cascade:Revision ; cascade:revisionOf :bridgeA ; cascade:version :bridgeAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :bridgeB a cascade:PrescribedOrReportedMedication .
-:bridgeBVersion prov:specializationOf :bridgeB ; cascade:prescribedOrReported "prescribed" ;
+:bridgeBVersion prov:specializationOf :bridgeB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Products X and Y" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000001> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000002> .
@@ -112,49 +114,49 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :bridgeC a cascade:PrescribedOrReportedMedication .
-:bridgeCVersion prov:specializationOf :bridgeC ; cascade:prescribedOrReported "prescribed" ;
+:bridgeCVersion prov:specializationOf :bridgeC ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Product Y" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000002> .
 :bridgeCRevision a cascade:Revision ; cascade:revisionOf :bridgeC ; cascade:version :bridgeCVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :strayA a cascade:PrescribedOrReportedMedication .
-:strayAVersion prov:specializationOf :strayA ; cascade:prescribedOrReported "prescribed" ;
+:strayAVersion prov:specializationOf :strayA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Stray, pod file" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000003> .
 :strayARevision a cascade:Revision ; cascade:revisionOf :strayA ; cascade:version :strayAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :strayB a cascade:PrescribedOrReportedMedication .
-:strayBVersion prov:specializationOf :strayB ; cascade:prescribedOrReported "prescribed" ;
+:strayBVersion prov:specializationOf :strayB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Stray, pod file again" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000003> .
 :strayBRevision a cascade:Revision ; cascade:revisionOf :strayB ; cascade:version :strayBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :otherKindA a cascade:PrescribedOrReportedMedication .
-:otherKindAVersion prov:specializationOf :otherKindA ; cascade:prescribedOrReported "prescribed" ;
+:otherKindAVersion prov:specializationOf :otherKindA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Other kind" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000004> .
 :otherKindARevision a cascade:Revision ; cascade:revisionOf :otherKindA ; cascade:version :otherKindAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :otherKindB a cascade:PrescribedOrReportedMedication .
-:otherKindBVersion prov:specializationOf :otherKindB ; cascade:prescribedOrReported "prescribed" ;
+:otherKindBVersion prov:specializationOf :otherKindB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Other kind again" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000004> .
 :otherKindBRevision a cascade:Revision ; cascade:revisionOf :otherKindB ; cascade:version :otherKindBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :partialA a cascade:PrescribedOrReportedMedication .
-:partialAVersion prov:specializationOf :partialA ; cascade:prescribedOrReported "prescribed" ;
+:partialAVersion prov:specializationOf :partialA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Product P" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000005> .
 :partialARevision a cascade:Revision ; cascade:revisionOf :partialA ; cascade:version :partialAVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :partialB a cascade:PrescribedOrReportedMedication .
-:partialBVersion prov:specializationOf :partialB ; cascade:prescribedOrReported "prescribed" ;
+:partialBVersion prov:specializationOf :partialB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Products P and Q" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000005> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000006> .
@@ -162,7 +164,7 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :partialC a cascade:PrescribedOrReportedMedication .
-:partialCVersion prov:specializationOf :partialC ; cascade:prescribedOrReported "prescribed" ;
+:partialCVersion prov:specializationOf :partialC ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Product Q" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000006> .
 :partialCRevision a cascade:Revision ; cascade:revisionOf :partialC ; cascade:version :partialCVersion ;
@@ -170,7 +172,7 @@
 
 # Two of one product, one also carrying a code only the version no longer current lists.
 :droppedA a cascade:PrescribedOrReportedMedication .
-:droppedAVersion prov:specializationOf :droppedA ; cascade:prescribedOrReported "prescribed" ;
+:droppedAVersion prov:specializationOf :droppedA ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Product R, and a product the table no longer lists" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000008> ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000007> .
@@ -178,7 +180,7 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :droppedB a cascade:PrescribedOrReportedMedication .
-:droppedBVersion prov:specializationOf :droppedB ; cascade:prescribedOrReported "prescribed" ;
+:droppedBVersion prov:specializationOf :droppedB ; cascade:patient :subject ; cascade:medicationUseStartDate "2026-01-01"^^xsd:date ; cascade:prescribedOrReported "prescribed" ;
     cascade:drugName "Product R" ;
     cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/1000008> .
 :droppedBRevision a cascade:Revision ; cascade:revisionOf :droppedB ; cascade:version :droppedBVersion ;

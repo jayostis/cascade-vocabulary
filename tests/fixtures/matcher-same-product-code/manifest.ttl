@@ -9,6 +9,7 @@
   mf:entries (
     <#same-product-code>
     <#same-product-code-in-current-tables>
+    <#same-product-code-in-current-tables-and-overlapping-exposure-periods>
   ) .
 
 <#same-product-code> a mf:QueryEvaluationTest ;
@@ -45,6 +46,36 @@
   mf:name "same-product-code-in-current-tables" ;
   rdfs:comment "As same-product-code, with codes counted over the current version of each series alone: a code only the drug products version no longer current lists is not counted, so the record that carries it beside a product another record shares joins that record, which same-product-code leaves out." ;
   mf:action [ qt:query <../../../queries/matcher/same-product-code-in-current-tables.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:brandFive> ,
+                                  <urn:x:brandTen> ,
+                                  <urn:x:bridgeA> ,
+                                  <urn:x:bridgeB> ,
+                                  <urn:x:bridgeC> ,
+                                  <urn:x:combination> ,
+                                  <urn:x:droppedA> ,
+                                  <urn:x:droppedB> ,
+                                  <urn:x:fillA> ,
+                                  <urn:x:fillB> ,
+                                  <urn:x:ingredientA> ,
+                                  <urn:x:ingredientB> ,
+                                  <urn:x:otherKindA> ,
+                                  <urn:x:otherKindB> ,
+                                  <urn:x:partialA> ,
+                                  <urn:x:partialB> ,
+                                  <urn:x:partialC> ,
+                                  <urn:x:productB> ,
+                                  <urn:x:single> ,
+                                  <urn:x:strayA> ,
+                                  <urn:x:strayB> ,
+                                  <urn:x:strengthA> ,
+                                  <urn:x:strengthB> ] ;
+  mf:result <same-product-code-in-current-tables.srj> .
+
+<#same-product-code-in-current-tables-and-overlapping-exposure-periods> a mf:QueryEvaluationTest ;
+  mf:name "same-product-code-in-current-tables-and-overlapping-exposure-periods" ;
+  rdfs:comment "As same-product-code-in-current-tables, every record exposed from one day: the period test leaves the drug test's rows as they are." ;
+  mf:action [ qt:query <../../../queries/matcher/same-product-code-in-current-tables-and-overlapping-exposure-periods.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               ctm:boundRecord <urn:x:brandFive> ,
                                   <urn:x:brandTen> ,

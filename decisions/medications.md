@@ -5,7 +5,7 @@ Status: draft, 2026-10-29, written with #292 (phase 1 of #287), which applies it
 `CumulativeMedicationDuration` does), `clinical-terms-follow-fhir.md` (a departure from FHIR is explained in its area's
 note, and this is the medications area's), `one-meaning-per-term.md` (the lifecycle classes, rule L1) and
 `partial-dates-and-absent-reasons.md` (the four date types a source date may take). The medication matching rules M15
-and M16, which decide which copies are one entry, still need their own note (#286).
+and M16, which decide which copies are one entry, are ruled in `medication-matching.md`.
 
 ## Question
 

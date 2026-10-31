@@ -20,7 +20,9 @@ Feature: The matcher's procedure
   rule list's version 13. Hana, with the vocabulary's rule list of an app, enters conditions, flu
   shots and lab results whose dates are a year, a month or a time to the hour, under the rule list's version 14. Gus,
   with the vocabulary's rule list of an app, imports his clinic's summaries, whose plan of treatment grows, and the
-  hospital course his hospital and his clinic each send, under the rule list's version 17.
+  hospital course his hospital and his clinic each send, under the rule list's version 17. Gus, with the drug products
+  table and the vocabulary's rule list of an app, enters two courses of metformin years apart and a copy within the
+  first, under the rule list's version 18.
 
   Rule: M1. A step's records are those with at least one first revision from that step's import, entry session or connect, the servers its connect wrote any revision for, or all from acts its sync names
     decisions/republishing-sources.md, row "what a run compares"; decisions/performance.md, row "runs bound to arrivals, scoped within an organisation".
@@ -354,6 +356,18 @@ Feature: The matcher's procedure
       queries/matcher/same-note-or-document-master-identifier.rq, for notes only. Two notes of one master identifier
       typed by its system, from any sources.
 
+    Version 18 of the vocabulary's list changes the queries of R5, R10 and R11 to join two medications only when their
+    exposure periods share a day as well, whose examples are under M16; versions 1 to 17 pin the old files:
+
+    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode:
+      queries/matcher/same-ndc-code-and-overlapping-exposure-periods.rq, for medications only.
+    - R10, cascade:SameBrandGenericRule, justified cascade:SameBrandGeneric:
+      queries/matcher/same-brand-generic-and-overlapping-exposure-periods.rq, with cascade:BrandGenerics, for
+      medications only.
+    - R11, cascade:SameProductCodeRule, justified cascade:SameProductCode:
+      queries/matcher/same-product-code-in-current-tables-and-overlapping-exposure-periods.rq, with
+      cascade:DrugProducts, for medications only.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
@@ -362,7 +376,8 @@ Feature: The matcher's procedure
     changed query, R15, R16 and R17 in its version 12, R18 as well in its version 13, and R2's, R4's, R6's, R8's,
     R15's, R16's and R17's changed queries in its version 14, R6's, R15's, R16's, R17's and R18's queries bound
     per side in its version 15, R1's, R2's, R3's, R4's, R5's, R7's, R10's, R11's, R12's and R13's queries joined
-    on the code first in its version 16, and R19, R20 and R21 as well in its version 17.
+    on the code first in its version 16, R19, R20 and R21 as well in its version 17, and R5's, R10's and R11's
+    queries with the period test in its version 18.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -820,8 +835,8 @@ Feature: The matcher's procedure
     Example: a condition with no onset joins nothing
       Then the matcher has no judgment holding condition ICD-10-CM R10.9 "Abdominal pain, no onset" and condition ICD-10-CM R10.9 "Abdominal pain, 2022"
 
-  Rule: M15. A medication is compared by every RxNorm and NDC code it carries, and through the brand generics table
-    No note rules this.
+  Rule: M15. A medication is compared by every RxNorm and NDC code it carries, through the brand generics table, and by its exposure period
+    decisions/medication-matching.md, rows "same course", "a period", "an ongoing course", "no dates" and "a gap".
     A medication version may carry any number of RxNorm codes and NDC codes (cascade:ndcCode), and name the one its
     source chose (cascade:userSelectedCode). R5 reads no table: it joins two medications that share an NDC, or whose chosen
     RxNorm codes are the same. The chosen RxNorm code is the selected one when that is an RxNorm code, else the only
@@ -833,6 +848,15 @@ Feature: The matcher's procedure
     R10 joins a branded product and its generic, or two brands of one generic, by a version of the brand generics
     table, only when the two records share no code, so R5 and R10 never judge one pair. No rule joins an NDC with the
     drug it is, until jayostis/cascade-vocabulary#118.
+
+    From the rule list's version 18, R5, R10 and R11 join two medications only when their exposure periods share at
+    least one day as well, so two courses of one drug years apart are two medications. A period runs from the record's
+    cascade:medicationExposureStart to its cascade:medicationExposureEnd, both days counting; with no end it runs on
+    while cascade:medicationExposureOngoing holds, and is its start day alone otherwise. A record with no exposure start
+    joins no other medication, and a break of one day keeps two apart. A start given to the year or month counts as its
+    last day and an end as its first, unlike M14 and M23, which read a partial date as every day it covers, so two
+    records join only when the overlap is certain. The examples here and under M16 that give no
+    dates run under versions 6 and 7; M16 has one under version 18.
 
     Gus's pharmacy entry holds medications whose codes pair in no more than twos, so no judgment depends on M3's order.
 
@@ -858,7 +882,7 @@ Feature: The matcher's procedure
         | same medication code | medication NDC 00093111310 "Lisinopril 10 mg, March", medication NDC 00093111310 "Lisinopril 10 mg, April" | version 1 of medication NDC 00093111310 "Lisinopril 10 mg, March", version 1 of medication NDC 00093111310 "Lisinopril 10 mg, April" |
 
   Rule: M16. Medications are joined by a shared NDC, or by a shared RxNorm code that the drug products table says names one product, and by no other code they share
-    No note rules this.
+    decisions/medication-matching.md, row "what is kept apart".
     R5 joins two medications that share an NDC. R11 joins two medications that share an RxNorm code which a version of
     the drug products table lists (an SCD, SBD, GPCK or BPCK), whatever else each carries and whichever code its source
     selected. A pair that shares an NDC is R5's alone, so no pair has two justifications. R11 leaves out a medication
@@ -868,7 +892,8 @@ Feature: The matcher's procedure
     records of one ingredient, one dose form, one brand name or a product the table does not list, is "possibly the same
     medication" on "What needs review", for a person to confirm. No step asks a question, so the vocabulary's fixtures
     show it. R10 joins only records that share no code, so a brand and its generic that also share a code that is not a
-    product are left to a person too.
+    product are left to a person too. So are a pair of one product or one NDC that version 18's period test (M15) keeps
+    apart, as two courses or one course with a gap.
 
     Each example opens a new pod for Gus with the drug products table, the last after version 6's drugs table, and
     enters its own entry, so that no example's records join another's.
@@ -939,6 +964,15 @@ Feature: The matcher's procedure
         | same medication code | medication NDC 00093111310 "Lisinopril 10 mg, March", medication NDC 00093111310 "Lisinopril 10 mg, April" | version 1 of medication NDC 00093111310 "Lisinopril 10 mg, March", version 1 of medication NDC 00093111310 "Lisinopril 10 mg, April"                                |
         | same product code    | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" | Drug products table version 1, version 1 of medication RxNorm 861007 "metformin 500 MG Oral Tablet", version 1 of medication RxNorm 861007 "Metformin 500 mg, list" |
       And the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" has lapsed
+
+    Example: two courses of one product years apart are no Same, and a copy within the first course is the same product code
+      Given a new pod for Gus on 2026-10-01 at 09:00
+      And the pod is opened with the tables "app-courses" on 2026-10-01 at 09:01
+      And Gus enters "two-courses" on 2026-10-02 at 09:00
+      When the matcher runs on the records of that entry on 2026-10-02 at 09:05
+      Then the matcher's judgments holding medication RxNorm 861007 "metformin 500 MG, 2019 to 2021", medication RxNorm 861007 "metformin 500 MG, since 2026" and medication RxNorm 861007 "metformin 500 MG, spring 2020" are:
+        | justification     | members                                                                                                             | used                                                                                                                                                                         |
+        | same product code | medication RxNorm 861007 "metformin 500 MG, 2019 to 2021", medication RxNorm 861007 "metformin 500 MG, spring 2020" | Drug products table version 1, version 1 of medication RxNorm 861007 "metformin 500 MG, 2019 to 2021", version 1 of medication RxNorm 861007 "metformin 500 MG, spring 2020" |
 
   Rule: M17. Variants are joined by a shared ClinVar VariationID, or by finding one row of a variant classifications table, and by no other code
     decisions/variant-identity.md, rows "join by ID (R12)", "join through the table (R13)", "how a version finds its row", "left alone" and "computed identity"; decisions/performance.md, row "page-read tables, current versions only"; decisions/variant-record.md, row "computed identity".

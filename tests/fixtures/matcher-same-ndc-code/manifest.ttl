@@ -8,12 +8,26 @@
   rdfs:comment "Two fills of one NDC; a fill and a record of that NDC and an RxNorm code; two records of one RxNorm code and no NDC; a record of that RxNorm code beside one that also carries an NDC; a record of another NDC. No table is held." ;
   mf:entries (
     <#same-ndc-code>
+    <#same-ndc-code-and-overlapping-exposure-periods>
   ) .
 
 <#same-ndc-code> a mf:QueryEvaluationTest ;
   mf:name "same-ndc-code" ;
   rdfs:comment "Records whose current versions share an NDC match, whatever else each carries; a shared RxNorm code alone, or another NDC, matches nothing." ;
   mf:action [ qt:query <../../../queries/matcher/same-ndc-code.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:listed> ,
+                                  <urn:x:march> ,
+                                  <urn:x:other> ,
+                                  <urn:x:refill> ,
+                                  <urn:x:reported> ,
+                                  <urn:x:sameDrug> ] ;
+  mf:result <same-ndc-code.srj> .
+
+<#same-ndc-code-and-overlapping-exposure-periods> a mf:QueryEvaluationTest ;
+  mf:name "same-ndc-code-and-overlapping-exposure-periods" ;
+  rdfs:comment "As same-ndc-code, every record exposed from one day: the period test leaves the drug test's rows as they are." ;
+  mf:action [ qt:query <../../../queries/matcher/same-ndc-code-and-overlapping-exposure-periods.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               ctm:boundRecord <urn:x:listed> ,
                                   <urn:x:march> ,

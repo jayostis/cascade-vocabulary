@@ -2248,12 +2248,12 @@ cascade:SameMappedCodeAndDate a owl:NamedIndividual ;
 
 cascade:SameMedicationCode a owl:NamedIndividual ;
     rdfs:label "same medication code"@en ;
-    rdfs:comment "Both medication records share an NDC code. In the rule list's versions 2 to 6 they shared an RxNorm code as well (from version 6, the same chosen RxNorm code, the one their source selected or their only one), whether each came from a prescription or from a list of what the person takes."@en ;
+    rdfs:comment "Both medication records share an NDC code. In the rule list's versions 2 to 6 they shared an RxNorm code as well (from version 6, the same chosen RxNorm code, the one their source selected or their only one), whether each came from a prescription or from a list of what the person takes. From the rule list's version 18, their exposure periods (cascade:medicationExposureStart) share at least one day as well; rule M15 and decisions/medication-matching.md, row \"same course\", say why."@en ;
     skos:broadMatch semapv:LexicalMatching .
 
 cascade:SameProductCode a owl:NamedIndividual ;
     rdfs:label "same product code"@en ;
-    rdfs:comment "Both medication records carry one RxNorm code that a version of a drug products table says names one drug product (SCD, SBD, GPCK or BPCK); they share no NDC."@en ;
+    rdfs:comment "Both medication records carry one RxNorm code that a version of a drug products table says names one drug product (SCD, SBD, GPCK or BPCK); they share no NDC. From the rule list's version 18, their exposure periods (cascade:medicationExposureStart) share at least one day as well; rule M15 and decisions/medication-matching.md, row \"same course\", say why."@en ;
     skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
 
 cascade:SameVariation a owl:NamedIndividual ;
@@ -2273,7 +2273,7 @@ cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost a owl:NamedIndi
 
 cascade:SameBrandGeneric a owl:NamedIndividual ;
     rdfs:label "same brand generic"@en ;
-    rdfs:comment "One record's branded RxNorm product and the other's generic, or two brands of one generic, by a version of a brand generics table; the records share no code."@en ;
+    rdfs:comment "One record's branded RxNorm product and the other's generic, or two brands of one generic, by a version of a brand generics table; the records share no code. From the rule list's version 18, their exposure periods (cascade:medicationExposureStart) share at least one day as well; rule M15 and decisions/medication-matching.md, row \"same course\", say why."@en ;
     skos:broadMatch semapv:BackgroundKnowledgeBasedMatching .
 
 cascade:SameResult a owl:NamedIndividual ;

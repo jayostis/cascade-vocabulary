@@ -1,0 +1,25 @@
+# Two records of one kind match when their current versions share an NDC and their exposure periods share at least
+# one day, so two courses of one product years apart stay two medications (decisions/medication-matching.md). A period
+# runs from cascade:medicationExposureStart to cascade:medicationExposureEnd, both days included; with no end it runs on
+# when the record's exposure is ongoing, and is its start day alone otherwise. A record with no exposure start matches
+# nothing. No table is read, and RxNorm codes are not compared here: the rule that reads the drug products table joins
+# those that name one product. Any intents are ignored. Each ordered pair is a row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+
+SELECT DISTINCT ?record ?other
+WHERE {
+  ?record pav:hasCurrentVersion ?version ; cascade:medicationExposureStart ?start .
+  ?version cascade:ndcCode ?code .
+  ?otherVersion cascade:ndcCode ?code .
+  ?other pav:hasCurrentVersion ?otherVersion ; cascade:medicationExposureStart ?otherStart .
+  ?record cascade:recordKind ?kind .
+  ?other cascade:recordKind ?otherKind .
+  FILTER (?record != ?other && sameTerm(?kind, ?otherKind))
+  OPTIONAL { ?record cascade:medicationExposureEnd ?end }
+  OPTIONAL { ?record cascade:medicationExposureOngoing ?ongoing }
+  OPTIONAL { ?other cascade:medicationExposureEnd ?otherEnd }
+  OPTIONAL { ?other cascade:medicationExposureOngoing ?otherOngoing }
+  FILTER (STR(?start) <= COALESCE(STR(?otherEnd), IF(BOUND(?otherOngoing), "9999-12-31", STR(?otherStart)))
+          && STR(?otherStart) <= COALESCE(STR(?end), IF(BOUND(?ongoing), "9999-12-31", STR(?start))))
+}

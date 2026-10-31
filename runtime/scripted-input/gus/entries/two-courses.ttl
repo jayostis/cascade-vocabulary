@@ -1,0 +1,33 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<urn:uuid:03dcee8b-5ca3-458e-ac1b-39340f96b357> a prov:Activity ;
+  rdfs:label "entered in the Cascade app" ;
+  prov:qualifiedAssociation [ prov:agent <https://pod.example/profile/card.ttl#me> ; prov:hadRole cascade:PatientRole ] .
+<urn:cascade:output-0> a <https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication> .
+<urn:cascade:output-0-version> prov:specializationOf <urn:cascade:output-0> ;
+  <https://ns.cascadeprotocol.org/cascade#drugName> "metformin 500 MG, 2019 to 2021" ;
+  <https://ns.cascadeprotocol.org/cascade#rxNormCode> <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ;
+  <https://ns.cascadeprotocol.org/cascade#prescribedOrReported> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "completed" ;
+  <https://ns.cascadeprotocol.org/cascade#medicationUseStartDate> "2019-01-10"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/cascade#medicationUseEndDate> "2021-07-30"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-1> a <https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication> .
+<urn:cascade:output-1-version> prov:specializationOf <urn:cascade:output-1> ;
+  <https://ns.cascadeprotocol.org/cascade#drugName> "metformin 500 MG, since 2026" ;
+  <https://ns.cascadeprotocol.org/cascade#rxNormCode> <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ;
+  <https://ns.cascadeprotocol.org/cascade#prescribedOrReported> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "active" ;
+  <https://ns.cascadeprotocol.org/cascade#medicationUseStartDate> "2026-09-20"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
+<urn:cascade:output-2> a <https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication> .
+<urn:cascade:output-2-version> prov:specializationOf <urn:cascade:output-2> ;
+  <https://ns.cascadeprotocol.org/cascade#drugName> "metformin 500 MG, spring 2020" ;
+  <https://ns.cascadeprotocol.org/cascade#rxNormCode> <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ;
+  <https://ns.cascadeprotocol.org/cascade#prescribedOrReported> "reportedUse" ;
+  <https://ns.cascadeprotocol.org/cascade#workflowStatus> "completed" ;
+  <https://ns.cascadeprotocol.org/cascade#medicationUseStartDate> "2020-03-01"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/cascade#medicationUseEndDate> "2020-06-01"^^<http://www.w3.org/2001/XMLSchema#date> ;
+  <https://ns.cascadeprotocol.org/cascade#patient> <urn:uuid:1392db7d-f82b-4f91-bde1-cbb601a0f79c> .
