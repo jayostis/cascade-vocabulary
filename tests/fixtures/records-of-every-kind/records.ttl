@@ -67,3 +67,9 @@
     cascade:noteOrDocumentDate "2025-05-06"^^xsd:date .
 :noteRevision a cascade:Revision ; cascade:revisionOf :note ; cascade:version :noteVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:dispense a cascade:MedicationDispense .
+:dispenseVersion prov:specializationOf :dispense ; cascade:drugName "amoxicillin 500 MG Oral Capsule" ; cascade:workflowStatus "in-progress" ;
+    cascade:dispensePreparedTime "2024-02-11"^^xsd:date ; cascade:authorizingPrescription :prescription .
+:dispenseRevision a cascade:Revision ; cascade:revisionOf :dispense ; cascade:version :dispenseVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
