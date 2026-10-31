@@ -388,7 +388,7 @@ The view holds no entry.
 |---|---|
 
 The entry holding the record has, for each field the table names, exactly these values; with `only`, it states nothing
-else but its members and their current values (`cascade:memberCurrentValues`). The fields are `type`, `status`, `criticality`, `abatement date`, `status from` and
+else but its members. The fields are `type`, `status`, `criticality`, `abatement date`, `status from` and
 `lead member`.
 
 ### `{records} is/are in no view`
