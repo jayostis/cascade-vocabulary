@@ -190,7 +190,7 @@ cascade:workflowStatus a owl:DatatypeProperty ;
     rdfs:label "Workflow Status"@en ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:Vaccination cascade:MedicalProcedure cascade:LaboratoryTestResult
         cascade:PrescribedOrReportedMedication cascade:GeneticVariantFinding cascade:VariantInterpretation
-        cascade:DiagnosticReport cascade:ClinicalNoteOrDocument ) ] ;
+        cascade:DiagnosticReport cascade:ClinicalNoteOrDocument cascade:MedicationDispense ) ] ;
     rdfs:range xsd:string ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> , <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
@@ -387,14 +387,14 @@ cascade:PrescribedOrReportedMedication a owl:Class ;
 
 cascade:drugName a owl:DatatypeProperty ;
     rdfs:label "Drug Name"@en ;
-    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicationDispense ) ] ;
     rdfs:range xsd:string ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
 cascade:rxNormCode a owl:ObjectProperty ;
     rdfs:label "RxNorm Code"@en ;
-    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicationDispense ) ] ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -654,6 +654,48 @@ cascade:attachmentUrl a owl:DatatypeProperty ;
     rdfs:range xsd:anyURI ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/datatypes-definitions.html#Attachment.url> .
 
+# A pharmacy's dispense; decisions/medications.md
+
+cascade:MedicationDispense a owl:Class ;
+    rdfs:label "medication dispense"@en ;
+    rdfs:comment "A supply of a medication a pharmacy prepared for the person or handed over to them, as FHIR's MedicationDispense: its drug, by the drug terms a medication's version uses, its status, the prescription it fills, when it was prepared and handed over, how much was dispensed and for how many days. A record of its own kind, never a medication record: a fill is evidence of use, not a course, and it reaches its course through cascade:authorizingPrescription."@en ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationdispense-definitions.html#MedicationDispense> .
+
+cascade:authorizingPrescription a owl:ObjectProperty ;
+    rdfs:label "authorizing prescription"@en ;
+    rdfs:comment "Of a version of a medication dispense, a prescription it was dispensed against, as FHIR's MedicationDispense.authorizingPrescription: the IRI of that prescription's medication record, one for each the source named. It may name a record no source of the pod sent."@en ;
+    rdfs:domain cascade:MedicationDispense ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationdispense-definitions.html#MedicationDispense.authorizingPrescription> .
+
+cascade:dispensePreparedTime a owl:DatatypeProperty ;
+    rdfs:label "dispense prepared time"@en ;
+    rdfs:comment "Of a version of a medication dispense, when the dispensed product was packaged and reviewed, as FHIR's MedicationDispense.whenPrepared; never when it was handed over."@en ;
+    rdfs:domain cascade:MedicationDispense ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationdispense-definitions.html#MedicationDispense.whenPrepared> .
+
+cascade:dispenseHandedOverTime a owl:DatatypeProperty ;
+    rdfs:label "dispense handed over time"@en ;
+    rdfs:comment "Of a version of a medication dispense, when the dispensed product was provided to the person or their representative, as FHIR's MedicationDispense.whenHandedOver."@en ;
+    rdfs:domain cascade:MedicationDispense ;
+    rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationdispense-definitions.html#MedicationDispense.whenHandedOver> .
+
+cascade:dispenseQuantity a owl:ObjectProperty ;
+    rdfs:label "dispense quantity"@en ;
+    rdfs:comment "Of a version of a medication dispense, the amount of the medication dispensed, as FHIR's MedicationDispense.quantity: a cascade:Quantity <version>#dispense-quantity."@en ;
+    rdfs:domain cascade:MedicationDispense ;
+    rdfs:range cascade:Quantity ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationdispense-definitions.html#MedicationDispense.quantity> .
+
+cascade:dispenseDaysSupply a owl:ObjectProperty ;
+    rdfs:label "dispense days supply"@en ;
+    rdfs:comment "Of a version of a medication dispense, how long the amount dispensed is expected to last, as FHIR's MedicationDispense.daysSupply: a cascade:Quantity <version>#dispense-days-supply whose unit is a UCUM unit of time."@en ;
+    rdfs:domain cascade:MedicationDispense ;
+    rdfs:range cascade:Quantity ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationdispense-definitions.html#MedicationDispense.daysSupply> .
+
 # Records
 
 cascade:sourceUrl a owl:ObjectProperty ;
@@ -667,14 +709,14 @@ cascade:patient a owl:ObjectProperty ;
 cascade:ndcCode a owl:ObjectProperty ;
     rdfs:label "NDC code"@en ;
     rdfs:comment "An NDC the source gave, as the cascade:NDC IRI: Cascade's 11-digit form, so an adapter normalises FHIR's 10-digit hyphenated form into it."@en ;
-    rdfs:domain cascade:PrescribedOrReportedMedication .
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicationDispense ) ] .
 
 cascade:medicationCodeInOtherSystem a owl:DatatypeProperty ;
     rdfs:label "medication code in another system"@en ;
     rdfs:comment "Of a version of a medication, a code the source gave for the drug in a system this kind has no property of its own for, such as a formulary's or SNOMED CT, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. An RxNorm or NDC code is a cascade:rxNormCode or cascade:ndcCode IRI instead."@en ;
-    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicationDispense ) ] ;
     rdfs:range rdfs:Literal ;
-    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.medication_x_> , <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.medication_x_> , <https://hl7.org/fhir/R4/medication-definitions.html#Medication.code> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.medication_x_> , <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.medication_x_> , <https://hl7.org/fhir/R4/medicationdispense-definitions.html#MedicationDispense.medication_x_> , <https://hl7.org/fhir/R4/medication-definitions.html#Medication.code> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
 
 cascade:prescriptionWrittenDate a owl:DatatypeProperty ;
     rdfs:label "prescription written date"@en ;
@@ -795,7 +837,7 @@ cascade:dosageRouteCodeInOtherSystem a owl:DatatypeProperty ;
 cascade:userSelectedCode a owl:ObjectProperty ;
     rdfs:label "user selected code"@en ;
     rdfs:comment "The one code among the version's codes that the source marked as the one it chose, as FHIR's Coding.userSelected does; absent when the source marked none."@en ;
-    rdfs:domain cascade:PrescribedOrReportedMedication .
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicationDispense ) ] .
 
 cascade:Revision a owl:Class ;
     rdfs:label "revision"@en ;
@@ -1995,14 +2037,14 @@ dct:identifier a owl:DatatypeProperty ;
 
 cascade:lifecycle a owl:ObjectProperty ;
     rdfs:label "lifecycle"@en ;
-    rdfs:comment "Of a medication entry in its view, the concept of cascade:MedicationLifecycle that its status classifies to, so an app reads whether the medication is still taken without the status; cascade:MedicationUnknown where it states none."@en ;
-    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:comment "Of a medication entry in its view, the concept of cascade:MedicationLifecycle that its status classifies to, so an app reads whether the medication is still taken without the status; cascade:MedicationUnknown where it states none. Of a medication dispense entry in its view, the concept of cascade:MedicationDispenseLifecycle, so an app reads whether it was handed over; cascade:MedicationDispenseUnknown where it states none."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicationDispense ) ] ;
     rdfs:range skos:Concept .
 
 cascade:statusLifecycle a owl:ObjectProperty ;
     rdfs:label "status lifecycle"@en ;
-    rdfs:comment "Derived: the lifecycle class of the status the entry shows, the cascade:currentVersionStatusLifecycle of the member it takes its status from. The medications view says it as cascade:lifecycle, a name of its own because a query reading both the derived state and the view would otherwise find each triple twice."@en ;
-    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:comment "Derived: the lifecycle class of the status the entry shows, the cascade:currentVersionStatusLifecycle of the member it takes its status from. The medications and medication dispenses views say it as cascade:lifecycle, a name of its own because a query reading both the derived state and the view would otherwise find each triple twice."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicationDispense ) ] ;
     rdfs:range skos:Concept .
 
 cascade:statusLifecycleStep a owl:DatatypeProperty ;
@@ -2013,8 +2055,8 @@ cascade:statusLifecycleStep a owl:DatatypeProperty ;
 
 cascade:currentVersionStatusLifecycle a owl:ObjectProperty ;
     rdfs:label "current version status lifecycle"@en ;
-    rdfs:comment "Derived: of a medication record in an entry, the lifecycle class of its own current version's status, by runtime rule L1. A rule reads a copy's own class, never its entry's, which is the class of the one member the entry takes its status from."@en ;
-    rdfs:domain cascade:PrescribedOrReportedMedication ;
+    rdfs:comment "Derived: of a medication record in an entry, the lifecycle class of its own current version's status, by runtime rule L1; of a medication dispense in an entry, by rule L2. A rule reads a copy's own class, never its entry's, which is the class of the one member the entry takes its status from."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicationDispense ) ] ;
     rdfs:range skos:Concept .
 
 cascade:currentVersionStatusLifecycleStep a owl:DatatypeProperty ;
@@ -2080,6 +2122,38 @@ cascade:MedicationEnteredInError a skos:Concept ;
     skos:inScheme cascade:MedicationLifecycle ;
     skos:prefLabel "entered-in-error" ;
     skos:definition "The record itself is repudiated. Not a statement about the medication at all, so not read as stopped; \"My active medications\" leaves it out."@en .
+
+cascade:MedicationDispenseLifecycle a skos:ConceptScheme ;
+    rdfs:label "Medication dispense lifecycle"@en ;
+    rdfs:comment "Whether a pharmacy handed a dispense over, the codes of FHIR R4's MedicationDispense.status each in one class by runtime rule L2, so an absent status is unknown rather than handed over. A dispense's classes are never a medication's: a completed dispense is a fill handed over, not a course stopped. The rows are in derivations/medication-dispense-lifecycles.rq."@en ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/valueset-medicationdispense-status.html> ;
+    skos:hasTopConcept cascade:MedicationDispenseCompleted , cascade:MedicationDispenseInProgress ,
+        cascade:MedicationDispenseNotCompleted , cascade:MedicationDispenseUnknown , cascade:MedicationDispenseEnteredInError .
+
+cascade:MedicationDispenseCompleted a skos:Concept ;
+    skos:inScheme cascade:MedicationDispenseLifecycle ;
+    skos:prefLabel "completed" ;
+    skos:definition "The source states the dispensed product was picked up: evidence the person received the medication, saying nothing about whether the course goes on."@en .
+
+cascade:MedicationDispenseInProgress a skos:Concept ;
+    skos:inScheme cascade:MedicationDispenseLifecycle ;
+    skos:prefLabel "in progress" ;
+    skos:definition "The source states the dispense is being prepared, is ready for pickup or is paused, and has not been handed over yet."@en .
+
+cascade:MedicationDispenseNotCompleted a skos:Concept ;
+    skos:inScheme cascade:MedicationDispenseLifecycle ;
+    skos:prefLabel "not completed" ;
+    skos:definition "The source states the dispense ended without being completed: cancelled and never to be picked up, declined, or stopped before all its actions occurred. Not evidence the medication was received."@en .
+
+cascade:MedicationDispenseUnknown a skos:Concept ;
+    skos:inScheme cascade:MedicationDispenseLifecycle ;
+    skos:prefLabel "unknown" ;
+    skos:definition "The source states no status, unknown, or one FHIR does not list. Not evidence either way."@en .
+
+cascade:MedicationDispenseEnteredInError a skos:Concept ;
+    skos:inScheme cascade:MedicationDispenseLifecycle ;
+    skos:prefLabel "entered-in-error" ;
+    skos:definition "The record itself is repudiated, so it is left out at source; not a statement about the medication."@en .
 
 # Judgments
 

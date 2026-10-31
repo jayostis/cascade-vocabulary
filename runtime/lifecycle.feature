@@ -3,7 +3,7 @@ Feature: Medication lifecycle
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Ben
   enters fifteen medications, each named by the status it states: a FHIR code in capitals, an abbreviation, none, a
   blank one, FHIR codes, the HL7 v3 ActStatus codes a C-CDA medication activity carries, a synonym, phrases, run-together text and text
-  nothing matches.
+  nothing matches. He also enters five dispenses, each named by the status it states.
 
   Rule: L1. A medication record's status, and so its entry's, is classed active, stopped, paused, unknown or entered-in-error by the first step of this order that holds
     decisions/one-meaning-per-term.md, rows "3. a medication's status" and "5. one status for every kind", and
@@ -124,3 +124,35 @@ Feature: Medication lifecycle
         | medication             | lifecycle                 | step |
         | "status: see pharmacy" | cascade:MedicationUnknown | 6    |
         | "status: new"          | cascade:MedicationUnknown | 6    |
+
+  Rule: L2. A pharmacy's dispense is classed completed, in progress, not completed, unknown or entered-in-error by its own status, and never by L1
+    decisions/medications.md, row "a dispense's lifecycle".
+    Each dispense in an entry is classed by the status of its own current version, derived as
+    cascade:currentVersionStatusLifecycle, and the entry has the class of the member it takes its status from, or unknown
+    when no member gives one, as cascade:statusLifecycle; the view says it as cascade:lifecycle. The classes are the
+    concepts of cascade:MedicationDispenseLifecycle. The key is the status lower-cased with every character other than
+    a-z and 0-9 removed. FHIR R4's MedicationDispense.status codes have these classes: completed is completed;
+    preparation, in-progress and on-hold are in progress; cancelled, declined and stopped are not completed;
+    entered-in-error is entered-in-error; unknown is unknown. An absent status, and any other, is unknown. A completed
+    dispense is a fill picked up: it never reads as a stopped medication, and no course ends by it.
+
+    Background:
+      Given a new pod for Ben on 2026-02-01 at 08:00
+      And Ben enters "medication-dispense-statuses" on 2026-02-01 at 08:30
+
+    Example: a FHIR dispense status has its own class, read without case or punctuation, and an absent or other status is unknown
+      When the query is:
+        """
+        SELECT ?medication ?lifecycle WHERE {
+          VALUES ?medication { "dispense: completed" "dispense: In Progress" "dispense: stopped" "dispense: none" "dispense: picked up" }
+          ?record pav:hasCurrentVersion/cascade:drugName ?medication ; cascade:inEntry ?entry .
+          ?entry cascade:statusLifecycle ?lifecycle .
+        }
+        """
+      Then it answers:
+        | medication              | lifecycle                                  |
+        | "dispense: completed"   | cascade:MedicationDispenseCompleted        |
+        | "dispense: In Progress" | cascade:MedicationDispenseInProgress       |
+        | "dispense: stopped"     | cascade:MedicationDispenseNotCompleted     |
+        | "dispense: none"        | cascade:MedicationDispenseUnknown          |
+        | "dispense: picked up"   | cascade:MedicationDispenseUnknown          |

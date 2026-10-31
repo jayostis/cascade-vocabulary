@@ -1,0 +1,20 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:prescription a cascade:PrescribedOrReportedMedication .
+:prescriptionVersion prov:specializationOf :prescription ; cascade:patient :subject ; cascade:drugName "metformin 500 MG Oral Tablet" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ; cascade:prescriptionWrittenDate "2026-01-10"^^xsd:date .
+:prescriptionRevision a cascade:Revision ; cascade:revisionOf :prescription ; cascade:version :prescriptionVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .
+
+:dispense a cascade:MedicationDispense .
+:dispenseVersion prov:specializationOf :dispense ; cascade:patient :subject ; cascade:drugName "metformin 500 MG Oral Tablet, filled" ;
+    cascade:workflowStatus "completed" ; cascade:dispenseHandedOverTime "2026-01-12"^^xsd:date ;
+    cascade:dispenseDaysSupply <urn:x:dispenseVersion#dispense-days-supply> ; cascade:authorizingPrescription :prescription .
+<urn:x:dispenseVersion#dispense-days-supply> cascade:decimalValue "30"^^xsd:decimal ; cascade:writtenValue "30" ; cascade:ucumUnit "d" .
+:dispenseRevision a cascade:Revision ; cascade:revisionOf :dispense ; cascade:version :dispenseVersion ;
+    prov:generatedAtTime "2026-10-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-01T00:00:00Z"^^xsd:dateTime .

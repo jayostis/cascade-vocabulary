@@ -1,0 +1,31 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:prescription a cascade:PrescribedOrReportedMedication .
+:prescriptionVersion prov:specializationOf :prescription ; cascade:patient :subject ; cascade:drugName "metformin hydrochloride 500 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "active" ; cascade:prescriptionWrittenDate "2026-01-10"^^xsd:date .
+:prescriptionRevision a cascade:Revision ; cascade:revisionOf :prescription ; cascade:version :prescriptionVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:filled a cascade:MedicationDispense .
+:filledVersion prov:specializationOf :filled ; cascade:patient :subject ; cascade:drugName "metformin hydrochloride 500 MG Oral Tablet" ;
+    cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ;
+    cascade:ndcCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> ;
+    cascade:workflowStatus "completed" ; cascade:dispensePreparedTime "2026-01-11"^^xsd:date ;
+    cascade:dispenseHandedOverTime "2026-01-12T09:00:00Z"^^xsd:dateTime ;
+    cascade:paddedDateTime <urn:x:filledVersion#padded-dispenseHandedOverTime> ;
+    cascade:authorizingPrescription :prescription .
+<urn:x:filledVersion#padded-dispenseHandedOverTime> cascade:paddedDateTimeProperty cascade:dispenseHandedOverTime ; cascade:writtenDate "2026011209" .
+:filledRevision a cascade:Revision ; cascade:revisionOf :filled ; cascade:version :filledVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:waiting a cascade:MedicationDispense .
+:waitingVersion prov:specializationOf :waiting ; cascade:patient :subject ; cascade:drugName "amoxicillin 500 MG Oral Capsule" ;
+    cascade:workflowStatus "preparation" ; cascade:dispensePreparedTime "2026-02-01"^^xsd:date .
+:waitingRevision a cascade:Revision ; cascade:revisionOf :waiting ; cascade:version :waitingVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .

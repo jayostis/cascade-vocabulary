@@ -6,7 +6,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "records-of-every-kind" ;
-  rdfs:comment "One record of each kind records.rq lists, a report and a note or document among them, each with one revision and a version stating its name, status and date, and a prescription stating when it was written and no start." ;
+  rdfs:comment "One record of each kind records.rq lists, a report, a note or document and a medication dispense among them, each with one revision and a version stating its name, status and date, a prescription stating when it was written and no start, and a dispense of it stating when it was prepared and not when it was handed over." ;
   mf:entries (
     <#what-each-record-is>
     <#the-name-and-date-of-each-version>
@@ -22,7 +22,7 @@
 
 <#the-name-and-date-of-each-version> a mf:QueryEvaluationTest ;
   mf:name "the-name-and-date-of-each-version" ;
-  rdfs:comment "Each version gets cascade:displayName and cascade:displayDate from its kind's own properties; an allergy states no date, and a prescription with no start of use is dated by the day it was written." ;
+  rdfs:comment "Each version gets cascade:displayName and cascade:displayDate from its kind's own properties; an allergy states no date, a prescription with no start of use is dated by the day it was written, and a dispense not yet handed over by the day it was prepared." ;
   mf:action [ qt:query <the-name-and-date-of-each-version.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-name-and-date-of-each-version.srj> .
