@@ -1,12 +1,15 @@
 # Two notes match when their current versions share a note type, a LOINC code, or a code of another system when
 # neither has a LOINC code, the documents their revisions come from name, as custodian or author, one organization
 # record, or two that are currently the same organization, and the shorter one's text begins or ends the longer one's
-# as whole lines: a note its source sends again as it grows, as a clinic's plan of treatment that keeps every visit's
-# paragraph and adds the latest after them, or before them, newest first. A text is read as lines, as
+# as whole lines, or is the longer one's first lines and last lines with whole lines between them, the first lines at
+# most 20: a note its source sends again as it grows, as a clinic's plan of treatment that keeps every visit's
+# paragraph and adds the latest after them, or before them, newest first, or a table that adds each new row after its
+# header lines. A text is read as lines, as
 # cascade:narrativeTextAsTrimmedLines holds it, the white space inside each line one space, each line trimmed and blank
 # lines dropped, so a source that indents or spaces its text anew still matches; the lines are compared as written otherwise, in their order. A note held in the middle
-# of another is no match: growth adds at an end, and text in the middle of other lines is a template's. Pairs are found
-# by the first and the last 200 characters of a text. The shorter text holds at least 200 characters, since a short
+# of another is no match: growth adds at an end or at one point after a header, and text in the middle of other lines is
+# a template's, as is text with lines added at two points. Pairs are found by the first and the last 200 characters of
+# a text, so a table grown after its header is found by its header or its rows when either holds 200 characters. The shorter text holds at least 200 characters, since a short
 # plan such as "Return in 3 months." is held whole by many later notes it is not part of. The longer one is dated no
 # earlier, by instant when both are times and by day otherwise, when both are dated, since a note holding a later one
 # whole was cut down, not grown, and its lines would be hidden behind the later lead. Growth is a chain: a shorter note
@@ -66,7 +69,11 @@ WHERE {
             BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
             BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
             BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
-            FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+            FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText))
+                        || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                    FILTER (STRLEN(?longerText) > STRLEN(?shorterText)
+                                            && STRSTARTS(?longerText, SUBSTR(?shorterText, 1, STRLEN(?shorterText) - STRLEN(REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                            && STRENDS(?longerText, CONCAT("\n", REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
                     && (!BOUND(?shorterDate) || !BOUND(?longerDate)
                         || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
           UNION
@@ -111,7 +118,11 @@ WHERE {
             BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
             BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
             BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
-            FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+            FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText))
+                        || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                    FILTER (STRLEN(?longerText) > STRLEN(?shorterText)
+                                            && STRSTARTS(?longerText, SUBSTR(?shorterText, 1, STRLEN(?shorterText) - STRLEN(REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                            && STRENDS(?longerText, CONCAT("\n", REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
                     && (!BOUND(?shorterDate) || !BOUND(?longerDate)
                         || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
         } }
@@ -163,7 +174,11 @@ WHERE {
                       BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
                       BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
                       BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
-                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText))
+                        || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                    FILTER (STRLEN(?longerText) > STRLEN(?shorterText)
+                                            && STRSTARTS(?longerText, SUBSTR(?shorterText, 1, STRLEN(?shorterText) - STRLEN(REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                            && STRENDS(?longerText, CONCAT("\n", REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
                               && (!BOUND(?shorterDate) || !BOUND(?longerDate)
                                   || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
                     UNION
@@ -208,7 +223,11 @@ WHERE {
                       BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
                       BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
                       BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
-                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText))
+                        || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                    FILTER (STRLEN(?longerText) > STRLEN(?shorterText)
+                                            && STRSTARTS(?longerText, SUBSTR(?shorterText, 1, STRLEN(?shorterText) - STRLEN(REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                            && STRENDS(?longerText, CONCAT("\n", REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
                               && (!BOUND(?shorterDate) || !BOUND(?longerDate)
                                   || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
                   } }
@@ -229,10 +248,24 @@ WHERE {
                     BIND (COALESCE(SUBSTR(?witness1Text, 1, 200), "") AS ?shorterStart)
                     BIND (COALESCE(SUBSTR(STR(?witness1Date), 1, 10), "") AS ?witness1Day)
                   } }
-                FILTER (?witness1Text != ?longerText && (STRSTARTS(?witness1Text, CONCAT(?shorterText, "\n")) || STRENDS(?witness1Text, CONCAT("\n", ?shorterText)))
+                FILTER (?witness1Text != ?longerText
+                        && (STRSTARTS(?witness1Text, CONCAT(?shorterText, "\n")) || STRENDS(?witness1Text, CONCAT("\n", ?shorterText))
+                            || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                        FILTER (STRLEN(?witness1Text) > STRLEN(?shorterText)
+                                                && STRSTARTS(?witness1Text, SUBSTR(?shorterText, 1, STRLEN(?shorterText) - STRLEN(REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                                && STRENDS(?witness1Text, CONCAT("\n", REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
                         && (!BOUND(?shorterDate) || !BOUND(?witness1Date)
                               || COALESCE(?witness1Date >= ?shorterDate, ?witness1Day >= ?shorterDay))
-                        && !(STRSTARTS(?longerText, CONCAT(?witness1Text, "\n")) || STRENDS(?longerText, CONCAT("\n", ?witness1Text))) && !(STRSTARTS(?witness1Text, CONCAT(?longerText, "\n")) || STRENDS(?witness1Text, CONCAT("\n", ?longerText))))
+                        && !(STRSTARTS(?longerText, CONCAT(?witness1Text, "\n")) || STRENDS(?longerText, CONCAT("\n", ?witness1Text))
+                             || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                         FILTER (STRLEN(?longerText) > STRLEN(?witness1Text)
+                                                 && STRSTARTS(?longerText, SUBSTR(?witness1Text, 1, STRLEN(?witness1Text) - STRLEN(REPLACE(?witness1Text, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                                 && STRENDS(?longerText, CONCAT("\n", REPLACE(?witness1Text, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
+                        && !(STRSTARTS(?witness1Text, CONCAT(?longerText, "\n")) || STRENDS(?witness1Text, CONCAT("\n", ?longerText))
+                             || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                         FILTER (STRLEN(?witness1Text) > STRLEN(?longerText)
+                                                 && STRSTARTS(?witness1Text, SUBSTR(?longerText, 1, STRLEN(?longerText) - STRLEN(REPLACE(?longerText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                                 && STRENDS(?witness1Text, CONCAT("\n", REPLACE(?longerText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) }))
                 } }
               ?witness1Revision cascade:revisionOf ?witness1 ; prov:wasDerivedFrom/prov:qualifiedAttribution ?witness1Attribution .
               ?witness1Attribution prov:hadRole ?witness1Role ; prov:agent ?witness1Organization .
@@ -290,7 +323,11 @@ WHERE {
                       BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
                       BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
                       BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
-                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText))
+                        || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                    FILTER (STRLEN(?longerText) > STRLEN(?shorterText)
+                                            && STRSTARTS(?longerText, SUBSTR(?shorterText, 1, STRLEN(?shorterText) - STRLEN(REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                            && STRENDS(?longerText, CONCAT("\n", REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
                               && (!BOUND(?shorterDate) || !BOUND(?longerDate)
                                   || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
                     UNION
@@ -335,7 +372,11 @@ WHERE {
                       BIND (IF(?recordShorter, ?otherDate, ?date) AS ?longerDate)
                       BIND (COALESCE(SUBSTR(?shorterText, 1, 200), "") AS ?shorterStart)
                       BIND (COALESCE(SUBSTR(?shorterText, STRLEN(?shorterText) - 199), "") AS ?shorterEnd)
-                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText)))
+                      FILTER (?length != ?otherLength && (STRSTARTS(?longerText, CONCAT(?shorterText, "\n")) || STRENDS(?longerText, CONCAT("\n", ?shorterText))
+                        || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                    FILTER (STRLEN(?longerText) > STRLEN(?shorterText)
+                                            && STRSTARTS(?longerText, SUBSTR(?shorterText, 1, STRLEN(?shorterText) - STRLEN(REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                            && STRENDS(?longerText, CONCAT("\n", REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
                               && (!BOUND(?shorterDate) || !BOUND(?longerDate)
                                   || COALESCE(?longerDate >= ?shorterDate, ?longerDay >= ?shorterDay))) }
                   } }
@@ -356,10 +397,24 @@ WHERE {
                     BIND (COALESCE(SUBSTR(?witness2Text, ?witness2Length - 199), "") AS ?shorterEnd)
                     BIND (COALESCE(SUBSTR(STR(?witness2Date), 1, 10), "") AS ?witness2Day)
                   } }
-                FILTER (?witness2Text != ?longerText && (STRSTARTS(?witness2Text, CONCAT(?shorterText, "\n")) || STRENDS(?witness2Text, CONCAT("\n", ?shorterText)))
+                FILTER (?witness2Text != ?longerText
+                        && (STRSTARTS(?witness2Text, CONCAT(?shorterText, "\n")) || STRENDS(?witness2Text, CONCAT("\n", ?shorterText))
+                            || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                        FILTER (STRLEN(?witness2Text) > STRLEN(?shorterText)
+                                                && STRSTARTS(?witness2Text, SUBSTR(?shorterText, 1, STRLEN(?shorterText) - STRLEN(REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                                && STRENDS(?witness2Text, CONCAT("\n", REPLACE(?shorterText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
                         && (!BOUND(?shorterDate) || !BOUND(?witness2Date)
                               || COALESCE(?witness2Date >= ?shorterDate, ?witness2Day >= ?shorterDay))
-                        && !(STRSTARTS(?longerText, CONCAT(?witness2Text, "\n")) || STRENDS(?longerText, CONCAT("\n", ?witness2Text))) && !(STRSTARTS(?witness2Text, CONCAT(?longerText, "\n")) || STRENDS(?witness2Text, CONCAT("\n", ?longerText))))
+                        && !(STRSTARTS(?longerText, CONCAT(?witness2Text, "\n")) || STRENDS(?longerText, CONCAT("\n", ?witness2Text))
+                             || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                         FILTER (STRLEN(?longerText) > STRLEN(?witness2Text)
+                                                 && STRSTARTS(?longerText, SUBSTR(?witness2Text, 1, STRLEN(?witness2Text) - STRLEN(REPLACE(?witness2Text, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                                 && STRENDS(?longerText, CONCAT("\n", REPLACE(?witness2Text, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) })
+                        && !(STRSTARTS(?witness2Text, CONCAT(?longerText, "\n")) || STRENDS(?witness2Text, CONCAT("\n", ?longerText))
+                             || EXISTS { VALUES ?headerLines { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 }
+                                         FILTER (STRLEN(?witness2Text) > STRLEN(?longerText)
+                                                 && STRSTARTS(?witness2Text, SUBSTR(?longerText, 1, STRLEN(?longerText) - STRLEN(REPLACE(?longerText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
+                                                 && STRENDS(?witness2Text, CONCAT("\n", REPLACE(?longerText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) }))
                 } }
               ?witness2Revision cascade:revisionOf ?witness2 ; prov:wasDerivedFrom/prov:qualifiedAttribution ?witness2Attribution .
               ?witness2Attribution prov:hadRole ?witness2Role ; prov:agent ?witness2Organization .

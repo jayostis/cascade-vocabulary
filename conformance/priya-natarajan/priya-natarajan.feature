@@ -153,7 +153,7 @@ Feature: Priya Natarajan's pod
         | FFC-IMM-FLU |
       And the matcher has no judgment holding FFC-IMM-FLU
 
-  Rule: P7. A download again, with new bytes and narrative IDs that moved, adds no record and no version
+  Rule: P7. A download again, with new bytes and narrative IDs that moved, adds no record and no version of an entry
     kestrel-harbor-health-summary-2.xml (E4) has a new document id and time, and every narrative ID renamed and two rows
     reordered; its entries say what the first download's said.
 
@@ -268,9 +268,10 @@ Feature: Priya Natarajan's pod
         | "fluticasone propionate 50 MCG/ACTUAT Nasal Spray" | "2024-10-15"^^xsd:date |
         | "fluticasone propionate 50 MCG/ACTUAT Nasal Spray" | "2024-10-15"^^xsd:date |
 
-  Rule: P14. A section the adapter does not map is a finding
-    Each C-CDA's vital signs and social history sections are findings the Bridge raises (ccda:sectionNotMapped in each
-    saved findings.ttl), never records. A document that revised nothing is still kept for its findings (A10).
+  Rule: P14. A section no entry of which the adapter maps is a note
+    Each C-CDA's vital signs and social history sections are notes (cascade:ClinicalNoteOrDocument) holding their text,
+    never records of a blood pressure or a smoking status. A note is dated by the document that sends it, so a download
+    again sends each as a version dated anew, and a document that revises only those is still kept for its findings (A10).
 
     Example: no blood pressure and no smoking status is in the pod
       When the pod is read as it stood after "M5"
@@ -283,7 +284,23 @@ Feature: Priya Natarajan's pod
         """
       Then it answers nothing
 
-    Example: E4's download revised nothing and is kept for its findings
+    Example: the two sections are notes, a version for each download that sent them
+      When the pod is read as it stood after "M3"
+      When the query is:
+        """
+        SELECT ?title ?date WHERE {
+          ?record a cascade:ClinicalNoteOrDocument .
+          ?version prov:specializationOf ?record ; cascade:noteOrDocumentTitle ?title ; cascade:noteOrDocumentDate ?date .
+        }
+        """
+      Then it answers:
+        | title            | date                                 |
+        | "Social History" | "2025-04-03T09:15:22Z"^^xsd:dateTime |
+        | "Social History" | "2025-04-20T08:11:05Z"^^xsd:dateTime |
+        | "Vital Signs"    | "2025-04-03T09:15:22Z"^^xsd:dateTime |
+        | "Vital Signs"    | "2025-04-20T08:11:05Z"^^xsd:dateTime |
+
+    Example: E4's download revises only the two notes and is kept for its findings
       When the pod is read as it stood after "E4"
       When the query is:
         """
@@ -298,7 +315,7 @@ Feature: Priya Natarajan's pod
         """
       Then it answers:
         | revisions | documents |
-        | 0         | 1         |
+        | 2         | 1         |
 
   Rule: P15. A person joins what the matcher does not
     Priya enters loratadine she takes, APP-MED-LORATADINE (RxNorm 311372); Fernhill lists its brand, FFC-MED-CLARITIN

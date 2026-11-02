@@ -1,0 +1,58 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "narrative-text-of-an-entry" ;
+  rdfs:comment "A procedure, a lab result and a medication, each an entry of two records whose versions state a text, and one of two where only the earlier states it; a procedure, a lab result and a medication stating none; a stopped medication stating the reason; and a note whose text has blank lines and white space." ;
+  mf:entries (
+    <#the-text-the-views-show>
+    <#the-versions-with-trimmed-lines>
+    <#my-procedures>
+    <#my-lab-results>
+    <#my-active-medications>
+    <#my-medication-history>
+  ) .
+
+<#the-text-the-views-show> a mf:QueryEvaluationTest ;
+  mf:name "the-text-the-views-show" ;
+  rdfs:comment "An entry of a procedure, a lab result or a medication takes the text of its lead and keeps each member's own beside the member that wrote it, so the earlier record's text is not lost when a later one leads; an entry no member gives a text has none." ;
+  mf:action [ qt:query <the-text-the-views-show.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-text-the-views-show.srj> .
+
+<#the-versions-with-trimmed-lines> a mf:QueryEvaluationTest ;
+  mf:name "the-versions-with-trimmed-lines" ;
+  rdfs:comment "Only a note's or a report's version has its text as trimmed lines: the text a lab result, a procedure or a medication states is not worked out for the matcher's note rules, which never read it." ;
+  mf:action [ qt:query <the-versions-with-trimmed-lines.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-versions-with-trimmed-lines.srj> .
+
+<#my-procedures> a mf:QueryEvaluationTest ;
+  mf:name "my-procedures" ;
+  rdfs:comment "Each entry gives the text its records state, each with the record that states it; none for the entry no record gives a text." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20procedures.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-procedures.srj> .
+
+<#my-lab-results> a mf:QueryEvaluationTest ;
+  mf:name "my-lab-results" ;
+  rdfs:comment "Each entry gives the text its records state, each with the record that states it, so the TSH says its earlier record's label though the later record, which states none, leads." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20lab%20results.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-lab-results.srj> .
+
+<#my-active-medications> a mf:QueryEvaluationTest ;
+  mf:name "my-active-medications" ;
+  rdfs:comment "Each active entry gives the text its records state, each with the record that states it; none for the entry no record gives a text." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-medications.srj> .
+
+<#my-medication-history> a mf:QueryEvaluationTest ;
+  mf:name "my-medication-history" ;
+  rdfs:comment "Every entry gives the text its records state, each with the record that states it, so the stopped amlodipine gives the reason its record states." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20medication%20history.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-medication-history.srj> .

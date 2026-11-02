@@ -1,0 +1,79 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:colonoscopy a cascade:MedicalProcedure .
+:colonoscopyVersion prov:specializationOf :colonoscopy ; cascade:patient :subject ; cascade:procedureName "Colonoscopy" ; cascade:workflowStatus "completed" ;
+    cascade:procedureDate "2024-03-01"^^xsd:date ; cascade:narrativeText "Normal; repeat in 10 years." .
+:colonoscopyRevision a cascade:Revision ; cascade:revisionOf :colonoscopy ; cascade:version :colonoscopyVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:colonoscopyResent a cascade:MedicalProcedure .
+:colonoscopyResentVersion prov:specializationOf :colonoscopyResent ; cascade:patient :subject ; cascade:procedureName "Colonoscopy, screening" ;
+    cascade:snomedCode <http://snomed.info/id/73761001> ; cascade:narrativeText "Two polyps removed." .
+:colonoscopyResentRevision a cascade:Revision ; cascade:revisionOf :colonoscopyResent ; cascade:version :colonoscopyResentVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:echo a cascade:MedicalProcedure .
+:echoVersion prov:specializationOf :echo ; cascade:patient :subject ; cascade:procedureName "Echocardiogram" ; cascade:workflowStatus "completed" ;
+    cascade:procedureDate "2023-05-01"^^xsd:date .
+:echoRevision a cascade:Revision ; cascade:revisionOf :echo ; cascade:version :echoVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:tsh a cascade:LaboratoryTestResult .
+:tshVersion prov:specializationOf :tsh ; cascade:patient :subject ; cascade:testName "TSH" ;
+    cascade:testCode <http://loinc.org/rdf/3016-3> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "2.1" ; cascade:resultUnit "mIU/L" ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
+    cascade:narrativeText "historical result" .
+:tshRevision a cascade:Revision ; cascade:revisionOf :tsh ; cascade:version :tshVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:tshResent a cascade:LaboratoryTestResult .
+:tshResentVersion prov:specializationOf :tshResent ; cascade:patient :subject ; cascade:testName "Thyrotropin" ;
+    cascade:testCode <http://loinc.org/rdf/3016-3> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "2.1" ; cascade:resultUnit "mIU/L" .
+:tshResentRevision a cascade:Revision ; cascade:revisionOf :tshResent ; cascade:version :tshResentVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:glucose a cascade:LaboratoryTestResult .
+:glucoseVersion prov:specializationOf :glucose ; cascade:patient :subject ; cascade:testName "Glucose" ;
+    cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "95" ; cascade:resultUnit "mg/dL" ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-04-10T08:00:00Z"^^xsd:dateTime .
+:glucoseRevision a cascade:Revision ; cascade:revisionOf :glucose ; cascade:version :glucoseVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:listed a cascade:PrescribedOrReportedMedication .
+:listedVersion prov:specializationOf :listed ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg tablet" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:narrativeText "Takes it with breakfast." .
+:listedRevision a cascade:Revision ; cascade:revisionOf :listed ; cascade:version :listedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:prescribed a cascade:PrescribedOrReportedMedication .
+:prescribedVersion prov:specializationOf :prescribed ; cascade:patient :subject ; cascade:drugName "lisinopril 10 MG Oral Tablet" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:narrativeText "Ninety days, two refills." .
+:prescribedRevision a cascade:Revision ; cascade:revisionOf :prescribed ; cascade:version :prescribedVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:amlodipine a cascade:PrescribedOrReportedMedication .
+:amlodipineVersion prov:specializationOf :amlodipine ; cascade:patient :subject ; cascade:drugName "Amlodipine 5 mg tablet" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "stopped" ;
+    cascade:narrativeText "Stopped by Dr. Ng: ankle swelling." .
+:amlodipineRevision a cascade:Revision ; cascade:revisionOf :amlodipine ; cascade:version :amlodipineVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:metformin a cascade:PrescribedOrReportedMedication .
+:metforminVersion prov:specializationOf :metformin ; cascade:patient :subject ; cascade:drugName "Metformin 500 mg tablet" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" .
+:metforminRevision a cascade:Revision ; cascade:revisionOf :metformin ; cascade:version :metforminVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:progress a cascade:ClinicalNoteOrDocument .
+:progressVersion prov:specializationOf :progress ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;
+    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ; cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ;
+    cascade:workflowStatus "current" ; cascade:narrativeText "  Lung nodule, 6 mm.  \n\n  Repeat chest CT in 12 months.\n" .
+:progressRevision a cascade:Revision ; cascade:revisionOf :progress ; cascade:version :progressVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

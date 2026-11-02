@@ -1,0 +1,29 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-note-type-and-text-grown-within-one-organization-newest-first" ;
+  rdfs:comment "Tables a source sends again with each new row right after the header lines, newest first. Kestrel Harbor's Encounters in 2022 and in 2024, the 2024 one sent again as a copy dated in January 2022. Alder Street Pharmacy's fill history in 2024 and in 2026, and a hospital's copy of the 2024 history with a fill of its own after the header. At Birchwood, visit histories of one type in November 2025 and, grown apart from it, in February and in March 2026, each with its own new first row; and notes of another type in November 2025 and in March 2026, the March one with two new rows, one after the header and one in the middle." ;
+  mf:entries (
+    <#same-note-type-and-text-grown-within-one-organization-newest-first>
+  ) .
+
+<#same-note-type-and-text-grown-within-one-organization-newest-first> a mf:QueryEvaluationTest ;
+  mf:name "same-note-type-and-text-grown-within-one-organization-newest-first" ;
+  rdfs:comment "Each table that is the other's first lines and last lines, with whole lines of rows between them, is matched with it, both ways, when it is longer, dated no earlier, and from one organization: the 2022 and 2024 Encounters, and the 2024 and 2026 fill histories, whose new rows come after five or six header lines. Not matched: the 2022 Encounters with the 2024 copy dated in January 2022, since a table that holds it was cut down, not grown; the hospital's fill history with Alder's, of another organization, which does not make the 2024 and 2026 histories two growths apart either; the Birchwood visit histories of February and March with the November one or with each other, since two tables grown apart from one are two visits' histories and joining both to it would hide a row of each; and the November note with the March note, whose two new rows are in two places, not one." ;
+  mf:action [ qt:query <../../../queries/matcher/same-note-type-and-text-grown-within-one-organization.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:encounters2022> ,
+                                  <urn:x:encounters2024> ,
+                                  <urn:x:encounters2024SentEarlier> ,
+                                  <urn:x:fills2024> ,
+                                  <urn:x:fills2026> ,
+                                  <urn:x:fillsAtHospital> ,
+                                  <urn:x:notes2025> ,
+                                  <urn:x:notesGrownAtTwoPoints> ,
+                                  <urn:x:visits2025> ,
+                                  <urn:x:visitsGrownWithA> ,
+                                  <urn:x:visitsGrownWithB> ] ;
+  mf:result <same-note-type-and-text-grown-within-one-organization.srj> .

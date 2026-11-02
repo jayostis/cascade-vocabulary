@@ -1,6 +1,7 @@
-# Each entry takes the name and code of its lead, the status of the member chosen for status, and the date of the member
-# chosen for the date. Each member's current values are a node of the view of their own, named after the entry and the
-# member, which says the member they came from.
+# Each entry takes the name, code and text of its lead, the status of the member chosen for status, and the date of the
+# member chosen for the date. Each member's current values are a node of the view of their own, named after the entry
+# and the member, which says the member they came from, with the text that member's source wrote for it: an entry whose
+# lead states none shows none, and the member that does shows it there.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -8,6 +9,7 @@ CONSTRUCT {
   ?entry a cascade:MedicalProcedure ;
     cascade:procedureName ?name ;
     cascade:snomedCode ?code ;
+    cascade:narrativeText ?text ;
     cascade:workflowStatus ?status ;
     cascade:procedureDate ?date ;
     cascade:leadMember ?lead ;
@@ -17,6 +19,7 @@ CONSTRUCT {
   ?memberValues cascade:valuesOfMember ?member ;
     cascade:procedureName ?memberProcedureName ;
     cascade:snomedCode ?memberSnomedCode ;
+    cascade:narrativeText ?memberNarrativeText ;
     cascade:workflowStatus ?memberWorkflowStatus ;
     cascade:procedureDate ?memberProcedureDate .
 }
@@ -25,6 +28,7 @@ WHERE {
     ?entry cascade:leadMember ?lead .
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:procedureName ?name }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:snomedCode ?code }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:narrativeText ?text }
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:procedureDate ?date } }
@@ -33,6 +37,7 @@ WHERE {
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
     OPTIONAL { ?memberVersion cascade:procedureName ?memberProcedureName }
     OPTIONAL { ?memberVersion cascade:snomedCode ?memberSnomedCode }
+    OPTIONAL { ?memberVersion cascade:narrativeText ?memberNarrativeText }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:procedureDate ?memberProcedureDate } }
 }

@@ -5,7 +5,8 @@
 # still taken without reading the status. Each member's current values are a node of the view of their own, named after
 # the entry and the member, which says the member they came from, with the dosage text that member states. An entry whose
 # lead states no dosage text shows the one of the member the derivations chose (cascade:dosageFrom): none when no member
-# states one. A time its source wrote short of the second keeps the node saying so (cascade:PaddedDateTime), named after
+# states one. It shows the narrative text of its lead (what the lead's source wrote for it, such as a stop reason), and
+# each member's node its own: an entry whose lead states none shows none, and the member that does shows it there. A time its source wrote short of the second keeps the node saying so (cascade:PaddedDateTime), named after
 # the entry or the member's values and -padded-, so the view never shows a padded time as exact.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
@@ -19,6 +20,7 @@ CONSTRUCT {
     cascade:workflowStatus ?status ;
     cascade:lifecycle ?lifecycle ;
     cascade:dosage ?dosage ;
+    cascade:narrativeText ?narrativeText ;
     cascade:medicationUseStartDate ?started ;
     cascade:prescriptionWrittenDate ?written ;
     cascade:medicationUseEndDate ?end ;
@@ -34,6 +36,7 @@ CONSTRUCT {
     cascade:userSelectedCode ?memberUserSelectedCode ;
     cascade:workflowStatus ?memberWorkflowStatus ;
     cascade:dosage ?memberDosage ;
+    cascade:narrativeText ?memberNarrativeText ;
     cascade:medicationUseStartDate ?memberMedicationUseStartDate ;
     cascade:prescriptionWrittenDate ?memberPrescriptionWrittenDate ;
     cascade:medicationUseEndDate ?memberMedicationUseEndDate ;
@@ -57,6 +60,7 @@ WHERE {
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:dosage ?leadDosage }
     OPTIONAL { ?entry cascade:dosageFrom/pav:hasCurrentVersion/cascade:dosage ?fromDosage }
     BIND (COALESCE(?leadDosage, ?fromDosage) AS ?dosage)
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:narrativeText ?narrativeText }
     OPTIONAL { ?record pav:hasCurrentVersion/cascade:prescribedOrReported ?intent }
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
@@ -82,6 +86,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:userSelectedCode ?memberUserSelectedCode }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:dosage ?memberDosage }
+    OPTIONAL { ?memberVersion cascade:narrativeText ?memberNarrativeText }
     OPTIONAL { ?memberVersion cascade:medicationUseStartDate ?memberMedicationUseStartDate }
     OPTIONAL { ?memberVersion cascade:prescriptionWrittenDate ?memberPrescriptionWrittenDate }
     OPTIONAL { ?memberVersion cascade:medicationUseEndDate ?memberMedicationUseEndDate }
