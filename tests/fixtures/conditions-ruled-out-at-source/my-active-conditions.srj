@@ -1,0 +1,64 @@
+{
+  "head": {
+    "vars": [
+      "condition",
+      "snomed",
+      "icd10",
+      "onset",
+      "records",
+      "entry",
+      "entryLabel",
+      "sources"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "condition": {
+          "type": "literal",
+          "value": "Cough"
+        },
+        "records": {
+          "type": "literal",
+          "value": "2",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "entry": {
+          "type": "uri",
+          "value": "https://pod.example/clinical/conditions.ttl#c796148eaafcb915759fa83df02afd6f4ff80c4129e98488f174de3512736c04"
+        },
+        "entryLabel": {
+          "type": "literal",
+          "value": "Condition entry · Cough"
+        },
+        "sources": {
+          "type": "literal",
+          "value": "urn:x:coughFirst; urn:x:coughLater"
+        }
+      },
+      {
+        "condition": {
+          "type": "literal",
+          "value": "Hypertension"
+        },
+        "records": {
+          "type": "literal",
+          "value": "1",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "entry": {
+          "type": "uri",
+          "value": "https://pod.example/clinical/conditions.ttl#fd7448e0fbca2abfba9d88134c69f55eff5384c749939f4f18823fe601236576"
+        },
+        "entryLabel": {
+          "type": "literal",
+          "value": "Condition entry · Hypertension"
+        },
+        "sources": {
+          "type": "literal",
+          "value": "urn:x:hypertension"
+        }
+      }
+    ]
+  }
+}

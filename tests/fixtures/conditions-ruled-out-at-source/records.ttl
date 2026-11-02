@@ -1,0 +1,66 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:embolism a cascade:ProblemOrDiagnosis .
+:embolismVersion prov:specializationOf :embolism ; cascade:patient :subject ; cascade:conditionName "Pulmonary embolism" ;
+    cascade:snomedCode <http://snomed.info/id/59282003> ; cascade:clinicalStatus "resolved" ; cascade:verificationStatus "refuted" ;
+    cascade:onsetDate "2025-07-08"^^xsd:date ; cascade:abatementDate "2025-07-08"^^xsd:date .
+:embolismRevision a cascade:Revision ; cascade:revisionOf :embolism ; cascade:version :embolismVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:negated a cascade:ProblemOrDiagnosis .
+:negatedVersion prov:specializationOf :negated ; cascade:patient :subject ; cascade:conditionName "No known problems" ;
+    cascade:verificationStatus "refuted" .
+:negatedRevision a cascade:Revision ; cascade:revisionOf :negated ; cascade:version :negatedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:thrombosis a cascade:ProblemOrDiagnosis .
+:thrombosisVersion prov:specializationOf :thrombosis ; cascade:patient :subject ; cascade:conditionName "Deep vein thrombosis" ;
+    cascade:clinicalStatus "active" ; cascade:verificationStatus "refuted" .
+:thrombosisRevision a cascade:Revision ; cascade:revisionOf :thrombosis ; cascade:version :thrombosisVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:hypertension a cascade:ProblemOrDiagnosis .
+:hypertensionVersion prov:specializationOf :hypertension ; cascade:patient :subject ; cascade:conditionName "Hypertension" ;
+    cascade:clinicalStatus "active" ; cascade:verificationStatus "confirmed" .
+:hypertensionRevision a cascade:Revision ; cascade:revisionOf :hypertension ; cascade:version :hypertensionVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:mistake a cascade:ProblemOrDiagnosis .
+:mistakeVersion prov:specializationOf :mistake ; cascade:patient :subject ; cascade:conditionName "Appendicitis" ;
+    cascade:clinicalStatus "active" ; cascade:verificationStatus "entered-in-error" .
+:mistakeRevision a cascade:Revision ; cascade:revisionOf :mistake ; cascade:version :mistakeVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:chestFirst a cascade:ProblemOrDiagnosis .
+:chestFirstVersion prov:specializationOf :chestFirst ; cascade:patient :subject ; cascade:conditionName "Chest pain" ;
+    cascade:clinicalStatus "active" ; cascade:verificationStatus "confirmed" .
+:chestFirstRevision a cascade:Revision ; cascade:revisionOf :chestFirst ; cascade:version :chestFirstVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:chestLater a cascade:ProblemOrDiagnosis .
+:chestLaterVersion prov:specializationOf :chestLater ; cascade:patient :subject ; cascade:conditionName "Chest pain" ;
+    cascade:clinicalStatus "resolved" ; cascade:verificationStatus "refuted" ; cascade:abatementDate "2026-01-20"^^xsd:date .
+:chestLaterRevision a cascade:Revision ; cascade:revisionOf :chestLater ; cascade:version :chestLaterVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:coughFirst a cascade:ProblemOrDiagnosis .
+:coughFirstVersion prov:specializationOf :coughFirst ; cascade:patient :subject ; cascade:conditionName "Cough" ;
+    cascade:clinicalStatus "resolved" ; cascade:verificationStatus "refuted" .
+:coughFirstRevision a cascade:Revision ; cascade:revisionOf :coughFirst ; cascade:version :coughFirstVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:coughLater a cascade:ProblemOrDiagnosis .
+:coughLaterVersion prov:specializationOf :coughLater ; cascade:patient :subject ; cascade:conditionName "Cough" ;
+    cascade:clinicalStatus "active" ; cascade:verificationStatus "confirmed" .
+:coughLaterRevision a cascade:Revision ; cascade:revisionOf :coughLater ; cascade:version :coughLaterVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:ankle a cascade:ProblemOrDiagnosis .
+:ankleVersion prov:specializationOf :ankle ; cascade:patient :subject ; cascade:conditionName "Sprained ankle" ;
+    cascade:clinicalStatus "resolved" ; cascade:verificationStatus "confirmed" ; cascade:onsetDate "2025-03-01"^^xsd:date ;
+    cascade:abatementDate "2025-04-12"^^xsd:date .
+:ankleRevision a cascade:Revision ; cascade:revisionOf :ankle ; cascade:version :ankleVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

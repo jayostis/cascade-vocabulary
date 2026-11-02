@@ -1,0 +1,98 @@
+# Read from the view alone, as an app would: each condition entry whatever its status, with its codes, its status, when
+# it started and when it ended, each record's own status, how many records it joins, and each record with the document it
+# was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. The status is "ruled out"
+# when the record the entry took its status from is refuted, whatever its clinical status, so a condition that was
+# considered and refuted is never read as one that resolved; otherwise it is that record's clinical status, or none when
+# it states none, and an entry ruled out has no abatement day. The verification status is as the source writes it. The
+# entries whose status is active and not ruled out are the ones `pod/My active conditions` lists. A record's own status
+# is its clinical status, "ruled out" alone when it is refuted; the day it abated follows a clinical status, never "ruled out". A list
+# holds its values in order,
+# each ended by "; " but the last; a value's own parts are ended by ", ". Each code is its system's IRI, SNOMED CT's or
+# ICD-10-CM's: the one the entry states, or http://snomed.info/id/ or https://ns.cascadeprotocol.org/codes/icd10cm/
+# followed by the code as written, percent-encoded as ENCODE_FOR_URI does (rule M4). An entry stating several codes of one
+# system gives the first as written, in code point order, so that each entry is one row.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?condition ?snomed ?icd10 ?status ?verificationStatus ?onset ?abated ?statuses (COUNT(?record) AS ?records) ?entry
+       ?entryLabel ?sources
+WHERE {
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "; "); separator=""), "; $", "") AS ?statuses)
+    WHERE {
+      { SELECT ?entry ?statusText
+        WHERE {
+          ?entry a cascade:ProblemOrDiagnosis ; cascade:memberCurrentValues ?values .
+          ?values cascade:valuesOfMember ?member .
+          OPTIONAL { ?values cascade:clinicalStatus ?memberClinicalStatus }
+          OPTIONAL { ?values cascade:verificationStatus ?memberVerificationStatus }
+          OPTIONAL { ?values cascade:abatementDate ?memberAbated }
+          BIND (BOUND(?memberVerificationStatus) && ?memberVerificationStatus = "refuted" AS ?memberRuledOut)
+          BIND (CONCAT(STR(?member), " ",
+                       IF(?memberRuledOut, "ruled out", COALESCE(?memberClinicalStatus, "with no status")),
+                       IF(?memberRuledOut, "", COALESCE(CONCAT(", abated ", STR(?memberAbated)), ""))) AS ?statusText)
+        }
+        ORDER BY ?entry ?statusText }
+    }
+    GROUP BY ?entry }
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+    WHERE {
+      { SELECT ?entry ?sourceText
+        WHERE {
+          { SELECT ?entry ?sourceRecord ?document ?retrievedOn
+                   (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?hospital, ", "), ""); separator=""), ", $", "") AS ?hospitals)
+            WHERE {
+              { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
+                WHERE {
+                  ?entry a cascade:ProblemOrDiagnosis ; cascade:mergedFrom ?sourceRecord .
+                  OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
+                             OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
+                             OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
+                                        ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
+                                        OPTIONAL { ?agent rdfs:label ?agentLabel }
+                                        OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }
+                                        BIND (CONCAT(IF(?hospitalRole = cascade:AuthorRole, "written by ", "kept by "),
+                                                     COALESCE(?agentLabel, ?agentName)) AS ?hospital) } }
+                }
+                ORDER BY ?entry ?sourceRecord ?document ?hospital }
+            }
+            GROUP BY ?entry ?sourceRecord ?document ?retrievedOn }
+          BIND (CONCAT(STR(?sourceRecord), COALESCE(CONCAT(" from ", STR(?document)), ""),
+                       COALESCE(CONCAT(", retrieved ", STR(?retrievedOn)), ""),
+                       IF(?hospitals = "", "", CONCAT(", ", ?hospitals))) AS ?sourceText)
+        }
+        ORDER BY ?entry ?sourceText }
+    }
+    GROUP BY ?entry }
+  ?entry a cascade:ProblemOrDiagnosis ; cascade:conditionName ?condition ; cascade:mergedFrom ?record .
+  OPTIONAL { ?entry cascade:clinicalStatus ?clinicalStatus }
+  OPTIONAL { ?entry cascade:verificationStatus ?verificationStatus }
+  OPTIONAL {
+    ?entry cascade:snomedCode ?writtenSnomed .
+    FILTER NOT EXISTS {
+      ?entry cascade:snomedCode ?earlierSnomed .
+      FILTER (STR(?earlierSnomed) < STR(?writtenSnomed))
+    }
+    BIND (IF(isIRI(?writtenSnomed), ?writtenSnomed,
+             IRI(CONCAT("http://snomed.info/id/", ENCODE_FOR_URI(STR(?writtenSnomed))))) AS ?snomed)
+  }
+  OPTIONAL {
+    ?entry cascade:icd10Code ?writtenIcd10 .
+    FILTER NOT EXISTS {
+      ?entry cascade:icd10Code ?earlierIcd10 .
+      FILTER (STR(?earlierIcd10) < STR(?writtenIcd10))
+    }
+    BIND (IF(isIRI(?writtenIcd10), ?writtenIcd10,
+             IRI(CONCAT("https://ns.cascadeprotocol.org/codes/icd10cm/", ENCODE_FOR_URI(STR(?writtenIcd10))))) AS ?icd10)
+  }
+  OPTIONAL { ?entry cascade:onsetDate ?onset }
+  OPTIONAL { ?entry cascade:abatementDate ?abated
+             FILTER NOT EXISTS { ?entry cascade:verificationStatus "refuted" } }
+  OPTIONAL { ?entry rdfs:label ?entryLabel }
+  BIND (IF(BOUND(?verificationStatus) && ?verificationStatus = "refuted", "ruled out", ?clinicalStatus) AS ?status)
+}
+GROUP BY ?entry ?condition ?snomed ?icd10 ?status ?verificationStatus ?onset ?abated ?entryLabel ?statuses ?sources
+ORDER BY ?condition ?entry

@@ -1,0 +1,11 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT DISTINCT ?condition ?clinicalStatus ?verificationStatus ?statusFrom
+WHERE {
+  GRAPH <https://pod.example/clinical/conditions.ttl> {
+    ?entry cascade:mergedFrom [] ; cascade:conditionName ?condition .
+    OPTIONAL { ?entry cascade:clinicalStatus ?clinicalStatus }
+    OPTIONAL { ?entry cascade:verificationStatus ?verificationStatus }
+    OPTIONAL { ?entry cascade:statusFrom ?statusFrom }
+  }
+}

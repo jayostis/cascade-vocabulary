@@ -1,0 +1,42 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "conditions-ruled-out-at-source" ;
+  rdfs:comment "Conditions whose source marks them refuted: a pulmonary embolism resolved and refuted on one day, a negated observation that states no clinical status, a thrombosis active and refuted, a chest pain whose later record rules out what the earlier one confirmed, a cough whose later record confirms what the earlier one ruled out; and a confirmed hypertension and an appendicitis entered in error." ;
+  mf:entries (
+    <#the-conditions-view>
+    <#the-members-values>
+    <#my-condition-history>
+    <#my-active-conditions>
+  ) .
+
+<#the-conditions-view> a mf:QueryEvaluationTest ;
+  mf:name "the-conditions-view" ;
+  rdfs:comment "An entry takes its verification status from the member its status comes from, as it takes its clinical status; a member that states only a verification status is the one the status comes from when no other states a status; the appendicitis is no entry." ;
+  mf:action [ qt:query <the-conditions-view.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-conditions-view.srj> .
+
+<#the-members-values> a mf:QueryEvaluationTest ;
+  mf:name "the-members-values" ;
+  rdfs:comment "Each member's own clinical and verification status, so the entry that took the later member's still shows what the earlier one said." ;
+  mf:action [ qt:query <the-members-values.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-members-values.srj> .
+
+<#my-condition-history> a mf:QueryEvaluationTest ;
+  mf:name "my-condition-history" ;
+  rdfs:comment "Every entry, once: ruled out whatever its clinical status when the member its status comes from is refuted, otherwise its clinical status, the embolism with its onset and no abatement day, each record's own status beside it." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20condition%20history.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-condition-history.srj> .
+
+<#my-active-conditions> a mf:QueryEvaluationTest ;
+  mf:name "my-active-conditions" ;
+  rdfs:comment "Only the hypertension and the cough: an entry whose status comes from a refuted record is not active, even when that record's clinical status says active." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20conditions.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-conditions.srj> .
