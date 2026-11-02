@@ -37,3 +37,18 @@
     cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" .
 :amoxicillinRevision a cascade:Revision ; cascade:revisionOf :amoxicillin ; cascade:version :amoxicillinVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:atorvastatinListed a cascade:PrescribedOrReportedMedication .
+:atorvastatinListedVersion prov:specializationOf :atorvastatinListed ; cascade:patient :subject ; cascade:drugName "Atorvastatin 20 mg tablet" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:dosage "Take 1 tablet at night" .
+:atorvastatinListedRevision a cascade:Revision ; cascade:revisionOf :atorvastatinListed ; cascade:version :atorvastatinListedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:atorvastatinPrescribed a cascade:PrescribedOrReportedMedication .
+:atorvastatinPrescribedVersion prov:specializationOf :atorvastatinPrescribed ; cascade:patient :subject ; cascade:drugName "atorvastatin 20 MG Oral Tablet" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:dosage "20 mg orally at bedtime" .
+:atorvastatinPrescribedRevision a cascade:Revision ; cascade:revisionOf :atorvastatinPrescribed ; cascade:version :atorvastatinPrescribedVersion ;
+    prov:wasDerivedFrom :document ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
