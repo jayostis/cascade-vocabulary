@@ -1,0 +1,7 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT DISTINCT ?medication ?dosage ?member ?memberDosage
+WHERE { GRAPH <https://pod.example/clinical/medications.ttl> {
+  ?entry cascade:mergedFrom [] ; cascade:drugName ?medication .
+  OPTIONAL { ?entry cascade:dosage ?dosage }
+  OPTIONAL { ?entry cascade:memberCurrentValues ?values . ?values cascade:valuesOfMember ?member ; cascade:dosage ?memberDosage } } }

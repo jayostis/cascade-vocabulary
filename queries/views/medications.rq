@@ -1,11 +1,12 @@
-# Each entry takes the name, every RxNorm code, every NDC code and the code the source chose of its lead, the status and
-# end date of the member chosen for status, the start of use and the day the prescription was written of the members
-# chosen for each, and every intent a member states, so an entry joining a prescription and a list entry says both. It
-# also says the lifecycle class of that status (cascade:lifecycle), so an app reads whether the medication is still
-# taken without reading the status. Each member's current values are a node of the view of their own, named after the
-# entry and the member, which says the member they came from. A time its source wrote short of the second keeps the node
-# saying so (cascade:PaddedDateTime), named after the entry or the member's values and -padded-, so the view never shows
-# a padded time as exact.
+# Each entry takes the name, every RxNorm code, every NDC code, the code the source chose, the status and end date of the
+# member chosen for status, the start of use and the day the prescription was written of the members chosen for each, the
+# dosage text of its lead, and every intent a member states, so an entry joining a prescription and a list entry says
+# both. It also says the lifecycle class of that status (cascade:lifecycle), so an app reads whether the medication is
+# still taken without reading the status. Each member's current values are a node of the view of their own, named after
+# the entry and the member, which says the member they came from, with the dosage text that member states. An entry whose
+# lead states no dosage text shows the one of the member the derivations chose (cascade:dosageFrom): none when no member
+# states one. A time its source wrote short of the second keeps the node saying so (cascade:PaddedDateTime), named after
+# the entry or the member's values and -padded-, so the view never shows a padded time as exact.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -17,6 +18,7 @@ CONSTRUCT {
     cascade:userSelectedCode ?selected ;
     cascade:workflowStatus ?status ;
     cascade:lifecycle ?lifecycle ;
+    cascade:dosage ?dosage ;
     cascade:medicationUseStartDate ?started ;
     cascade:prescriptionWrittenDate ?written ;
     cascade:medicationUseEndDate ?end ;
@@ -31,6 +33,7 @@ CONSTRUCT {
     cascade:ndcCode ?memberNdcCode ;
     cascade:userSelectedCode ?memberUserSelectedCode ;
     cascade:workflowStatus ?memberWorkflowStatus ;
+    cascade:dosage ?memberDosage ;
     cascade:medicationUseStartDate ?memberMedicationUseStartDate ;
     cascade:prescriptionWrittenDate ?memberPrescriptionWrittenDate ;
     cascade:medicationUseEndDate ?memberMedicationUseEndDate ;
@@ -51,6 +54,9 @@ WHERE {
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:rxNormCode ?code }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:ndcCode ?ndc }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:userSelectedCode ?selected }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:dosage ?leadDosage }
+    OPTIONAL { ?entry cascade:dosageFrom/pav:hasCurrentVersion/cascade:dosage ?fromDosage }
+    BIND (COALESCE(?leadDosage, ?fromDosage) AS ?dosage)
     OPTIONAL { ?record pav:hasCurrentVersion/cascade:prescribedOrReported ?intent }
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
@@ -75,6 +81,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:ndcCode ?memberNdcCode }
     OPTIONAL { ?memberVersion cascade:userSelectedCode ?memberUserSelectedCode }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
+    OPTIONAL { ?memberVersion cascade:dosage ?memberDosage }
     OPTIONAL { ?memberVersion cascade:medicationUseStartDate ?memberMedicationUseStartDate }
     OPTIONAL { ?memberVersion cascade:prescriptionWrittenDate ?memberPrescriptionWrittenDate }
     OPTIONAL { ?memberVersion cascade:medicationUseEndDate ?memberMedicationUseEndDate }

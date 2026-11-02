@@ -4,7 +4,7 @@
 # condition, one vaccination; no merged record is stored, so the view holds each member's current values as a node of
 # its own (cascade:memberCurrentValues) and this reads the view alone. The view takes the entry's name and codes from
 # its lead, and its status and dates from the members the derivations chose for them (cascade:statusFrom,
-# cascade:dateFrom and, for a medication, cascade:medicationUseStartDateFrom and cascade:prescriptionWrittenDateFrom). A
+# cascade:dateFrom and, for a medication, cascade:medicationUseStartDateFrom, cascade:prescriptionWrittenDateFrom and cascade:dosageFrom). A
 # value no member states, such as the highest criticality among them, has no From. A padded time is shown as the time, and a reference range as its
 # text, its bounds being nodes of the view of their own; the node saying a time was written short of the second is no
 # value of its own.
