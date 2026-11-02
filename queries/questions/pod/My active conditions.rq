@@ -1,4 +1,5 @@
-# Read from the view alone, as an app would: each entry whose status is active, with its codes, its onset, how many
+# Read from the view alone, as an app would: each entry whose status is active and not ruled out, so not one whose
+# status was taken from a refuted record (`pod/My condition history` lists those), with its codes, its onset, how many
 # records it joins, and each record with the document it was derived from, when that was retrieved, and the hospitals
 # that wrote it and that keep it, in order, each ended by "; " but the last, its own parts by ", ". Each code is its
 # system's IRI, SNOMED CT's or ICD-10-CM's: the one the entry states, or http://snomed.info/id/ or
@@ -23,6 +24,7 @@ WHERE {
               { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
                   ?entry a cascade:ProblemOrDiagnosis ; cascade:clinicalStatus "active" ; cascade:mergedFrom ?sourceRecord .
+                  FILTER NOT EXISTS { ?entry cascade:verificationStatus "refuted" }
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                              OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
@@ -45,6 +47,7 @@ WHERE {
     GROUP BY ?entry }
   ?entry a cascade:ProblemOrDiagnosis ; cascade:clinicalStatus "active" ;
          cascade:conditionName ?condition ; cascade:mergedFrom ?record .
+  FILTER NOT EXISTS { ?entry cascade:verificationStatus "refuted" }
   OPTIONAL {
     ?entry cascade:snomedCode ?writtenSnomed .
     FILTER NOT EXISTS {

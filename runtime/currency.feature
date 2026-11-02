@@ -144,3 +144,17 @@ Feature: Currency
     No example shows this rule: an example reads a dataset built whole from the files its story wrote, so a build in
     part and a build whole give it the same rows. Each runtime tests it itself, replaying every kit and building the
     pod both ways after each step.
+
+  Rule: C9. A condition its source refutes is an entry, ruled out, and an allergy so marked is still left out
+    cascade-vocabulary#333; a person's ruling on #287, 2026-11-02. A condition whose current version has the verification
+    status refuted is not left out (queries/derivations/excluded-at-source.rq): it is joined to the records it is the
+    same as and makes an entry. One entered in error is still left out, and so is an allergy refuted. The entry takes its
+    clinical status, verification status and abatement date from the member it takes its status from, as every status is
+    taken (queries/derivations/status-sources.rq), and a verification status refuted states a status by
+    itself, so a record that states no clinical status can be that member. queries/views/conditions.rq holds the entry's
+    verification status and each member's own beside its clinical status, so the status of a member the entry did not take
+    is still shown. queries/questions/pod/My condition history.rq reads the entry as "ruled out" whatever its clinical
+    status, never as resolved, and queries/questions/pod/My active conditions.rq leaves it out.
+
+    No example here shows this rule: no scripted input holds a refuted condition. The fixtures
+    tests/fixtures/conditions-ruled-out-at-source and left-out-at-source show it.
