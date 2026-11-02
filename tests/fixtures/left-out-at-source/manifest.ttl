@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "left-out-at-source" ;
-  rdfs:comment "The subject's records whose current versions their source marks entered in error and refuted, a report, a note or document, a note whose content is in error and a medication dispense among those in error, and one whose earlier version it marked entered in error." ;
+  rdfs:comment "The subject's records whose current versions their source marks entered in error and, for an allergy, refuted (a refuted condition is not among them), a report, a note or document, a note whose content is in error and a medication dispense among those in error, and one whose earlier version it marked entered in error." ;
   mf:entries (
     <#left-out-for-the-status-of-its-current-version>
   ) .
 
 <#left-out-for-the-status-of-its-current-version> a mf:QueryEvaluationTest ;
   mf:name "left-out-for-the-status-of-its-current-version" ;
-  rdfs:comment "A record whose current version is entered in error or refuted is left out for that reason, and one whose earlier version was is not." ;
+  rdfs:comment "A record whose current version is entered in error, or an allergy refuted, is left out for that reason; a refuted condition, and a record whose earlier version was in error, are not." ;
   mf:action [ qt:query <left-out-for-the-status-of-its-current-version.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <left-out-for-the-status-of-its-current-version.srj> .

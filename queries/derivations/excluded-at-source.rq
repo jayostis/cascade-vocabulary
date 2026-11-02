@@ -1,8 +1,8 @@
-# A record whose current version its source marks entered in error or refuted is left out of every view: by its
-# verification status, or, for an immunization, a lab result, a procedure, a variant, a variant interpretation, a report,
-# a note or document or a medication dispense, which state entered in error as their status, by its workflow status, and
-# a note or document also by the status of its content.
-# The table is the one place that lists those statuses, each with the reason it gives.
+# A record whose current version its source marks entered in error is left out of every view, and so is an allergy it
+# marks refuted: by its verification status, or, for an immunization, a lab result, a procedure, a variant, a variant
+# interpretation, a report, a note or document or a medication dispense, which state entered in error as their status, by
+# its workflow status, and a note or document also by the status of its content. A condition it marks refuted is an
+# entry, ruled out. The table is the one place that lists those statuses, each with the reason it gives.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -10,7 +10,7 @@ CONSTRUCT { ?record cascade:leftOutFor ?leftOut . ?leftOut cascade:leftOutReason
 WHERE {
   VALUES (?property ?status ?kind ?reason) {
     (cascade:verificationStatus "entered-in-error" UNDEF          cascade:EnteredInErrorAtSource)
-    (cascade:verificationStatus "refuted"          UNDEF          cascade:RefutedAtSource)
+    (cascade:verificationStatus "refuted"          "Allergy"      cascade:RefutedAtSource)
     (cascade:workflowStatus     "entered-in-error" "Immunization" cascade:EnteredInErrorAtSource)
     (cascade:workflowStatus     "entered-in-error" "Lab result"   cascade:EnteredInErrorAtSource)
     (cascade:workflowStatus     "entered-in-error" "Procedure"    cascade:EnteredInErrorAtSource)

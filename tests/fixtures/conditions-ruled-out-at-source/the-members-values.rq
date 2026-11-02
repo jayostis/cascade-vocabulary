@@ -1,0 +1,11 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT ?member ?clinicalStatus ?verificationStatus
+WHERE {
+  GRAPH <https://pod.example/clinical/conditions.ttl> {
+    ?entry cascade:memberCurrentValues ?values .
+    ?values cascade:valuesOfMember ?member .
+    OPTIONAL { ?values cascade:clinicalStatus ?clinicalStatus }
+    OPTIONAL { ?values cascade:verificationStatus ?verificationStatus }
+  }
+}
