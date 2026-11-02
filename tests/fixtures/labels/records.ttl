@@ -24,3 +24,9 @@
 
 :table a cascade:ReferenceSeries ; rdfs:label "Rules" .
 :table-1 prov:specializationOf :table ; pav:version "1" .
+
+:refuted a cascade:ProblemOrDiagnosis .
+:refutedVersion prov:specializationOf :refuted ; cascade:patient :subject ; cascade:conditionName "Pulmonary embolism" ;
+    cascade:clinicalStatus "resolved" ; cascade:verificationStatus "refuted" .
+:refutedRevision a cascade:Revision ; cascade:revisionOf :refuted ; cascade:version :refutedVersion ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:00Z"^^xsd:dateTime .
