@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "medication-dosage" ;
-  rdfs:comment "A medication entry joining a list entry and a later prescription that each state a dosage; one whose later prescription states none beside a list entry that does; and one that states none." ;
+  rdfs:comment "A medication entry joining a list entry and a later prescription that each state a dosage; one whose later prescription states none beside a list entry that does, which the entry shows; and one that states none." ;
   mf:entries (
     <#the-dosage-the-view-shows>
     <#my-active-medications>
@@ -14,7 +14,7 @@
 
 <#the-dosage-the-view-shows> a mf:QueryEvaluationTest ;
   mf:name "the-dosage-the-view-shows" ;
-  rdfs:comment "An entry takes the dosage of its lead, none when its lead states none, and keeps each member's own dosage beside the member; an entry no member gives a dosage has none." ;
+  rdfs:comment "An entry takes the dosage of its lead, else that of the member that states one, none when none does, and keeps each member's own dosage beside the member; an entry no member gives a dosage has none." ;
   mf:action [ qt:query <the-dosage-the-view-shows.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <the-dosage-the-view-shows.srj> .
