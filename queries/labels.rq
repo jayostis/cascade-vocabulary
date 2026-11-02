@@ -46,7 +46,7 @@ WHERE {
       OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?custodianName ] }
       BIND (COALESCE(?authorName, ?custodianName) AS ?author)
       BIND (CONCAT(?kind, " version · ", COALESCE(?name, "no name"), " · ",
-                   COALESCE(?status, ?verification, CONCAT("criticality ", ?c), STR(?date), "nothing stated"), " · ",
+                   COALESCE(IF(?verification = "refuted", "ruled out", ?status), ?status, ?verification, CONCAT("criticality ", ?c), STR(?date), "nothing stated"), " · ",
                    COALESCE(REPLACE(STR(?from), "^.*/", ""), ?author, IF(BOUND(?doc), "unknown source", "own entry")),
                    " · first received ", SUBSTR(STR(?t), 1, 10)) AS ?l)
     }
