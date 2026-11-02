@@ -1,5 +1,6 @@
-# Each entry takes the test, code, value, unit and time of its lead, so a value is never shown at another member's time,
-# and the status of the member chosen for status. A value is shown as its source wrote it: a quantity with its
+# Each entry takes the test, code, value, unit, time and text of its lead, so a value is never shown at another member's
+# time, and the status of the member chosen for status. The text is what the lead's source wrote for it, such as a label
+# beside the value; an entry whose lead states none shows none, and the member that does shows it on its own node. A value is shown as its source wrote it: a quantity with its
 # comparator before its number, a ratio as its numerator, a colon and its denominator, a range as its two bounds with a
 # hyphen between, or the one it has after >= or <=, and any other value as its text. The unit is the quantity's unit
 # text, else its UCUM unit, else the result's unit as text. Each member's current values are a node of the view of their
@@ -18,6 +19,7 @@ CONSTRUCT {
     cascade:testCode ?code ;
     cascade:resultValue ?value ;
     cascade:resultUnit ?unit ;
+    cascade:narrativeText ?narrativeText ;
     cascade:workflowStatus ?status ;
     cascade:resultClinicallyRelevantTime ?date ;
     cascade:resultInterpretationCode ?interpretation ;
@@ -33,6 +35,7 @@ CONSTRUCT {
     cascade:testCode ?memberTestCode ;
     cascade:resultValue ?memberResultValue ;
     cascade:resultUnit ?memberResultUnit ;
+    cascade:narrativeText ?memberNarrativeText ;
     cascade:workflowStatus ?memberWorkflowStatus ;
     cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime ;
     cascade:resultInterpretationCode ?memberInterpretation ;
@@ -55,6 +58,7 @@ WHERE {
     ?entry cascade:leadMember ?lead .
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testName ?name }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testCode ?code }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:narrativeText ?narrativeText }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultValue ?text }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultUnit ?textUnit }
     OPTIONAL {
@@ -102,6 +106,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:testCode ?memberTestCode }
     OPTIONAL { ?memberVersion cascade:resultValue ?memberResultValue }
     OPTIONAL { ?memberVersion cascade:resultUnit ?memberResultUnit }
+    OPTIONAL { ?memberVersion cascade:narrativeText ?memberNarrativeText }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime }
     OPTIONAL { ?memberVersion cascade:resultInterpretationCode ?memberInterpretation }

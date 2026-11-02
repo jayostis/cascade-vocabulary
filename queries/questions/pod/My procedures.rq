@@ -1,5 +1,6 @@
 # Read from the view alone, as an app would, newest first by the date as written, so a year follows its months and
-# days, with how many records each entry joins, SNOMED CT's IRI for each procedure, and each record it joins with the
+# days, with how many records each entry joins, SNOMED CT's IRI for each procedure, the text each record's source wrote
+# for it, such as the finding beside a screening (none when no record has one), and each record it joins with the
 # document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it, in order, each
 # ended by "; " but the last, its own parts by ", ". Times written with a zone are ordered by their wall time as written,
 # not as instants: 23:00-05:00 sorts before 01:00Z the next day, though it is later.
@@ -9,8 +10,20 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?performed ?procedure ?snomed ?status (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
+SELECT ?performed ?procedure ?snomed ?status ?narrativeTexts (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?narrativeLine; separator=""), "; $", "") AS ?said)
+    WHERE {
+      { SELECT ?entry ?narrativeLine
+        WHERE {
+          ?entry a cascade:MedicalProcedure ; cascade:memberCurrentValues ?values .
+          ?values cascade:valuesOfMember ?member .
+          OPTIONAL { ?values cascade:narrativeText ?memberNarrativeText }
+          BIND (IF(BOUND(?memberNarrativeText), CONCAT(STR(?member), " ", ?memberNarrativeText, "; "), "") AS ?narrativeLine)
+        }
+        ORDER BY ?entry ?narrativeLine }
+    }
+    GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
     WHERE {
       { SELECT ?entry ?sourceText
@@ -47,6 +60,7 @@ WHERE {
   OPTIONAL { ?entry cascade:snomedCode ?snomed }
   OPTIONAL { ?entry cascade:workflowStatus ?status }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
+  BIND (IF(?said = "", ?nothing, ?said) AS ?narrativeTexts)
 }
-GROUP BY ?entry ?performed ?procedure ?snomed ?status ?entryLabel ?sources
+GROUP BY ?entry ?performed ?procedure ?snomed ?status ?narrativeTexts ?entryLabel ?sources
 ORDER BY DESC(COALESCE(STR(?performed), "")) ?procedure ?entry

@@ -616,8 +616,10 @@ cascade:noteOrDocumentMasterIdentifier a owl:DatatypeProperty ;
 
 cascade:narrativeText a owl:DatatypeProperty ;
     rdfs:label "narrative text"@en ;
-    rdfs:comment "Of a version of a note, document or report, the note's text as its source wrote it, markup removed, in document order: a C-CDA section's text, FHIR's text.div with its tags stripped, or an inline text attachment's decoded text. A PDF's text is not read."@en ;
-    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:DiagnosticReport cascade:ClinicalNoteOrDocument ) ] ;
+    rdfs:comment "Of a version of a record of any kind, the text its source wrote for it, as FHIR's DomainResource.text, markup removed, in document order. A note's or report's is the text of a C-CDA section that no entry references, else FHIR's text.div with its tags stripped or an inline text attachment's decoded text; any other kind's is the text its C-CDA statement's own text/reference points at, such as a procedure row's finding, a result's label or a medication's stop reason. A PDF's text is not read."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:AllergyOrIntolerance cascade:ProblemOrDiagnosis cascade:Vaccination
+        cascade:MedicalProcedure cascade:LaboratoryTestResult cascade:PrescribedOrReportedMedication cascade:MedicationDispense
+        cascade:GeneticVariantFinding cascade:VariantInterpretation cascade:DiagnosticReport cascade:ClinicalNoteOrDocument ) ] ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/domainresource-definitions.html#DomainResource.text> .
 
