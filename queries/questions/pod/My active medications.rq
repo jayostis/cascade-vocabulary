@@ -1,7 +1,8 @@
 # Read from the view alone, as an app would: each entry whose status is of the active lifecycle class (rule L1), so not
 # one on hold, stopped, not taken or without a status, with its RxNorm code, when it started, the day its prescription was
-# written, how many records it joins, each record's own status and the day it ended, and each record with the document it
-# was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. An entry whose status was
+# written, how many records it joins, each record's own status and the day it ended, the dosage text each record states
+# (none when no record states one), and each record with the document it was derived from, when that was retrieved, and
+# the hospitals that wrote it and that keep it. An entry whose status was
 # taken from a record that stopped it is not listed, even when another record says it is active: that record's status is
 # in `pod/My medication history`. The code is RxNorm's IRI, or https://ns.cascadeprotocol.org/codes/rxnorm/ followed by
 # the code as written, percent-encoded as ENCODE_FOR_URI does (rule M4). It is the chosen RxNorm code, as the rule that
@@ -15,7 +16,7 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?medication ?code ?started ?written ?statuses (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
+SELECT ?medication ?code ?started ?written ?statuses ?dosages (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "; "); separator=""), "; $", "") AS ?statuses)
     WHERE {
@@ -30,6 +31,19 @@ WHERE {
                        COALESCE(CONCAT(", ended ", STR(?memberEnded)), "")) AS ?statusText)
         }
         ORDER BY ?entry ?statusText }
+    }
+    GROUP BY ?entry }
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?dosageText; separator=""), "; $", "") AS ?stated)
+    WHERE {
+      { SELECT ?entry ?dosageText
+        WHERE {
+          ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
+                 cascade:memberCurrentValues ?values .
+          ?values cascade:valuesOfMember ?member .
+          OPTIONAL { ?values cascade:dosage ?memberDosage }
+          BIND (IF(BOUND(?memberDosage), CONCAT(STR(?member), " ", ?memberDosage, "; "), "") AS ?dosageText)
+        }
+        ORDER BY ?entry ?dosageText }
     }
     GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
@@ -80,8 +94,9 @@ WHERE {
   OPTIONAL { ?entry cascade:medicationUseStartDate ?started }
   OPTIONAL { ?entry cascade:prescriptionWrittenDate ?written }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
+  BIND (IF(?stated = "", ?nothing, ?stated) AS ?dosages)
   BIND (COALESCE(IF(STRSTARTS(STR(?chosen), "https://ns.cascadeprotocol.org/codes/rxnorm/"), ?chosen, ?nothing),
                  IF(?candidates = 1, ?only, ?nothing)) AS ?code)
 }
-GROUP BY ?entry ?medication ?code ?started ?written ?entryLabel ?statuses ?sources
+GROUP BY ?entry ?medication ?code ?started ?written ?entryLabel ?statuses ?dosages ?sources
 ORDER BY ?medication ?entry
