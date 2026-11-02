@@ -49,3 +49,9 @@
     cascade:workflowStatus "entered-in-error" .
 :dispenseInErrorRevision a cascade:Revision ; cascade:revisionOf :dispenseInError ; cascade:version :dispenseInErrorVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:refutedCondition a cascade:ProblemOrDiagnosis .
+:refutedConditionVersion prov:specializationOf :refutedCondition ; cascade:patient :subject ; cascade:conditionName "Pulmonary embolism" ;
+    cascade:verificationStatus "refuted" .
+:refutedConditionRevision a cascade:Revision ; cascade:revisionOf :refutedCondition ; cascade:version :refutedConditionVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
