@@ -3,9 +3,10 @@
 # was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. The status is "ruled out"
 # when the record the entry took its status from is refuted, whatever its clinical status, so a condition that was
 # considered and refuted is never read as one that resolved; otherwise it is that record's clinical status, or none when
-# it states none, and an entry ruled out has no abatement day. The verification status is as the source writes it. The entries
-# whose status is active and not ruled out are the ones `pod/My active conditions` lists. A record's own status is its clinical status, "ruled out" alone
-# when it is refuted, then the day it abated. A list holds its values in order,
+# it states none, and an entry ruled out has no abatement day. The verification status is as the source writes it. The
+# entries whose status is active and not ruled out are the ones `pod/My active conditions` lists. A record's own status
+# is its clinical status, "ruled out" alone when it is refuted; the day it abated follows a clinical status, never "ruled out". A list
+# holds its values in order,
 # each ended by "; " but the last; a value's own parts are ended by ", ". Each code is its system's IRI, SNOMED CT's or
 # ICD-10-CM's: the one the entry states, or http://snomed.info/id/ or https://ns.cascadeprotocol.org/codes/icd10cm/
 # followed by the code as written, percent-encoded as ENCODE_FOR_URI does (rule M4). An entry stating several codes of one

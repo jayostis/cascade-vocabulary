@@ -57,3 +57,10 @@
     cascade:clinicalStatus "active" ; cascade:verificationStatus "confirmed" .
 :coughLaterRevision a cascade:Revision ; cascade:revisionOf :coughLater ; cascade:version :coughLaterVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:ankle a cascade:ProblemOrDiagnosis .
+:ankleVersion prov:specializationOf :ankle ; cascade:patient :subject ; cascade:conditionName "Sprained ankle" ;
+    cascade:clinicalStatus "resolved" ; cascade:verificationStatus "confirmed" ; cascade:onsetDate "2025-03-01"^^xsd:date ;
+    cascade:abatementDate "2025-04-12"^^xsd:date .
+:ankleRevision a cascade:Revision ; cascade:revisionOf :ankle ; cascade:version :ankleVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
