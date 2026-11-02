@@ -62,3 +62,31 @@ def test_the_kits_c_cda_downloads_with_saved_output_are_found():
 def test_no_section_of_the_download_goes_wholly_unread(name, document):
     kept = saved_texts(ROOT / name)
     assert not list(unread_sections(document, kept)), re.sub(r"\s+", " ", name)
+
+
+def document(sections):
+    return ElementTree.fromstring(f'<ClinicalDocument xmlns="urn:hl7-org:v3"><component><structuredBody>{sections}</structuredBody></component></ClinicalDocument>')
+
+
+SECTION = ('<component><section><templateId root="{section}"/><title>{title}</title>'
+           '<text><table><tbody><tr ID="ROW-1"><td>130/82 mm[Hg]</td></tr></tbody></table></text>'
+           '<entry>{entry}</entry></section></component>')
+VITAL_SIGN = ('<organizer><templateId root="2.16.840.1.113883.10.20.22.4.26"/><component><observation>'
+              '<templateId root="2.16.840.1.113883.10.20.22.4.27"/><text><reference value="#ROW-1"/></text></observation></component></organizer>')
+ALLERGY = ('<act><templateId root="2.16.840.1.113883.10.20.22.4.30"/><entryRelationship><observation>'
+           '<templateId root="2.16.840.1.113883.10.20.22.4.7"/><text><reference value="#ROW-1"/></text></observation></entryRelationship></act>')
+CONCERN_ONLY = ('<act><templateId root="2.16.840.1.113883.10.20.22.4.3"/><text><reference value="#ROW-1"/></text>'
+                '<entryRelationship><observation><templateId root="2.16.840.1.113883.10.20.22.4.4"/></observation></entryRelationship></act>')
+PLANNED_MEDICATION = ('<substanceAdministration moodCode="RQO"><templateId root="2.16.840.1.113883.10.20.22.4.16"/>'
+                      '<text><reference value="#ROW-1"/></text></substanceAdministration>')
+
+
+@pytest.mark.parametrize("section, title, entry, read", [
+    ("2.16.840.1.113883.10.20.22.2.6.1", "Allergies", ALLERGY, True),
+    ("2.16.840.1.113883.10.20.22.2.4.1", "Vital Signs", VITAL_SIGN, False),
+    ("2.16.840.1.113883.10.20.22.2.5.1", "Problems", CONCERN_ONLY, False),
+    ("2.16.840.1.113883.10.20.22.2.1.1", "Medications", PLANNED_MEDICATION, False),
+], ids=["an allergy", "a vital sign", "a concern act", "a medication in the request mood"])
+def test_a_reference_counts_as_a_read_only_from_a_statement_the_adapter_makes_a_record_of(section, title, entry, read):
+    sections = SECTION.format(section=section, title=title, entry=entry)
+    assert list(unread_sections(document(sections), kept=[])) == ([] if read else [title])
