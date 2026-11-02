@@ -596,7 +596,7 @@ cascade:noteOrDocumentContentStatus a owl:DatatypeProperty ;
 
 cascade:noteOrDocumentDate a owl:DatatypeProperty ;
     rdfs:label "note or document date"@en ;
-    rdfs:comment "Of a version of a note or document, when it was written, as FHIR's DocumentReference.date, a C-CDA Note Activity's author time, or, for a narrative-only section, its document's effectiveTime."@en ;
+    rdfs:comment "Of a version of a note or document, when it was written, as FHIR's DocumentReference.date, a C-CDA Note Activity's author time, or, for the text of a section that no entry references, its document's effectiveTime."@en ;
     rdfs:domain cascade:ClinicalNoteOrDocument ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.date> .

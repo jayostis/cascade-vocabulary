@@ -1324,7 +1324,7 @@ Feature: The matcher's procedure
         | same result on one day | lab result LOINC 2823-3 "Potassium, at two", lab result LOINC 2823-3 "Potassium, other lab at two" | version 1 of lab result LOINC 2823-3 "Potassium, at two", version 1 of lab result LOINC 2823-3 "Potassium, other lab at two" |
 
   Rule: M24. A note its source sent again as it grew, and one note two sources sent, are one note
-    decisions/reports-and-notes.md, rows "a narrative-only section" and "joining".
+    decisions/reports-and-notes.md, rows "the text no entry holds" and "joining".
     A C-CDA section is named by its code and its text, since it has no id (naming.feature), so a source that sends a
     section again as it was names the same record, and one that sends it grown, as a clinic's plan of treatment that
     keeps each visit's paragraph and adds the latest, names another; and two custodians' copies of one note are two

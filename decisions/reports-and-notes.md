@@ -1,13 +1,13 @@
 # Reports, notes and documents
 
-Status: accepted, 2026-10-31: the owner accepted the departure in row "a narrative-only section". Written 2026-10-30
+Status: accepted, 2026-10-31: the owner accepted the departure in row "the text no entry holds". Written 2026-10-30
 with the terms it rules under phase 1 of the care-gap epic
 ([#287](https://github.com/jayostis/cascade-vocabulary/issues/287), item 2,
 [#291](https://github.com/jayostis/cascade-vocabulary/issues/291), and the narrative text of
 [jayostis/cascade-bridge-adapter-ccda#50](https://github.com/jayostis/cascade-bridge-adapter-ccda/issues/50)). It is
 the area note `clinical-terms-follow-fhir.md` asks for: what a report and a note borrow from FHIR, and the one place they
 depart. Rows "report", "note or document", "a report's results", "a code", "an attachment" and "the text" only apply
-accepted rule (b) of `clinical-terms-follow-fhir.md`; row "a narrative-only section" is a departure from FHIR, accepted by
+accepted rule (b) of `clinical-terms-follow-fhir.md`; row "the text no entry holds" is a departure from FHIR, accepted by
 the owner. It depends on `clinical-terms-follow-fhir.md`, `code-iris.md` (a coding in a system
 with no property of its own is a literal typed by its system), `naming.md` (row "version": a node inside a version is a
 fragment of it by role) and `partial-dates-and-absent-reasons.md` (how a source date is typed, padded and left absent).
@@ -73,8 +73,8 @@ https://hl7.org/cda/us/ccda/StructureDefinition-HospitalCourseSection.html; the 
 | a report's results | `DiagnosticReport.result`; `Observation.hasMember` | each result record's IRI on the report's version, by RO's "has member" (`obo:RO_0002351`), as the panel members table already uses it, with no class constraint (`ontologies/cascade.shapes.ttl`) | borrowed from RO |
 | a code | `code-iris.md` | a report's LOINC or SNOMED CT code and a note's LOINC type are code IRIs; any other system's is a literal typed by its system; a report's category is always such a literal, since no table joins a category (`ontologies/cascade.ttl`) | borrowed |
 | an attachment | FHIR `Attachment` | a node of the version, `<version>#attachment-n`, with its media type, title and address; its bytes stay in the kept document (`ontologies/cascade.ttl`) | borrowed |
-| the text | `DomainResource.text`; C-CDA `section/text` | one `cascade:narrativeText` per version, the whole text in document order with the markup removed; a PDF is not read (`ontologies/cascade.ttl`) | borrowed; one string where FHIR keeps XHTML |
-| a narrative-only section | C-CDA on FHIR maps sections into `Composition.section` | a C-CDA section whose code is a note type and which holds no entries is one note record, its type the section's code, its date the document's `effectiveTime` (#291) | diverged: a reading needs a record of note size, and `Composition` is exchange machinery |
+| the text | `DomainResource.text`; C-CDA `section/text` | one `cascade:narrativeText` per version of a record of any kind, the text its source wrote for it in document order with the markup removed: a note's or report's own text, and for any other kind the text its C-CDA statement's `text/reference` points at, the referenced element only (a table row's cells one to a line, a list item), as FHIR's `DomainResource.text` and C-CDA on FHIR build `.text` from the referenced element; a PDF is not read (`ontologies/cascade.ttl`) | borrowed, less the table header C-CDA on FHIR adds to each row; one string where FHIR keeps XHTML |
+| the text no entry holds | C-CDA on FHIR maps section text into `Composition.section.text` | the blocks of a section's text that no entry references are one note record per section, for any section kind, its type the section's code, its date the document's `effectiveTime` (#291); a section none of whose entries references its text keeps all of it; an entry's `typeCode="DRIV"` is not read, since a download marks DRIV and still carries text no entry holds | diverged: a reading needs a record of note size, and `Composition` is exchange machinery |
 | joining | the matcher's rules | kinds never join (`tests/fixtures/kinds-never-join`); two notes of one type, LOINC or, when neither has LOINC, another system's, join when, from one organization, the shorter text begins or ends the longer as whole lines, dated no earlier, and no two notes grew apart from it (R19), or, from any sources, the texts are equal once white space is one space (R20), either text of at least 200 characters; and two notes of one document master identifier join from any sources (R21) (`queries/matcher/same-note-type-and-text-grown-within-one-organization.rq`, `queries/matcher/same-note-type-and-text.rq`, `queries/matcher/same-note-or-document-master-identifier.rq`, rule M24) | ours |
 
 ## Why
@@ -104,16 +104,38 @@ contents; each has its own media type and title, so each is a node, named by its
 **Why one string of text.** (row "the text") A model and a reading quote text, not markup. The XHTML or the C-CDA
 narrative block stays in the kept document, which the revision's selector reaches.
 
-**Why a narrative-only section is a note.** (row "a narrative-only section") C-CDA documents carry the assessment, the
-plan and the hospital course as sections with no entries. FHIR would hold them as `Composition.section`, which exists to
-assemble a document for exchange; the pod keeps the document itself, and a reading needs something of note size to
-target and cite. Looked at FHIR's `Composition` and C-CDA on FHIR's notes page: failed because neither gives a section
-an identity of its own apart from its document.
+**Why the text no entry holds is a note, for any section.** (row "the text no entry holds") C-CDA documents carry the
+assessment, the plan and the hospital course as sections with no entries. FHIR would hold them as `Composition.section`,
+which exists to assemble a document for exchange; the pod keeps the document itself, and a reading needs something of
+note size to target and cite. Looked at FHIR's `Composition` and C-CDA on FHIR's notes page: failed because neither gives
+a section an identity of its own apart from its document.
+
+The first rule kept a section only when its template was one of five and it held no entries, on the premise that an
+entry-bearing section's text is the human-readable copy of its entries. Real downloads break it, and every scored loss
+of the care-gap evaluation's first round traces to it
+([#287, the owner's ruling](https://github.com/jayostis/cascade-vocabulary/issues/287#issuecomment-6582465877)): a
+Results section carries a CT report with a lung nodule beside the lab table its entries reference; every Encounters
+section has no entry; a Plan of Treatment section that gains two order entries loses its discharge text; a pharmacy's
+fill-history table is pointed at by no entry. So any section's text that no entry references is kept, and a section
+whose entries reference none of it keeps all of it, the safe default. A block is a `paragraph`, `list item`, table row
+or a run of text directly in `text`; a table or list that holds a referenced block is walked into, one that holds none is
+kept whole; a table's header (`thead`, `tfoot`, `caption`) is kept only beside a kept row, so a fully said lab table
+leaves no header line. `typeCode="DRIV"` is not read: a download marks it and still carries text no entry holds.
+Measured on Priya's downloads the notes grow by 2.1 KB, at scale by 20 KB.
+
+**Why an entry's text is on its version.** (row "the text") C-CDA on FHIR builds a resource's `.text` from the element
+its `text/reference` points at, with the table's header rows; we keep the referenced element only, because the header
+costs bytes on every lab row and the version already has the test's name. It is on the statement's own version, for
+every kind, because the colonoscopy's finding ("normal; repeat in 10 years"), a result's label ("historical result") and
+a medication's stop reason are what the source wrote for that row and nothing else holds them. A concern act's reference
+is not read: it is no record, and no download carries one. A Result Organizer's text is the report's. Text the row
+references only for a name, the other cells of a referenced row, are named in the adapter's `ccda:narrative` as a known
+loss. The matcher's trimmed lines stay a note's and a report's: the note rules read nothing else.
 
 **Why kinds never join, and how two notes do.** (row "joining") No rule yet says when a report sent as a
 `DiagnosticReport` and the same report sent as a `DocumentReference` are one; joining them by code and date would join
-two notes of one day. A narrative-only section has no id, so it is named by its code and its text, and the departure
-in row "a narrative-only section" holds only if its repeats join. Counted on the comparison person `priya_l` (19
+two notes of one day. A section's kept text has no id, so it is named by its code and its text, and the departure
+in row "the text no entry holds" holds only if its repeats join. Counted on the comparison person `priya_l` (19
 downloads, converted with the C-CDA adapter's note sections; the counts, lines and timings are posted at
 https://github.com/jayostis/cascade-vocabulary/issues/321#issuecomment-6533857683): 10 note sections made 9 records, identical re-sends
 already one record; Fernhill's 5 cumulative plans of treatment, each keeping every visit's paragraph and adding the
