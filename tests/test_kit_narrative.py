@@ -21,9 +21,14 @@ def saved_graphs(download):
     return sorted(download.parent.parent.glob(f"bridge/**/{download.stem}/graph.ttl"))
 
 
+def letters(text):
+    """The text with all its white space dropped: a table's cells are lines in a note and run together in the markup."""
+    return "".join(text.split())
+
+
 def saved_texts(download):
-    """The narrative text of every record in the saved Bridge output of the download, whitespace as one space."""
-    return [words(str(text)) for graph in saved_graphs(download)
+    """The narrative text of every record in the saved Bridge output of the download, white space dropped."""
+    return [letters(str(text)) for graph in saved_graphs(download)
             for text in Graph().parse(graph, format="turtle").objects(None, CASCADE.narrativeText)]
 
 
@@ -38,16 +43,50 @@ def cdas():
             yield download, document
 
 
+ROOTS = "2.16.840.1.113883.10.20.22."
+MEDICATIONS, RESULTS = {ROOTS + "2.1", ROOTS + "2.1.1"}, {ROOTS + "2.3", ROOTS + "2.3.1"}
+DIRECT = {"substanceAdministration": ROOTS + "4.52", "procedure": ROOTS + "4.14", "act": ROOTS + "4.202"}
+
+
+def templates(element):
+    return {template.get("root") for template in element.findall(f"{V3}templateId")}
+
+
+def records_statements(section):
+    """The statements of a section's entries that the adapter makes a record of: an allergy, a problem in a concern act,
+    an immunization, a procedure, a note activity, a medication on a list of what the person takes, a report in a Results
+    section (in/sparql/document-table.rq). A concern act, a vital sign, a social history observation and a planned order
+    are none."""
+    for entry in section.findall(f"{V3}entry"):
+        for statement in entry:
+            kind, roots = statement.tag.removeprefix(V3), templates(statement)
+            if DIRECT.get(kind) in roots:
+                yield statement
+            if kind == "substanceAdministration" and ROOTS + "4.16" in roots and templates(section) & MEDICATIONS \
+                    and statement.get("moodCode") in ("INT", "EVN") and statement.get("negationInd") != "true":
+                yield statement
+            if kind == "organizer" and ROOTS + "4.1" in roots and templates(section) & RESULTS:
+                yield statement
+            if kind == "act":
+                for holder in [statement, *statement.findall(f"{V3}entryRelationship")]:
+                    for observation in holder.findall(f"{V3}observation"):
+                        observed = templates(observation)
+                        if ROOTS + "4.7" in observed or (ROOTS + "4.4" in observed and ROOTS + "4.3" in roots):
+                            yield observation
+
+
 def unread_sections(document, kept):
-    """Each section with text that no entry references into and whose text no saved note holds."""
+    """Each section with text that no statement the adapter makes a record of references into and whose text no saved note
+    holds."""
     pointed = {reference.get("value", "").strip().removeprefix("#")
-               for entry in document.iter(f"{V3}entry") for reference in entry.iter(f"{V3}reference")}
+               for section in document.iter(f"{V3}section") for statement in records_statements(section)
+               for reference in statement.iter(f"{V3}reference")}
     for section in document.iter(f"{V3}section"):
         text = section.find(f"{V3}text")
         if section.get("nullFlavor") or text is None or not words("".join(text.itertext())):
             continue
         ids = {element.get("ID") for element in text.iter() if element.get("ID")}
-        if not ids & pointed and words("".join(text.itertext())) not in kept:
+        if not ids & pointed and letters("".join(text.itertext())) not in kept:
             yield words(" ".join(section.findtext(f"{V3}title", default="a section").split()))
 
 
