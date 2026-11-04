@@ -36,6 +36,7 @@
 
 cascade:PatientProfile a owl:Class ;
     rdfs:label "Patient Profile"@en ;
+    rdfs:subClassOf prov:Entity ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -105,16 +106,19 @@ cascade:dateOfDeath a owl:DatatypeProperty ;
 
 cascade:AllergyOrIntolerance a owl:Class ;
     rdfs:label "Allergy or Intolerance"@en ;
+    rdfs:subClassOf prov:Entity ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
 cascade:ProblemOrDiagnosis a owl:Class ;
     rdfs:label "Problem or Diagnosis"@en ;
+    rdfs:subClassOf prov:Entity ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
 cascade:Vaccination a owl:Class ;
     rdfs:label "Vaccination"@en ;
+    rdfs:subClassOf prov:Entity ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -263,6 +267,7 @@ cascade:administrationSite a owl:DatatypeProperty ;
 
 cascade:LaboratoryTestResult a owl:Class ;
     rdfs:label "Laboratory Test Result"@en ;
+    rdfs:subClassOf prov:Entity ;
     dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.ttl> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
@@ -963,7 +968,8 @@ pav:version a owl:DatatypeProperty ;
     rdfs:label "Version"@en ;
     rdfs:isDefinedBy <http://purl.org/pav/> ;
     rdfs:range xsd:string ;
-    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> .
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> ;
+    dct:license <http://www.apache.org/licenses/LICENSE-2.0> .
 
 rdfs:label a rdf:Property ;
     rdfs:label "label"@en ;
@@ -976,7 +982,224 @@ pav:hasCurrentVersion a owl:ObjectProperty ;
     rdfs:label "Has current version"@en ;
     rdfs:isDefinedBy <http://purl.org/pav/> ;
     rdfs:subPropertyOf pav:hasVersion ;
-    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> .
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> ;
+    dct:license <http://www.apache.org/licenses/LICENSE-2.0> .
+
+pav:lastUpdateOn a owl:DatatypeProperty ;
+    rdfs:label "Last updated on"@en ;
+    rdfs:isDefinedBy <http://purl.org/pav/> ;
+    rdfs:range xsd:dateTime ;
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> ;
+    dct:license <http://www.apache.org/licenses/LICENSE-2.0> .
+
+pav:retrievedFrom a owl:ObjectProperty ;
+    rdfs:label "Retrieved from"@en ;
+    rdfs:isDefinedBy <http://purl.org/pav/> ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> ;
+    dct:license <http://www.apache.org/licenses/LICENSE-2.0> .
+
+pav:retrievedOn a owl:DatatypeProperty ;
+    rdfs:label "Retrieved on"@en ;
+    rdfs:isDefinedBy <http://purl.org/pav/> ;
+    rdfs:range xsd:dateTime ;
+    dct:source <https://github.com/pav-ontology/pav/blob/1aff4569e1e14fc1c6c3ee6654c9101e06a4c655/pav.rdf> ;
+    dct:license <http://www.apache.org/licenses/LICENSE-2.0> .
+
+prov:Activity a owl:Class ;
+    rdfs:label "Activity" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:Association a owl:Class ;
+    rdfs:label "Association" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:subClassOf prov:AgentInfluence ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:Attribution a owl:Class ;
+    rdfs:label "Attribution" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:subClassOf prov:AgentInfluence ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:Entity a owl:Class ;
+    rdfs:label "Entity" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:Person a owl:Class ;
+    rdfs:label "Person" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:subClassOf prov:Agent ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:Plan a owl:Class ;
+    rdfs:label "Plan" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:subClassOf prov:Entity ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:SoftwareAgent a owl:Class ;
+    rdfs:label "SoftwareAgent" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:subClassOf prov:Agent ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:agent a owl:ObjectProperty ;
+    rdfs:label "agent" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:AgentInfluence ;
+    rdfs:range prov:Agent ;
+    rdfs:subPropertyOf prov:influencer ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:generated a owl:ObjectProperty ;
+    rdfs:label "generated" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Activity ;
+    rdfs:range prov:Entity ;
+    rdfs:subPropertyOf prov:influenced ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:generatedAtTime a owl:DatatypeProperty ;
+    rdfs:label "generatedAtTime" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Entity ;
+    rdfs:range xsd:dateTime ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:hadMember a owl:ObjectProperty ;
+    rdfs:label "hadMember" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Collection ;
+    rdfs:range prov:Entity ;
+    rdfs:subPropertyOf prov:wasInfluencedBy ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:hadPlan a owl:ObjectProperty ;
+    rdfs:label "hadPlan" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Association ;
+    rdfs:range prov:Plan ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:hadRole a owl:ObjectProperty ;
+    rdfs:label "hadRole" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Influence , [ a owl:Class ; owl:unionOf ( prov:Association prov:InstantaneousEvent ) ] ;
+    rdfs:range prov:Role ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:qualifiedAssociation a owl:ObjectProperty ;
+    rdfs:label "qualifiedAssociation" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Activity ;
+    rdfs:range prov:Association ;
+    rdfs:subPropertyOf prov:qualifiedInfluence ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:qualifiedAttribution a owl:ObjectProperty ;
+    rdfs:label "qualifiedAttribution" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Entity ;
+    rdfs:range prov:Attribution ;
+    rdfs:subPropertyOf prov:qualifiedInfluence ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:specializationOf a owl:AnnotationProperty , owl:ObjectProperty ;
+    rdfs:label "specializationOf" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Entity ;
+    rdfs:range prov:Entity ;
+    rdfs:subPropertyOf prov:alternateOf ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:startedAtTime a owl:DatatypeProperty ;
+    rdfs:label "startedAtTime" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Activity ;
+    rdfs:range xsd:dateTime ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:used a owl:ObjectProperty ;
+    rdfs:label "used" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Activity ;
+    rdfs:range prov:Entity ;
+    rdfs:subPropertyOf prov:wasInfluencedBy ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:wasAssociatedWith a owl:ObjectProperty ;
+    rdfs:label "wasAssociatedWith" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Activity ;
+    rdfs:range prov:Agent ;
+    rdfs:subPropertyOf prov:wasInfluencedBy ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:wasDerivedFrom a owl:ObjectProperty ;
+    rdfs:label "wasDerivedFrom" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Entity ;
+    rdfs:range prov:Entity ;
+    rdfs:subPropertyOf prov:wasInfluencedBy ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:wasGeneratedBy a owl:ObjectProperty ;
+    rdfs:label "wasGeneratedBy" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Entity ;
+    rdfs:range prov:Activity ;
+    rdfs:subPropertyOf prov:wasInfluencedBy ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:wasInfluencedBy a owl:ObjectProperty ;
+    rdfs:label "wasInfluencedBy" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( prov:Activity prov:Agent prov:Entity ) ] ;
+    rdfs:range [ a owl:Class ; owl:unionOf ( prov:Activity prov:Agent prov:Entity ) ] ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:wasInformedBy a owl:ObjectProperty ;
+    rdfs:label "wasInformedBy" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Activity ;
+    rdfs:range prov:Activity ;
+    rdfs:subPropertyOf prov:wasInfluencedBy ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:wasRevisionOf a owl:AnnotationProperty , owl:ObjectProperty ;
+    rdfs:label "wasRevisionOf" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Entity ;
+    rdfs:range prov:Entity ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
 
 prov:wasAttributedTo a owl:ObjectProperty ;
     rdfs:label "wasAttributedTo" ;
@@ -1318,6 +1541,9 @@ cascade:ValueAbsentForReason a owl:Class ;
 cascade:valueAbsentForReason a owl:ObjectProperty ;
     rdfs:label "value absent for a reason"@en ;
     rdfs:comment "Of a version, the node saying why it holds no value for one property, one for each such property."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PatientProfile cascade:AllergyOrIntolerance cascade:ProblemOrDiagnosis
+        cascade:Vaccination cascade:MedicalProcedure cascade:PrescribedOrReportedMedication cascade:StructuredDosage
+        cascade:MedicationDispense cascade:LaboratoryTestResult cascade:DiagnosticReport cascade:ClinicalNoteOrDocument ) ] ;
     rdfs:range cascade:ValueAbsentForReason .
 
 cascade:absentValueProperty a owl:ObjectProperty ;
@@ -2677,7 +2903,7 @@ cascade:SameNoteOrDocumentMasterIdentifierRule a owl:NamedIndividual ;
 
 cascade:Server a owl:Class ;
     rdfs:label "server"@en ;
-    rdfs:subClassOf prov:SoftwareAgent ;
+    rdfs:subClassOf prov:SoftwareAgent , prov:Entity ;
     rdfs:comment "A server a client pulled from or connected to, as a record named by cascade:ServerNamingRule. What the server reported about itself is on its versions; a server known only from a document's address has a record with none."@en ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/capabilitystatement.html> .
 
@@ -2725,7 +2951,7 @@ cascade:connectClientId a owl:DatatypeProperty ;
 
 cascade:Organization a owl:Class ;
     rdfs:label "organization"@en ;
-    rdfs:subClassOf prov:Organization ;
+    rdfs:subClassOf prov:Organization , org:Organization , prov:Entity ;
     rdfs:comment "An organization as a record named by cascade:OrganizationNamingRule: a provider, a custodian, a payer. Its name, addresses and identifiers are on its versions."@en ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/organization.html> .
 
