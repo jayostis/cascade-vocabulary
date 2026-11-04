@@ -97,6 +97,17 @@ def test_every_predicate_a_shape_constrains_is_declared_or_is_prov_o():
     assert undeclared == set()
 
 
+def test_every_term_a_shape_targets_is_declared_here():
+    vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
+    targeted = {
+        term
+        for predicate in (SH.targetClass, SH.targetSubjectsOf, SH.targetObjectsOf)
+        for term in shapes.objects(None, predicate)
+    }
+    assert targeted
+    assert {t for t in targeted if (t, RDF.type, None) not in vocabulary} == set()
+
+
 def test_every_package_class_a_term_names_is_declared_here():
     vocabulary = union(ONTOLOGIES)
     named = {

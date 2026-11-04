@@ -142,13 +142,14 @@ def test_every_code_system_has_one_iri_stem_ending_in_a_slash_or_a_colon_and_one
 
 def test_every_page_template_is_one_address_with_the_code_as_its_only_expression():
     templated = {system: list(kinds().objects(system, CASCADE.codePageUrlTemplate)) for system in set(kinds().subjects(CASCADE.codePageUrlTemplate, None))}
-    assert templated.keys() == {CASCADE.ClinVar, CASCADE.MeSH}
+    assert templated.keys() == {CASCADE.ClinVar, CASCADE.LOINC, CASCADE.MeSH}
     for system, templates in templated.items():
         assert (system, RDF.type, CASCADE.CodeSystem) in kinds() and len(templates) == 1, system
         template = str(templates[0])
         assert template.startswith("https://") and template.count("{code}") == 1, system
         assert template.replace("{code}", "").count("{") == 0 and template.replace("{code}", "").count("}") == 0, system
     assert str(templated[CASCADE.ClinVar][0]).replace("{code}", "90011") == "https://www.ncbi.nlm.nih.gov/clinvar/variation/90011/"
+    assert str(templated[CASCADE.LOINC][0]).replace("{code}", "2345-7") == "https://loinc.org/2345-7"
     assert str(templated[CASCADE.MeSH][0]).replace("{code}", "M0006414") == "https://id.nlm.nih.gov/mesh/M0006414.html"
 
 
