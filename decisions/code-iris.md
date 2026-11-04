@@ -355,9 +355,11 @@ code IRI there, and the re-derived version has a new name; no code IRI is rename
   would not be theirs for the same package.
 - **Bioregistry resolver URLs, `https://bioregistry.io/{prefix}:{id}`.** The strongest case: one registry covers twelve
   of the thirteen. It lost on (c), and on a preferred prefix that has changed for ClinVar.
-- **The owners' page URLs** (RxNav, NCBI's ClinVar page, FDA's UNII page). The strongest case: the owner's own address,
-  and it resolves. A page is not an identifier and carries no commitment; ClinVar's `/clinvar/{id}/`, the form
-  `hgvs4variation`'s header gives, is 404. Each stays a `rec:pageTemplate`.
+- **The owners' page URLs** (RxNav, NCBI's ClinVar page, FDA's UNII page, LOINC's `https://loinc.org/{code}`). The
+  strongest case: the owner's own address, and it resolves. A page is not an identifier and carries no commitment;
+  ClinVar's `/clinvar/{id}/`, the form `hgvs4variation`'s header gives, is 404. Each stays a
+  `cascade:codePageUrlTemplate`. LOINC, unlike RxNorm, CVX and ICD-10-CM, has a page per code, and it opens in a
+  browser (`https://loinc.org/2345-7`) and answers scripts 403.
 - **NCI EVS's `http://ncicb.nci.nih.gov/MEDRT.owl#` for MED-RT, or Bioregistry's `ndfrt`.** The strongest case: the
   distributor's own RDF names, and a registered stem for the same NUIs. EVS's is an internal name with no stated
   commitment, beside a release-named graph; `ndfrt` names a retired system's concepts.

@@ -987,6 +987,15 @@ prov:wasAttributedTo a owl:ObjectProperty ;
     dct:source <https://www.w3.org/ns/prov-o-20130430> ;
     dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
 
+prov:invalidated a owl:ObjectProperty ;
+    rdfs:label "invalidated" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    rdfs:domain prov:Activity ;
+    rdfs:range prov:Entity ;
+    rdfs:subPropertyOf prov:influenced ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
 cascade:View a owl:Class ;
     rdfs:label "view"@en ;
     rdfs:comment "A file the view queries build from the pod's records and judgments: deleting it loses nothing, and rerunning them rebuilds it."@en .
@@ -1630,6 +1639,7 @@ cascade:LOINC a cascade:CodeSystem ;
     rdfs:label "LOINC"@en ;
     rdfs:comment "The LOINC code as LOINC writes it, with its check digit: 2823-3."@en ;
     void:uriSpace "http://loinc.org/rdf/" ;
+    cascade:codePageUrlTemplate "https://loinc.org/{code}" ;
     cascade:codingSystemUri "http://loinc.org"^^xsd:anyURI ;
     dct:source <https://github.com/HL7/UTG/blob/18bfa0662fbf6c9f6f51922e46c534b00d987848/input/sourceOfTruth/external/v3/namingSystems/v3-loinc.xml> .
 
