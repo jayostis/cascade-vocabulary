@@ -26,7 +26,13 @@ jobs:
         with:
           python-version: '3.12'
       - run: python3 -m pip install -r requirements.txt
-      - run: python3 -m pytest -n auto --dist loadgroup --durations=10
+      - run: python3 -m pytest -n auto --dist loadgroup --durations=10 --junitxml=pytest-junit.xml
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: pytest-junit
+          path: pytest-junit.xml
+          if-no-files-found: error
 
   # The reference runtime, at its default branch or the pull request a Depends-On: line names, run over this checkout,
   # before a merge and nightly: a pair of pull requests is proven together before either merges.
