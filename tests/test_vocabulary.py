@@ -1,12 +1,13 @@
 import json
+import re
 
 import pytest
 from pyshacl import validate
-from rdflib import BNode, Graph, Namespace, URIRef
+from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, XSD
 
-from contract import QUERIES, ROOT
+from contract import LAYOUT, QUERIES, ROOT
 
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
 SHAPES = [path for path in ONTOLOGIES if path.name.endswith(".shapes.ttl")]
@@ -14,7 +15,13 @@ SPEC = "https://github.com/the-cascade-protocol/spec/"
 SOURCE_COMMIT = SPEC + "blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/"
 CC_BY = URIRef("https://creativecommons.org/licenses/by/4.0/")
 CASCADE = "https://ns.cascadeprotocol.org/"
+CASCADE_NS = Namespace(CASCADE + "cascade#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
+PAV = Namespace("http://purl.org/pav/")
+SOLID = Namespace("http://www.w3.org/ns/solid/terms#")
+PROV_AND_PAV = {"prov": PROV, "pav": PAV, str(PROV): PROV, str(PAV): PAV}
+NAMES_A_PROV_OR_PAV_TERM = re.compile(
+    r"\b(prov|pav):([A-Za-z]+)\b|(http://www\.w3\.org/ns/prov#|http://purl\.org/pav/)([A-Za-z]+)")
 FORMATS = {
     ".feature": "text/x-gherkin",
     ".json": "application/json",
@@ -90,11 +97,44 @@ def test_every_term_copied_from_the_spec_names_the_commit_and_carries_its_licenc
     assert sorted(term for term in copied if (term, DCTERMS.license, CC_BY) not in graph) == []
 
 
-def test_every_predicate_a_shape_constrains_is_declared_or_is_prov_o():
-    shapes = union(SHAPES)
+def test_every_predicate_a_shape_constrains_and_every_prov_or_pav_term_a_pod_file_names_is_declared():
+    vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
     paths = {p for path in shapes.objects(None, SH.path) for p in predicates(shapes, path)}
-    undeclared = {p for p in paths - declared() if not str(p).startswith(str(PROV))}
-    assert undeclared == set()
+    pod_files = sorted(QUERIES.rglob("*.rq")) + SHAPES + sorted(
+        path for folder in ("runtime", "conformance") for path in (ROOT / folder).rglob("*") if path.is_file())
+    named = {
+        URIRef(PROV_AND_PAV[prefix or namespace] + (local or full_local))
+        for path in pod_files
+        for prefix, local, namespace, full_local in NAMES_A_PROV_OR_PAV_TERM.findall(path.read_text(encoding="utf-8"))
+    }
+    assert PROV.wasInformedBy in named and PAV.retrievedOn in named
+    assert sorted(paths - declared()) == []
+    assert sorted(term for term in named if not all(
+        (term, predicate, None) in vocabulary for predicate in (RDF.type, DCTERMS.source, DCTERMS.license))) == []
+
+
+def test_every_class_whose_records_a_placement_holds_is_a_prov_entity():
+    vocabulary, layout = union(ONTOLOGIES), Graph().parse(LAYOUT)
+    records = {layout.value(placement, SOLID.forClass)
+               for placement in layout.subjects(CASCADE_NS.holdsRecords, Literal(True))}
+    assert len(records) > 10
+    assert sorted(c for c in records if PROV.Entity not in set(vocabulary.transitive_objects(c, RDFS.subClassOf))) == []
+
+
+def test_a_value_absent_for_a_reason_has_for_domain_each_class_of_a_property_a_value_can_be_absent_for():
+    vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
+    (shape,) = shapes.subjects(SH.path, CASCADE_NS.absentValueProperty)
+    can_be_absent = Collection(shapes, shapes.value(shape, SH["in"]))
+    def subjects_of(p):
+        named = {c for domain in vocabulary.objects(p, RDFS.domain) for c in members(vocabulary, domain)}
+        return named or {c for s in shapes.subjects(SH.targetSubjectsOf, p) for c in shapes.objects(s, SH.targetClass)}
+
+    unread = sorted(str(p) for p in can_be_absent if not subjects_of(p))
+    assert unread == []
+    of_those = {c for p in can_be_absent for c in subjects_of(p)}
+    stated = {c for domain in vocabulary.objects(CASCADE_NS.valueAbsentForReason, RDFS.domain)
+              for c in members(vocabulary, domain)}
+    assert len(of_those) > 10 and stated == of_those
 
 
 def test_every_term_a_shape_targets_is_declared_here():
