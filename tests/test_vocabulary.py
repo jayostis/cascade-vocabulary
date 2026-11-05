@@ -20,9 +20,16 @@ PROV = Namespace("http://www.w3.org/ns/prov#")
 PAV = Namespace("http://purl.org/pav/")
 SOLID = Namespace("http://www.w3.org/ns/solid/terms#")
 OA = Namespace("http://www.w3.org/ns/oa#")
-COPIED_NAMESPACES = {"prov": PROV, "pav": PAV, "oa": OA, str(PROV): PROV, str(PAV): PAV, str(OA): OA}
+SEMAPV = Namespace("https://w3id.org/semapv/vocab/")
+ONLY_BUILT_IN = {"cascade", "rdf", "rdfs", "owl", "xsd"}
+COPIED_NAMESPACES = {
+    prefix: str(namespace)
+    for prefix, namespace in Graph(bind_namespaces="none").parse(ROOT / "ontologies/cascade.ttl").namespaces()
+    if prefix not in ONLY_BUILT_IN
+}
 NAMES_A_COPIED_TERM = re.compile(
-    r"\b(prov|pav|oa):([A-Za-z]+)\b|(http://www\.w3\.org/ns/prov#|http://purl\.org/pav/|http://www\.w3\.org/ns/oa#)([A-Za-z]+)")
+    r"(?<![A-Za-z0-9_:/#.\"-])(" + "|".join(COPIED_NAMESPACES) + r"):([A-Za-z][A-Za-z0-9_]*)\b"
+    r"|(" + "|".join(re.escape(namespace) for namespace in COPIED_NAMESPACES.values()) + r")([A-Za-z][A-Za-z0-9_]*)")
 FORMATS = {
     ".feature": "text/x-gherkin",
     ".json": "application/json",
@@ -98,17 +105,17 @@ def test_every_term_copied_from_the_spec_names_the_commit_and_carries_its_licenc
     assert sorted(term for term in copied if (term, DCTERMS.license, CC_BY) not in graph) == []
 
 
-def test_every_predicate_a_shape_constrains_and_every_prov_pav_or_oa_term_a_pod_file_names_is_declared():
+def test_every_predicate_a_shape_constrains_and_every_copied_term_a_pod_file_names_is_declared():
     vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
     paths = {p for path in shapes.objects(None, SH.path) for p in predicates(shapes, path)}
     pod_files = sorted(QUERIES.rglob("*.rq")) + SHAPES + sorted(
         path for folder in ("runtime", "conformance") for path in (ROOT / folder).rglob("*") if path.is_file())
     named = {
-        URIRef(COPIED_NAMESPACES[prefix or namespace] + (local or full_local))
+        URIRef((COPIED_NAMESPACES[prefix] if prefix else namespace) + (local or full_local))
         for path in pod_files
         for prefix, local, namespace, full_local in NAMES_A_COPIED_TERM.findall(path.read_text(encoding="utf-8"))
     }
-    assert PROV.wasInformedBy in named and PAV.retrievedOn in named and OA.XPathSelector in named
+    assert {PROV.wasInformedBy, PAV.retrievedOn, OA.XPathSelector, SEMAPV.ManualMappingCuration} <= named
     assert sorted(paths - declared()) == []
     assert sorted(term for term in named if not all(
         (term, predicate, None) in vocabulary for predicate in (RDF.type, DCTERMS.source, DCTERMS.license))) == []

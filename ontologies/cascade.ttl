@@ -2369,6 +2369,90 @@ dct:identifier a owl:DatatypeProperty ;
     dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
+dct:bibliographicCitation a rdf:Property ;
+    rdfs:label "Bibliographic Citation"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:range rdfs:Literal ;
+    rdfs:subPropertyOf <http://purl.org/dc/elements/1.1/identifier> , dct:identifier ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+dct:conformsTo a rdf:Property ;
+    rdfs:label "Conforms To"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:subPropertyOf <http://purl.org/dc/elements/1.1/relation> , dct:relation ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+dct:description a rdf:Property ;
+    rdfs:label "Description"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:subPropertyOf <http://purl.org/dc/elements/1.1/description> ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+dct:license a rdf:Property ;
+    rdfs:label "License"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:subPropertyOf <http://purl.org/dc/elements/1.1/rights> , dct:rights ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+dct:source a rdf:Property ;
+    rdfs:label "Source"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:subPropertyOf <http://purl.org/dc/elements/1.1/source> , dct:relation ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+dct:title a rdf:Property ;
+    rdfs:label "Title"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:range rdfs:Literal ;
+    rdfs:subPropertyOf <http://purl.org/dc/elements/1.1/title> ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
+semapv:ManualMappingCuration a owl:Class ;
+    rdfs:label "manual mapping curation"@en ;
+    rdfs:isDefinedBy <https://w3id.org/semapv/vocab/> ;
+    rdfs:subClassOf semapv:Matching ;
+    dct:source <http://w3id.org/semapv/vocab/releases/2026-06-10/semapv.owl> ;
+    dct:license <https://creativecommons.org/publicdomain/zero/1.0/> .
+
+semapv:MappingChaining a owl:Class ;
+    rdfs:label "mapping chaining-based matching process"@en ;
+    rdfs:isDefinedBy <https://w3id.org/semapv/vocab/> ;
+    rdfs:subClassOf semapv:Matching ;
+    dct:source <http://w3id.org/semapv/vocab/releases/2026-06-10/semapv.owl> ;
+    dct:license <https://creativecommons.org/publicdomain/zero/1.0/> .
+
+skos:broadMatch a owl:ObjectProperty ;
+    rdfs:label "has broader match"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    rdfs:subPropertyOf skos:mappingRelation , skos:broader ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+foaf:PersonalProfileDocument a owl:Class ;
+    rdfs:label "PersonalProfileDocument"@en ;
+    rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> ;
+    rdfs:subClassOf foaf:Document ;
+    dct:source <http://xmlns.com/foaf/spec/20140114.rdf> ;
+    dct:license <http://creativecommons.org/licenses/by/1.0/> .
+
+solid:TypeIndex a rdfs:Class ;
+    rdfs:label "Type index"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
+    dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> ;
+    dct:license <https://creativecommons.org/publicdomain/zero/1.0/> .
+
+solid:TypeRegistration a rdfs:Class ;
+    rdfs:label "Type Registration"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
+    dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> ;
+    dct:license <https://creativecommons.org/publicdomain/zero/1.0/> .
+
 # Medication lifecycle
 
 cascade:lifecycle a owl:ObjectProperty ;
