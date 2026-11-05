@@ -2165,6 +2165,58 @@ void:Dataset a owl:Class ;
     dct:source <https://www.w3.org/TR/2011/NOTE-void-20110303/> ;
     dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
 
+oa:Annotation a rdfs:Class ;
+    rdfs:label "Annotation"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+oa:Motivation a rdfs:Class ;
+    rdfs:label "Motivation"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:subClassOf skos:Concept ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+oa:ResourceSelection a rdfs:Class ;
+    rdfs:label "ResourceSelection"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+oa:SpecificResource a rdfs:Class ;
+    rdfs:label "SpecificResource"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:subClassOf oa:ResourceSelection ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+oa:Selector a rdfs:Class ;
+    rdfs:label "Selector"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+oa:FragmentSelector a rdfs:Class ;
+    rdfs:label "FragmentSelector"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:subClassOf oa:Selector ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+oa:XPathSelector a rdfs:Class ;
+    rdfs:label "XPathSelector"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    rdfs:subClassOf oa:Selector ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+oa:refinedBy a rdf:Property ;
+    rdfs:label "refinedBy"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
+    dct:source <https://www.w3.org/TR/2017/REC-annotation-vocab-20170223/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
 oa:hasSelector a rdf:Property ;
     rdfs:label "hasSelector"@en ;
     rdfs:isDefinedBy <http://www.w3.org/ns/oa#> ;
