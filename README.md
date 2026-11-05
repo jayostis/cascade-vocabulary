@@ -35,6 +35,15 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
 
 Beside them, [`tests/fixtures/`](tests/fixtures) holds the small hand-made pods each query is tested on.
 
+## Docs
+
+- [The Cascade hub](https://jayostis.github.io/cascade-runtime-js/): where to go for each thing, and every repository.
+- [Term reference](https://jayostis.github.io/cascade-runtime-js/terms/): every term the vocabulary defines or copies.
+- [The rules](https://jayostis.github.io/cascade-runtime-js/spec/): the rules, feature by feature.
+- [Decision notes](https://jayostis.github.io/cascade-runtime-js/decisions/): why a term or a rule is as it is.
+- [Latest conformance run](https://jayostis.github.io/cascade-runtime-js/conformance/): the reference runtime's result for every example of the features and conformance kits.
+- [Unit-test reports](https://jayostis.github.io/cascade-runtime-js/conformance/tests/): each case of the runtime's and the vocabulary's tests, with its result, from the newest run on main.
+
 ## How a runtime proves it conforms
 
 It runs every example of the feature files, the rules' and the kit's, and passes what
