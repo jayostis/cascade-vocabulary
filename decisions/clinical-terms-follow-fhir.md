@@ -55,8 +55,9 @@ Read on 2026-10-29 by the research in #288 unless marked.
 
 Sources: https://hl7.org/fhir/R4/, https://hl7.org/fhir/us/core/profiles-and-extensions.html,
 https://hl7.org/fhir/R5/medicationstatement.html, https://hl7.org/fhir/R4/rdf.html,
-https://hl7.org/fhir/R4/linkage.html, https://hl7.org/fhir/R4/resource.html, https://www.w3.org/TR/prov-o/, https://pav-ontology.github.io/pav/, https://www.w3.org/TR/annotation-vocab/,
-https://mapping-commons.github.io/sssom/dev/spec-model/. The research is the evidence issue
+https://hl7.org/fhir/R4/linkage.html, https://hl7.org/fhir/R4/resource.html, https://www.w3.org/TR/prov-o/,
+https://pav-ontology.github.io/pav/, https://www.w3.org/TR/annotation-vocab/,
+https://mapping-commons.github.io/sssom/1.0/spec-model/. The research is the evidence issue
 [#288](https://github.com/jayostis/cascade-vocabulary/issues/288) (the by-record-kind comparison and the cross-cutting
 concerns), and #128's mapping (https://github.com/jayostis/cascade-vocabulary/issues/128#issuecomment-6135264321).
 
