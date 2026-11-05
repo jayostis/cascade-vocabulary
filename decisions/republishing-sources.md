@@ -181,7 +181,11 @@ record by record, and the source is one more thing they may not want known.
   attribution (https://www.w3.org/TR/2013/REC-prov-dm-20130430/#term-attribute). So an attribution with a role is
   read as an association too, and the carriedAs check refuses `prov:hadRole` on any record class. Lean: name each role
   on a `prov:qualifiedAssociation` of the act that generated the document, as PROV-DM does, and keep
-  `prov:wasAttributedTo` for the organisation alone.
+  `prov:wasAttributedTo` for the organisation alone. The domain is not the only reason the check refuses it: it also
+  refuses `prov:hadRole` on a `prov:Association`, the class the lean uses, because `hadRole`'s domain `prov:Influence`
+  cannot be reached from it here. `prov:AgentInfluence`, and its `rdfs:subClassOf prov:Influence`, are not declared. A
+  ruling that lands the lean declares `prov:AgentInfluence` and `prov:Influence` as copied terms too, or the lean fails
+  the same check.
 
 ## What would change our mind
 

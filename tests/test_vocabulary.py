@@ -125,7 +125,13 @@ def test_a_value_absent_for_a_reason_has_for_domain_each_class_of_a_property_a_v
     vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
     (shape,) = shapes.subjects(SH.path, CASCADE_NS.absentValueProperty)
     can_be_absent = Collection(shapes, shapes.value(shape, SH["in"]))
-    of_those = {c for p in can_be_absent for domain in vocabulary.objects(p, RDFS.domain) for c in members(vocabulary, domain)}
+    def subjects_of(p):
+        named = {c for domain in vocabulary.objects(p, RDFS.domain) for c in members(vocabulary, domain)}
+        return named or {c for s in shapes.subjects(SH.targetSubjectsOf, p) for c in shapes.objects(s, SH.targetClass)}
+
+    unread = sorted(str(p) for p in can_be_absent if not subjects_of(p))
+    assert unread == []
+    of_those = {c for p in can_be_absent for c in subjects_of(p)}
     stated = {c for domain in vocabulary.objects(CASCADE_NS.valueAbsentForReason, RDFS.domain)
               for c in members(vocabulary, domain)}
     assert len(of_those) > 10 and stated == of_those
