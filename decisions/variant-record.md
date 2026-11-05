@@ -61,7 +61,7 @@ one without; the pod has no server of record to say they are one, and a view the
 Sources: FHIR Genomics Reporting IG STU3 (https://hl7.org/fhir/uv/genomics-reporting/STU3/, verified), its Variant
 profile (https://hl7.org/fhir/uv/genomics-reporting/STU3/StructureDefinition-variant.html, verified) and coding appendix
 (https://hl7.org/fhir/uv/genomics-reporting/STU3/codings.html, verified); HL7 Clinical Genomics Work Group
-(https://wiki.hl7.org/CG, unverified: read from a search excerpt); HGVS nomenclature
+(no address: its wiki page answers only behind a human-verification check, and the page was read from a search excerpt); HGVS nomenclature
 (https://hgvs-nomenclature.org/stable/, verified) and its reference sequences
 (https://hgvs-nomenclature.org/stable/background/refseq/, verified); HGNC (https://www.genenames.org/about/, verified;
 https://www.genenames.org/about/guidelines/, verified); ClinVar identifiers

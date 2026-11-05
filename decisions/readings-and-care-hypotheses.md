@@ -109,7 +109,7 @@ Sources: FHIR R4 `DetectedIssue` (https://hl7.org/fhir/R4/detectedissue.html), `
 openEHR Clinical Knowledge Manager (https://ckm.openehr.org/); OMOP CDM 5.4 `NOTE_NLP`
 (https://ohdsi.github.io/CommonDataModel/cdm54.html#note_nlp); Web Annotation Vocabulary
 (https://www.w3.org/TR/annotation-vocab/); PROV-O (https://www.w3.org/TR/prov-o/); nanopublication guidelines
-(https://nanopub.net/guidelines/working_draft/); SSSOM (https://mapping-commons.github.io/sssom/spec-model/); SEPIO
+(https://nanopub.net/guidelines/working_draft/); SSSOM (https://mapping-commons.github.io/sssom/dev/spec-model/); SEPIO
 (https://github.com/monarch-initiative/SEPIO-ontology); ECO (https://www.evidenceontology.org/); Biolink Model
 (https://biolink.github.io/biolink-model/); Micropublications, Clark, Ciccarese and Goble, J Biomed Semantics 2014
 (https://doi.org/10.1186/2041-1480-5-28); SIO (https://github.com/MaastrichtU-IDS/semanticscience). The research is

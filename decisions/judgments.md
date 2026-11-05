@@ -31,7 +31,7 @@ its confidence and its retraction, or does the pod define one?
 
 Sources: FHIR `Linkage` (https://hl7.org/fhir/R4/linkage.html), `Patient.link`
 (https://hl7.org/fhir/R4/patient.html#links); OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
-(https://mapping-commons.github.io/sssom/spec-model/) and SEMAPV (https://w3id.org/semapv); nanopublication guidelines
+(https://mapping-commons.github.io/sssom/dev/spec-model/) and SEMAPV (https://w3id.org/semapv); nanopublication guidelines
 (https://nanopub.net/guidelines/working_draft/) and `npx:retracts` (http://purl.org/nanopub/x/retracts); PROV-O
 (https://www.w3.org/TR/prov-o/); SKOS (https://www.w3.org/TR/skos-reference/#mapping).
 
