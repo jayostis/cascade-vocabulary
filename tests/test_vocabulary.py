@@ -21,15 +21,31 @@ PAV = Namespace("http://purl.org/pav/")
 SOLID = Namespace("http://www.w3.org/ns/solid/terms#")
 OA = Namespace("http://www.w3.org/ns/oa#")
 SEMAPV = Namespace("https://w3id.org/semapv/vocab/")
-ONLY_BUILT_IN = {"cascade", "rdf", "rdfs", "owl", "xsd"}
-COPIED_NAMESPACES = {
-    prefix: str(namespace)
-    for prefix, namespace in Graph(bind_namespaces="none").parse(ROOT / "ontologies/cascade.ttl").namespaces()
-    if prefix not in ONLY_BUILT_IN
-}
-NAMES_A_COPIED_TERM = re.compile(
-    r"(?<![A-Za-z0-9_:/#.\"-])(" + "|".join(COPIED_NAMESPACES) + r"):([A-Za-z][A-Za-z0-9_]*)\b"
-    r"|(" + "|".join(re.escape(namespace) for namespace in COPIED_NAMESPACES.values()) + r")([A-Za-z][A-Za-z0-9_]*)")
+NOT_COPIED = (CASCADE, str(RDF), str(RDFS), str(OWL), str(XSD), str(SH))
+BINDS_A_PREFIX = re.compile(r"(?:@prefix|PREFIX)[ \t]+([A-Za-z][\w-]*):[ \t]*<([^<>\s]*)>", re.IGNORECASE)
+AN_IRI = re.compile(r"<[^<>\s]*>")
+A_PREFIXED_NAME = re.compile(r"(?<![\w:#-])([A-Za-z][\w-]*):([A-Za-z]\w*)\b")
+BOUND_IN_CASCADE = dict(
+    Graph(bind_namespaces="none").parse(ROOT / "ontologies/cascade.ttl").namespaces())
+
+
+def copied_terms_named_in(text):
+    """The terms a pod file names from a vocabulary the pod copies rather than owns: those in a namespace that is not
+    cascade's own, RDF, RDFS, OWL, XSD or SHACL, by a prefix the file binds (or cascade.ttl binds, for a file that
+    binds none, as a feature or a guide) or by the namespace written out."""
+    bound = {**{prefix: str(ns) for prefix, ns in BOUND_IN_CASCADE.items()},
+             **{prefix: ns for prefix, ns in BINDS_A_PREFIX.findall(text)}}
+    copied = {prefix: ns for prefix, ns in bound.items() if not ns.startswith(NOT_COPIED)}
+    named = {URIRef(copied[prefix] + local) for prefix, local in A_PREFIXED_NAME.findall(AN_IRI.sub(" ", text))
+             if prefix in copied}
+    if copied:
+        written_out = re.compile(
+            "(" + "|".join(re.escape(ns) for ns in sorted(set(copied.values()), key=len, reverse=True))
+            + r")([A-Za-z]\w*)")
+        named |= {URIRef(ns + local) for ns, local in written_out.findall(text)}
+    return named
+
+
 FORMATS = {
     ".feature": "text/x-gherkin",
     ".json": "application/json",
@@ -105,20 +121,46 @@ def test_every_term_copied_from_the_spec_names_the_commit_and_carries_its_licenc
     assert sorted(term for term in copied if (term, DCTERMS.license, CC_BY) not in graph) == []
 
 
-def test_every_predicate_a_shape_constrains_and_every_copied_term_a_pod_file_names_is_declared():
+def test_every_predicate_a_shape_constrains_and_every_term_a_pod_file_names_from_a_vocabulary_cascade_does_not_own_is_declared():
+    """A term in a namespace other than cascade's own, RDF, RDFS, OWL, XSD and SHACL, named by a prefix its file binds, by
+    any step of a path, or by its IRI written out, is declared in ontologies/ with a type, a source and a licence."""
     vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
     paths = {p for path in shapes.objects(None, SH.path) for p in predicates(shapes, path)}
     pod_files = sorted(QUERIES.rglob("*.rq")) + SHAPES + sorted(
         path for folder in ("runtime", "conformance") for path in (ROOT / folder).rglob("*") if path.is_file())
-    named = {
-        URIRef((COPIED_NAMESPACES[prefix] if prefix else namespace) + (local or full_local))
-        for path in pod_files
-        for prefix, local, namespace, full_local in NAMES_A_COPIED_TERM.findall(path.read_text(encoding="utf-8"))
-    }
-    assert {PROV.wasInformedBy, PAV.retrievedOn, OA.XPathSelector, SEMAPV.ManualMappingCuration} <= named
+    named = set().union(*(copied_terms_named_in(path.read_text(encoding="utf-8")) for path in pod_files))
+    assert {PROV.wasInformedBy, PAV.retrievedOn, OA.XPathSelector, SEMAPV.ManualMappingCuration, SOLID.forClass,
+            URIRef("http://www.w3.org/ns/pim/space#storage"), URIRef("http://xmlns.com/foaf/0.1/name"),
+            URIRef("http://www.w3.org/2004/02/skos/core#broadMatch")} <= named
     assert sorted(paths - declared()) == []
     assert sorted(term for term in named if not all(
         (term, predicate, None) in vocabulary for predicate in (RDF.type, DCTERMS.source, DCTERMS.license))) == []
+
+
+@pytest.mark.parametrize("text, term", [
+    ("PREFIX anno: <http://www.w3.org/ns/oa#>\nSELECT * { ?x anno:Bogus ?y }", OA.Bogus),
+    ("@prefix anno: <http://www.w3.org/ns/oa#> .\n<a> anno:Bogus <b> .", OA.Bogus),
+    ("PREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT * { ?x dcterms:bogus ?y }", URIRef(str(DCTERMS) + "bogus")),
+    ("PREFIX prov: <http://www.w3.org/ns/prov#>\nSELECT * { ?x prov:wasDerivedFrom/prov:bogus ?y }", PROV.bogus),
+    ("PREFIX oa: <http://www.w3.org/ns/oa#>\nSELECT * { ?x a/oa:Bogus ?y }", OA.Bogus),
+    ("PREFIX prov: <http://www.w3.org/ns/prov#>\nSELECT * { ?x prov:used|prov:bogus ?y }", PROV.bogus),
+    ("PREFIX pim: <http://www.w3.org/ns/pim/space#>\nSELECT * { ?x pim:bogus ?y }", URIRef("http://www.w3.org/ns/pim/space#bogus")),
+    ('{"term": "prov:bogus"}', PROV.bogus),
+    ("<http://www.w3.org/ns/prov#bogus>", PROV.bogus),
+])
+def test_the_scan_for_copied_terms_reads_each_files_own_prefixes_and_every_step_of_a_path(text, term):
+    assert term in copied_terms_named_in(text)
+
+
+@pytest.mark.parametrize("text", [
+    "see runtime/steps.md and queries/x.rq for <http://example.org/prov:bogus> and <file:///a/prov:bogus>",
+    "PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>\nSELECT * { ?x cascade:bogus ?y . ?x rdf:type ?z }",
+    "PREFIX sh: <http://www.w3.org/ns/shacl#>\n[] sh:bogus 1 .",
+    "PREFIX ccda: <https://ns.cascadeprotocol.org/adapter/ccda/v1-draft#>\n[] ccda:bogus 1 .",
+    "urn:uuid:5d0c8f3e and ni:///sha-256;abc",
+])
+def test_the_scan_for_copied_terms_does_not_read_iris_paths_or_terms_that_are_not_copied(text):
+    assert copied_terms_named_in(text) == set()
 
 
 def test_every_class_whose_records_a_placement_holds_is_a_prov_entity():

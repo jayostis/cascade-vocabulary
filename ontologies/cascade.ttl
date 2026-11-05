@@ -17,6 +17,7 @@
 @prefix org: <http://www.w3.org/ns/org#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
+@prefix pim: <http://www.w3.org/ns/pim/space#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -1390,6 +1391,19 @@ solid:instanceContainer a rdf:Property ;
     rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
     dct:source <https://github.com/solid/vocab/blob/b2ec12c354ead0df5c9526479bda69f0bd4e9acd/solid-terms.ttl> ;
     dct:license <https://creativecommons.org/publicdomain/zero/1.0/> .
+
+pim:storage a rdf:Property ;
+    rdfs:label "storage"@en ;
+    rdfs:range pim:Storage ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/pim/space#> ;
+    dct:source <http://www.w3.org/ns/pim/space> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+pim:ConfigurationFile a rdfs:Class ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/pim/space#> ;
+    rdfs:subClassOf <http://www.w3.org/2006/gen/ont#InformationResource> ;
+    dct:source <http://www.w3.org/ns/pim/space> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
 
 # A lab result's value, unit and reference range, typed; decisions/quantities.md
 
