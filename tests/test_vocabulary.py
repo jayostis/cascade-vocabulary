@@ -121,6 +121,21 @@ def test_every_class_whose_records_a_placement_holds_is_a_prov_entity():
     assert sorted(c for c in records if PROV.Entity not in set(vocabulary.transitive_objects(c, RDFS.subClassOf))) == []
 
 
+def test_every_term_outside_cascade_carries_its_source_and_its_licence():
+    vocabulary = union(ONTOLOGIES)
+    ontologies = set(vocabulary.subjects(RDF.type, OWL.Ontology))
+    copied = {s for s in vocabulary.subjects() if isinstance(s, URIRef)
+              and not str(s).startswith(str(CASCADE_NS)) and s not in ontologies}
+    assert len(copied) > 50
+    assert sorted(s for s in copied if not all((s, p, None) in vocabulary for p in (DCTERMS.source, DCTERMS.license))) == []
+
+
+def test_a_judgment_and_a_reference_series_are_prov_entities_by_the_vocabularys_own_subclasses():
+    vocabulary = union(ONTOLOGIES)
+    for c in (CASCADE_NS.Judgment, CASCADE_NS.ReferenceSeries):
+        assert PROV.Entity in set(vocabulary.transitive_objects(c, RDFS.subClassOf)), c
+
+
 def test_a_value_absent_for_a_reason_has_for_domain_each_class_of_a_property_a_value_can_be_absent_for():
     vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
     (shape,) = shapes.subjects(SH.path, CASCADE_NS.absentValueProperty)
