@@ -204,7 +204,7 @@ and migration (https://docs.identifiers.org/pages/identification_scheme.html, â€
 â€¦/migration.html) and registry API
 (https://registry.api.identifiers.org/restApi/namespaces/search/findByPrefix?prefix=clinvar, and `unii`, `ndc`,
 `icd`); Bioregistry API (https://bioregistry.io/api/registry/rxnorm, and each prefix, `ndfrt` included); prefix.cc
-(http://prefix.cc/clinvar.file.json and each prefix); NCBO, RDF in BioPortal
+(prefix.cc/`<prefix>`.file.json, for `clinvar` and each prefix); NCBO, RDF in BioPortal
 (https://web.archive.org/web/2025/https://www.bioontology.org/wiki/RDF_in_BioPortal) and the 2013 reply
 (https://lists.w3.org/Archives/Public/public-semweb-lifesci/2013May/0082.html); Wikidata API
 (https://www.wikidata.org/w/api.php?action=wbgetentities&ids=P3345); SPHN external terminologies
