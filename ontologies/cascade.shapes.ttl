@@ -2852,3 +2852,33 @@ cascade:RuleListVersionRowShape a sh:NodeShape ;
 cascade:PersonJudgmentAssociationShape a sh:NodeShape ;
     sh:property [ sh:path prov:agent ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
                 [ sh:path prov:hadRole ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( cascade:PatientRole ) ] .
+
+cascade:DocumentRoleAttributionShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:wasAttributedTo , prov:wasGeneratedBy ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A document's author and custodian, named by an association of the act that generated it, are each the object of its prov:wasAttributedTo: {?agent} is not."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this ?agent WHERE {
+  $this <http://www.w3.org/ns/prov#wasGeneratedBy>/<http://www.w3.org/ns/prov#qualifiedAssociation> ?association .
+  ?association <http://www.w3.org/ns/prov#agent> ?agent ;
+                <http://www.w3.org/ns/prov#hadRole> ?role .
+  FILTER (?role IN (<https://ns.cascadeprotocol.org/cascade#AuthorRole>, <https://ns.cascadeprotocol.org/cascade#CustodianRole>))
+  FILTER NOT EXISTS { $this <http://www.w3.org/ns/prov#wasAttributedTo> ?agent }
+}""" ] ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "A document's prov:wasAttributedTo never names a party that only transmitted it: {?agent} does."@en ;
+        sh:severity sh:Violation ;
+        sh:select """SELECT $this ?agent WHERE {
+  $this <http://www.w3.org/ns/prov#wasAttributedTo> ?agent .
+  $this <http://www.w3.org/ns/prov#wasGeneratedBy>/<http://www.w3.org/ns/prov#qualifiedAssociation> ?association .
+  ?association <http://www.w3.org/ns/prov#agent> ?agent ;
+                <http://www.w3.org/ns/prov#hadRole> <https://ns.cascadeprotocol.org/cascade#TransmitterRole> .
+  FILTER NOT EXISTS {
+    $this <http://www.w3.org/ns/prov#wasGeneratedBy>/<http://www.w3.org/ns/prov#qualifiedAssociation> ?other .
+    ?other <http://www.w3.org/ns/prov#agent> ?agent ;
+           <http://www.w3.org/ns/prov#hadRole> ?role .
+    FILTER (?role IN (<https://ns.cascadeprotocol.org/cascade#AuthorRole>, <https://ns.cascadeprotocol.org/cascade#CustodianRole>))
+  }
+}""" ] .

@@ -114,8 +114,9 @@ it the same way, with no term of ours. Looked at: FHIR's own elements (`performe
 ORG, whose properties (`org:memberOf`, `org:hasUnit`, `org:siteOf`) relate people, units and sites to an organisation
 and never an entity to one, so none fits a record; and a role on an association of the act that generated the version,
 as a document names its custodian, which needs an act and a node per association inside the version and whose role
-would say nothing a performer's plain attribution does not. It sits on the version because it is what one pull of the record says: a server that later
-names another lab writes another version, and the record, named by server, type and id, keeps its name. Only
+would say nothing a performer's plain attribution does not. It sits on the version because it is what one pull of the
+record says: a server that later names another lab writes another version, and the record, named by server, type and
+id, keeps its name. Only
 `Observation.performer` is read: `Patient.managingOrganization` assigns a person's records to an organisation on a
 server that may serve many, the open question below, and an `Encounter`, where `serviceProvider` sits, is no record.
 

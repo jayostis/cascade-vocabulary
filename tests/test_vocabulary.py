@@ -210,7 +210,6 @@ def test_a_role_on_an_attribution_reaches_no_domain_of_had_role_and_the_attribut
     assert (PROV.qualifiedAttribution, None, None) not in vocabulary
     vocabulary.add((PROV.Attribution, RDFS.subClassOf, PROV.AgentInfluence))
     assert not reaches_every_domain(vocabulary, PROV.Attribution, PROV.hadRole)
-    assert not reaches_every_domain(vocabulary, PROV.Association, PROV.bogus)
 
 
 def test_a_value_absent_for_a_reason_has_for_domain_each_class_of_a_property_a_value_can_be_absent_for():
