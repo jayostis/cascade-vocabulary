@@ -186,6 +186,33 @@ def test_a_judgment_and_a_reference_series_are_prov_entities_by_the_vocabularys_
         assert PROV.Entity in set(vocabulary.transitive_objects(c, RDFS.subClassOf)), c
 
 
+def reaches_every_domain(vocabulary, subject_class, predicate):
+    """Whether a subject of the class may carry the predicate: through rdfs:subClassOf the class reaches a member of
+    each of the predicate's domains."""
+    reached = set(vocabulary.transitive_objects(subject_class, RDFS.subClassOf))
+    domains = list(vocabulary.objects(predicate, RDFS.domain))
+    return bool(domains) and all(reached & members(vocabulary, domain) for domain in domains)
+
+
+@pytest.mark.parametrize("subject_class, predicate", [
+    (PROV.Association, PROV.hadRole),
+    (PROV.Association, PROV.agent),
+    pytest.param(CASCADE_NS.Judgment, PROV.used, marks=pytest.mark.xfail(
+        strict=True, reason="a machine's Same names what it used on the judgment, an entity; prov:used's domain is an activity")),
+])
+def test_a_class_a_pod_writes_a_property_on_reaches_every_domain_of_that_property(subject_class, predicate):
+    assert reaches_every_domain(union(ONTOLOGIES), subject_class, predicate)
+
+
+def test_a_role_on_an_attribution_reaches_no_domain_of_had_role_and_the_attribution_terms_are_not_declared():
+    vocabulary = union(ONTOLOGIES)
+    assert (PROV.Attribution, None, None) not in vocabulary
+    assert (PROV.qualifiedAttribution, None, None) not in vocabulary
+    vocabulary.add((PROV.Attribution, RDFS.subClassOf, PROV.AgentInfluence))
+    assert not reaches_every_domain(vocabulary, PROV.Attribution, PROV.hadRole)
+    assert not reaches_every_domain(vocabulary, PROV.Association, PROV.bogus)
+
+
 def test_a_value_absent_for_a_reason_has_for_domain_each_class_of_a_property_a_value_can_be_absent_for():
     vocabulary, shapes = union(ONTOLOGIES), union(SHAPES)
     (shape,) = shapes.subjects(SH.path, CASCADE_NS.absentValueProperty)

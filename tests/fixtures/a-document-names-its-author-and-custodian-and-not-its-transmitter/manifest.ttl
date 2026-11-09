@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-document-names-its-author-and-custodian-and-not-its-transmitter" ;
+  rdfs:comment "Asthma from a summary that two writers' acts generated: one names Fernhill Clinic its author, the other the exchange its custodian and Apple Health its transmitter. The summary is attributed to the author and the custodian." ;
+  mf:entries (
+    <#where-it-came-from>
+  ) .
+
+<#where-it-came-from> a mf:QueryEvaluationTest ;
+  mf:name "where-it-came-from" ;
+  rdfs:comment "The asthma's summary once for each hospital it is attributed to, the author and the custodian, and never for the app that transmitted it; the record and the summary are named by their author." ;
+  mf:action [ qt:query <../../../queries/questions/entry/Where%20it%20came%20from.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <where-it-came-from.srj> .
