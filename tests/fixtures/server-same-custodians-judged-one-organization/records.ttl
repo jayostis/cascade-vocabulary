@@ -16,10 +16,12 @@
 
 :oldPull a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
     cascade:serverBaseUrl "https://fhir.hospital.example/api/FHIR/R4" ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+    prov:wasAttributedTo :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] ] .
 :newPullAfterTheMerger a prov:Entity ; pav:retrievedOn "2026-03-01T00:00:00Z"^^xsd:dateTime ;
     cascade:serverBaseUrl "https://fhir.hospital.example/interconnect/api/FHIR/R4" ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospitalAfterMerger ] .
+    prov:wasAttributedTo :hospitalAfterMerger ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospitalAfterMerger ] ] .
 
 <urn:uuid:73ad8730-ae74-8c5a-9300-dc29b5155e02> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a3" ;
     cascade:sourceUrl <https://fhir.hospital.example/api/FHIR/R4/AllergyIntolerance/a3> .

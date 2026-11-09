@@ -101,7 +101,6 @@ def test_a_record_is_in_no_view_exactly_when_the_derivations_recorded_a_reason(f
 
 
 @every_fixture
-@pytest.mark.xfail(reason="#355 V2 moves the fixtures' roles from prov:qualifiedAttribution to the generating act")
 def test_no_pod_holds_a_qualified_attribution_so_no_role_sits_on_one(fixture):
     store = built_once(fixture, "oxigraph", LENSES[0]).store
     assert not store.ask(f"ASK {{ ?s <{PROV.qualifiedAttribution}> ?attribution }}")

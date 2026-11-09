@@ -3,9 +3,15 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-:penicillinNorthDocument prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] .
-:penicillinSouthDocument prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Southview" ] ] .
-:asthmaFirstDocument prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] .
-:asthmaSecondDocument prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] .
-:latexDocument prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] .
+:penicillinNorthDocument prov:wasAttributedTo :northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ] .
+:penicillinSouthDocument prov:wasAttributedTo _:southview ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:southview ] ] .
+_:southview rdfs:label "Southview" .
+:asthmaFirstDocument prov:wasAttributedTo :northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ] .
+:asthmaSecondDocument prov:wasAttributedTo :northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ] .
+:latexDocument prov:wasAttributedTo :northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ] .
 :northgate rdfs:label "Northgate" .

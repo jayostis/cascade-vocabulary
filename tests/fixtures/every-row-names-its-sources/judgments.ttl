@@ -6,9 +6,9 @@
 :person a prov:Person .
 
 :sameMedication a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :prescribed, :listed ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
 
 :sameGlucose a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :glucose, :glucoseCopy ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .

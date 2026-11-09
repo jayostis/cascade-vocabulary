@@ -6,17 +6,17 @@
 :alex a prov:Person .
 
 :same a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :record , :other ;
-    prov:wasAttributedTo :alex ; prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :alex ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
 :februaryBeforeJanuary a cascade:Judgment ; cascade:verdict cascade:Before ; prov:hadMember :february , :january ;
     cascade:earlierMember :february ;
-    prov:wasAttributedTo :alex ; prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :alex ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
 :januaryBeforeOther a cascade:Judgment ; cascade:verdict cascade:Before ; prov:hadMember :january , :otherRevision ;
     cascade:earlierMember :january ;
-    prov:wasAttributedTo :alex ; prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :alex ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .
 :otherBeforeFebruary a cascade:Judgment ; cascade:verdict cascade:Before ; prov:hadMember :otherRevision , :february ;
     cascade:earlierMember :otherRevision ;
-    prov:wasAttributedTo :alex ; prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :alex ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-03-03T00:00:00Z"^^xsd:dateTime .

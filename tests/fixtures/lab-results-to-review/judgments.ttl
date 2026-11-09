@@ -17,7 +17,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:assertedUnderRuleListVersion :rules11 .
 
 :notTheSame a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :differentA , :differentB ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
@@ -34,7 +34,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:used <urn:x:countPlainVersion> , <urn:x:countAnnotatedVersion> .
 
 :seen a cascade:Judgment ; cascade:verdict cascade:Acknowledged ; prov:hadMember :countsDiffer ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
 
 :differentUnits a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultUnitsAtOneInstant ;
@@ -50,7 +50,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:used <urn:x:sameAVersion> , <urn:x:sameBVersion> .
 
 :theSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :sameA , :sameB ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-03T00:00:00Z"^^xsd:dateTime .
 
 :byIdentifier a cascade:Judgment ; cascade:verdict cascade:Same ;

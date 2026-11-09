@@ -21,10 +21,12 @@
 :hospitalRevision a cascade:Revision ; cascade:revisionOf :hospital ; cascade:version :hospitalVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :summary a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:agent :clinic ; prov:hadRole cascade:AuthorRole ] ,
-                              [ prov:agent :exchange ; prov:hadRole cascade:CustodianRole ] .
+    prov:wasAttributedTo :clinic , :exchange ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :clinic ; prov:hadRole cascade:AuthorRole ] ,
+                              [ prov:agent :exchange ; prov:hadRole cascade:CustodianRole ] ] .
 :visit a prov:Entity ; pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:agent :hospital ; prov:hadRole cascade:AuthorRole ] .
+    prov:wasAttributedTo :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :hospital ; prov:hadRole cascade:AuthorRole ] ] .
 
 :progress a cascade:ClinicalNoteOrDocument .
 :progressVersion prov:specializationOf :progress ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;

@@ -6,7 +6,8 @@
 :hospital a cascade:Organization .
 
 :unstructured a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+    prov:wasAttributedTo :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] ] .
 :pull a prov:Entity ; cascade:serverBaseUrl "https://fhir.hospital.example/r4" .
 :otherPull a prov:Entity ; cascade:serverBaseUrl "https://fhir.hospital.example/r4" .
 

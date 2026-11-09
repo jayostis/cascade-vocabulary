@@ -8,26 +8,36 @@
 :exchange a cascade:Organization .
 
 :clinicMay a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :clinicJune a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :clinicAugust a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :clinicApril a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :clinicAugustAgain a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :clinicJuly a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :clinicSeptember a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :clinicMarch a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :hospitalSummary a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+    prov:wasAttributedTo :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] ] .
 :exchangeSummary a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :exchange ] ,
-                              [ prov:hadRole cascade:AuthorRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :exchange , :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :exchange ] ,
+                              [ prov:hadRole cascade:AuthorRole ; prov:agent :clinic ] ] .
 
 :planMay a cascade:ClinicalNoteOrDocument .
 <urn:x:planMayVersion> prov:specializationOf :planMay ;

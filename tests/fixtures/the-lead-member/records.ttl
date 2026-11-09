@@ -6,7 +6,8 @@
 
 :subject a cascade:Subject .
 
-:document prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] .
+:document prov:wasAttributedTo :northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ] .
 
 :older a cascade:AllergyOrIntolerance .
 :olderFirst prov:specializationOf :older ; cascade:patient :subject ; cascade:allergen "Pollen" .

@@ -14,7 +14,9 @@
     prov:wasDerivedFrom :document ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :document pav:retrievedFrom <https://north.example/fhir/AllergyIntolerance/peanut> ;
     pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:wasAttributedTo _:northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate ] ] .
+_:northgate rdfs:label "Northgate" .
 
 :entered a cascade:AllergyOrIntolerance .
 :enteredVersion prov:specializationOf :entered ; cascade:patient :subject ; cascade:allergen "Peanut" ;

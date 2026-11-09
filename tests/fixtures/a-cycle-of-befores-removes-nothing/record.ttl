@@ -6,7 +6,9 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :subject a cascade:Subject .
-:document prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+:document prov:wasAttributedTo _:northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate ] ] .
+_:northgate rdfs:label "Northgate" .
 
 :record a cascade:ProblemOrDiagnosis .
 :first prov:specializationOf :record ; cascade:patient :subject ; cascade:conditionName "Eczema" ; cascade:clinicalStatus "active" .

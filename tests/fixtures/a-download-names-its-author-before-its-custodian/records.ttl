@@ -12,11 +12,13 @@
 :differVersion prov:specializationOf :differ ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
 :differRevision a cascade:Revision ; cascade:revisionOf :differ ; cascade:version :differVersion ; prov:wasDerivedFrom :downloadDiffer ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
-:downloadDiffer prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ,
-                                          [ prov:hadRole cascade:CustodianRole ; prov:agent :alpha ] .
+:downloadDiffer prov:wasAttributedTo :northgate , :alpha ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ,
+                                          [ prov:hadRole cascade:CustodianRole ; prov:agent :alpha ] ] .
 
 :custodianOnly a cascade:AllergyOrIntolerance .
 :custodianOnlyVersion prov:specializationOf :custodianOnly ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
 :custodianOnlyRevision a cascade:Revision ; cascade:revisionOf :custodianOnly ; cascade:version :custodianOnlyVersion ; prov:wasDerivedFrom :downloadCustodian ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
-:downloadCustodian prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :alpha ] .
+:downloadCustodian prov:wasAttributedTo :alpha ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :alpha ] ] .

@@ -9,11 +9,11 @@
 
 :about a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :claimed ; cascade:subject :subject ;
     cascade:basis cascade:OwnerStatement ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :aboutRetracted a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :retracted ; cascade:subject :subject ;
     cascade:basis cascade:OwnerStatement ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :retraction a prov:Activity ; prov:invalidated :aboutRetracted ;
     prov:wasAssociatedWith :person ; prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;

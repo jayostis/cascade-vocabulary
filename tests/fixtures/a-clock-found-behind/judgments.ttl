@@ -5,5 +5,5 @@
 
 :person a prov:Person .
 :earlierAcknowledged a cascade:Judgment ; cascade:verdict cascade:Acknowledged ; prov:hadMember :earlierClockBehind ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2025-12-29T00:00:00Z"^^xsd:dateTime .

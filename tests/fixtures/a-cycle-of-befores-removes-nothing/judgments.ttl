@@ -9,8 +9,8 @@
 :sam a prov:Person .
 
 :xBeforeY a cascade:Judgment ; cascade:verdict cascade:Before ; prov:hadMember :x , :y ; cascade:earlierMember :x ;
-    prov:wasAttributedTo :alex ; prov:qualifiedAttribution [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :alex ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :alex ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
 :yBeforeX a cascade:Judgment ; cascade:verdict cascade:Before ; prov:hadMember :y , :x ; cascade:earlierMember :y ;
-    prov:wasAttributedTo :sam ; prov:qualifiedAttribution [ prov:agent :sam ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :sam ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :sam ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .

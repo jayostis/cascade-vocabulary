@@ -7,7 +7,9 @@
 @prefix org: <http://www.w3.org/ns/org#> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> a cascade:Organization .
-<ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> prov:qualifiedAttribution _:c5f2091b3082734bc081b9bc57b7f697 .
+<ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> prov:wasGeneratedBy _:writing ;
+	prov:wasAttributedTo <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> .
+_:writing prov:qualifiedAssociation _:c5f2091b3082734bc081b9bc57b7f697 .
 _:c5f2091b3082734bc081b9bc57b7f697 prov:agent <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> ;
 	prov:hadRole cascade:CustodianRole .
 <ni:///sha-256;5rNG4N2I8C9jutyJj32NuTX-8YIs3kBrMJiGS8dJV9I> prov:specializationOf <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> .
@@ -17,7 +19,7 @@ _:fd7a03af7128b12945a65d319c3a5085 a oa:XPathSelector ;
 	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='custodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='assignedCustodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='representedCustodianOrganization' and namespace-uri()='urn:hl7-org:v3'][1]" .
 <ni:///sha-256;5rNG4N2I8C9jutyJj32NuTX-8YIs3kBrMJiGS8dJV9I> foaf:name "Kestrel Harbor Hospital" ;
 	org:identifier "1234567893"^^<http://hl7.org/fhir/sid/us-npi> .
-<ni:///sha-256;pU26p-MVZqVdxLd2Qu5U7pKuFHZHAJ2mk7Cs7H9E_fs> prov:qualifiedAttribution _:c4dab2179fd4572a40925bb7fed94db2 .
+_:writing prov:qualifiedAssociation _:c4dab2179fd4572a40925bb7fed94db2 .
 _:c4dab2179fd4572a40925bb7fed94db2 prov:agent <urn:uuid:b272d9d2-08db-8fd9-9d33-eca1e48c75ba> ;
 	prov:hadRole cascade:AuthorRole .
 <ni:///sha-256;0ROnGrsB6S2xIzOtoj0wL0Hy7GxjIN1tlfB8Od5ij1I> cascade:noteOrDocumentTypeName "Hospital course Narrative" ;

@@ -6,4 +6,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :summary pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:wasAttributedTo _:northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate ] ] .
+_:northgate rdfs:label "Northgate" .

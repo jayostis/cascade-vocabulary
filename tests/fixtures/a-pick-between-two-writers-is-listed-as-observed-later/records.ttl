@@ -7,9 +7,13 @@
 
 :subject a cascade:Subject .
 :pulledByMe pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:wasAttributedTo _:northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate ] ] .
+_:northgate rdfs:label "Northgate" .
 :pulledByThem pav:retrievedOn "2026-01-03T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:wasAttributedTo _:northgate2 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate2 ] ] .
+_:northgate2 rdfs:label "Northgate" .
 
 :twoWriters a cascade:ProblemOrDiagnosis .
 :twoWritersFirst prov:specializationOf :twoWriters ; cascade:patient :subject ; cascade:conditionName "Rash" ; cascade:clinicalStatus "active" .

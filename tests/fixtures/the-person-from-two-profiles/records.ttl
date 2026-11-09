@@ -9,9 +9,13 @@
 :subject a cascade:Subject .
 
 :northSummary a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:agent [ rdfs:label "North Hospital" ] ; prov:hadRole cascade:AuthorRole ] .
+    prov:wasAttributedTo _:northhospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent _:northhospital ; prov:hadRole cascade:AuthorRole ] ] .
+_:northhospital rdfs:label "North Hospital" .
 :southSummary a prov:Entity ; pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:agent [ rdfs:label "South Clinic" ] ; prov:hadRole cascade:AuthorRole ] .
+    prov:wasAttributedTo _:southclinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent _:southclinic ; prov:hadRole cascade:AuthorRole ] ] .
+_:southclinic rdfs:label "South Clinic" .
 
 :north a cascade:PatientProfile .
 :northVersion prov:specializationOf :north ; foaf:name "Priya Natarajan" ; cascade:dateOfBirth "1968-11-04"^^xsd:date ;
