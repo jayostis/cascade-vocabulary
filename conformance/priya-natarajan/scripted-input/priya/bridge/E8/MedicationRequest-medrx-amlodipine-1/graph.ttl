@@ -40,15 +40,17 @@ _:c47838f7b75c12b01d414b52465097bb a oa:FragmentSelector ;
 	rdf:value "" .
 _:1f8425fa914aa54b49c0b7b8501fe6c9 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2025-06-15T08:05:04Z"^^xsd:dateTime .
-<ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> prov:qualifiedAttribution _:bb1bdcda258d1d208596e88b4f7fdaf5 .
-_:bb1bdcda258d1d208596e88b4f7fdaf5 prov:agent _:a9710e44287af42bf987c98817fbfd73 .
-_:a9710e44287af42bf987c98817fbfd73 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:bb1bdcda258d1d208596e88b4f7fdaf5 prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> prov:qualifiedAttribution _:f8cab4a200e18135e13df7ffd2a78e40 .
-_:f8cab4a200e18135e13df7ffd2a78e40 prov:agent _:875dbbe4a26582dbf2277c45071b36ab .
-_:875dbbe4a26582dbf2277c45071b36ab <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
-_:f8cab4a200e18135e13df7ffd2a78e40 prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> cascade:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
+<ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> prov:wasGeneratedBy _:bb1bdcda258d1d208596e88b4f7fdaf5 .
+_:bb1bdcda258d1d208596e88b4f7fdaf5 prov:qualifiedAssociation _:a9710e44287af42bf987c98817fbfd73 .
+_:a9710e44287af42bf987c98817fbfd73 prov:agent _:f8cab4a200e18135e13df7ffd2a78e40 .
+_:f8cab4a200e18135e13df7ffd2a78e40 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:a9710e44287af42bf987c98817fbfd73 prov:hadRole cascade:TransmitterRole .
+_:bb1bdcda258d1d208596e88b4f7fdaf5 prov:qualifiedAssociation _:875dbbe4a26582dbf2277c45071b36ab .
+_:875dbbe4a26582dbf2277c45071b36ab prov:agent _:9df533e7e9d13938f4fe1eb634d4afe7 .
+_:9df533e7e9d13938f4fe1eb634d4afe7 <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
+_:875dbbe4a26582dbf2277c45071b36ab prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;tgT6mpcxmsu7GZScyv7uNZTwDhbUgJG8ZnvdhVWDKCM> prov:wasAttributedTo _:9df533e7e9d13938f4fe1eb634d4afe7 ;
+	cascade:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
 	pav:retrievedFrom <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-amlodipine-1> ;
 	pav:retrievedOn "2025-06-14T07:12:40Z"^^xsd:dateTime ;
 	cascade:sourceFormatVersion "4.0.1" ;

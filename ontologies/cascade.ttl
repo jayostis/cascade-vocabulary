@@ -1018,15 +1018,15 @@ prov:Activity a owl:Class ;
     dct:source <https://www.w3.org/ns/prov-o-20130430> ;
     dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
 
-prov:Association a owl:Class ;
-    rdfs:label "Association" ;
+prov:AgentInfluence a owl:Class ;
+    rdfs:label "AgentInfluence" ;
     rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
-    rdfs:subClassOf prov:AgentInfluence ;
+    rdfs:subClassOf prov:Influence ;
     dct:source <https://www.w3.org/ns/prov-o-20130430> ;
     dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
 
-prov:Attribution a owl:Class ;
-    rdfs:label "Attribution" ;
+prov:Association a owl:Class ;
+    rdfs:label "Association" ;
     rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
     rdfs:subClassOf prov:AgentInfluence ;
     dct:source <https://www.w3.org/ns/prov-o-20130430> ;
@@ -1041,6 +1041,12 @@ prov:Collection a owl:Class ;
 
 prov:Entity a owl:Class ;
     rdfs:label "Entity" ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
+    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+prov:Influence a owl:Class ;
+    rdfs:label "Influence" ;
     rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
     dct:source <https://www.w3.org/ns/prov-o-20130430> ;
     dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
@@ -1122,15 +1128,6 @@ prov:qualifiedAssociation a owl:ObjectProperty ;
     rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
     rdfs:domain prov:Activity ;
     rdfs:range prov:Association ;
-    rdfs:subPropertyOf prov:qualifiedInfluence ;
-    dct:source <https://www.w3.org/ns/prov-o-20130430> ;
-    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
-
-prov:qualifiedAttribution a owl:ObjectProperty ;
-    rdfs:label "qualifiedAttribution" ;
-    rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> ;
-    rdfs:domain prov:Entity ;
-    rdfs:range prov:Attribution ;
     rdfs:subPropertyOf prov:qualifiedInfluence ;
     dct:source <https://www.w3.org/ns/prov-o-20130430> ;
     dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .

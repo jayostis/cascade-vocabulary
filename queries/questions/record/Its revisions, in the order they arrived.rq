@@ -31,10 +31,8 @@ WHERE {
              OPTIONAL { ?document rdfs:label ?documentLabel }
              OPTIONAL { ?document pav:retrievedOn ?retrieved }
              OPTIONAL { ?document cascade:answeredAsOf ?answeredAsOf }
-             OPTIONAL { ?document prov:qualifiedAttribution ?author .
-                        ?author prov:hadRole ?hospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital
-                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
-             OPTIONAL { ?document prov:qualifiedAttribution ?sender .
+             OPTIONAL { ?document prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital }
+             OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?sender .
                         ?sender prov:hadRole cascade:TransmitterRole ; prov:agent/rdfs:label ?transmitter } }
   OPTIONAL { ?revision prov:wasGeneratedBy ?import .
              OPTIONAL { ?import rdfs:label ?importLabel }

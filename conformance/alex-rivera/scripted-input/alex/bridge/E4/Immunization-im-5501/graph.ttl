@@ -3,39 +3,42 @@
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
 <ni:///sha-256;7fq_wzn58uMbjgRS-IDrwWqbBvBdwpZ-DL6LRb5jiqU> cascade:vaccineName "Influenza, seasonal" ;
-	cascade:workflowStatus "completed" ;
+	cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/141> ;
 	cascade:vaccinationOccurrenceTime "2025-10-15"^^xsd:date ;
-	cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/141> .
-_:51ad715b5a0ac0a73ddf7e3000b298a pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;7fq_wzn58uMbjgRS-IDrwWqbBvBdwpZ-DL6LRb5jiqU> .
-<ni:///sha-256;7fq_wzn58uMbjgRS-IDrwWqbBvBdwpZ-DL6LRb5jiqU> cascade:patient <urn:uuid:5056e058-324f-8c70-b69b-fb27a061cdc5> ;
-	prov:specializationOf <urn:uuid:7e3decf1-6e9a-8e95-b982-c2e7d18be3f1> .
-<urn:uuid:7e3decf1-6e9a-8e95-b982-c2e7d18be3f1> cascade:sourceRecordId "im-5501" ;
+	cascade:workflowStatus "completed" .
+<urn:uuid:7e3decf1-6e9a-8e95-b982-c2e7d18be3f1> a cascade:Vaccination ;
 	cascade:sourceUrl <https://ehr.larkspur.example/fhir/R4/Immunization/im-5501> ;
-	a cascade:Vaccination .
-_:51ad715b5a0ac0a73ddf7e3000b298a oa:hasSelector _:af13d52608e7be051ba0e1b0aa1749a8 ;
+	cascade:sourceRecordId "im-5501" .
+<ni:///sha-256;7fq_wzn58uMbjgRS-IDrwWqbBvBdwpZ-DL6LRb5jiqU> prov:specializationOf <urn:uuid:7e3decf1-6e9a-8e95-b982-c2e7d18be3f1> ;
+	cascade:patient <urn:uuid:5056e058-324f-8c70-b69b-fb27a061cdc5> .
+_:51ad715b5a0ac0a73ddf7e3000b298a bridge:arrivedAs <ni:///sha-256;7fq_wzn58uMbjgRS-IDrwWqbBvBdwpZ-DL6LRb5jiqU> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:af13d52608e7be051ba0e1b0aa1749a8 ;
 	oa:hasSource <ni:///sha-256;LVAYE3hro7inQx9KKeCT54MbpvAkcQihcjALweOmbNI> ;
 	prov:wasDerivedFrom <ni:///sha-256;LVAYE3hro7inQx9KKeCT54MbpvAkcQihcjALweOmbNI> ;
 	prov:wasGeneratedBy _:dcb825391d6ab44a2f89c4efb32b7f71 .
 _:af13d52608e7be051ba0e1b0aa1749a8 a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "" .
 _:dcb825391d6ab44a2f89c4efb32b7f71 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-10-14T15:42:00Z"^^xsd:dateTime .
-<ni:///sha-256;LVAYE3hro7inQx9KKeCT54MbpvAkcQihcjALweOmbNI> prov:qualifiedAttribution _:a3bb548133e86f3c663c8548d09444d5 .
-_:a3bb548133e86f3c663c8548d09444d5 prov:agent _:d60a66d6dcc5fe9b86ba748423b9cfd1 .
-_:d60a66d6dcc5fe9b86ba748423b9cfd1 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:a3bb548133e86f3c663c8548d09444d5 prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;LVAYE3hro7inQx9KKeCT54MbpvAkcQihcjALweOmbNI> prov:qualifiedAttribution _:57a5efde05b00e78464465007e29537 .
-_:57a5efde05b00e78464465007e29537 prov:agent _:8820a7481e858a8fd57cf65297d69f52 .
-_:8820a7481e858a8fd57cf65297d69f52 <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
-_:57a5efde05b00e78464465007e29537 prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;LVAYE3hro7inQx9KKeCT54MbpvAkcQihcjALweOmbNI> cascade:serverBaseUrl "https://ehr.larkspur.example/fhir/R4" ;
+<ni:///sha-256;LVAYE3hro7inQx9KKeCT54MbpvAkcQihcjALweOmbNI> prov:wasGeneratedBy _:a3bb548133e86f3c663c8548d09444d5 .
+_:a3bb548133e86f3c663c8548d09444d5 prov:qualifiedAssociation _:d60a66d6dcc5fe9b86ba748423b9cfd1 .
+_:d60a66d6dcc5fe9b86ba748423b9cfd1 prov:agent _:57a5efde05b00e78464465007e29537 .
+_:57a5efde05b00e78464465007e29537 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:d60a66d6dcc5fe9b86ba748423b9cfd1 prov:hadRole cascade:TransmitterRole .
+_:a3bb548133e86f3c663c8548d09444d5 prov:qualifiedAssociation _:8820a7481e858a8fd57cf65297d69f52 .
+_:8820a7481e858a8fd57cf65297d69f52 prov:agent _:dff089f9744d3dc81d903c57ee0b3cec .
+_:dff089f9744d3dc81d903c57ee0b3cec <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
+_:8820a7481e858a8fd57cf65297d69f52 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;LVAYE3hro7inQx9KKeCT54MbpvAkcQihcjALweOmbNI> prov:wasAttributedTo _:dff089f9744d3dc81d903c57ee0b3cec ;
+	cascade:serverBaseUrl "https://ehr.larkspur.example/fhir/R4" ;
 	pav:retrievedFrom <https://EHR.Larkspur.example/fhir/R4/Immunization/im-5501> ;
 	pav:retrievedOn "2026-10-14T15:40:00Z"^^xsd:dateTime ;
 	cascade:sourceFormatVersion "4.0.1" ;

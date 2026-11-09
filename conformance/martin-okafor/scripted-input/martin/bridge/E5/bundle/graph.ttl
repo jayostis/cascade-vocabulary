@@ -232,10 +232,12 @@ _:b4af91f2081a04731ca20f2cd5a91134 <http://www.w3.org/2000/01/rdf-schema#label> 
 <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> cascade:serverBaseUrl "https://fhir.st-columbas-hospital.example/r4" ;
 	pav:retrievedOn "2026-10-13T09:20:00Z"^^xsd:dateTime ;
 	cascade:authenticatedPatient "Patient/mo-90412" ;
-	prov:qualifiedAttribution _:cfc0aaead8d896931b129b32baf01acc .
-_:cfc0aaead8d896931b129b32baf01acc prov:agent _:9eb4331f92405cf8b5ed549e5c7e305d .
-_:9eb4331f92405cf8b5ed549e5c7e305d <http://www.w3.org/2000/01/rdf-schema#label> "St Columba's Hospital" .
-_:cfc0aaead8d896931b129b32baf01acc prov:hadRole cascade:AuthorRole .
+	prov:wasAttributedTo _:cfc0aaead8d896931b129b32baf01acc ;
+	prov:wasGeneratedBy _:9eb4331f92405cf8b5ed549e5c7e305d .
+_:9eb4331f92405cf8b5ed549e5c7e305d prov:qualifiedAssociation _:7646e341b8c9bf78cc534fb49d617ec0 .
+_:7646e341b8c9bf78cc534fb49d617ec0 prov:agent _:cfc0aaead8d896931b129b32baf01acc ;
+	prov:hadRole cascade:AuthorRole .
+_:cfc0aaead8d896931b129b32baf01acc <http://www.w3.org/2000/01/rdf-schema#label> "St Columba's Hospital" .
 <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> a prov:Entity .
 _:b4af91f2081a04731ca20f2cd5a91134 a prov:Activity ;
 	prov:used <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ;

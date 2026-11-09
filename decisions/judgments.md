@@ -43,7 +43,7 @@ who makes judgments.
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | judgment | nanopub assertion; SSSOM row | `jdg:Judgment`, a `prov:Collection` whose `prov:hadMember` are the records; one verdict (`ontologies/cascade.ttl`) | borrowed from PROV; the verdict is ours |
-| maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` (`runtime/matcher.feature`, M5; `ontologies/cascade.ttl`) | borrowed |
+| maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` (`runtime/matcher.feature`, M5; `ontologies/cascade.ttl`); a person's judgment also names the part they acted in, `cascade:PatientRole`, on the one `prov:qualifiedAssociation` of the act that generated it, a blank node its `prov:wasGeneratedBy` names, whose agent is the person it is attributed to (`runtime/naming.feature`, N10; `cascade:PersonJudgmentShape`) | borrowed; the role sits where PROV-DM puts one, on an association |
 | verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`, and `cascade:Before`, of two revisions, naming the earlier as `cascade:earlierMember`, per `currency.md` (`ontologies/cascade.ttl`) | ours: a belief with a maker, not an axiom, and Different wins over Same |
 | acknowledgement | FHIR `DetectedIssue.mitigation`; `Flag.status` | `cascade:Acknowledged`, a verdict whose one member is a finding: the finding leaves the review page, still stands, and nothing else changes (`runtime/matcher.feature`, M19). A verdict, not a mark outside judgments, because a person's other answers to a finding, a Same or a Before, are judgments whose member is the finding, so the three list, count, retract and sync alike, and writers that file them in any order hold one answer (looked at `DetectedIssue.mitigation`, an action taken on a clinical issue with a practitioner author, and `Flag.status`, which edits the flag in place, where a pod edits nothing) | ours |
 | a clock known wrong | | `cascade:ClockDiscounted`, a person's verdict whose one member is an act: every revision the act generated is ranked as carrying no observation time, per `currency.md` (`runtime/currency.feature`, C7). It discounts and carries no offset: the derivation `currency.md` describes needs only that the times are wrong, and an offset would be a guess at how wrong (#204) | ours |
@@ -86,6 +86,12 @@ it. So where two makers disagree, the pod errs toward showing two things, and a 
 **Why every maker leaves a trail.** (row "maker") Where a maker went wrong, its trail is what finds the damage: a rule list version
 by the assertions under it, a runtime by the acts it performed, an app by its agent and version, and a person's
 Erroneous over an act hides bad data from any of them.
+
+**Why a person's role sits on the act that generated the judgment.** (row "maker") PROV-DM allows a role on an
+association, a usage, a generation, an invalidation, a start and an end, and never on an attribution
+(https://www.w3.org/TR/2013/REC-prov-dm-20130430/#term-attribute), so a judgment names it as a document names its
+author's, on an association of the act that generated it (`republishing-sources.md`, row "the part a party played in a
+document"). A person's retraction is itself an act, so its role is on its own association already.
 
 **Why a claim, an assertion per rule list version, and one matcher agent.** (row "machine claim and assertion") A machine judgment is one claim with an
 assertion per rule list version because the same inputs give the same name, so a later version that agrees could

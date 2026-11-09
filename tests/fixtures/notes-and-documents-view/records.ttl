@@ -13,7 +13,8 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :summary a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:agent :clinic ; prov:hadRole cascade:AuthorRole ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :clinic ; prov:hadRole cascade:AuthorRole ] ] .
 
 :progress a cascade:ClinicalNoteOrDocument .
 :progressVersion prov:specializationOf :progress ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;

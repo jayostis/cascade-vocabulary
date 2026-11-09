@@ -10,16 +10,21 @@
 :exchange a cascade:Organization .
 
 :fhirSummary a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+    prov:wasAttributedTo :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] ] .
 :ccdaSummary a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+    prov:wasAttributedTo :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] ] .
 :summaryAfterMerger a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospitalAfterMerger ] .
+    prov:wasAttributedTo :hospitalAfterMerger ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospitalAfterMerger ] ] .
 :exchangeSummary a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :exchange ] ,
-                              [ prov:hadRole cascade:AuthorRole ; prov:agent :hospital ] .
+    prov:wasAttributedTo :exchange , :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :exchange ] ,
+                              [ prov:hadRole cascade:AuthorRole ; prov:agent :hospital ] ] .
 :summaryElsewhere a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinicElsewhere ] .
+    prov:wasAttributedTo :clinicElsewhere ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinicElsewhere ] ] .
 :pull a prov:Entity ; cascade:serverBaseUrl "https://fhir.hospital.example/r4" .
 
 <urn:uuid:818da826-ebc2-818f-aa16-83af37bb7b83> a cascade:Server ; cascade:serverBaseUrl "https://fhir.exchange.example/r4" .
@@ -141,7 +146,9 @@
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :healthExport a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ a prov:Organization ] ] .
+    prov:wasAttributedTo _:agent ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:agent ] ] .
+_:agent a prov:Organization .
 
 :exportedFirst a cascade:LaboratoryTestResult .
 <urn:x:exportedFirstVersion> prov:specializationOf :exportedFirst ;

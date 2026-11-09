@@ -27,14 +27,14 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :sameD a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :d1 , :d2 ;
     prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personSameD a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :d1 , :d2 ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+:personSameD a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :d1 , :d2 ; prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 # e: a lapsed pair a person's Different separates
 :sameE a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :e1 , :e2 ;
     prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personDifferentE a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :e1 , :e2 ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+:personDifferentE a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :e1 , :e2 ; prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 # f: a lapsed Same a person retracted
@@ -66,7 +66,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :sameJ a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :j1 , :j2 ;
     prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personSameJ a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :j1 , :j2 ; dct:replaces :sameJ ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+:personSameJ a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :j1 , :j2 ; dct:replaces :sameJ ; prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :retractPersonSameJ a prov:Activity ; prov:invalidated :personSameJ ; prov:wasAssociatedWith :person ; prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
@@ -77,7 +77,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :sameK a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :k1 , :k2 ;
     prov:used :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personDifferentK a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :k1 , :k2 ; dct:replaces :sameK ; prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+:personDifferentK a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :k1 , :k2 ; dct:replaces :sameK ; prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :sameAUnderrules4 a cascade:ClaimAssertion ; cascade:assertedClaim :sameA ;

@@ -148,10 +148,12 @@ _:29751bd9911c5aec569d5f0a0b73a94 <http://www.w3.org/2000/01/rdf-schema#label> "
 <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> cascade:serverBaseUrl "https://fhir.harbourline-genetics.example/r4" ;
 	pav:retrievedOn "2026-10-13T09:10:00Z"^^xsd:dateTime ;
 	cascade:authenticatedPatient "Patient/mo-7731" ;
-	prov:qualifiedAttribution _:ca9ecf36837032cdc3b4af1f642e9a4e .
-_:ca9ecf36837032cdc3b4af1f642e9a4e prov:agent _:3455ef949fc519769f0a13599aa8932f .
-_:3455ef949fc519769f0a13599aa8932f <http://www.w3.org/2000/01/rdf-schema#label> "Harbourline Genetics" .
-_:ca9ecf36837032cdc3b4af1f642e9a4e prov:hadRole cascade:AuthorRole .
+	prov:wasAttributedTo _:ca9ecf36837032cdc3b4af1f642e9a4e ;
+	prov:wasGeneratedBy _:3455ef949fc519769f0a13599aa8932f .
+_:3455ef949fc519769f0a13599aa8932f prov:qualifiedAssociation _:c919ea620e2b0d3466f7538d061def6c .
+_:c919ea620e2b0d3466f7538d061def6c prov:agent _:ca9ecf36837032cdc3b4af1f642e9a4e ;
+	prov:hadRole cascade:AuthorRole .
+_:ca9ecf36837032cdc3b4af1f642e9a4e <http://www.w3.org/2000/01/rdf-schema#label> "Harbourline Genetics" .
 <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> a prov:Entity .
 _:29751bd9911c5aec569d5f0a0b73a94 a prov:Activity ;
 	prov:used <ni:///sha-256;PoyKMPHUii6EQ-Cw9qXaHOcPhzm4bHQINk8uzzZKGt4> ;

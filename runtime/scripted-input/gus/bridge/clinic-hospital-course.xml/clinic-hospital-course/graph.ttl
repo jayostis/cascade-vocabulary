@@ -7,7 +7,9 @@
 @prefix org: <http://www.w3.org/ns/org#> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> a cascade:Organization .
-<ni:///sha-256;vXlLsyUXI0VLNl8jg2m2S74c2xmqS1hxTbSLcWV-m7Y> prov:qualifiedAttribution _:c545c8084c1a7c83f7049741250836a9 .
+<ni:///sha-256;vXlLsyUXI0VLNl8jg2m2S74c2xmqS1hxTbSLcWV-m7Y> prov:wasGeneratedBy _:writing ;
+	prov:wasAttributedTo <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> .
+_:writing prov:qualifiedAssociation _:c545c8084c1a7c83f7049741250836a9 .
 _:c545c8084c1a7c83f7049741250836a9 prov:agent <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> ;
 	prov:hadRole cascade:CustodianRole .
 <ni:///sha-256;it6jHPm47tRiUzK2--q_Db_G99RHNpDFB-SUrlhJFew> prov:specializationOf <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> .
@@ -17,7 +19,7 @@ _:cc78274f44d69a962097b830dbda106e a oa:XPathSelector ;
 	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='custodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='assignedCustodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='representedCustodianOrganization' and namespace-uri()='urn:hl7-org:v3'][1]" .
 <ni:///sha-256;it6jHPm47tRiUzK2--q_Db_G99RHNpDFB-SUrlhJFew> foaf:name "Fernhill Family Clinic" ;
 	org:identifier "CLINIC-7"^^<urn:oid:2.16.840.1.113883.19.5.2> .
-<ni:///sha-256;vXlLsyUXI0VLNl8jg2m2S74c2xmqS1hxTbSLcWV-m7Y> prov:qualifiedAttribution _:f5a04612a01d37ab229fbd8b2acafba0 .
+_:writing prov:qualifiedAssociation _:f5a04612a01d37ab229fbd8b2acafba0 .
 _:f5a04612a01d37ab229fbd8b2acafba0 prov:agent <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> ;
 	prov:hadRole cascade:AuthorRole .
 <ni:///sha-256;RsCHG5AZYpHpAezMbjIkcfmRbKqMNWBVf4Lx1CFZCxA> cascade:noteOrDocumentTypeName "Hospital course Narrative" ;

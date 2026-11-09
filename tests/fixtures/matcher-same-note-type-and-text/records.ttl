@@ -7,11 +7,14 @@
 :hospital a cascade:Organization .
 
 :hospitalSummary a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+    prov:wasAttributedTo :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] ] .
 :clinicSummary a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :clinicUnstructured a prov:Entity ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 :pull a prov:Entity ; cascade:serverBaseUrl "https://fhir.hospital.example/r4" .
 
 :hospitalCourse a cascade:ClinicalNoteOrDocument .

@@ -15,10 +15,12 @@
     prov:startedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime .
 
 :firstDocument a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ,
-        [ prov:hadRole cascade:AuthorRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ,
+        [ prov:hadRole cascade:AuthorRole ; prov:agent :clinic ] ] .
 :secondDocument a prov:Entity ; pav:retrievedOn "2026-01-02T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 
 :clinic a cascade:Organization .
 :clinicFirstVersion prov:specializationOf :clinic ; foaf:name "Fernhill Clinic" ;

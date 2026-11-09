@@ -8,14 +8,22 @@
 :subject a cascade:Subject .
 :apple rdfs:label "Apple Health" .
 :newerExport cascade:answeredAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime ; pav:retrievedOn "2026-02-02T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
-        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] .
+    prov:wasAttributedTo _:northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] ] .
+_:northgate rdfs:label "Northgate" .
 :olderExport cascade:answeredAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime ; pav:retrievedOn "2026-02-09T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
-        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] .
+    prov:wasAttributedTo _:northgate2 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate2 ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] ] .
+_:northgate2 rdfs:label "Northgate" .
 :pulled pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
-:ccdaFile prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:wasAttributedTo _:northgate3 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate3 ] ] .
+_:northgate3 rdfs:label "Northgate" .
+:ccdaFile prov:wasAttributedTo _:northgate4 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate4 ] ] .
+_:northgate4 rdfs:label "Northgate" .
 
 :exported a cascade:ProblemOrDiagnosis .
 :exportedCorrected prov:specializationOf :exported ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "resolved" .

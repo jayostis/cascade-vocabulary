@@ -7,9 +7,11 @@
 
 :subject a cascade:Subject .
 :northgate rdfs:label "Northgate" .
-:document prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] .
-:copy prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ,
-    [ prov:hadRole cascade:TransmitterRole ; prov:agent [ rdfs:label "Apple Health" ] ] .
+:document prov:wasAttributedTo :northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ] .
+:copy prov:wasAttributedTo :northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ,
+    [ prov:hadRole cascade:TransmitterRole ; prov:agent [ rdfs:label "Apple Health" ] ] ] .
 
 :record a cascade:ProblemOrDiagnosis .
 :first prov:specializationOf :record ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .

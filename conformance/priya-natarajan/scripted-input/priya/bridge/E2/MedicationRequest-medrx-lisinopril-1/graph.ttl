@@ -40,15 +40,17 @@ _:e629c1845b5e727fabafac48a9618f2 a oa:FragmentSelector ;
 	rdf:value "" .
 _:b10aaa5662122a23188393c8fb5d422d <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2025-03-29T18:45:04Z"^^xsd:dateTime .
-<ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> prov:qualifiedAttribution _:78f5382b711da9b3fea15b52a7f1a043 .
-_:78f5382b711da9b3fea15b52a7f1a043 prov:agent _:3a9658ff4d7aa694bdb3f7d7c6ba6d6c .
-_:3a9658ff4d7aa694bdb3f7d7c6ba6d6c <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:78f5382b711da9b3fea15b52a7f1a043 prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> prov:qualifiedAttribution _:390ccd8cc704627cfb0fa4be948e500b .
-_:390ccd8cc704627cfb0fa4be948e500b prov:agent _:3e897127752c1d32f0914a59437078d5 .
-_:3e897127752c1d32f0914a59437078d5 <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
-_:390ccd8cc704627cfb0fa4be948e500b prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> cascade:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
+<ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> prov:wasGeneratedBy _:78f5382b711da9b3fea15b52a7f1a043 .
+_:78f5382b711da9b3fea15b52a7f1a043 prov:qualifiedAssociation _:3a9658ff4d7aa694bdb3f7d7c6ba6d6c .
+_:3a9658ff4d7aa694bdb3f7d7c6ba6d6c prov:agent _:390ccd8cc704627cfb0fa4be948e500b .
+_:390ccd8cc704627cfb0fa4be948e500b <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:3a9658ff4d7aa694bdb3f7d7c6ba6d6c prov:hadRole cascade:TransmitterRole .
+_:78f5382b711da9b3fea15b52a7f1a043 prov:qualifiedAssociation _:3e897127752c1d32f0914a59437078d5 .
+_:3e897127752c1d32f0914a59437078d5 prov:agent _:89fe515da0444ad315f3bb94e1764d36 .
+_:89fe515da0444ad315f3bb94e1764d36 <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
+_:3e897127752c1d32f0914a59437078d5 prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;AAZXQ4qJikuBjOyYT8yakeYd2jjZvhGJ4knRmhehZKo> prov:wasAttributedTo _:89fe515da0444ad315f3bb94e1764d36 ;
+	cascade:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
 	pav:retrievedFrom <https://fhir.kestrelharbor.example/api/FHIR/R4/MedicationRequest/medrx-lisinopril-1> ;
 	pav:retrievedOn "2025-03-29T18:39:51Z"^^xsd:dateTime ;
 	cascade:sourceFormatVersion "4.0.1" ;

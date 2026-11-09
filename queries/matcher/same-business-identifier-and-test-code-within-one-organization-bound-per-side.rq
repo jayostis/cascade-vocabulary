@@ -75,13 +75,9 @@ WHERE {
     } }
   ?record pav:hasCurrentVersion ?version .
   FILTER (?other != ?record)
-  ?revision cascade:revisionOf ?record ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
-  ?attribution prov:hadRole ?role ; prov:agent ?organization .
+  ?revision cascade:revisionOf ?record ; prov:wasDerivedFrom/prov:wasAttributedTo ?organization .
   ?organization a cascade:Organization .
-  ?otherRevision cascade:revisionOf ?other ; prov:wasDerivedFrom/prov:qualifiedAttribution ?otherAttribution .
-  ?otherAttribution prov:hadRole ?otherRole ; prov:agent ?otherOrganization .
+  ?otherRevision cascade:revisionOf ?other ; prov:wasDerivedFrom/prov:wasAttributedTo ?otherOrganization .
   ?otherOrganization a cascade:Organization .
-  FILTER (?role IN (cascade:CustodianRole, cascade:AuthorRole) && ?otherRole IN (cascade:CustodianRole, cascade:AuthorRole)
-          && (?organization = ?otherOrganization
-              || EXISTS { ?organization cascade:currentlySameOrganization+ ?otherOrganization }))
+  FILTER (?organization = ?otherOrganization || EXISTS { ?organization cascade:currentlySameOrganization+ ?otherOrganization })
 }

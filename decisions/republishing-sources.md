@@ -46,6 +46,7 @@ is one judgment per source-level fact, from which the per-record joins are deriv
 |---|---|---|---|
 | server | FHIR `CapabilityStatement` | a record named by the base URL the client used; a connect is an act, and each writes a version of what the server reported: self-asserted base, login endpoint, software, and the client id it was reported to, since a pod holds connects from several apps; an address known only from a document or an export (Apple's copy carries the URL, not what the server said) has a server record with no version (A16, A17); never the subject's record, and taken by the matcher only once it has a version, for the machine's server Same (M2, M20) | ours; the self-URL is evidence, never a name input, diverging from FHIR's own statement of where a server lives |
 | organisation | `prov:Organization`; W3C ORG `org:Organization`; FHIR `Organization`; CDA custodian | a record, a `prov:Organization` and an `org:Organization`, since its identifiers are `org:identifier`, whose domain that is, named by server plus `Organization/{id}` from a server, and by a business identifier from a document, as `naming.md` maps it (a C-CDA `id` through HL7's CDA-to-FHIR identifier mapping, a FHIR `Organization.identifier`, a registered OID as its URI in both, so one NPI is one record in either format); name, address and identifiers on versions; a document names its custodian and author by it, in `cascade:CustodianRole` and `cascade:AuthorRole`; a pull writes one for each `Organization` it holds, and a record from a server names, on its version, the organisation the source says performed it, by `prov:wasAttributedTo`, as a variant interpretation names its lab: a lab result's `Observation.performer` (A20); never the subject's record, so never taken by the matcher (M2) | borrowed from PROV; FHIR's `Organization` resource treated as any record |
+| the part a party played in a document | PROV-DM association with a role; FHIR `Provenance.agent`; US Core `ProvenanceTransmitter` | each part is a `prov:qualifiedAssociation` of the act that generated the document, a blank node with no type that the document's `prov:wasGeneratedBy` names: the association's `prov:agent` is the party and its `prov:hadRole` is `cascade:AuthorRole`, `cascade:CustodianRole` or `cascade:TransmitterRole`; the document is `prov:wasAttributedTo` its author and its custodian, by the node the association names, never its transmitter; each writer writes its own act, so a document may carry several, read through `prov:wasGeneratedBy/prov:qualifiedAssociation`; a query that needs no role reads `prov:wasAttributedTo` (`runtime/arrivals.feature`, A21; a person's judgment alike, `judgments.md`, row "maker") | borrowed from PROV-DM, which puts a role on an association; from FHIR only the grouping, one `Provenance` per activity and its agents that activity's |
 | two servers are one | git remotes | a Same whose members are two servers, by a person on the app's proposal, or by the machine when two connects made with one client id report the same self-URL, the same login endpoint and the same host (the Epic path edit: 57 of 57 kept the self-URL, 19 of 19 hosting moves changed it; verified, probed, [research 2](https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328100407)); with no like-for-like connect, the app proposes and the person decides; derivation: every record of one type and id under both, within one organisation, is one record (M20; `same-records-under-same-servers.rq`) | ours; the derivation is `Linkage` computed rather than asserted |
 | two organisations are one | `Patient.link`; SPHN | a Same whose members are two organisations, usually the machine's from a shared NPI or OID, where one was read from a server or a document named them by different identifiers; derivation: the matcher's within-organisation rules run over both, and the server Same's derivation counts the two as one organisation (`queries/derivations/same-organizations.rq`, `queries/derivations/same-records-under-same-servers.rq`; `runtime/matcher.feature`, M22) | ours |
 | two documents from one organisation | CDA `setId`, `versionNumber`, `relatedDocument` `RPLC`; FHIR `relatesTo` | no judgment: a document names its custodian and author organisations by an identifier they carry (a C-CDA `id`; a FHIR document's `Organization` by an NPI or an identifier whose system is rooted at an OID or a UUID, never by its id in the bundle), as `naming.md` picks one, so two documents from one organisation point at one organisation record by name; where a document declares that it replaces another, the adapter reads it onto the document's version, once #254 rules what a replaced document is named by, since a pod names a document by its bytes; the overlap between the two is joined by name for C-CDA entries and by the within-organisation rules for a FHIR document's | borrowed: a declared replacement is the standards' fact, stored as stated; "edition" as a judgment of ours is dropped |
@@ -111,12 +112,43 @@ the lab that performed it, read from the same FHIR element, `Observation.perform
 it the same way, with no term of ours. Looked at: FHIR's own elements (`performer`, `managingOrganization`,
 `serviceProvider`), which are where the fact is read from, not terms a pod carries outside FHIR RDF's namespace; W3C
 ORG, whose properties (`org:memberOf`, `org:hasUnit`, `org:siteOf`) relate people, units and sites to an organisation
-and never an entity to one, so none fits a record; and PROV's qualified attribution with a role, as a document names
-its custodian, which needs a node per attribution inside the version and whose role would say nothing a performer's
-plain attribution does not. It sits on the version because it is what one pull of the record says: a server that later
-names another lab writes another version, and the record, named by server, type and id, keeps its name. Only
+and never an entity to one, so none fits a record; and a role on an association of the act that generated the version,
+as a document names its custodian, which needs an act and a node per association inside the version and whose role
+would say nothing a performer's plain attribution does not. It sits on the version because it is what one pull of the
+record says: a server that later names another lab writes another version, and the record, named by server, type and
+id, keeps its name. Only
 `Observation.performer` is read: `Patient.managingOrganization` assigns a person's records to an organisation on a
 server that may serve many, the open question below, and an `Encounter`, where `serviceProvider` sits, is no record.
+
+**Why the part a party played sits on the act that generated the document.** (row "the part a party played in a
+document") PROV-DM allows a role on a usage, a generation, an invalidation, an association, a start and an end, and
+never on an attribution (https://www.w3.org/TR/2013/REC-prov-dm-20130430/#term-attribute); PROV-O gives `prov:hadRole`
+the domains `prov:Influence` and the union of `prov:Association` and `prov:InstantaneousEvent`, which an attribution is
+outside. So a role names the party's part in the act that made the document, and `prov:wasAttributedTo` still says who
+the document is ascribed to, for the many queries that need no role. Looked at:
+
+- The role on a `prov:Attribution`, as the pod wrote it until #355. Failed because PROV allows a role on no
+  attribution, so a reader that follows PROV-O reads every such attribution as an association too.
+- An act named by an IRI made from the document's name. Failed on four counts. A runtime refuses a document's graph
+  that holds a statement about no record, version, arrival, document or import (`runtime/arrivals.feature`, A14), which
+  an IRI act's associations would be. The document's file is its blank-node closure, so it would lose the act, and a
+  typed act would be filed as an entry session under `provenance/activities/` (`runtime/pod-layout.ttl`). It would need
+  a naming rule of its own, computed alike by two adapters and two importers. And nothing points at it. The Bridge
+  already names its own import act and its association as blank nodes.
+- A transmission as an act of its own. Failed because that act would generate the document too, and PROV-CONSTRAINTS
+  lets several activities generate one entity only at one instant
+  (https://www.w3.org/TR/prov-constraints/#generation-generation-ordering), which a writing and a later delivery are
+  not. It would need a second entity, the source's copy, which no pod holds and every reader would walk through. FHIR
+  maps one `Provenance` to one `prov:Activity` and each of its agents to an agent of that activity
+  (https://hl7.org/fhir/R4/provenance-mappings.html, the W3C PROV column), and US Core puts the transmitter on that same
+  `Provenance` (`Provenance.agent:ProvenanceTransmitter`,
+  https://hl7.org/fhir/us/core/StructureDefinition-us-core-provenance.html). The same column maps `agent.type` to an
+  attribution, the placement PROV-DM forbids, so FHIR is followed for the grouping and not for where the role goes.
+
+Each writer writes its own act, the importer's facts one and each record's mapping that names an organisation's part
+another, because none sees the others'. Blank acts assert no two of them are distinct, and PROV lets several
+activities generate one entity at one instant (the constraint above), so a reader that walks
+`prov:wasGeneratedBy/prov:qualifiedAssociation` reads every part whichever act names it.
 
 **Why privacy is drawn at the boundary.** (row "what leaves the pod") The server and organisation records are in the clear inside the pod because
 the person owns the pod; the opaque name earns its keep at the boundary, where a receiver gets a name it can cite and
@@ -175,17 +207,6 @@ record by record, and the source is one more thing they may not want known.
 - A matcher rule for organisations: `jdg:SameBusinessIdentifier` needs a shared code, which an organisation lacks,
   and M2 takes no organisation's record.
 - Whether the NPI registry becomes a reference table kind; the organisation record does not wait on it.
-- How a document names the role its custodian or author played. It writes `prov:hadRole` on a `prov:Attribution`, but
-  PROV-O gives `prov:hadRole` the domain `prov:Influence` and `prov:Association` or `prov:InstantaneousEvent`, and
-  PROV-DM allows a role on a usage, a generation, an invalidation, an association, a start and an end, never on an
-  attribution (https://www.w3.org/TR/2013/REC-prov-dm-20130430/#term-attribute). So an attribution with a role is
-  read as an association too, and the carriedAs check refuses `prov:hadRole` on any record class. Lean: name each role
-  on a `prov:qualifiedAssociation` of the act that generated the document, as PROV-DM does, and keep
-  `prov:wasAttributedTo` for the organisation alone. The domain is not the only reason the check refuses it: it also
-  refuses `prov:hadRole` on a `prov:Association`, the class the lean uses, because `hadRole`'s domain `prov:Influence`
-  cannot be reached from it here. `prov:AgentInfluence`, and its `rdfs:subClassOf prov:Influence`, are not declared. A
-  ruling that lands the lean declares `prov:AgentInfluence` and `prov:Influence` as copied terms too, or the lean fails
-  the same check.
 
 ## What would change our mind
 

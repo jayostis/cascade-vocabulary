@@ -8,15 +8,23 @@
 :subject a cascade:Subject .
 :relay rdfs:label "Health Relay" .
 :pulledFirst pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:wasAttributedTo _:northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate ] ] .
+_:northgate rdfs:label "Northgate" .
 :pulledAgain pav:retrievedOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:wasAttributedTo _:northgate2 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate2 ] ] .
+_:northgate2 rdfs:label "Northgate" .
 :relayedFirst pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
-        [ prov:hadRole cascade:TransmitterRole ; prov:agent :relay ] .
+    prov:wasAttributedTo _:northgate3 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate3 ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :relay ] ] .
+_:northgate3 rdfs:label "Northgate" .
 :relayedAgain pav:retrievedOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
-        [ prov:hadRole cascade:TransmitterRole ; prov:agent :relay ] .
+    prov:wasAttributedTo _:northgate4 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate4 ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :relay ] ] .
+_:northgate4 rdfs:label "Northgate" .
 
 :direct a cascade:ProblemOrDiagnosis .
 :directFirst prov:specializationOf :direct ; cascade:patient :subject ; cascade:conditionName "Gout" ; cascade:clinicalStatus "active" .

@@ -7,10 +7,10 @@
 :person a prov:Person .
 
 :aboutNorth a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :northProfile ; cascade:subject :subject ;
-    cascade:basis cascade:OwnerStatement ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    cascade:basis cascade:OwnerStatement ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:wasAttributedTo :person ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :aboutSouth a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :southProfile ; cascade:subject :subject ;
-    cascade:basis cascade:OwnerStatement ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    cascade:basis cascade:OwnerStatement ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:wasAttributedTo :person ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :northRevision a cascade:Revision ; cascade:revisionOf :northProfile ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime ;

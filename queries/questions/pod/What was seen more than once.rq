@@ -17,9 +17,7 @@ WHERE {
     WHERE {
       ?member a cascade:Record ; ^cascade:mergedFrom ?entry ; cascade:currentRevision ?memberRevision .
       OPTIONAL { ?memberRevision prov:wasGeneratedBy/rdfs:label ?memberImportLabel }
-      OPTIONAL { ?memberRevision prov:wasDerivedFrom/prov:qualifiedAttribution ?memberAttribution .
-                 ?memberAttribution prov:hadRole ?memberHospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?memberHospital
-                 FILTER (?memberHospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
+      OPTIONAL { ?memberRevision prov:wasDerivedFrom/prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?memberHospital }
       BIND (COALESCE(?memberHospital, ?memberImportLabel) AS ?somewhere)
     }
     GROUP BY ?entry
@@ -27,9 +25,7 @@ WHERE {
   ?record ^cascade:mergedFrom ?entry ; cascade:currentRevision ?revision .
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   OPTIONAL { ?revision prov:wasGeneratedBy/rdfs:label ?importLabel }
-  OPTIONAL { ?revision prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
-             ?attribution prov:hadRole ?hospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital
-             FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) }
+  OPTIONAL { ?revision prov:wasDerivedFrom/prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital }
   BIND (COALESCE(?hospital, ?importLabel) AS ?place)
 }
 GROUP BY ?entry ?entryLabel ?place ?places

@@ -9,16 +9,24 @@
 :apple rdfs:label "Apple Health" .
 :otherApple rdfs:label "Apple Health" .
 :pulledDirectly pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:wasAttributedTo _:northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate ] ] .
+_:northgate rdfs:label "Northgate" .
 :pulledThroughApple pav:retrievedOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
-        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] .
+    prov:wasAttributedTo _:northgate2 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate2 ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] ] .
+_:northgate2 rdfs:label "Northgate" .
 :pulledThroughOtherApple pav:retrievedOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
-        [ prov:hadRole cascade:TransmitterRole ; prov:agent :otherApple ] .
+    prov:wasAttributedTo _:northgate3 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate3 ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :otherApple ] ] .
+_:northgate3 rdfs:label "Northgate" .
 :pulledThroughAppleFirst pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] ,
-        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] .
+    prov:wasAttributedTo _:northgate4 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate4 ] ,
+        [ prov:hadRole cascade:TransmitterRole ; prov:agent :apple ] ] .
+_:northgate4 rdfs:label "Northgate" .
 
 :directThenRelayed a cascade:ProblemOrDiagnosis .
 :directThenRelayedFirst prov:specializationOf :directThenRelayed ; cascade:patient :subject ; cascade:conditionName "Migraine" ; cascade:clinicalStatus "active" .

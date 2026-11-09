@@ -3,43 +3,46 @@
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;uJJD9YtCvATJaZDb0ogv9G21b7104vNHY22nxcZnFk4> cascade:reactionManifestationText "Rash" ;
+<ni:///sha-256;uJJD9YtCvATJaZDb0ogv9G21b7104vNHY22nxcZnFk4> cascade:allergen "Amoxicillin" ;
+	cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/723> ;
+	cascade:clinicalStatus "active" ;
+	cascade:verificationStatus "confirmed" ;
 	cascade:allergyType "allergy" ;
 	cascade:allergyCriticality "low" ;
-	cascade:clinicalStatus "active" ;
-	cascade:allergen "Amoxicillin" ;
-	cascade:verificationStatus "confirmed" ;
 	cascade:allergyCategory "medication" ;
-	cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/723> .
-_:44257cdee8e847989889ec354cceccce pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;uJJD9YtCvATJaZDb0ogv9G21b7104vNHY22nxcZnFk4> .
-<ni:///sha-256;uJJD9YtCvATJaZDb0ogv9G21b7104vNHY22nxcZnFk4> cascade:patient <urn:uuid:e6ef533e-087e-8aff-8979-1e62c5e9d06a> ;
-	prov:specializationOf <urn:uuid:122c6b65-68f6-81b8-8e5a-d67563d20053> .
-<urn:uuid:122c6b65-68f6-81b8-8e5a-d67563d20053> cascade:sourceRecordId "alg-amox-2" ;
+	cascade:reactionManifestationText "Rash" .
+<urn:uuid:122c6b65-68f6-81b8-8e5a-d67563d20053> a cascade:AllergyOrIntolerance ;
 	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/AllergyIntolerance/alg-amox-2> ;
-	a cascade:AllergyOrIntolerance .
-_:44257cdee8e847989889ec354cceccce oa:hasSelector _:995b554e339b4fbd8920fee174ccf547 ;
+	cascade:sourceRecordId "alg-amox-2" .
+<ni:///sha-256;uJJD9YtCvATJaZDb0ogv9G21b7104vNHY22nxcZnFk4> prov:specializationOf <urn:uuid:122c6b65-68f6-81b8-8e5a-d67563d20053> ;
+	cascade:patient <urn:uuid:e6ef533e-087e-8aff-8979-1e62c5e9d06a> .
+_:44257cdee8e847989889ec354cceccce bridge:arrivedAs <ni:///sha-256;uJJD9YtCvATJaZDb0ogv9G21b7104vNHY22nxcZnFk4> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2027-01-28T16:00:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:995b554e339b4fbd8920fee174ccf547 ;
 	oa:hasSource <ni:///sha-256;o3VDg6c1ZgGw53sXBpmIGvskyJoCRFZZIiyugpJpYFs> ;
 	prov:wasDerivedFrom <ni:///sha-256;o3VDg6c1ZgGw53sXBpmIGvskyJoCRFZZIiyugpJpYFs> ;
 	prov:wasGeneratedBy _:dd0f9de7a50115c4b66a3b8834634638 .
 _:995b554e339b4fbd8920fee174ccf547 a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "" .
 _:dd0f9de7a50115c4b66a3b8834634638 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2027-02-10T17:21:00Z"^^xsd:dateTime .
-<ni:///sha-256;o3VDg6c1ZgGw53sXBpmIGvskyJoCRFZZIiyugpJpYFs> prov:qualifiedAttribution _:f4406cfe400b860b6c8f9dd3545b71a4 .
-_:f4406cfe400b860b6c8f9dd3545b71a4 prov:agent _:2691e8d6c5f626c14ed8584ed52d218e .
-_:2691e8d6c5f626c14ed8584ed52d218e <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:f4406cfe400b860b6c8f9dd3545b71a4 prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;o3VDg6c1ZgGw53sXBpmIGvskyJoCRFZZIiyugpJpYFs> prov:qualifiedAttribution _:a60a8d17af2a27ef35cd1696cbc54e7f .
-_:a60a8d17af2a27ef35cd1696cbc54e7f prov:agent _:62029f8f1e166c93b49e302251dbca8a .
-_:62029f8f1e166c93b49e302251dbca8a <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
-_:a60a8d17af2a27ef35cd1696cbc54e7f prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;o3VDg6c1ZgGw53sXBpmIGvskyJoCRFZZIiyugpJpYFs> cascade:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+<ni:///sha-256;o3VDg6c1ZgGw53sXBpmIGvskyJoCRFZZIiyugpJpYFs> prov:wasGeneratedBy _:f4406cfe400b860b6c8f9dd3545b71a4 .
+_:f4406cfe400b860b6c8f9dd3545b71a4 prov:qualifiedAssociation _:2691e8d6c5f626c14ed8584ed52d218e .
+_:2691e8d6c5f626c14ed8584ed52d218e prov:agent _:a60a8d17af2a27ef35cd1696cbc54e7f .
+_:a60a8d17af2a27ef35cd1696cbc54e7f <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:2691e8d6c5f626c14ed8584ed52d218e prov:hadRole cascade:TransmitterRole .
+_:f4406cfe400b860b6c8f9dd3545b71a4 prov:qualifiedAssociation _:62029f8f1e166c93b49e302251dbca8a .
+_:62029f8f1e166c93b49e302251dbca8a prov:agent _:5819f99985c3dd278570b6d75c63c69c .
+_:5819f99985c3dd278570b6d75c63c69c <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
+_:62029f8f1e166c93b49e302251dbca8a prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;o3VDg6c1ZgGw53sXBpmIGvskyJoCRFZZIiyugpJpYFs> prov:wasAttributedTo _:5819f99985c3dd278570b6d75c63c69c ;
+	cascade:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
 	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/AllergyIntolerance/alg-amox-2> ;
 	pav:retrievedOn "2027-02-10T17:19:00Z"^^xsd:dateTime ;
 	cascade:sourceFormatVersion "4.0.1" ;

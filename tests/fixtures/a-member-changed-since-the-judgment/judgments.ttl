@@ -7,13 +7,13 @@
 :person a prov:Person .
 
 :sameXY a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :x, :y ; prov:used :xFirst , :yFirst ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :samePQ a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :p, :q ; prov:used :pFirst , :qFirst ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :samePQAgain a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :p, :q ; prov:used :pSecond , :qFirst ; dct:replaces :samePQ ;
-    prov:wasAttributedTo :person ; prov:qualifiedAttribution [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-04-01T00:00:00Z"^^xsd:dateTime .

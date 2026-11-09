@@ -5,8 +5,14 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 :northDocument pav:retrievedFrom <https://north.example/fhir/AllergyIntolerance/peanut> ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Northgate" ] ] .
+    prov:wasAttributedTo _:northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate ] ] .
+_:northgate rdfs:label "Northgate" .
 :south1Document pav:retrievedFrom <https://south.example/fhir/AllergyIntolerance/latex> ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Southview" ] ] .
+    prov:wasAttributedTo _:southview ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:southview ] ] .
+_:southview rdfs:label "Southview" .
 :south2Document pav:retrievedFrom <https://south.example/fhir/AllergyIntolerance/penicillin> ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:AuthorRole ; prov:agent [ rdfs:label "Southview" ] ] .
+    prov:wasAttributedTo _:southview2 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:southview2 ] ] .
+_:southview2 rdfs:label "Southview" .

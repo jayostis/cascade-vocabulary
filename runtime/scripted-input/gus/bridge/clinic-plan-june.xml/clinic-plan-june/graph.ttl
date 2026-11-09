@@ -7,7 +7,9 @@
 @prefix org: <http://www.w3.org/ns/org#> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> a cascade:Organization .
-<ni:///sha-256;pzbHMY4yEyK8QRz4B47D2xQexz5ttW7uOXOTMSJeKt8> prov:qualifiedAttribution _:a6c06d65152b88df1c8f62b628e84f41 .
+<ni:///sha-256;pzbHMY4yEyK8QRz4B47D2xQexz5ttW7uOXOTMSJeKt8> prov:wasGeneratedBy _:writing ;
+	prov:wasAttributedTo <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> .
+_:writing prov:qualifiedAssociation _:a6c06d65152b88df1c8f62b628e84f41 .
 _:a6c06d65152b88df1c8f62b628e84f41 prov:agent <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> ;
 	prov:hadRole cascade:CustodianRole .
 <ni:///sha-256;it6jHPm47tRiUzK2--q_Db_G99RHNpDFB-SUrlhJFew> prov:specializationOf <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> .
@@ -17,7 +19,7 @@ _:cbea23079985c203bb5e9925b4d7ec4 a oa:XPathSelector ;
 	rdf:value "/*[local-name()='ClinicalDocument' and namespace-uri()='urn:hl7-org:v3']/*[local-name()='custodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='assignedCustodian' and namespace-uri()='urn:hl7-org:v3'][1]/*[local-name()='representedCustodianOrganization' and namespace-uri()='urn:hl7-org:v3'][1]" .
 <ni:///sha-256;it6jHPm47tRiUzK2--q_Db_G99RHNpDFB-SUrlhJFew> foaf:name "Fernhill Family Clinic" ;
 	org:identifier "CLINIC-7"^^<urn:oid:2.16.840.1.113883.19.5.2> .
-<ni:///sha-256;pzbHMY4yEyK8QRz4B47D2xQexz5ttW7uOXOTMSJeKt8> prov:qualifiedAttribution _:b3681fe4dcce6f776a66cdc1fc04ca78 .
+_:writing prov:qualifiedAssociation _:b3681fe4dcce6f776a66cdc1fc04ca78 .
 _:b3681fe4dcce6f776a66cdc1fc04ca78 prov:agent <urn:uuid:5f0b3af1-bc5d-84fc-a2fc-3551a9d2d8dc> ;
 	prov:hadRole cascade:AuthorRole .
 <ni:///sha-256;wQoOTEgNVXW-btLuvV_VxDemuzEgEiEsJqKlHSBraOM> cascade:noteOrDocumentTypeName "Plan of care note" ;

@@ -16,13 +16,16 @@
 
 :oldPull a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
     cascade:serverBaseUrl "https://fhir.hospital.example/api/FHIR/R4" ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+    prov:wasAttributedTo :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] ] .
 :newPullOfTheHospital a prov:Entity ; pav:retrievedOn "2026-03-01T00:00:00Z"^^xsd:dateTime ;
     cascade:serverBaseUrl "https://fhir.hospital.example/interconnect/api/FHIR/R4" ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] .
+    prov:wasAttributedTo :hospital ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :hospital ] ] .
 :newPullOfTheClinic a prov:Entity ; pav:retrievedOn "2026-03-01T00:00:00Z"^^xsd:dateTime ;
     cascade:serverBaseUrl "https://fhir.hospital.example/interconnect/api/FHIR/R4" ;
-    prov:qualifiedAttribution [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] .
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent :clinic ] ] .
 
 <urn:uuid:fa930b35-e0db-86a1-b23c-90fc2c6b0dba> a cascade:AllergyOrIntolerance ; cascade:sourceRecordId "a1" ;
     cascade:sourceUrl <https://fhir.hospital.example/api/FHIR/R4/AllergyIntolerance/a1> .

@@ -46,15 +46,17 @@ _:78dc42e861d60d04f6326b32fd325c37 a oa:FragmentSelector ;
 	rdf:value "" .
 _:54efa4aded4fd010dd236c9d2af1c35a <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2025-03-29T18:45:04Z"^^xsd:dateTime .
-<ni:///sha-256;9A9vb7ioqrBFMhikgEJ_t7jN_ytVUXaoQ7a8eBBia4c> prov:qualifiedAttribution _:e15aaeb518abd6a56289b12086f9de6b .
-_:e15aaeb518abd6a56289b12086f9de6b prov:agent _:327e2c411ebfdc742a1e2631a3fc8c93 .
-_:327e2c411ebfdc742a1e2631a3fc8c93 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:e15aaeb518abd6a56289b12086f9de6b prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;9A9vb7ioqrBFMhikgEJ_t7jN_ytVUXaoQ7a8eBBia4c> prov:qualifiedAttribution _:41d46482bac69af12994f1570b610035 .
-_:41d46482bac69af12994f1570b610035 prov:agent _:bb53ccfd89a8ad60ae30877c4cf187dc .
-_:bb53ccfd89a8ad60ae30877c4cf187dc <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
-_:41d46482bac69af12994f1570b610035 prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;9A9vb7ioqrBFMhikgEJ_t7jN_ytVUXaoQ7a8eBBia4c> cascade:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
+<ni:///sha-256;9A9vb7ioqrBFMhikgEJ_t7jN_ytVUXaoQ7a8eBBia4c> prov:wasGeneratedBy _:e15aaeb518abd6a56289b12086f9de6b .
+_:e15aaeb518abd6a56289b12086f9de6b prov:qualifiedAssociation _:327e2c411ebfdc742a1e2631a3fc8c93 .
+_:327e2c411ebfdc742a1e2631a3fc8c93 prov:agent _:41d46482bac69af12994f1570b610035 .
+_:41d46482bac69af12994f1570b610035 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:327e2c411ebfdc742a1e2631a3fc8c93 prov:hadRole cascade:TransmitterRole .
+_:e15aaeb518abd6a56289b12086f9de6b prov:qualifiedAssociation _:bb53ccfd89a8ad60ae30877c4cf187dc .
+_:bb53ccfd89a8ad60ae30877c4cf187dc prov:agent _:9656209b8853b05772e6d089b030ca47 .
+_:9656209b8853b05772e6d089b030ca47 <http://www.w3.org/2000/01/rdf-schema#label> "Kestrel Harbor Hospital" .
+_:bb53ccfd89a8ad60ae30877c4cf187dc prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;9A9vb7ioqrBFMhikgEJ_t7jN_ytVUXaoQ7a8eBBia4c> prov:wasAttributedTo _:9656209b8853b05772e6d089b030ca47 ;
+	cascade:serverBaseUrl "https://fhir.kestrelharbor.example/api/FHIR/R4" ;
 	pav:retrievedFrom <https://fhir.kestrelharbor.example/api/FHIR/R4/Observation/obs-potassium-20250327> ;
 	pav:retrievedOn "2025-03-29T18:39:51Z"^^xsd:dateTime ;
 	cascade:sourceFormatVersion "4.0.1" ;

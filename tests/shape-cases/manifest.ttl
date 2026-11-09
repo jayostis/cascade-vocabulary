@@ -291,6 +291,11 @@
   mf:action [ sht:dataGraph <judgment-about/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
+<#judgment-about/role-on-an-attribution> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/role-on-an-attribution.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PersonJudgmentShape ] ] .
+
 <#judgment-about/no-basis> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-about/no-basis.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
@@ -822,3 +827,21 @@
   mf:action [ sht:dataGraph <record-medication-dispense/prescription-a-reference-string.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MedicationDispenseShape ; sh:resultPath cascade:authorizingPrescription ] ] .
+
+<#document-roles/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <document-roles/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#document-roles/neither-is-valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <document-roles/neither-is-valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#document-roles/author-not-attributed> a sht:Validate ;
+  mf:action [ sht:dataGraph <document-roles/author-not-attributed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DocumentRoleAttributionShape ] ] .
+
+<#document-roles/transmitter-attributed> a sht:Validate ;
+  mf:action [ sht:dataGraph <document-roles/transmitter-attributed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DocumentRoleAttributionShape ] ] .

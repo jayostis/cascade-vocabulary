@@ -3,44 +3,47 @@
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
-<ni:///sha-256;jxKMasGC0LjO-H5kVY8PEtlqPs0aWU-7wjWOWiKnIYk> cascade:reactionManifestationText "Itching" , "Rash" ;
-	cascade:allergyType "allergy" ;
-	cascade:onsetDate "2022-05-03"^^xsd:date ;
-	cascade:allergyCriticality "low" ;
+<ni:///sha-256;jxKMasGC0LjO-H5kVY8PEtlqPs0aWU-7wjWOWiKnIYk> cascade:allergen "Sulfamethoxazole" ;
+	cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/10180> ;
 	cascade:clinicalStatus "active" ;
-	cascade:allergen "Sulfamethoxazole" ;
 	cascade:verificationStatus "confirmed" ;
+	cascade:allergyType "allergy" ;
+	cascade:allergyCriticality "low" ;
 	cascade:allergyCategory "medication" ;
-	cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/10180> .
-_:50f7e4a999cf79951be5e76484ebcc5b pav:lastUpdateOn "2026-11-12T14:00:00Z"^^xsd:dateTime ;
-	pav:version "2" ;
-	bridge:arrivedAs <ni:///sha-256;jxKMasGC0LjO-H5kVY8PEtlqPs0aWU-7wjWOWiKnIYk> .
-<ni:///sha-256;jxKMasGC0LjO-H5kVY8PEtlqPs0aWU-7wjWOWiKnIYk> cascade:patient <urn:uuid:7883c5a4-6c61-837c-9bf7-dbe1b37d89ff> ;
-	prov:specializationOf <urn:uuid:5a16d5f4-34b0-8fb6-9f5c-59b37aa6d4dc> .
-<urn:uuid:5a16d5f4-34b0-8fb6-9f5c-59b37aa6d4dc> cascade:sourceRecordId "alg-sulfa-1" ;
+	cascade:onsetDate "2022-05-03"^^xsd:date ;
+	cascade:reactionManifestationText "Itching" , "Rash" .
+<urn:uuid:5a16d5f4-34b0-8fb6-9f5c-59b37aa6d4dc> a cascade:AllergyOrIntolerance ;
 	cascade:sourceUrl <https://fhir.meridian.example/api/FHIR/R4/AllergyIntolerance/alg-sulfa-1> ;
-	a cascade:AllergyOrIntolerance .
-_:50f7e4a999cf79951be5e76484ebcc5b oa:hasSelector _:3314be1b626feecb09cdd1d41464ea39 ;
+	cascade:sourceRecordId "alg-sulfa-1" .
+<ni:///sha-256;jxKMasGC0LjO-H5kVY8PEtlqPs0aWU-7wjWOWiKnIYk> prov:specializationOf <urn:uuid:5a16d5f4-34b0-8fb6-9f5c-59b37aa6d4dc> ;
+	cascade:patient <urn:uuid:7883c5a4-6c61-837c-9bf7-dbe1b37d89ff> .
+_:50f7e4a999cf79951be5e76484ebcc5b bridge:arrivedAs <ni:///sha-256;jxKMasGC0LjO-H5kVY8PEtlqPs0aWU-7wjWOWiKnIYk> ;
+	pav:version "2" ;
+	pav:lastUpdateOn "2026-11-12T14:00:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:3314be1b626feecb09cdd1d41464ea39 ;
 	oa:hasSource <ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> ;
 	prov:wasDerivedFrom <ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> ;
 	prov:wasGeneratedBy _:75de5ebf2f559c7d1367795fff8a8a3c .
 _:3314be1b626feecb09cdd1d41464ea39 a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "" .
 _:75de5ebf2f559c7d1367795fff8a8a3c <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-11-20T09:00:04Z"^^xsd:dateTime .
-<ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> prov:qualifiedAttribution _:ec9eff299cf05b8a4d73cfa3b1883a07 .
-_:ec9eff299cf05b8a4d73cfa3b1883a07 prov:agent _:87129afaea00f61837010f0cc0c60e77 .
-_:87129afaea00f61837010f0cc0c60e77 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:ec9eff299cf05b8a4d73cfa3b1883a07 prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> prov:qualifiedAttribution _:a016ee06ff741a06b111ede56db6dbcd .
-_:a016ee06ff741a06b111ede56db6dbcd prov:agent _:b30ad38e388a07ac895c58ca9d1d5dec .
-_:b30ad38e388a07ac895c58ca9d1d5dec <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
-_:a016ee06ff741a06b111ede56db6dbcd prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> cascade:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
+<ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> prov:wasGeneratedBy _:ec9eff299cf05b8a4d73cfa3b1883a07 .
+_:ec9eff299cf05b8a4d73cfa3b1883a07 prov:qualifiedAssociation _:87129afaea00f61837010f0cc0c60e77 .
+_:87129afaea00f61837010f0cc0c60e77 prov:agent _:a016ee06ff741a06b111ede56db6dbcd .
+_:a016ee06ff741a06b111ede56db6dbcd <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:87129afaea00f61837010f0cc0c60e77 prov:hadRole cascade:TransmitterRole .
+_:ec9eff299cf05b8a4d73cfa3b1883a07 prov:qualifiedAssociation _:b30ad38e388a07ac895c58ca9d1d5dec .
+_:b30ad38e388a07ac895c58ca9d1d5dec prov:agent _:40a24a3d6074a0bc3c0ad60f6be0c190 .
+_:40a24a3d6074a0bc3c0ad60f6be0c190 <http://www.w3.org/2000/01/rdf-schema#label> "Meridian Health System" .
+_:b30ad38e388a07ac895c58ca9d1d5dec prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;aR9fwxPZ7i91Kw5BYYU_04tPlRZ3tAGAF_hMLFE7vBY> prov:wasAttributedTo _:40a24a3d6074a0bc3c0ad60f6be0c190 ;
+	cascade:serverBaseUrl "https://fhir.meridian.example/api/FHIR/R4" ;
 	pav:retrievedFrom <https://FHIR.Meridian.example/api/FHIR/R4/AllergyIntolerance/alg-sulfa-1> ;
 	pav:retrievedOn "2026-11-20T09:00:00Z"^^xsd:dateTime ;
 	cascade:sourceFormatVersion "4.0.1" ;
