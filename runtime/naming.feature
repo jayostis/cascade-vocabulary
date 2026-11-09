@@ -88,7 +88,7 @@ Feature: Naming
         | the document of allergy "Mango"     | ni:///sha-256;BMVJZrtTlT-XS2y6CvRWFW3r9Pi9GmNMlC-jzs1doZs |
 
   Rule: N6. A matcher judgment is a claim named by the claim rule, and each assertion of it by the assertion rule
-    decisions/naming.md, rows "machine judgment" and "assertion, retraction by a release"; decisions/judgments.md, row "machine claim and assertion".
+    decisions/naming.md, rows "machine judgment" and "assertion, retraction by a release"; decisions/judgments.md, rows "machine claim and assertion" and "what a judgment, a finding or a view came from".
     The claim: cascade:ClaimNamingRule, over, in this order: the maker, cascade:CascadeMatcher; the matcher rule term the rule list's row names (cascade:matcherRule); the
     justification; the members (M5), as a list; and everything it used, as a list, which never holds the rule list's
     version. It carries no time, so every run that reaches it reaches one name. Its assertion:
@@ -235,7 +235,7 @@ Feature: Naming
         |                                                             | "04c54966bb53953f974b6cba0af456156debf4f8bd1a634c942fa3cecd5da19b"     |
 
   Rule: N10. A person's judgment, and a person's retraction, keeps the IRI its input gives it
-    decisions/naming.md, rows "person's judgment" and "retraction"; decisions/judgments.md, rows "maker" and "retraction".
+    decisions/naming.md, rows "person's judgment" and "retraction"; decisions/judgments.md, rows "maker", "retraction" and "what a judgment, a finding or a view came from".
     A judgment a person makes arrives with its name: whoever made it minted that once, as the subject's ID was minted. A
     runtime files it under that IRI and gives it no other; it is neither a new random UUID nor named by a rule. So a
     judgment can name another person's judgment, and an answer can name it, on every run. A person's retraction, a

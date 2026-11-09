@@ -424,7 +424,7 @@ Feature: The matcher's procedure
         | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005            |
 
   Rule: M5. It writes one claim per record per rule, and per table version, that matched anything, and asserts it under the rule list's version
-    decisions/naming.md, rows "machine judgment", "assertion, retraction by a release" and "maker"; decisions/judgments.md, rows "maker" and "machine claim and assertion"; decisions/performance.md, row "the star".
+    decisions/naming.md, rows "machine judgment", "assertion, retraction by a release" and "maker"; decisions/judgments.md, rows "maker", "machine claim and assertion" and "what a judgment, a finding or a view came from"; decisions/performance.md, row "the star".
     The claim's members are the record and, of each entry among the records that version's rows matched it with, or the rule matched it with when the rule reads no
     table, the least of those it is not judged different from, or the least of them all when it is judged different
     from each, in code point order of their names: a star, so a record matched with every earlier copy
@@ -1032,7 +1032,7 @@ Feature: The matcher's procedure
       Then the matcher has no judgment holding variant ClinVar 90012 and variant ClinVar 90011
 
   Rule: M18. A rule list version's first run over the whole pod files one finding naming the claims it no longer reaches
-    decisions/naming.md, row "document, finding", and its Why: a version that tightens a rule retracts nothing, and its first run files one finding
+    decisions/naming.md, row "document, finding", and its Why, and decisions/judgments.md, row "what a judgment, a finding or a view came from": a version that tightens a rule retracts nothing, and its first run files one finding
     naming the claims it no longer reaches. A run that compares the whole pod, an open (O1) or a recheck (M7), files,
     after its claims and before its reference descriptions (W1), a cascade:FindingForReview whose oa:hasBody is
     cascade:ClaimsNoLongerReached, whose oa:motivatedBy is oa:classifying, whose
@@ -1201,7 +1201,7 @@ Feature: The matcher's procedure
       Then the matcher has no judgment holding server https://fhir.example-hospital.example/r4 and server https://fhir.example-hospital-cloud.example/api/FHIR/R4
 
   Rule: M21. A lab result is compared by its code, its instant, its value and its unit, and joined on a day alone only as likely
-    decisions/quantities.md, rows "matcher" and "conversion".
+    decisions/quantities.md, rows "matcher" and "conversion"; decisions/judgments.md, row "what a judgment, a finding or a view came from".
     From the rule list's version 12, R6 joins two lab results of one LOINC code
     at one instant whose values are of one kind and equal: two quantities of one number, compared by value, so 4.10
     and 4.1 are one, with the same comparator or none on both; two ratios of equal parts; two ranges of equal bounds;

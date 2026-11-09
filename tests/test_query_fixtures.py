@@ -3,10 +3,10 @@ from functools import cache
 from pathlib import Path
 
 import pytest
-from rdflib import OWL, RDF, Graph, URIRef
+from rdflib import OWL, RDF, RDFS, Graph, URIRef
 
 from contract import CASCADE, PROV, QUERIES, ROOT, built, derivations, named, query, questions
-from engines import ENGINES, bound_to_records, marked_groups
+from engines import ENGINES, Oxigraph, bound_to_records, marked_groups
 from manifests import Entry, entries, failure, lens_name, row
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
@@ -106,11 +106,30 @@ def test_no_pod_holds_a_qualified_attribution_so_no_role_sits_on_one(fixture):
     assert not store.ask(f"ASK {{ ?s <{PROV.qualifiedAttribution}> ?attribution }}")
 
 
+VOCABULARY = Graph().parse(ROOT / "ontologies" / "cascade.ttl")
+ACTIVITIES = [PROV.Activity, *VOCABULARY.transitive_subjects(RDFS.subClassOf, PROV.Activity)]
+
+
+def used_by_no_activity(store):
+    kinds = " ".join(f"<{kind}>" for kind in dict.fromkeys(ACTIVITIES))
+    return store.select(f"SELECT DISTINCT ?s WHERE {{ ?s <{PROV.used}> [] "
+                        f"FILTER NOT EXISTS {{ VALUES ?kind {{ {kinds} }} ?s a ?kind }} }}")
+
+
 @every_fixture
 def test_only_an_activity_prov_used_something(fixture):
-    """An entity says what it came from with prov:wasDerivedFrom: prov:used has an activity for its domain."""
-    store = built_once(fixture, "oxigraph", LENSES[0]).store
-    assert store.select(f"SELECT DISTINCT ?s WHERE {{ ?s <{PROV.used}> [] FILTER NOT EXISTS {{ ?s a <{PROV.Activity}> }} }}") == []
+    """An entity says what it came from with prov:wasDerivedFrom: prov:used has an activity for its domain, and a
+    subclass of prov:Activity is one."""
+    assert used_by_no_activity(built_once(fixture, "oxigraph", LENSES[0]).store) == []
+
+
+def test_an_act_typed_only_as_a_subclass_of_prov_activity_may_use_something():
+    act, thing = URIRef("urn:cascade:act:1"), URIRef("urn:cascade:thing:1")
+    store = Oxigraph()
+    store.add([(act, RDF.type, CASCADE.MatcherRun), (act, PROV.used, thing)])
+    assert used_by_no_activity(store) == []
+    store.add([(thing, PROV.used, act)])
+    assert len(used_by_no_activity(store)) == 1
 
 
 def test_every_derivation_lens_view_and_the_labels_add_a_triple_and_every_question_and_comparison_gives_a_row():
