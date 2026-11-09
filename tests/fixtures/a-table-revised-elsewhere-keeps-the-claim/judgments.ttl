@@ -6,7 +6,7 @@
 cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :byIngredient a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ;
-    prov:hadMember :brand , :ingredient ; prov:used :ingredients-1 , :brandVersion , :ingredientVersion ;
+    prov:hadMember :brand , :ingredient ; prov:wasDerivedFrom :ingredients-1 , :brandVersion , :ingredientVersion ;
     cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :byIngredientUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byIngredient ;

@@ -88,7 +88,7 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 SELECT DISTINCT ?claim ?now ?hash ?member WHERE {
   ?claim prov:wasAttributedTo cascade:CascadeMatcher ; cascade:verdict cascade:Same ; cascade:matcherRule ?rule ;
-         prov:used ?input ; prov:hadMember ?member .
+         prov:wasDerivedFrom ?input ; prov:hadMember ?member .
   ?assertion cascade:assertedClaim ?claim .
   FILTER NOT EXISTS { ?retraction prov:invalidated ?assertion }
   ?input prov:specializationOf ?series .
@@ -128,7 +128,7 @@ def write(store):
     the layout marks it written always or the pod holds a record of its class."""
     current = [row["version"] for row in store.select(query(questions()["pod/Which reference versions are current"]))]
     marked = lambda path, triples: triples | {(URIRef(ADDRESS + path), RDF.type, CASCADE.View)} | {
-        (URIRef(ADDRESS + path), PROV.used, v) for v in current}
+        (URIRef(ADDRESS + path), PROV.wasDerivedFrom, v) for v in current}
     views, others = {}, {}
     for path, (by, kind, always) in written().items():
         if kind is None:

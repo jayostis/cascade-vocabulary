@@ -9,11 +9,11 @@
 cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :sameX a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :x1 , :x2 ;
-    prov:used :x1Version , :x2Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasDerivedFrom :x1Version , :x2Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :sameXUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameX ; cascade:assertedUnderRuleListVersion :rules1 .
 
 :sameZ a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :z1 , :z2 , :z3 ;
-    prov:used :z1Version , :z2Version , :z3Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasDerivedFrom :z1Version , :z2Version , :z3Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :sameZUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameZ ; cascade:assertedUnderRuleListVersion :rules1 .
 
 :finding a cascade:FindingForReview ; oa:hasBody cascade:ClaimsNoLongerReached ; oa:motivatedBy oa:classifying ; cascade:noLongerReachedUnderRuleListVersion :rules2 ;

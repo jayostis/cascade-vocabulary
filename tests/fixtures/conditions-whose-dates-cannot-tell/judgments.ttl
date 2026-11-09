@@ -13,7 +13,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :byCodeAndPeriod a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCodeAndPeriod ; prov:hadMember :joinedA , :joinedB ;
-    prov:used :joinedAVersion , :joinedBVersion ;
+    prov:wasDerivedFrom :joinedAVersion , :joinedBVersion ;
     cascade:matcherRule cascade:SameCodeAndPeriodRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :byCodeAndPeriodUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byCodeAndPeriod ;

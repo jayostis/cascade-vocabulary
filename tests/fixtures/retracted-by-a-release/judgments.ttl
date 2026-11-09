@@ -7,7 +7,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 # retracted: its one assertion, under version 1, a release retracted; version 3 runs its rule with another query
 :retracted a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ;
-    prov:hadMember :c1 , :c2 ; prov:used :c1Version , :c2Version ;
+    prov:hadMember :c1 , :c2 ; prov:wasDerivedFrom :c1Version , :c2Version ;
     cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :retractedUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :retracted ;
     cascade:assertedUnderRuleListVersion :rules1 .
@@ -15,7 +15,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 # assertedAgain: retracted under version 1 as well, then asserted again under version 3, which runs the fixed rule
 :assertedAgain a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ;
-    prov:hadMember :c1 , :c3 ; prov:used :c1Version , :c3Version ;
+    prov:hadMember :c1 , :c3 ; prov:wasDerivedFrom :c1Version , :c3Version ;
     cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :assertedAgainUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :assertedAgain ;
     cascade:assertedUnderRuleListVersion :rules1 .
@@ -25,7 +25,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 # lapsing: asserted under version 1 only, of a rule version 3 runs with another query, and retracted by nothing
 :lapsing a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
-    prov:hadMember :c2 , :c3 ; prov:used :c2Version , :c3Version ;
+    prov:hadMember :c2 , :c3 ; prov:wasDerivedFrom :c2Version , :c3Version ;
     cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :lapsingUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :lapsing ;
     cascade:assertedUnderRuleListVersion :rules1 .

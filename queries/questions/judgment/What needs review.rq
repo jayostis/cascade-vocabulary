@@ -9,7 +9,7 @@ SELECT DISTINCT ?judgment ?judgmentLabel ?needs
 WHERE {
   ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
   ?record pav:hasCurrentVersion ?now .
-  FILTER NOT EXISTS { ?judgment prov:used ?now }
+  FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?now }
   BIND ("a member changed since it was judged" AS ?needs)
   OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
 }

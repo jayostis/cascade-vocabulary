@@ -10,7 +10,7 @@
 cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :machineSame a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :record , :other ;
-    prov:used :recordVersion , :otherVersion ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasDerivedFrom :recordVersion , :otherVersion ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :personSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :record , :other ;
     prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;

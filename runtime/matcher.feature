@@ -1222,8 +1222,8 @@ Feature: The matcher's procedure
     joined by neither, since no rule converts one unit into another: R17 files a finding for review of the two
     (cascade:DifferentResultUnitsAtOneInstant). Each finding is named by its triples (cascade:FindingNamingRule) as
     M18's is: its type, its kind, its oa:motivatedBy oa:classifying, the two records as its oa:hasTarget and their
-    current versions as its prov:used. A run files it for each pair the query gives that the pod holds no finding of,
-    so a second run files none. "What needs review" lists it while both records are still at those versions, until a
+    current versions as its prov:wasDerivedFrom. A run files it for each pair the query gives that the pod holds no
+    finding of, so a second run files none. "What needs review" lists it while both records are still at those versions, until a
     person acknowledges it or judges the two the same or different, or while R18 joins them and one says it was
     corrected or amended (M22). The review page's
     lines for R15's joins and for the findings are shown by the vocabulary's fixtures.

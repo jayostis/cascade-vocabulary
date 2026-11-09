@@ -233,6 +233,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MachineSameShape ] ] .
 
+<#judgment-same-by-the-matcher/used-beside-derived-from> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-same-by-the-matcher/used-beside-derived-from.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:JudgmentShape ; sh:resultPath prov:used ] ] .
+
 <#rule-list-row/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <rule-list-row/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
@@ -645,6 +650,11 @@
   mf:action [ sht:dataGraph <finding/names-its-act.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:FindingForReviewShape ; sh:resultPath prov:wasGeneratedBy ] ] .
+
+<#finding/used-beside-derived-from> a sht:Validate ;
+  mf:action [ sht:dataGraph <finding/used-beside-derived-from.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:FindingForReviewShape ; sh:resultPath prov:used ] ] .
 
 <#finding/no-rule-list-version> a sht:Validate ;
   mf:action [ sht:dataGraph <finding/no-rule-list-version.ttl> ] ;

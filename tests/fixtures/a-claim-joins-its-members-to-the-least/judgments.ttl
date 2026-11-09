@@ -8,11 +8,11 @@
 cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :threeMembers a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
-    prov:hadMember :a3 , :a1 , :a2 ; prov:used :a1Version , :a2Version , :a3Version ;
+    prov:hadMember :a3 , :a1 , :a2 ; prov:wasDerivedFrom :a1Version , :a2Version , :a3Version ;
     cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :twoMembers a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
-    prov:hadMember :b2 , :b1 ; prov:used :b1Version , :b2Version ;
+    prov:hadMember :b2 , :b1 ; prov:wasDerivedFrom :b1Version , :b2Version ;
     cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :threeMembersUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :threeMembers ;

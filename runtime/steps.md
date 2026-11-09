@@ -309,7 +309,7 @@ number of its current version; `subject`, the person whose record the lens says 
 The matcher's judgments with any of those records as a member are exactly these. Each is a claim: a `cascade:Same` with
 that justification and exactly those members, attributed to the matcher. `asserted under` (optional) is each rule list
 version an assertion of it names (`cascade:assertedUnderRuleListVersion`), in words; `used` (optional) everything it
-`prov:used`, in words; `inputs` (optional) the rule first and then the inputs N6 names
+came from (`prov:wasDerivedFrom`), in words; `inputs` (optional) the rule first and then the inputs N6 names
 it from, joined by `, `, a list in parentheses: `cascade:ClaimNamingRule`, the maker `cascade:CascadeMatcher`, the
 matcher rule term, the justification, `(` its members `)` and `(` what it used `)`, each the IRI the pod holds (`cascade:`
 stands for the namespace); `name` (optional) its IRI. Every column but `name` is checked first, so an input the pod does not
@@ -351,7 +351,7 @@ The findings for review the step wrote name exactly these, one row for each thin
 justification and members, as the matcher's judgments are read above; `name` (optional) is the finding's IRI. A
 finding of `different result values at one instant` or `different result units at one instant` is one row, its two records (oa:hasTarget) as its `members`, its
 `under` and `justification` left empty. Each holds only its type, its kind, its oa:motivatedBy oa:classifying, its
-version or the versions it compared (prov:used) and what it names, and is named by its triples
+version or the versions it compared (prov:wasDerivedFrom) and what it names, and is named by its triples
 (cascade:FindingNamingRule).
 
 ### `{step} wrote these reference descriptions:`

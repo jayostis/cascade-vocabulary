@@ -75,9 +75,9 @@ read each and correct this section.
   `oa:TextQuoteSelector` for an exact quote with its prefix and suffix. The vocabulary already makes one kind of
   conclusion an annotation: `cascade:FindingForReview` is a subclass of `oa:Annotation` whose body is its kind and
   whose motivation is `oa:classifying`.
-- **PROV-O** gives what every kind shares: `prov:wasAttributedTo`, `prov:wasDerivedFrom`, `prov:used`, and retraction
-  as an activity that `prov:invalidated` the entity, as `judgments.md` already uses and `queries/lenses/everyday.rq`
-  tests.
+- **PROV-O** gives what every kind shares: `prov:wasAttributedTo`, `prov:wasDerivedFrom` for the versions it was made from
+  (`prov:used` is an activity's), and retraction as an activity that `prov:invalidated` the entity, as `judgments.md`
+  already uses and `queries/lenses/everyday.rq` tests.
 - **Nanopublications** wrap any assertion with its provenance and publication info; `judgments.md` borrowed the split.
 - **SSSOM** gives `confidence`, which `judgments.md` leaves open for a judgment (its row "confidence").
 - **SEPIO** (Scientific Evidence and Provenance Information Ontology) models assertions, the evidence lines for and

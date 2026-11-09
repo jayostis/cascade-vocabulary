@@ -379,7 +379,7 @@ Feature: Alex Rivera's pod
         SELECT DISTINCT ?judgment WHERE {
           ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
           ?record pav:hasCurrentVersion ?now .
-          FILTER NOT EXISTS { ?judgment prov:used ?now }
+          FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?now }
         }
         """
       Then it answers:
@@ -393,7 +393,7 @@ Feature: Alex Rivera's pod
         SELECT DISTINCT ?judgment WHERE {
           ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
           ?record pav:hasCurrentVersion ?now .
-          FILTER NOT EXISTS { ?judgment prov:used ?now }
+          FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?now }
         }
         """
       Then it answers nothing
@@ -779,7 +779,7 @@ Feature: Alex Rivera's pod
       When the query is:
         """
         SELECT ?view ?used WHERE {
-          GRAPH ?view { ?view a cascade:View ; prov:used ?used }
+          GRAPH ?view { ?view a cascade:View ; prov:wasDerivedFrom ?used }
         }
         """
       Then it answers:
@@ -811,7 +811,7 @@ Feature: Alex Rivera's pod
             { ?thing rdfs:label ?one , ?other . FILTER (?one != ?other) BIND (rdfs:label AS ?predicate) }
             UNION
             { ?thing ?predicate ?value .
-              FILTER (IF(?thing = <https://pod.alex-rivera.example/clinical/labels.ttl>, ?predicate NOT IN (rdf:type, prov:used), ?predicate != rdfs:label)) }
+              FILTER (IF(?thing = <https://pod.alex-rivera.example/clinical/labels.ttl>, ?predicate NOT IN (rdf:type, prov:wasDerivedFrom), ?predicate != rdfs:label)) }
           }
         }
         """

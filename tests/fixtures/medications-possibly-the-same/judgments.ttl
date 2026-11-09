@@ -8,7 +8,7 @@
 cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :joinedBySharedProduct a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameProductCode ; prov:hadMember :joinedA , :joinedB ;
-    prov:used :joinedAVersion , :joinedBVersion ;
+    prov:wasDerivedFrom :joinedAVersion , :joinedBVersion ;
     cascade:matcherRule cascade:SameProductCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :notTheSame a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :differentA , :differentB ;
@@ -17,25 +17,25 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 # a Same that used version 6 of the rules, which version 7 revises
 :lapsedBySharedCode a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMedicationCode ; prov:hadMember :lapsedA , :lapsedB ;
-    prov:used :lapsedAVersion , :lapsedBVersion ;
+    prov:wasDerivedFrom :lapsedAVersion , :lapsedBVersion ;
     cascade:matcherRule cascade:SameMedicationCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # an entry joined by an NDC and by a product code, both exact identity
 :exemptNdc a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMedicationCode ; prov:hadMember :refill , :fill ;
-    prov:used :refillVersion , :fillVersion ;
+    prov:wasDerivedFrom :refillVersion , :fillVersion ;
     cascade:matcherRule cascade:SameMedicationCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :exemptProduct a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameProductCode ; prov:hadMember :refill , :listed ;
-    prov:used :refillVersion , :listedVersion ;
+    prov:wasDerivedFrom :refillVersion , :listedVersion ;
     cascade:matcherRule cascade:SameProductCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # an entry joined by a product code and by a brand generic
 :otherProduct a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameProductCode ; prov:hadMember :genericOne , :genericTwo ;
-    prov:used :genericOneVersion , :genericTwoVersion ;
+    prov:wasDerivedFrom :genericOneVersion , :genericTwoVersion ;
     cascade:matcherRule cascade:SameProductCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :otherBrandGeneric a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameBrandGeneric ; prov:hadMember :brand , :genericOne ;
-    prov:used :brandVersion , :genericOneVersion ;
+    prov:wasDerivedFrom :brandVersion , :genericOneVersion ;
     cascade:matcherRule cascade:SameBrandGenericRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :joinedBySharedProductUnderrules7 a cascade:ClaimAssertion ; cascade:assertedClaim :joinedBySharedProduct ;

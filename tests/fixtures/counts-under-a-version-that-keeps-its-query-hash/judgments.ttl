@@ -8,7 +8,7 @@
 cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :byCode a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
-    prov:hadMember :c1 , :c2 ; prov:used :c1Version , :c2Version ;
+    prov:hadMember :c1 , :c2 ; prov:wasDerivedFrom :c1Version , :c2Version ;
     cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :byCodeUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byCode ;
