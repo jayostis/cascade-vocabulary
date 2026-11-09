@@ -809,3 +809,32 @@ Feature: Arrivals
       Then it answers:
         | organization                                    |
         | <urn:uuid:7b40ed6a-7e98-86bb-aa22-26e771ea51a3> |
+
+  Rule: A21. A document names the part each party played on an association of the act that generated it, and is attributed to its author and custodian
+    decisions/republishing-sources.md, row "the part a party played in a document".
+    The document's prov:wasGeneratedBy names the act, a blank node with no rdf:type. Each prov:qualifiedAssociation of
+    the act names a party as prov:agent and the part it played as prov:hadRole: cascade:AuthorRole,
+    cascade:CustodianRole or cascade:TransmitterRole. The document is prov:wasAttributedTo its author and its custodian,
+    each by the node its association names, and never to its transmitter. Each writer of the document writes its own
+    act, the importer's facts one and a record's mapping another, so a document may carry several, and a reader walks
+    prov:wasGeneratedBy/prov:qualifiedAssociation, which does not count them. The act and its associations are kept in
+    the document's file with it (A10). No role is on an attribution, since PROV allows a role on none.
+
+    Example: an export's document names its hospital as author and Apple Health as transmitter, and is attributed to the hospital alone
+      Given a new pod for Ada on 2026-01-01 at 09:00
+      When the export "first-export" is imported on 2026-01-02 at 10:00
+      When the query is:
+        """
+        SELECT ?document ?role ?party ?attributed WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:first-export> prov:generated ?file }
+          GRAPH ?file { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .
+                        ?association prov:hadRole ?role ; prov:agent ?agent .
+                        ?agent rdfs:label ?party
+                        BIND (EXISTS { ?document prov:wasAttributedTo ?agent } AS ?attributed) }
+          ?revision prov:wasDerivedFrom ?document ; cascade:version/cascade:allergen "Peanut" .
+        }
+        """
+      Then it answers:
+        | document                         | role                    | party              | attributed |
+        | the document of allergy "Peanut" | cascade:AuthorRole      | "Example Hospital" | true       |
+        | the document of allergy "Peanut" | cascade:TransmitterRole | "Apple Health"     | false      |

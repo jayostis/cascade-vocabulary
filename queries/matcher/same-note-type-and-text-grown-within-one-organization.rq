@@ -267,16 +267,12 @@ WHERE {
                                                  && STRSTARTS(?witness1Text, SUBSTR(?longerText, 1, STRLEN(?longerText) - STRLEN(REPLACE(?longerText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
                                                  && STRENDS(?witness1Text, CONCAT("\n", REPLACE(?longerText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) }))
                 } }
-              ?witness1Revision cascade:revisionOf ?witness1 ; prov:wasDerivedFrom/prov:qualifiedAttribution ?witness1Attribution .
-              ?witness1Attribution prov:hadRole ?witness1Role ; prov:agent ?witness1Organization .
+              ?witness1Revision cascade:revisionOf ?witness1 ; prov:wasDerivedFrom/prov:wasAttributedTo ?witness1Organization .
               ?witness1Organization a cascade:Organization .
               ?witness1ShorterRevision cascade:revisionOf ?shorter ;
-                prov:wasDerivedFrom/prov:qualifiedAttribution ?witness1ShorterAttribution .
-              ?witness1ShorterAttribution prov:hadRole ?witness1ShorterRole ; prov:agent ?witness1ShorterOrganization .
-              FILTER (?witness1Role IN (cascade:CustodianRole, cascade:AuthorRole)
-                      && ?witness1ShorterRole IN (cascade:CustodianRole, cascade:AuthorRole)
-                      && (?witness1Organization = ?witness1ShorterOrganization
-                          || EXISTS { ?witness1Organization cascade:currentlySameOrganization+ ?witness1ShorterOrganization })) }
+                prov:wasDerivedFrom/prov:wasAttributedTo ?witness1ShorterOrganization .
+              FILTER (?witness1Organization = ?witness1ShorterOrganization
+                      || EXISTS { ?witness1Organization cascade:currentlySameOrganization+ ?witness1ShorterOrganization }) }
             UNION
             { { SELECT ?record ?other ?shorter ?witness2
                 WHERE {
@@ -416,26 +412,18 @@ WHERE {
                                                  && STRSTARTS(?witness2Text, SUBSTR(?longerText, 1, STRLEN(?longerText) - STRLEN(REPLACE(?longerText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), ""))))
                                                  && STRENDS(?witness2Text, CONCAT("\n", REPLACE(?longerText, CONCAT("^(?:[^\n]*\n){", STR(?headerLines), "}"), "")))) }))
                 } }
-              ?witness2Revision cascade:revisionOf ?witness2 ; prov:wasDerivedFrom/prov:qualifiedAttribution ?witness2Attribution .
-              ?witness2Attribution prov:hadRole ?witness2Role ; prov:agent ?witness2Organization .
+              ?witness2Revision cascade:revisionOf ?witness2 ; prov:wasDerivedFrom/prov:wasAttributedTo ?witness2Organization .
               ?witness2Organization a cascade:Organization .
               ?witness2ShorterRevision cascade:revisionOf ?shorter ;
-                prov:wasDerivedFrom/prov:qualifiedAttribution ?witness2ShorterAttribution .
-              ?witness2ShorterAttribution prov:hadRole ?witness2ShorterRole ; prov:agent ?witness2ShorterOrganization .
-              FILTER (?witness2Role IN (cascade:CustodianRole, cascade:AuthorRole)
-                      && ?witness2ShorterRole IN (cascade:CustodianRole, cascade:AuthorRole)
-                      && (?witness2Organization = ?witness2ShorterOrganization
-                          || EXISTS { ?witness2Organization cascade:currentlySameOrganization+ ?witness2ShorterOrganization })) }
+                prov:wasDerivedFrom/prov:wasAttributedTo ?witness2ShorterOrganization .
+              FILTER (?witness2Organization = ?witness2ShorterOrganization
+                      || EXISTS { ?witness2Organization cascade:currentlySameOrganization+ ?witness2ShorterOrganization }) }
           } }
       }
     } }
-  ?revision cascade:revisionOf ?record ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
-  ?attribution prov:hadRole ?role ; prov:agent ?organization .
+  ?revision cascade:revisionOf ?record ; prov:wasDerivedFrom/prov:wasAttributedTo ?organization .
   ?organization a cascade:Organization .
-  ?otherRevision cascade:revisionOf ?other ; prov:wasDerivedFrom/prov:qualifiedAttribution ?otherAttribution .
-  ?otherAttribution prov:hadRole ?otherRole ; prov:agent ?otherOrganization .
+  ?otherRevision cascade:revisionOf ?other ; prov:wasDerivedFrom/prov:wasAttributedTo ?otherOrganization .
   ?otherOrganization a cascade:Organization .
-  FILTER (?role IN (cascade:CustodianRole, cascade:AuthorRole) && ?otherRole IN (cascade:CustodianRole, cascade:AuthorRole)
-          && (?organization = ?otherOrganization
-              || EXISTS { ?organization cascade:currentlySameOrganization+ ?otherOrganization }))
+  FILTER (?organization = ?otherOrganization || EXISTS { ?organization cascade:currentlySameOrganization+ ?otherOrganization })
 }

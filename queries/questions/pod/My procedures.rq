@@ -36,8 +36,8 @@ WHERE {
                   ?entry a cascade:MedicalProcedure ; cascade:mergedFrom ?sourceRecord .
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
-                             OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
-                                        ?attribution prov:hadRole ?hospitalRole ; prov:agent ?agent
+                             OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .
+                                        ?association prov:hadRole ?hospitalRole ; prov:agent ?agent
                                         FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole))
                                         OPTIONAL { ?agent rdfs:label ?agentLabel }
                                         OPTIONAL { ?agent pav:hasCurrentVersion/foaf:name ?agentName }

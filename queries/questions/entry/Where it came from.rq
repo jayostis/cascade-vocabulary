@@ -17,8 +17,6 @@ WHERE {
   OPTIONAL { ?revision prov:wasDerivedFrom ?document .
              OPTIONAL { ?document rdfs:label ?documentLabel }
              OPTIONAL { ?document pav:retrievedOn ?retrieved }
-             OPTIONAL { ?document prov:qualifiedAttribution ?attribution .
-                        ?attribution prov:hadRole ?hospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital
-                        FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) } }
+             OPTIONAL { ?document prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital } }
 }
 ORDER BY ?entryLabel ?entry ?arrived ?recordLabel ?record ?document ?hospital ?retrieved

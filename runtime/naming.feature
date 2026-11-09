@@ -235,13 +235,15 @@ Feature: Naming
         |                                                             | "04c54966bb53953f974b6cba0af456156debf4f8bd1a634c942fa3cecd5da19b"     |
 
   Rule: N10. A person's judgment, and a person's retraction, keeps the IRI its input gives it
-    decisions/naming.md, rows "person's judgment" and "retraction"; decisions/judgments.md, row "retraction".
+    decisions/naming.md, rows "person's judgment" and "retraction"; decisions/judgments.md, rows "maker" and "retraction".
     A judgment a person makes arrives with its name: whoever made it minted that once, as the subject's ID was minted. A
     runtime files it under that IRI and gives it no other; it is neither a new random UUID nor named by a rule. So a
     judgment can name another person's judgment, and an answer can name it, on every run. A person's retraction, a
     prov:Activity that prov:invalidated a judgment (decisions/naming.md, row "retraction"), arrives with its name too and
     is filed under it, in the folder pod-layout.ttl gives what states prov:invalidated, even when it also states prov:used
-    (cascade:Placement).
+    (cascade:Placement). A person's judgment names the part its author acted in, cascade:PatientRole, on the one
+    prov:qualifiedAssociation of the act that generated it, a blank node filed with the judgment; a retraction, an act
+    itself, names it on its own association.
 
     Example: a person's About and its retraction are each filed under the IRI they arrived with, in their own step's file
       Given a new pod for Cleo on 2026-03-01 at 09:00

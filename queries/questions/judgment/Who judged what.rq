@@ -15,7 +15,7 @@ WHERE {
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?author rdfs:label ?authorLabel }
     OPTIONAL { ?judgment cascade:verdict ?verdict }
-    OPTIONAL { ?judgment prov:qualifiedAttribution/prov:hadRole ?role }
+    OPTIONAL { ?judgment prov:wasGeneratedBy/prov:qualifiedAssociation/prov:hadRole ?role }
     OPTIONAL { ?judgment prov:hadMember ?member .
                OPTIONAL { ?member rdfs:label ?memberLabel } }
     OPTIONAL { ?judgment dct:description ?reason }

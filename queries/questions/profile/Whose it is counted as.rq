@@ -12,16 +12,13 @@ WHERE {
   { SELECT ?profile ?hospital (COUNT(DISTINCT ?record) AS ?records)
     WHERE {
       { { SELECT DISTINCT ?document ?hospital
-          WHERE { ?document prov:qualifiedAttribution ?attribution .
-                  ?attribution prov:hadRole ?hospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital
-                  FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) } }
+          WHERE { ?document prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital } }
         ?revision prov:wasDerivedFrom ?document ; cascade:version ?version .
         ?version cascade:patient ?profile ; prov:specializationOf ?record . }
       UNION
       { ?version cascade:patient ?profile ; prov:specializationOf ?record .
-        MINUS { ?revision cascade:version ?version ; prov:wasDerivedFrom/prov:qualifiedAttribution ?attribution .
-                ?attribution prov:hadRole ?hospitalRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital
-                FILTER (?hospitalRole IN (cascade:AuthorRole, cascade:CustodianRole)) } } }
+        MINUS { ?revision cascade:version ?version ;
+                          prov:wasDerivedFrom/prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital } } }
     GROUP BY ?profile ?hospital
     HAVING (BOUND(?profile)) }
   ?about a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?subject .
