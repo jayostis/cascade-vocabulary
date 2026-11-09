@@ -106,6 +106,13 @@ def test_no_pod_holds_a_qualified_attribution_so_no_role_sits_on_one(fixture):
     assert not store.ask(f"ASK {{ ?s <{PROV.qualifiedAttribution}> ?attribution }}")
 
 
+@every_fixture
+def test_only_an_activity_prov_used_something(fixture):
+    """An entity says what it came from with prov:wasDerivedFrom: prov:used has an activity for its domain."""
+    store = built_once(fixture, "oxigraph", LENSES[0]).store
+    assert store.select(f"SELECT DISTINCT ?s WHERE {{ ?s <{PROV.used}> [] FILTER NOT EXISTS {{ ?s a <{PROV.Activity}> }} }}") == []
+
+
 def test_every_derivation_lens_view_and_the_labels_add_a_triple_and_every_question_and_comparison_gives_a_row():
     quiet = {*derivations(LENSES[0]), *named("lenses").values(), *built().values(), *ASKED.values()}
     for fixture in FIXTURES:
