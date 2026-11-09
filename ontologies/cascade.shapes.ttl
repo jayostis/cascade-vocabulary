@@ -2854,7 +2854,7 @@ cascade:PersonJudgmentAssociationShape a sh:NodeShape ;
                 [ sh:path prov:hadRole ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( cascade:PatientRole ) ] .
 
 cascade:DocumentRoleAttributionShape a sh:NodeShape ;
-    sh:targetSubjectsOf prov:wasAttributedTo , prov:wasGeneratedBy ;
+    sh:targetSubjectsOf prov:wasGeneratedBy ;
     sh:sparql [
         a sh:SPARQLConstraint ;
         sh:message "A document's author and custodian, named by an association of the act that generated it, are each the object of its prov:wasAttributedTo: {?agent} is not."@en ;
