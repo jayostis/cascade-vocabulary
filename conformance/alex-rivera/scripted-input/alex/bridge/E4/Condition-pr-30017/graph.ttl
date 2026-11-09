@@ -3,40 +3,43 @@
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix pav: <http://purl.org/pav/> .
 <ni:///sha-256;kk_UvFjveZWXMFecv_KczpWCDtIfdyoTYVfMmM9wj4I> cascade:conditionName "Hypertension" ;
-	cascade:onsetDate "2021-04-02"^^xsd:date ;
-	cascade:clinicalStatus "active" ;
 	cascade:snomedCode <http://snomed.info/id/38341003> ;
-	cascade:verificationStatus "confirmed" .
-_:60556140e6e4d52697435da94565b412 pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
-	pav:version "1" ;
-	bridge:arrivedAs <ni:///sha-256;kk_UvFjveZWXMFecv_KczpWCDtIfdyoTYVfMmM9wj4I> .
-<ni:///sha-256;kk_UvFjveZWXMFecv_KczpWCDtIfdyoTYVfMmM9wj4I> cascade:patient <urn:uuid:5056e058-324f-8c70-b69b-fb27a061cdc5> ;
-	prov:specializationOf <urn:uuid:fb6ea0ec-3fbb-865c-a044-01b708d547f1> .
-<urn:uuid:fb6ea0ec-3fbb-865c-a044-01b708d547f1> cascade:sourceRecordId "pr-30017" ;
+	cascade:clinicalStatus "active" ;
+	cascade:verificationStatus "confirmed" ;
+	cascade:onsetDate "2021-04-02"^^xsd:date .
+<urn:uuid:fb6ea0ec-3fbb-865c-a044-01b708d547f1> a cascade:ProblemOrDiagnosis ;
 	cascade:sourceUrl <https://ehr.larkspur.example/fhir/R4/Condition/pr-30017> ;
-	a cascade:ProblemOrDiagnosis .
-_:60556140e6e4d52697435da94565b412 oa:hasSelector _:2419ba4b95df9a93be31324fd715ac3d ;
+	cascade:sourceRecordId "pr-30017" .
+<ni:///sha-256;kk_UvFjveZWXMFecv_KczpWCDtIfdyoTYVfMmM9wj4I> prov:specializationOf <urn:uuid:fb6ea0ec-3fbb-865c-a044-01b708d547f1> ;
+	cascade:patient <urn:uuid:5056e058-324f-8c70-b69b-fb27a061cdc5> .
+_:60556140e6e4d52697435da94565b412 bridge:arrivedAs <ni:///sha-256;kk_UvFjveZWXMFecv_KczpWCDtIfdyoTYVfMmM9wj4I> ;
+	pav:version "1" ;
+	pav:lastUpdateOn "2026-08-20T08:00:00Z"^^xsd:dateTime ;
+	oa:hasSelector _:2419ba4b95df9a93be31324fd715ac3d ;
 	oa:hasSource <ni:///sha-256;Cz5MtRwIZdqPndcnbRHYmSyV0ifFlAvMwatkhsAD_ho> ;
 	prov:wasDerivedFrom <ni:///sha-256;Cz5MtRwIZdqPndcnbRHYmSyV0ifFlAvMwatkhsAD_ho> ;
 	prov:wasGeneratedBy _:c72d6338e7026634631c13b511809fff .
 _:2419ba4b95df9a93be31324fd715ac3d a oa:FragmentSelector ;
-	dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+	dct:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
 	rdf:value "" .
 _:c72d6338e7026634631c13b511809fff <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health export" ;
 	prov:startedAtTime "2026-10-14T15:42:00Z"^^xsd:dateTime .
-<ni:///sha-256;Cz5MtRwIZdqPndcnbRHYmSyV0ifFlAvMwatkhsAD_ho> prov:qualifiedAttribution _:c3300e19d261859268da82cb347b6957 .
-_:c3300e19d261859268da82cb347b6957 prov:agent _:fa89d02787f7be7ce1a0d1b6f03f11fa .
-_:fa89d02787f7be7ce1a0d1b6f03f11fa <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
-_:c3300e19d261859268da82cb347b6957 prov:hadRole cascade:TransmitterRole .
-<ni:///sha-256;Cz5MtRwIZdqPndcnbRHYmSyV0ifFlAvMwatkhsAD_ho> prov:qualifiedAttribution _:8aaf8557ae7fe34088c27e0d4758b200 .
-_:8aaf8557ae7fe34088c27e0d4758b200 prov:agent _:d79e7db696d7ee402f82e22f9f322dbe .
-_:d79e7db696d7ee402f82e22f9f322dbe <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
-_:8aaf8557ae7fe34088c27e0d4758b200 prov:hadRole cascade:AuthorRole .
-<ni:///sha-256;Cz5MtRwIZdqPndcnbRHYmSyV0ifFlAvMwatkhsAD_ho> cascade:serverBaseUrl "https://ehr.larkspur.example/fhir/R4" ;
+<ni:///sha-256;Cz5MtRwIZdqPndcnbRHYmSyV0ifFlAvMwatkhsAD_ho> prov:wasGeneratedBy _:c3300e19d261859268da82cb347b6957 .
+_:c3300e19d261859268da82cb347b6957 prov:qualifiedAssociation _:fa89d02787f7be7ce1a0d1b6f03f11fa .
+_:fa89d02787f7be7ce1a0d1b6f03f11fa prov:agent _:8aaf8557ae7fe34088c27e0d4758b200 .
+_:8aaf8557ae7fe34088c27e0d4758b200 <http://www.w3.org/2000/01/rdf-schema#label> "Apple Health" .
+_:fa89d02787f7be7ce1a0d1b6f03f11fa prov:hadRole cascade:TransmitterRole .
+_:c3300e19d261859268da82cb347b6957 prov:qualifiedAssociation _:d79e7db696d7ee402f82e22f9f322dbe .
+_:d79e7db696d7ee402f82e22f9f322dbe prov:agent _:c2532fc47c49ad59af775ed6c6b46999 .
+_:c2532fc47c49ad59af775ed6c6b46999 <http://www.w3.org/2000/01/rdf-schema#label> "Larkspur Valley Health" .
+_:d79e7db696d7ee402f82e22f9f322dbe prov:hadRole cascade:AuthorRole .
+<ni:///sha-256;Cz5MtRwIZdqPndcnbRHYmSyV0ifFlAvMwatkhsAD_ho> prov:wasAttributedTo _:c2532fc47c49ad59af775ed6c6b46999 ;
+	cascade:serverBaseUrl "https://ehr.larkspur.example/fhir/R4" ;
 	pav:retrievedFrom <https://EHR.Larkspur.example/fhir/R4/Condition/pr-30017> ;
 	pav:retrievedOn "2026-10-14T15:40:00Z"^^xsd:dateTime ;
 	cascade:sourceFormatVersion "4.0.1" ;
