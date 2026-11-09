@@ -417,10 +417,13 @@ Feature: Arrivals
       And the pod holds no revision
 
   Rule: A15. The build writes a view once the pod holds a record of its kind, and at every build after
-    No note rules this.
+    decisions/judgments.md, row "what a judgment, a finding or a view came from".
     Records are never removed, so nothing a build wrote goes stale. The labels file, and each view pod-layout.ttl marks
     cascade:writtenAlways, as the patient-profile view, are written at every build: a pod always has a subject. The type
     index registers only the views written. So a kind the layout adds changes no pod that holds none of it.
+    A view names each reference version it was built with by prov:wasDerivedFrom and names no act with prov:used; the
+    example of that is in conformance/alex-rivera/alex-rivera.feature, "each view and the labels file used the reference
+    versions current at the end".
 
     Example: a pod of an allergy and a condition holds those two views, the patient-profile view and the labels, and no other
       Given a new pod for Ben on 2026-02-01 at 08:00

@@ -8,23 +8,23 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 # a: a Same that used a table, the rules and the records' versions
 :sameA a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :a1 , :a2 ;
-    prov:used :groups1 , :a1Version , :a2Version ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasDerivedFrom :groups1 , :a1Version , :a2Version ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # b: a Same that used the rules alone
 :sameB a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :b1 , :b2 ;
-    prov:used :b1Version , :b2Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasDerivedFrom :b1Version , :b2Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # c: a Same that used version 1 of a table that has a version 2 since, beside the Same that used version 2
 :sameCOld a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :c1 , :c2 ;
-    prov:used :ingredients1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasDerivedFrom :ingredients1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :sameCNew a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :c1 , :c2 ;
-    prov:used :ingredients2 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasDerivedFrom :ingredients2 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 # d: two Sames of one pair, each of a table of its own
 :sameDIngredients a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :d1 , :d2 ;
-    prov:used :ingredients2 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasDerivedFrom :ingredients2 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :sameDGroups a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCodeAndDate ; prov:hadMember :d1 , :d2 ;
-    prov:used :groups1 ; cascade:matcherRule cascade:SameMappedCodeAndDateRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasDerivedFrom :groups1 ; cascade:matcherRule cascade:SameMappedCodeAndDateRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :sameAUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameA ;
     cascade:assertedUnderRuleListVersion :rules1 .

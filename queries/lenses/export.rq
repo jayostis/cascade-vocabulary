@@ -36,7 +36,7 @@ WHERE {
     }
     FILTER NOT EXISTS { ?retraction prov:invalidated ?j }
     MINUS {
-      ?j prov:used ?input .
+      ?j prov:wasDerivedFrom ?input .
       ?input prov:specializationOf ?series .
       ?series a cascade:ReferenceSeries ; pav:hasCurrentVersion ?now .
       FILTER (?now != ?input)

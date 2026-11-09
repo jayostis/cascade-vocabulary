@@ -197,8 +197,8 @@ def reaches_every_domain(vocabulary, subject_class, predicate):
 @pytest.mark.parametrize("subject_class, predicate", [
     (PROV.Association, PROV.hadRole),
     (PROV.Association, PROV.agent),
-    pytest.param(CASCADE_NS.Judgment, PROV.used, marks=pytest.mark.xfail(
-        strict=True, reason="a machine's Same names what it used on the judgment, an entity; prov:used's domain is an activity")),
+    (CASCADE_NS.FindingForReview, PROV.wasDerivedFrom),
+    (CASCADE_NS.View, PROV.wasDerivedFrom),
 ])
 def test_a_class_a_pod_writes_a_property_on_reaches_every_domain_of_that_property(subject_class, predicate):
     assert reaches_every_domain(union(ONTOLOGIES), subject_class, predicate)

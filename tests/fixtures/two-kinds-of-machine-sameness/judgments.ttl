@@ -8,10 +8,10 @@
 cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :byCode a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCodeAndDate ; prov:hadMember :flu1 , :flu2 ;
-    prov:used :flu1Version , :flu2Version ;
+    prov:wasDerivedFrom :flu1Version , :flu2Version ;
     cascade:matcherRule cascade:SameCodeAndDateRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :byMappedCode a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCodeAndDate ;
-    prov:hadMember :flu2 , :flu3 ; prov:used :flu2Version , :flu3Version ;
+    prov:hadMember :flu2 , :flu3 ; prov:wasDerivedFrom :flu2Version , :flu3Version ;
     cascade:matcherRule cascade:SameMappedCodeAndDateRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :byCodeUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byCode ;
@@ -29,10 +29,10 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :grown a cascade:Judgment ; cascade:verdict cascade:Same ;
     cascade:justification cascade:SameNoteTypeAndTextGrownWithinOneOrganization ; prov:hadMember :note1 , :note2 ;
-    prov:used :note1Version , :note2Version ;
+    prov:wasDerivedFrom :note1Version , :note2Version ;
     cascade:matcherRule cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 :sameText a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameNoteTypeAndText ;
-    prov:hadMember :note2 , :note3 ; prov:used :note2Version , :note3Version ;
+    prov:hadMember :note2 , :note3 ; prov:wasDerivedFrom :note2Version , :note3Version ;
     cascade:matcherRule cascade:SameNoteTypeAndTextRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :grownUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :grown ;
@@ -47,7 +47,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:queryHash :sameTextQuery .
 :sameDocument a cascade:Judgment ; cascade:verdict cascade:Same ;
     cascade:justification cascade:SameNoteOrDocumentMasterIdentifier ; prov:hadMember :note1 , :note3 ;
-    prov:used :note1Version , :note3Version ;
+    prov:wasDerivedFrom :note1Version , :note3Version ;
     cascade:matcherRule cascade:SameNoteOrDocumentMasterIdentifierRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :sameDocumentUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameDocument ;

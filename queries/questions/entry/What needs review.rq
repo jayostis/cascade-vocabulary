@@ -193,7 +193,7 @@ WHERE {
       (cascade:DifferentResultValuesAtOneInstant "one test at one instant, two values")
       (cascade:DifferentResultUnitsAtOneInstant "one test at one instant, in units that differ")
     }
-    ?finding oa:hasBody ?kind ; oa:hasTarget ?record , ?otherRecord ; prov:used ?version , ?otherVersion .
+    ?finding oa:hasBody ?kind ; oa:hasTarget ?record , ?otherRecord ; prov:wasDerivedFrom ?version , ?otherVersion .
     ?record pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
     ?otherRecord pav:hasCurrentVersion ?otherVersion .
     FILTER (STR(?record) < STR(?otherRecord))

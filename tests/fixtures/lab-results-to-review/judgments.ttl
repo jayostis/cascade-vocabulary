@@ -10,7 +10,7 @@
 cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :onOneDay a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameResultOnOneDay ;
-    prov:hadMember :dayOnly , :dayInstant ; prov:used <urn:x:dayOnlyVersion> , <urn:x:dayInstantVersion> ;
+    prov:hadMember :dayOnly , :dayInstant ; prov:wasDerivedFrom <urn:x:dayOnlyVersion> , <urn:x:dayInstantVersion> ;
     cascade:matcherRule cascade:SameResultOnOneDayRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :onOneDayUnderrules11 a cascade:ClaimAssertion ; cascade:assertedClaim :onOneDay ;
@@ -27,11 +27,11 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :differentValues a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
     oa:motivatedBy oa:classifying ; oa:hasTarget :unitsUpper , :valueOther ;
-    prov:used <urn:x:unitsUpperVersion> , <urn:x:valueOtherVersion> .
+    prov:wasDerivedFrom <urn:x:unitsUpperVersion> , <urn:x:valueOtherVersion> .
 
 :countsDiffer a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
     oa:motivatedBy oa:classifying ; oa:hasTarget :countPlain , :countAnnotated ;
-    prov:used <urn:x:countPlainVersion> , <urn:x:countAnnotatedVersion> .
+    prov:wasDerivedFrom <urn:x:countPlainVersion> , <urn:x:countAnnotatedVersion> .
 
 :seen a cascade:Judgment ; cascade:verdict cascade:Acknowledged ; prov:hadMember :countsDiffer ;
     prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
@@ -39,15 +39,15 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :differentUnits a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultUnitsAtOneInstant ;
     oa:motivatedBy oa:classifying ; oa:hasTarget :unitsUpper , :unitsOther ;
-    prov:used <urn:x:unitsUpperVersion> , <urn:x:unitsOtherVersion> .
+    prov:wasDerivedFrom <urn:x:unitsUpperVersion> , <urn:x:unitsOtherVersion> .
 
 :unitsOfTheDifferent a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultUnitsAtOneInstant ;
     oa:motivatedBy oa:classifying ; oa:hasTarget :differentA , :differentB ;
-    prov:used <urn:x:differentAVersion> , <urn:x:differentBVersion> .
+    prov:wasDerivedFrom <urn:x:differentAVersion> , <urn:x:differentBVersion> .
 
 :unitsOfTheSame a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultUnitsAtOneInstant ;
     oa:motivatedBy oa:classifying ; oa:hasTarget :sameA , :sameB ;
-    prov:used <urn:x:sameAVersion> , <urn:x:sameBVersion> .
+    prov:wasDerivedFrom <urn:x:sameAVersion> , <urn:x:sameBVersion> .
 
 :theSame a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :sameA , :sameB ;
     prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
@@ -56,7 +56,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :byIdentifier a cascade:Judgment ; cascade:verdict cascade:Same ;
     cascade:justification cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization ;
     prov:hadMember :identifiedFirst , :identifiedCorrected ;
-    prov:used <urn:x:identifiedFirstVersion> , <urn:x:identifiedCorrectedVersion> ;
+    prov:wasDerivedFrom <urn:x:identifiedFirstVersion> , <urn:x:identifiedCorrectedVersion> ;
     cascade:matcherRule cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule ;
     prov:wasAttributedTo cascade:CascadeMatcher .
 
@@ -69,7 +69,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :byValue a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameResult ;
     prov:hadMember :identifiedCorrected , :sameAsCorrected ;
-    prov:used <urn:x:identifiedCorrectedVersion> , <urn:x:sameAsCorrectedVersion> ;
+    prov:wasDerivedFrom <urn:x:identifiedCorrectedVersion> , <urn:x:sameAsCorrectedVersion> ;
     cascade:matcherRule cascade:SameResultRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
 :byValueUnderrules11 a cascade:ClaimAssertion ; cascade:assertedClaim :byValue ;
@@ -80,12 +80,12 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :correctedValue a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
     oa:motivatedBy oa:classifying ; oa:hasTarget :identifiedFirst , :identifiedCorrected ;
-    prov:used <urn:x:identifiedFirstVersion> , <urn:x:identifiedCorrectedVersion> .
+    prov:wasDerivedFrom <urn:x:identifiedFirstVersion> , <urn:x:identifiedCorrectedVersion> .
 
 :byIdentifierUnmarked a cascade:Judgment ; cascade:verdict cascade:Same ;
     cascade:justification cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization ;
     prov:hadMember :unmarkedFirst , :unmarkedSecond ;
-    prov:used <urn:x:unmarkedFirstVersion> , <urn:x:unmarkedSecondVersion> ;
+    prov:wasDerivedFrom <urn:x:unmarkedFirstVersion> , <urn:x:unmarkedSecondVersion> ;
     cascade:matcherRule cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule ;
     prov:wasAttributedTo cascade:CascadeMatcher .
 
@@ -94,4 +94,4 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :unmarkedValue a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;
     oa:motivatedBy oa:classifying ; oa:hasTarget :unmarkedFirst , :unmarkedSecond ;
-    prov:used <urn:x:unmarkedFirstVersion> , <urn:x:unmarkedSecondVersion> .
+    prov:wasDerivedFrom <urn:x:unmarkedFirstVersion> , <urn:x:unmarkedSecondVersion> .

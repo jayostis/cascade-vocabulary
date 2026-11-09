@@ -11,7 +11,7 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT { ?j cascade:lapsed true }
 WHERE {
-  { ?j cascade:verdict cascade:Same ; prov:wasAttributedTo cascade:CascadeMatcher ; prov:used ?input .
+  { ?j cascade:verdict cascade:Same ; prov:wasAttributedTo cascade:CascadeMatcher ; prov:wasDerivedFrom ?input .
     ?keptAssertion cascade:assertedClaim ?j .
     FILTER NOT EXISTS { ?keptRetraction prov:invalidated ?keptAssertion }
     ?input prov:specializationOf ?series .

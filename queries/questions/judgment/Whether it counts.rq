@@ -31,7 +31,7 @@ WHERE {
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?by rdfs:label ?byLabel } }
   UNION
-  { ?judgment a cascade:Judgment ; prov:used ?replaced .
+  { ?judgment a cascade:Judgment ; prov:wasDerivedFrom ?replaced .
     ?replaced prov:specializationOf/a cascade:ReferenceSeries .
     ?by prov:wasRevisionOf ?replaced .
     FILTER NOT EXISTS {

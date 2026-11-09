@@ -1231,7 +1231,8 @@ prov:invalidated a owl:ObjectProperty ;
 
 cascade:View a owl:Class ;
     rdfs:label "view"@en ;
-    rdfs:comment "A file the view queries build from the pod's records and judgments: deleting it loses nothing, and rerunning them rebuilds it."@en .
+    rdfs:comment "A file the view queries build from the pod's records and judgments: deleting it loses nothing, and rerunning them rebuilds it. It says which reference versions it was built with by prov:wasDerivedFrom."@en ;
+    rdfs:subClassOf prov:Entity .
 
 cascade:countsUnderLens a owl:DatatypeProperty ;
     rdfs:label "counts under lens"@en ;
@@ -2796,7 +2797,7 @@ cascade:currentlyDifferent a owl:ObjectProperty , owl:SymmetricProperty ;
 cascade:FindingForReview a owl:Class ;
     rdfs:label "finding for review"@en ;
     rdfs:comment "Something a runtime noticed about what the pod holds and filed for a person to answer, a file an act wrote and named by cascade:FindingNamingRule from its own triples, so two writers that notice one thing file one file. Its kind is its oa:hasBody, a concept of cascade:FindingForReviewKinds, its oa:motivatedBy oa:classifying, since it classifies its targets as that kind, and what it is about its oa:hasTarget. Each kind says how its body reads its targets: whether it applies to each target alone, as cascade:ClaimsNoLongerReached does, or to the targets together, as a finding of two records' differing values would. It carries no time and names no act: which act filed it is read from that act's snapshot. A person answers it with a judgment whose one member it is; an acknowledged finding still stands."@en ;
-    rdfs:subClassOf oa:Annotation .
+    rdfs:subClassOf oa:Annotation , prov:Entity .
 
 cascade:FindingForReviewKinds a skos:ConceptScheme ;
     rdfs:label "finding for review kinds"@en ;
@@ -2838,12 +2839,12 @@ cascade:writerClockBehindByAtLeastDays a owl:DatatypeProperty ;
 cascade:DifferentResultValuesAtOneInstant a skos:Concept ;
     skos:inScheme cascade:FindingForReviewKinds ;
     skos:prefLabel "different result values at one instant"@en ;
-    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant whose values differ: values of two kinds, or of one kind other than text, in one unit, their UCUM annotations aside and the litre written either way, that differ: two numbers, a comparator on one and not the other, a part or a bound one holds and the other lacks, or coded answers of one code system sharing no code. The finding's prov:used are the two versions whose values differ. The body applies to its targets together: neither result is wrong alone, but both cannot be the one draw, and a correction should have come as a new version. The matcher never judges such a pair the same (R6); it files this finding by rule R16 instead, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
+    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant whose values differ: values of two kinds, or of one kind other than text, in one unit, their UCUM annotations aside and the litre written either way, that differ: two numbers, a comparator on one and not the other, a part or a bound one holds and the other lacks, or coded answers of one code system sharing no code. The finding's prov:wasDerivedFrom are the two versions whose values differ. The body applies to its targets together: neither result is wrong alone, but both cannot be the one draw, and a correction should have come as a new version. The matcher never judges such a pair the same (R6); it files this finding by rule R16 instead, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
 
 cascade:DifferentResultUnitsAtOneInstant a skos:Concept ;
     skos:inScheme cascade:FindingForReviewKinds ;
     skos:prefLabel "different result units at one instant"@en ;
-    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant whose values are of one kind that has units, where both hold a number in one place, the first or the second, in units that differ once their UCUM annotations are dropped and the litre is written one way. The finding's prov:used are the two versions compared. Two units may measure one draw, mmol/L and mg/dL, and no rule converts one into the other, so the matcher neither joins nor parts them; it files this finding by rule R17, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
+    skos:definition "Two lab results, each an oa:hasTarget, of one test code at one instant whose values are of one kind that has units, where both hold a number in one place, the first or the second, in units that differ once their UCUM annotations are dropped and the litre is written one way. The finding's prov:wasDerivedFrom are the two versions compared. Two units may measure one draw, mmol/L and mg/dL, and no rule converts one into the other, so the matcher neither joins nor parts them; it files this finding by rule R17, which a person answers with an acknowledgement, or by judging the two results the same or different."@en .
 
 # Naming rules: each name a runtime or an adapter mints follows one, and a changed recipe is a new rule
 
