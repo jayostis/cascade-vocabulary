@@ -179,6 +179,8 @@ class TestNamingVectors:
             assert naming.normalised_base_url(given) == expected
 
     class TestGivenAnyBaseAddressVectorWithAnIpLiteral:
+        """given any base address vector whose normalised host is an IP literal"""
+
         def test_is_an_iri_to_oxigraph(self):
             """is an IRI to Oxigraph
 

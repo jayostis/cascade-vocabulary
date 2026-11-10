@@ -56,7 +56,7 @@ class TestSnapshotVectors:
             """holds a division that gives Bitcoin Core's digest
 
             Three numbers made from the bytes 0, 1 and 2 are multiplied and divided as MuHash3072 removes a member: the
-            first times the second over the third, modulo its prime. The result is written as 384 little-endian bytes,
+            first times the second over the third, kept below its prime. The result is written as 384 bytes, the least significant first,
             hashed with SHA-256 and written backwards in hex, as Bitcoin Core writes a digest, and is compared with the
             digest Bitcoin Core publishes for that division.
             """

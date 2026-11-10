@@ -119,8 +119,8 @@ class TestNamesAFeatureWrites:
 
             Each kit's table of matcher judgments, at least eleven, is read with its justification, its members and
             the reference versions it says it used; the records and versions are looked up from the kit's own files, and
-            the name N6's rule gives from them is compared with the name the row writes. It is the slowest case of this
-            module, as each kit's references are read once for each row.
+            the name N6's rule gives from them is compared with the name the row writes. It takes longer than any other case
+            of this module, as each kit's references are read once for each row.
             """
             judgments = list(matcher_judgments_written_with_what_they_used())
             assert len(judgments) >= 11

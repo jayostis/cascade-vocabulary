@@ -381,8 +381,8 @@ class TestChecksOfTheRedMainAlert:
         def test_prints_one_line_that_names_red_main_token_and_the_permissions_it_needs(self, capsys):
             """prints one line that names `RED_MAIN_TOKEN` and the permissions it needs
 
-            Given an environment whose `RED_MAIN_TOKEN` is empty, the one line `main()` prints to standard error has no
-            traceback and names the token, the Issues permission and the Actions permission.
+            Given an environment whose `RED_MAIN_TOKEN` is empty, the one line `main()` prints to standard error shows no
+            error trace and names the token, the Issues permission and the Actions permission.
             """
             red_main.main({"GITHUB_REPOSITORY_OWNER": "jayostis", "RED_MAIN_TOKEN": ""})
             _, err = capsys.readouterr()
@@ -401,7 +401,7 @@ class TestChecksOfTheRedMainAlert:
         def test_prints_one_line_without_the_token_when_github_refuses_it(self, capsys, monkeypatch):
             """prints one line without the token when GitHub refuses it
 
-            Given a token that GitHub answers with 401, `main()` returns 1 and prints one line, with no traceback, in
+            Given a token that GitHub answers with 401, `main()` returns 1 and prints one line, with no error trace, in
             which the token's value appears nowhere on standard output or standard error.
             """
             def refuse(self, path, **params):

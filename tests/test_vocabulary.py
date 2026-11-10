@@ -552,17 +552,17 @@ class TestRootCrate:
         def test_describes_with_is_based_on_or_citation_only_files_that_exist(self):
             """describes with `isBasedOn` or `citation` only files that exist
 
-            Each entity of the crate that has `isBasedOn` or `citation` is named by the path of a file; one other than the
+            Each item of the crate that has `isBasedOn` or `citation` is named by the path of a file; one other than the
             crate's own root whose file is not there fails.
             """
             described = [path for path, entity in crate().items() if "isBasedOn" in entity or "citation" in entity]
             assert described and [path for path in described if path != "./" and not (ROOT / path).is_file()] == []
 
-        def test_reaches_every_entity_from_its_metadata_descriptor(self):
-            """reaches every entity from its metadata descriptor
+        def test_reaches_every_item_from_its_metadata_descriptor(self):
+            """reaches every item from its metadata descriptor
 
-            Following each `@id` reference from the descriptor `ro-crate-metadata.json`, every entity of the crate is
-            reached; an entity nothing refers to fails.
+            Following each `@id` reference from the descriptor `ro-crate-metadata.json`, every item of the crate is
+            reached; an item nothing refers to fails.
             """
             entities, reached, todo = crate(), set(), ["ro-crate-metadata.json"]
             while todo:
