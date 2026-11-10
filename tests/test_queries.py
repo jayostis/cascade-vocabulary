@@ -171,7 +171,7 @@ def declared(relative):
 
 
 @lru_cache(maxsize=None)
-def namespaces():
+def namespaces_by_prefix():
     bindings = [binding for relative in every_query() for binding in declared(relative)]
     for path in ROOT.glob("ontologies/**/*.ttl"):
         graph = Graph(bind_namespaces="none").parse(path)
@@ -304,7 +304,7 @@ class TestQueryForm:
         @pytest.mark.parametrize("relative", every_query())
         def test_no_query_spells_out_an_iri_in_a_namespace_the_queries_declare(self, relative):
             prefixes = {prefix for other in every_query() for prefix, _ in declared(other)}
-            declared_namespaces = tuple(namespace for prefix in prefixes for namespace in namespaces()[prefix])
+            declared_namespaces = tuple(namespace for prefix in prefixes for namespace in namespaces_by_prefix()[prefix])
             _, query = parsed(relative)
             assert {str(iri) for iri in iris(query) if str(iri).startswith(declared_namespaces)} == set()
 
@@ -314,7 +314,7 @@ class TestQueryForm:
 
     class TestGivenTheQueriesAndTheOntologyFilesTogether:
         def test_every_prefix_names_the_same_namespace_in_every_query_and_every_vocabulary_file(self):
-            assert {prefix: bound for prefix, bound in namespaces().items() if len(bound) > 1} == {}
+            assert {prefix: bound for prefix, bound in namespaces_by_prefix().items() if len(bound) > 1} == {}
 
 
 class TestMatcherComparisons:

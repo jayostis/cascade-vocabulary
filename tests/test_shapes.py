@@ -161,7 +161,7 @@ def fixture_pod(fixture):
     return graph
 
 
-def written():
+def pod_files_carried():
     yield from (fixture.folder / relative for fixture in FIXTURES for relative in fixture.files())
     yield from (file for file, expected in cases().values() if not expected)
     yield from (ROOT / "runtime" / "scripted-input").rglob("*.ttl")
@@ -249,7 +249,7 @@ class TestTermsDeclared:
         def test_every_term_a_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it(self):
             declared = {str(term) for term in ontology().subjects(RDF.type, None)} | set(map(str, UNDECLARED_ON_PURPOSE))
             ours = namespaces()
-            undeclared = {(term, file.relative_to(ROOT).as_posix()) for file in written() for term in iris(file)
+            undeclared = {(term, file.relative_to(ROOT).as_posix()) for file in pod_files_carried() for term in iris(file)
                           if term.startswith(ours) and term not in declared}
             assert sorted(undeclared) == []
 
