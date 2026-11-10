@@ -169,11 +169,11 @@ WHERE {
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
   UNION
-  { ?record cascade:recordKind "Medication" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
-    ?otherRecord cascade:recordKind "Medication" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
-    VALUES ?codeProperty { cascade:rxNormCode cascade:ndcCode }
+  { VALUES ?codeProperty { cascade:rxNormCode cascade:ndcCode }
     ?version ?codeProperty ?code .
     ?otherVersion ?codeProperty ?code .
+    ?record cascade:recordKind "Medication" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
+    ?otherRecord cascade:recordKind "Medication" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
     FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry)
     MINUS { ?record cascade:currentlyDifferent ?otherRecord }
     MINUS { ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord }
