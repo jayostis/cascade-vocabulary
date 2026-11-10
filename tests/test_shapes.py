@@ -210,6 +210,15 @@ def name_shape_only():
     return graph
 
 
+def selectable_codes(concepts):
+    """Each code of the concepts and of theirs, at every depth, but an abstract one (notSelectable), percent-encoded as
+    ENCODE_FOR_URI does."""
+    for concept in concepts:
+        if not any(p["code"] == "notSelectable" and p.get("valueBoolean") for p in concept.get("property", [])):
+            yield quote(concept["code"], safe="")
+        yield from selectable_codes(concept.get("concept", []))
+
+
 class TestShapesThatFindAWrongPod:
     class TestGivenAShapeCase:
         def test_each_valid_case_conforms_and_each_break_reports_its_shape_and_path_and_nothing_else(self):
@@ -322,11 +331,6 @@ class TestHl7CodeShapes:
         def test_a_shape_of_an_hl7_code_systems_codes_lists_exactly_the_codes_a_coding_may_carry(self):
             """HL7 Terminology's CodeSystems as published (tests/terminology/hl7-terminology/, CC0), every code at every depth
             but an abstract one (notSelectable), each percent-encoded as ENCODE_FOR_URI does."""
-            def codes(concepts):
-                for concept in concepts:
-                    if not any(p["code"] == "notSelectable" and p.get("valueBoolean") for p in concept.get("property", [])):
-                        yield quote(concept["code"], safe="")
-                    yield from codes(concept.get("concept", []))
             for shape, system, file in ((CASCADE.DataAbsentReasonCodeShape, CASCADE.DataAbsentReason, "CodeSystem-data-absent-reason.json"),
                                         (CASCADE.NullFlavorCodeShape, CASCADE.NullFlavor, "CodeSystem-v3-NullFlavor.json"),
                                         (CASCADE.ObservationInterpretationCodeShape, CASCADE.ObservationInterpretation,
@@ -335,4 +339,4 @@ class TestHl7CodeShapes:
                 assert published["url"] == str(ontology().value(system, CASCADE.codingSystemUri))
                 stem = str(ontology().value(system, URIRef("http://rdfs.org/ns/void#uriSpace")))
                 listed = [str(code) for code in Collection(shapes(), shapes().value(shape, SH["in"]))]
-                assert listed == [stem + code for code in codes(published["concept"])]
+                assert listed == [stem + code for code in selectable_codes(published["concept"])]
