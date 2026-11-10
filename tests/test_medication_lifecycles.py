@@ -38,15 +38,17 @@ FHIR_CODES = sorted(codes("codesystem-medicationrequest-status.json") | codes("c
 
 
 def derived(engine, record_class, derivation, statuses):
-    """What the derivation gives a record of the class that states each status, alone in an entry of its own, by the
-    local name of the property: the record's class and, where the derivation gives one, the step that gave it."""
+    """What the derivation gives a record of the class that states each status (None: states none), alone in an entry of
+    its own, by the local name of the property: the record's class and, where the derivation gives one, the step that
+    gave it."""
     store = ENGINES[engine]()
     triples = set()
     for number, status in enumerate(statuses):
         record, entry, version = (URIRef(f"urn:x:{name}{number}") for name in ("record", "entry", "version"))
         triples |= {(record, RDF.type, URIRef(CASCADE + record_class)), (record, URIRef(CASCADE + "inEntry"), entry),
-                    (record, URIRef(PAV + "hasCurrentVersion"), version),
-                    (version, URIRef(CASCADE + "workflowStatus"), Literal(status))}
+                    (record, URIRef(PAV + "hasCurrentVersion"), version)}
+        if status is not None:
+            triples.add((version, URIRef(CASCADE + "workflowStatus"), Literal(status)))
     store.add(triples)
     found = store.construct(query(derivation))
     return {status: {p.removeprefix(CASCADE): o for s, p, o in found if s == URIRef(f"urn:x:record{number}")}
@@ -90,6 +92,18 @@ class TestMedicationStatusCodes:
             """
             assert medication_lifecycles(engine) == dict.fromkeys(FHIR_CODES, 3)
 
+    class TestGivenAMedicationThatStatesNoCode:
+        @pytest.mark.parametrize("engine", sorted(ENGINES))
+        def test_is_unknown_by_the_second_step_of_l1(self, engine):
+            """is unknown by the second step of L1, on the record and not only on its entry
+
+            One medication whose current version states no status is given to the derivation. The record's own class
+            is unknown and the step that gave it is 2, as L1's order says.
+            """
+            record = derived(engine, "PrescribedOrReportedMedication", DERIVATION, [None])[None]
+            assert record["currentVersionStatusLifecycle"].removeprefix(CASCADE) == "MedicationUnknown"
+            assert int(record["currentVersionStatusLifecycleStep"]) == 2
+
     class TestGivenHl7sListOfDispenseStatusCodes:
         """given HL7's list of MedicationDispense status codes"""
 
@@ -112,3 +126,13 @@ class TestMedicationStatusCodes:
             names for that code: completed, in progress, not completed, entered in error or unknown.
             """
             assert dispense_lifecycles(engine, sorted(DISPENSE_CLASSES)) == DISPENSE_CLASSES
+
+    class TestGivenADispenseThatStatesNoCode:
+        @pytest.mark.parametrize("engine", sorted(ENGINES))
+        def test_is_unknown_on_the_record_and_not_only_on_its_entry(self, engine):
+            """is unknown on the record and not only on its entry
+
+            One dispense whose current version states no status is given to the derivation. The record's own class is
+            unknown, as L2 says an absent status is.
+            """
+            assert dispense_lifecycles(engine, [None]) == {None: "MedicationDispenseUnknown"}

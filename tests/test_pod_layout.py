@@ -23,7 +23,7 @@ def naming_neither(graph):
 
 
 def conforms_to_its_shapes(graph):
-    conforms, _, report = validate(graph, shacl_graph=shapes(), advanced=True)
+    conforms, _, report = validate(graph, shacl_graph=Graph() + shapes(), advanced=True)
     return conforms, report
 
 

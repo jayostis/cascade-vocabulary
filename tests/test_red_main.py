@@ -396,7 +396,8 @@ class TestChecksOfTheRedMainAlert:
             and does not use the workflow's token in its place; the token's value is in no line it prints.
             """
             assert red_main.main({"GITHUB_TOKEN": "workflow-token"}) == 1
-            assert "workflow-token" not in capsys.readouterr().err
+            out, err = capsys.readouterr()
+            assert "workflow-token" not in out + err
 
         def test_prints_one_line_without_the_token_when_github_refuses_it(self, capsys, monkeypatch):
             """prints one line without the token when GitHub refuses it

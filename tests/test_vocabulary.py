@@ -520,7 +520,7 @@ class TestProv:
             assert (term, None, None) not in vocabulary()
 
         def test_reaches_no_domain_of_had_role(self):
-            """reaches no domain of `prov:hadRole`, so a role on one would be out of place
+            """does not reach every domain of `prov:hadRole`, so a role on one would be out of place
 
             On a copy of the ontology files, `prov:Attribution` is made a subclass of `prov:AgentInfluence`; it still does
             not reach every domain of `prov:hadRole`, so `prov:hadRole` is not written on an attribution.

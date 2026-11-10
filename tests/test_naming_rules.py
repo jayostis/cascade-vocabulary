@@ -47,7 +47,7 @@ class TestNamingVectors:
     """
 
     class TestGivenTheFolderOfVectors:
-        """given the folder of vectors"""
+        """given the folder that holds every naming rule's worked examples, read as a whole"""
 
         def test_holds_a_vector_of_every_naming_rule(self):
             """holds a vector of every naming rule
@@ -159,7 +159,7 @@ class TestNamingVectors:
         def test_has_another_name_than_the_same_text_split_at_the_bar(self):
             """has another name than the same text split at the bar
 
-            Two vectors of one rule have inputs that read alike once joined by a bar, one with the bar inside an input and
+            Two vectors of one rule have inputs that read alike once written with a bar between them, one with the bar inside an input and
             the other with the text split at it. The names of the two are compared, and must differ, or the separator is
             not escaped and two things have one name.
             """
@@ -281,8 +281,8 @@ class TestReferenceImplementation:
     class TestCodeIri:
         """`code_iri()`"""
 
-        def test_joins_a_code_to_its_stem_as_encode_for_uri_writes_it(self):
-            """joins a code to its stem as Oxigraph's `ENCODE_FOR_URI` writes it
+        def test_puts_a_code_after_its_stem_as_encode_for_uri_writes_it(self):
+            """puts a code after its stem as Oxigraph's `ENCODE_FOR_URI` writes it
 
             Five codes, with reserved characters, parentheses, a leading zero and non-ASCII text, are each given to the
             function with a stem, and the IRI it gives is compared with the stem and what Oxigraph's `ENCODE_FOR_URI`
@@ -301,7 +301,7 @@ class TestReferenceImplementation:
             """refuses content that holds a blank node
 
             Given statements with a blank node as their subject, the function raises a `ValueError` that says so, as a
-            blank node's label changes between readings and would change the name.
+            blank node's name changes between readings and would change the name.
             """
             with pytest.raises(ValueError, match="blank node"):
                 naming.version_name({Triple(BlankNode(), NamedNode("urn:x:p"), NamedNode("urn:x:o"))})

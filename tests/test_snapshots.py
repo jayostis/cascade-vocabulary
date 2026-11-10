@@ -79,7 +79,7 @@ class TestSnapshotVectors:
             files = [(f["path"], bytes.fromhex(f["sha256"])) for f in vector["files"]]
             assert naming.set_hash(files) == vector["setHash"]
 
-    class TestGivenASnapshotOfAChain:
+    class TestGivenASnapshotInARunOfSnapshots:
         """given a snapshot in a run of snapshots"""
 
         @pytest.mark.parametrize("chain, at, snapshot", SNAPSHOTS)

@@ -171,8 +171,8 @@ class TestVariantRecords:
         def test_is_each_the_iri_that_its_stem_and_encode_for_uri_give(self, engine):
             """is, each, the IRI that its system's stem and `ENCODE_FOR_URI` of its literal give
 
-            For each code vector that has a literal, the engine computes the stem of the vector's code system joined to the
-            literal through `ENCODE_FOR_URI`; the result is compared with the IRI the vector states, on Oxigraph and on
+            For each code vector that has a literal, the engine computes the stem of the vector's code system followed by the
+            literal passed through `ENCODE_FOR_URI`; the result is compared with the IRI the vector states, on Oxigraph and on
             rdflib alike.
             """
             rows = [row for row in vector("code-iris.json") if row["literal"] is not None]
@@ -248,8 +248,8 @@ class TestVariantRecords:
                          if not {URIRef(c) for c in row["concepts"]} <= members_of]
             assert offenders == []
 
-        def test_is_for_a_review_status_the_one_concept_labelled_so(self):
-            """is, for a review status, the one concept labelled so, or none
+        def test_is_for_a_review_status_the_one_concept_named_so(self):
+            """is, for a review status, the one concept named so, or none
 
             Each review status as ClinVar writes it is matched to a concept of `cascade:ClinVarReviewStatuses` by its name;
             the concept found, or none when no name matches, is compared with the concept the vector lists.

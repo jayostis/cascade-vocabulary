@@ -376,8 +376,8 @@ class TestQueryForm:
                     offenders.append(relative)
             assert offenders == []
 
-        def test_passes_every_value_it_joins_to_a_stem_through_encode_for_uri(self):
-            """passes every value it joins to a code system's stem through `ENCODE_FOR_URI`
+        def test_passes_every_value_it_adds_to_a_stem_through_encode_for_uri(self):
+            """passes every value it adds after a code system's stem through `ENCODE_FOR_URI`
 
             A code's IRI is its code system's stem and the code, percent-encoded as `ENCODE_FOR_URI` does. A query
             that makes a `CONCAT` of a stem and a value not passed through it fails, so no query writes a code that has a
@@ -815,8 +815,8 @@ class TestChecksOfTheQueryChecks:
     class TestJoinsAStemToALiteralWithoutEncoding:
         """`joins_a_stem_to_a_literal_without_encoding()`"""
 
-        def test_returns_true_for_a_stem_joined_to_a_value_as_it_is(self):
-            """returns true for a stem joined to a value as it is
+        def test_returns_true_for_a_stem_followed_by_a_value_as_it_is(self):
+            """returns true for a stem followed by a value as it is
 
             Given a `CONCAT` of a stem and `STR(?a)`, which is not passed through `ENCODE_FOR_URI`, the function
             returns True.
@@ -829,9 +829,9 @@ class TestChecksOfTheQueryChecks:
             'SELECT * { BIND (CONCAT("a", STR(?a)) AS ?b) }',
         ], ids=["a value passed through `ENCODE_FOR_URI`", "a `CONCAT` with no stem"])
         def test_returns_false_for(self, form):
-            """returns false for a form that is no stem joined to a value as it is
+            """returns false for a form that is no stem followed by a value as it is
 
-            Given a stem joined to a value passed through `ENCODE_FOR_URI`, or a `CONCAT` of a text that is no stem
+            Given a stem followed by a value passed through `ENCODE_FOR_URI`, or a `CONCAT` of a text that is no stem
             and a value, the function returns False.
             """
             assert not joins_a_stem_to_a_literal_without_encoding(form, {"http://x/"})

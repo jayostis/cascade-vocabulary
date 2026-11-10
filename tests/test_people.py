@@ -235,7 +235,7 @@ class TestPeople:
             assert refusals(folder) == []
 
     class TestGivenAnyKit:
-        """given any kit"""
+        """given any conformance kit, whichever person it is for"""
 
         def test_is_the_kit_of_a_person(self):
             """is the kit of a person

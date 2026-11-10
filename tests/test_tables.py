@@ -372,8 +372,8 @@ class TestCodeSystems:
             assert template.replace("{code}", "").count("{") == 0 and template.replace("{code}", "").count("}") == 0
 
         @pytest.mark.parametrize("system", list(PAGES))
-        def test_gives_a_known_code_its_page(self, system):
-            """gives a known code its page
+        def test_gives_a_code_its_page(self, system):
+            """gives a code its page
 
             Putting a code in place of `{code}` in the system's template gives the address of that code's page at its
             publisher: variation 90011 for ClinVar, 2345-7 for LOINC and M0006414 for MeSH.
@@ -429,6 +429,7 @@ class TestReferenceTables:
 
             Each declared kind is read for its `cascade:rowShape`. A kind with none or with two fails.
             """
+            assert table_kinds()
             assert {kind for kind in table_kinds() if len(set(terms().objects(kind, CASCADE.rowShape))) != 1} == set()
 
         def test_says_what_its_rows_are_found_by(self):
@@ -437,6 +438,7 @@ class TestReferenceTables:
             Each declared kind is read for its `cascade:foundBy`, the properties that find a row of it. A kind that has
             none fails.
             """
+            assert table_kinds()
             assert {kind for kind in table_kinds() if not set(terms().objects(kind, CASCADE.foundBy))} == set()
 
     class TestGivenTheTableKindsTogether:
@@ -557,7 +559,7 @@ class TestReferenceTables:
         def test_names_every_row_by_n11(self):
             """names every row by N11 over its source, property, target and sequence
 
-            Each row of the vector is named by the naming rule over its panel, its member, the property that joins them and
+            Each row of the vector is named by the naming rule over its panel, its member, the property that links them and
             the member's sequence in the panel.
             """
             rows = parsed(VERSIONS / "panel-members-1.ttl")
