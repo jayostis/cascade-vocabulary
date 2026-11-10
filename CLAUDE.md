@@ -26,8 +26,9 @@ The contract a Cascade pod is built and read by; [`README.md`](README.md) names 
   on a `Depends-On:` line.
 - **The suite runs in parallel** (`python3 -m pytest -n auto --dist loadgroup`): what a test builds is built once per
   worker, and the cases that share it are put on one worker with `xdist_group`.
-- **A top-level test class is a heading of the tests page:** its docstring's first paragraph is the heading, listed in
-  `tests/spec.json`.
+- **Every test sits in a top-level class whose docstring's first paragraph is a heading of the tests page,** written
+  word for word in tests/spec.json (under capabilities, or build for the suite's checks of its own tools); CI's
+  spec-shape step refuses one that is not, and pytest does not check it.
 
 ## Conventions
 
