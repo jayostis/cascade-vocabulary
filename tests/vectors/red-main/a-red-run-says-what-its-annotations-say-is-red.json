@@ -1,0 +1,49 @@
+{
+  "repo": "jayostis/cascade-example",
+  "workflows": [
+    {"id": 2, "name": "watch", "path": ".github/workflows/watch.yml", "state": "active"}
+  ],
+  "runs": {
+    "2": [
+      {"id": 201, "event": "schedule", "status": "completed", "conclusion": "failure",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/201"}
+    ]
+  },
+  "jobs": {
+    "201": [
+      {"name": "watch", "conclusion": "failure", "steps": [
+        {"name": "Check each source", "conclusion": "success"},
+        {"name": "Run echo \"::error::not checked: $FAILED\"", "conclusion": "failure"}
+      ]}
+    ]
+  },
+  "annotations": {
+    "201": [
+      {"annotation_level": "failure", "message": "Process completed with exit code 1."},
+      {"annotation_level": "failure", "message": "not checked: ncbi-clinvar nlm-rxnorm-prescribable"},
+      {"annotation_level": "failure", "message": "ncbi-clinvar could not be checked"},
+      {"annotation_level": "failure", "message": "ncbi-clinvar could not be checked"},
+      {"annotation_level": "warning", "message": "a warning is not what is red"},
+      {"annotation_level": "notice", "message": "The ubuntu-latest label will migrate"}
+    ]
+  },
+  "issues": [],
+  "comments": {},
+  "expected": [
+    {
+      "do": "open",
+      "title": "watch is red on main",
+      "body_has": [
+        "`watch / Run echo \"::error::not checked: $FAILED\"`",
+        "not checked: ncbi-clinvar nlm-rxnorm-prescribable",
+        "ncbi-clinvar could not be checked"
+      ],
+      "body_lacks": [
+        "Process completed with exit code",
+        "a warning is not what is red",
+        "ubuntu-latest"
+      ],
+      "body_count": {"ncbi-clinvar could not be checked": 1}
+    }
+  ]
+}
