@@ -61,6 +61,13 @@ SHARED = ROOT / "runtime" / "rule-list"
 CASES = json.loads((VERSIONS / "cases.json").read_text(encoding="utf-8"))
 
 
+def held_messages(folder, kind, rows):
+    """The messages of the kind's row shape that a table version in the folder is held to."""
+    if folder.parent == PUBLISHED_BEFORE_RO and kind in (CASCADE.ProductIngredients, CASCADE.VaccineGroups):
+        return set()
+    return row_messages(kind, rows)
+
+
 @cache
 def table_versions():
     """Each table version of every kit and vector: its folder, its file stem, its kind and its rows."""
@@ -495,6 +502,37 @@ class TestReferenceTables:
             said = row_messages(CASCADE.CodeConversions, Graph().parse(data=PREFIXES + rows, format="turtle"))
             assert any(message in m for m in said), said
             assert not any("with dct:isReplacedBy" in m for m in said), said
+
+    class TestGivenATableHeldAsPublished:
+        @pytest.mark.parametrize("kind, rows", [
+            pytest.param(CASCADE.VaccineGroups, f"<urn:x:r> {ROW.replace('obo:RO_0002350', 'skos:broadMatch')} ; {CURATED} .",
+                         id="vaccine groups"),
+            pytest.param(CASCADE.ProductIngredients, f"<urn:x:r> {DRUG} ; {CHAINED} .", id="product ingredients"),
+        ])
+        def test_is_not_told_to_use_the_relation(self, kind, rows):
+            """is not told to use the relation
+
+            A vaccine group row or a product ingredient row that states a `skos:broadMatch` and nothing else wrong gets no
+            message, in a table of `hana`'s.
+            """
+            folder = PUBLISHED_BEFORE_RO / "app"
+            assert held_messages(folder, kind, Graph().parse(data=PREFIXES + rows, format="turtle")) == set()
+
+        @pytest.mark.parametrize("kind, rows, message", [
+            pytest.param(CASCADE.VaccineGroups,
+                         f"<urn:x:r> {ROW.replace('obo:RO_0002350', 'skos:broadMatch').replace('cvx:141', 'rxnorm:7980')} ; {CURATED} .",
+                         "maps a CVX code", id="vaccine groups"),
+            pytest.param(CASCADE.ProductIngredients, f"<urn:x:r> {DRUG.replace('rxnorm:153010', 'cvx:141')} ; {CHAINED} .",
+                         "A product ingredient row maps an RxNorm code", id="product ingredients"),
+        ])
+        def test_reports_a_break_other_than_the_relation(self, kind, rows, message):
+            """reports a break other than the relation
+
+            A vaccine group row or a product ingredient row that states a `skos:broadMatch` and is broken another way is
+            given the message for that break, in a table of `hana`'s.
+            """
+            said = held_messages(PUBLISHED_BEFORE_RO / "app", kind, Graph().parse(data=PREFIXES + rows, format="turtle"))
+            assert any(message in m for m in said), said
 
     class TestGivenAnyTableVersionOfAKitOrOfScriptedInput:
         def test_conforms_to_its_kinds_row_shape(self):
