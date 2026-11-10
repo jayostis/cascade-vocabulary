@@ -99,10 +99,10 @@ WHERE {
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
   UNION
-  { { { SELECT ?finding ?record ?otherRecord (MIN(STR(?named)) AS ?first)
+  { { { SELECT ?finding ?record ?otherRecord (MIN(STR(?lapsedJudgment)) AS ?first)
         WHERE {
-          ?finding oa:hasBody cascade:MatcherJudgmentsNoLongerReached ; oa:hasTarget ?named .
-          ?named cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
+          ?finding oa:hasBody cascade:MatcherJudgmentsNoLongerReached ; oa:hasTarget ?lapsedJudgment .
+          ?lapsedJudgment cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
           FILTER (STR(?record) < STR(?otherRecord))
         }
         GROUP BY ?finding ?record ?otherRecord }
