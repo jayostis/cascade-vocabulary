@@ -1,6 +1,7 @@
 """What the tests page shows of a case, written into the case's report as properties: a heading for each class around the
 test, from its docstring, and the test's own title and description. The page reads them as the runtime's does."""
 
+import functools
 import inspect
 import re
 
@@ -26,6 +27,7 @@ def in_words(name):
     return HUMP.sub(" ", name.removeprefix("Test")).lower()
 
 
+@functools.cache
 def line(thing):
     return inspect.getsourcelines(thing)[1]
 
