@@ -207,8 +207,8 @@ def name_shape_only():
 
 
 def selectable_codes(concepts):
-    """Each code of the concepts and of theirs, at every depth, but an abstract one (notSelectable), percent-encoded as
-    ENCODE_FOR_URI does."""
+    """Each code of the concepts and of theirs, at every depth, but one HL7 marks notSelectable (a heading, not a code a
+    coding may carry), percent-encoded as XPath's fn:encode-for-uri does, every character but letters, digits and - _ . ~"""
     for concept in concepts:
         if not any(p["code"] == "notSelectable" and p.get("valueBoolean") for p in concept.get("property", [])):
             yield quote(concept["code"], safe="")
@@ -406,7 +406,9 @@ class TestHl7CodeShapes:
         def test_lists_exactly_the_codes_hl7_lets_a_coding_carry(self, shape, system, file):
             """lists exactly the codes HL7 lets a coding carry, percent-encoded, in HL7's order
 
-            Every code at every depth but an abstract one (`notSelectable`), each percent-encoded as ENCODE_FOR_URI does.
+            The shape's `sh:in` list, prefix included, equals HL7's codes with that prefix, in order: every code at every
+            depth but one HL7 marks `notSelectable` (a heading, not a code a coding may carry), each percent-encoded as
+            XPath's fn:encode-for-uri does, every character but letters, digits and - _ . ~
             """
             published = json.loads((ROOT / "tests" / "terminology" / "hl7-terminology" / file).read_text(encoding="utf-8"))
             stem = str(ontology().value(system, URIRef("http://rdfs.org/ns/void#uriSpace")))

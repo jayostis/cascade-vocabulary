@@ -432,6 +432,12 @@ class TestKindsOfRecord:
 
     class TestGivenTheReasonsARecordIsInNoView:
         def test_names_each_reason_in_one_derivation_and_in_no_other_query(self):
+            """names each reason in one derivation and in no other query
+
+            For each declared reason, every query that names it, derivation or not, is listed; the test pins the one
+            derivation file each reason is named in, such as `derivations/excluded-at-source.rq` for both
+            `EnteredInErrorAtSource` and `RefutedAtSource`.
+            """
             declared = reasons()
             named = {short(reason): [] for reason in declared}
             for relative in every_query():
@@ -524,7 +530,11 @@ class TestMatcherComparisons:
             assert offenders == []
 
         def test_opens_its_outermost_group_with_the_querys_first_brace(self):
-            """opens its outermost group with the query's first brace"""
+            """writes its outermost group, the WHERE group, at the query's first brace, with no brace before it
+
+            Over every comparison under `matcher/`: the text is split at its `WHERE {`, and a comparison with none, or
+            with a brace before it, fails.
+            """
             offenders = []
             for relative in contract.named("matcher").values():
                 head, where, _ = contract.query(relative).partition("\nWHERE {")
