@@ -11,12 +11,13 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import datetime, timedelta, timezone
 
 OWNER = "jayostis"
 LABEL = "red-main"
 RED = {"failure", "timed_out", "startup_failure"}
-PULL_REQUEST_EVENTS = {"pull_request", "pull_request_target"}
-MAIN_EVENTS = ("push", "schedule", "workflow_dispatch", "workflow_run", "repository_dispatch")
+MAIN_EVENTS = ("push", "schedule", "workflow_run")
+STALE_AFTER_DAYS = 14
 RUN_NAMED = re.compile(r"<!-- run: (\d+) -->")
 WORKFLOW_MARKER = re.compile(r"<!-- red-main: (.+?) -->")
 MISSING_TOKEN = (
@@ -31,13 +32,19 @@ class GitHubError(Exception):
         self.status = status
 
 
-def latest_runs(runs):
-    """The newest run of each event, whatever its status, from a newest-first list; a pull request is not a run of main."""
+def parse_time(text):
+    return datetime.strptime(text, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+
+
+def latest_runs(runs, now):
+    """The newest run of each event that runs on its own, whatever its status, from a newest-first list, left out when it
+    is older than STALE_AFTER_DAYS: a pull request or a manual run is not the state of main, and a removed schedule keeps
+    no red."""
     latest = {}
     for run in runs:
-        if run["event"] not in PULL_REQUEST_EVENTS:
+        if run["event"] in MAIN_EVENTS:
             latest.setdefault(run["event"], run)
-    return list(latest.values())
+    return [run for run in latest.values() if now - parse_time(run["created_at"]) <= timedelta(days=STALE_AFTER_DAYS)]
 
 
 def is_red(run):
@@ -60,10 +67,10 @@ def run_marker(run):
     return f"<!-- run: {run['id']} -->"
 
 
-def decide(repo, workflows, runs, jobs, issues, comments):
+def decide(repo, workflows, runs, jobs, issues, comments, now):
     """What to do in one repository, from GitHub's answers: its workflows, each workflow's latest run on main of each
-    event, newest first, by workflow id, the jobs of each red latest run by run id, its open issues labelled red-main, and their comments by
-    issue number."""
+    event, newest first, by workflow id, the jobs of each red latest run by run id, its open issues labelled red-main,
+    their comments by issue number, and the time it is."""
     opened = {}
     for issue in sorted(issues, key=lambda issue: issue["number"]):
         found = WORKFLOW_MARKER.search(issue.get("body") or "")
@@ -76,9 +83,7 @@ def decide(repo, workflows, runs, jobs, issues, comments):
         if workflow["state"] != "active":
             continue
         active.add(workflow["path"])
-        latest = latest_runs(runs.get(str(workflow["id"]), []))
-        if not latest:
-            continue
+        latest = latest_runs(runs.get(str(workflow["id"]), []), now)
         mine = opened.get(workflow["path"], [])
         on_issue = (mine[0].get("body") or "") if mine else ""
         in_comments = "\n".join(text["body"] or "" for text in comments.get(str(mine[0]["number"]), [])) if mine else ""
@@ -100,7 +105,12 @@ def decide(repo, workflows, runs, jobs, issues, comments):
                     "do": "comment", "repo": repo, "number": mine[0]["number"],
                     "body": f"{run_marker(run)}\nStill red on `main`.\n\n{where}",
                 })
-        if mine and all(is_green(run) for run in latest):
+        if mine and not latest:
+            actions += [{
+                "do": "close", "repo": repo, "number": issue["number"],
+                "body": f"`{workflow['path']}` has had no run on `main` in {STALE_AFTER_DAYS} days, so nothing keeps this issue red.",
+            } for issue in mine]
+        elif mine and all(is_green(run) for run in latest):
             newest = max(latest, key=lambda run: run["id"])
             if all(id <= newest["id"] for id in named):
                 said = {int(found) for found in RUN_NAMED.findall(in_comments)}
@@ -190,6 +200,7 @@ def visit(api, repo):
     base = f"/repos/{repo}"
     workflows = api.pages(f"{base}/actions/workflows", key="workflows")
     runs, jobs = {}, {}
+    now = datetime.now(timezone.utc)
     for workflow in workflows:
         if workflow["state"] != "active":
             continue
@@ -198,12 +209,12 @@ def visit(api, repo):
             for run in api.get(f"{base}/actions/workflows/{workflow['id']}/runs", branch="main", event=event, per_page=1)["workflow_runs"]:
                 found[run["id"]] = run
         runs[str(workflow["id"])] = sorted(found.values(), key=lambda run: run["id"], reverse=True)
-        for run in latest_runs(runs[str(workflow["id"])]):
+        for run in latest_runs(runs[str(workflow["id"])], now):
             if is_red(run):
                 jobs[str(run["id"])] = api.get(f"{base}/actions/runs/{run['id']}/jobs", filter="latest", per_page=100)["jobs"]
     issues = [i for i in api.pages(f"{base}/issues", labels=LABEL, state="open") if "pull_request" not in i]
     comments = {str(i["number"]): api.pages(f"{base}/issues/{i['number']}/comments") for i in issues}
-    return perform(api, repo, decide(repo, workflows, runs, jobs, issues, comments))
+    return perform(api, repo, decide(repo, workflows, runs, jobs, issues, comments, now))
 
 
 def run(api, say=print):

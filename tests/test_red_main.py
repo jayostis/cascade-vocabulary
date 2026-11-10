@@ -3,6 +3,7 @@ recorded GitHub API answers under tests/vectors/red-main/, and what it sends and
 
 import importlib.util
 import json
+from datetime import datetime, timezone
 
 import pytest
 
@@ -19,9 +20,15 @@ def vectors():
     return [pytest.param(json.loads(path.read_text(encoding="utf-8")), id=path.stem) for path in sorted(VECTORS.glob("*.json"))]
 
 
+NOW = "2026-11-09T12:00:00Z"
+JUST_NOW = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def decided(vector):
-    return red_main.decide(vector["repo"], vector["workflows"], vector["runs"], vector["jobs"], vector["issues"],
-                           vector["comments"])
+    now = vector.get("now", NOW)
+    runs = {id: [{"created_at": now, **run} for run in listed] for id, listed in vector["runs"].items()}
+    return red_main.decide(vector["repo"], vector["workflows"], runs, vector["jobs"], vector["issues"],
+                           vector["comments"], red_main.parse_time(now))
 
 
 @pytest.mark.parametrize("vector", vectors())
@@ -57,7 +64,7 @@ class Fake:
 
 
 def a_pod_of_repositories():
-    runs = {"workflow_runs": [{"id": 5, "event": "schedule", "status": "completed", "conclusion": "failure",
+    runs = {"workflow_runs": [{"id": 5, "event": "schedule", "status": "completed", "conclusion": "failure", "created_at": JUST_NOW,
                                 "html_url": "https://github.com/jayostis/cascade-a/actions/runs/5"}]}
     workflows = {"workflows": [{"id": 1, "name": "nightly", "path": ".github/workflows/nightly.yml", "state": "active"}]}
     answers = {
@@ -102,7 +109,7 @@ def test_a_repository_it_cannot_reach_is_one_plain_line_and_the_others_are_still
 def test_closing_comments_then_closes():
     answers = a_pod_of_repositories()
     answers["/repos/jayostis/cascade-a/actions/workflows/1/runs"] = {"workflow_runs": [
-        {"id": 6, "event": "schedule", "status": "completed", "conclusion": "success",
+        {"id": 6, "event": "schedule", "status": "completed", "conclusion": "success", "created_at": JUST_NOW,
          "html_url": "https://github.com/jayostis/cascade-a/actions/runs/6"}]}
     answers["/repos/jayostis/cascade-a/issues"] = [
         {"number": 7, "body": "<!-- red-main: .github/workflows/nightly.yml -->\n<!-- run: 5 -->"},
