@@ -8,8 +8,8 @@ from functools import cache, cached_property
 from pathlib import Path
 
 import pytest
-from rdflib import URIRef
-from rdflib.namespace import RDF
+from rdflib import Graph, URIRef
+from rdflib.namespace import RDF, RDFS
 
 from contract import LAYOUT, PROV, CASCADE, QUERIES, ROOT, derivations, named, query, questions, written
 from engines import ENGINES, Store, parsed
@@ -20,6 +20,7 @@ DERIVED = "urn:cascade:derived:"
 ENTRY = "urn:cascade:entry:"
 KEPT = "membersJoinedByCurrentTableVersion"
 LAYOUT_GRAPH = "urn:cascade:pod-layout"
+MF_MANIFEST = URIRef("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest")
 
 
 @dataclass(frozen=True)
@@ -45,6 +46,11 @@ class Fixture:
     def name(self):
         return self.folder.name
 
+    @property
+    def comment(self):
+        """What the manifest says the fixture shows."""
+        return manifest_comment(self.manifest)
+
     def files(self):
         return sorted(path.relative_to(self.folder).as_posix() for path in self.folder.rglob("*.ttl")
                       if path != self.manifest)
@@ -59,6 +65,12 @@ class Fixture:
         files = write(store)
         store.add(layout(), LAYOUT_GRAPH)
         return Build(store, added, files)
+
+
+@cache
+def manifest_comment(manifest):
+    graph = Graph().parse(manifest, format="turtle")
+    return str(graph.value(graph.value(None, RDF.type, MF_MANIFEST), RDFS.comment) or "")
 
 
 @cache
@@ -162,9 +174,11 @@ def resolved(views):
 FIXTURES = [Fixture(manifest) for manifest in sorted((ROOT / "tests" / "fixtures").glob("*/manifest.ttl"))]
 
 
-def on_its_worker(fixture, *values, id, marks=()):
-    """A case about the fixture, run on the worker that builds it, so each fixture is built once a run."""
-    return pytest.param(fixture, *values, id=id, marks=[pytest.mark.xdist_group(fixture.name), *marks])
+def on_its_worker(fixture, *values, id, marks=(), says=None):
+    """A case about the fixture, run on the worker that builds it, so each fixture is built once a run. The tests page
+    shows what it says, else what the fixture's manifest says the fixture shows."""
+    return pytest.param(fixture, *values, id=id,
+                        marks=[pytest.mark.xdist_group(fixture.name), pytest.mark.says(says or fixture.comment), *marks])
 
 
 every_fixture = pytest.mark.parametrize("fixture", [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES])

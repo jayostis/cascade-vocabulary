@@ -10,7 +10,7 @@ from urllib.request import url2pathname
 
 from rdflib import Graph, Namespace, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, XSD
+from rdflib.namespace import RDF, RDFS, XSD
 
 from contract import QUERIES, named
 from engines import literal
@@ -29,6 +29,7 @@ class Entry:
     query: Path | None
     result: Path | None
     records: tuple = ()
+    comment: str = ""
 
 
 def path(iri):
@@ -50,7 +51,8 @@ def entries(manifest):
             iri=str(entry), name=str(graph.value(entry, MF.name)), types=frozenset(graph.objects(entry, RDF.type)),
             lens=path(graph.value(action, CTM.lensQueryPath)), query=path(graph.value(action, QT.query)),
             result=path(graph.value(entry, MF.result)),
-            records=tuple(sorted(str(record) for record in graph.objects(action, CTM.boundRecord)))))
+            records=tuple(sorted(str(record) for record in graph.objects(action, CTM.boundRecord))),
+            comment=str(graph.value(entry, RDFS.comment) or "")))
     return found
 
 
