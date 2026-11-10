@@ -27,8 +27,11 @@ JUST_NOW = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 def decided(vector):
     now = vector.get("now", NOW)
     runs = {id: [{"created_at": now, **run} for run in listed] for id, listed in vector["runs"].items()}
-    return red_main.decide(vector["repo"], vector["workflows"], runs, vector["jobs"], vector["issues"],
-                           vector["comments"], red_main.parse_time(now))
+    return red_main.decide(vector["repo"], vector["workflows"], runs, vector["jobs"], vector.get("annotations", {}),
+                           vector["issues"], vector["comments"], red_main.parse_time(now))
+
+
+CHECKS = {"body_has", "body_lacks", "body_count"}
 
 
 @pytest.mark.parametrize("vector", vectors())
@@ -36,9 +39,32 @@ def test_a_vector_is_decided_as_it_says(vector):
     actions = decided(vector)
     assert len(actions) == len(vector["expected"])
     for action, expected in zip(actions, vector["expected"]):
-        assert {k: v for k, v in action.items() if k in expected} == {k: v for k, v in expected.items() if k != "body_has"}
+        assert {k: v for k, v in action.items() if k in expected} == {k: v for k, v in expected.items() if k not in CHECKS}
         for text in expected.get("body_has", []):
             assert text in action["body"]
+        for text in expected.get("body_lacks", []):
+            assert text not in action["body"]
+        for text, count in expected.get("body_count", {}).items():
+            assert action["body"].count(text) == count
+
+
+def a_red_vector_with(messages):
+    vector = json.loads((VECTORS / "a-red-run-says-what-its-annotations-say-is-red.json").read_text(encoding="utf-8"))
+    vector["annotations"] = {"201": [{"annotation_level": "failure", "message": message} for message in messages]}
+    return decided(vector)[0]["body"]
+
+
+def test_what_failed_is_the_first_five_messages_each_cut_to_one_short_line_and_never_markup():
+    body = a_red_vector_with(["one\n  two  \tthree", "x" * 500, "@maintainer ```", "four", "five", "six"])
+    listed = body.split("```")[1].strip().splitlines()
+    assert listed[0] == "one two three"
+    assert len(listed) == 5 and all(len(line) <= 200 for line in listed)
+    assert "six" not in body
+    assert body.count("```") == 2 and "@maintainer" in listed[2]
+
+
+def test_a_run_whose_only_failure_message_is_an_exit_code_says_nothing_about_what_failed():
+    assert "What failed" not in a_red_vector_with(["Process completed with exit code 1.", "Process completed with exit code 137."])
 
 
 class Fake:
@@ -48,8 +74,10 @@ class Fake:
         self.answers = answers
         self.refuse = refuse
         self.sent = []
+        self.asked = []
 
     def get(self, path, **params):
+        self.asked.append(path)
         return self.answers[path]
 
     def pages(self, path, key=None, **params):
@@ -96,6 +124,76 @@ def test_it_reads_only_the_unarchived_cascade_repositories_of_the_owner_and_labe
         ("POST", "/repos/jayostis/cascade-b/issues"),
     ]
     assert api.sent[1][2]["labels"] == ["red-main"]
+
+
+def a_red_repository(annotations):
+    answers = a_pod_of_repositories()
+    base = "/repos/jayostis/cascade-a"
+    answers["/user/repos"] = answers["/user/repos"][:1]
+    answers[f"{base}/actions/runs/5/jobs"] = {"jobs": [
+        {"id": 50, "name": "ok", "conclusion": "success", "steps": []},
+        {"id": 51, "name": "watch", "conclusion": "failure", "steps": [{"name": "echo", "conclusion": "failure"}]},
+    ]}
+    answers.update({f"{base}/check-runs/{id}/annotations": answer for id, answer in annotations.items()})
+    return answers
+
+
+def test_it_reads_the_annotations_of_the_failed_jobs_of_a_red_run_only():
+    api = Fake(a_red_repository({51: [{"annotation_level": "failure", "message": "not checked: ncbi-clinvar"}]}))
+    assert red_main.run(api) == []
+    assert "not checked: ncbi-clinvar" in api.sent[1][2]["body"]
+    assert "/repos/jayostis/cascade-a/check-runs/50/annotations" not in api.asked
+
+
+def test_a_token_that_cannot_read_annotations_still_opens_the_issue_and_says_so_once():
+    api = Fake(a_red_repository({}))
+    get = api.get
+
+    def refused(path, **params):
+        if "/check-runs/" in path:
+            raise red_main.GitHubError("GitHub answered 403 to GET " + path, 403)
+        return get(path, **params)
+
+    api.get = refused
+    said = []
+    assert red_main.run(api, say=said.append) == []
+    assert ("POST", "/repos/jayostis/cascade-a/issues") in [(m, p) for m, p, _ in api.sent]
+    assert "What failed" not in api.sent[1][2]["body"]
+    assert len([line for line in said if "Checks" in line]) == 1
+
+
+def test_the_messages_read_before_a_job_whose_annotations_are_refused_are_kept():
+    answers = a_red_repository({51: [{"annotation_level": "failure", "message": "not checked: ncbi-clinvar"}]})
+    answers["/repos/jayostis/cascade-a/actions/runs/5/jobs"]["jobs"].append({"id": 52, "name": "late", "conclusion": "failure", "steps": []})
+    answers["/repos/jayostis/cascade-a/actions/runs/5/jobs"]["jobs"][0] = {"id": 50, "name": "first", "conclusion": "failure", "steps": []}
+    answers["/repos/jayostis/cascade-a/check-runs/50/annotations"] = [{"annotation_level": "failure", "message": "first job said this"}]
+    api = Fake(answers)
+    get = api.get
+
+    def refusing(path, **params):
+        if path.endswith("/check-runs/51/annotations"):
+            raise red_main.GitHubError("GitHub answered 403 to GET " + path + ": Resource not accessible by personal access token", 403)
+        return get(path, **params)
+
+    api.get = refusing
+    assert red_main.run(api) == []
+    assert "first job said this" in api.sent[1][2]["body"]
+
+
+def test_a_secondary_rate_limit_is_an_error_for_the_repository_not_a_missing_checks_permission():
+    api = Fake(a_red_repository({}))
+    get = api.get
+
+    def limited(path, **params):
+        if "/check-runs/" in path:
+            raise red_main.GitHubError("GitHub answered 403 to GET " + path + ": You have exceeded a secondary rate limit", 403)
+        return get(path, **params)
+
+    api.get = limited
+    said = []
+    errors = red_main.run(api, say=said.append)
+    assert len(errors) == 1 and "rate limit" in errors[0]
+    assert not any("Checks" in line for line in said)
 
 
 def test_a_repository_it_cannot_reach_is_one_plain_line_and_the_others_are_still_read():

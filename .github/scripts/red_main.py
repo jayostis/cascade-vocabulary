@@ -20,9 +20,16 @@ MAIN_EVENTS = ("push", "schedule", "workflow_run")
 STALE_AFTER_DAYS = 14
 RUN_NAMED = re.compile(r"<!-- run: (\d+) -->")
 WORKFLOW_MARKER = re.compile(r"<!-- red-main: (.+?) -->")
+FAILED_JOB = {"failure", "timed_out"}
+SHOWN_MESSAGES = 5
+MESSAGE_LENGTH = 200
+EXIT_CODE_ONLY = re.compile(r"Process completed with exit code \d+\.?")
+WORKFLOW_URL = f"https://github.com/{OWNER}/cascade-vocabulary/blob/main/.github/workflows/red-main.yml"
+README_URL = f"https://github.com/{OWNER}/cascade-vocabulary/blob/main/README.md#red-main-alerts"
 MISSING_TOKEN = (
-    f"RED_MAIN_TOKEN is not set: create a fine-grained personal access token with Issues read and write, Actions read "
-    f"and Metadata read on the {OWNER}/cascade-* repositories, and add it as a repository secret named RED_MAIN_TOKEN."
+    f"RED_MAIN_TOKEN is not set: create a fine-grained personal access token with Issues read and write, Actions read, "
+    f"Checks read and Metadata read on the {OWNER}/cascade-* repositories, and add it as a repository secret named "
+    f"RED_MAIN_TOKEN."
 )
 
 
@@ -57,20 +64,32 @@ def is_green(run):
 
 def first_failing_step(jobs):
     for job in jobs:
-        if job.get("conclusion") in {"failure", "timed_out"}:
-            step = next((s for s in job.get("steps", []) if s.get("conclusion") in {"failure", "timed_out"}), None)
+        if job.get("conclusion") in FAILED_JOB:
+            step = next((s for s in job.get("steps", []) if s.get("conclusion") in FAILED_JOB), None)
             return f"{job['name']} / {step['name']}" if step else job["name"]
     return "not reported"
+
+
+def failure_messages(annotations):
+    """What a run's failure annotations say, each on one line cut short, the same message once, and without the bare exit
+    code every failed step adds: the first SHOWN_MESSAGES. A step that continues on error is green, so only these name
+    what is red. A fence in a message would end the block it is printed in."""
+    shown = []
+    for annotation in annotations:
+        message = " ".join((annotation.get("message") or "").replace("```", "'''").split())[:MESSAGE_LENGTH]
+        if annotation.get("annotation_level") == "failure" and message and not EXIT_CODE_ONLY.fullmatch(message) and message not in shown:
+            shown.append(message)
+    return shown[:SHOWN_MESSAGES]
 
 
 def run_marker(run):
     return f"<!-- run: {run['id']} -->"
 
 
-def decide(repo, workflows, runs, jobs, issues, comments, now):
+def decide(repo, workflows, runs, jobs, annotations, issues, comments, now):
     """What to do in one repository, from GitHub's answers: its workflows, each workflow's latest run on main of each
-    event, newest first, by workflow id, the jobs of each red latest run by run id, its open issues labelled red-main,
-    their comments by issue number, and the time it is."""
+    event, newest first, by workflow id, the jobs of each red latest run by run id, the annotations of its failed jobs
+    by run id, its open issues labelled red-main, their comments by issue number, and the time it is."""
     opened = {}
     for issue in sorted(issues, key=lambda issue: issue["number"]):
         found = WORKFLOW_MARKER.search(issue.get("body") or "")
@@ -92,12 +111,17 @@ def decide(repo, workflows, runs, jobs, issues, comments, now):
             step = first_failing_step(jobs.get(str(run["id"]), []))
             what = f"The latest {run['event']} run of the workflow `{workflow['name']}` ({workflow['path']}) on `main` failed.\n\n"
             where = f"- Run: {run['html_url']}\n- First failing step: `{step}`\n"
+            failed = failure_messages(annotations.get(str(run["id"]), []))
+            if failed:
+                where += "- What failed, from the run's annotations:\n\n```\n" + "\n".join(failed) + "\n```\n"
             if not mine:
                 actions.append({
                     "do": "open", "repo": repo, "labels": [LABEL], "title": f"{workflow['name']} is red on main",
                     "body": f"<!-- red-main: {workflow['path']} -->\n{run_marker(run)}\n{what}{where}\n"
-                            f"This issue is kept by the red-main workflow of {OWNER}/cascade-vocabulary. It gets one "
-                            f"comment for each later red run and closes when the latest run of every event is green.",
+                            f"It closes when the latest push, schedule and workflow_run run of this workflow on `main` "
+                            f"are green; a manual run does not close it.\n\n"
+                            f"This issue is kept by the [red-main workflow]({WORKFLOW_URL}) of {OWNER}/cascade-vocabulary, "
+                            f"described in [its README]({README_URL}). It gets one comment for each later red run.",
                 })
                 break
             if run["id"] not in named:
@@ -196,10 +220,30 @@ def perform(api, repo, actions):
     return said
 
 
+def refused(error):
+    return error.status in (403, 404) and "rate limit" not in str(error).lower()
+
+
+def failed_annotations(api, base, jobs):
+    """The annotations of a run's failed jobs, the first job first, until there are enough to show, and whether a job's were refused."""
+    found = []
+    for job in jobs:
+        if job.get("conclusion") in FAILED_JOB:
+            try:
+                found += api.get(f"{base}/check-runs/{job['id']}/annotations", per_page=100)
+            except GitHubError as error:
+                if not refused(error):
+                    raise
+                return found, True
+            if len(failure_messages(found)) == SHOWN_MESSAGES:
+                break
+    return found, False
+
+
 def visit(api, repo):
     base = f"/repos/{repo}"
     workflows = api.pages(f"{base}/actions/workflows", key="workflows")
-    runs, jobs = {}, {}
+    runs, jobs, annotations, notes = {}, {}, {}, []
     now = datetime.now(timezone.utc)
     for workflow in workflows:
         if workflow["state"] != "active":
@@ -212,9 +256,12 @@ def visit(api, repo):
         for run in latest_runs(runs[str(workflow["id"])], now):
             if is_red(run):
                 jobs[str(run["id"])] = api.get(f"{base}/actions/runs/{run['id']}/jobs", filter="latest", per_page=100)["jobs"]
+                annotations[str(run["id"])], denied = failed_annotations(api, base, jobs[str(run["id"])])
+                if denied and not notes:
+                    notes.append(f"{repo}: the token cannot read check-run annotations (it needs Checks read), so its alerts name the failing step only")
     issues = [i for i in api.pages(f"{base}/issues", labels=LABEL, state="open") if "pull_request" not in i]
     comments = {str(i["number"]): api.pages(f"{base}/issues/{i['number']}/comments") for i in issues}
-    return perform(api, repo, decide(repo, workflows, runs, jobs, issues, comments, now))
+    return notes + perform(api, repo, decide(repo, workflows, runs, jobs, annotations, issues, comments, now))
 
 
 def run(api, say=print):

@@ -77,6 +77,28 @@ Locally, with cascade-runtime-js cloned beside this checkout, the runtime reads 
 npm run conformance -- --report earl.nt   # in cascade-runtime-js
 ```
 
+## Red-main alerts
+
+The [`red-main` workflow](.github/workflows/red-main.yml) tells you when a Cascade repository's `main` is red. Every day
+at 06:41 UTC, and when dispatched by hand, it reads the latest `push`, `schedule` and `workflow_run` run of each workflow
+on `main` in every unarchived `jayostis/cascade-*` repository, and keeps one issue labelled `red-main` open there for each
+workflow whose latest run failed. A run on a pull request or a manual run is not the state of `main`, and a run older
+than 14 days is ignored.
+
+- **Opens** on the first red run: the issue links the run, names its first failing step and lists the failure messages
+  the run printed as annotations (a step that continues on error is green, so a feed check names its failed feeds
+  there). **Comments** once for each later red run. A workflow says what is red by printing `::error::<what>` lines;
+  the alert quotes them, and without them it names only the step.
+- **Closes** at the first red-main run after the latest `push`, `schedule` and `workflow_run` run of that workflow are all
+  green. A manual run does not close it, and a run still going or cancelled holds it as it is. Dispatch `red-main` to
+  close it sooner than its next daily run.
+- **Needs** the repository secret `RED_MAIN_TOKEN`, a fine-grained personal access token on the `jayostis/cascade-*`
+  repositories with Issues read and write, Actions read, Checks read and Metadata read. Without the token the run fails
+  with one line saying so; without Checks read the issues open but name only the failing step.
+
+When one opens, read the run and the failure messages, fix the cause or, when it is known and not yours to fix, comment
+the issue that tracks it. Do not close the issue by hand: the next red run opens another.
+
 ## The vocabulary's own tests
 
 ```sh
