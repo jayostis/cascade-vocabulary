@@ -63,9 +63,10 @@ CASES = json.loads((VERSIONS / "cases.json").read_text(encoding="utf-8"))
 
 def held_messages(folder, kind, rows):
     """The messages of the kind's row shape that a table version in the folder is held to."""
+    said = row_messages(kind, rows)
     if folder.parent == PUBLISHED_BEFORE_RO and kind in (CASCADE.ProductIngredients, CASCADE.VaccineGroups):
-        return set()
-    return row_messages(kind, rows)
+        return {m for m in said if not any(relation in m for relation in ("with obo:RO_0002350", "with obo:RO_0002248"))}
+    return said
 
 
 @cache
@@ -414,6 +415,9 @@ class TestReferenceTables:
     Reference tables reach a pod as versions of a series, each of one table kind, and every kind has a row shape: what one
     row of it must state. A row that breaks its shape is refused with a message that says how, and a row and a table
     version are each named from what they hold.
+    `hana`'s apps hold rule-list versions 1 to 8, whose pinned R3 and R4 queries read only skos:broadMatch rows, so their
+    product ingredient and vaccine group tables stay as published before version 9 and are held to every part of their
+    row shape but the relation.
 
     @rule naming N11
     @rule naming N12
@@ -536,17 +540,16 @@ class TestReferenceTables:
 
     class TestGivenAnyTableVersionOfAKitOrOfScriptedInput:
         def test_conforms_to_its_kinds_row_shape(self):
-            """conforms to its kind's row shape, but for two kinds of `hana`'s tables
+            """conforms to its kind's row shape, but for the relation of two kinds of `hana`'s tables
 
             The rows of every table version a kit or the scripted input holds are checked against its kind's row shape.
-            The product ingredients and vaccine groups under `runtime/scripted-input/hana/tables` are not checked.
+            The product ingredients and vaccine groups under `runtime/scripted-input/hana/tables` are not checked for
+            the relation their rows state.
             """
             assert table_versions()
             broken = {}
             for folder, stem, kind, rows in table_versions():
-                held_as_published = folder.parent == PUBLISHED_BEFORE_RO and kind in (CASCADE.ProductIngredients,
-                                                                                      CASCADE.VaccineGroups)
-                if (said := row_messages(kind, rows)) and not held_as_published:
+                if said := held_messages(folder, kind, rows):
                     broken[f"{folder.relative_to(ROOT).as_posix()}/{stem}"] = said
             assert broken == {}
 
