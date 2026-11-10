@@ -1,6 +1,3 @@
-"""No section of a kit's C-CDA goes wholly unread: a section with text either has an entry that references into its text,
-or the saved Bridge output of its download holds that text as a note."""
-
 import re
 import xml.etree.ElementTree as ElementTree
 
@@ -111,24 +108,43 @@ PLANNED_MEDICATION = ('<substanceAdministration moodCode="RQO"><templateId root=
 
 
 class TestNarrativeAccountedFor:
-    class TestGivenTheDownloadsWithSavedOutput:
-        def test_the_kits_c_cda_downloads_with_saved_output_are_found(self):
-            assert len(CASES) >= 12
+    """C-CDA sections a kit's saved output accounts for · conformance/*/scripted-input/*/downloads/,
+    runtime/scripted-input/*/downloads/
 
-        @pytest.mark.parametrize("name, document", CASES, ids=[name for name, _ in CASES])
-        def test_no_section_of_the_download_goes_wholly_unread(self, name, document):
-            kept = saved_texts(ROOT / name)
-            assert not list(unread_sections(document, kept)), re.sub(r"\s+", " ", name)
+    A kit carries C-CDA downloads and, beside each, the records an adapter made of it. Every section of a download
+    that has text for a person to read is accounted for in that output: a record's statement references into the
+    section's text, or a note holds the text.
+    """
+
+    class TestGivenTheDownloadsWithSavedOutput:
+        """given the C-CDA downloads that have saved output"""
+
+        def test_leaves_no_section_with_text_wholly_unread(self):
+            assert len(CASES) >= 12
+            unread = {re.sub(r"\s+", " ", name): sections for name, document in CASES
+                      if (sections := list(unread_sections(document, saved_texts(ROOT / name))))}
+            assert unread == {}
 
 
 class TestChecksOfTheNarrativeCheck:
+    """Checks of the check on a kit's narrative · tests/test_kit_narrative.py
+
+    The rule above is checked by a function of this module. These cases show it a section that is read and sections that
+    are not, so a rule that every kit keeps is known to be checked.
+    """
+
     class TestUnreadSections:
-        @pytest.mark.parametrize("section, title, entry, read", [
-            ("2.16.840.1.113883.10.20.22.2.6.1", "Allergies", ALLERGY, True),
-            ("2.16.840.1.113883.10.20.22.2.4.1", "Vital Signs", VITAL_SIGN, False),
-            ("2.16.840.1.113883.10.20.22.2.5.1", "Problems", CONCERN_ONLY, False),
-            ("2.16.840.1.113883.10.20.22.2.1.1", "Medications", PLANNED_MEDICATION, False),
-        ], ids=["an allergy", "a vital sign", "a concern act", "a medication in the request mood"])
-        def test_a_reference_counts_as_a_read_only_from_a_statement_the_adapter_makes_a_record_of(self, section, title, entry, read):
+        """`unread_sections()`"""
+
+        def test_returns_nothing_for_a_section_that_an_allergy_observation_references_into(self):
+            sections = SECTION.format(section="2.16.840.1.113883.10.20.22.2.6.1", title="Allergies", entry=ALLERGY)
+            assert list(unread_sections(document(sections), kept=[])) == []
+
+        @pytest.mark.parametrize("section, title, entry", [
+            ("2.16.840.1.113883.10.20.22.2.4.1", "Vital Signs", VITAL_SIGN),
+            ("2.16.840.1.113883.10.20.22.2.5.1", "Problems", CONCERN_ONLY),
+            ("2.16.840.1.113883.10.20.22.2.1.1", "Medications", PLANNED_MEDICATION),
+        ], ids=["a vital sign", "a concern act", "a medication in the request mood"])
+        def test_returns_a_section_whose_text_is_referenced_only_from(self, section, title, entry):
             sections = SECTION.format(section=section, title=title, entry=entry)
-            assert list(unread_sections(document(sections), kept=[])) == ([] if read else [title])
+            assert list(unread_sections(document(sections), kept=[])) == [title]
