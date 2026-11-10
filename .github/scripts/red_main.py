@@ -1,7 +1,9 @@
-"""Reads the latest run of every workflow on main in each jayostis/cascade-* repository, and keeps one issue there open
-for each workflow whose latest run is red: opened on the first red run, commented on once for each later red run, closed
-when the latest run is green. An issue is recognised by its label and by a marker in its body naming the workflow."""
+"""Reads the latest run of each event of every workflow on main in each jayostis/cascade-* repository, and keeps one issue
+there open for each workflow with a red latest run: opened on the first red run, commented on once for each later red
+run, closed when the latest run of every event is green. A run still going, or cancelled, holds the issue as it is. An
+issue is recognised by its label and by a marker in its body naming the workflow."""
 
+import http.client
 import json
 import os
 import re
@@ -14,6 +16,8 @@ OWNER = "jayostis"
 LABEL = "red-main"
 RED = {"failure", "timed_out", "startup_failure"}
 PULL_REQUEST_EVENTS = {"pull_request", "pull_request_target"}
+MAIN_EVENTS = ("push", "schedule", "workflow_dispatch", "workflow_run", "repository_dispatch")
+RUN_NAMED = re.compile(r"<!-- run: (\d+) -->")
 WORKFLOW_MARKER = re.compile(r"<!-- red-main: (.+?) -->")
 MISSING_TOKEN = (
     f"RED_MAIN_TOKEN is not set: create a fine-grained personal access token with Issues read and write, Actions read "
@@ -27,14 +31,27 @@ class GitHubError(Exception):
         self.status = status
 
 
-def latest_run(runs):
-    return next((run for run in runs if run["status"] == "completed" and run["event"] not in PULL_REQUEST_EVENTS), None)
+def latest_runs(runs):
+    """The newest run of each event, whatever its status, from a newest-first list; a pull request is not a run of main."""
+    latest = {}
+    for run in runs:
+        if run["event"] not in PULL_REQUEST_EVENTS:
+            latest.setdefault(run["event"], run)
+    return list(latest.values())
+
+
+def is_red(run):
+    return run["status"] == "completed" and run["conclusion"] in RED
+
+
+def is_green(run):
+    return run["status"] == "completed" and run["conclusion"] == "success"
 
 
 def first_failing_step(jobs):
     for job in jobs:
-        if job.get("conclusion") == "failure":
-            step = next((s for s in job.get("steps", []) if s.get("conclusion") == "failure"), None)
+        if job.get("conclusion") in {"failure", "timed_out"}:
+            step = next((s for s in job.get("steps", []) if s.get("conclusion") in {"failure", "timed_out"}), None)
             return f"{job['name']} / {step['name']}" if step else job["name"]
     return "not reported"
 
@@ -44,8 +61,8 @@ def run_marker(run):
 
 
 def decide(repo, workflows, runs, jobs, issues, comments):
-    """What to do in one repository, from GitHub's answers: its workflows, each workflow's recent completed runs on main
-    by workflow id, the jobs of each red latest run by run id, its open issues labelled red-main, and their comments by
+    """What to do in one repository, from GitHub's answers: its workflows, each workflow's latest run on main of each
+    event, newest first, by workflow id, the jobs of each red latest run by run id, its open issues labelled red-main, and their comments by
     issue number."""
     opened = {}
     for issue in sorted(issues, key=lambda issue: issue["number"]):
@@ -59,31 +76,39 @@ def decide(repo, workflows, runs, jobs, issues, comments):
         if workflow["state"] != "active":
             continue
         active.add(workflow["path"])
-        run = latest_run(runs.get(str(workflow["id"]), []))
-        if run is None:
+        latest = latest_runs(runs.get(str(workflow["id"]), []))
+        if not latest:
             continue
         mine = opened.get(workflow["path"], [])
-        if run["conclusion"] in RED:
+        on_issue = (mine[0].get("body") or "") if mine else ""
+        in_comments = "\n".join(text["body"] or "" for text in comments.get(str(mine[0]["number"]), [])) if mine else ""
+        named = {int(found) for found in RUN_NAMED.findall(on_issue + in_comments)}
+        for run in (run for run in latest if is_red(run)):
             step = first_failing_step(jobs.get(str(run["id"]), []))
-            what = f"The latest run of the workflow `{workflow['name']}` ({workflow['path']}) on `main` failed.\n\n"
+            what = f"The latest {run['event']} run of the workflow `{workflow['name']}` ({workflow['path']}) on `main` failed.\n\n"
             where = f"- Run: {run['html_url']}\n- First failing step: `{step}`\n"
             if not mine:
                 actions.append({
                     "do": "open", "repo": repo, "labels": [LABEL], "title": f"{workflow['name']} is red on main",
                     "body": f"<!-- red-main: {workflow['path']} -->\n{run_marker(run)}\n{what}{where}\n"
                             f"This issue is kept by the red-main workflow of {OWNER}/cascade-vocabulary. It gets one "
-                            f"comment for each later red run and closes when the latest run is green.",
+                            f"comment for each later red run and closes when the latest run of every event is green.",
                 })
-            elif not any(run_marker(run) in (text["body"] or "") for text in [mine[0], *comments.get(str(mine[0]["number"]), [])]):
+                break
+            if run["id"] not in named:
                 actions.append({
                     "do": "comment", "repo": repo, "number": mine[0]["number"],
                     "body": f"{run_marker(run)}\nStill red on `main`.\n\n{where}",
                 })
-        elif run["conclusion"] == "success":
-            actions += [{
-                "do": "close", "repo": repo, "number": issue["number"],
-                "body": f"{run_marker(run)}\nGreen again on `main`: {run['html_url']}",
-            } for issue in mine]
+        if mine and all(is_green(run) for run in latest):
+            newest = max(latest, key=lambda run: run["id"])
+            if all(id <= newest["id"] for id in named):
+                said = {int(found) for found in RUN_NAMED.findall(in_comments)}
+                actions += [{
+                    "do": "close", "repo": repo, "number": issue["number"],
+                    "body": None if issue is mine[0] and newest["id"] in said
+                    else f"{run_marker(newest)}\nGreen again on `main`: {newest['html_url']}",
+                } for issue in mine]
 
     for path, gone in opened.items():
         if path not in active:
@@ -113,9 +138,12 @@ class Api:
             except (ValueError, AttributeError):
                 message = error.reason
             raise GitHubError(f"GitHub answered {error.code} to {method} {path}: {' '.join(str(message).split())[:200]}", error.code) from None
-        except (urllib.error.URLError, TimeoutError) as error:
+        except (OSError, http.client.HTTPException) as error:
             raise GitHubError(f"GitHub could not be reached for {method} {path}: {getattr(error, 'reason', error)}") from None
-        return json.loads(text) if text else {}
+        try:
+            return json.loads(text) if text else {}
+        except ValueError:
+            raise GitHubError(f"GitHub answered {method} {path} with something that is not JSON") from None
 
     def get(self, path, **params):
         return self.request("GET", path, params)
@@ -150,7 +178,8 @@ def perform(api, repo, actions):
             number = api.send("POST", f"{base}/issues", {k: action[k] for k in ("title", "body", "labels")}).get("number")
             said.append(f"{repo}: opened #{number}, {action['title']}")
         else:
-            api.send("POST", f"{base}/issues/{action['number']}/comments", {"body": action["body"]})
+            if action["body"] is not None:
+                api.send("POST", f"{base}/issues/{action['number']}/comments", {"body": action["body"]})
             if action["do"] == "close":
                 api.send("PATCH", f"{base}/issues/{action['number']}", {"state": "closed", "state_reason": "completed"})
             said.append(f"{repo}: {'closed' if action['do'] == 'close' else 'commented on'} #{action['number']}")
@@ -164,11 +193,14 @@ def visit(api, repo):
     for workflow in workflows:
         if workflow["state"] != "active":
             continue
-        listed = api.get(f"{base}/actions/workflows/{workflow['id']}/runs", branch="main", status="completed", per_page=10)
-        runs[str(workflow["id"])] = listed["workflow_runs"]
-        run = latest_run(listed["workflow_runs"])
-        if run and run["conclusion"] in RED:
-            jobs[str(run["id"])] = api.get(f"{base}/actions/runs/{run['id']}/jobs", filter="latest", per_page=100)["jobs"]
+        found = {}
+        for event in MAIN_EVENTS:
+            for run in api.get(f"{base}/actions/workflows/{workflow['id']}/runs", branch="main", event=event, per_page=1)["workflow_runs"]:
+                found[run["id"]] = run
+        runs[str(workflow["id"])] = sorted(found.values(), key=lambda run: run["id"], reverse=True)
+        for run in latest_runs(runs[str(workflow["id"])]):
+            if is_red(run):
+                jobs[str(run["id"])] = api.get(f"{base}/actions/runs/{run['id']}/jobs", filter="latest", per_page=100)["jobs"]
     issues = [i for i in api.pages(f"{base}/issues", labels=LABEL, state="open") if "pull_request" not in i]
     comments = {str(i["number"]): api.pages(f"{base}/issues/{i['number']}/comments") for i in issues}
     return perform(api, repo, decide(repo, workflows, runs, jobs, issues, comments))
@@ -183,8 +215,8 @@ def run(api, say=print):
         try:
             for line in visit(api, repo["full_name"]):
                 say(line)
-        except GitHubError as error:
-            errors.append(f"{repo['full_name']}: {error}")
+        except Exception as error:
+            errors.append(f"{repo['full_name']}: {' '.join(str(error).split()) or type(error).__name__}")
     return errors
 
 

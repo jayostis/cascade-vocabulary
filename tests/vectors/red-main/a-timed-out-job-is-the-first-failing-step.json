@@ -1,0 +1,16 @@
+{
+  "repo": "jayostis/cascade-example",
+  "workflows": [
+    {"id": 1, "name": "nightly", "path": ".github/workflows/nightly.yml", "state": "active"}
+  ],
+  "runs": {
+    "1": [
+      {"id": 107, "event": "schedule", "status": "completed", "conclusion": "failure",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/107"}
+    ]
+  },
+  "jobs": {"107": [{"name": "slow", "conclusion": "timed_out", "steps": [{"name": "Wait", "conclusion": "cancelled"}, {"name": "Build", "conclusion": "timed_out"}]}]},
+  "issues": [],
+  "comments": {},
+  "expected": [{"do": "open", "body_has": ["slow / Build"]}]
+}

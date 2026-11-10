@@ -1,0 +1,19 @@
+{
+  "repo": "jayostis/cascade-example",
+  "workflows": [
+    {"id": 1, "name": "nightly", "path": ".github/workflows/nightly.yml", "state": "active"}
+  ],
+  "runs": {
+    "1": [
+      {"id": 106, "event": "schedule", "status": "completed", "conclusion": "success",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/106"}
+    ]
+  },
+  "jobs": {},
+  "issues": [
+    {"number": 7, "state": "open",
+     "body": "<!-- red-main: .github/workflows/nightly.yml -->\n<!-- run: 105 -->\nThe latest run failed."}
+  ],
+  "comments": {"7": [{"body": "<!-- run: 106 -->\nGreen again on main."}]},
+  "expected": [{"do": "close", "number": 7, "body": null}]
+}

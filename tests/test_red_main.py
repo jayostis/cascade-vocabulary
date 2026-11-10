@@ -140,3 +140,36 @@ def test_a_refusal_never_prints_the_token(capsys, monkeypatch):
     out, err = capsys.readouterr()
     assert "secret-value" not in out + err
     assert err.count("\n") == 1 and "Traceback" not in err
+
+
+@pytest.mark.parametrize("failure", [ConnectionResetError("reset by peer"), json.JSONDecodeError("Expecting value\nline 1", "<html>", 0)])
+def test_any_failure_in_one_repository_is_one_plain_line_and_the_others_are_still_read(failure):
+    answers = a_pod_of_repositories()
+    api = Fake(answers)
+    get = api.get
+
+    def flaky(path, **params):
+        if path.startswith("/repos/jayostis/cascade-a/"):
+            raise failure
+        return get(path, **params)
+
+    api.get = flaky
+    errors = red_main.run(api)
+    assert len(errors) == 1 and "\n" not in errors[0] and errors[0].startswith("jayostis/cascade-a: ")
+    assert ("POST", "/repos/jayostis/cascade-b/issues") in [(m, p) for m, p, _ in api.sent]
+
+
+def test_a_body_that_is_not_json_is_a_github_error(monkeypatch):
+    class Body:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def read(self):
+            return b"<html>gateway</html>"
+
+    monkeypatch.setattr(red_main.urllib.request, "urlopen", lambda *a, **k: Body())
+    with pytest.raises(red_main.GitHubError):
+        red_main.Api("t").get("/user/repos")
