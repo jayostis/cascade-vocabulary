@@ -217,7 +217,7 @@ ROWS = [
     pytest.param(CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER.replace('obo:RO_0002350', 'skos:exactMatch')} ; {CURATED} .", "with obo:RO_0002350",
      id="value-set expansions: an exact-match property"),
     pytest.param(CASCADE.ValueSetExpansions, f"<urn:x:r> {MEMBER} ; {CHAINED} .", "justified as a manually curated mapping",
-     id="value-set expansions: a chained justification"),
+     id="value-set expansions: a justification that is not manual curation"),
     pytest.param(CASCADE.CodeNames, '<https://ns.cascadeprotocol.org/codes/medrt/N0000175722> skos:prefLabel "Beta-Adrenergic Blocker [EPC]" ; skos:notation "N0000175722" .', None,
      id="code names: a MED-RT code"),
     pytest.param(CASCADE.CodeNames, f'{MESH} skos:prefLabel "Ibuprofen" ; skos:notation "M0006414" .', None,
