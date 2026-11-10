@@ -48,6 +48,8 @@ def joins_a_stem_to_a_literal_without_encoding(text, stems):
 
 
 def is_subquery(part):
+    if part.name == "GraphGraphPattern":
+        return any(n.name == "SubSelect" for n in nodes(part["graph"]))
     return part.name == "GroupOrUnionGraphPattern" and [g.name for g in part["graph"]] == ["SubSelect"]
 
 
@@ -62,25 +64,18 @@ def has_a_subselect_after_a_pattern(tree):
 
 
 QUERY_FORMS = ("SelectQuery", "ConstructQuery", "AskQuery", "DescribeQuery", "SubSelect")
-EXISTS_FORMS = ("Builtin_EXISTS", "Builtin_NOTEXISTS")
 NESTED = {
-    "nested-not-exists": "SELECT * WHERE { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d FILTER NOT EXISTS { ?d ?e ?f } } }",
     "union-joined": "SELECT * WHERE { ?x ?y ?a { ?a ?b ?c } UNION { ?a ?d ?c } }",
     "union-in-a-group": "SELECT * WHERE { { { ?a ?b ?c } UNION { ?a ?d ?c } } }",
     "subquery-in-optional": "SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a ?q ?r { SELECT ?r WHERE { ?r ?s ?t } } } }",
-    "graph-in-a-group": "SELECT * WHERE { ?a ?b ?c OPTIONAL { GRAPH ?g { ?a ?d ?e } } }",
 }
 
 
 def nested_forms(tree):
     everything = list(nodes(tree))
     wheres = {id(n["where"]) for n in everything if n.name in QUERY_FORMS and n.get("where") is not None}
-    branches = {id(branch) for n in everything if id(n) in wheres for part in n.get("part") or []
-                if part.name == "GroupOrUnionGraphPattern" for branch in part["graph"]}
     found = []
     for node in everything:
-        if node.name in EXISTS_FORMS and any(m.name in EXISTS_FORMS for m in nodes(node["graph"])):
-            found.append("nested-not-exists")
         if node.name == "GroupGraphPatternSub":
             parts = list(node.get("part") or [])
             unions = [p for p in parts if p.name == "GroupOrUnionGraphPattern" and len(p["graph"]) > 1]
@@ -88,8 +83,6 @@ def nested_forms(tree):
                 found.append("union-joined")
             elif unions and id(node) not in wheres:
                 found.append("union-in-a-group")
-            if any(p.name == "GraphGraphPattern" for p in parts) and not {id(node)} & (wheres | branches):
-                found.append("graph-in-a-group")
         if node.name == "OptionalGraphPattern" and any(m.name == "SubSelect" for m in nodes(node["graph"])):
             found.append("subquery-in-optional")
     return found
@@ -305,6 +298,9 @@ class TestQueryForm:
 
     Every query the vocabulary carries is one SPARQL file that a runtime runs as it is written. Each is written in the
     same form, so a runtime's engine, a reader and a tool that edits a query's text all find the same thing in every file.
+    rdflib 7.6.0, one of the suite's two engines, runs a sub-select that comes after another pattern — in its own group,
+    in an OPTIONAL, or in a UNION or GRAPH joined to one — with that pattern's bindings already in place, so it returns
+    rows Oxigraph does not; this form keeps every sub-select where the two agree.
 
     @rule naming N13
     @rule matcher M4
@@ -321,10 +317,10 @@ class TestQueryForm:
             assert offenders == []
 
         def test_is_one_flat_pattern(self):
-            """is one flat pattern, with none of the five nested forms
+            """is one flat pattern, with none of the three nested forms
 
-            The five are a NOT EXISTS inside a NOT EXISTS, a UNION joined to other patterns, a UNION inside an inner group, a
-            GRAPH inside an inner group, and a sub-select inside an OPTIONAL.
+            The three are a UNION joined to other patterns, a UNION inside an inner group, and a sub-select inside an
+            OPTIONAL.
             """
             offenders = {relative: forms for relative in every_query() if (forms := nested_forms(parsed(relative)))}
             assert offenders == {}
@@ -742,7 +738,7 @@ class TestChecksOfTheQueryChecks:
         def test_returns_the_name_of(self, form):
             """returns the name of the nested form
 
-            For each of five queries written with one nested form, `nested_forms()` returns a list holding that form's
+            For each of three queries written with one nested form, `nested_forms()` returns a list holding that form's
             name only.
             """
             assert nested_forms(parseQuery(NESTED[form])) == [form]
@@ -756,17 +752,6 @@ class TestChecksOfTheQueryChecks:
             assert nested_forms(parseQuery("""SELECT * WHERE {
               { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d } OPTIONAL { ?a ?e ?f } }
               UNION { { SELECT ?a WHERE { ?a ?b ?c } } ?a ?d ?c }
-            }""")) == []
-
-        def test_returns_nothing_for_a_graph_around_a_whole_pattern(self):
-            """returns nothing for a graph around a whole pattern
-
-            Given a GRAPH whose braces hold a whole pattern, in a UNION branch, `nested_forms()` returns an empty list,
-            as the GRAPH is not inside an inner group.
-            """
-            assert nested_forms(parseQuery("""SELECT * WHERE {
-              { GRAPH ?g { ?a ?b ?c OPTIONAL { ?a ?e ?f } } ?g ?h ?i }
-              UNION { VALUES ?a { <urn:x:a> } GRAPH ?g { ?a ?d ?c } }
             }""")) == []
 
     class TestKindsNamedOutOfPlace:
