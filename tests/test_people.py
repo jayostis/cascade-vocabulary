@@ -1,7 +1,3 @@
-"""Every person under people/ is a person.json the schema accepts, in a folder named by its id, and every source of
-theirs, and every download of their kit, agrees with it on name, birth date and gender except where it declares the
-difference."""
-
 import json
 import xml.etree.ElementTree as ElementTree
 
@@ -174,16 +170,6 @@ def refusals(folder, root=ROOT):
     return found
 
 
-@pytest.mark.parametrize("folder", people(), ids=lambda folder: folder.name)
-def test_a_person_is_whole_and_every_source_agrees_with_them(folder):
-    assert refusals(folder) == []
-
-
-def test_every_kit_follows_a_person():
-    kits = {json.loads((folder / "person.json").read_text(encoding="utf-8")).get("kit") for folder in people()}
-    assert {kit.relative_to(ROOT).as_posix() for kit in KITS} <= kits
-
-
 def story_keys(told):
     """Why a story's keys are refused (settlements §1.7): nothing when they are whole."""
     missing, stray = {"hospital", "story", "findings"} - set(told), set(told) - {"hospital", "story", "findings",
@@ -191,27 +177,10 @@ def story_keys(told):
     return [*(f"lacks {key}" for key in sorted(missing)), *(f"has {key}, which a story does not" for key in sorted(stray))]
 
 
-@pytest.mark.parametrize("told, reasons", [
-    ({"hospital": "h", "story": "s", "findings": []}, []),
-    ({"hospital": "h", "story": "s", "findings": [], "pulls": [], "ccda": "x"}, []),
-    ({"hospital": "h", "story": "s", "findings": [], "patient": "pt-9"}, ["has patient, which a story does not"]),
-    ({"hospital": "h", "story": "s", "findngs": []}, ["lacks findings", "has findngs, which a story does not"]),
-], ids=["whole", "with pulls and ccda", "a leftover patient", "a misspelled key"])
-def test_a_story_has_only_the_keys_of_a_story(told, reasons):
-    assert story_keys(told) == reasons
-
-
-def test_a_story_names_a_source_and_a_document_of_its_person():
-    for story in sorted(PEOPLE.glob("*/expected/story.json")):
-        told, folder = json.loads(story.read_text(encoding="utf-8")), story.parent.parent
-        assert story_keys(told) == [], story
-        assert (folder / "sources" / told["hospital"] / "fhir.json").is_file(), story
-        assert "ccda" not in told or (folder / told["ccda"]).is_file(), story
-
-
-def test_a_source_document_is_named_by_the_day_of_its_effective_time():
-    for path in sorted(PEOPLE.glob("*/sources/*/ccda/*.xml")):
-        assert path.stem == day(header(path, "effectiveTime").get("value")), path
+def sandbox_stories():
+    """Each sandbox story of a person, as (the story's file, what it tells, its person's folder)."""
+    return [(story, json.loads(story.read_text(encoding="utf-8")), story.parent.parent)
+            for story in sorted(PEOPLE.glob("*/expected/story.json"))]
 
 
 PATIENT = {"resourceType": "Patient", "id": "p1", "name": [{"family": "Quill", "given": ["Hedda"]}],
@@ -229,36 +198,9 @@ NO_ID = {key: value for key, value in PATIENT.items() if key != "id"}
 RULE = "a source holds fhir.json and ccda/<day>.xml"
 
 
-@pytest.mark.parametrize("person, patients, extra, where, reason", [
-    ({**HEDDA, "birthDate": "1980-02-01"}, [PATIENT], (), FHIR,
-     "Patient p1 says birthDate 1980-01-02, person.json says 1980-02-01"),
-    ({**HEDDA, "differences": [{"source": "north", "field": "gender", "value": "male", "reason": "Entered wrong.",
-                                "expectedMatch": "probable"}]}, [PATIENT], (), CARD,
-     "declares a difference in gender at north that its Patient does not show"),
-    ({**HEDDA, "id": "hedda-quil"}, [PATIENT], (), CARD, "has the id hedda-quil, but its folder is hedda-quill"),
-    ({**HEDDA, "kit": "conformance/hedda", "subject": {**SUBJECT, "name": "Heddy"}}, [PATIENT], (), CARD,
-     "has the subject name Heddy, but conformance/hedda/scripted-input/people.ttl says Hedda"),
-    ({**HEDDA, "kit": "conformance/hedda", "subject": {**SUBJECT, "iri": "urn:uuid:00000000-0000-4000-8000-000000000002"}},
-     [PATIENT], (), CARD, "has the subject urn:uuid:00000000-0000-4000-8000-000000000002, which "
-                          "conformance/hedda/scripted-input/people.ttl has no row for"),
-    ({**HEDDA, "kit": "conformance/hedda"}, [PATIENT], (), CARD, "'subject' is a dependency of 'kit'"),
-    ({**HEDDA, "kit": "conformance/nobody", "subject": SUBJECT}, [PATIENT], (), CARD,
-     "names the kit conformance/nobody, which is not there"),
-    ({**HEDDA, "gender": "woman"}, [PATIENT], (), CARD, "'woman' is not one of ['male', 'female', 'other', 'unknown']"),
-    (HEDDA, [], (), FHIR, "holds no Patient"),
-    (HEDDA, [PATIENT, {**PATIENT, "id": "p2"}], (), FHIR, "holds 2 Patients: a source holds one"),
-    (HEDDA, [NO_ID, dict(NO_ID)], (), FHIR, "holds 2 Patients: a source holds one"),
-    ({**HEDDA, "gender": "male"}, [NO_ID], (), FHIR, "a Patient with no id says gender female, person.json says male"),
-    (HEDDA, [PATIENT], ("north/patient.json",), "people/hedda-quill/sources/north/patient.json",
-     f"is not a source file: {RULE}"),
-    (HEDDA, [PATIENT], ("north/ccda/2025-01-01.txt",), "people/hedda-quill/sources/north/ccda/2025-01-01.txt",
-     f"is not a source file: {RULE}"),
-    (HEDDA, None, (), "people/hedda-quill/sources/north", f"holds no source file: {RULE}"),
-], ids=["an undeclared birth date", "a declared difference not shown", "a folder not its id",
-        "a subject not the people.ttl row", "a subject with no people.ttl row", "a kit without a subject",
-        "a kit not there", "a field the schema refuses", "no Patient", "two Patients", "two Patients with no id",
-        "a Patient with no id", "a file that is not a source", "a ccda entry that is not xml", "a source with no file"])
-def test_a_person_is_refused_for_each_reason(tmp_path, person, patients, extra, where, reason):
+def a_person_folder(tmp_path, person, patients, extra=()):
+    """A person's folder under `tmp_path`: their `person.json`, one source `north` that holds a FHIR bundle of the
+    patients (none when `patients` is None), and each file of `extra` written under `sources/`."""
     folder = tmp_path / "people" / "hedda-quill"
     (folder / "sources" / "north").mkdir(parents=True)
     (folder / "person.json").write_text(json.dumps(person), encoding="utf-8")
@@ -268,19 +210,174 @@ def test_a_person_is_refused_for_each_reason(tmp_path, person, patients, extra, 
     for name in extra:
         (folder / "sources" / name).parent.mkdir(parents=True, exist_ok=True)
         (folder / "sources" / name).write_text("{}", encoding="utf-8")
-    (tmp_path / "conformance" / "hedda" / "scripted-input").mkdir(parents=True)
-    (tmp_path / "conformance" / "hedda" / "scripted-input" / "people.ttl").write_text(ROW, encoding="utf-8")
-    assert refusals(folder, tmp_path) == [(where, reason)]
+    return folder
 
 
-def test_a_declared_difference_the_source_shows_is_accepted(tmp_path):
-    folder = tmp_path / "people" / "hedda-quill"
-    (folder / "sources" / "north").mkdir(parents=True)
-    person = {**HEDDA, "differences": [{"source": "north", "field": "name", "value": {"family": "Quil", "given": ["Hedda"]},
-                                        "reason": "The hospital dropped a letter.", "expectedMatch": "probable"}]}
-    (folder / "person.json").write_text(json.dumps(person), encoding="utf-8")
-    patient = {**PATIENT, "name": [{"use": "nickname", "family": "Q", "given": ["H"]},
-                                   {"use": "official", "family": "Quil", "given": ["Hedda"]}]}
-    bundle = {"resourceType": "Bundle", "type": "collection", "entry": [{"resource": patient}]}
-    (folder / "sources" / "north" / "fhir.json").write_text(json.dumps(bundle), encoding="utf-8")
-    assert refusals(folder, tmp_path) == []
+class TestPeople:
+    """People the kits and the sandbox stories are about · people/
+
+    Each made-up person has a folder: a `person.json` that says who they are, and their sources, the files each hospital
+    holds about them. A kit or a sandbox story is told about one of them, so every file must agree on who that is.
+    """
+
+    class TestGivenAPerson:
+        """given a person"""
+
+        @pytest.mark.parametrize("folder", people(), ids=lambda folder: folder.name)
+        def test_is_whole(self, folder):
+            """is whole: its `person.json`, its folder, its sources and its kit's row agree, but for the differences it declares
+
+            The person's `person.json` is checked against its schema and its folder's name. Each patient in each of their
+            sources, and in the downloads of their kit, is compared with it on name, birth date and gender, and the kit's
+            `people.ttl` row with its subject. A difference is accepted only where `person.json` declares it and the
+            source shows it. The reasons found, one for each break, must be none.
+            """
+            assert refusals(folder) == []
+
+    class TestGivenAnyKit:
+        """given any conformance kit, whichever person it is for"""
+
+        def test_is_the_kit_of_a_person(self):
+            """is the kit of a person
+
+            The kits are the folders of `conformance/` that hold a feature of their own name. Each is compared with the kits
+            the people's `person.json` files name; a kit that no person names is listed.
+            """
+            named = {json.loads((folder / "person.json").read_text(encoding="utf-8")).get("kit") for folder in people()}
+            assert sorted({kit.relative_to(ROOT).as_posix() for kit in KITS} - named) == []
+
+    class TestGivenAnySandboxStoryOfAPerson:
+        """given any sandbox story of a person"""
+
+        def test_has_only_the_keys_of_a_story(self):
+            """has only the keys of a story
+
+            Each person's `expected/story.json` is read with `story_keys()`. A story that lacks a key every story has, or
+            holds a key no story has, is listed with the reasons.
+            """
+            stories = sandbox_stories()
+            assert stories
+            offenders = {story.relative_to(ROOT).as_posix(): reasons for story, told, _ in stories
+                         if (reasons := story_keys(told))}
+            assert offenders == {}
+
+        def test_names_a_hospital_that_is_a_source_of_its_person(self):
+            """names a hospital that is a source of its person
+
+            The hospital a story names is looked for as a source of the same person, a folder under `sources/` that holds
+            a `fhir.json`. A story whose hospital has none is listed.
+            """
+            stories = sandbox_stories()
+            assert stories
+            offenders = sorted(story.relative_to(ROOT).as_posix() for story, told, folder in stories
+                               if not (folder / "sources" / told["hospital"] / "fhir.json").is_file())
+            assert offenders == []
+
+        def test_names_no_c_cda_document_that_its_person_lacks(self):
+            """names no C-CDA document that its person lacks
+
+            A story that names a `ccda` document gives its path under its person's folder. A story whose document is no
+            file there is listed.
+            """
+            stories = sandbox_stories()
+            assert stories
+            offenders = sorted(story.relative_to(ROOT).as_posix() for story, told, folder in stories
+                               if "ccda" in told and not (folder / told["ccda"]).is_file())
+            assert offenders == []
+
+    class TestGivenAnyCcdaDocumentOfASource:
+        """given any C-CDA document of a source"""
+
+        def test_is_named_by_the_day_of_its_effective_time(self):
+            """is named by the day of its effective time
+
+            Each document under a source's `ccda/` is named for the day, as `YYYY-MM-DD`, of the `effectiveTime` in its
+            header. A document whose file name is another day is listed with the day its header gives.
+            """
+            documents = sorted(PEOPLE.glob("*/sources/*/ccda/*.xml"))
+            assert documents
+            offenders = {path.relative_to(ROOT).as_posix(): day(header(path, "effectiveTime").get("value"))
+                         for path in documents if path.stem != day(header(path, "effectiveTime").get("value"))}
+            assert offenders == {}
+
+
+class TestChecksOfThePersonChecks:
+    """Checks of the checks on a person · tests/test_people.py
+
+    The rules above are checked by two functions of this module. These cases give each a made-up folder or story that
+    breaks a rule, or a difference a person rightly declares, so a rule that every person keeps is known to be checked.
+    """
+
+    class TestRefusals:
+        """`refusals()`"""
+
+        @pytest.mark.parametrize("person, patients, extra, where, reason", [
+            ({**HEDDA, "birthDate": "1980-02-01"}, [PATIENT], (), FHIR,
+             "Patient p1 says birthDate 1980-01-02, person.json says 1980-02-01"),
+            ({**HEDDA, "differences": [{"source": "north", "field": "gender", "value": "male", "reason": "Entered wrong.",
+                                        "expectedMatch": "probable"}]}, [PATIENT], (), CARD,
+             "declares a difference in gender at north that its Patient does not show"),
+            ({**HEDDA, "id": "hedda-quil"}, [PATIENT], (), CARD, "has the id hedda-quil, but its folder is hedda-quill"),
+            ({**HEDDA, "kit": "conformance/hedda", "subject": {**SUBJECT, "name": "Heddy"}}, [PATIENT], (), CARD,
+             "has the subject name Heddy, but conformance/hedda/scripted-input/people.ttl says Hedda"),
+            ({**HEDDA, "kit": "conformance/hedda", "subject": {**SUBJECT, "iri": "urn:uuid:00000000-0000-4000-8000-000000000002"}},
+             [PATIENT], (), CARD, "has the subject urn:uuid:00000000-0000-4000-8000-000000000002, which "
+                                  "conformance/hedda/scripted-input/people.ttl has no row for"),
+            ({**HEDDA, "kit": "conformance/hedda"}, [PATIENT], (), CARD, "'subject' is a dependency of 'kit'"),
+            ({**HEDDA, "kit": "conformance/nobody", "subject": SUBJECT}, [PATIENT], (), CARD,
+             "names the kit conformance/nobody, which is not there"),
+            ({**HEDDA, "gender": "woman"}, [PATIENT], (), CARD, "'woman' is not one of ['male', 'female', 'other', 'unknown']"),
+            (HEDDA, [], (), FHIR, "holds no Patient"),
+            (HEDDA, [PATIENT, {**PATIENT, "id": "p2"}], (), FHIR, "holds 2 Patients: a source holds one"),
+            (HEDDA, [NO_ID, dict(NO_ID)], (), FHIR, "holds 2 Patients: a source holds one"),
+            ({**HEDDA, "gender": "male"}, [NO_ID], (), FHIR, "a Patient with no id says gender female, person.json says male"),
+            (HEDDA, [PATIENT], ("north/patient.json",), "people/hedda-quill/sources/north/patient.json",
+             f"is not a source file: {RULE}"),
+            (HEDDA, [PATIENT], ("north/ccda/2025-01-01.txt",), "people/hedda-quill/sources/north/ccda/2025-01-01.txt",
+             f"is not a source file: {RULE}"),
+            (HEDDA, None, (), "people/hedda-quill/sources/north", f"holds no source file: {RULE}"),
+        ], ids=["an undeclared birth date", "a declared difference not shown", "a folder not its id",
+                "a subject not the people.ttl row", "a subject with no people.ttl row", "a kit without a subject",
+                "a kit not there", "a field the schema refuses", "no Patient", "two Patients", "two Patients with no id",
+                "a Patient with no id", "a file that is not a source", "a ccda entry that is not xml", "a source with no file"])
+        def test_returns_one_reason_and_its_file_for(self, tmp_path, person, patients, extra, where, reason):
+            """returns one reason, and the file it is about, for
+
+            A made-up person folder under a temporary folder is broken in one way, named by the case. `refusals()` over it
+            returns that one reason, with the path of the file it is about, and no other.
+            """
+            folder = a_person_folder(tmp_path, person, patients, extra)
+            (tmp_path / "conformance" / "hedda" / "scripted-input").mkdir(parents=True)
+            (tmp_path / "conformance" / "hedda" / "scripted-input" / "people.ttl").write_text(ROW, encoding="utf-8")
+            assert refusals(folder, tmp_path) == [(where, reason)]
+
+        def test_returns_nothing_for_a_declared_difference_that_the_source_shows(self, tmp_path):
+            """returns nothing for a declared difference that the source shows
+
+            A person's `person.json` declares that the source `north` spells the family name `Quil`, and the source's
+            official name is `Quil`, beside a nickname that differs. `refusals()` over that folder returns nothing.
+            """
+            person = {**HEDDA, "differences": [{"source": "north", "field": "name",
+                                                "value": {"family": "Quil", "given": ["Hedda"]},
+                                                "reason": "The hospital dropped a letter.", "expectedMatch": "probable"}]}
+            patient = {**PATIENT, "name": [{"use": "nickname", "family": "Q", "given": ["H"]},
+                                           {"use": "official", "family": "Quil", "given": ["Hedda"]}]}
+            assert refusals(a_person_folder(tmp_path, person, [patient]), tmp_path) == []
+
+    class TestStoryKeys:
+        """`story_keys()`"""
+
+        @pytest.mark.parametrize("told, reasons", [
+            ({"hospital": "h", "story": "s", "findings": []}, []),
+            ({"hospital": "h", "story": "s", "findings": [], "pulls": [], "ccda": "x"}, []),
+            ({"hospital": "h", "story": "s", "findings": [], "patient": "pt-9"}, ["has patient, which a story does not"]),
+            ({"hospital": "h", "story": "s", "findngs": []}, ["lacks findings", "has findngs, which a story does not"]),
+        ], ids=["whole", "with pulls and ccda", "a leftover patient", "a misspelled key"])
+        def test_returns_the_reasons_a_storys_keys_are_refused(self, told, reasons):
+            """returns the reasons a story's keys are refused, and none when they are whole
+
+            Given the keys of a story that are whole, that add `pulls` and `ccda`, that keep a `patient` no story has, or
+            that misspell `findings`, `story_keys()` returns the reasons for each: a key lacked and a key that is not a
+            story's, or none at all.
+            """
+            assert story_keys(told) == reasons

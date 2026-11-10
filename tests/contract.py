@@ -7,16 +7,27 @@ import json
 from functools import cache
 from pathlib import Path
 
+from gherkin.parser import Parser
+from gherkin.pickles.compiler import Compiler
 from rdflib import Graph, Literal, Namespace
 
 ROOT = Path(__file__).absolute().parent.parent
 QUERIES = ROOT / "queries"
 LAYOUT = ROOT / "runtime" / "pod-layout.ttl"
 KITS = sorted(kit for kit in (ROOT / "conformance").iterdir() if (kit / f"{kit.name}.feature").is_file())
+FEATURES = sorted([*ROOT.glob("runtime/*.feature"), *ROOT.glob("conformance/*/*.feature")])
 PROV = Namespace("http://www.w3.org/ns/prov#")
 CASCADE = Namespace("https://ns.cascadeprotocol.org/cascade#")
 SOLID = Namespace("http://www.w3.org/ns/solid/terms#")
 BASE = "https://pod.invalid/"
+
+
+def feature_documents():
+    """Each feature file, parsed, and compiled to its pickles."""
+    for path in FEATURES:
+        document = Parser().parse(path.read_text(encoding="utf-8"))
+        document["uri"] = path.relative_to(ROOT).as_posix()
+        yield path, document, Compiler().compile(document)
 
 
 def file_stem(name):

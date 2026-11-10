@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 from pyparsing import ParseException, ParseResults
-from rdflib import RDF, Graph, URIRef, Variable
+from rdflib import RDF, Graph, Literal, URIRef, Variable
 from rdflib.paths import Path as PropertyPath
 from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
@@ -14,9 +14,11 @@ from rdflib.plugins.sparql.parserutils import CompValue
 import contract
 from contract import ROOT
 from engines import TOKEN, marked_groups, opened, prepared
+from ontologies import terms
 
 CASCADE = "https://ns.cascadeprotocol.org/cascade#"
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
+URI_SPACE = URIRef("http://rdfs.org/ns/void#uriSpace")
 
 
 def every_query():
@@ -31,6 +33,18 @@ def nodes(tree):
     elif isinstance(tree, (list, tuple, ParseResults)):
         for value in tree:
             yield from nodes(value)
+
+
+def joins_a_stem_to_a_literal_without_encoding(text, stems):
+    """Whether a CONCAT of the query has a stem for an argument and an argument that is not ENCODE_FOR_URI."""
+    for node in nodes(prepared(text).algebra):
+        if node.name == "Builtin_CONCAT":
+            arguments = list(node["arg"])
+            if any(isinstance(a, Literal) and str(a) in stems for a in arguments):
+                if any(not isinstance(a, Literal) and getattr(a, "name", None) != "Builtin_ENCODE_FOR_URI"
+                       for a in arguments):
+                    return True
+    return False
 
 
 def is_subquery(part):
@@ -293,6 +307,7 @@ class TestQueryForm:
     same form, so a runtime's engine, a reader and a tool that edits a query's text all find the same thing in every file.
 
     @rule naming N13
+    @rule matcher M4
     """
 
     class TestGivenAnyQuery:
@@ -359,6 +374,18 @@ class TestQueryForm:
                 text = contract.query(relative)
                 if text.count('CONCAT("urn:cascade:entry:"') != text.count(ENTRY_PLACEHOLDER):
                     offenders.append(relative)
+            assert offenders == []
+
+        def test_passes_every_value_it_adds_to_a_stem_through_encode_for_uri(self):
+            """passes every value it adds after a code system's stem through `ENCODE_FOR_URI`
+
+            A code's IRI is its code system's stem and the code, percent-encoded as `ENCODE_FOR_URI` does. A query
+            that makes a `CONCAT` of a stem and a value not passed through it fails, so no query writes a code that has a
+            reserved character under another IRI than every other query does.
+            """
+            stems = {str(space) for space in terms().objects(None, URI_SPACE)}
+            offenders = sorted(relative for relative in every_query()
+                               if joins_a_stem_to_a_literal_without_encoding(contract.query(relative), stems))
             assert offenders == []
 
     class TestGivenTheQueriesAndTheOntologyFilesTogether:
@@ -784,6 +811,30 @@ class TestChecksOfTheQueryChecks:
             """
             assert restated_absences("""SELECT ?j ?by WHERE {
               ?j ?p ?o OPTIONAL { ?by <http://purl.org/dc/terms/replaces> ?j } FILTER (BOUND(?o)) }""") == []
+
+    class TestJoinsAStemToALiteralWithoutEncoding:
+        """`joins_a_stem_to_a_literal_without_encoding()`"""
+
+        def test_returns_true_for_a_stem_followed_by_a_value_as_it_is(self):
+            """returns true for a stem followed by a value as it is
+
+            Given a `CONCAT` of a stem and `STR(?a)`, which is not passed through `ENCODE_FOR_URI`, the function
+            returns True.
+            """
+            assert joins_a_stem_to_a_literal_without_encoding(
+                'SELECT * { BIND (CONCAT("http://x/", STR(?a)) AS ?b) }', {"http://x/"})
+
+        @pytest.mark.parametrize("form", [
+            'SELECT * { BIND (CONCAT("http://x/", ENCODE_FOR_URI(STR(?a))) AS ?b) }',
+            'SELECT * { BIND (CONCAT("a", STR(?a)) AS ?b) }',
+        ], ids=["a value passed through `ENCODE_FOR_URI`", "a `CONCAT` with no stem"])
+        def test_returns_false_for(self, form):
+            """returns false for a form that is no stem followed by a value as it is
+
+            Given a stem followed by a value passed through `ENCODE_FOR_URI`, or a `CONCAT` of a text that is no stem
+            and a value, the function returns False.
+            """
+            assert not joins_a_stem_to_a_literal_without_encoding(form, {"http://x/"})
 
     class TestMissingProse:
         """`missing_prose()`"""

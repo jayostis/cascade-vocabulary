@@ -3,18 +3,16 @@ from functools import cache
 
 import pytest
 from gherkin.parser import Parser
-from gherkin.pickles.compiler import Compiler
 from rdflib import Variable
 from rdflib.namespace import RDF
 from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
 
-from contract import KITS, PROV, QUERIES, CASCADE, ROOT
+from contract import KITS, PROV, QUERIES, CASCADE, ROOT, feature_documents
 from engines import parsed
 from naming import ni_name
 
-FEATURES = sorted([*ROOT.glob("runtime/*.feature"), *ROOT.glob("conformance/*/*.feature")])
 TIME = re.compile(r" on (\d{4}-\d{2}-\d{2}) at (\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?)(?: \(|$)")
 PREFIXES = "".join(f"PREFIX {prefix}: <{base}>\n" for prefix, base in {
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
@@ -22,14 +20,6 @@ PREFIXES = "".join(f"PREFIX {prefix}: <{base}>\n" for prefix, base in {
     "dct": "http://purl.org/dc/terms/", "bridge": "https://ns.cascadeprotocol.org/bridge/v1-draft#",
     "oa": "http://www.w3.org/ns/oa#", "cascade": "https://ns.cascadeprotocol.org/cascade#",
 }.items())
-
-
-def documents():
-    """Each feature file, parsed, and compiled to its pickles."""
-    for path in FEATURES:
-        document = Parser().parse(path.read_text(encoding="utf-8"))
-        document["uri"] = path.relative_to(ROOT).as_posix()
-        yield path, document, Compiler().compile(document)
 
 
 def slug(name):
@@ -113,7 +103,7 @@ class TestFeatureFiles:
 
         def test_writes_every_given_when_and_then_in_a_phrase(self):
             """writes every Given, When and Then in a phrase that `runtime/steps.md` lists"""
-            unlisted = {(path.name, step["text"]) for path, _, pickles in documents() for pickle in pickles
+            unlisted = {(path.name, step["text"]) for path, _, pickles in feature_documents() for pickle in pickles
                         for step in pickle["steps"]
                         if not any(phrase.fullmatch(LABEL.sub("", step["text"])) for phrase in PHRASES)}
             assert unlisted == set()
@@ -123,7 +113,7 @@ class TestFeatureFiles:
 
             A name in parentheses at the end of a Given or a When is how a later line names what that one made.
             """
-            named = {(path.name, step["text"]) for path, _, pickles in documents() for pickle in pickles
+            named = {(path.name, step["text"]) for path, _, pickles in feature_documents() for pickle in pickles
                      for step in pickle["steps"] if LABEL.search(step["text"]) and step.get("type") == "Outcome"}
             assert named == set()
 
@@ -133,7 +123,7 @@ class TestFeatureFiles:
             A runtime's report names an example by that slug, as its test IRI.
             """
             clashes = []
-            for path, _, pickles in documents():
+            for path, _, pickles in feature_documents():
                 slugs = [slug(pickle["name"]) for pickle in pickles]
                 clashes += [(path.name, name) for name in set(slugs) if slugs.count(name) > 1]
             assert clashes == []
@@ -145,7 +135,7 @@ class TestFeatureFiles:
             has it just before a name in parentheses. The moments of an example's dated lines never go back.
             """
             backwards = []
-            for path, _, pickles in documents():
+            for path, _, pickles in feature_documents():
                 for pickle in pickles:
                     times = [f"{found.group(1)}T{found.group(2)}" for step in pickle["steps"]
                              for found in [TIME.search(step["text"])] if found]
@@ -155,7 +145,7 @@ class TestFeatureFiles:
 
         def test_has_for_every_rule_an_example_or_a_sentence(self):
             """has, for every rule, an example or a sentence saying why none can show it"""
-            silent = [(path.name, child["rule"]["name"]) for path, document, _ in documents()
+            silent = [(path.name, child["rule"]["name"]) for path, document, _ in feature_documents()
                       for child in document["feature"]["children"] if "rule" in child
                       if not any("scenario" in inner for inner in child["rule"]["children"])
                       and not re.search(r"No example|no test of its own", " ".join(child["rule"]["description"].split()))]
@@ -168,7 +158,7 @@ class TestFeatureFiles:
             prefixes; one that does not parse fails, named with the start of the error.
             """
             broken = []
-            for path, _, pickles in documents():
+            for path, _, pickles in feature_documents():
                 for pickle in pickles:
                     for step in pickle["steps"]:
                         query = step.get("argument", {}).get("docString", {}).get("content")

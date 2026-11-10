@@ -1,37 +1,52 @@
 {
-  "about": "The vocabulary's own tests: what its queries, shapes, fixtures, features and kits are held to, beside the rules a runtime runs. Each heading names the files it is about.",
-  "shaped": [
-    "test_features.py",
-    "test_kit_narrative.py",
-    "test_queries.py",
-    "test_query_fixtures.py",
-    "test_shapes.py"
-  ],
+  "about": "The vocabulary's own tests: what its queries, shapes, terms, vectors, fixtures, features, kits and people are held to, beside the rules a runtime runs. Each heading names the files it is about.",
   "capabilities": [
     "Named questions an app asks a pod · queries/questions/",
     "What each query gives over a small pod · tests/fixtures/*/manifest.ttl",
     "What is true of any pod once its derivations have run · queries/derivations/, ontologies/cascade.ttl",
+    "Medication status codes the lifecycle derivations class · queries/derivations/medication-lifecycles.rq, queries/derivations/medication-dispense-lifecycles.rq",
+    "Code systems and the IRI a code gets · ontologies/cascade.ttl",
     "Shapes that find a wrong pod · ontologies/*.shapes.ttl, tests/shape-cases/",
     "Terms declared for everything a pod writes · ontologies/*.ttl",
     "Shapes that check a name against the address it comes from · cascade:ServerRecordNameShape, cascade:ServerNameShape",
     "Shapes that list the codes of an HL7 code system · cascade:DataAbsentReasonCodeShape, cascade:NullFlavorCodeShape, cascade:ObservationInterpretationCodeShape",
+    "Reference tables whose rows the shapes hold · ontologies/cascade.shapes.ttl, tests/table-versions/, **/references.ttl",
+    "Variant records and ClinVar's classifications · ontologies/cascade.ttl, ontologies/cascade.shapes.ttl, tests/vectors/clinvar/",
+    "Where a pod keeps its files · runtime/pod-layout.ttl, conformance/*/expected/*.ttl",
     "The order a runtime runs the derivations and a lens in · queries/derivations/, queries/lenses/, ro-crate-metadata.json",
     "Derived state two engines build alike · queries/derivations/, queries/lenses/, queries/views/",
     "Matcher comparisons a runtime binds to records · queries/matcher/, runtime/rule-list/",
     "Rule lists the features and kits carry · runtime/rule-list/, **/references/*.ttl",
     "Feature files any runtime can run · runtime/*.feature, conformance/*/*.feature, runtime/steps.md",
+    "Names a feature writes beside their inputs · runtime/*.feature, conformance/*/*.feature, runtime/steps.md",
     "C-CDA sections a kit's saved output accounts for · conformance/*/scripted-input/*/downloads/, runtime/scripted-input/*/downloads/",
+    "Naming vectors every runtime and adapter reproduces · tests/vectors/naming/",
+    "Reference implementation of the naming rules · tests/naming.py",
+    "Snapshot vectors a runtime reproduces · tests/vectors/snapshot/vectors.json, tests/naming.py",
     "Kinds of record in the queries · queries/derivations/records.rq, queries/views/",
-    "The form every query is written in · queries/**/*.rq"
+    "The form every query is written in · queries/**/*.rq",
+    "Terms the shapes and the ontology files agree on · ontologies/cascade.ttl, ontologies/cascade.shapes.ttl",
+    "Terms copied from another vocabulary · ontologies/*.ttl",
+    "PROV as a pod's records use it · ontologies/cascade.ttl, runtime/pod-layout.ttl",
+    "The root crate · ro-crate-metadata.json",
+    "People the kits and the sandbox stories are about · people/"
   ],
   "build": [
     "Checks of the checks on a query's text · tests/test_queries.py",
     "Checks of the fixtures' own tools · tests/engines.py, tests/manifests.py",
     "Checks of the shape cases' own tools · tests/test_shapes.py",
     "Checks of the checks on a rule list · tests/test_features.py",
-    "Checks of the check on a kit's narrative · tests/test_kit_narrative.py"
+    "Checks of the check on a kit's narrative · tests/test_kit_narrative.py",
+    "Checks of the check on a feature's names · tests/test_naming.py",
+    "Checks of the checks on a person · tests/test_people.py",
+    "Checks of the scan for copied terms · tests/test_vocabulary.py",
+    "Checks of the red-main alert · .github/scripts/red_main.py"
   ],
   "glossary": [
+    {
+      "term": "ACMG",
+      "definition": "the American College of Medical Genetics and Genomics, whose five classes for a variant run from benign to pathogenic."
+    },
     {
       "term": "act",
       "definition": "one thing done to a pod that writes files to it: an import, an entry session, a connection to a hospital's server, or a run of the matcher.",
@@ -48,8 +63,46 @@
       ]
     },
     {
+      "term": "base address",
+      "definition": "the address of a hospital's server, under which each of its records has its own; a server and its records are named from it once it is normalised.",
+      "aliases": [
+        "base addresses"
+      ]
+    },
+    {
+      "term": "blank node",
+      "definition": "a node in a set of statements that has no IRI, only a name that holds within one reading of them, so it cannot be named the same way twice."
+    },
+    {
       "term": "C-CDA",
       "definition": "Consolidated Clinical Document Architecture: HL7's standard for the XML summary documents patient portals hand out."
+    },
+    {
+      "term": "canonical form",
+      "definition": "a set of statements written one fixed way (the W3C's RDFC-1.0), so that the same statements always give the same bytes and so the same hash."
+    },
+    {
+      "term": "ClinVar",
+      "definition": "the public archive, kept by the US National Library of Medicine, of how laboratories classify variants, from benign to pathogenic; one of the reference tables.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#VariantClassifications"
+    },
+    {
+      "term": "ClinVar ID",
+      "definition": "the number ClinVar gives one variant, which a pod holds as `clinvarVariationId`.",
+      "aliases": [
+        "ClinVar IDs"
+      ]
+    },
+    {
+      "term": "clock",
+      "definition": "the time a device believes it is; a writer's clock can run behind or ahead of the real time, and the revisions it stamps then show it."
+    },
+    {
+      "term": "code IRI",
+      "definition": "the IRI a code gets: its code system's stem, then the code, percent-encoded.",
+      "aliases": [
+        "code IRIs"
+      ]
     },
     {
       "term": "code system",
@@ -73,6 +126,20 @@
       "definition": "a query the matcher runs to find records that are one thing; a rule list names each by its path under `queries/matcher/`."
     },
     {
+      "term": "concept",
+      "definition": "one value of a fixed list the vocabulary declares, such as \"Likely pathogenic\", with its own IRI and the names it goes by.",
+      "aliases": [
+        "concepts"
+      ]
+    },
+    {
+      "term": "content vector",
+      "definition": "a naming vector whose input is a file: the name is a hash of the file's statements in canonical form, or of a document's bytes.",
+      "aliases": [
+        "content vectors"
+      ]
+    },
+    {
       "term": "derivation",
       "aliases": [
         "derivations"
@@ -82,6 +149,13 @@
     {
       "term": "derived state",
       "definition": "what the derivations and one lens add to a pod's files: statements worked out from them, which the views and questions read."
+    },
+    {
+      "term": "dispense",
+      "definition": "a pharmacy's record of handing over a medication, apart from the prescription it fills.",
+      "aliases": [
+        "dispenses"
+      ]
     },
     {
       "term": "download",
@@ -112,11 +186,23 @@
       "definition": "a file of rules and examples in Gherkin, the plain-text format Cucumber reads; the rules of a pod are written as features."
     },
     {
+      "term": "FHIR",
+      "definition": "Fast Healthcare Interoperability Resources: HL7's standard for health records as JSON.",
+      "vocabulary": "https://hl7.org/fhir/R4/"
+    },
+    {
       "term": "fixture",
       "aliases": [
         "fixtures"
       ],
       "definition": "a small hand-made pod under `tests/fixtures/`, with a manifest of the rows that queries give over it; each shows one behaviour."
+    },
+    {
+      "term": "flatten",
+      "aliases": [
+        "flattened"
+      ],
+      "definition": "to write a list as its count and then its members in sorted order, so that a query takes the list as plain values."
     },
     {
       "term": "focus node",
@@ -126,11 +212,22 @@
       "definition": "in SHACL, a thing a shape is checked against."
     },
     {
+      "term": "graph",
+      "aliases": [
+        "graphs"
+      ],
+      "definition": "a set of statements read together as one, such as the statements of a file."
+    },
+    {
       "term": "group",
       "aliases": [
         "groups"
       ],
       "definition": "in SPARQL, the patterns between one pair of braces."
+    },
+    {
+      "term": "HGVS",
+      "definition": "the Human Genome Variation Society's standard way to write a variant, such as `NM_000249.4:c.2042C>T`."
     },
     {
       "term": "HL7",
@@ -146,6 +243,14 @@
         "IRIs"
       ],
       "definition": "a web-style identifier, such as `https://ns.cascadeprotocol.org/cascade#Record`; every term and every record is named by one."
+    },
+    {
+      "term": "join",
+      "aliases": [
+        "joins",
+        "joined"
+      ],
+      "definition": "in a query, to put two patterns together on a variable they share, so a value found by one is looked for in the other."
     },
     {
       "term": "judgment",
@@ -173,11 +278,29 @@
       ]
     },
     {
+      "term": "label",
+      "aliases": [
+        "labels"
+      ],
+      "definition": "a tag a GitHub repository puts on its issues to group them, such as `red-main`."
+    },
+    {
+      "term": "layout",
+      "definition": "`runtime/pod-layout.ttl`: the file that says where in a pod each class of thing is kept."
+    },
+    {
       "term": "lens",
       "definition": "a choice of which judgments count when a question is answered: `everyday` is the default, and `export` is stricter, for records sent elsewhere.",
       "aliases": [
         "lenses"
       ]
+    },
+    {
+      "term": "literal",
+      "aliases": [
+        "literals"
+      ],
+      "definition": "a value written as text in a statement, such as a number, a date or a name, as against an IRI, which names a thing."
     },
     {
       "term": "manifest",
@@ -193,6 +316,13 @@
       "aliases": [
         "matchers"
       ]
+    },
+    {
+      "term": "member",
+      "aliases": [
+        "members"
+      ],
+      "definition": "one thing that a group of things holds: a code of a panel, a concept of a list, a record of an entry."
     },
     {
       "term": "named question",
@@ -216,11 +346,40 @@
       "definition": "a query the vocabulary publishes that gives the name of a thing from what it is made from, such as a record's name from its address on a server."
     },
     {
+      "term": "naming vector",
+      "definition": "a worked example of one naming rule under `tests/vectors/naming/`: its inputs and the name they give.",
+      "aliases": [
+        "naming vectors"
+      ]
+    },
+    {
       "term": "ontology file",
       "aliases": [
         "ontology files"
       ],
       "definition": "a Turtle file under `ontologies/` that declares terms."
+    },
+    {
+      "term": "Oxigraph",
+      "definition": "one of the two engines the tests run every query on, with rdflib; a runtime may use either."
+    },
+    {
+      "term": "page template",
+      "definition": "the address of a code's page on its publisher's site, with `{code}` where the code goes; an app fills it to link a code.",
+      "aliases": [
+        "page templates"
+      ]
+    },
+    {
+      "term": "pathogenic",
+      "definition": "causing disease: the strongest of the ACMG classes for a variant, with \"Likely pathogenic\" just below it and \"Benign\" at the other end."
+    },
+    {
+      "term": "person",
+      "definition": "one of the made-up patients under `people/`: a `person.json`, and the files each hospital holds about them.",
+      "aliases": [
+        "people"
+      ]
     },
     {
       "term": "phrase",
@@ -235,6 +394,13 @@
         "placeholders"
       ],
       "definition": "a stand-in name a query gives a view entry, `urn:cascade:entry:` and a hash, until a runtime writes the entry's real name."
+    },
+    {
+      "term": "placement",
+      "definition": "one line of the layout: a class of thing and the file or folder a pod keeps it in.",
+      "aliases": [
+        "placements"
+      ]
     },
     {
       "term": "planted case",
@@ -265,8 +431,34 @@
       "definition": "a short name a file declares for a namespace, such as `cascade:`."
     },
     {
+      "term": "property",
+      "aliases": [
+        "properties"
+      ],
+      "definition": "a named link from a thing to a value or to another thing, such as `cascade:workflowStatus`; a statement is a thing, a property and a value."
+    },
+    {
       "term": "prose",
       "definition": "the comment a query file opens with, saying what its rows are; the site shows it beside the query."
+    },
+    {
+      "term": "PROV",
+      "definition": "the W3C's vocabulary for saying who made a thing, when and from what."
+    },
+    {
+      "term": "pull",
+      "aliases": [
+        "pulls",
+        "pulled"
+      ],
+      "definition": "one fetch of a person's records from a hospital's server into a pod."
+    },
+    {
+      "term": "pull request",
+      "aliases": [
+        "pull requests"
+      ],
+      "definition": "a proposed change to a GitHub repository, which is merged once it has been checked."
     },
     {
       "term": "record",
@@ -277,8 +469,48 @@
       ]
     },
     {
+      "term": "reference implementation",
+      "definition": "`tests/naming.py`: one function for each naming rule, which the vectors are worked out by and other implementations are compared with."
+    },
+    {
+      "term": "reference tables",
+      "definition": "public code lists, such as RxNorm for medicines, that tell a runtime when two codes mean one thing.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#ReferenceSeries",
+      "aliases": [
+        "reference table"
+      ]
+    },
+    {
+      "term": "review status",
+      "definition": "ClinVar's statement of how well a classification is supported, such as `criteria provided, multiple submitters, no conflicts`.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#clinvarReviewStatus"
+    },
+    {
+      "term": "revise",
+      "aliases": [
+        "revises",
+        "revised",
+        "revising"
+      ],
+      "definition": "of a table version, to follow an earlier version of its series and take its place for readers; a first version revises none."
+    },
+    {
       "term": "root crate",
       "definition": "`ro-crate-metadata.json`, the file at the vocabulary's root that lists its files in the RO-Crate format."
+    },
+    {
+      "term": "row",
+      "aliases": [
+        "rows"
+      ],
+      "definition": "one line of a table: in a reference table, one statement of what a code maps to; in the answer to a query, one set of values it returns."
+    },
+    {
+      "term": "row shape",
+      "definition": "the shape a table kind names for its rows: what one row of that kind must state.",
+      "aliases": [
+        "row shapes"
+      ]
     },
     {
       "term": "rule",
@@ -303,6 +535,13 @@
       ]
     },
     {
+      "term": "sandbox story",
+      "definition": "a made-up patient at a demo hospital whose records were written to show one outcome, such as a lab result that falls after a medication starts, with that outcome written down beside them.",
+      "aliases": [
+        "sandbox stories"
+      ]
+    },
+    {
       "term": "saved output",
       "definition": "the records an adapter made of a kit's download, kept in the kit beside the download."
     },
@@ -316,6 +555,11 @@
         "sections"
       ],
       "definition": "a part of a C-CDA document with a title, such as Allergies: text for a person to read, and coded statements."
+    },
+    {
+      "term": "series",
+      "definition": "one of the reference tables across its versions, such as RxNorm's product ingredients.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#ReferenceSeries"
     },
     {
       "term": "server",
@@ -332,6 +576,17 @@
       "definition": "a worked example of a naming rule for a server or a record pulled from one: its inputs and the name they give."
     },
     {
+      "term": "set hash",
+      "definition": "one hash of all the files a pod holds, made so that adding or removing a file updates it without reading the rest.",
+      "aliases": [
+        "set hashes"
+      ]
+    },
+    {
+      "term": "severity",
+      "definition": "how serious a result of a shape is, which the shape fixes: a violation, a warning or an information."
+    },
+    {
       "term": "shape case",
       "aliases": [
         "shape cases"
@@ -342,6 +597,14 @@
       "term": "shapes",
       "definition": "the vocabulary's requirements on what a record, a judgment or a file of a pod must state, written in SHACL, the W3C language for checking data.",
       "vocabulary": "https://www.w3.org/TR/shacl/"
+    },
+    {
+      "term": "snapshot",
+      "definition": "the set of files a pod held as one act left it, which names the snapshot before it as a git commit names its parent.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#Snapshot",
+      "aliases": [
+        "snapshots"
+      ]
     },
     {
       "term": "source address",
@@ -356,6 +619,13 @@
       "vocabulary": "https://www.w3.org/TR/sparql11-query/"
     },
     {
+      "term": "stem",
+      "definition": "the beginning of every code IRI of one code system, such as `http://snomed.info/id/`; the vocabulary declares one for each.",
+      "aliases": [
+        "stems"
+      ]
+    },
+    {
       "term": "sub-select",
       "aliases": [
         "sub-selects"
@@ -363,11 +633,25 @@
       "definition": "a SELECT written inside another query's group."
     },
     {
+      "term": "superclass",
+      "aliases": [
+        "superclasses"
+      ],
+      "definition": "a class that another class is a kind of: every `cascade:PatientProfile` is also a `prov:Entity`."
+    },
+    {
       "term": "symmetric property",
       "aliases": [
         "symmetric properties"
       ],
       "definition": "a term declared to hold both ways: if A is the same as B, B is the same as A."
+    },
+    {
+      "term": "system URI",
+      "definition": "the URI by which FHIR and C-CDA name a code system, such as `http://loinc.org`; a source states a code with it.",
+      "aliases": [
+        "system URIs"
+      ]
     },
     {
       "term": "table kind",
@@ -378,6 +662,13 @@
       ]
     },
     {
+      "term": "table version",
+      "definition": "one release of a series of the reference tables, named from the series, the version it revises and its rows.",
+      "aliases": [
+        "table versions"
+      ]
+    },
+    {
       "term": "term",
       "definition": "one word the vocabulary defines, named by an IRI, a web-style identifier such as `https://ns.cascadeprotocol.org/cascade#allergen`.",
       "aliases": [
@@ -385,9 +676,31 @@
       ]
     },
     {
+      "term": "triple",
+      "aliases": [
+        "triples"
+      ],
+      "definition": "one statement: a subject, a property and a value."
+    },
+    {
       "term": "Turtle",
       "definition": "a W3C text format for writing statements in the vocabulary's terms.",
       "vocabulary": "https://www.w3.org/TR/turtle/"
+    },
+    {
+      "term": "variant",
+      "definition": "a difference in one of a person's genes from the reference sequence, as a genetic test reports it.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#GeneticVariantFinding",
+      "aliases": [
+        "variants"
+      ]
+    },
+    {
+      "term": "vector",
+      "aliases": [
+        "vectors"
+      ],
+      "definition": "a worked example kept in a file, with the answer a runtime or an adapter must give for it, such as the naming, snapshot, code and row vectors here."
     },
     {
       "term": "view",

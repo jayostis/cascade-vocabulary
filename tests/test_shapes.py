@@ -11,13 +11,13 @@ from rdflib.namespace import OWL, RDF, SH
 
 from contract import KITS, CASCADE, ROOT
 from manifests import MF, path
+from naming_vectors import VECTORS, vectors
 from pods import FIXTURES, every_fixture
-from test_naming_rules import VECTORS, vectors
 
 SHT = Namespace("http://www.w3.org/ns/shacl-test#")
 CASES = ROOT / "tests" / "shape-cases"
 TARGETS = (SH.targetClass, SH.targetSubjectsOf, SH.targetObjectsOf, SH.targetNode)
-BROKEN_ELSEWHERE = {CASCADE.PlacementShape: "test_pod_layout.py breaks the layout's entries"}
+BROKEN_ELSEWHERE = {CASCADE.PlacementShape: "test_pod_layout.py breaks the layout's placements"}
 UNDECLARED_ON_PURPOSE = {CASCADE.NoSuchRecord: "Finn's type-filed-nowhere export files a record of a type no folder holds"}
 
 
