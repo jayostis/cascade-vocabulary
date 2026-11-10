@@ -275,7 +275,7 @@ class TestNameShapes:
         def test_the_name_shape_leaves_an_address_holding_a_delete_character_alone(self):
             pod = Graph()
             pod.add((URIRef("urn:uuid:11111111-1111-8111-8111-111111111106"), CASCADE.sourceUrl,
-                     URIRef("https://fhir.example/r4/Observation/obs-9")))
+                     URIRef("https://fhir.example/r4\x7f/Observation/obs-9")))
             conforms, _, _ = validate(pod, shacl_graph=shapes())
             assert conforms
 
