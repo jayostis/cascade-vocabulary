@@ -195,7 +195,10 @@ class TestRuleLists:
     """
 
     class TestGivenEveryRuleList:
-        """given every rule list"""
+        """given every rule list a feature or a kit carries
+
+        The files that hold rule list rows beside a `references.ttl` under `runtime/` or `conformance/`.
+        """
 
         def test_names_only_comparisons_under_matcher(self):
             """names only comparisons under `matcher/`"""
