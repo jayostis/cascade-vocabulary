@@ -253,7 +253,7 @@ class TestMatcherComparisons:
                 assert rows_of(store, bound_to_records(text, records)) == unbound, name
 
         @pytest.mark.parametrize("fixture", MATCHER_FIXTURES)
-        def test_gives_bound_per_side_or_joined_on_its_key_first_the_rows_of_the_comparison_it_was_made_from(self, fixture):
+        def test_gives_the_rows_of_the_comparison_it_was_made_from(self, fixture):
             """gives, bound per side or joined on its key first, the rows of the comparison it was made from
 
             Bound and unbound, on each engine; on rdflib only where the pair gives rows over the fixture, for two texts
