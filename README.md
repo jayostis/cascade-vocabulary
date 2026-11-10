@@ -108,4 +108,5 @@ python3 -m pytest -n auto --dist loadgroup
 
 They check the ontologies, the shapes and the crate; that every feature file uses only the steps `runtime/steps.md`
 lists; and each query, over
-the fixtures, on two SPARQL engines.
+the fixtures, on two SPARQL engines. The tests are classes named for what the files are held to, and they run in random
+order; `tests/spec.json` lists the headings of the tests page, each one a class.
