@@ -1,0 +1,25 @@
+name: red-main
+
+on:
+  schedule:
+    - cron: '41 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: red-main
+
+permissions: {}
+
+jobs:
+  red-main:
+    name: red-main
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - run: python3 .github/scripts/red_main.py
+        env:
+          RED_MAIN_TOKEN: ${{ secrets.RED_MAIN_TOKEN }}

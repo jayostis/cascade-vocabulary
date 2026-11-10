@@ -1,0 +1,21 @@
+{
+  "repo": "jayostis/cascade-example",
+  "workflows": [
+    {"id": 1, "name": "try", "path": ".github/workflows/try.yml", "state": "active"}
+  ],
+  "runs": {
+    "1": [
+      {"id": 110, "event": "push", "status": "completed", "conclusion": "success",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/110"},
+      {"id": 102, "event": "schedule", "status": "completed", "conclusion": "failure",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/102"}
+    ]
+  },
+  "jobs": {"102": [{"name": "try", "conclusion": "failure", "steps": [{"name": "Run", "conclusion": "failure"}]}]},
+  "issues": [
+    {"number": 7, "state": "open",
+     "body": "<!-- red-main: .github/workflows/try.yml -->\n<!-- run: 102 -->\nThe latest run failed."}
+  ],
+  "comments": {"7": []},
+  "expected": []
+}
