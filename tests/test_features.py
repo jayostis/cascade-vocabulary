@@ -64,85 +64,6 @@ PHRASES = [pattern(phrase) for heading in re.findall(r"^### (.+)$", STEPS, re.M)
            for phrase in re.findall(r"`([^`]+)`", heading)]
 
 
-def test_every_step_is_one_the_step_document_lists_and_only_a_given_or_when_is_labelled():
-    unlisted = {(path.name, step["text"]) for path, _, pickles in documents() for pickle in pickles
-                for step in pickle["steps"]
-                if not any(phrase.fullmatch(LABEL.sub("", step["text"])) for phrase in PHRASES)
-                or (LABEL.search(step["text"]) and step.get("type") == "Outcome")}
-    assert unlisted == set()
-
-
-def test_each_example_has_a_test_iri_of_its_own_and_takes_its_steps_in_time_order():
-    clashes, backwards = [], []
-    for path, _, pickles in documents():
-        slugs = [slug(pickle["name"]) for pickle in pickles]
-        clashes += [(path.name, name) for name in set(slugs) if slugs.count(name) > 1]
-        for pickle in pickles:
-            times = [f"{found.group(1)}T{found.group(2)}" for step in pickle["steps"]
-                     for found in [TIME.search(step["text"])] if found]
-            if times != sorted(times):
-                backwards.append((path.name, pickle["name"]))
-    assert (clashes, backwards) == ([], [])
-
-
-def test_every_rule_has_an_example_or_says_why_none_can_show_it():
-    silent = [(path.name, child["rule"]["name"]) for path, document, _ in documents()
-              for child in document["feature"]["children"] if "rule" in child
-              if not any("scenario" in inner for inner in child["rule"]["children"])
-              and not re.search(r"No example|no test of its own", " ".join(child["rule"]["description"].split()))]
-    assert silent == []
-
-
-def test_every_inline_query_parses():
-    broken = []
-    for path, _, pickles in documents():
-        for pickle in pickles:
-            for step in pickle["steps"]:
-                query = step.get("argument", {}).get("docString", {}).get("content")
-                if query is not None:
-                    try:
-                        parseQuery(PREFIXES + query)
-                    except Exception as error:
-                        broken.append((path.name, pickle["name"], str(error)[:80]))
-    assert broken == []
-
-
-def test_each_planted_case_a_kit_names_is_a_rule_of_it_with_an_example():
-    planted, shown = {}, {}
-    for kit in KITS:
-        feature = Parser().parse((kit / f"{kit.name}.feature").read_text(encoding="utf-8"))["feature"]
-        named = re.search(r"\bplanted cases? ([A-Z])1 to \1(\d+)", " ".join(feature["description"].split()))
-        planted[kit.name] = set(range(1, int(named.group(2)) + 1)) if named else set()
-        letter = named.group(1) if named else "P"
-        shown[kit.name] = {int(found.group(1)) for child in feature["children"] if "rule" in child
-                           for found in [re.match(rf"{letter}(\d+)\.", child["rule"]["name"])]
-                           if found and any("scenario" in inner for inner in child["rule"]["children"])}
-    assert all(planted.values()), planted
-    assert shown == planted
-
-
-def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_guards_on_its_kind_but_those_examples_break():
-    lists = {path.relative_to(ROOT).as_posix(): rows
-             for path in sorted(path for top in ("runtime", "conformance")
-                                for index in (ROOT / top).rglob("references.ttl") for path in index.parent.glob("*.ttl"))
-             for rows in [parsed(path)] if (None, RDF.type, CASCADE.RuleListRow) in rows}
-    assert len(lists) == 29
-    mismatched, unguarded = set(), set()
-    for path, rows in lists.items():
-        for row in rows.subjects(RDF.type, CASCADE.RuleListRow):
-            query = str(rows.value(row, CASCADE.queryPath))
-            assert query.startswith("matcher/"), path
-            octets = (QUERIES / query).read_bytes()
-            text = octets.decode("utf-8")
-            if ni_name(octets) != str(rows.value(row, CASCADE.queryHash)):
-                mismatched.add(("/".join(path.split("/")[-3:-1]), query))
-            if not guarded(frozenset(rows.objects(row, CASCADE.tableKind)), text):
-                unguarded.add((path, query))
-    assert mismatched == {("finn/references", "matcher/same-code.rq"),
-                          ("tables/app-new-rules", "matcher/same-code-and-date.rq")}
-    assert unguarded == set()
-
-
 @cache
 def guarded(kinds, query):
     """Whether a query reads GRAPH ?origin exactly when its row names one table kind, and joins, outside any graph, the
@@ -168,22 +89,104 @@ def guarded(kinds, query):
     return found == kinds and len(kinds) <= 1 and reads == bool(kinds)
 
 
-@pytest.mark.parametrize("kinds, query, expected", [
-    ({CASCADE.VaccineGroups}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . "
-                          "GRAPH ?origin { ?s ?p ?o } }", True),
-    ({CASCADE.VaccineGroups}, "# ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups .\n"
-                          "SELECT * { GRAPH ?origin { ?s ?p ?o } }", False),
-    ({CASCADE.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . "
-                                 "GRAPH ?origin { ?s ?p ?o } }", False),
-    (set(), "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }",
-     False),
-    ({CASCADE.VaccineGroups, CASCADE.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind "
-                                                    "cascade:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }", False),
-    ({CASCADE.VaccineGroups}, "SELECT * { OPTIONAL { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . } "
-                          "GRAPH ?origin { ?s ?p ?o } }", False),
-    ({CASCADE.VaccineGroups}, "SELECT * { ?origin prov:specializationOf ?v . ?v cascade:tableKind cascade:VaccineGroups . "
-                          "GRAPH ?origin { ?s ?p ?o } }", False),
-])
-def test_a_rule_reads_a_table_graph_exactly_when_its_row_names_the_kind_one_joined_triple_guards_it_on(kinds, query,
-                                                                                                        expected):
-    assert guarded(frozenset(kinds), PREFIXES + query) == expected
+class TestFeatureFiles:
+    class TestGivenEveryFeatureFile:
+        def test_every_step_is_one_the_step_document_lists_and_only_a_given_or_when_is_labelled(self):
+            unlisted = {(path.name, step["text"]) for path, _, pickles in documents() for pickle in pickles
+                        for step in pickle["steps"]
+                        if not any(phrase.fullmatch(LABEL.sub("", step["text"])) for phrase in PHRASES)
+                        or (LABEL.search(step["text"]) and step.get("type") == "Outcome")}
+            assert unlisted == set()
+
+        def test_each_example_has_a_test_iri_of_its_own_and_takes_its_steps_in_time_order(self):
+            clashes, backwards = [], []
+            for path, _, pickles in documents():
+                slugs = [slug(pickle["name"]) for pickle in pickles]
+                clashes += [(path.name, name) for name in set(slugs) if slugs.count(name) > 1]
+                for pickle in pickles:
+                    times = [f"{found.group(1)}T{found.group(2)}" for step in pickle["steps"]
+                             for found in [TIME.search(step["text"])] if found]
+                    if times != sorted(times):
+                        backwards.append((path.name, pickle["name"]))
+            assert (clashes, backwards) == ([], [])
+
+        def test_every_rule_has_an_example_or_says_why_none_can_show_it(self):
+            silent = [(path.name, child["rule"]["name"]) for path, document, _ in documents()
+                      for child in document["feature"]["children"] if "rule" in child
+                      if not any("scenario" in inner for inner in child["rule"]["children"])
+                      and not re.search(r"No example|no test of its own", " ".join(child["rule"]["description"].split()))]
+            assert silent == []
+
+        def test_every_inline_query_parses(self):
+            broken = []
+            for path, _, pickles in documents():
+                for pickle in pickles:
+                    for step in pickle["steps"]:
+                        query = step.get("argument", {}).get("docString", {}).get("content")
+                        if query is not None:
+                            try:
+                                parseQuery(PREFIXES + query)
+                            except Exception as error:
+                                broken.append((path.name, pickle["name"], str(error)[:80]))
+            assert broken == []
+
+    class TestGivenTheKitsFeatures:
+        def test_each_planted_case_a_kit_names_is_a_rule_of_it_with_an_example(self):
+            planted, shown = {}, {}
+            for kit in KITS:
+                feature = Parser().parse((kit / f"{kit.name}.feature").read_text(encoding="utf-8"))["feature"]
+                named = re.search(r"\bplanted cases? ([A-Z])1 to \1(\d+)", " ".join(feature["description"].split()))
+                planted[kit.name] = set(range(1, int(named.group(2)) + 1)) if named else set()
+                letter = named.group(1) if named else "P"
+                shown[kit.name] = {int(found.group(1)) for child in feature["children"] if "rule" in child
+                                   for found in [re.match(rf"{letter}(\d+)\.", child["rule"]["name"])]
+                                   if found and any("scenario" in inner for inner in child["rule"]["children"])}
+            assert all(planted.values()), planted
+            assert shown == planted
+
+
+class TestRuleLists:
+    class TestGivenEveryRuleList:
+        def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_guards_on_its_kind_but_those_examples_break(self):
+            lists = {path.relative_to(ROOT).as_posix(): rows
+                     for path in sorted(path for top in ("runtime", "conformance")
+                                        for index in (ROOT / top).rglob("references.ttl") for path in index.parent.glob("*.ttl"))
+                     for rows in [parsed(path)] if (None, RDF.type, CASCADE.RuleListRow) in rows}
+            assert len(lists) == 29
+            mismatched, unguarded = set(), set()
+            for path, rows in lists.items():
+                for row in rows.subjects(RDF.type, CASCADE.RuleListRow):
+                    query = str(rows.value(row, CASCADE.queryPath))
+                    assert query.startswith("matcher/"), path
+                    octets = (QUERIES / query).read_bytes()
+                    text = octets.decode("utf-8")
+                    if ni_name(octets) != str(rows.value(row, CASCADE.queryHash)):
+                        mismatched.add(("/".join(path.split("/")[-3:-1]), query))
+                    if not guarded(frozenset(rows.objects(row, CASCADE.tableKind)), text):
+                        unguarded.add((path, query))
+            assert mismatched == {("finn/references", "matcher/same-code.rq"),
+                                  ("tables/app-new-rules", "matcher/same-code-and-date.rq")}
+            assert unguarded == set()
+
+
+class TestChecksOfTheRuleListCheck:
+    class TestGuarded:
+        @pytest.mark.parametrize("kinds, query, expected", [
+            ({CASCADE.VaccineGroups}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . "
+                                  "GRAPH ?origin { ?s ?p ?o } }", True),
+            ({CASCADE.VaccineGroups}, "# ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups .\n"
+                                  "SELECT * { GRAPH ?origin { ?s ?p ?o } }", False),
+            ({CASCADE.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . "
+                                         "GRAPH ?origin { ?s ?p ?o } }", False),
+            (set(), "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }",
+             False),
+            ({CASCADE.VaccineGroups, CASCADE.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind "
+                                                            "cascade:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }", False),
+            ({CASCADE.VaccineGroups}, "SELECT * { OPTIONAL { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . } "
+                                  "GRAPH ?origin { ?s ?p ?o } }", False),
+            ({CASCADE.VaccineGroups}, "SELECT * { ?origin prov:specializationOf ?v . ?v cascade:tableKind cascade:VaccineGroups . "
+                                  "GRAPH ?origin { ?s ?p ?o } }", False),
+        ])
+        def test_a_rule_reads_a_table_graph_exactly_when_its_row_names_the_kind_one_joined_triple_guards_it_on(self, kinds, query,
+                                                                                                                expected):
+            assert guarded(frozenset(kinds), PREFIXES + query) == expected

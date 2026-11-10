@@ -112,20 +112,6 @@ def severities():
     return validated()[1]
 
 
-def test_each_valid_case_conforms_and_each_break_reports_its_shape_and_path_and_nothing_else():
-    assert {file for file in CASES.rglob("*.ttl") if file.name != "manifest.ttl"} == {f for f, _ in cases().values()}
-    manifest = parsed(CASES / "manifest.ttl")
-    conforms = {str(entry).rpartition("#")[2]: manifest.value(manifest.value(entry, MF.result), SH.conforms)
-                for entry in manifest.subjects(RDF.type, SHT.Validate)}
-    assert sorted(name for name, (_, expected) in cases().items() if conforms[name] != Literal(not expected)) == []
-    wrong = {name: {"expected": sorted(map(str, expected)), "reported": sorted(map(str, reported()[name]))}
-             for name, (_, expected) in cases().items() if reported()[name] != expected}
-    assert wrong == {}
-    unpinned = {name: {str(key): sorted(map(str, severity)) for key, severity in pins.items()
-                       if severities()[name].get(key) != severity} for name, pins in severity_pins().items()}
-    assert {name: bad for name, bad in unpinned.items() if bad} == {}
-
-
 def targets(shape, data):
     found = {node for kind in shapes().objects(shape, SH.targetClass) for node in data.subjects(RDF.type, kind)}
     found |= {node for p in shapes().objects(shape, SH.targetSubjectsOf) for node in data.subjects(p, None)}
@@ -136,13 +122,6 @@ def targets(shape, data):
 def targeting():
     return {shape for shape in shapes().subjects(RDF.type, SH.NodeShape)
             if any((shape, t, None) in shapes() for t in TARGETS)}
-
-
-def test_every_shape_that_targets_pod_data_has_a_valid_case_and_a_break():
-    valid = {shape for name, (file, expected) in cases().items() if not expected
-             for shape in targeting() if targets(shape, parsed(file))}
-    broken = {shape for _, expected in cases().values() for shape, _ in expected}
-    assert sorted(targeting() - set(BROKEN_ELSEWHERE) - (valid & broken)) == []
 
 
 def namespaces():
@@ -182,17 +161,6 @@ def fixture_pod(fixture):
     return graph
 
 
-def test_every_fixture_pod_conforms_to_the_shapes():
-    reports = {fixture.name: validate(fixture_pod(fixture), shacl_graph=shapes()) for fixture in FIXTURES}
-    assert {name: text for name, (conforms, _, text) in reports.items() if not conforms} == {}
-
-
-def test_every_subject_of_a_kind_the_shapes_cover_in_a_fixture_or_a_valid_case_is_a_focus_node_of_its_shape():
-    pods = {fixture.name: fixture_pod(fixture) for fixture in FIXTURES}
-    pods |= {name: parsed(file) for name, (file, expected) in cases().items() if not expected}
-    assert {name: sorted(found) for name, data in pods.items() if (found := untargeted(data))} == {}
-
-
 def written():
     yield from (fixture.folder / relative for fixture in FIXTURES for relative in fixture.files())
     yield from (file for file, expected in cases().values() if not expected)
@@ -208,25 +176,9 @@ def iris(file):
             if isinstance(term, pyoxigraph.NamedNode)}
 
 
-def test_every_term_a_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it():
-    declared = {str(term) for term in ontology().subjects(RDF.type, None)} | set(map(str, UNDECLARED_ON_PURPOSE))
-    ours = namespaces()
-    undeclared = {(term, file.relative_to(ROOT).as_posix()) for file in written() for term in iris(file)
-                  if term.startswith(ours) and term not in declared}
-    assert sorted(undeclared) == []
-
-
 def name_shape_select():
     [constraint] = shapes().objects(CASCADE.ServerRecordNameShape, SH.sparql)
     return str(shapes().value(constraint, SH.select))
-
-
-def test_the_name_shape_embeds_the_naming_rules_query_apart_from_binding_its_inputs():
-    rule = (VECTORS / "RecordFromServerNamingRule.rq").read_text(encoding="utf-8")
-    body = rule.split(" WHERE {\n", 1)[1].rsplit("\n}", 1)[0]
-    select = name_shape_select()
-    assert body in select
-    assert select.index("AS ?input3") < select.index(body)
 
 
 def server_vectors():
@@ -240,43 +192,12 @@ def records(pairs):
     return graph
 
 
-def test_the_name_shape_takes_each_server_vectors_name_for_its_address_and_no_other():
-    found = server_vectors()
-    assert len(found) >= 2
-    conforms, _, _ = validate(records((vector.expected, vector) for vector in found), shacl_graph=shapes())
-    assert conforms
-    swapped = records(zip([vector.expected for vector in found[1:] + found[:1]], found))
-    _, report, _ = validate(swapped, shacl_graph=shapes())
-    assert {str(node) for node in report.objects(None, SH.focusNode)} == {vector.expected for vector in found}
-
-
 def servers(pairs):
     graph = Graph()
     for name, vector in pairs:
         graph.add((URIRef(name), RDF.type, CASCADE.Server))
         graph.add((URIRef(name), CASCADE.serverBaseUrl, Literal(vector.inputs[0])))
     return graph
-
-
-def test_the_server_name_shape_embeds_its_rules_query_and_takes_each_server_vectors_name_and_no_other():
-    [constraint] = shapes().objects(CASCADE.ServerNameShape, SH.sparql)
-    body = (VECTORS / "ServerNamingRule.rq").read_text(encoding="utf-8").split(" WHERE {\n", 1)[1].rsplit("\n}", 1)[0]
-    assert body in str(shapes().value(constraint, SH.select))
-    found = [vector for vector in vectors() if vector.rule == "ServerNamingRule"]
-    assert len(found) >= 2
-    conforms, _, _ = validate(servers((vector.expected, vector) for vector in found), shacl_graph=shapes())
-    assert conforms
-    _, report, _ = validate(servers(zip([vector.expected for vector in found[1:] + found[:1]], found)),
-                            shacl_graph=shapes())
-    assert {str(node) for node in report.objects(None, SH.focusNode)} == {vector.expected for vector in found}
-
-
-def test_the_name_shape_leaves_an_address_holding_a_delete_character_alone():
-    pod = Graph()
-    pod.add((URIRef("urn:uuid:11111111-1111-8111-8111-111111111106"), CASCADE.sourceUrl,
-             URIRef("https://fhir.example/r4/Observation/obs-9")))
-    conforms, _, _ = validate(pod, shacl_graph=shapes())
-    assert conforms
 
 
 def name_shape_only():
@@ -289,42 +210,129 @@ def name_shape_only():
     return graph
 
 
-@pytest.mark.parametrize("kit", KITS, ids=lambda kit: kit.name)
-def test_every_record_of_a_kit_pod_with_a_source_address_has_the_name_that_address_gives(kit):
-    pod = Graph()
-    for folder in ("scripted-input", "expected"):
-        for file in sorted((kit / folder).rglob("*.ttl")):
-            pod += parsed(file)
-    _, report, _ = validate(pod, shacl_graph=name_shape_only())
-    named_wrong = {str(report.value(result, SH.focusNode)) for result in report.objects(None, SH.result)
-                   if report.value(result, SH.sourceShape) == CASCADE.ServerRecordNameShape}
-    assert named_wrong == set()
+class TestShapesThatFindAWrongPod:
+    class TestGivenAShapeCase:
+        def test_each_valid_case_conforms_and_each_break_reports_its_shape_and_path_and_nothing_else(self):
+            assert {file for file in CASES.rglob("*.ttl") if file.name != "manifest.ttl"} == {f for f, _ in cases().values()}
+            manifest = parsed(CASES / "manifest.ttl")
+            conforms = {str(entry).rpartition("#")[2]: manifest.value(manifest.value(entry, MF.result), SH.conforms)
+                        for entry in manifest.subjects(RDF.type, SHT.Validate)}
+            assert sorted(name for name, (_, expected) in cases().items() if conforms[name] != Literal(not expected)) == []
+            wrong = {name: {"expected": sorted(map(str, expected)), "reported": sorted(map(str, reported()[name]))}
+                     for name, (_, expected) in cases().items() if reported()[name] != expected}
+            assert wrong == {}
+            unpinned = {name: {str(key): sorted(map(str, severity)) for key, severity in pins.items()
+                               if severities()[name].get(key) != severity} for name, pins in severity_pins().items()}
+            assert {name: bad for name, bad in unpinned.items() if bad} == {}
+
+    class TestGivenAShapeThatTargetsAPodsData:
+        def test_every_shape_that_targets_pod_data_has_a_valid_case_and_a_break(self):
+            valid = {shape for name, (file, expected) in cases().items() if not expected
+                     for shape in targeting() if targets(shape, parsed(file))}
+            broken = {shape for _, expected in cases().values() for shape, _ in expected}
+            assert sorted(targeting() - set(BROKEN_ELSEWHERE) - (valid & broken)) == []
+
+    class TestGivenAnyFixture:
+        def test_every_fixture_pod_conforms_to_the_shapes(self):
+            reports = {fixture.name: validate(fixture_pod(fixture), shacl_graph=shapes()) for fixture in FIXTURES}
+            assert {name: text for name, (conforms, _, text) in reports.items() if not conforms} == {}
+
+    class TestGivenAnyFixtureOrValidCase:
+        def test_every_subject_of_a_kind_the_shapes_cover_in_a_fixture_or_a_valid_case_is_a_focus_node_of_its_shape(self):
+            pods = {fixture.name: fixture_pod(fixture) for fixture in FIXTURES}
+            pods |= {name: parsed(file) for name, (file, expected) in cases().items() if not expected}
+            assert {name: sorted(found) for name, data in pods.items() if (found := untargeted(data))} == {}
 
 
-def test_no_absolute_subject_iri_is_the_subject_of_nodes_in_two_shape_case_files():
-    """reported() merges every case into one graph and credits each node to one file, so a name two files share would
-    credit one file with the other's results."""
-    owners = {}
-    for name, (file, _) in cases().items():
-        for node in {s for s in parsed(file).subjects() if isinstance(s, URIRef) and ":" in s}:
-            owners.setdefault(node, set()).add(name)
-    assert {str(node): sorted(names) for node, names in owners.items() if len(names) > 1} == {}
+class TestTermsDeclared:
+    class TestGivenEveryPodFileTheVocabularyCarries:
+        def test_every_term_a_pod_writes_in_a_namespace_of_this_vocabulary_is_declared_in_it(self):
+            declared = {str(term) for term in ontology().subjects(RDF.type, None)} | set(map(str, UNDECLARED_ON_PURPOSE))
+            ours = namespaces()
+            undeclared = {(term, file.relative_to(ROOT).as_posix()) for file in written() for term in iris(file)
+                          if term.startswith(ours) and term not in declared}
+            assert sorted(undeclared) == []
 
 
-def test_a_shape_of_an_hl7_code_systems_codes_lists_exactly_the_codes_a_coding_may_carry():
-    """HL7 Terminology's CodeSystems as published (tests/terminology/hl7-terminology/, CC0), every code at every depth
-    but an abstract one (notSelectable), each percent-encoded as ENCODE_FOR_URI does."""
-    def codes(concepts):
-        for concept in concepts:
-            if not any(p["code"] == "notSelectable" and p.get("valueBoolean") for p in concept.get("property", [])):
-                yield quote(concept["code"], safe="")
-            yield from codes(concept.get("concept", []))
-    for shape, system, file in ((CASCADE.DataAbsentReasonCodeShape, CASCADE.DataAbsentReason, "CodeSystem-data-absent-reason.json"),
-                                (CASCADE.NullFlavorCodeShape, CASCADE.NullFlavor, "CodeSystem-v3-NullFlavor.json"),
-                                (CASCADE.ObservationInterpretationCodeShape, CASCADE.ObservationInterpretation,
-                                 "CodeSystem-v3-ObservationInterpretation.json")):
-        published = json.loads((ROOT / "tests" / "terminology" / "hl7-terminology" / file).read_text(encoding="utf-8"))
-        assert published["url"] == str(ontology().value(system, CASCADE.codingSystemUri))
-        stem = str(ontology().value(system, URIRef("http://rdfs.org/ns/void#uriSpace")))
-        listed = [str(code) for code in Collection(shapes(), shapes().value(shape, SH["in"]))]
-        assert listed == [stem + code for code in codes(published["concept"])]
+class TestNameShapes:
+    class TestGivenARecordWithASourceAddress:
+        def test_the_name_shape_embeds_the_naming_rules_query_apart_from_binding_its_inputs(self):
+            rule = (VECTORS / "RecordFromServerNamingRule.rq").read_text(encoding="utf-8")
+            body = rule.split(" WHERE {\n", 1)[1].rsplit("\n}", 1)[0]
+            select = name_shape_select()
+            assert body in select
+            assert select.index("AS ?input3") < select.index(body)
+
+        def test_the_name_shape_takes_each_server_vectors_name_for_its_address_and_no_other(self):
+            found = server_vectors()
+            assert len(found) >= 2
+            conforms, _, _ = validate(records((vector.expected, vector) for vector in found), shacl_graph=shapes())
+            assert conforms
+            swapped = records(zip([vector.expected for vector in found[1:] + found[:1]], found))
+            _, report, _ = validate(swapped, shacl_graph=shapes())
+            assert {str(node) for node in report.objects(None, SH.focusNode)} == {vector.expected for vector in found}
+
+        def test_the_name_shape_leaves_an_address_holding_a_delete_character_alone(self):
+            pod = Graph()
+            pod.add((URIRef("urn:uuid:11111111-1111-8111-8111-111111111106"), CASCADE.sourceUrl,
+                     URIRef("https://fhir.example/r4/Observation/obs-9")))
+            conforms, _, _ = validate(pod, shacl_graph=shapes())
+            assert conforms
+
+    class TestGivenAServer:
+        def test_the_server_name_shape_embeds_its_rules_query_and_takes_each_server_vectors_name_and_no_other(self):
+            [constraint] = shapes().objects(CASCADE.ServerNameShape, SH.sparql)
+            body = (VECTORS / "ServerNamingRule.rq").read_text(encoding="utf-8").split(" WHERE {\n", 1)[1].rsplit("\n}", 1)[0]
+            assert body in str(shapes().value(constraint, SH.select))
+            found = [vector for vector in vectors() if vector.rule == "ServerNamingRule"]
+            assert len(found) >= 2
+            conforms, _, _ = validate(servers((vector.expected, vector) for vector in found), shacl_graph=shapes())
+            assert conforms
+            _, report, _ = validate(servers(zip([vector.expected for vector in found[1:] + found[:1]], found)),
+                                    shacl_graph=shapes())
+            assert {str(node) for node in report.objects(None, SH.focusNode)} == {vector.expected for vector in found}
+
+    class TestGivenAKitsFiles:
+        @pytest.mark.parametrize("kit", KITS, ids=lambda kit: kit.name)
+        def test_every_record_of_a_kit_pod_with_a_source_address_has_the_name_that_address_gives(self, kit):
+            pod = Graph()
+            for folder in ("scripted-input", "expected"):
+                for file in sorted((kit / folder).rglob("*.ttl")):
+                    pod += parsed(file)
+            _, report, _ = validate(pod, shacl_graph=name_shape_only())
+            named_wrong = {str(report.value(result, SH.focusNode)) for result in report.objects(None, SH.result)
+                           if report.value(result, SH.sourceShape) == CASCADE.ServerRecordNameShape}
+            assert named_wrong == set()
+
+
+class TestChecksOfTheShapeCaseTools:
+    class TestValidated:
+        def test_no_absolute_subject_iri_is_the_subject_of_nodes_in_two_shape_case_files(self):
+            """reported() merges every case into one graph and credits each node to one file, so a name two files share would
+            credit one file with the other's results."""
+            owners = {}
+            for name, (file, _) in cases().items():
+                for node in {s for s in parsed(file).subjects() if isinstance(s, URIRef) and ":" in s}:
+                    owners.setdefault(node, set()).add(name)
+            assert {str(node): sorted(names) for node, names in owners.items() if len(names) > 1} == {}
+
+
+class TestHl7CodeShapes:
+    class TestGivenOneOfTheThreeCodeSystems:
+        def test_a_shape_of_an_hl7_code_systems_codes_lists_exactly_the_codes_a_coding_may_carry(self):
+            """HL7 Terminology's CodeSystems as published (tests/terminology/hl7-terminology/, CC0), every code at every depth
+            but an abstract one (notSelectable), each percent-encoded as ENCODE_FOR_URI does."""
+            def codes(concepts):
+                for concept in concepts:
+                    if not any(p["code"] == "notSelectable" and p.get("valueBoolean") for p in concept.get("property", [])):
+                        yield quote(concept["code"], safe="")
+                    yield from codes(concept.get("concept", []))
+            for shape, system, file in ((CASCADE.DataAbsentReasonCodeShape, CASCADE.DataAbsentReason, "CodeSystem-data-absent-reason.json"),
+                                        (CASCADE.NullFlavorCodeShape, CASCADE.NullFlavor, "CodeSystem-v3-NullFlavor.json"),
+                                        (CASCADE.ObservationInterpretationCodeShape, CASCADE.ObservationInterpretation,
+                                         "CodeSystem-v3-ObservationInterpretation.json")):
+                published = json.loads((ROOT / "tests" / "terminology" / "hl7-terminology" / file).read_text(encoding="utf-8"))
+                assert published["url"] == str(ontology().value(system, CASCADE.codingSystemUri))
+                stem = str(ontology().value(system, URIRef("http://rdfs.org/ns/void#uriSpace")))
+                listed = [str(code) for code in Collection(shapes(), shapes().value(shape, SH["in"]))]
+                assert listed == [stem + code for code in codes(published["concept"])]

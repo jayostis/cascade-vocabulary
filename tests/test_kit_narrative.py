@@ -93,16 +93,6 @@ def unread_sections(document, kept):
 CASES = [(download.relative_to(ROOT).as_posix(), document) for download, document in cdas()]
 
 
-def test_the_kits_c_cda_downloads_with_saved_output_are_found():
-    assert len(CASES) >= 12
-
-
-@pytest.mark.parametrize("name, document", CASES, ids=[name for name, _ in CASES])
-def test_no_section_of_the_download_goes_wholly_unread(name, document):
-    kept = saved_texts(ROOT / name)
-    assert not list(unread_sections(document, kept)), re.sub(r"\s+", " ", name)
-
-
 def document(sections):
     return ElementTree.fromstring(f'<ClinicalDocument xmlns="urn:hl7-org:v3"><component><structuredBody>{sections}</structuredBody></component></ClinicalDocument>')
 
@@ -120,12 +110,25 @@ PLANNED_MEDICATION = ('<substanceAdministration moodCode="RQO"><templateId root=
                       '<text><reference value="#ROW-1"/></text></substanceAdministration>')
 
 
-@pytest.mark.parametrize("section, title, entry, read", [
-    ("2.16.840.1.113883.10.20.22.2.6.1", "Allergies", ALLERGY, True),
-    ("2.16.840.1.113883.10.20.22.2.4.1", "Vital Signs", VITAL_SIGN, False),
-    ("2.16.840.1.113883.10.20.22.2.5.1", "Problems", CONCERN_ONLY, False),
-    ("2.16.840.1.113883.10.20.22.2.1.1", "Medications", PLANNED_MEDICATION, False),
-], ids=["an allergy", "a vital sign", "a concern act", "a medication in the request mood"])
-def test_a_reference_counts_as_a_read_only_from_a_statement_the_adapter_makes_a_record_of(section, title, entry, read):
-    sections = SECTION.format(section=section, title=title, entry=entry)
-    assert list(unread_sections(document(sections), kept=[])) == ([] if read else [title])
+class TestNarrativeAccountedFor:
+    class TestGivenTheDownloadsWithSavedOutput:
+        def test_the_kits_c_cda_downloads_with_saved_output_are_found(self):
+            assert len(CASES) >= 12
+
+        @pytest.mark.parametrize("name, document", CASES, ids=[name for name, _ in CASES])
+        def test_no_section_of_the_download_goes_wholly_unread(self, name, document):
+            kept = saved_texts(ROOT / name)
+            assert not list(unread_sections(document, kept)), re.sub(r"\s+", " ", name)
+
+
+class TestChecksOfTheNarrativeCheck:
+    class TestUnreadSections:
+        @pytest.mark.parametrize("section, title, entry, read", [
+            ("2.16.840.1.113883.10.20.22.2.6.1", "Allergies", ALLERGY, True),
+            ("2.16.840.1.113883.10.20.22.2.4.1", "Vital Signs", VITAL_SIGN, False),
+            ("2.16.840.1.113883.10.20.22.2.5.1", "Problems", CONCERN_ONLY, False),
+            ("2.16.840.1.113883.10.20.22.2.1.1", "Medications", PLANNED_MEDICATION, False),
+        ], ids=["an allergy", "a vital sign", "a concern act", "a medication in the request mood"])
+        def test_a_reference_counts_as_a_read_only_from_a_statement_the_adapter_makes_a_record_of(self, section, title, entry, read):
+            sections = SECTION.format(section=section, title=title, entry=entry)
+            assert list(unread_sections(document(sections), kept=[])) == ([] if read else [title])
