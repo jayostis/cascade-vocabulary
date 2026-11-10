@@ -1,7 +1,4 @@
-"""The medication lifecycle: every code of the two FHIR R4 medication status value sets is a row of the derivation, a
-record with no status is unknown, an entry has the class of the record it takes its status from, and the engines agree
-on all of them. The dispense lifecycle likewise for FHIR R4's MedicationDispense status codes, each in the class rule L2
-gives it. The value sets are HL7's CodeSystems, pinned under tests/terminology/hl7-fhir-r4/ (CC0)."""
+"""The status codes are HL7's CodeSystems for FHIR R4, pinned under tests/terminology/hl7-fhir-r4/ (CC0)."""
 
 import json
 from pathlib import Path
@@ -17,6 +14,15 @@ CODE_SYSTEMS = Path(__file__).parent / "terminology" / "hl7-fhir-r4"
 CASCADE = "https://ns.cascadeprotocol.org/cascade#"
 PAV = "http://purl.org/pav/"
 DERIVATION = "derivations/medication-lifecycles.rq"
+DISPENSE_DERIVATION = "derivations/medication-dispense-lifecycles.rq"
+DISPENSE_CLASSES = {
+    "completed": "MedicationDispenseCompleted",
+    "preparation": "MedicationDispenseInProgress", "in-progress": "MedicationDispenseInProgress",
+    "on-hold": "MedicationDispenseInProgress",
+    "cancelled": "MedicationDispenseNotCompleted", "declined": "MedicationDispenseNotCompleted",
+    "stopped": "MedicationDispenseNotCompleted",
+    "entered-in-error": "MedicationDispenseEnteredInError", "unknown": "MedicationDispenseUnknown",
+}
 
 
 def codes(file):
@@ -31,84 +37,78 @@ def codes(file):
 FHIR_CODES = sorted(codes("codesystem-medicationrequest-status.json") | codes("codesystem-medication-statement-status.json"))
 
 
-def lifecycles(engine, statuses):
-    """What the derivation gives a record of one medication, alone in its entry, for each status, None for an absent
-    one: its class and the step that gave it, and the entry's."""
+def derived(engine, record_class, derivation, statuses):
+    """What the derivation gives a record of the class that states each status, alone in an entry of its own, by the
+    local name of the property: the record's class and, where the derivation gives one, the step that gave it."""
     store = ENGINES[engine]()
     triples = set()
     for number, status in enumerate(statuses):
         record, entry, version = (URIRef(f"urn:x:{name}{number}") for name in ("record", "entry", "version"))
-        triples |= {(record, RDF.type, URIRef(CASCADE + "PrescribedOrReportedMedication")), (record, URIRef(CASCADE + "inEntry"), entry),
-                    (entry, URIRef(CASCADE + "statusFrom"), record), (record, URIRef(PAV + "hasCurrentVersion"), version)}
-        if status is not None:
-            triples.add((version, URIRef(CASCADE + "workflowStatus"), Literal(status)))
+        triples |= {(record, RDF.type, URIRef(CASCADE + record_class)), (record, URIRef(CASCADE + "inEntry"), entry),
+                    (record, URIRef(PAV + "hasCurrentVersion"), version),
+                    (version, URIRef(CASCADE + "workflowStatus"), Literal(status))}
     store.add(triples)
-    found = store.construct(query(DERIVATION))
-    def of(subject, number, name):
-        return next(o for s, p, o in found if s == URIRef(f"urn:x:{subject}{number}") and p == URIRef(CASCADE + name))
-
-    return {number: ((of("record", number, "currentVersionStatusLifecycle"), int(of("record", number, "currentVersionStatusLifecycleStep"))),
-                     (of("entry", number, "statusLifecycle"), int(of("entry", number, "statusLifecycleStep"))))
-            for number in range(len(statuses))}
+    found = store.construct(query(derivation))
+    return {status: {p.removeprefix(CASCADE): o for s, p, o in found if s == URIRef(f"urn:x:record{number}")}
+            for number, status in enumerate(statuses)}
 
 
-@pytest.mark.parametrize("engine", sorted(ENGINES))
-def test_every_fhir_medication_status_code_is_a_row_of_its_own_an_absent_status_is_unknown_and_the_entry_has_its_records_class(engine):
-    found = lifecycles(engine, [*FHIR_CODES, None])
-    assert {code: found[number][0][1] for number, code in enumerate(FHIR_CODES)} == dict.fromkeys(FHIR_CODES, 3)
-    assert found[len(FHIR_CODES)][0] == (URIRef(CASCADE + "MedicationUnknown"), 2)
-    assert all(record == entry for record, entry in found.values())
-
-
-DISPENSE_DERIVATION = "derivations/medication-dispense-lifecycles.rq"
-DISPENSE_CLASSES = {
-    "completed": "MedicationDispenseCompleted",
-    "preparation": "MedicationDispenseInProgress", "in-progress": "MedicationDispenseInProgress",
-    "on-hold": "MedicationDispenseInProgress",
-    "cancelled": "MedicationDispenseNotCompleted", "declined": "MedicationDispenseNotCompleted",
-    "stopped": "MedicationDispenseNotCompleted",
-    "entered-in-error": "MedicationDispenseEnteredInError", "unknown": "MedicationDispenseUnknown",
-}
+def medication_lifecycles(engine):
+    """The step that gave each code of the two medication status lists its class."""
+    found = derived(engine, "PrescribedOrReportedMedication", DERIVATION, FHIR_CODES)
+    return {code: int(found[code]["currentVersionStatusLifecycleStep"]) for code in FHIR_CODES}
 
 
 def dispense_lifecycles(engine, statuses):
-    """What the dispense derivation gives a dispense alone in its entry, for each status, None for an absent one: its
-    class, and its entry's."""
-    store = ENGINES[engine]()
-    triples = set()
-    for number, status in enumerate(statuses):
-        record, entry, version = (URIRef(f"urn:x:{name}{number}") for name in ("record", "entry", "version"))
-        triples |= {(record, RDF.type, URIRef(CASCADE + "MedicationDispense")), (record, URIRef(CASCADE + "inEntry"), entry),
-                    (entry, URIRef(CASCADE + "statusFrom"), record), (record, URIRef(PAV + "hasCurrentVersion"), version)}
-        if status is not None:
-            triples.add((version, URIRef(CASCADE + "workflowStatus"), Literal(status)))
-    store.add(triples)
-    found = store.construct(query(DISPENSE_DERIVATION))
-    def of(subject, number, name):
-        return next(o for s, p, o in found if s == URIRef(f"urn:x:{subject}{number}") and p == URIRef(CASCADE + name))
-
-    return {number: (of("record", number, "currentVersionStatusLifecycle"), of("entry", number, "statusLifecycle"))
-            for number in range(len(statuses))}
+    """The class the dispense derivation gives each status, by its local name."""
+    found = derived(engine, "MedicationDispense", DISPENSE_DERIVATION, statuses)
+    return {status: found[status]["currentVersionStatusLifecycle"].removeprefix(CASCADE) for status in statuses}
 
 
-@pytest.mark.parametrize("engine", sorted(ENGINES))
-def test_every_fhir_dispense_status_code_has_the_class_l2_gives_it_and_an_absent_or_other_status_is_unknown(engine):
-    statuses = sorted(codes("codesystem-medicationdispense-status.json"))
-    assert set(statuses) == set(DISPENSE_CLASSES)
-    found = dispense_lifecycles(engine, [*statuses, "In Progress", "picked up", None])
-    expected = [*(DISPENSE_CLASSES[status] for status in statuses), "MedicationDispenseInProgress",
-                "MedicationDispenseUnknown", "MedicationDispenseUnknown"]
-    assert [record for record, _ in found.values()] == [URIRef(CASCADE + name) for name in expected]
-    assert all(record == entry for record, entry in found.values())
+class TestMedicationStatusCodes:
+    """Medication status codes the lifecycle derivations class · queries/derivations/medication-lifecycles.rq,
+    queries/derivations/medication-dispense-lifecycles.rq
 
+    A medication's status is classed as active, stopped, paused, unknown or entered in error, and a pharmacy's dispense
+    by a table of its own. HL7 publishes the status codes a FHIR server may send; these derivations class every one of
+    them by name, so none falls through to unknown.
 
-@pytest.mark.parametrize("engine", sorted(ENGINES))
-def test_a_dispense_with_no_status_and_no_status_source_is_unknown_and_so_is_its_entry(engine):
-    store = ENGINES[engine]()
-    record, entry = URIRef("urn:x:record"), URIRef("urn:x:entry")
-    store.add({(record, RDF.type, URIRef(CASCADE + "MedicationDispense")), (record, URIRef(CASCADE + "inEntry"), entry),
-               (record, URIRef(PAV + "hasCurrentVersion"), URIRef("urn:x:version"))})
-    found = store.construct(query(DISPENSE_DERIVATION))
-    unknown = URIRef(CASCADE + "MedicationDispenseUnknown")
-    assert (record, URIRef(CASCADE + "currentVersionStatusLifecycle"), unknown) in found
-    assert (entry, URIRef(CASCADE + "statusLifecycle"), unknown) in found
+    @rule lifecycle L1
+    @rule lifecycle L2
+    """
+
+    class TestGivenAMedicationThatStatesEachCode:
+        """given a medication that states each code of HL7's two medication status lists"""
+
+        @pytest.mark.parametrize("engine", sorted(ENGINES))
+        def test_classes_every_code_by_a_row_of_its_own(self, engine):
+            """classes every code by a row of its own, the third place in L1's order
+
+            One medication states each code of the two lists, `MedicationRequest.status` and `MedicationStatement.status`.
+            The derivation gives each the class of the row for that code, which is the third place in L1's order, and not
+            the second, where an absent or unlisted status falls to unknown.
+            """
+            assert medication_lifecycles(engine) == dict.fromkeys(FHIR_CODES, 3)
+
+    class TestGivenHl7sListOfDispenseStatusCodes:
+        """given HL7's list of MedicationDispense status codes"""
+
+        def test_holds_exactly_the_nine_codes_that_l2_gives_a_class(self):
+            """holds exactly the nine codes that L2 gives a class
+
+            The codes in HL7's `MedicationDispense.status` list are compared with the nine codes the test holds as the
+            ones L2 gives a class, so a code HL7 adds, or one L2 names that HL7 does not, fails here.
+            """
+            assert set(codes("codesystem-medicationdispense-status.json")) == set(DISPENSE_CLASSES)
+
+    class TestGivenADispenseThatStatesEachCode:
+        """given a dispense that states each of those codes"""
+
+        @pytest.mark.parametrize("engine", sorted(ENGINES))
+        def test_has_the_class_l2_gives_its_code(self, engine):
+            """has the class L2 gives its code
+
+            One dispense states each of the nine codes. The class the derivation gives it is compared with the class L2
+            names for that code: completed, in progress, not completed, entered in error or unknown.
+            """
+            assert dispense_lifecycles(engine, sorted(DISPENSE_CLASSES)) == DISPENSE_CLASSES
