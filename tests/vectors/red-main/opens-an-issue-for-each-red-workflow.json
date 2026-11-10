@@ -1,0 +1,55 @@
+{
+  "repo": "jayostis/cascade-example",
+  "workflows": [
+    {"id": 1, "name": "nightly", "path": ".github/workflows/nightly.yml", "state": "active"},
+    {"id": 2, "name": "watch", "path": ".github/workflows/watch.yml", "state": "active"},
+    {"id": 3, "name": "check", "path": ".github/workflows/check.yml", "state": "active"}
+  ],
+  "runs": {
+    "1": [
+      {"id": 101, "event": "schedule", "status": "completed", "conclusion": "failure",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/101"}
+    ],
+    "2": [
+      {"id": 201, "event": "schedule", "status": "completed", "conclusion": "timed_out",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/201"}
+    ],
+    "3": [
+      {"id": 301, "event": "push", "status": "completed", "conclusion": "success",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/301"}
+    ]
+  },
+  "jobs": {
+    "101": [
+      {"name": "build", "conclusion": "success", "steps": [{"name": "Set up job", "conclusion": "success"}]},
+      {"name": "launcher", "conclusion": "failure", "steps": [
+        {"name": "Run actions/checkout@v7", "conclusion": "success"},
+        {"name": "Run npm run test:launcher", "conclusion": "failure"},
+        {"name": "Run npm run lint", "conclusion": "failure"}
+      ]}
+    ]
+  },
+  "issues": [],
+  "comments": {},
+  "expected": [
+    {
+      "do": "open",
+      "title": "nightly is red on main",
+      "body_has": [
+        "<!-- red-main: .github/workflows/nightly.yml -->",
+        "<!-- run: 101 -->",
+        "https://github.com/jayostis/cascade-example/actions/runs/101",
+        "`launcher / Run npm run test:launcher`"
+      ]
+    },
+    {
+      "do": "open",
+      "title": "watch is red on main",
+      "body_has": [
+        "<!-- red-main: .github/workflows/watch.yml -->",
+        "<!-- run: 201 -->",
+        "not reported"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "repo": "jayostis/cascade-example",
+  "workflows": [
+    {"id": 1, "name": "nightly", "path": ".github/workflows/nightly.yml", "state": "active"},
+    {"id": 2, "name": "watch", "path": ".github/workflows/watch.yml", "state": "active"}
+  ],
+  "runs": {
+    "1": [
+      {"id": 103, "event": "schedule", "status": "completed", "conclusion": "success",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/103"},
+      {"id": 102, "event": "schedule", "status": "completed", "conclusion": "failure",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/102"}
+    ],
+    "2": [
+      {"id": 202, "event": "schedule", "status": "completed", "conclusion": "failure",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/202"}
+    ]
+  },
+  "jobs": {
+    "202": [{"name": "watch", "conclusion": "failure", "steps": [{"name": "Fetch", "conclusion": "failure"}]}]
+  },
+  "issues": [
+    {"number": 7, "state": "open",
+     "body": "<!-- red-main: .github/workflows/nightly.yml -->\n<!-- run: 101 -->\nThe latest run failed."},
+    {"number": 8, "state": "open",
+     "body": "<!-- red-main: .github/workflows/watch.yml -->\n<!-- run: 202 -->\nThe latest run failed."}
+  ],
+  "comments": {"7": [], "8": []},
+  "expected": [
+    {
+      "do": "close",
+      "number": 7,
+      "body_has": [
+        "<!-- run: 103 -->",
+        "https://github.com/jayostis/cascade-example/actions/runs/103"
+      ]
+    }
+  ]
+}

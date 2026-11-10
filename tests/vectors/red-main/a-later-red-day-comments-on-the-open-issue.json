@@ -1,0 +1,37 @@
+{
+  "repo": "jayostis/cascade-example",
+  "workflows": [
+    {"id": 1, "name": "nightly", "path": ".github/workflows/nightly.yml", "state": "active"}
+  ],
+  "runs": {
+    "1": [
+      {"id": 1011, "event": "schedule", "status": "completed", "conclusion": "failure",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/1011"}
+    ]
+  },
+  "jobs": {
+    "1011": [
+      {"name": "launcher", "conclusion": "failure", "steps": [
+        {"name": "Run npm run test:launcher", "conclusion": "failure"}
+      ]}
+    ]
+  },
+  "issues": [
+    {"number": 7, "state": "open",
+     "body": "<!-- red-main: .github/workflows/nightly.yml -->\n<!-- run: 101 -->\nThe latest run failed."}
+  ],
+  "comments": {
+    "7": [{"body": "<!-- run: 1012 -->\nStill red."}]
+  },
+  "expected": [
+    {
+      "do": "comment",
+      "number": 7,
+      "body_has": [
+        "<!-- run: 1011 -->",
+        "https://github.com/jayostis/cascade-example/actions/runs/1011",
+        "`launcher / Run npm run test:launcher`"
+      ]
+    }
+  ]
+}

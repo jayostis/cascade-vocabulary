@@ -1,0 +1,29 @@
+{
+  "repo": "jayostis/cascade-example",
+  "workflows": [
+    {"id": 1, "name": "check", "path": ".github/workflows/check.yml", "state": "active"},
+    {"id": 2, "name": "old", "path": ".github/workflows/old.yml", "state": "disabled_manually"}
+  ],
+  "runs": {
+    "1": [
+      {"id": 100, "event": "push", "status": "completed", "conclusion": "success",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/100"}
+    ],
+    "2": [
+      {"id": 200, "event": "push", "status": "completed", "conclusion": "failure",
+       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/200"}
+    ]
+  },
+  "jobs": {},
+  "issues": [
+    {"number": 3, "state": "open",
+     "body": "<!-- red-main: .github/workflows/old.yml -->\n<!-- run: 190 -->\nThe latest run failed."},
+    {"number": 4, "state": "open",
+     "body": "<!-- red-main: .github/workflows/deleted.yml -->\n<!-- run: 191 -->\nThe latest run failed."}
+  ],
+  "comments": {"3": [], "4": []},
+  "expected": [
+    {"do": "close", "number": 3, "body_has": ["no longer an active workflow"]},
+    {"do": "close", "number": 4, "body_has": ["no longer an active workflow"]}
+  ]
+}
