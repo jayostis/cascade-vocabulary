@@ -285,6 +285,7 @@ def reasons():
 PUBLISHED = json.loads((ROOT / "tests" / "published-bytes.json").read_text())
 PUBLISHED_FILES = ("runtime/rule-list/[0-9a-f]*.ttl", "queries/matcher/*.rq")
 
+
 class TestQueryForm:
     """The form every query is written in · queries/**/*.rq
 
