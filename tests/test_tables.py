@@ -61,6 +61,14 @@ SHARED = ROOT / "runtime" / "rule-list"
 CASES = json.loads((VERSIONS / "cases.json").read_text(encoding="utf-8"))
 
 
+def held_messages(folder, kind, rows):
+    """The messages of the kind's row shape that a table version in the folder is held to."""
+    said = row_messages(kind, rows)
+    if folder.parent == PUBLISHED_BEFORE_RO and kind in (CASCADE.ProductIngredients, CASCADE.VaccineGroups):
+        return {m for m in said if not any(relation in m for relation in ("with obo:RO_0002350", "with obo:RO_0002248"))}
+    return said
+
+
 @cache
 def table_versions():
     """Each table version of every kit and vector: its folder, its file stem, its kind and its rows."""
@@ -407,6 +415,9 @@ class TestReferenceTables:
     Reference tables reach a pod as versions of a series, each of one table kind, and every kind has a row shape: what one
     row of it must state. A row that breaks its shape is refused with a message that says how, and a row and a table
     version are each named from what they hold.
+    `hana`'s apps hold rule-list versions 1 to 8, whose pinned R3 and R4 queries read only skos:broadMatch rows, so their
+    product ingredient and vaccine group tables stay as published before version 9 and are held to every part of their
+    row shape but the relation.
 
     @rule naming N11
     @rule naming N12
@@ -496,19 +507,49 @@ class TestReferenceTables:
             assert any(message in m for m in said), said
             assert not any("with dct:isReplacedBy" in m for m in said), said
 
+    class TestGivenATableHeldAsPublished:
+        @pytest.mark.parametrize("kind, rows", [
+            pytest.param(CASCADE.VaccineGroups, f"<urn:x:r> {ROW.replace('obo:RO_0002350', 'skos:broadMatch')} ; {CURATED} .",
+                         id="vaccine groups"),
+            pytest.param(CASCADE.ProductIngredients, f"<urn:x:r> {DRUG} ; {CHAINED} .", id="product ingredients"),
+        ])
+        def test_is_not_told_to_use_the_relation(self, kind, rows):
+            """is not told to use the relation
+
+            A vaccine group row or a product ingredient row that states a `skos:broadMatch` and nothing else wrong gets no
+            message, in a table of `hana`'s.
+            """
+            folder = PUBLISHED_BEFORE_RO / "app"
+            assert held_messages(folder, kind, Graph().parse(data=PREFIXES + rows, format="turtle")) == set()
+
+        @pytest.mark.parametrize("kind, rows, message", [
+            pytest.param(CASCADE.VaccineGroups,
+                         f"<urn:x:r> {ROW.replace('obo:RO_0002350', 'skos:broadMatch').replace('cvx:141', 'rxnorm:7980')} ; {CURATED} .",
+                         "maps a CVX code", id="vaccine groups"),
+            pytest.param(CASCADE.ProductIngredients, f"<urn:x:r> {DRUG.replace('rxnorm:153010', 'cvx:141')} ; {CHAINED} .",
+                         "A product ingredient row maps an RxNorm code", id="product ingredients"),
+        ])
+        def test_reports_a_break_other_than_the_relation(self, kind, rows, message):
+            """reports a break other than the relation
+
+            A vaccine group row or a product ingredient row that states a `skos:broadMatch` and is broken another way is
+            given the message for that break, in a table of `hana`'s.
+            """
+            said = held_messages(PUBLISHED_BEFORE_RO / "app", kind, Graph().parse(data=PREFIXES + rows, format="turtle"))
+            assert any(message in m for m in said), said
+
     class TestGivenAnyTableVersionOfAKitOrOfScriptedInput:
         def test_conforms_to_its_kinds_row_shape(self):
-            """conforms to its kind's row shape, but for two kinds of `hana`'s tables
+            """conforms to its kind's row shape, but for the relation of two kinds of `hana`'s tables
 
             The rows of every table version a kit or the scripted input holds are checked against its kind's row shape.
-            The product ingredients and vaccine groups under `runtime/scripted-input/hana/tables` are not checked.
+            The product ingredients and vaccine groups under `runtime/scripted-input/hana/tables` are not checked for
+            the relation their rows state.
             """
             assert table_versions()
             broken = {}
             for folder, stem, kind, rows in table_versions():
-                held_as_published = folder.parent == PUBLISHED_BEFORE_RO and kind in (CASCADE.ProductIngredients,
-                                                                                      CASCADE.VaccineGroups)
-                if (said := row_messages(kind, rows)) and not held_as_published:
+                if said := held_messages(folder, kind, rows):
                     broken[f"{folder.relative_to(ROOT).as_posix()}/{stem}"] = said
             assert broken == {}
 

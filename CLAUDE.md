@@ -20,14 +20,17 @@ The contract a Cascade pod is built and read by; [`README.md`](README.md) names 
   and a rule's examples under `runtime/` from the rule they sit under, never from a runtime's output.
 - **A query is tested on fixtures under [`tests/fixtures/`](tests/fixtures), one per behaviour, never on an
   example.** Its expected rows are written from what the query says it does. A check true of any pod runs over every
-  fixture, with `every_fixture` from [`tests/pods.py`](tests/pods.py).
+  fixture, with `every_fixture` from [`tests/pods.py`](tests/pods.py). A derivation's table of codes is the exception: its
+  test builds one record for each code of the list pinned under `tests/terminology/`, and one stating none, so a code the
+  list gains fails without a fixture to copy it into.
 - **A change here is tried against the reference runtime** by the `compatibility` check, on each pull request and
   nightly. One the runtime must follow is a pair of pull requests, here and in cascade-runtime-js, each naming the other
   on a `Depends-On:` line.
 - **The suite runs in parallel** (`python3 -m pytest -n auto --dist loadgroup`): what a test builds is built once per
   worker, and the cases that share it are put on one worker with `xdist_group`.
-- **A top-level test class is a heading of the tests page:** its docstring's first paragraph is the heading, listed in
-  `tests/spec.json`.
+- **Every test sits in a top-level class whose docstring's first paragraph is a heading of the tests page,** written
+  word for word in tests/spec.json (under capabilities, or build for the suite's checks of its own tools); CI's
+  spec-shape step refuses one that is not, and pytest does not check it.
 
 ## Conventions
 
