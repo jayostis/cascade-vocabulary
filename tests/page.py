@@ -7,7 +7,7 @@ import re
 import pytest
 
 RULE = re.compile(r"^@rule[ \t]+(.+)$", re.MULTILINE)
-HUMP = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
+HUMP = re.compile(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
 
 
 def said(thing, name):
