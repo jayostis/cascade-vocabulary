@@ -723,6 +723,18 @@ class TestChecksOfTheQueryChecks:
                     if token.group().startswith("<")]
             assert iris == ["<urn:a#b>", "<>"]
 
+    class TestHasASubselectAfterAPattern:
+        """`has_a_subselect_after_a_pattern()`"""
+
+        def test_refuses_a_graph_after_a_pattern_that_holds_a_sub_select(self):
+            """refuses a GRAPH after a pattern that holds a sub-select
+
+            Given a triple pattern followed by a GRAPH whose braces hold a sub-select,
+            `has_a_subselect_after_a_pattern()` returns true, as that sub-select is reached after a pattern.
+            """
+            assert has_a_subselect_after_a_pattern(parseQuery(
+                "SELECT * WHERE { ?a ?b ?c GRAPH ?g { { SELECT ?z WHERE { ?z ?p ?v } } } }"))
+
     class TestNestedForms:
         """`nested_forms()`"""
 
