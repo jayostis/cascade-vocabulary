@@ -1242,7 +1242,7 @@ cascade:countsUnderLens a owl:DatatypeProperty ;
 
 cascade:membersJoinedByCurrentTableVersion a owl:ObjectProperty ;
     rdfs:label "members joined by current table version"@en ;
-    rdfs:comment "Derived: the current version of a series the matcher's claim used another version of, whose rows the query the current rule list runs for the claim's rule joins its members by, one of them to each of the others (M7)."@en ;
+    rdfs:comment "Derived: the current version of a series the matcher's judgment used another version of, whose rows the query the current rule list runs for the judgment's rule joins its members by, one of them to each of the others (M7)."@en ;
     rdfs:domain cascade:Judgment ;
     rdfs:range prov:Entity .
 
@@ -1277,7 +1277,7 @@ cascade:JudgedErroneous a owl:NamedIndividual ;
 cascade:ImportJudgedErroneous a owl:NamedIndividual ;
     rdfs:label "the import that brought it was judged erroneous"@en .
 
-cascade:PatientNotClaimed a owl:NamedIndividual ;
+cascade:PatientProfileNotClaimed a owl:NamedIndividual ;
     rdfs:label "its patient profile has no counting About"@en .
 
 cascade:NoPatient a owl:NamedIndividual ;
@@ -1615,7 +1615,7 @@ cascade:appliesToClass a owl:ObjectProperty ;
 
 cascade:matcherRule a owl:ObjectProperty ;
     rdfs:label "matcher rule"@en ;
-    rdfs:comment "The matcher rule a row of a rule list runs, or that a machine claim was made by: one of the rule terms R1 to R17 of runtime/matcher.feature. A claim's name takes it."@en ;
+    rdfs:comment "The matcher rule a row of a rule list runs, or that a matcher judgment was made by: one of the rule terms R1 to R17 of runtime/matcher.feature. A matcher judgment's name takes it."@en ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:RuleListRow cascade:Judgment ) ] .
 
 cascade:queryPath a owl:DatatypeProperty ;
@@ -1631,7 +1631,7 @@ cascade:queryHash a owl:ObjectProperty ;
 
 cascade:rowOfRuleListVersion a owl:ObjectProperty ;
     rdfs:label "row of rule list version"@en ;
-    rdfs:comment "The rule list version a row belongs to, as a pod describes it: a version's description names each row <version>#<the rule term's local name>, with its cascade:matcherRule and cascade:queryHash, so a lens can compare the row for a claim's rule in two versions."@en ;
+    rdfs:comment "The rule list version a row belongs to, as a pod describes it: a version's description names each row <version>#<the rule term's local name>, with its cascade:matcherRule and cascade:queryHash, so a lens can compare the row for a matcher judgment's rule in two versions."@en ;
     rdfs:domain cascade:RuleListRow ;
     rdfs:range prov:Entity .
 
@@ -2591,7 +2591,7 @@ cascade:MedicationDispenseEnteredInError a skos:Concept ;
 
 cascade:Judgment a owl:Class ;
     rdfs:label "judgment"@en ;
-    rdfs:comment "A conclusion about records, made by a person at a time or claimed by a machine, which gives no time; its members are prov:hadMember."@en ;
+    rdfs:comment "A conclusion about records, made by a person at a time or by a matcher, which gives no time; its members are prov:hadMember."@en ;
     rdfs:subClassOf prov:Collection .
 
 cascade:verdict a owl:ObjectProperty ;
@@ -2600,7 +2600,7 @@ cascade:verdict a owl:ObjectProperty ;
 
 cascade:Same a owl:NamedIndividual ;
     rdfs:label "same"@en ;
-    rdfs:comment "The members are one thing: a view draws one entry on every member. A Same whose one member is a cascade:ClaimsNoLongerReached finding joins, for each claim the finding names, that claim's members, as a Same of them would."@en .
+    rdfs:comment "The members are one thing: a view draws one entry on every member. A Same whose one member is a cascade:MatcherJudgmentsNoLongerReached finding joins, for each matcher judgment the finding names, that judgment's members, as a Same of them would."@en .
 
 cascade:Different a owl:NamedIndividual ;
     rdfs:label "different"@en ;
@@ -2772,12 +2772,12 @@ dct:replaces a rdf:Property ;
 
 cascade:matcherRuleDeclaredWrong a owl:ObjectProperty ;
     rdfs:label "matcher rule declared wrong"@en ;
-    rdfs:comment "Of a rule list version, the release, a matcher rule it declares wrong: once a pod's current rule list version is the release or a version after it, the pod's cascade:RuleListVersionMigration retracts each assertion of that rule's claims under a version the release revises, so a known-bad join is not offered back. An assertion under the release or a later version is not declared wrong: a version that ships the rule fixed, or runs it again, can join the pair again."@en ;
+    rdfs:comment "Of a rule list version, the release, a matcher rule it declares wrong: once a pod's current rule list version is the release or a version after it, the pod's cascade:RuleListVersionMigration retracts each assertion of that rule's matcher judgments under a version the release revises, so a known-bad join is not offered back. An assertion under the release or a later version is not declared wrong: a version that ships the rule fixed, or runs it again, can join the pair again."@en ;
     rdfs:domain prov:Entity .
 
 cascade:RuleListVersionMigration a owl:Class ;
     rdfs:label "rule list version migration"@en ;
-    rdfs:comment "An act a runtime performs whenever the pod's current rule list version, or a version it revises, declares a matcher rule wrong and the pod holds an assertion of that rule's claim, under a version the declaring version revises, that no retraction invalidates: at an open, before its matcher run; at a sync's arrival; before a matcher run. It writes a retraction of each such assertion, a prov:Activity that prov:invalidated the assertion and prov:used the declaring version, named by cascade:RetractionNamingRule with no time and no run, so two writers on one release write one file with one content, whatever order they met the versions in. It is written only when it writes a retraction."@en ;
+    rdfs:comment "An act a runtime performs whenever the pod's current rule list version, or a version it revises, declares a matcher rule wrong and the pod holds an assertion of that rule's matcher judgment, under a version the declaring version revises, that no retraction invalidates: at an open, before its matcher run; at a sync's arrival; before a matcher run. It writes a retraction of each such assertion, a prov:Activity that prov:invalidated the assertion and prov:used the declaring version, named by cascade:ReleaseRetractionNamingRule with no time and no run, so two writers on one release write one file with one content, whatever order they met the versions in. It is written only when it writes a retraction."@en ;
     rdfs:subClassOf prov:Activity .
 
 cascade:currentlySame a owl:ObjectProperty , owl:SymmetricProperty ;
@@ -2796,21 +2796,21 @@ cascade:currentlyDifferent a owl:ObjectProperty , owl:SymmetricProperty ;
 
 cascade:FindingForReview a owl:Class ;
     rdfs:label "finding for review"@en ;
-    rdfs:comment "Something a runtime noticed about what the pod holds and filed for a person to answer, a file an act wrote and named by cascade:FindingNamingRule from its own triples, so two writers that notice one thing file one file. Its kind is its oa:hasBody, a concept of cascade:FindingForReviewKinds, its oa:motivatedBy oa:classifying, since it classifies its targets as that kind, and what it is about its oa:hasTarget. Each kind says how its body reads its targets: whether it applies to each target alone, as cascade:ClaimsNoLongerReached does, or to the targets together, as a finding of two records' differing values would. It carries no time and names no act: which act filed it is read from that act's snapshot. A person answers it with a judgment whose one member it is; an acknowledged finding still stands."@en ;
+    rdfs:comment "Something a runtime noticed about what the pod holds and filed for a person to answer, a file an act wrote and named by cascade:FindingNamingRule from its own triples, so two writers that notice one thing file one file. Its kind is its oa:hasBody, a concept of cascade:FindingForReviewKinds, its oa:motivatedBy oa:classifying, since it classifies its targets as that kind, and what it is about its oa:hasTarget. Each kind says how its body reads its targets: whether it applies to each target alone, as cascade:MatcherJudgmentsNoLongerReached does, or to the targets together, as a finding of two records' differing values would. It carries no time and names no act: which act filed it is read from that act's snapshot. A person answers it with a judgment whose one member it is; an acknowledged finding still stands."@en ;
     rdfs:subClassOf oa:Annotation , prov:Entity .
 
 cascade:FindingForReviewKinds a skos:ConceptScheme ;
     rdfs:label "finding for review kinds"@en ;
     rdfs:comment "The kinds of thing a cascade:FindingForReview reports, as its oa:hasBody."@en .
 
-cascade:ClaimsNoLongerReached a skos:Concept ;
+cascade:MatcherJudgmentsNoLongerReached a skos:Concept ;
     skos:inScheme cascade:FindingForReviewKinds ;
-    skos:prefLabel "claims no longer reached"@en ;
-    skos:definition "The matcher claims a rule list version no longer reaches (cascade:noLongerReachedUnderRuleListVersion), each an oa:hasTarget: every claim nothing withdraws that is asserted, by an assertion no retraction invalidates, under a version whose row for its rule carries the cascade:queryHash of that rule's row in any version on this one's prov:wasRevisionOf line, under none whose row carries the hash of this version's row for it, and that no finding the pod holds names, the rows read as the pod describes them; so which versions the pod's runs went through does not change which claims are named. The body applies to each target alone: each is a claim no longer reached. Filed once per rule list version, by the first run that compares the whole pod under it and leaves at least one such claim, so these claims are listed together on the review page rather than pair by pair. What a claim's tables did is no part of it: a claim kept or lapsed by a table version, and reached by this rule list version, is in no such finding."@en .
+    skos:prefLabel "matcher judgments no longer reached"@en ;
+    skos:definition "The matcher judgments a rule list version no longer reaches (cascade:noLongerReachedUnderRuleListVersion), each an oa:hasTarget: every matcher judgment nothing withdraws that is asserted, by an assertion no retraction invalidates, under a version whose row for its rule carries the cascade:queryHash of that rule's row in any version on this one's prov:wasRevisionOf line, under none whose row carries the hash of this version's row for it, and that no finding the pod holds names, the rows read as the pod describes them; so which versions the pod's runs went through does not change which matcher judgments are named. The body applies to each target alone: each is a matcher judgment no longer reached. Filed once per rule list version, by the first run that compares the whole pod under it and leaves at least one such matcher judgment, so these matcher judgments are listed together on the review page rather than pair by pair. What a matcher judgment's tables did is no part of it: a matcher judgment kept or lapsed by a table version, and reached by this rule list version, is in no such finding."@en .
 
 cascade:noLongerReachedUnderRuleListVersion a owl:ObjectProperty ;
     rdfs:label "no longer reached under rule list version"@en ;
-    rdfs:comment "Of a cascade:ClaimsNoLongerReached finding, the rule list version that reaches none of the claims it names, though the version it revises reached each."@en ;
+    rdfs:comment "Of a cascade:MatcherJudgmentsNoLongerReached finding, the rule list version that reaches none of the matcher judgments it names, though the version it revises reached each."@en ;
     rdfs:domain cascade:FindingForReview ;
     rdfs:range prov:Entity .
 
@@ -2930,19 +2930,19 @@ cascade:OrganizationNamingRule a owl:NamedIndividual ;
     rdfs:comment "An organization, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, from a server, in order: the normalised base URL, Organization, the resource's id; from a document, in order: the IRI of the datatype and the lexical form of the org:identifier literal its version carries, so the name and the version state the identifier alike: a FHIR Organization.identifier's system and value; a C-CDA id as HL7's CDA-to-FHIR identifier mapping makes it one, a root and extension as the root's registered URI and the extension where the FHIR identifier registry gives the root one (http://hl7.org/fhir/sid/us-npi for the NPI's 2.16.840.1.113883.4.6), else as urn:oid: and the root (urn:uuid: and the root in lower case, for a UUID root) and the extension, a root alone that registers no identifier system as urn:ietf:rfc:3986 and the root's urn:oid: or urn:uuid: IRI; a FHIR system urn:oid: and a registered root is that root's URI too, so one NPI names one organization in either format."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:ClaimNamingRule a owl:NamedIndividual ;
-    rdfs:label "claim naming rule"@en ;
-    rdfs:comment "A machine judgment's claim. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the maker; the matcher rule term; the justification; the members as a list; what it used as a list. A list is its count, then its distinct items in code point order."@en ;
+cascade:MatcherJudgmentNamingRule a owl:NamedIndividual ;
+    rdfs:label "matcher judgment naming rule"@en ;
+    rdfs:comment "A matcher judgment. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the maker; the matcher rule term; the justification; the members as a list; what it used as a list. A list is its count, then its distinct items in code point order."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:AssertionNamingRule a owl:NamedIndividual ;
+cascade:MatcherJudgmentAssertionNamingRule a owl:NamedIndividual ;
     rdfs:label "assertion naming rule"@en ;
-    rdfs:comment "A claim asserted under a version of the rule list. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the rule list version; the claim."@en ;
+    rdfs:comment "A matcher judgment asserted under a version of the rule list. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the rule list version; the matcher judgment."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:RetractionNamingRule a owl:NamedIndividual ;
+cascade:ReleaseRetractionNamingRule a owl:NamedIndividual ;
     rdfs:label "retraction naming rule"@en ;
-    rdfs:comment "A release's retraction of a claim's assertion. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the release; the assertion; the matcher rule the release declares wrong."@en ;
+    rdfs:comment "A release's retraction of a matcher judgment's assertion. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the release; the assertion; the matcher rule the release declares wrong."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
 # Snapshots
@@ -2993,21 +2993,21 @@ cascade:CascadeMatcher a prov:SoftwareAgent ;
     rdfs:label "Cascade matcher"@en ;
     rdfs:comment "Any runtime that follows runtime/matcher.feature and the Cascade rule list, as the maker of the judgments it writes; unversioned, since the runtime that ran is on the act."@en .
 
-cascade:ClaimAssertion a owl:Class ;
-    rdfs:label "claim assertion"@en ;
-    rdfs:comment "A machine claim asserted under a version of the rule list, named by cascade:AssertionNamingRule. A claim is asserted once for each query its rule has run with: a version whose row for the claim's rule carries the cascade:queryHash of that rule's row in a version the claim is already asserted under asserts nothing. It carries no time and names no run."@en ;
+cascade:MatcherJudgmentAssertion a owl:Class ;
+    rdfs:label "matcher judgment assertion"@en ;
+    rdfs:comment "A matcher judgment asserted under a version of the rule list, named by cascade:MatcherJudgmentAssertionNamingRule. A matcher judgment is asserted once for each query its rule has run with: a version whose row for the judgment's rule carries the cascade:queryHash of that rule's row in a version the judgment is already asserted under asserts nothing. It carries no time and names no run."@en ;
     rdfs:subClassOf prov:Entity .
 
-cascade:assertedClaim a owl:ObjectProperty ;
-    rdfs:label "asserted claim"@en ;
-    rdfs:comment "The machine claim an assertion asserts."@en ;
-    rdfs:domain cascade:ClaimAssertion ;
+cascade:assertedJudgment a owl:ObjectProperty ;
+    rdfs:label "asserted judgment"@en ;
+    rdfs:comment "The matcher judgment an assertion asserts."@en ;
+    rdfs:domain cascade:MatcherJudgmentAssertion ;
     rdfs:range cascade:Judgment .
 
 cascade:assertedUnderRuleListVersion a owl:ObjectProperty ;
     rdfs:label "asserted under rule list version"@en ;
-    rdfs:comment "The version of the rule list an assertion asserts its claim under."@en ;
-    rdfs:domain cascade:ClaimAssertion ;
+    rdfs:comment "The version of the rule list an assertion asserts its matcher judgment under."@en ;
+    rdfs:domain cascade:MatcherJudgmentAssertion ;
     rdfs:range prov:Entity .
 
 cascade:SameCodeRule a owl:NamedIndividual ;

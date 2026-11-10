@@ -2,8 +2,8 @@
 # a Different judgment wins. A Same none of whose members are currently different joins each member with its least, in
 # code point order of the IRI, both ways: a star, 2(n - 1) pairs for n members, which makes the entries every pair would.
 # A Same two of whose members are currently different joins every other pair of its members, so a Different pair is
-# still joined through a third member. A counting Same whose member is a finding of claims no longer reached joins the
-# members of each claim the finding names as a Same of them would, whether or not the claim counts.
+# still joined through a third member. A counting Same whose member is a finding of matcher judgments no longer reached joins the
+# members of each matcher judgment the finding names as a Same of them would, whether or not the judgment counts.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX oa: <http://www.w3.org/ns/oa#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -15,7 +15,7 @@ WHERE {
         { ?j cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?m }
         UNION
         { ?answer cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?finding .
-          ?finding oa:hasBody cascade:ClaimsNoLongerReached ; oa:hasTarget ?j .
+          ?finding oa:hasBody cascade:MatcherJudgmentsNoLongerReached ; oa:hasTarget ?j .
           ?j prov:hadMember ?m } }
       GROUP BY ?j }
     MINUS { ?x cascade:currentlyDifferent ?y . ?j prov:hadMember ?x , ?y }
@@ -32,7 +32,7 @@ WHERE {
         UNION
         { ?x cascade:currentlyDifferent ?y .
           ?answer cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?finding .
-          ?finding oa:hasBody cascade:ClaimsNoLongerReached ; oa:hasTarget ?j .
+          ?finding oa:hasBody cascade:MatcherJudgmentsNoLongerReached ; oa:hasTarget ?j .
           ?j prov:hadMember ?x , ?y } } }
     ?j prov:hadMember ?a , ?b .
     FILTER (?a != ?b)

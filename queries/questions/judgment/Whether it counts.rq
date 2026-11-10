@@ -1,7 +1,7 @@
 # Each judgment has one row saying whether it counts under the lens the pod was built with, and one more row for each thing
 # that happened to it: a later judgment replaced it, a retraction invalidated it or one of its assertions, the reference
 # table it was made with has a newer version whose rows do not join its members as its rule reads them (M7), or the
-# rule list its claim was asserted under has a current version whose rule runs another query, the version naming what
+# rule list its matcher judgment was asserted under has a current version whose rule runs another query, the version naming what
 # did it. Only judgments that count shape the views.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX dct: <http://purl.org/dc/terms/>
@@ -23,7 +23,7 @@ WHERE {
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?by rdfs:label ?byLabel } }
   UNION
-  { ?by prov:invalidated|prov:invalidated/cascade:assertedClaim ?judgment .
+  { ?by prov:invalidated|prov:invalidated/cascade:assertedJudgment ?judgment .
     ?judgment a cascade:Judgment .
     BIND ("retracted" AS ?happened)
     OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
@@ -46,7 +46,7 @@ WHERE {
   UNION
   { { SELECT DISTINCT ?judgment ?by
       WHERE {
-        ?assertion cascade:assertedClaim ?judgment ; cascade:assertedUnderRuleListVersion ?asserted .
+        ?assertion cascade:assertedJudgment ?judgment ; cascade:assertedUnderRuleListVersion ?asserted .
         ?asserted prov:specializationOf ?ruleList .
         ?ruleList pav:hasCurrentVersion ?by .
         FILTER (?by != ?asserted)
@@ -57,7 +57,7 @@ WHERE {
               WHERE { ?pinning pav:hasCurrentVersion ?by .
                       ?currentRow cascade:rowOfRuleListVersion ?by ; cascade:matcherRule ?rule ; cascade:queryHash ?hash } }
             ?anyRow cascade:matcherRule ?rule ; cascade:queryHash ?hash ; cascade:rowOfRuleListVersion ?anyVersion .
-            ?anyAssertion cascade:assertedUnderRuleListVersion ?anyVersion ; cascade:assertedClaim ?judgment .
+            ?anyAssertion cascade:assertedUnderRuleListVersion ?anyVersion ; cascade:assertedJudgment ?judgment .
             ?judgment cascade:matcherRule ?rule .
           }
         }

@@ -43,7 +43,7 @@ Feature: Opening a pod
     not join its members, or no current rule list version runs the query it was asserted with (M5), it has lapsed
     (cascade:lapsed, derived, nothing written for it), unless something retracts it or a judgment not itself retracted replaces it, and "What
     needs review" lists its pair, if now in two entries, until a person judges it: with the finding that names it,
-    when the open's run files one of the adopted rule list version's claims it no longer reaches (M18, M19), and
+    when the open's run files one of the adopted rule list version's matcher judgments it no longer reaches (M18, M19), and
     otherwise alone. A Same whose rule the adopted rule
     list runs with the query it was asserted with is reached again without anything written (M9), and counts on.
 
@@ -81,9 +81,9 @@ Feature: Opening a pod
         | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" |
       And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" has not lapsed
 
-    Example: a rule list the pod names that M11 now refuses joins nothing, so the adopted rule list judges every pair, and finds each claim asserted with the query it runs
+    Example: a rule list the pod names that M11 now refuses joins nothing, so the adopted rule list judges every pair, and finds each matcher judgment asserted with the query it runs
       Version 2 runs the vaccine group query the Sames were asserted with under version 1, so judging the pairs anew
-      reaches the claims the pod holds, asserted already (M9): nothing is written of them, and they count on.
+      reaches the matcher judgments the pod holds, asserted already (M9): nothing is written of them, and they count on.
 
       When the pod is opened with the tables "app-new-rules" on 2026-07-03 at 09:00
       Then that step wrote these matcher judgments:
@@ -106,8 +106,8 @@ Feature: Opening a pod
         | justification    | members                                                        | used                                                                                                                                            |
         | same mapped code | allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen" | NLM RxNorm Prescribable product ingredients version 1, version 1 of allergy RxNorm 153010 "Advil", version 1 of allergy RxNorm 5640 "Ibuprofen" |
 
-    Example: adopting the rule list's version 2 judges the pairs its new R3 joins among records already matched, and asserts no claim of a rule it left unchanged
-      Version 2 runs version 1's vaccine group query, so the flu shots' claims, asserted with it under version 1, are
+    Example: adopting the rule list's version 2 judges the pairs its new R3 joins among records already matched, and asserts no matcher judgment of a rule it left unchanged
+      Version 2 runs version 1's vaccine group query, so the flu shots' matcher judgments, asserted with it under version 1, are
       not asserted again, and count on.
 
       Given Hana enters "allergies" on 2026-07-02 at 10:00
@@ -152,9 +152,9 @@ Feature: Opening a pod
 
     Example: adopting the rule list's version 4 judges the pairs its new R8 joins among records already matched, and the earlier same code of two episodes apart still counts
       R1 joined the two pharyngitis episodes under version 1. Version 4 takes conditions out of R1, so nothing is
-      filed again for them, but its row for R1 carries the query hash the Same was asserted with: a claim counts while
+      filed again for them, but its row for R1 carries the query hash the Same was asserted with: a matcher judgment counts while
       its rule runs the query it was asserted with (M5), so the Same counts on and the episodes stay one entry until a
-      person judges them different. A version that must undo its rule's claims changes the rule's query.
+      person judges them different. A version that must undo its rule's matcher judgments changes the rule's query.
 
       Given Hana enters "episodes" on 2026-07-02 at 10:00
       And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-episodes)
@@ -188,7 +188,7 @@ Feature: Opening a pod
         PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
         SELECT ?rules WHERE {
           ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameConvertedCode .
-          ?assertion cascade:assertedClaim ?judgment ; cascade:assertedUnderRuleListVersion ?rules .
+          ?assertion cascade:assertedJudgment ?judgment ; cascade:assertedUnderRuleListVersion ?rules .
         }
         """
       And it answers:
@@ -252,7 +252,7 @@ Feature: Opening a pod
         """
         SELECT ?rules WHERE {
           ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameMappedCodeAndDate .
-          ?assertion cascade:assertedClaim ?judgment ; cascade:assertedUnderRuleListVersion ?rules .
+          ?assertion cascade:assertedJudgment ?judgment ; cascade:assertedUnderRuleListVersion ?rules .
         }
         """
       Then it answers:

@@ -3,7 +3,7 @@
 Status: draft, 2026-10-22, opened from the review on #130. Records what `ontologies/judgments/v1-draft/judgments.ttl`
 already is, against the vocabularies it could have reused, so that the rubric's second and fourth tests in `naming.md`
 have a note behind them; adds `jdg:CascadeMatcher`, the trusted-makers list, and the frame for makers of other
-procedures and for makers whose inputs do not determine their answer. Names, claims and assertions are `naming.md`;
+procedures and for makers whose inputs do not determine their answer. Names, matcher judgments and assertions are `naming.md`;
 the Before and the findings it orders are `currency.md`; the Sames over servers and organisations are
 `republishing-sources.md`. The open questions are listed at the end.
 
@@ -51,8 +51,8 @@ who makes judgments.
 | reason | SEMAPV | `jdg:justification`, one of the `jdg:Same…` kinds, the matching kinds each `skos:broadMatch` a SEMAPV kind (`jdg:Demographics` and the About bases have none); `jdg:basis` for a person's (`ontologies/cascade.ttl`) | borrowed from SEMAPV at the kind level; the kinds are ours |
 | confidence | SSSOM `confidence` | none; the justification kind stands in for it, and the review page lists the weaker kinds (`ontologies/cascade.ttl`) | diverged; see open |
 | retraction | `npx:retracts` | a `prov:Activity` that `prov:invalidated` the judgment, per `naming.md` (`runtime/naming.feature`, N10 and N15) | diverged: the pod's retraction is an act, not an agent's statement |
-| machine claim and assertion | nanopub assertion | a claim named once from its maker, rule, justification, members and used, its members the record and the least member of each entry it matched, a star that `same-pairs.rq` derives; an assertion per rule list version that reaches it and changed its rule's `rec:queryHash`, per `naming.md` (`runtime/naming.feature`, N6; `runtime/matcher.feature`, M5 and M9) | borrowed split; ours in the parts |
-| what a judgment, a finding or a view came from | PROV-O `prov:wasDerivedFrom` and `prov:used` | `prov:wasDerivedFrom`, from each version a judgment or finding was made from and each reference version a view was built with, and `prov:used` only on an activity: imports, entry sessions, the manifest's build act, retractions (`runtime/naming.feature`, N6 and N10; `runtime/matcher.feature`, M5, M18 and M21; `runtime/arrivals.feature`, A15) | borrowed; PROV-O gives `prov:wasDerivedFrom` an entity for domain and `prov:used` an activity. A finding has no act and a machine claim no act and no time, so no activity stands between them and what they came from; a view takes its own mark and not the manifest's build act, since a view can be built in part; and no lens, `lapsed-sames` or incremental build gains a hop |
+| matcher judgment and assertion | nanopub assertion | a matcher judgment named once from its maker, rule, justification, members and used, its members the record and the least member of each entry it matched, a star that `same-pairs.rq` derives; an assertion per rule list version that reaches it and changed its rule's `rec:queryHash`, per `naming.md` (`runtime/naming.feature`, N6; `runtime/matcher.feature`, M5 and M9) | borrowed split; ours in the parts |
+| what a judgment, a finding or a view came from | PROV-O `prov:wasDerivedFrom` and `prov:used` | `prov:wasDerivedFrom`, from each version a judgment or finding was made from and each reference version a view was built with, and `prov:used` only on an activity: imports, entry sessions, the manifest's build act, retractions (`runtime/naming.feature`, N6 and N10; `runtime/matcher.feature`, M5, M18 and M21; `runtime/arrivals.feature`, A15) | borrowed; PROV-O gives `prov:wasDerivedFrom` an entity for domain and `prov:used` an activity. A finding has no act and a matcher judgment no act and no time, so no activity stands between them and what they came from; a view takes its own mark and not the manifest's build act, since a view can be built in part; and no lens, `lapsed-sames` or incremental build gains a hop |
 
 Every judgment names its maker, and nothing else about a judgment depends on there being one matcher.
 
@@ -94,16 +94,16 @@ association, a usage, a generation, an invalidation, a start and an end, and nev
 author's, on an association of the act that generated it (`republishing-sources.md`, row "the part a party played in a
 document"). A person's retraction is itself an act, so its role is on its own association already.
 
-**Why a claim, an assertion per rule list version, and one matcher agent.** (row "machine claim and assertion") A machine judgment is one claim with an
+**Why a matcher judgment, an assertion per rule list version, and one matcher agent.** (row "matcher judgment and assertion") A matcher judgment is named once, with an
 assertion per rule list version because the same inputs give the same name, so a later version that agrees could
-otherwise write nothing, and a run that reaches an asserted claim writes nothing, so a daily run adds no files. The
-rule list's version is out of the claim's name because with it in, every version renamed every claim, the duplication
-the split exists to stop. A claim counts under any version that keeps its rule's `rec:queryHash` because M11 pins the
-rule's bytes, so such versions reach the same claims; an assertion per claim per version would be 600k to 1.2M files
-over ten years ([#206](https://github.com/jayostis/cascade-vocabulary/issues/206)). A claim's members are a star, the
+otherwise write nothing, and a run that reaches an asserted judgment writes nothing, so a daily run adds no files. The
+rule list's version is out of the matcher judgment's name because with it in, every version renamed every matcher judgment, the duplication
+the split exists to stop. A matcher judgment counts under any version that keeps its rule's `rec:queryHash` because M11 pins the
+rule's bytes, so such versions reach the same matcher judgments; an assertion per matcher judgment per version would be 600k to 1.2M files
+over ten years ([#206](https://github.com/jayostis/cascade-vocabulary/issues/206)). A matcher judgment's members are a star, the
 record and the least member of each entry it matched, because entries come out the same and every earlier copy as a
 member expands to about 58M pairs over ten years (#206). The Cascade matcher is one unversioned agent because the
-matcher feature promises every runtime that follows it reaches the same claims, so which runtime ran is forensics, and
+matcher feature promises every runtime that follows it reaches the same matcher judgments, so which runtime ran is forensics, and
 it sits on the run's act with every other act's performer (`naming.md`).
 
 **Why a model's judgment is minted, not hashed.** No hash of inputs names an answer the inputs do not fix, so a
@@ -122,12 +122,12 @@ domain `foaf:Agent`, making the retractor an agent and the retracted a nanopubli
   any entity.
 - **The matcher named per rule list version, or per runtime.** The strongest case: the agent would say which rules
   and which code. Per version, the maker changes every release, which is the duplicate problem again; per runtime,
-  two correct runtimes would make two claims of one conclusion, which the matcher feature forbids. The version is on
+  two correct runtimes would make two matcher judgments of one conclusion, which the matcher feature forbids. The version is on
   the assertion and the runtime on the act (`naming.md`).
-- **A claim counting while the app uses that rule list version.** The strongest case: each version says for itself
-  what it reaches. Every version then asserts every claim again, 600k to 1.2M assertions in ten years, more than the
-  whole pod (computed, #206), where versions with one query hash reach the same claims (`naming.md`).
-- **A claim whose members are the record and everything it matched.** The strongest case: one file shows the whole
+- **A matcher judgment counting while the app uses that rule list version.** The strongest case: each version says for itself
+  what it reaches. Every version then asserts every matcher judgment again, 600k to 1.2M assertions in ten years, more than the
+  whole pod (computed, #206), where versions with one query hash reach the same matcher judgments (`naming.md`).
+- **A matcher judgment whose members are the record and everything it matched.** The strongest case: one file shows the whole
   join. A fact in every monthly summary makes it cubic, about 58M derived pairs in ten years (computed, #206), where a
   star gives the same entries (`naming.md`).
 

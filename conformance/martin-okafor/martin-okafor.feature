@@ -148,7 +148,7 @@ Feature: Martin Okafor's pod
       Then "E4" wrote these reference descriptions:
         | reference |
 
-  Rule: His claims tie two profiles to him
+  Rule: He claims two profiles as his
     J1 and J2 each claim the profile one report names for him: HG-PAT and SC-PAT.
 
     Example: the patient profile is one entry of the two profiles

@@ -94,7 +94,7 @@ Feature: The matcher's procedure
     the same when it has a version, which only a connect writes (A16), and only R14 applies to it (M20,
     decisions/republishing-sources.md, row "two servers are one"); an organization's record is never taken.
 
-    Example: a record whose patient no About claims, or which names no patient, is never taken nor compared
+    Example: a record whose patient profile no About claims, or which names no patient, is never taken nor compared
       Given a new pod for Cleo on 2026-03-01 at 09:00
       And Cleo files the judgment "about-p" on 2026-03-01 at 09:05
       And the export "first-export" is imported on 2026-03-02 at 10:00
@@ -169,7 +169,7 @@ Feature: The matcher's procedure
     - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
     - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
       cascade:SubstanceIngredients, a kind only the stories fill; in the vocabulary's list from its version 2,
-      queries/matcher/same-ingredient.rq, with cascade:ProductIngredients, for allergies only. A claim cites its
+      queries/matcher/same-ingredient.rq, with cascade:ProductIngredients, for allergies only. A matcher judgment cites its
       rule, and its assertion the list's version and the hash of the query that version's row for the rule runs.
     - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate: queries/matcher/same-mapped-code-and-date.rq, with cascade:VaccineGroups.
 
@@ -401,7 +401,7 @@ Feature: The matcher's procedure
 
     Example: immunizations of different codes in one vaccine group on one date are the same by mapped code and date
       M3 takes FluLaval after the two shots of the other code on its date, which the same code and date has joined in
-      one entry by then, so its claim holds it and the least of those two (M5). A shot of their code on another date
+      one entry by then, so its matcher judgment holds it and the least of those two (M5). A shot of their code on another date
       joins none.
 
       Then the matcher's judgments holding immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval", immunization CVX 141 "Flublok" and immunization CVX 141 "Fluad" are:
@@ -423,25 +423,25 @@ Feature: The matcher's procedure
         | same code        | allergy RxNorm 733 "Principen", allergy RxNorm 733 "Ampicillin"    |
         | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005            |
 
-  Rule: M5. It writes one claim per record per rule, and per table version, that matched anything, and asserts it under the rule list's version
-    decisions/naming.md, rows "machine judgment", "assertion, retraction by a release" and "maker"; decisions/judgments.md, rows "maker", "machine claim and assertion" and "what a judgment, a finding or a view came from"; decisions/performance.md, row "the star".
-    The claim's members are the record and, of each entry among the records that version's rows matched it with, or the rule matched it with when the rule reads no
+  Rule: M5. It writes one matcher judgment per record per rule, and per table version, that matched anything, and asserts it under the rule list's version
+    decisions/naming.md, rows "matcher judgment", "assertion, retraction by a release" and "maker"; decisions/judgments.md, rows "maker", "matcher judgment and assertion" and "what a judgment, a finding or a view came from"; decisions/performance.md, row "the star".
+    The matcher judgment's members are the record and, of each entry among the records that version's rows matched it with, or the rule matched it with when the rule reads no
     table, the least of those it is not judged different from, or the least of them all when it is judged different
     from each, in code point order of their names: a star, so a record matched with every earlier copy
     of one fact names one of them, and the entries are those every pair of them would give (queries/derivations/
-    same-pairs.rq). The entries are those the counting Sames make, as same-pairs.rq derives them, with the claims the
+    same-pairs.rq). The entries are those the counting Sames make, as same-pairs.rq derives them, with the matcher judgments the
     run has filed before, and without any Same that holds the record or a record that arrived after it (M3), so a run
-    again over the same records reaches the same claims. A Different filed later that splits an entry a claim's star
-    reached is answered by the next recheck (M7), so the facts give the same entries in either order. The claim is cascade:Same with the
+    again over the same records reaches the same matcher judgments. A Different filed later that splits an entry a matcher judgment's star
+    reached is answered by the next recheck (M7), so the facts give the same entries in either order. The matcher judgment is cascade:Same with the
     rule's justification and cites the rule (cascade:matcherRule). It uses the table version whose rows joined it, if
     any, and each member's current version, never the rule list's version. It is attributed to the matcher,
     cascade:CascadeMatcher, carries no time, and is named by N6.
 
-    Its assertion, a cascade:ClaimAssertion named by N6, asserts it (cascade:assertedClaim) under the rule list's
-    version (cascade:assertedUnderRuleListVersion). The everyday lens counts the claim while every version it used is
+    Its assertion, a cascade:MatcherJudgmentAssertion named by N6, asserts it (cascade:assertedJudgment) under the rule list's
+    version (cascade:assertedUnderRuleListVersion). The everyday lens counts the matcher judgment while every version it used is
     current, or has a current version whose rows join its members (M7), and the current version of a rule list has a
-    row for the claim's rule with the cascade:queryHash of that rule's row in a version the claim is asserted under (M8,
-    queries/lenses/everyday.rq). A claim carries no run: the run is an act (N7), and which run wrote a claim or an
+    row for the matcher judgment's rule with the cascade:queryHash of that rule's row in a version the matcher judgment is asserted under (M8,
+    queries/lenses/everyday.rq). A matcher judgment carries no run: the run is an act (N7), and which run wrote a matcher judgment or an
     assertion is read from the run's snapshot, which names every file it wrote (N14).
 
     Background:
@@ -458,7 +458,7 @@ Feature: The matcher's procedure
         | same code        | allergy RxNorm 7980 "Penicillin G", allergy RxNorm 7980 "Bicillin" |
         | same mapped code | allergy RxNorm 7980 "Bicillin", allergy SNOMED 373270004           |
 
-    Example: a claim is a Same of its rule, using the table's version and its members', asserted under the rule list's version
+    Example: a matcher judgment is a Same of its rule, using the table's version and its members', asserted under the rule list's version
       Then the matcher's judgments holding allergy SNOMED 373270004 are:
         | justification    | members                                                      | asserted under                  | used                                                                                                                                 |
         | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | Cascade matcher rules version 1 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 |
@@ -466,8 +466,8 @@ Feature: The matcher's procedure
 
     Example: a record matched with records already in one entry names the least of those it matched there
       The second entry's two latex allergies are one entry once the matcher joins them; the third entry's matches both,
-      and its claim names the one whose name is least, allergy RxNorm 8591 "Latex gloves". A fact in every monthly
-      summary so gives claims of two members each, not two, three, four.
+      and its matcher judgment names the one whose name is least, allergy RxNorm 8591 "Latex gloves". A fact in every monthly
+      summary so gives matcher judgments of two members each, not two, three, four.
 
       Given Cleo files the judgment "about-r" on 2026-03-04 at 07:00
       And Cleo enters "second-entry" on 2026-03-04 at 08:00
@@ -483,7 +483,7 @@ Feature: The matcher's procedure
 
     Example: a Different filed before a record is matched splits its star, so it names both records the Different keeps apart
       Cleo judges the two latex allergies different before the third entry's is matched, so they are two entries
-      when it is, and its claim holds both, through which the three are one entry (decisions/judgments.md: a
+      when it is, and its matcher judgment holds both, through which the three are one entry (decisions/judgments.md: a
       Different wins only for its pair).
 
       Given Cleo files the judgment "about-r" on 2026-03-04 at 07:00
@@ -500,8 +500,8 @@ Feature: The matcher's procedure
         | allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex", allergy RxNorm 8591 "Natural rubber latex" |
 
     Example: a Different filed after a record is matched gives the same entries, once a recheck files its star again
-      Here Cleo judges the two latex allergies different after the third entry's claim named only the least of them;
-      the next recheck re-runs that claim's rule over the entries the Different split (M7) and files the claim the
+      Here Cleo judges the two latex allergies different after the third entry's matcher judgment named only the least of them;
+      the next recheck re-runs that matcher judgment's rule over the entries the Different split (M7) and files the matcher judgment the
       other order gave, so the entries are the same in both orders.
 
       Given Cleo files the judgment "about-r" on 2026-03-04 at 07:00
@@ -519,8 +519,8 @@ Feature: The matcher's procedure
         | allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex", allergy RxNorm 8591 "Natural rubber latex" |
 
     Example: a Different between a record and the least it named makes the recheck name the next record of that entry
-      Cleo judges the third entry's latex allergy different from the one its claim named; the other record of that
-      entry, which its rule also matched, is one it is not judged different from, so the recheck files that claim
+      Cleo judges the third entry's latex allergy different from the one its matcher judgment named; the other record of that
+      entry, which its rule also matched, is one it is not judged different from, so the recheck files that matcher judgment
       (M7), and the three are one entry, as every pair of them but the different one would make.
 
       Given Cleo files the judgment "about-r" on 2026-03-04 at 07:00
@@ -539,7 +539,7 @@ Feature: The matcher's procedure
 
   Rule: M6. The matcher reads no person's Same or Different
     No note rules this.
-    No judgment decides which records a rule matches; only a claim's star reads the entries the judgments make (M5).
+    No judgment decides which records a rule matches; only a matcher judgment's star reads the entries the judgments make (M5).
 
     Example: the matcher joins the pair a person called different, and not the pair a person called the same
       Given a new pod for Cleo on 2026-03-01 at 09:00
@@ -555,14 +555,14 @@ Feature: The matcher's procedure
         | same code     | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" |
 
   Rule: M7. A recheck re-runs the rule of each matcher Same that used a reference version the tables revise and whose current version does not join its members, or whose rule now runs another query, or whose star a Different has split
-    decisions/performance.md, row "claims named once, asserted per query hash", decisions/variant-identity.md, row "used", and decisions/variant-classifications-table.md, row "versions an app keeps".
+    decisions/performance.md, row "matcher judgments named once, asserted per query hash", decisions/variant-identity.md, row "used", and decisions/variant-classifications-table.md, row "versions an app keeps".
     Unless the Same was retracted, or replaced by a judgment not itself retracted: a retracted judgment replaces
     nothing. A Same's rule runs another query when the current rule list's row for it carries a cascade:queryHash
     that no row for the rule carries in a version the Same is asserted under by an assertion no retraction invalidates
     (M5, N15). A Different has split a Same's
     star when the Same's latest-arriving member matches by its rule a record it is not judged different from that
     the entries keep apart from it: the rule is run again for that record over the entries as they now are (M5), and
-    the claim that gives is filed beside the Same, which keeps counting, since every pair it joins its new claim
+    the matcher judgment that gives is filed beside the Same, which keeps counting, since every pair it joins its new matcher judgment
     joins too.
 
     The current version of a series whose older version a Same used joins its members when the query the current rule
@@ -572,15 +572,15 @@ Feature: The matcher's procedure
     and the Same is left as it was: it is not run again, nothing is written for it, and the everyday lens counts it
     on. A runtime derives, just before the lens, cascade:membersJoinedByCurrentTableVersion from each such Same to
     that version, from the current rule list and versions the pod names and the rows its tables hold of them; the
-    lens reads it (queries/lenses/everyday.rq). Filing a new claim for every table-reading claim at each adopted
-    version would be about 960k claims in ten years (decisions/naming.md). The cost of asking the rule rather than
-    naming the rows in the claim is that the answer depends on the tables a device holds: where the pod's current
+    lens reads it (queries/lenses/everyday.rq). Filing a new matcher judgment for every table-reading matcher judgment at each adopted
+    version would be about 960k matcher judgments in ten years (decisions/naming.md). The cost of asking the rule rather than
+    naming the rows in the matcher judgment is that the answer depends on the tables a device holds: where the pod's current
     version of the series is one its tables do not hold, nothing joins and the Same does not count there, so a read
     names that version as unheld, as an open does (O2), rather than differ silently from a device that holds it.
 
     Otherwise the rule runs on the members that are still taken (M2), under the current version of the series
-    whose version the Same used, and files their claim (M5, M9) if at least two still match: a new claim when that
-    version is new, and otherwise the claim's assertion under the current rule list alone. A Same whose rule now runs
+    whose version the Same used, and files their matcher judgment (M5, M9) if at least two still match: a new matcher judgment when that
+    version is new, and otherwise the matcher judgment's assertion under the current rule list alone. A Same whose rule now runs
     another query is run so even when the current version joins its members. A version is revised when a version of
     the tables revises it, whether or not the pod describes that one, so an open that writes the descriptions last
     (W1) still rechecks. A Same whose rule now reads a table, and which used no version of that table's kind, is not
@@ -600,7 +600,7 @@ Feature: The matcher's procedure
       Then that step wrote no file
       And the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
         | justification    | members                                       | used                                                                                                                  | name                                          |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:229f494f-26fa-8d9c-a2c9-badd04fd0356 |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:d9369a14-2bff-818e-9628-53cd1a1577b5 |
       And the matcher's same mapped code of allergy SNOMED 373270004 and allergy RxNorm 7980 counts
 
     Example: a Same a person retracted is not rechecked
@@ -666,7 +666,7 @@ Feature: The matcher's procedure
     No note rules this.
     A rule list version's description also describes each of its rows, named <version>#<the local name of its rule
     term>, by cascade:rowOfRuleListVersion, its cascade:matcherRule and its cascade:queryHash, so the lens can compare
-    the row for a claim's rule in two versions (M5).
+    the row for a matcher judgment's rule in two versions (M5).
 
     Example: a reference series or version is described only by the first step that finds the pod lacking it
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -689,18 +689,18 @@ Feature: The matcher's procedure
       And that step wrote these reference descriptions:
         | reference |
 
-  Rule: M9. A run that reaches a claim asserted with its rule's query hash writes nothing for it, and one asserted only with other hashes gets its assertion alone
-    decisions/naming.md, row "assertion, retraction by a release"; decisions/judgments.md, row "machine claim and assertion".
-    A claim is named once (N6) and carries no time, so
-    a run that reaches a claim the pod holds never writes it again.
-    It writes the claim's assertion under the rule list's version unless the claim is already asserted under a version
+  Rule: M9. A run that reaches a matcher judgment asserted with its rule's query hash writes nothing for it, and one asserted only with other hashes gets its assertion alone
+    decisions/naming.md, row "assertion, retraction by a release"; decisions/judgments.md, row "matcher judgment and assertion".
+    A matcher judgment is named once (N6) and carries no time, so
+    a run that reaches a matcher judgment the pod holds never writes it again.
+    It writes the matcher judgment's assertion under the rule list's version unless the matcher judgment is already asserted under a version
     whose row for the rule carries the hash this version's row carries, by an assertion no retraction invalidates (N15):
-    at most one assertion per version per claim,
-    and none under a version that runs the query the claim is asserted with, so a new version asserts only the claims
-    of the rules it changed. A claim that does not count because a person retracted or replaced it is neither
+    at most one assertion per version per matcher judgment,
+    and none under a version that runs the query the matcher judgment is asserted with, so a new version asserts only the matcher judgments
+    of the rules it changed. A matcher judgment that does not count because a person retracted or replaced it is neither
     asserted again nor read as joining its members.
     Only the reference descriptions it uses that the pod lacks are written (M8), so a run that stopped between its
-    claims and its descriptions (W1) finishes when run again. So running again is always safe.
+    matcher judgments and its descriptions (W1) finishes when run again. So running again is always safe.
 
     Background:
       Given a new pod for Cleo on 2026-03-01 at 09:00
@@ -713,7 +713,7 @@ Feature: The matcher's procedure
       When the matcher runs on the records of "entry" on 2026-03-03 at 09:00 (again)
       Then that step wrote no file
 
-    Example: running the matcher again leaves each claim asserted once
+    Example: running the matcher again leaves each matcher judgment asserted once
       When the matcher runs on the records of "entry" on 2026-03-03 at 09:00 (again)
       Then the matcher's judgments holding allergy SNOMED 373270004 are:
         | justification    | members                                                      | asserted under                  |
@@ -735,8 +735,8 @@ Feature: The matcher's procedure
       When the matcher runs on the records of that entry on 2026-04-04 at 09:05 (match-later)
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy SNOMED 91936005 are:
         | justification    | members                                                      | used                                                                                                                                 | name                                          |
-        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:b754bce3-f373-81a7-b6da-7d7b48339fe2 |
-        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:d562ceb4-bd7a-8b04-aeff-4aa14446b5b8 |
+        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:91b68197-9076-86ae-bcbe-f2d2d467244b |
+        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:2f16d97d-95ad-8134-ba5c-e864e744c2d1 |
 
   Rule: M11. A rule list whose row names a query that does not hash to the row's cascade:queryHash refuses the run
     No note rules this.
@@ -777,7 +777,7 @@ Feature: The matcher's procedure
         | same result   | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Serum potassium" | version 1 of lab result LOINC 2823-3 "Potassium", version 1 of lab result LOINC 2823-3 "Serum potassium" |
 
   Rule: M13. A match comes from one table version's rows, and each version that joins a pair gives a judgment of its own
-    decisions/naming.md, row "machine judgment".
+    decisions/naming.md, row "matcher judgment".
     A rule naming a table kind reads the rows of the current version of every series of that kind, each in the graph
     named by the version's IRI, and the descriptions of those versions and their series, as references.ttl states
     them, beside the pod, and no other version's: the pod's own descriptions of reference versions are left out, so a
@@ -786,7 +786,7 @@ Feature: The matcher's procedure
     the pod.
 
     Gus's references hold a second vaccine group series, "Clinic vaccine groups", that also puts CVX 140 in the
-    influenza group. M3 takes his three shots in the order 140, 141, 150, so FluLaval's claim by the clinic's groups
+    influenza group. M3 takes his three shots in the order 140, 141, 150, so FluLaval's matcher judgment by the clinic's groups
     holds the least of the two shots the clinic's groups joined before it (M5).
 
     Example: two tables of one kind that both join a pair each give a judgment of it, and a pair only one joins gets one
@@ -1031,31 +1031,31 @@ Feature: The matcher's procedure
       When the matcher runs on the records of that entry on 2026-10-02 at 09:05
       Then the matcher has no judgment holding variant ClinVar 90012 and variant ClinVar 90011
 
-  Rule: M18. A rule list version's first run over the whole pod files one finding naming the claims it no longer reaches
+  Rule: M18. A rule list version's first run over the whole pod files one finding naming the matcher judgments it no longer reaches
     decisions/naming.md, row "document, finding", and its Why, and decisions/judgments.md, row "what a judgment, a finding or a view came from": a version that tightens a rule retracts nothing, and its first run files one finding
-    naming the claims it no longer reaches. A run that compares the whole pod, an open (O1) or a recheck (M7), files,
-    after its claims and before its reference descriptions (W1), a cascade:FindingForReview whose oa:hasBody is
-    cascade:ClaimsNoLongerReached, whose oa:motivatedBy is oa:classifying, whose
-    cascade:noLongerReachedUnderRuleListVersion is the current rule list version, and whose oa:hasTarget is each claim
+    naming the matcher judgments it no longer reaches. A run that compares the whole pod, an open (O1) or a recheck (M7), files,
+    after its matcher judgments and before its reference descriptions (W1), a cascade:FindingForReview whose oa:hasBody is
+    cascade:MatcherJudgmentsNoLongerReached, whose oa:motivatedBy is oa:classifying, whose
+    cascade:noLongerReachedUnderRuleListVersion is the current rule list version, and whose oa:hasTarget is each matcher judgment
     of the matcher's that nothing retracts or replaces that is asserted, by an assertion no retraction invalidates,
     under a version whose row for its rule carries the cascade:queryHash of that rule's row in any version on the current
     version's prov:wasRevisionOf line, and under none whose row carries the hash of the current version's row for it,
     the run's own assertions counted, and that no finding the pod holds names, every hash read from the rows the pod
-    describes: so the claims it names do not hang on which versions the pod's runs went through. It files none when
+    describes: so the matcher judgments it names do not hang on which versions the pod's runs went through. It files none when
     the current version revises none, when the pod holds a finding naming the current version, or when it would name
-    no claim: so one per version, whichever run is first, and a run bound to a step's records files none.
+    no matcher judgment: so one per version, whichever run is first, and a run bound to a step's records files none.
 
     It carries no time and names no act, and is named by cascade:FindingNamingRule from its triples, so two writers
-    whose first runs under one version find the same claims file one file; two writers whose pods differ when each
-    first runs under it, as when one has retracted a claim the other has not, may file two findings of one version. A claim whose every assertion a release
+    whose first runs under one version find the same matcher judgments file one file; two writers whose pods differ when each
+    first runs under it, as when one has retracted a matcher judgment the other has not, may file two findings of one version. A matcher judgment whose every assertion a release
     retracted (N15) is asserted by none, and is named by no finding: a release declared its rule wrong, and the
-    review page does not offer it back. What a claim's tables did is no part of it: a claim the version reaches, kept
+    review page does not offer it back. What a matcher judgment's tables did is no part of it: a matcher judgment the version reaches, kept
     or lapsed by a table version (M7), is named by no finding, and lapses pair by pair (O1).
 
-    Example: opening a pod matched under version 6 with version 7 files one finding naming the claims of the rule version 7 changed that it did not file again
-      Version 7 changes the query of R5 and R6. Its run asserts again the claim of the NDC pair, which R5 still joins,
-      and the finding names the two claims of RxNorm pairs that version 6's R6 joined, of which version 7's R11 joins
-      the product pair again by another claim.
+    Example: opening a pod matched under version 6 with version 7 files one finding naming the matcher judgments of the rule version 7 changed that it did not file again
+      Version 7 changes the query of R5 and R6. Its run asserts again the matcher judgment of the NDC pair, which R5 still joins,
+      and the finding names the two matcher judgments of RxNorm pairs that version 6's R6 joined, of which version 7's R11 joins
+      the product pair again by another matcher judgment.
 
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
@@ -1064,26 +1064,26 @@ Feature: The matcher's procedure
       When the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
       Then that step wrote these findings:
         | kind                     | under                   | justification        | members                                                                                                    |
-        | claims no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
-        | claims no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
+        | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
+        | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
 
-    Example: a run under a version whose finding the pod holds files no other, though it would name another claim
-      Gus's Same replaces the matcher's claim of the Lisinopril pair, so the open's finding names the metformin claim
-      alone; once he retracts it, the Lisinopril claim is withdrawn by nothing and named by no finding, and the recheck
+    Example: a run under a version whose finding the pod holds files no other, though it would name another matcher judgment
+      Gus's Same replaces the matcher's judgment of the Lisinopril pair, so the open's finding names the metformin matcher judgment
+      alone; once he retracts it, the Lisinopril matcher judgment is withdrawn by nothing and named by no finding, and the recheck
       files no second finding of version 7.
 
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
       And Gus enters "version-six-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
-      And Gus files the judgment "same-instead-of-the-lisinopril-claim" on 2026-09-02 at 12:00
+      And Gus files the judgment "same-instead-of-the-lisinopril-matcher-judgment" on 2026-09-02 at 12:00
       And the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
-      And Gus files the judgment "retract-same-instead-of-the-lisinopril-claim" on 2026-09-04 at 08:00
+      And Gus files the judgment "retract-same-instead-of-the-lisinopril-matcher-judgment" on 2026-09-04 at 08:00
       When the matcher rechecks on 2026-09-04 at 09:00
       Then that step wrote no file
 
-    Example: a version that changes no query a claim was asserted with files no finding
-      Version 2 adds R3 and runs version 1's vaccine group query, which the flu shots' claims were asserted with.
+    Example: a version that changes no query a matcher judgment was asserted with files no finding
+      Version 2 adds R3 and runs version 1's vaccine group query, which the flu shots' matcher judgments were asserted with.
 
       Given a new pod for Hana on 2026-07-01 at 09:00
       And the pod is opened with the tables "app" on 2026-07-01 at 09:01
@@ -1093,7 +1093,7 @@ Feature: The matcher's procedure
       Then that step wrote these findings:
         | kind | under | justification | members |
 
-    Example: a version that drops a rule names the claims of that rule
+    Example: a version that drops a rule names the matcher judgments of that rule
       Version "1a" lacks R4.
 
       Given a new pod for Hana on 2026-07-01 at 09:00
@@ -1103,10 +1103,10 @@ Feature: The matcher's procedure
       When the pod is opened with the tables "app-fewer-rules" on 2026-07-03 at 09:00
       Then that step wrote these findings:
         | kind | under | justification | members |
-        | claims no longer reached | Matcher rules version 1a | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" |
-        | claims no longer reached | Matcher rules version 1a | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" |
+        | matcher judgments no longer reached | Matcher rules version 1a | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" |
+        | matcher judgments no longer reached | Matcher rules version 1a | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" |
 
-    Example: a version that drops a rule and declares it wrong names none of its claims, since its release retracts their assertions
+    Example: a version that drops a rule and declares it wrong names none of its matcher judgments, since its release retracts their assertions
       Version "1b" lacks R4 and declares it wrong.
 
       Given a new pod for Hana on 2026-07-01 at 09:00
@@ -1117,13 +1117,13 @@ Feature: The matcher's procedure
       Then that step wrote these findings:
         | kind | under | justification | members |
 
-  Rule: M19. A person answers a finding of claims no longer reached once, for every pair it names
+  Rule: M19. A person answers a finding of matcher judgments no longer reached once, for every pair it names
     decisions/naming.md, row "document, finding", and its Why, and decisions/judgments.md, rows "judgment over a source-level thing" and "acknowledgement". "What needs
-    review" lists the finding as one line, its pairs: each pair of records of a claim it names that are now in two
-    entries and not judged different, with the claim of least IRI that names it; a lapsed Same the finding names is
+    review" lists the finding as one line, its pairs: each pair of records of a matcher judgment it names that are now in two
+    entries and not judged different, with the matcher judgment of least IRI that names it; a lapsed Same the finding names is
     listed with it and never alone, and one no finding names is listed alone (O1). A person answers it with a judgment
-    whose one member is the finding: a Same over it joins the members of each claim it names as a Same of them would
-    (queries/derivations/same-pairs.rq), whether or not the claim counts, so every pair is joined at once, and
+    whose one member is the finding: a Same over it joins the members of each matcher judgment it names as a Same of them would
+    (queries/derivations/same-pairs.rq), whether or not the matcher judgment counts, so every pair is joined at once, and
     retracting it parts them at once; a person's Same already filed on a pair is untouched. An Acknowledged takes the
     finding off the review page and changes nothing else: the finding still stands, and its pairs stay apart. Or the
     person judges the pairs one by one. Each answer is a judgment the lens counts or not, so writers that file them in
@@ -1142,9 +1142,9 @@ Feature: The matcher's procedure
       When the query "questions/entry/What needs review.rq" is asked
       Then it answers:
         | entry                                                | entryLabel                              | needs                                              | finding                                                     | judgment                                                                                                               | judgmentLabel                                    | record                                       | recordLabel                                   | otherRecord                          | otherRecordLabel                      |
-        | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets" | "no longer joined under a newer rule list version" | <ni:///sha-256;2yO1P_juGetc2yqp2dXCnyv9TguArFgysnV50pT0oUk> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · a44d12bc · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
+        | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets" | "no longer joined under a newer rule list version" | <ni:///sha-256;r3A6LAf0rxE6bEDIhByAwDGK-E8snI4FU1-73maVfLA> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · eab831dd · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
 
-    Example: a Same over the finding joins the pairs of every claim it names
+    Example: a Same over the finding joins the pairs of every matcher judgment it names
       When Gus files the judgment "same-over-the-version-seven-finding" on 2026-09-04 at 09:00
       Then the medications view holds these entries:
         | members                                                                            |
@@ -1167,7 +1167,7 @@ Feature: The matcher's procedure
     their ports aside. A connect's run takes the server it wrote a revision for, its first or a later one (M1), so which
     server was connected first, and under which client id, does not decide whether two match. Servers reported to
     two client ids, or at two hosts, are not matched: the app may propose that they are one, and the person decides.
-    The claim joins the two servers as any counting Same does, and queries/derivations/same-records-under-same-servers.rq
+    The matcher judgment joins the two servers as any counting Same does, and queries/derivations/same-records-under-same-servers.rq
     derives from it, as from a person's Same over servers, one record of each type and id under both, within one
     organization.
 

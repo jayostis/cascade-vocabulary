@@ -360,7 +360,7 @@ Feature: Priya Natarajan's pod
       Then that step is refused
       And "E10" wrote no file
 
-  Rule: Her claims tie three profiles to her
+  Rule: She claims three profiles as hers
     J1 to J3 each claim the profile one source names for her: KHF-PAT, KHC-PAT and FFC-PAT.
 
     Example: the patient profile is one entry of the three profiles

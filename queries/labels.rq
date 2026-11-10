@@ -1,5 +1,5 @@
 # A name for every record, version, revision, document, judgment, retraction, reference version, entry and patient
-# profile, made from what each says: its kind, its name, where it came from and when; a machine's claim, which gives no
+# profile, made from what each says: its kind, its name, where it came from and when; a matcher judgment, which gives no
 # time, by the start of its name instead. Names only help people read; nothing depends on them.
 # An entry is labelled as the view holding it names it: a view is built before this file, and its graph holds each entry
 # resolved against the view's address (N13), so the placeholder only the derived state holds is never labelled.
@@ -112,8 +112,8 @@ WHERE {
       OPTIONAL { ?thing prov:startedAtTime ?t }
       OPTIONAL { ?who rdfs:label ?named }
       OPTIONAL { ?thing prov:qualifiedAssociation/prov:hadRole ?role }
-      OPTIONAL { ?retracted cascade:assertedClaim?/cascade:verdict ?retractedVerdict }
-      OPTIONAL { ?retracted cascade:assertedClaim?/prov:hadMember/^prov:specializationOf/cascade:displayName ?retractedAbout }
+      OPTIONAL { ?retracted cascade:assertedJudgment?/cascade:verdict ?retractedVerdict }
+      OPTIONAL { ?retracted cascade:assertedJudgment?/prov:hadMember/^prov:specializationOf/cascade:displayName ?retractedAbout }
       BIND (CONCAT("Retraction · ",
                    COALESCE(?named, IF(BOUND(?who), IF(?role = cascade:PatientRole, "the patient", "a person"), "a release")), " · ",
                    IF(BOUND(?t), SUBSTR(STR(?t), 1, 10), SUBSTR(REPLACE(STR(?thing), "^.*[:/#]", ""), 1, 8)), " · of ",

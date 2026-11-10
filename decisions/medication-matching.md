@@ -73,9 +73,9 @@ as stopped. Both are judgments about clinical meaning, and the pod holds facts (
 A break of one day is a break in what the sources said, and the pair goes to a person, not into one entry.
 
 **Same rule names.** Version 18 tightens three rules; it does not add rules. M18 is built for this: the open that
-first runs version 18 asserts again every claim its rules still reach, and files one finding naming the claims it no
-longer reaches, the pairs now apart. New rule names would make that finding name every medication claim of version 17,
-including the pairs the new rules join again, and file each again under a new claim. Which query a claim was judged
+first runs version 18 asserts again every matcher judgment its rules still reach, and files one finding naming the matcher judgments it no
+longer reaches, the pairs now apart. New rule names would make that finding name every medication matcher judgment of version 17,
+including the pairs the new rules join again, and file each again under a new matcher judgment. Which query a matcher judgment was judged
 by is already on its assertion (rule list version and query hash, M4), as it was when versions 7, 12 and 14 changed the
 queries of R5, R6 and R8.
 
@@ -97,7 +97,7 @@ to 265 ms (79 to 175), the brand generic rule 2 to 5 ms (4 to 8); run over the w
 - **New rule and justification names (the issue's lean: `SameMedicationCodeAndPeriod` and the like).** The strongest
   case: a judgment's justification would say the period was compared, as R8's `SameCodeAndPeriod` does. It lost as
   "Same rule names" in Why says: version 18 tightens the rules, and M18 handles a tightening without re-filing every
-  claim.
+  matcher judgment.
 - **Joining an undated copy to any dated course.** The strongest case: a medication list often omits dates, and the
   copy surely belongs to some course. It lost because there is no telling which, and a wrong join hides a course; the
   pair is listed for review instead.

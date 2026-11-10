@@ -14,10 +14,10 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:hadMember :flu2 , :flu3 ; prov:wasDerivedFrom :flu2Version , :flu3Version ;
     cascade:matcherRule cascade:SameMappedCodeAndDateRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:byCodeUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byCode ;
+:byCodeUnderrules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :byCode ;
     cascade:assertedUnderRuleListVersion :rules1 .
 
-:byMappedCodeUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :byMappedCode ;
+:byMappedCodeUnderrules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :byMappedCode ;
     cascade:assertedUnderRuleListVersion :rules1 .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
@@ -35,10 +35,10 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:hadMember :note2 , :note3 ; prov:wasDerivedFrom :note2Version , :note3Version ;
     cascade:matcherRule cascade:SameNoteTypeAndTextRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:grownUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :grown ;
+:grownUnderrules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :grown ;
     cascade:assertedUnderRuleListVersion :rules1 .
 
-:sameTextUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameText ;
+:sameTextUnderrules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameText ;
     cascade:assertedUnderRuleListVersion :rules1 .
 
 :rules1SameNoteTypeAndTextGrownWithinOneOrganizationRule cascade:rowOfRuleListVersion :rules1 ;
@@ -50,7 +50,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:wasDerivedFrom :note1Version , :note3Version ;
     cascade:matcherRule cascade:SameNoteOrDocumentMasterIdentifierRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:sameDocumentUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :sameDocument ;
+:sameDocumentUnderrules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameDocument ;
     cascade:assertedUnderRuleListVersion :rules1 .
 
 :rules1SameNoteOrDocumentMasterIdentifierRule cascade:rowOfRuleListVersion :rules1 ;

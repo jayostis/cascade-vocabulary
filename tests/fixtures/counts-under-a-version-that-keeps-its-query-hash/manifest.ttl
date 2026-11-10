@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "counts-under-a-version-that-keeps-its-query-hash" ;
-  rdfs:comment "A rule list whose version 2 revises version 1 and changes the same mapped code query only, and the matcher's same code claim, asserted under version 1 alone." ;
+  rdfs:comment "A rule list whose version 2 revises version 1 and changes the same mapped code query only, and the matcher's same code matcher judgment, asserted under version 1 alone." ;
   mf:entries (
     <#everyday-counts>
   ) .
 
 <#everyday-counts> a mf:QueryEvaluationTest ;
   mf:name "everyday-counts" ;
-  rdfs:comment "The claim counts though no assertion is under the current version 2: version 2 runs the same code query it was asserted with." ;
+  rdfs:comment "The matcher judgment counts though no assertion is under the current version 2: version 2 runs the same code query it was asserted with." ;
   mf:action [ qt:query <everyday-counts.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <everyday-counts.srj> .

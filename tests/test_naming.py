@@ -8,11 +8,11 @@ from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import PROV, RDF, RDFS
 
 from contract import ROOT
-from naming import CASCADE, claim_name, named, record_from_server_name
+from naming import CASCADE, matcher_judgment_name, named, record_from_server_name
 from test_features import documents
 
 PAV = Namespace("http://purl.org/pav/")
-CLAIM_VERSIONS = json.loads((ROOT / "tests" / "claim-versions.json").read_text(encoding="utf-8"))
+MATCHER_JUDGMENT_VERSIONS = json.loads((ROOT / "tests" / "matcher-judgment-versions.json").read_text(encoding="utf-8"))
 
 
 def inputs_of(cell):
@@ -40,8 +40,8 @@ def written():
 
 
 def test_the_inputs_are_read_as_the_rule_then_its_inputs_a_list_in_parentheses():
-    assert inputs_of("cascade:ClaimNamingRule, cascade:m, r, j, (b, a), (u)") == (
-        "ClaimNamingRule", [CASCADE + "m", "r", "j", ["b", "a"], ["u"]])
+    assert inputs_of("cascade:MatcherJudgmentNamingRule, cascade:m, r, j, (b, a), (u)") == (
+        "MatcherJudgmentNamingRule", [CASCADE + "m", "r", "j", ["b", "a"], ["u"]])
     assert inputs_of("cascade:SnapshotNamingRule, a, (), (p), h") == ("SnapshotNamingRule", ["a", [], ["p"], "h"])
 
 
@@ -51,9 +51,9 @@ def test_every_name_written_beside_its_inputs_follows_its_rule():
     assert [(inputs, name) for inputs, name in pairs if named(*inputs_of(inputs)) != name] == []
 
 
-def claims_written_with_what_they_used():
-    """Each kit claim a feature writes with its justification, members, the rule list versions it is asserted under,
-    what it used and its name, with its kit."""
+def matcher_judgments_written_with_what_they_used():
+    """Each kit matcher judgment a feature writes with its justification, members, the rule list versions it is
+    asserted under, what it used and its name, with its kit."""
     for path, _, pickles in documents():
         kit = path.parent
         if kit.parent != ROOT / "conformance":
@@ -68,9 +68,9 @@ def claims_written_with_what_they_used():
 
 
 def resolver(kit):
-    """A kit's claim labels as IRIs: a record by its handle, a reference version by its series' label and version, a
-    record's version by tests/claim-versions.json (the names its saved Bridge outputs give, re-minted), and a
-    justification by its label."""
+    """A kit's matcher judgment labels as IRIs: a record by its handle, a reference version by its series' label and
+    version, a record's version by tests/matcher-judgment-versions.json (the names its saved Bridge outputs give,
+    re-minted), and a justification by its label."""
     handles = json.loads((kit / "expected" / "handles.json").read_text(encoding="utf-8"))["records"]
     references = Graph()
     for file in kit.glob("scripted-input/*/references/references.ttl"):
@@ -83,7 +83,7 @@ def resolver(kit):
 
     def used(label):
         if version := re.fullmatch(r"version (\d+) of (.+)", label):
-            return CLAIM_VERSIONS[kit.name][version[2]][int(version[1]) - 1]
+            return MATCHER_JUDGMENT_VERSIONS[kit.name][version[2]][int(version[1]) - 1]
         series_label, number = label.rsplit(" version ", 1)
         series = references.value(None, RDFS.label, Literal(series_label))
         return str(next(v for v in references.subjects(PROV.specializationOf, series)
@@ -103,17 +103,17 @@ def resolver(kit):
     return record, used, justification, matcher_rule
 
 
-def test_every_claim_a_kit_writes_with_what_it_used_is_named_by_the_claim_rule_over_them():
-    claims = list(claims_written_with_what_they_used())
-    assert len(claims) >= 11
+def test_every_matcher_judgment_a_kit_writes_with_what_it_used_is_named_by_its_naming_rule_over_them():
+    judgments = list(matcher_judgments_written_with_what_they_used())
+    assert len(judgments) >= 11
     wrong = []
-    for kit, justified, members, asserted_under, used_labels, name in claims:
+    for kit, justified, members, asserted_under, used_labels, name in judgments:
         record, used, justification, matcher_rule = resolver(kit)
         justified_as = justification(justified)
         uses = [used(label.strip()) for label in used_labels.split(",")]
         rule = next(filter(None, (matcher_rule(used(label.strip()), justified_as)
                                   for label in asserted_under.split(","))))
-        computed = claim_name(CASCADE + "CascadeMatcher", rule, justified_as,
+        computed = matcher_judgment_name(CASCADE + "CascadeMatcher", rule, justified_as,
                               [record(m.strip()) for m in members.split(",")], uses)
         if computed != name:
             wrong.append((kit.name, justified, members, name, computed))

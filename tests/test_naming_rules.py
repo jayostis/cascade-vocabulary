@@ -25,7 +25,7 @@ QT = Namespace("http://www.w3.org/2001/sw/DataAccess/tests/test-query#")
 BRIDGE = Namespace("https://ns.cascadeprotocol.org/bridge/v1-draft#")
 CASCADE = Namespace(naming.CASCADE)
 NO_QUERY = {"VersionNamingRule", "RevisionNamingRule", "FindingNamingRule", "TableVersionNamingRule",
-            "DocumentNamingRule", "ClaimNamingRule", "SnapshotNamingRule"}
+            "DocumentNamingRule", "MatcherJudgmentNamingRule", "SnapshotNamingRule"}
 
 
 @dataclass(frozen=True)

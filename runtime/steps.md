@@ -86,7 +86,7 @@ saying why; a document an import must convert and has no saved output for is the
   its justification (`cascade:justifiedAs`), each class of record it applies to (`cascade:appliesToClass`), its comparison
   query as a path under
   `queries/` (`cascade:queryPath`), N5's name for that file's bytes (`cascade:queryHash`), and the kind of table the query
-  reads, if any (`cascade:tableKind`). A matcher claim cites its rule (`cascade:matcherRule`), and its assertion names the
+  reads, if any (`cascade:tableKind`). A matcher judgment cites its rule (`cascade:matcherRule`), and its assertion names the
   rule list's version, whose row for the rule says which query ran, by its bytes. A rule list version's description in
   the pod also describes each of its rows, `<version>#<rule's local name>`, with its rule and query hash (M8). A tables folder an `open` step
   names may list a version of the vocabulary's rule list (`runtime/rule-list/`) without holding its file: the rows are
@@ -306,11 +306,11 @@ number of its current version; `subject`, the person whose record the lens says 
 | justification | members | asserted under | used | inputs | name |
 |---|---|---|---|---|---|
 
-The matcher's judgments with any of those records as a member are exactly these. Each is a claim: a `cascade:Same` with
+The matcher's judgments with any of those records as a member are exactly these. Each is a `cascade:Same` with
 that justification and exactly those members, attributed to the matcher. `asserted under` (optional) is each rule list
 version an assertion of it names (`cascade:assertedUnderRuleListVersion`), in words; `used` (optional) everything it
 came from (`prov:wasDerivedFrom`), in words; `inputs` (optional) the rule first and then the inputs N6 names
-it from, joined by `, `, a list in parentheses: `cascade:ClaimNamingRule`, the maker `cascade:CascadeMatcher`, the
+it from, joined by `, `, a list in parentheses: `cascade:MatcherJudgmentNamingRule`, the maker `cascade:CascadeMatcher`, the
 matcher rule term, the justification, `(` its members `)` and `(` what it used `)`, each the IRI the pod holds (`cascade:`
 stands for the namespace); `name` (optional) its IRI. Every column but `name` is checked first, so an input the pod does not
 hold and a name the inputs do not give fail apart.
@@ -324,8 +324,8 @@ No matcher judgment has any of those records as a member.
 | justification | members | asserted under | used | inputs | name |
 |---|---|---|---|---|---|
 
-The claims the step asserted, writing an assertion of each, are exactly these, each as the step before says, whether or
-not the step wrote the claim itself (M9). Every claim the step wrote it asserted, and holds only what N6 names it from;
+The matcher judgments the step asserted, writing an assertion of each, are exactly these, each as the step before says, whether or
+not the step wrote the matcher judgment itself (M9). Every matcher judgment the step wrote it asserted, and holds only what N6 names it from;
 every other subject in the files the step wrote is an assertion of one of these, the matcher, described as above, a
 reference series or version, in the run's own file, the run, its snapshot or the runtime (N7, N14), a finding the run
 filed (M18), or a release's retraction or, in its migration's own file, the migration, its snapshot or the runtime (N15).
@@ -335,9 +335,9 @@ filed (M18), or a release's retraction or, in its migration's own file, the migr
 | justification | members | inputs | name |
 |---|---|---|---|
 
-The retractions the step wrote are exactly these, each of an assertion of the matcher's claim of that justification and
+The retractions the step wrote are exactly these, each of an assertion of the matcher's judgment of that justification and
 those members, as the step before reads them; each holds only what N15 says, and `inputs` are
-cascade:RetractionNamingRule, then the release it prov:used, the assertion it prov:invalidated and the claim's
+cascade:ReleaseRetractionNamingRule, then the release it prov:used, the assertion it prov:invalidated and the matcher judgment's
 cascade:matcherRule.
 
 ### `{step} wrote these findings:`
@@ -346,8 +346,8 @@ cascade:matcherRule.
 |---|---|---|---|---|
 
 The findings for review the step wrote name exactly these, one row for each thing a finding names: its kind in words
-(`claims no longer reached`, the skos:prefLabel of its oa:hasBody), `under` the rule list version it names
-(cascade:noLongerReachedUnderRuleListVersion) in words, and the matcher's claim it names (oa:hasTarget) by its
+(`matcher judgments no longer reached`, the skos:prefLabel of its oa:hasBody), `under` the rule list version it names
+(cascade:noLongerReachedUnderRuleListVersion) in words, and the matcher's judgment it names (oa:hasTarget) by its
 justification and members, as the matcher's judgments are read above; `name` (optional) is the finding's IRI. A
 finding of `different result values at one instant` or `different result units at one instant` is one row, its two records (oa:hasTarget) as its `members`, its
 `under` and `justification` left empty. Each holds only its type, its kind, its oa:motivatedBy oa:classifying, its

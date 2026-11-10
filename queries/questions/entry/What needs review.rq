@@ -1,9 +1,9 @@
 # Entries a person should look at, and why: its members disagree on how severe an allergy is,
 # the matcher joined it for two different reasons, two records judged different are still joined in it, a matcher's
 # Same of two records now in two entries has lapsed (an open adopted newer tables or rules and did not file it again,
-# so the pair it joined is apart until a person judges it), a finding of the claims a rule list version no longer
-# reaches names a lapsed claim of two records now in two entries (listed as one line, the finding, expanding to its pairs, each
-# with the claim of least IRI that names it, until a person answers the finding with a Same, which joins them all, or
+# so the pair it joined is apart until a person judges it), a finding of the matcher judgments a rule list version no longer
+# reaches names a lapsed matcher judgment of two records now in two entries (listed as one line, the finding, expanding to its pairs, each
+# with the matcher judgment of least IRI that names it, until a person answers the finding with a Same, which joins them all, or
 # an acknowledgement, which takes it off; a lapsed Same such a finding names is listed with it, never alone), or two of
 # its conditions, in two entries, carry one code and their dates cannot tell whether they are one condition: either
 # has no onset, or one has an unknown end (no abatement that is a date ending on or after its onset begins, and no
@@ -85,7 +85,7 @@ WHERE {
       WHERE {
         ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
         FILTER (STR(?record) < STR(?otherRecord))
-        FILTER NOT EXISTS { ?naming oa:hasBody cascade:ClaimsNoLongerReached ; oa:hasTarget ?lapsed }
+        FILTER NOT EXISTS { ?naming oa:hasBody cascade:MatcherJudgmentsNoLongerReached ; oa:hasTarget ?lapsed }
       }
       GROUP BY ?record ?otherRecord }
     ?judgment cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
@@ -99,10 +99,10 @@ WHERE {
     OPTIONAL { ?record rdfs:label ?recordLabel }
     OPTIONAL { ?otherRecord rdfs:label ?otherRecordLabel } }
   UNION
-  { { { SELECT ?finding ?record ?otherRecord (MIN(STR(?claim)) AS ?first)
+  { { { SELECT ?finding ?record ?otherRecord (MIN(STR(?lapsedJudgment)) AS ?first)
         WHERE {
-          ?finding oa:hasBody cascade:ClaimsNoLongerReached ; oa:hasTarget ?claim .
-          ?claim cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
+          ?finding oa:hasBody cascade:MatcherJudgmentsNoLongerReached ; oa:hasTarget ?lapsedJudgment .
+          ?lapsedJudgment cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
           FILTER (STR(?record) < STR(?otherRecord))
         }
         GROUP BY ?finding ?record ?otherRecord }

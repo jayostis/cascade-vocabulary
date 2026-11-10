@@ -314,7 +314,7 @@ system URI is therefore recorded on each system as `cascade:codingSystemUri`, an
 `Coding` from it and the IRI's tail; the IRI never has to be a FHIR concept IRI to be mapped back.
 
 **Why a later stem aligns rather than renames.** (row "a stem registered later") A code IRI is inside every version's content, and the version's name
-hashes it; renaming it renames the version and every claim and judgment on it. A second stem is a mapping: each code's
+hashes it; renaming it renames the version and every judgment on it. A second stem is a mapping: each code's
 IRI under it is its `skos:exactMatch`, which SKOS allows between concepts, unlike exactMatch on a code system
 (conformance-review C2).
 
