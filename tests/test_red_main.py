@@ -159,7 +159,7 @@ def test_a_token_that_cannot_read_annotations_still_opens_the_issue_and_says_so_
     assert red_main.run(api, say=said.append) == []
     assert ("POST", "/repos/jayostis/cascade-a/issues") in [(m, p) for m, p, _ in api.sent]
     assert "What failed" not in api.sent[1][2]["body"]
-    assert len([line for line in said if "Checks" in line]) == 1
+    assert len([line for line in said if "annotations" in line]) == 1
 
 
 def test_the_messages_read_before_a_job_whose_annotations_are_refused_are_kept():
