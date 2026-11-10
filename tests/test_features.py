@@ -65,6 +65,15 @@ PHRASES = [pattern(phrase) for heading in re.findall(r"^### (.+)$", STEPS, re.M)
 
 
 @cache
+def rule_lists():
+    """Each rule list the features and kits carry, parsed, by its path under the vocabulary."""
+    return {path.relative_to(ROOT).as_posix(): rows
+            for path in sorted(path for top in ("runtime", "conformance")
+                               for index in (ROOT / top).rglob("references.ttl") for path in index.parent.glob("*.ttl"))
+            for rows in [parsed(path)] if (None, RDF.type, CASCADE.RuleListRow) in rows}
+
+
+@cache
 def guarded(kinds, query):
     """Whether a query reads GRAPH ?origin exactly when its row names one table kind, and joins, outside any graph, the
     one triple ?origin prov:specializationOf/cascade:tableKind on that kind."""
@@ -148,10 +157,7 @@ class TestFeatureFiles:
 class TestRuleLists:
     class TestGivenEveryRuleList:
         def test_every_rule_list_names_a_comparison_whose_bytes_hash_to_its_hash_and_guards_on_its_kind_but_those_examples_break(self):
-            lists = {path.relative_to(ROOT).as_posix(): rows
-                     for path in sorted(path for top in ("runtime", "conformance")
-                                        for index in (ROOT / top).rglob("references.ttl") for path in index.parent.glob("*.ttl"))
-                     for rows in [parsed(path)] if (None, RDF.type, CASCADE.RuleListRow) in rows}
+            lists = rule_lists()
             assert len(lists) == 29
             mismatched, unguarded = set(), set()
             for path, rows in lists.items():
