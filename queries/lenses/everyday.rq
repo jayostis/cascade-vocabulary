@@ -1,5 +1,5 @@
 # The lens decides which judgments count, and is the one step of the build that can be swapped. This one counts a person's
-# judgment not retracted, nor replaced by a judgment not itself retracted. A machine's claim counts on the same terms when
+# judgment not retracted, nor replaced by a judgment not itself retracted. A matcher judgment counts on the same terms when
 # the Cascade matcher made it, every reference version it used is current or has a current version whose rows join its
 # members as its rule reads them (M7), and the current version of a rule list has a row for its rule with the query hash
 # of that rule's row in a version it is asserted under by an assertion no retraction invalidates: its rule runs now the
@@ -25,7 +25,7 @@ WHERE {
               WHERE { ?ruleList pav:hasCurrentVersion ?current .
                       ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash } }
             ?assertedRow cascade:matcherRule ?rule ; cascade:queryHash ?hash ; cascade:rowOfRuleListVersion ?asserted .
-            ?assertion cascade:assertedUnderRuleListVersion ?asserted ; cascade:assertedClaim ?j .
+            ?assertion cascade:assertedUnderRuleListVersion ?asserted ; cascade:assertedJudgment ?j .
             FILTER NOT EXISTS { ?assertionRetraction prov:invalidated ?assertion }
             ?j cascade:matcherRule ?rule .
           } }

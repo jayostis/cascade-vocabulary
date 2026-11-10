@@ -346,7 +346,7 @@ Feature: Alex Rivera's pod
         | retracted | counts |
         | J10       | false  |
 
-  Rule: P14. A machine judgment stops counting under everyday when its reference table is replaced
+  Rule: P14. A matcher judgment stops counting under everyday when its reference table is replaced
     J4 and E9: penicillin splits under everyday, since version 2027-01 holds no row joining its two records (M7);
     nothing is written but the new table version; J4 stays.
 
@@ -625,9 +625,9 @@ Feature: Alex Rivera's pod
       When the pod is read as it stood after "J24"
       Then these records are in no view, for these reasons:
         | record         | reason              | because |
-        | H1P-ALG-AMOX   | patient not claimed | H1P-PAT |
-        | H1P-CON-ECZEMA | patient not claimed | H1P-PAT |
-        | H1P-CON-OTITIS | patient not claimed | H1P-PAT |
+        | H1P-ALG-AMOX   | patient profile not claimed | H1P-PAT |
+        | H1P-CON-ECZEMA | patient profile not claimed | H1P-PAT |
+        | H1P-CON-OTITIS | patient profile not claimed | H1P-PAT |
 
     Example: J22 no longer counts
       When the pod is read as it stood after "J24"
@@ -679,11 +679,11 @@ Feature: Alex Rivera's pod
     Example: E5 writes J3 to J7 as the scenario gives them, and the reference descriptions it was the first to use
       Then "E5" wrote these matcher judgments:
         | justification      | members                     | asserted under                       | used                                                                                                  | name                                          |
-        | same code          | H1-ALG-SULFA, H2O-ALG-SULFA | Cascade matcher rules version 2026.1 | version 1 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA                                                 | urn:uuid:cc372c9c-bbe0-85eb-8271-1024c526c101 |
-        | same mapped code   | H1-ALG-PCN, H2O-ALG-PCN     | Cascade matcher rules version 2026.1 | SNOMED CT to RxNorm ingredient map version 2026-09, version 1 of H1-ALG-PCN, version 1 of H2O-ALG-PCN | urn:uuid:1a4b79cc-1b65-8d79-a533-f4b910eb784f |
-        | same code          | H1-CON-HTN, H2O-CON-HTN     | Cascade matcher rules version 2026.1 | version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN                                                     | urn:uuid:bde07d0b-3c5f-87de-9730-9b51e5948f05 |
-        | same code and date | H1-IMM-FLU25, H2O-IMM-FLU25 | Cascade matcher rules version 2026.1 | version 1 of H1-IMM-FLU25, version 1 of H2O-IMM-FLU25                                                 | urn:uuid:e0a93b3f-f773-85a4-a48a-441ce15439be |
-        | same code          | H1-PROC-COLO, H2O-PROC-COLO | Cascade matcher rules version 2026.1 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO                                                 | urn:uuid:cf3dc975-2d7d-816b-9d7b-c117741ff629 |
+        | same code          | H1-ALG-SULFA, H2O-ALG-SULFA | Cascade matcher rules version 2026.1 | version 1 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA                                                 | urn:uuid:56c3d40a-d387-8c09-b089-42abd21c0630 |
+        | same mapped code   | H1-ALG-PCN, H2O-ALG-PCN     | Cascade matcher rules version 2026.1 | SNOMED CT to RxNorm ingredient map version 2026-09, version 1 of H1-ALG-PCN, version 1 of H2O-ALG-PCN | urn:uuid:add40d7a-cc32-8b73-9f17-83324261d34f |
+        | same code          | H1-CON-HTN, H2O-CON-HTN     | Cascade matcher rules version 2026.1 | version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN                                                     | urn:uuid:c0a86c98-1a45-813a-b5d0-90374e46ffb3 |
+        | same code and date | H1-IMM-FLU25, H2O-IMM-FLU25 | Cascade matcher rules version 2026.1 | version 1 of H1-IMM-FLU25, version 1 of H2O-IMM-FLU25                                                 | urn:uuid:30cdc218-6a03-8a37-b582-c67b80eac626 |
+        | same code          | H1-PROC-COLO, H2O-PROC-COLO | Cascade matcher rules version 2026.1 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO                                                 | urn:uuid:66382f38-8e83-8da9-81b5-55025a9beabe |
       And "E5" wrote these reference descriptions:
         | reference                                          |
         | Cascade matcher rules                              |
@@ -694,12 +694,12 @@ Feature: Alex Rivera's pod
     Example: E13 writes J13 to J18 as the scenario gives them, and the reference descriptions it was the first to use
       Then "E13" wrote these matcher judgments:
         | justification             | members                                    | asserted under                       | used                                                                                           | name                                          |
-        | same code                 | H1-ALG-SULFA, H2F-ALG-SULFA                | Cascade matcher rules version 2026.1 | version 2 of H1-ALG-SULFA, version 1 of H2F-ALG-SULFA                                          | urn:uuid:1231b0c3-fd2b-84ff-9dc2-e1d87120a732 |
-        | same code                 | H2O-ALG-PCN, H2F-ALG-PCN                   | Cascade matcher rules version 2026.1 | version 1 of H2O-ALG-PCN, version 1 of H2F-ALG-PCN                                             | urn:uuid:cc70f84d-eb0f-89a1-8ef9-941423907394 |
-        | same code                 | H1-CON-HTN, H2F-CON-HTN                    | Cascade matcher rules version 2026.1 | version 1 of H1-CON-HTN, version 1 of H2F-CON-HTN                                              | urn:uuid:d0a71650-d8d6-8a21-b7b2-bef24fed22bc |
-        | same code                 | H2O-CON-ASTHMA, H2F-CON-ASTHMA             | Cascade matcher rules version 2026.1 | version 1 of H2O-CON-ASTHMA, version 1 of H2F-CON-ASTHMA                                       | urn:uuid:69c948f0-54e5-8127-978d-28a94b68ab7b |
-        | same mapped code and date | H1-IMM-FLU25, H2F-IMM-FLU25                | Cascade matcher rules version 2026.1 | CVX vaccine group table version 2026-08, version 1 of H1-IMM-FLU25, version 1 of H2F-IMM-FLU25 | urn:uuid:78ae5829-e6c6-81bf-bb11-40597975d12c |
-        | same code                 | H1-PROC-COLO, H2O-PROC-COLO, H2F-PROC-COLO | Cascade matcher rules version 2026.1 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO, version 1 of H2F-PROC-COLO              | urn:uuid:89faa01e-dfeb-8f79-a467-1c91ddc6849b |
+        | same code                 | H1-ALG-SULFA, H2F-ALG-SULFA                | Cascade matcher rules version 2026.1 | version 2 of H1-ALG-SULFA, version 1 of H2F-ALG-SULFA                                          | urn:uuid:35a7773d-30b3-816f-946d-1514c8cae269 |
+        | same code                 | H2O-ALG-PCN, H2F-ALG-PCN                   | Cascade matcher rules version 2026.1 | version 1 of H2O-ALG-PCN, version 1 of H2F-ALG-PCN                                             | urn:uuid:0d3233e8-1d91-8a97-81c7-54c0a1c943ad |
+        | same code                 | H1-CON-HTN, H2F-CON-HTN                    | Cascade matcher rules version 2026.1 | version 1 of H1-CON-HTN, version 1 of H2F-CON-HTN                                              | urn:uuid:94bdd837-2c72-8eae-a894-6860ec6795a7 |
+        | same code                 | H2O-CON-ASTHMA, H2F-CON-ASTHMA             | Cascade matcher rules version 2026.1 | version 1 of H2O-CON-ASTHMA, version 1 of H2F-CON-ASTHMA                                       | urn:uuid:364153c1-f0cc-8db2-beb9-7c765316d316 |
+        | same mapped code and date | H1-IMM-FLU25, H2F-IMM-FLU25                | Cascade matcher rules version 2026.1 | CVX vaccine group table version 2026-08, version 1 of H1-IMM-FLU25, version 1 of H2F-IMM-FLU25 | urn:uuid:1fde2b84-7510-8f6d-939c-b904952d6072 |
+        | same code                 | H1-PROC-COLO, H2O-PROC-COLO, H2F-PROC-COLO | Cascade matcher rules version 2026.1 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO, version 1 of H2F-PROC-COLO              | urn:uuid:d673ec6a-bd1b-8034-9402-353b6c5e03d9 |
       And "E13" wrote these reference descriptions:
         | reference                               |
         | CVX vaccine group table                 |

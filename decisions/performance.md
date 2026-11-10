@@ -50,8 +50,8 @@ fixes: [#206](https://github.com/jayostis/cascade-vocabulary/issues/206); the ru
 | sync as union, with the no-hash test | CRDT union; git's index | a sync is a union of files, written only when the writer holds an act, other than a sync, whose snapshot is no ancestor of its last snapshot; files that change in place are outside the set (`naming.md`): a check costs a walk of the snapshots the writer holds, kept in memory, never a read of every file (`runtime/sync.feature`, S1) | borrowed from CRDTs; the test is ours |
 | current per act, incrementally | openEHR `CONTRIBUTION`; FHIR `_since` | an act rebuilds only the records it wrote revisions for and those its judgments reach by derivation, equal to the full rebuild; a migration, a trusted-makers change and a rule list version change rebuild everything (`currency.md`; `runtime/currency.feature`, C8): the work is what the act touched and its groups; on Oxigraph JS 0.5.11 at 10k records a step's rebuild takes 0.8 to 1.8 s against 9 to 11 s whole, the writing of the views and labels about half of it (measured, on a machine shared with other work) | ours |
 | the ladder as a maximum | CRDTs | current is a maximum over one record's revisions, about four, less its Befores and Erroneous, with no walk of history (`currency.md`; computed) (`runtime/currency.feature`, C2) | borrowed in spirit from CRDTs |
-| claims named once, asserted per query hash | nanopub assertions | a claim counts under any rule list version whose row for its rule carries the same `rec:queryHash`, so a new version asserts only the claims of the rules it changed; only claims whose joining rows changed are re-minted (M7; `naming.md`, `judgments.md`, `variant-identity.md`): assertions track rule changes, not versions times claims | ours |
-| the star | `prov:hadMember` | a claim's members are the record and the least member of each entry it matched; `same-pairs.rq` derives a star and entries are unchanged (`naming.md`, `judgments.md`): linear in members, where every earlier copy was 58M derived pairs (computed from A5) (`runtime/matcher.feature`, M5) | ours |
+| matcher judgments named once, asserted per query hash | nanopub assertions | a matcher judgment counts under any rule list version whose row for its rule carries the same `rec:queryHash`, so a new version asserts only the matcher judgments of the rules it changed; only matcher judgments whose joining rows changed are re-minted (M7; `naming.md`, `judgments.md`, `variant-identity.md`): assertions track rule changes, not versions times matcher judgments | ours |
+| the star | `prov:hadMember` | a matcher judgment's members are the record and the least member of each entry it matched; `same-pairs.rq` derives a star and entries are unchanged (`naming.md`, `judgments.md`): linear in members, where every earlier copy was 58M derived pairs (computed from A5) (`runtime/matcher.feature`, M5) | ours |
 | entries by union-find | disjoint-set union (Tarjan) | a runtime may compute `queries/derivations/entries.rq`'s rows another way, such as a union-find over the `cascade:currentlySame` pairs, which `owl:SymmetricProperty` makes exact, so long as they equal the query's, which stays the oracle: on Oxigraph JS a 1,000-member entry takes 5.4 s by the query's closure and 0.04 s by union-find (measured, [#246](https://github.com/jayostis/cascade-vocabulary/issues/246)) | borrowed |
 | runs bound to arrivals, scoped within an organisation | FHIR `_since` | a run binds `?record` to the records the import, entry or sync brought, and within-organisation rules stay within one (`republishing-sources.md`): about 100k comparisons a run against 1 to 5M rows unbound (assumed) (`runtime/matcher.feature`, M1 and M4) | ours |
 | derivations of a source-level Same | FHIR `Linkage`, computed | a server Same's joins are a hash join on type and id over the records under both, kept with the derived state and redone when the judgment is filed or retracted, never per read (`republishing-sources.md`): on Oxigraph JS 0.5.11, 10,000 records under each of two servers judged one give about 10k pairs in 0.7 to 0.9 s, 1.0 to 2.5 s when every document names a custodian, and a pod with no server Same pays 2 to 5 ms (measured, on a machine shared with other work); until the runtime keeps them across steps ([cascade-runtime-js#518](https://github.com/jayostis/cascade-runtime-js/issues/518)), every derive recomputes them | ours |
@@ -76,9 +76,9 @@ record arrived; a rebuild touches the records whose current state could have cha
 record and an entry a closure. The wholesale cases are named and rare: a rule list version's first run (40), a vendor
 switch, an organisation Same, and the three rebuild triggers.
 
-**Judgments grow with facts, not with versions or copies.** (rows "claims named once, asserted per query hash", "the star") A claim per conclusion, asserted again only when its
-rule's bytes change, keeps assertions near the claim count rather than 600k to 1.2M; re-minting only claims whose
-rows changed keeps M7 to what a table version changed rather than 8k claims an adoption; and a star keeps a fact seen in 120 summaries at 120 members
+**Judgments grow with facts, not with versions or copies.** (rows "matcher judgments named once, asserted per query hash", "the star") A matcher judgment per conclusion, asserted again only when its
+rule's bytes change, keeps assertions near the matcher judgment count rather than 600k to 1.2M; re-minting only matcher judgments whose
+rows changed keeps M7 to what a table version changed rather than 8k matcher judgments an adoption; and a star keeps a fact seen in 120 summaries at 120 members
 rather than 120³/3 derived pairs.
 
 **Tables are today's.** (row "page-read tables, current versions only") A page and R13 ask what a table says now, so only current versions are read and kept, and a
@@ -96,13 +96,13 @@ store is 0.5 to 1 GB in WASM (assumed).
 
 Each is the wording a note had before 2026-10-22; the note named keeps it in full.
 
-- **A claim's members as the record and everything it matched** (`naming.md`). The strongest case: one file shows the
+- **A matcher judgment's members as the record and everything it matched** (`naming.md`). The strongest case: one file shows the
   whole join. Cubic: about 58M `currentlySame` triples in ten years (computed from A5).
 - **A snapshot naming every file the act left** (`naming.md`). The strongest case: git's tree, one canonical node per
   state. 70 to 200 GB over ten years against a 1 GB pod (computed).
-- **A claim counting under the rule list version the app uses, and M7 re-minting every table-reading claim**
+- **A matcher judgment counting under the rule list version the app uses, and M7 re-minting every table-reading matcher judgment**
   (`naming.md`, `judgments.md`, `variant-identity.md`). The strongest case: each version says for itself what it
-  reaches. 600k to 1.2M assertions (computed) and about 960k claims (assumed).
+  reaches. 600k to 1.2M assertions (computed) and about 960k matcher judgments (assumed).
 - **Matcher runs with `?record` unbound, and M1's triggers left open** (`republishing-sources.md`). The strongest
   case: a run needs no list of arrivals and misses nothing. 1 to 5M rows and 80M same-result comparisons per run
   (assumed).

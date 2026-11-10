@@ -15,10 +15,10 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:hadMember :b2 , :b1 ; prov:wasDerivedFrom :b1Version , :b2Version ;
     cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:threeMembersUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :threeMembers ;
+:threeMembersUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :threeMembers ;
     cascade:assertedUnderRuleListVersion :rules1 .
 
-:twoMembersUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :twoMembers ;
+:twoMembersUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :twoMembers ;
     cascade:assertedUnderRuleListVersion :rules1 .
 
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .

@@ -193,7 +193,7 @@ join later without a new term; that is also why it becomes repeatable, and why t
 immunization view and `My immunizations.rq`'s GROUP BY, pick the CVX one. The comparisons whose bytes old rule list
 versions pin (`same-mapped-code-and-date.rq`, versions 1 to 8; `same-vaccine-group-and-date.rq`, version 9) get a
 successor in a new version; whether the old versions survive #191's re-mint is #191's (lean: they go, since no pod
-holds a claim under them). `reactionManifestationText` takes FHIR's path, `reaction.manifestation.text`.
+holds a matcher judgment under them). `reactionManifestationText` takes FHIR's path, `reaction.manifestation.text`.
 `resultClinicallyRelevantTime` takes FHIR's name for FHIR's element, prefixed with what it is the time of, as
 `resultValue` is; C-CDA calls the same time "clinically relevant" and gives the sample's draw as its example,
 so "performed" says something neither source says.

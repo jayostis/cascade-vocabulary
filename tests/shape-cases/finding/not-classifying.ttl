@@ -6,7 +6,7 @@
 
 :matcher a prov:SoftwareAgent .
 
-:claim a cascade:Judgment ;
+:judgment a cascade:Judgment ;
     cascade:verdict cascade:Same ;
     prov:hadMember :one , :other ;
     cascade:justification cascade:SameCode ;
@@ -15,6 +15,6 @@
     prov:wasAttributedTo :matcher .
 
 :finding a cascade:FindingForReview ;
-    oa:hasBody cascade:ClaimsNoLongerReached ;
+    oa:hasBody cascade:MatcherJudgmentsNoLongerReached ;
     cascade:noLongerReachedUnderRuleListVersion :rules2 ;
-    oa:hasTarget :claim .
+    oa:hasTarget :judgment .

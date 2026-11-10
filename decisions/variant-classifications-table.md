@@ -81,7 +81,7 @@ as cited in `variant-record.md`. The counts, the scripts and the archived classi
 | gene coverage | nothing found | `rec:coversGene` on the version, an HGNC symbol, any number including none; a changed gene list is a new version; a version without it covers no named gene (`ontologies/cascade.ttl`) | ours |
 | kinds an app keeps for its pages | nothing found | `rec:readByPages true` marks the kinds an app keeps and packs because its pages read them, though no rule does: `rec:CodeNames`, `rec:CodeStatus`, `rec:VariantClassifications`, `rec:PanelMembers` and `rec:DrugClasses` (`records.ttl`); it replaces the set a runtime hard-coded (`ontologies/cascade.ttl`) | ours |
 | a row whose classification parses to no concept | | keeps its keys (`ontologies/cascade.ttl`) | ours: the join through a row is identity and reads no classification |
-| versions an app keeps | ClinVar archives `variant_summary` monthly | R13 counts over current versions only (`variant-identity.md`), so an old version's rows may be dropped; a new version re-mints only the claims whose joining rows changed in it (M7) | ours |
+| versions an app keeps | ClinVar archives `variant_summary` monthly | R13 counts over current versions only (`variant-identity.md`), so an old version's rows may be dropped; a new version re-mints only the matcher judgments whose joining rows changed in it (M7) | ours |
 
 ## Why
 
@@ -138,8 +138,8 @@ reads; a marker in the vocabulary changes none.
   what its pages read. It was the state before; every new kind a page reads would change a runtime.
 - **Every held version counted by R13.** The strongest case: an expression ClinVar ever put on two rows stays left
   alone. Every version is then kept, 72 GB of ClinVar in ten years (computed, #206).
-- **Every table-reading claim re-minted per adopted version (M7).** The strongest case: each claim names the version it
-  was last read under. About 960k claims in ten years for rows that did not change (assumed monthly adoption, #206).
+- **Every table-reading matcher judgment re-minted per adopted version (M7).** The strongest case: each matcher judgment names the version it
+  was last read under. About 960k matcher judgments in ten years for rows that did not change (assumed monthly adoption, #206).
 
 ## Still open
 

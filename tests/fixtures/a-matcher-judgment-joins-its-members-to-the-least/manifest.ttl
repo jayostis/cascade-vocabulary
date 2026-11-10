@@ -4,8 +4,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <> a mf:Manifest ;
-  rdfs:label "a-claim-joins-its-members-to-the-least" ;
-  rdfs:comment "A counting claim of three allergies and one of two, each written with its members out of order." ;
+  rdfs:label "a-matcher-judgment-joins-its-members-to-the-least" ;
+  rdfs:comment "A counting matcher judgment of three allergies and one of two, each written with its members out of order." ;
   mf:entries (
     <#star-pairs>
     <#entries>
@@ -13,7 +13,7 @@
 
 <#star-pairs> a mf:QueryEvaluationTest ;
   mf:name "star-pairs" ;
-  rdfs:comment "Each member is the same as its claim's least member, both ways, and as no other member: a1 with a2 and a3, b1 with b2." ;
+  rdfs:comment "Each member is the same as its matcher judgment's least member, both ways, and as no other member: a1 with a2 and a3, b1 with b2." ;
   mf:action [ qt:query <star-pairs.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <star-pairs.srj> .

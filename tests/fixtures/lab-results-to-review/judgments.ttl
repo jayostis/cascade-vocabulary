@@ -13,7 +13,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:hadMember :dayOnly , :dayInstant ; prov:wasDerivedFrom <urn:x:dayOnlyVersion> , <urn:x:dayInstantVersion> ;
     cascade:matcherRule cascade:SameResultOnOneDayRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:onOneDayUnderrules11 a cascade:ClaimAssertion ; cascade:assertedClaim :onOneDay ;
+:onOneDayUnderrules11 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :onOneDay ;
     cascade:assertedUnderRuleListVersion :rules11 .
 
 :notTheSame a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :differentA , :differentB ;
@@ -60,7 +60,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:matcherRule cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule ;
     prov:wasAttributedTo cascade:CascadeMatcher .
 
-:byIdentifierUnderrules11 a cascade:ClaimAssertion ; cascade:assertedClaim :byIdentifier ;
+:byIdentifierUnderrules11 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :byIdentifier ;
     cascade:assertedUnderRuleListVersion :rules11 .
 
 :rules11SameBusinessIdentifierRule cascade:rowOfRuleListVersion :rules11 ;
@@ -72,7 +72,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:wasDerivedFrom <urn:x:identifiedCorrectedVersion> , <urn:x:sameAsCorrectedVersion> ;
     cascade:matcherRule cascade:SameResultRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:byValueUnderrules11 a cascade:ClaimAssertion ; cascade:assertedClaim :byValue ;
+:byValueUnderrules11 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :byValue ;
     cascade:assertedUnderRuleListVersion :rules11 .
 
 :rules11SameResultRule cascade:rowOfRuleListVersion :rules11 ; cascade:matcherRule cascade:SameResultRule ;
@@ -89,7 +89,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:matcherRule cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule ;
     prov:wasAttributedTo cascade:CascadeMatcher .
 
-:byIdentifierUnmarkedUnderrules11 a cascade:ClaimAssertion ; cascade:assertedClaim :byIdentifierUnmarked ;
+:byIdentifierUnmarkedUnderrules11 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :byIdentifierUnmarked ;
     cascade:assertedUnderRuleListVersion :rules11 .
 
 :unmarkedValue a cascade:FindingForReview ; oa:hasBody cascade:DifferentResultValuesAtOneInstant ;

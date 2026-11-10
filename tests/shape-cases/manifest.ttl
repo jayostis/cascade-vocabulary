@@ -247,14 +247,14 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:RuleListVersionRowShape ; sh:resultPath cascade:queryHash ] ] .
 
-<#claim-assertion/valid> a sht:Validate ;
-  mf:action [ sht:dataGraph <claim-assertion/valid.ttl> ] ;
+<#matcher-judgment-assertion/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <matcher-judgment-assertion/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
-<#claim-assertion/no-claim> a sht:Validate ;
-  mf:action [ sht:dataGraph <claim-assertion/no-claim.ttl> ] ;
+<#matcher-judgment-assertion/no-judgment> a sht:Validate ;
+  mf:action [ sht:dataGraph <matcher-judgment-assertion/no-judgment.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:ClaimAssertionShape ; sh:resultPath cascade:assertedClaim ] ] .
+              sh:result [ sh:sourceShape cascade:MatcherJudgmentAssertionShape ; sh:resultPath cascade:assertedJudgment ] ] .
 
 <#matcher-run/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <matcher-run/valid.ttl> ] ;
@@ -659,7 +659,7 @@
 <#finding/no-rule-list-version> a sht:Validate ;
   mf:action [ sht:dataGraph <finding/no-rule-list-version.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:ClaimsNoLongerReachedShape ] ] .
+              sh:result [ sh:sourceShape cascade:MatcherJudgmentsNoLongerReachedShape ] ] .
 
 <#finding/different-result-values> a sht:Validate ;
   mf:action [ sht:dataGraph <finding/different-result-values.ttl> ] ;

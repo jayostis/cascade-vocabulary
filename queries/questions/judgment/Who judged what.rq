@@ -1,5 +1,5 @@
 # Everything each judgment says: when a person made it, by whom and in what role, its verdict, what it names, the reason
-# given, any judgment it replaces, and, for a machine's claim, each rule list version it is asserted under, since a claim
+# given, any judgment it replaces, and, for a matcher judgment, each rule list version it is asserted under, since a matcher judgment
 # carries no time; and each person's retraction, an activity, with the judgment it invalidated and no verdict. A judgment
 # is never edited; a later one replaces it, or a retraction takes it back.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
@@ -21,7 +21,7 @@ WHERE {
     OPTIONAL { ?judgment dct:description ?reason }
     OPTIONAL { ?judgment dct:replaces ?replaces .
                OPTIONAL { ?replaces rdfs:label ?replacesLabel } }
-    OPTIONAL { ?assertion cascade:assertedClaim ?judgment ; cascade:assertedUnderRuleListVersion ?assertedUnder } }
+    OPTIONAL { ?assertion cascade:assertedJudgment ?judgment ; cascade:assertedUnderRuleListVersion ?assertedUnder } }
   UNION
   { ?judgment a prov:Activity ; prov:invalidated ?retracts ; prov:wasAssociatedWith ?author .
     OPTIONAL { ?judgment prov:startedAtTime ?made }

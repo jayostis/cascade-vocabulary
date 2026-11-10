@@ -3,7 +3,7 @@
 Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the review on #202. Rules: R12, justified
 `jdg:SameVariation`, and R13, justified `jdg:SameVariationThroughTable`, in the rule list's version 8; rule M17 of
 `runtime/matcher.feature`. Applies `naming.md`'s rubric: a variant record is named by its source (`variant-record.md`),
-and that two are one variant is a judgment (test 2), made by `jdg:CascadeMatcher` as `judgments.md` rules. Claims,
+and that two are one variant is a judgment (test 2), made by `jdg:CascadeMatcher` as `judgments.md` rules. Matcher judgments,
 assertions and used are `naming.md`; which revision is current is `currency.md`; the within-organisation rules these
 rules are not are `republishing-sources.md`. #191 turns the short tags R12, R13 and M17 into descriptive rule terms, and
 #193 moves `jdg:` and `genomics:` into the one unversioned namespace.
@@ -66,7 +66,7 @@ SEMAPV (https://mapping-commons.github.io/semantic-mapping-vocabulary/, verified
 | a page's lookup | | through the ClinVar IDs of the variant's entry when it carries any, through its HGVS expressions only when it carries none, never both (`queries/tables/agreement.rq`) | ours |
 | justification kinds | SEMAPV | `jdg:SameVariation` `skos:broadMatch` `semapv:LexicalMatching` (`judgments.ttl:93`); `jdg:SameVariationThroughTable` `skos:broadMatch` `semapv:BackgroundKnowledgeBasedMatching` (`judgments.ttl:98`) (`ontologies/cascade.ttl`) | borrowed from SEMAPV at the kind level, as `judgments.md` rules |
 | maker | PROV agents; `judgments.md` | `jdg:CascadeMatcher`, one unversioned `prov:SoftwareAgent`; not yet in `judgments.ttl` (`ontologies/cascade.ttl`) | borrowed from `judgments.md` |
-| used | `naming.md`: each member's version and each table version the rule read | each member's version and `?origin`, the table version whose row joined them; a new table version re-mints only the claims whose joining rows changed in it (M7) | borrowed from `naming.md` where the kind has one series, since the count reads current versions only; with several, open |
+| used | `naming.md`: each member's version and each table version the rule read | each member's version and `?origin`, the table version whose row joined them; a new table version re-mints only the matcher judgments whose joining rows changed in it (M7) | borrowed from `naming.md` where the kind has one series, since the count reads current versions only; with several, open |
 | scope | `republishing-sources.md`: within-organisation rules | across organisations: both are identity rules on global codes (`queries/matcher/same-variation.rq`, `queries/matcher/same-variation-through-current-tables.rq`) | ours: `republishing-sources.md` adds rules within one organisation, and these two are not among them (Why) |
 | rule IRI | `naming.md`: descriptive terms in the one unversioned namespace | short tags in a versioned namespace today | yields to `naming.md` under #191 and #193 |
 | computed identity | VRS digest; CA id | none (`runtime/matcher.feature`, M17) | diverged; `variant-record.md` says why |
@@ -75,10 +75,10 @@ SEMAPV (https://mapping-commons.github.io/semantic-mapping-vocabulary/, verified
 
 **Why only a table joins two expressions.** (rows "join through the table (R13)", "used") An HGVS expression names a transcript version, so two expressions are two
 strings and nothing in the pod says they are one variant; only a table does, by listing both under one VariationID, as
-ClinVar's `hgvs4variation` does for 90011. Sameness is a claim the pod makes from a table that says so, which is the
-rubric's second test, and the table version is in the claim's used, so a later table that says otherwise makes a
-different claim. A later table whose joining rows are unchanged says the same, so M7 re-mints only the claims whose
-joining rows changed: re-minting every table-reading claim per adopted version is about 960k claims in ten years
+ClinVar's `hgvs4variation` does for 90011. Sameness is a matcher judgment the pod makes from a table that says so, which is the
+rubric's second test, and the table version is in the matcher judgment's used, so a later table that says otherwise makes a
+different matcher judgment. A later table whose joining rows are unchanged says the same, so M7 re-mints only the matcher judgments whose
+joining rows changed: re-minting every table-reading matcher judgment per adopted version is about 960k matcher judgments in ten years
 (assumed monthly adoption, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)).
 
 **Why an ID is read before an expression.** (rows "join by ID (R12)", "how a version finds its row", "a page's lookup") An ID is a stronger claim than an expression, so a version that carries one
@@ -108,7 +108,7 @@ treat both by kind without knowing the rule (`judgments.md`).
 
 - **Join any two records that share an expression.** The strongest case: it needs no table, and two reports of one
   expression on one transcript are almost always one variant. An expression is not unique across variations (195 in the
-  2026-10 file), and sameness is a claim the pod should make from a table that says so.
+  2026-10 file), and sameness is a matcher judgment the pod should make from a table that says so.
 - **Read both the ID and the expression.** The strongest case: it would join more pairs, including a report whose ID is
   on no row of the held version. A pair of different IDs would join through one's expression, against what the IDs say.
 - **A string distance between expressions.** The strongest case: it would join `NM_000249.3:c.2042C>T` and
@@ -123,8 +123,8 @@ treat both by kind without knowing the rule (`judgments.md`).
 - **Counting an expression's rows over every held version.** The strongest case: an expression that ever named two
   variations stays left alone, whatever the current version says. Every version is then kept for the count, 72 GB of
   ClinVar in ten years (computed, #206), and a superseded version's rows are no evidence of today's.
-- **A re-mint of every table-reading claim per adopted table version (M7).** The strongest case: each claim names the
-  version it was last read under, so used is always current by construction. About 960k claims in ten years (assumed,
+- **A re-mint of every table-reading matcher judgment per adopted table version (M7).** The strongest case: each matcher judgment names the
+  version it was last read under, so used is always current by construction. About 960k matcher judgments in ten years (assumed,
   #206), for rows that did not change.
 
 ## Still open
@@ -135,7 +135,7 @@ treat both by kind without knowing the rule (`judgments.md`).
   an organisation's. Whether every matcher rule on a global code (an RxNorm code, a LOINC code with a date) holds across
   organisations the same way, or only identity codes do, is open.
 - The maker is `jdg:CascadeMatcher`, which `judgments.md` adds and `judgments.ttl` does not yet hold.
-- The kit and M17 put "Matcher rules version 8" in a claim's used, where `naming.md` moves the rule list version to the
+- The kit and M17 put "Matcher rules version 8" in a matcher judgment's used, where `naming.md` moves the rule list version to the
   assertion, and the kit names its table version by a `urn:uuid`; both change under #191, not here.
 
 ## What would change our mind

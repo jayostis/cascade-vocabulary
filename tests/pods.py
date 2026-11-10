@@ -67,8 +67,9 @@ def layout():
 
 
 def derive(store, lens):
-    """Runs each derivation and the lens in turn, the claims M7 keeps across table versions just before the lens, adding
-    its triples to the store and then all of them as the lens's graph, and returns the triples each added by its path."""
+    """Runs each derivation and the lens in turn, the matcher judgments M7 keeps across table versions just before the
+    lens, adding its triples to the store and then all of them as the lens's graph, and returns the triples each added
+    by its path."""
     held, added = store.triples(), {}
     for relative in derivations(lens):
         if relative == named("lenses")[lens]:
@@ -82,14 +83,14 @@ def derive(store, lens):
     return added
 
 
-STALE_CLAIMS = """
+STALE_MATCHER_JUDGMENTS = """
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
-SELECT DISTINCT ?claim ?now ?hash ?member WHERE {
-  ?claim prov:wasAttributedTo cascade:CascadeMatcher ; cascade:verdict cascade:Same ; cascade:matcherRule ?rule ;
+SELECT DISTINCT ?judgment ?now ?hash ?member WHERE {
+  ?judgment prov:wasAttributedTo cascade:CascadeMatcher ; cascade:verdict cascade:Same ; cascade:matcherRule ?rule ;
          prov:wasDerivedFrom ?input ; prov:hadMember ?member .
-  ?assertion cascade:assertedClaim ?claim .
+  ?assertion cascade:assertedJudgment ?judgment .
   FILTER NOT EXISTS { ?retraction prov:invalidated ?assertion }
   ?input prov:specializationOf ?series .
   ?series a cascade:ReferenceSeries ; pav:hasCurrentVersion ?now .
@@ -106,19 +107,20 @@ def comparisons():
 
 
 def kept(store):
-    """M7: each matcher claim with an assertion no retraction invalidates that used a version of a series whose current
+    """M7: each matcher judgment with an assertion no retraction invalidates that used a version of a series whose current
     version is another, and whose rule's query in the current rule list, over that current version's rows, joins one of
     its members to each of the others."""
-    claims = {}
-    for row in store.select(STALE_CLAIMS):
-        claims.setdefault((row["claim"], row["now"], str(row["hash"])), set()).add(row["member"])
+    judgments = {}
+    for row in store.select(STALE_MATCHER_JUDGMENTS):
+        judgments.setdefault((row["judgment"], row["now"], str(row["hash"])), set()).add(row["member"])
     joined = {}
-    for _, _, hash in claims:
+    for _, _, hash in judgments:
         if hash not in joined:
             text = comparisons().get(hash)
             joined[hash] = set() if text is None else {
                 (row["record"], row["other"], row.get("origin")) for row in store.select(text)}
-    return {(claim, CASCADE.membersJoinedByCurrentTableVersion, now) for (claim, now, hash), members in claims.items()
+    return {(judgment, CASCADE.membersJoinedByCurrentTableVersion, now)
+            for (judgment, now, hash), members in judgments.items()
             if any(all((one, other, now) in joined[hash] for other in members - {one}) for one in members)}
 
 

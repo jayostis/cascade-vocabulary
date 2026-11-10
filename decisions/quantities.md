@@ -207,7 +207,7 @@ from one answer coded twice.
 unjoined until conversion is in scope, as a finding the matcher files, so the review page reads it rather than
 comparing every pair of results on each read (0.20 s against 1.30 s for the review question over 3,000 results). A different instant never joins; a result stamped only to the day is compared by day
 and drops to likely, surfaced, since two draws in a day are common for inpatients. A changed rule is a new rule list
-version, as `naming.md` requires, so the old rule's claims stop counting by derivation.
+version, as `naming.md` requires, so the old rule's matcher judgments stop counting by derivation.
 
 **Conversion waits.** (row "conversion") Within a dimension it is mechanical, but mass to molar needs a molar mass per LOINC code, and
 UCUM's licence forbids derivative works; whether a published LOINC-keyed table is one is a legal question (unverified).

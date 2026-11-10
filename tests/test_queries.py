@@ -487,7 +487,7 @@ def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no
         "RefutedAtSource": ["derivations/excluded-at-source.rq"],
         "JudgedErroneous": ["derivations/excluded-by-judgment.rq"],
         "ImportJudgedErroneous": ["derivations/excluded-with-their-activity.rq"],
-        "PatientNotClaimed": ["derivations/excluded-for-their-patient.rq"],
+        "PatientProfileNotClaimed": ["derivations/excluded-for-their-patient.rq"],
         "NoPatient": ["derivations/excluded-for-their-patient.rq"],
     }
 

@@ -1,7 +1,7 @@
-# A matcher's claim has lapsed when it does not count, nothing retracts it, no judgment not itself retracted replaces
+# A matcher's judgment has lapsed when it does not count, nothing retracts it, no judgment not itself retracted replaces
 # it, and a newer version stopped it counting: a reference version it used has a newer current one whose rows do not
 # join its members (M7), or no current version of a rule list has a row for its rule with the query hash of that rule's
-# row in a version it is asserted under. A claim is read by its assertions no retraction invalidates: one each of whose
+# row in a version it is asserted under. A matcher judgment is read by its assertions no retraction invalidates: one each of whose
 # assertions a release retracted neither counts nor lapses, since the release declared its rule wrong. An open adopted
 # newer tables or rules and did not file or assert it again, so the pair it joined may now be two entries.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
@@ -12,7 +12,7 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 CONSTRUCT { ?j cascade:lapsed true }
 WHERE {
   { ?j cascade:verdict cascade:Same ; prov:wasAttributedTo cascade:CascadeMatcher ; prov:wasDerivedFrom ?input .
-    ?keptAssertion cascade:assertedClaim ?j .
+    ?keptAssertion cascade:assertedJudgment ?j .
     FILTER NOT EXISTS { ?keptRetraction prov:invalidated ?keptAssertion }
     ?input prov:specializationOf ?series .
     ?series a cascade:ReferenceSeries ; pav:hasCurrentVersion ?now .
@@ -26,7 +26,7 @@ WHERE {
     FILTER NOT EXISTS { ?retraction prov:invalidated ?j } }
   UNION
   { ?j cascade:verdict cascade:Same ; prov:wasAttributedTo cascade:CascadeMatcher .
-    ?keptAssertion cascade:assertedClaim ?j .
+    ?keptAssertion cascade:assertedJudgment ?j .
     FILTER NOT EXISTS { ?keptRetraction prov:invalidated ?keptAssertion }
     FILTER NOT EXISTS { ?j cascade:countsUnderLens true }
     FILTER NOT EXISTS {
@@ -41,7 +41,7 @@ WHERE {
               WHERE { ?ruleList pav:hasCurrentVersion ?current .
                       ?currentRow cascade:rowOfRuleListVersion ?current ; cascade:matcherRule ?rule ; cascade:queryHash ?hash } }
             ?assertedRow cascade:matcherRule ?rule ; cascade:queryHash ?hash ; cascade:rowOfRuleListVersion ?asserted .
-            ?assertion cascade:assertedUnderRuleListVersion ?asserted ; cascade:assertedClaim ?j .
+            ?assertion cascade:assertedUnderRuleListVersion ?asserted ; cascade:assertedJudgment ?j .
             FILTER NOT EXISTS { ?assertionRetraction prov:invalidated ?assertion }
             ?j cascade:matcherRule ?rule .
           } } }

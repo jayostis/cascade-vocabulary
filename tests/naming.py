@@ -18,8 +18,8 @@ RULES = {local: CASCADE + local for local in (
     "RecordFromServerNamingRule", "RecordFromDocumentNamingRule", "RecordFromCcdaNamingRule",
     "RecordFromCcdaWithoutIdNamingRule", "ContainedRecordNamingRule", "EnteredRecordNamingRule", "VersionNamingRule", "RevisionNamingRule",
     "DocumentNamingRule", "FindingNamingRule", "TableRowNamingRule", "TableVersionNamingRule", "ViewEntryNamingRule",
-    "SnapshotNamingRule", "ServerNamingRule", "OrganizationNamingRule", "ClaimNamingRule", "AssertionNamingRule",
-    "RetractionNamingRule")}
+    "SnapshotNamingRule", "ServerNamingRule", "OrganizationNamingRule", "MatcherJudgmentNamingRule",
+    "MatcherJudgmentAssertionNamingRule", "ReleaseRetractionNamingRule")}
 
 THIS_VERSION = NamedNode("urn:cascade:this-version")
 
@@ -218,16 +218,16 @@ def organization_from_identifier_name(system, value):
     return v8_name("OrganizationNamingRule", [system, value])
 
 
-def claim_name(maker, matcher_rule, justification, members, used):
-    return v8_name("ClaimNamingRule", [maker, matcher_rule, justification, *counted(members), *counted(used)])
+def matcher_judgment_name(maker, matcher_rule, justification, members, used):
+    return v8_name("MatcherJudgmentNamingRule", [maker, matcher_rule, justification, *counted(members), *counted(used)])
 
 
-def assertion_name(rule_list_version, claim):
-    return v8_name("AssertionNamingRule", [rule_list_version, claim])
+def matcher_judgment_assertion_name(rule_list_version, judgment):
+    return v8_name("MatcherJudgmentAssertionNamingRule", [rule_list_version, judgment])
 
 
-def retraction_name(release, assertion, matcher_rule):
-    return v8_name("RetractionNamingRule", [release, assertion, matcher_rule])
+def release_retraction_name(release, assertion, matcher_rule):
+    return v8_name("ReleaseRetractionNamingRule", [release, assertion, matcher_rule])
 
 
 def table_row_name(source, predicate, target, panel_sequence=None):
@@ -314,9 +314,9 @@ def named(rule, inputs):
         "ServerNamingRule": lambda: server_name(*inputs),
         "OrganizationNamingRule": lambda: (organization_from_server_name(inputs[0], inputs[2]) if len(inputs) == 3
                                            else organization_from_identifier_name(*inputs)),
-        "ClaimNamingRule": lambda: claim_name(*inputs),
-        "AssertionNamingRule": lambda: assertion_name(*inputs),
-        "RetractionNamingRule": lambda: retraction_name(*inputs),
+        "MatcherJudgmentNamingRule": lambda: matcher_judgment_name(*inputs),
+        "MatcherJudgmentAssertionNamingRule": lambda: matcher_judgment_assertion_name(*inputs),
+        "ReleaseRetractionNamingRule": lambda: release_retraction_name(*inputs),
         "TableRowNamingRule": lambda: table_row_name(*inputs),
         "SnapshotNamingRule": lambda: snapshot_name(inputs[0], inputs[1], *(inputs[2] or [None]), inputs[3], inputs[4]),
         "ViewEntryNamingRule": lambda: view_entry_name(*inputs),

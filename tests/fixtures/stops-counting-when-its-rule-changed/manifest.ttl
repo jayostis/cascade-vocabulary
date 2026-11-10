@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "stops-counting-when-its-rule-changed" ;
-  rdfs:comment "A rule list whose version 2 revises version 1 and changes the same mapped code query, and two of the matcher's same mapped code claims: one asserted under version 1 alone, one under version 1 and again under version 2." ;
+  rdfs:comment "A rule list whose version 2 revises version 1 and changes the same mapped code query, and two of the matcher's same mapped code matcher judgments: one asserted under version 1 alone, one under version 1 and again under version 2." ;
   mf:entries (
     <#whether-it-counts>
     <#lapsed>
@@ -13,14 +13,14 @@
 
 <#whether-it-counts> a mf:QueryEvaluationTest ;
   mf:name "whether-it-counts" ;
-  rdfs:comment "The claim asserted under version 1 alone does not count, since version 2 runs another query for its rule, and the question says version 2 did it; the claim asserted again under version 2 counts." ;
+  rdfs:comment "The matcher judgment asserted under version 1 alone does not count, since version 2 runs another query for its rule, and the question says version 2 did it; the matcher judgment asserted again under version 2 counts." ;
   mf:action [ qt:query <../../../queries/questions/judgment/Whether%20it%20counts.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <whether-it-counts.srj> .
 
 <#lapsed> a mf:QueryEvaluationTest ;
   mf:name "lapsed" ;
-  rdfs:comment "The claim that stopped counting has lapsed: nothing retracts or supersedes it." ;
+  rdfs:comment "The matcher judgment that stopped counting has lapsed: nothing retracts or supersedes it." ;
   mf:action [ qt:query <lapsed.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <lapsed.srj> .

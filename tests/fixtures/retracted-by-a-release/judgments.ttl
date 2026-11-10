@@ -9,7 +9,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :retracted a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ;
     prov:hadMember :c1 , :c2 ; prov:wasDerivedFrom :c1Version , :c2Version ;
     cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
-:retractedUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :retracted ;
+:retractedUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :retracted ;
     cascade:assertedUnderRuleListVersion :rules1 .
 :retractedUnderRules1Retraction a prov:Activity ; prov:invalidated :retractedUnderRules1 ; prov:used :rules2 .
 
@@ -17,15 +17,15 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :assertedAgain a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ;
     prov:hadMember :c1 , :c3 ; prov:wasDerivedFrom :c1Version , :c3Version ;
     cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
-:assertedAgainUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :assertedAgain ;
+:assertedAgainUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :assertedAgain ;
     cascade:assertedUnderRuleListVersion :rules1 .
 :assertedAgainUnderRules1Retraction a prov:Activity ; prov:invalidated :assertedAgainUnderRules1 ; prov:used :rules2 .
-:assertedAgainUnderRules3 a cascade:ClaimAssertion ; cascade:assertedClaim :assertedAgain ;
+:assertedAgainUnderRules3 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :assertedAgain ;
     cascade:assertedUnderRuleListVersion :rules3 .
 
 # lapsing: asserted under version 1 only, of a rule version 3 runs with another query, and retracted by nothing
 :lapsing a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
     prov:hadMember :c2 , :c3 ; prov:wasDerivedFrom :c2Version , :c3Version ;
     cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
-:lapsingUnderRules1 a cascade:ClaimAssertion ; cascade:assertedClaim :lapsing ;
+:lapsingUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :lapsing ;
     cascade:assertedUnderRuleListVersion :rules1 .

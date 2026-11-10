@@ -38,11 +38,11 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :machineOld a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :record , :other ;
     prov:wasDerivedFrom :recordVersion , :otherVersion ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:machineCodeUnderrules2 a cascade:ClaimAssertion ; cascade:assertedClaim :machineCode ;
+:machineCodeUnderrules2 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :machineCode ;
     cascade:assertedUnderRuleListVersion :rules-2 .
 
-:machineMappedUnderrules2 a cascade:ClaimAssertion ; cascade:assertedClaim :machineMapped ;
+:machineMappedUnderrules2 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :machineMapped ;
     cascade:assertedUnderRuleListVersion :rules-2 .
 
-:machineOldUnderrules1 a cascade:ClaimAssertion ; cascade:assertedClaim :machineOld ;
+:machineOldUnderrules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :machineOld ;
     cascade:assertedUnderRuleListVersion :rules-1 .

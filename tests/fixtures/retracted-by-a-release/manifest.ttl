@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "retracted-by-a-release" ;
-  rdfs:comment "A rule list whose version 2 revises version 1, drops the same mapped code rule and declares it wrong, and whose version 3 revises version 2 and runs both rules with fixed queries; two same mapped code claims asserted under version 1, each assertion retracted by version 2, one asserted again under version 3; and a same code claim asserted under version 1 alone." ;
+  rdfs:comment "A rule list whose version 2 revises version 1, drops the same mapped code rule and declares it wrong, and whose version 3 revises version 2 and runs both rules with fixed queries; two same mapped code matcher judgments asserted under version 1, each assertion retracted by version 2, one asserted again under version 3; and a same code matcher judgment asserted under version 1 alone." ;
   mf:entries (
     <#which-count>
     <#which-have-lapsed>
@@ -13,14 +13,14 @@
 
 <#which-count> a mf:QueryEvaluationTest ;
   mf:name "which-count" ;
-  rdfs:comment "A claim counts by the assertions no retraction invalidates: the one asserted again under version 3 counts; the one whose only assertion a release retracted does not." ;
+  rdfs:comment "A matcher judgment counts by the assertions no retraction invalidates: the one asserted again under version 3 counts; the one whose only assertion a release retracted does not." ;
   mf:action [ qt:query <which-count.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <which-count.srj> .
 
 <#which-have-lapsed> a mf:QueryEvaluationTest ;
   mf:name "which-have-lapsed" ;
-  rdfs:comment "A claim whose every assertion a release retracted does not lapse, though version 3 runs its rule with another query; the same code claim, retracted by nothing, lapses." ;
+  rdfs:comment "A matcher judgment whose every assertion a release retracted does not lapse, though version 3 runs its rule with another query; the same code matcher judgment, retracted by nothing, lapses." ;
   mf:action [ qt:query <which-have-lapsed.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <which-have-lapsed.srj> .
