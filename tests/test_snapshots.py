@@ -80,7 +80,7 @@ class TestSnapshotVectors:
             assert naming.set_hash(files) == vector["setHash"]
 
     class TestGivenASnapshotOfAChain:
-        """given a snapshot of a chain"""
+        """given a snapshot in a run of snapshots"""
 
         @pytest.mark.parametrize("chain, at, snapshot", SNAPSHOTS)
         def test_holds_no_line_for_its_own_file(self, chain, at, snapshot):
@@ -104,7 +104,7 @@ class TestSnapshotVectors:
         def test_holds_the_snapshot_before_it_by_the_sha_256_of_that_file(self, chain, at, snapshot):
             """holds the snapshot before it by the SHA-256 of that file
 
-            The first snapshot of a chain has no first parent. A later one holds the file of the snapshot before it, and
+            The first snapshot of a run has no first parent. A later one holds the file of the snapshot before it, and
             the SHA-256 it holds for that file is compared with the SHA-256 of the earlier snapshot's own text.
             """
             earlier = CHAINS[chain][at - 1] if at else None
