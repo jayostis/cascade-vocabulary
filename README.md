@@ -93,8 +93,8 @@ than 14 days is ignored.
   green. A manual run does not close it, and a run still going or cancelled holds it as it is. Dispatch `red-main` to
   close it sooner than its next daily run.
 - **Needs** the repository secret `RED_MAIN_TOKEN`, a fine-grained personal access token on the `jayostis/cascade-*`
-  repositories with Issues read and write, Actions read, Checks read and Metadata read. Without the token the run fails
-  with one line saying so; without Checks read the issues open but name only the failing step.
+  repositories with Issues read and write, Actions read and Metadata read. Without the token the run fails with one line
+  saying so. A job whose annotations cannot be read is named by its failing step only.
 
 When one opens, read the run and the failure messages, fix the cause or, when it is known and not yours to fix, comment
 the issue that tracks it. Do not close the issue by hand: the next red run opens another.

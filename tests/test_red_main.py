@@ -263,15 +263,15 @@ class TestChecksOfTheRedMainAlert:
             assert errors == []
             assert "What failed" not in api.sent[1][2]["body"]
 
-        def test_says_once_that_the_token_lacks_the_checks_permission(self):
-            """says once that the token lacks the Checks permission
+        def test_says_once_that_github_refused_the_annotations(self):
+            """says once that GitHub refused the annotations
 
-            Given a token refused the annotations, `run()` says one line that names the Checks permission, and not one for
-            each job or each refusal.
+            Given a token refused the annotations, `run()` says one line that names the refused annotations, and not one
+            for each job or each refusal.
             """
             _, errors, said = run_refused_the_annotations()
             assert errors == []
-            assert len([line for line in said if "Checks" in line]) == 1
+            assert len([line for line in said if "annotations" in line]) == 1
 
         def test_keeps_the_messages_read_before_a_job_whose_annotations_are_refused(self):
             """keeps the messages read before a job whose annotations are refused
@@ -300,14 +300,14 @@ class TestChecksOfTheRedMainAlert:
             _, errors, _ = run_refused_the_annotations(": You have exceeded a secondary rate limit")
             assert len(errors) == 1 and "rate limit" in errors[0]
 
-        def test_says_nothing_of_a_checks_permission_when_the_refusal_is_a_rate_limit(self):
-            """says nothing of a Checks permission when the refusal is a rate limit
+        def test_says_nothing_of_refused_annotations_when_the_refusal_is_a_rate_limit(self):
+            """says nothing of refused annotations when the refusal is a rate limit
 
-            Given a 403 whose words say that a secondary rate limit was exceeded, none of the lines `run()` says names the
-            Checks permission.
+            Given a 403 whose words say that a secondary rate limit was exceeded, none of the lines `run()` says is about
+            refused annotations.
             """
             _, _, said = run_refused_the_annotations(": You have exceeded a secondary rate limit")
-            assert not any("Checks" in line for line in said)
+            assert not any("annotations" in line for line in said)
 
         def test_returns_one_plain_line_for_a_repository_that_github_refuses(self):
             """returns one plain line for a repository that GitHub refuses

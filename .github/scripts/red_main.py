@@ -27,8 +27,8 @@ EXIT_CODE_ONLY = re.compile(r"Process completed with exit code \d+\.?")
 WORKFLOW_URL = f"https://github.com/{OWNER}/cascade-vocabulary/blob/main/.github/workflows/red-main.yml"
 README_URL = f"https://github.com/{OWNER}/cascade-vocabulary/blob/main/README.md#red-main-alerts"
 MISSING_TOKEN = (
-    f"RED_MAIN_TOKEN is not set: create a fine-grained personal access token with Issues read and write, Actions read, "
-    f"Checks read and Metadata read on the {OWNER}/cascade-* repositories, and add it as a repository secret named "
+    f"RED_MAIN_TOKEN is not set: create a fine-grained personal access token with Issues read and write, Actions read "
+    f"and Metadata read on the {OWNER}/cascade-* repositories, and add it as a repository secret named "
     f"RED_MAIN_TOKEN."
 )
 
@@ -258,7 +258,7 @@ def visit(api, repo):
                 jobs[str(run["id"])] = api.get(f"{base}/actions/runs/{run['id']}/jobs", filter="latest", per_page=100)["jobs"]
                 annotations[str(run["id"])], denied = failed_annotations(api, base, jobs[str(run["id"])])
                 if denied and not notes:
-                    notes.append(f"{repo}: the token cannot read check-run annotations (it needs Checks read), so its alerts name the failing step only")
+                    notes.append(f"{repo}: GitHub refused to give the check-run annotations of a failed job, so its alerts name the failing step only")
     issues = [i for i in api.pages(f"{base}/issues", labels=LABEL, state="open") if "pull_request" not in i]
     comments = {str(i["number"]): api.pages(f"{base}/issues/{i['number']}/comments") for i in issues}
     return notes + perform(api, repo, decide(repo, workflows, runs, jobs, annotations, issues, comments, now))
