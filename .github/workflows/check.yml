@@ -27,11 +27,28 @@ jobs:
           python-version: '3.12'
       - run: python3 -m pip install -r requirements.txt
       - run: python3 -m pytest -n auto --dist loadgroup --durations=10 --junitxml=pytest-junit.xml
+      - uses: actions/checkout@v7
+        if: ${{ !cancelled() }}
+        with:
+          repository: jayostis/cascade-runtime-js
+          path: .runtime-js
+          sparse-checkout: |
+            scripts
+            packages/site/src
+      - uses: actions/setup-node@v5
+        if: ${{ !cancelled() }}
+        with:
+          node-version: '24'
+      - name: the tests read as a specification
+        if: ${{ !cancelled() }}
+        run: node .runtime-js/scripts/spec-shape.mjs pytest-junit.xml tests/spec.json
+      - if: ${{ !cancelled() }}
+        run: mkdir report && cp pytest-junit.xml tests/spec.json report/
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: pytest-junit
-          path: pytest-junit.xml
+          path: report/
           if-no-files-found: error
 
   # The reference runtime, at its default branch or the pull request a Depends-On: line names, run over this checkout,

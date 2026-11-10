@@ -37,6 +37,16 @@ def is_subquery(part):
     return part.name == "GroupOrUnionGraphPattern" and [g.name for g in part["graph"]] == ["SubSelect"]
 
 
+def has_a_subselect_after_a_pattern(tree):
+    for group in nodes(tree):
+        if group.name == "GroupGraphPatternSub":
+            parts = list(group.get("part") or [])
+            first_other = next((i for i, part in enumerate(parts) if not is_subquery(part)), len(parts))
+            if any(is_subquery(part) for part in parts[first_other:]):
+                return True
+    return False
+
+
 QUERY_FORMS = ("SelectQuery", "ConstructQuery", "AskQuery", "DescribeQuery", "SubSelect")
 EXISTS_FORMS = ("Builtin_EXISTS", "Builtin_NOTEXISTS")
 NESTED = {
@@ -71,15 +81,6 @@ def nested_forms(tree):
     return found
 
 
-@pytest.mark.parametrize("relative", every_query())
-def test_every_subquery_comes_first_in_its_group(relative):
-    for group in nodes(parsed(relative)):
-        if group.name == "GroupGraphPatternSub":
-            parts = list(group.get("part") or [])
-            first_other = next((i for i, part in enumerate(parts) if not is_subquery(part)), len(parts))
-            assert not any(is_subquery(part) for part in parts[first_other:]), relative
-
-
 def leaves(tree):
     if isinstance(tree, (CompValue, dict)):
         for value in tree.values():
@@ -97,22 +98,6 @@ def binds_record_outermost(tree):
     [query] = [node for node in nodes(tree) if node.name == "SelectQuery"]
     blocks = [part for part in query["where"].get("part") or [] if part.name == "TriplesBlock"]
     return Variable("record") in set(leaves(blocks))
-
-
-@pytest.mark.parametrize("relative", sorted(contract.named("matcher").values()))
-def test_every_comparison_binds_record_in_a_triple_of_its_outermost_group_whose_brace_is_its_first(relative):
-    assert binds_record_outermost(parsed(relative)), relative
-    head, where, _ = contract.query(relative).partition("\nWHERE {")
-    assert where and "{" not in head, relative
-
-
-@pytest.mark.parametrize("form", [
-    "SELECT ?record ?other WHERE { ?other ?p ?c { SELECT ?record ?c WHERE { ?record ?p ?c } } }",
-    "SELECT ?record ?other WHERE { ?other ?p ?c OPTIONAL { ?record ?p ?c } }",
-    "SELECT ?record ?other WHERE { ?other ?p ?c MINUS { ?record ?p ?c } }",
-])
-def test_the_outermost_binding_check_refuses_a_record_bound_only_inside_a_nested_pattern(form):
-    assert not binds_record_outermost(parseQuery(form))
 
 
 BOUND_RECORD = URIRef("urn:cascade:bound-record")
@@ -158,68 +143,7 @@ def marked_groups_bind_record(text):
     return len(groups) == marks and all(groups)
 
 
-@pytest.mark.parametrize("relative", sorted(contract.named("matcher").values()))
-def test_each_group_a_comparison_marks_binds_record_in_a_triple_of_its_own_inside_a_sub_select(relative):
-    assert marked_groups_bind_record(contract.query(relative)), relative
-
-
-@pytest.mark.parametrize("form", [
-    "SELECT ?record WHERE {\n  # bound: ?record\n  ?record ?p ?o { ?o ?q ?r }\n}",
-    "SELECT ?record\n# bound: ?record\nWHERE { ?record ?p ?o }",
-    "SELECT ?record WHERE { { SELECT ?record ?c\n  # bound: ?record\n  WHERE { OPTIONAL { ?record ?p ?c } } } ?record ?p ?c }",
-    "SELECT ?record WHERE {\n  # bound: ?record\n  { SELECT ?record WHERE { ?record ?p ?c } } ?record ?p ?c }",
-    "SELECT ?record WHERE { { SELECT (SAMPLE(?r) AS ?record) ?c\n  # bound: ?record\n  WHERE { ?record ?p ?c ; ?q ?r }\n"
-    "  GROUP BY ?c } ?record ?p ?c }",
-])
-def test_the_mark_check_refuses_a_mark_on_no_group_on_one_not_in_a_sub_select_keeping_every_row_or_not_binding_record(form):
-    assert not marked_groups_bind_record(form)
-
-
-def test_a_less_than_comparison_is_no_iri_though_an_iris_own_characters_stand_before_a_greater_than_sign():
-    iris = [token.group() for token in TOKEN.finditer("FILTER (?x <3&&?y>1) ?s <urn:a#b> <> ?o FILTER (?a<=?b&&?b>=?c)")
-            if token.group().startswith("<")]
-    assert iris == ["<urn:a#b>", "<>"]
-
-
 ENTRY_PLACEHOLDER = 'CONCAT("urn:cascade:entry:", SHA256(MIN(STR('
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_every_entry_placeholder_is_n13s_hash_of_the_least_member(relative):
-    text = contract.query(relative)
-    assert text.count('CONCAT("urn:cascade:entry:"') == text.count(ENTRY_PLACEHOLDER), relative
-
-
-@pytest.mark.parametrize("relative", sorted(contract.named("views").values()))
-def test_every_view_reads_only_members_of_its_own_kind_from_entries(relative):
-    patterns = [t for node in nodes(prepared(contract.query(relative)).algebra["p"]) if node.name == "BGP"
-                for t in node["triples"]]
-    typed = {s for s, p, o in patterns if p == RDF.type and isinstance(o, URIRef)}
-    assert {s for s, p, o in patterns if p == URIRef(CASCADE + "inEntry")} <= typed
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_every_query_is_one_flat_pattern(relative):
-    assert nested_forms(parsed(relative)) == []
-
-
-@pytest.mark.parametrize("form", sorted(NESTED))
-def test_the_flat_pattern_check_refuses_each_nested_form(form):
-    assert nested_forms(parseQuery(NESTED[form])) == [form]
-
-
-def test_the_flat_pattern_check_accepts_a_union_whose_branches_are_each_complete():
-    assert nested_forms(parseQuery("""SELECT * WHERE {
-      { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d } OPTIONAL { ?a ?e ?f } }
-      UNION { { SELECT ?a WHERE { ?a ?b ?c } } ?a ?d ?c }
-    }""")) == []
-
-
-def test_the_flat_pattern_check_accepts_a_graph_around_a_whole_pattern():
-    assert nested_forms(parseQuery("""SELECT * WHERE {
-      { GRAPH ?g { ?a ?b ?c OPTIONAL { ?a ?e ?f } } ?g ?h ?i }
-      UNION { VALUES ?a { <urn:x:a> } GRAPH ?g { ?a ?d ?c } }
-    }""")) == []
 
 
 def iris(tree):
@@ -246,29 +170,6 @@ def writes(relative):
     return {o if p == RDF.type else p for s, p, o in template}
 
 
-@pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
-def test_no_derivation_reads_a_term_a_later_derivation_writes(lens):
-    steps = contract.derivations(lens)
-    found = {(step, later, str(term)) for i, step in enumerate(steps) for later in steps[i + 1:]
-             for term in reads(step) & writes(later)}
-    assert found == set()
-
-
-@pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
-def test_every_lens_writes_counts_under_lens_and_nothing_else(lens):
-    assert writes(contract.named("lenses")[lens]) == {URIRef(CASCADE + "countsUnderLens")}
-
-
-def test_each_derivation_has_a_position_of_its_own_and_every_lens_the_same_one():
-    positions = contract.positions()
-    derivations = list(contract.named("derivations").values())
-    lenses = list(contract.named("lenses").values())
-    assert sorted(positions) == sorted(derivations + lenses)
-    assert len({positions[lens] for lens in lenses}) == 1
-    steps = sorted(positions[step] for step in derivations + lenses[:1])
-    assert steps == list(range(1, len(steps) + 1))
-
-
 @lru_cache(maxsize=None)
 def parsed(relative):
     return parseQuery(contract.query(relative))
@@ -280,7 +181,7 @@ def declared(relative):
 
 
 @lru_cache(maxsize=None)
-def namespaces():
+def namespaces_by_prefix():
     bindings = [binding for relative in every_query() for binding in declared(relative)]
     for path in ROOT.glob("ontologies/**/*.ttl"):
         graph = Graph(bind_namespaces="none").parse(path)
@@ -289,25 +190,6 @@ def namespaces():
     for prefix, namespace in bindings:
         found.setdefault(prefix, set()).add(namespace)
     return found
-
-
-def test_every_prefix_names_the_same_namespace_in_every_query_and_every_vocabulary_file():
-    assert {prefix: bound for prefix, bound in namespaces().items() if len(bound) > 1} == {}
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_every_query_declares_exactly_the_prefixes_it_uses_in_alphabetical_order(relative):
-    _, query = parsed(relative)
-    used = {node["prefix"] for node in nodes(query) if node.name == "pname"}
-    assert [prefix for prefix, _ in declared(relative)] == sorted(used)
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_no_query_spells_out_an_iri_in_a_namespace_the_queries_declare(relative):
-    prefixes = {prefix for other in every_query() for prefix, _ in declared(other)}
-    declared_namespaces = tuple(namespace for prefix in prefixes for namespace in namespaces()[prefix])
-    _, query = parsed(relative)
-    assert {str(iri) for iri in iris(query) if str(iri).startswith(declared_namespaces)} == set()
 
 
 RECORDS = "derivations/records.rq"
@@ -326,11 +208,6 @@ def record_types():
     return {kind: views.get(kind) for kind in listed}
 
 
-def test_no_two_kinds_of_record_share_a_word():
-    words = [str(row[Variable("kind")]) for row in kinds_of_record()]
-    assert sorted(words) == sorted(set(words))
-
-
 def kinds_named_out_of_place(relative, text):
     """The record types the query names though it is not about that one kind: only the derivation that lists them, a
     view, and a question named for a view, in the singular or the plural, may name its kind."""
@@ -343,26 +220,6 @@ def kinds_named_out_of_place(relative, text):
         return "-" + "-".join(word.removesuffix("s") for word in words(name)) + "-"
 
     return {kind for kind in named if singular(views[kind]) not in singular(Path(relative).stem)}
-
-
-def test_the_kind_check_refuses_a_record_type_named_by_a_query_not_about_that_one_kind():
-    allergy = URIRef("https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance")
-    query = f"SELECT ?r WHERE {{ ?r a <{allergy}> }}"
-    assert kinds_named_out_of_place("derivations/entries.rq", query) == {allergy}
-    assert kinds_named_out_of_place("questions/pod/My active conditions.rq", query) == {allergy}
-    assert kinds_named_out_of_place("questions/pod/My active allergies.rq", query) == set()
-    assert kinds_named_out_of_place("views/allergies.rq", query) == set()
-    lab = URIRef("https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult")
-    assert kinds_named_out_of_place("questions/pod/My lab results.rq", f"SELECT ?r WHERE {{ ?r a <{lab}> }}") == set()
-    medication = URIRef("https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication")
-    query = f"SELECT ?r WHERE {{ ?r a <{medication}> }}"
-    assert kinds_named_out_of_place("questions/pod/My medication history.rq", query) == set()
-    assert kinds_named_out_of_place("questions/pod/My procedures.rq", query) == {medication}
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_a_query_names_a_record_type_only_when_it_is_about_that_one_kind(relative):
-    assert kinds_named_out_of_place(relative, contract.query(relative)) == set()
 
 
 KINDS = ("entry", "record", "judgment", "profile")
@@ -394,43 +251,6 @@ def restated_absences(text):
     return found
 
 
-@pytest.mark.parametrize("form", sorted(RESTATING))
-def test_the_restating_check_refuses_each_way_of_asking_for_an_absence(form):
-    assert restated_absences(RESTATING[form]) == [form]
-
-
-def test_the_restating_check_accepts_a_term_the_query_only_reads():
-    assert restated_absences("""SELECT ?j ?by WHERE {
-      ?j ?p ?o OPTIONAL { ?by <http://purl.org/dc/terms/replaces> ?j } FILTER (BOUND(?o)) }""") == []
-
-
-@pytest.mark.parametrize("relative", every_question())
-def test_no_question_restates_a_derivation(relative):
-    assert restated_absences(contract.query(relative)) == []
-
-
-@pytest.mark.parametrize("relative", every_question())
-def test_every_question_is_a_select(relative):
-    assert prepared(contract.query(relative)).algebra.name == "SelectQuery"
-
-
-def test_every_question_is_filed_under_the_pod_or_a_kind():
-    assert {Path(relative).parent.name for relative in every_question()} == {"pod", *KINDS}
-
-
-@pytest.mark.parametrize("relative", [q for q in every_question() if Path(q).parent.name in KINDS])
-def test_every_question_outside_pod_returns_the_column_of_its_kind(relative):
-    columns = [str(v) for v in prepared(contract.query(relative)).algebra["PV"]]
-    assert Path(relative).parent.name in columns
-
-
-@pytest.mark.parametrize("relative", every_question())
-def test_every_label_column_labels_a_column_of_the_question(relative):
-    columns = {str(v) for v in prepared(contract.query(relative)).algebra["PV"]}
-    labelled = {column[:-len("Label")] for column in columns if column.endswith("Label")}
-    assert labelled <= columns
-
-
 def words(text):
     return re.findall(r"[a-z0-9]+", text.lower())
 
@@ -445,20 +265,6 @@ def missing_prose(relative, text):
     if words(prose)[:len(name)] == name:
         return "prose opening with its name"
     return None
-
-
-def test_the_prose_check_refuses_a_query_with_no_prose_or_prose_opening_with_its_name():
-    query = "SELECT ?s WHERE { ?s ?p ?o }"
-    assert missing_prose("pod/Which file states each thing.rq", query) == "no prose"
-    assert missing_prose("pod/Which file states each thing.rq", "# Which file states each thing.\n" + query) == \
-        "prose opening with its name"
-    assert missing_prose("derivations/same-pairs.rq", "# Same pairs: ...\n" + query) == "prose opening with its name"
-    assert missing_prose("pod/Which file states each thing.rq", "# Each file is its own graph.\n" + query) is None
-
-
-@pytest.mark.parametrize("relative", every_query())
-def test_every_query_has_prose_that_does_not_open_with_its_name(relative):
-    assert missing_prose(relative, contract.query(relative)) is None
 
 
 def short(term):
@@ -476,34 +282,534 @@ def reasons():
     return frozenset(named & declared)
 
 
-def test_each_reason_a_record_is_in_no_view_is_named_by_one_derivation_and_by_no_other_query():
-    declared = reasons()
-    named = {short(reason): [] for reason in declared}
-    for relative in every_query():
-        for reason in declared & set(iris(prepared(contract.query(relative)).algebra)):
-            named[short(reason)].append(relative)
-    assert named == {
-        "EnteredInErrorAtSource": ["derivations/excluded-at-source.rq"],
-        "RefutedAtSource": ["derivations/excluded-at-source.rq"],
-        "JudgedErroneous": ["derivations/excluded-by-judgment.rq"],
-        "ImportJudgedErroneous": ["derivations/excluded-with-their-activity.rq"],
-        "PatientProfileNotClaimed": ["derivations/excluded-for-their-patient.rq"],
-        "NoPatient": ["derivations/excluded-for-their-patient.rq"],
-    }
-
-
 PUBLISHED = json.loads((ROOT / "tests" / "published-bytes.json").read_text())
 PUBLISHED_FILES = ("runtime/rule-list/[0-9a-f]*.ttl", "queries/matcher/*.rq")
 
 
-def test_a_published_rule_list_and_matcher_query_keep_their_bytes_and_a_changed_rule_is_a_new_file():
-    held = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in PUBLISHED}
-    edited = sorted(name for name in PUBLISHED if held[name] != PUBLISHED[name])
-    assert not edited, f"publish a new file instead of editing {edited}"
-    listed = {p.relative_to(ROOT).as_posix() for pattern in PUBLISHED_FILES for p in ROOT.glob(pattern)}
-    assert listed <= set(PUBLISHED), f"a new rule list or matcher query is listed in tests/published-bytes.json: {sorted(listed - set(PUBLISHED))}"
+class TestQueryForm:
+    """The form every query is written in · queries/**/*.rq
+
+    Every query the vocabulary carries is one SPARQL file that a runtime runs as it is written. Each is written in the
+    same form, so a runtime's engine, a reader and a tool that edits a query's text all find the same thing in every file.
+
+    @rule naming N13
+    """
+
+    class TestGivenAnyQuery:
+        def test_puts_every_sub_select_first_in_its_group(self):
+            """puts every sub-select first in its group
+
+            Parses every query under `queries/`; one with a sub-select after a triple pattern or any other part of the
+            same group fails.
+            """
+            offenders = sorted(relative for relative in every_query() if has_a_subselect_after_a_pattern(parsed(relative)))
+            assert offenders == []
+
+        def test_is_one_flat_pattern(self):
+            """is one flat pattern, with none of the five nested forms
+
+            The five are a NOT EXISTS inside a NOT EXISTS, a UNION joined to other patterns, a UNION inside an inner group, a
+            GRAPH inside an inner group, and a sub-select inside an OPTIONAL.
+            """
+            offenders = {relative: forms for relative in every_query() if (forms := nested_forms(parsed(relative)))}
+            assert offenders == {}
+
+        def test_declares_exactly_the_prefixes_it_uses_in_alphabetical_order(self):
+            """declares exactly the prefixes it uses, in alphabetical order"""
+            offenders = {}
+            for relative in every_query():
+                _, query = parsed(relative)
+                used = sorted({node["prefix"] for node in nodes(query) if node.name == "pname"})
+                declared_here = [prefix for prefix, _ in declared(relative)]
+                if declared_here != used:
+                    offenders[relative] = {"declared": declared_here, "used": used}
+            assert offenders == {}
+
+        def test_writes_with_its_prefix_every_iri_of_a_namespace_the_queries_declare(self):
+            """writes, with its prefix, every IRI of a namespace the queries declare
+
+            Every namespace that any query declares a prefix for is collected from the queries and the ontology files; a
+            query that spells out an IRI inside one of them, instead of using the prefix, fails.
+            """
+            prefixes = {prefix for other in every_query() for prefix, _ in declared(other)}
+            declared_namespaces = tuple(namespace for prefix in prefixes for namespace in namespaces_by_prefix()[prefix])
+            spelled_out = {relative: sorted({str(iri) for iri in iris(parsed(relative)[1])
+                                             if str(iri).startswith(declared_namespaces)})
+                           for relative in every_query()}
+            assert {relative: found for relative, found in spelled_out.items() if found} == {}
+
+        def test_opens_with_prose_that_does_not_begin_with_its_own_name(self):
+            """opens with prose that does not begin with its own name
+
+            Each query's leading comment is read: one with no comment, or whose words begin with the words of the file's
+            name, fails.
+            """
+            offenders = {relative: why for relative in every_query()
+                         if (why := missing_prose(relative, contract.query(relative)))}
+            assert offenders == {}
+
+        def test_names_a_view_entry_only_by_n13s_placeholder(self):
+            """names a view entry only by N13's placeholder
+
+            Counts `CONCAT("urn:cascade:entry:"` in each query's text against the count of the full placeholder,
+            `CONCAT("urn:cascade:entry:", SHA256(MIN(STR(`; a query that builds an entry IRI any other way fails.
+            """
+            offenders = []
+            for relative in every_query():
+                text = contract.query(relative)
+                if text.count('CONCAT("urn:cascade:entry:"') != text.count(ENTRY_PLACEHOLDER):
+                    offenders.append(relative)
+            assert offenders == []
+
+    class TestGivenTheQueriesAndTheOntologyFilesTogether:
+        def test_binds_each_prefix_to_one_namespace(self):
+            """binds each prefix to one namespace
+
+            Collects every prefix declaration of every query and of every ontology file; a prefix bound to two
+            namespaces anywhere fails.
+            """
+            assert {prefix: bound for prefix, bound in namespaces_by_prefix().items() if len(bound) > 1} == {}
 
 
-def test_why_it_is_in_no_view_reads_only_the_recorded_reasons_and_labels():
-    terms = {URIRef(CASCADE + term) for term in ("Record", "leftOutFor", "leftOutReason", "leftOutBecauseOf")}
-    assert reads(contract.questions()["record/Why it is in no view"]) == terms | {RDF.type, URIRef(RDFS_LABEL)}
+class TestDerivationOrder:
+    """The order a runtime runs the derivations and a lens in · queries/derivations/, queries/lenses/, ro-crate-metadata.json
+
+    A derivation is a query whose answer a runtime adds to a pod's derived state before any view or question reads it. The
+    root crate gives each one its position, and a lens runs last among them at one position.
+    """
+
+    class TestGivenTheRootCrate:
+        """given the root crate
+
+        `ro-crate-metadata.json` lists each derivation and lens with the position at which a runtime runs it. A position is
+        a whole number; derivations run in the order of their positions.
+        """
+
+        def test_gives_every_derivation_and_lens_a_position(self):
+            """gives every derivation and lens a position
+
+            The positions in the root crate name exactly the derivations and lenses the vocabulary carries: none
+            missing, none extra.
+            """
+            positions = contract.positions()
+            derivations = list(contract.named("derivations").values())
+            lenses = list(contract.named("lenses").values())
+            assert sorted(positions) == sorted(derivations + lenses)
+
+        def test_gives_every_lens_the_same_position(self):
+            """gives every lens the same position
+
+            The lenses' positions in the root crate are one value, as a lens runs last among the derivations, in place
+            of the others.
+            """
+            positions = contract.positions()
+            assert len({positions[lens] for lens in contract.named("lenses").values()}) == 1
+
+        def test_numbers_the_positions_from_1_with_no_gap(self):
+            """numbers the positions from 1 with no gap
+
+            The derivations' positions, with one lens's, sorted, equal 1 to their count.
+            """
+            positions = contract.positions()
+            derivations = list(contract.named("derivations").values())
+            lenses = list(contract.named("lenses").values())
+            steps = sorted(positions[step] for step in derivations + lenses[:1])
+            assert steps == list(range(1, len(steps) + 1))
+
+    class TestGivenALens:
+        @pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
+        def test_reads_in_no_derivation_a_term_a_later_one_writes(self, lens):
+            """reads, in no derivation, a term a later one writes
+
+            Takes the derivations a lens runs, in order; one that reads a term (a class or a property) which a later
+            derivation writes fails, so the order never needs a second pass.
+            """
+            steps = contract.derivations(lens)
+            found = {(step, later, str(term)) for i, step in enumerate(steps) for later in steps[i + 1:]
+                     for term in reads(step) & writes(later)}
+            assert found == set()
+
+        @pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
+        def test_writes_counts_under_lens_and_nothing_else(self, lens):
+            """writes `cascade:countsUnderLens` and nothing else"""
+            assert writes(contract.named("lenses")[lens]) == {URIRef(CASCADE + "countsUnderLens")}
+
+
+class TestKindsOfRecord:
+    """Kinds of record in the queries · queries/derivations/records.rq, queries/views/
+
+    `derivations/records.rq` lists each kind of record with its word, and a view of its own lists the records of each
+    kind. Every other query says `cascade:Record`, so a kind added later reaches it with no edit.
+    """
+
+    class TestGivenTheRecordsDerivation:
+        """given `derivations/records.rq`"""
+
+        def test_gives_each_kind_of_record_a_word_no_other_has(self):
+            """gives each kind of record a word no other has
+
+            The words in the table of `derivations/records.rq`, one per kind, are compared with the same list as a set:
+            a word given to two kinds fails.
+            """
+            words = [str(row[Variable("kind")]) for row in kinds_of_record()]
+            assert sorted(words) == sorted(set(words))
+
+    class TestGivenAnyQuery:
+        def test_names_a_record_type_only_when_it_is_about_that_one_kind(self):
+            """names a record type only when it is about that one kind
+
+            Every query's algebra is searched for the record types the records derivation lists; a type named outside
+            that derivation, its own view, and a question named for that view fails.
+            """
+            offenders = {relative: sorted(map(str, kinds)) for relative in every_query()
+                         if (kinds := kinds_named_out_of_place(relative, contract.query(relative)))}
+            assert offenders == {}
+
+    class TestGivenAnyView:
+        def test_types_every_record_it_reads_through_in_entry(self):
+            """types every record it reads through `cascade:inEntry`
+
+            Each is typed by a class the view names, not necessarily the view's own.
+            """
+            offenders = {}
+            for relative in sorted(contract.named("views").values()):
+                patterns = [t for node in nodes(prepared(contract.query(relative)).algebra["p"]) if node.name == "BGP"
+                            for t in node["triples"]]
+                typed = {s for s, p, o in patterns if p == RDF.type and isinstance(o, URIRef)}
+                untyped = {s for s, p, o in patterns if p == URIRef(CASCADE + "inEntry")} - typed
+                if untyped:
+                    offenders[relative] = sorted(map(str, untyped))
+            assert offenders == {}
+
+    class TestGivenTheReasonsARecordIsInNoView:
+        def test_names_each_reason_in_one_derivation_and_in_no_other_query(self):
+            """names each reason in one derivation and in no other query
+
+            For each declared reason, every query that names it, derivation or not, is listed; the test pins the one
+            derivation file each reason is named in, such as `derivations/excluded-at-source.rq` for both
+            `EnteredInErrorAtSource` and `RefutedAtSource`.
+            """
+            declared = reasons()
+            named = {short(reason): [] for reason in declared}
+            for relative in every_query():
+                for reason in declared & set(iris(prepared(contract.query(relative)).algebra)):
+                    named[short(reason)].append(relative)
+            assert named == {
+                "EnteredInErrorAtSource": ["derivations/excluded-at-source.rq"],
+                "RefutedAtSource": ["derivations/excluded-at-source.rq"],
+                "JudgedErroneous": ["derivations/excluded-by-judgment.rq"],
+                "ImportJudgedErroneous": ["derivations/excluded-with-their-activity.rq"],
+                "PatientProfileNotClaimed": ["derivations/excluded-for-their-patient.rq"],
+                "NoPatient": ["derivations/excluded-for-their-patient.rq"],
+            }
+
+        def test_reads_in_why_it_is_in_no_view_only_the_recorded_reasons(self):
+            """reads, in `record/Why it is in no view`, only the recorded reasons and their `rdfs:label`s"""
+            terms = {URIRef(CASCADE + term) for term in ("Record", "leftOutFor", "leftOutReason", "leftOutBecauseOf")}
+            assert reads(contract.questions()["record/Why it is in no view"]) == terms | {RDF.type, URIRef(RDFS_LABEL)}
+
+
+class TestNamedQuestions:
+    """Named questions an app asks a pod · queries/questions/
+
+    A named question is a SELECT an app runs by its name, such as `pod/My active allergies`. It reads the derived state
+    and the views, and never works out again what a derivation has recorded.
+    """
+
+    class TestGivenTheFolders:
+        """given the folders of `queries/questions/`"""
+
+        def test_holds_pod_and_one_folder_for_each_of_the_four_kinds(self):
+            """holds `pod` and one folder for each of the four kinds
+
+            A question outside `pod` is about one thing of its kind: an `entry`, a `record`, a `judgment` or a `profile`.
+            """
+            assert {Path(relative).parent.name for relative in every_question()} == {"pod", *KINDS}
+
+    class TestGivenAnyQuestion:
+        def test_is_a_select(self):
+            """is a select
+
+            Every named question is compared with the form SELECT; one written as a CONSTRUCT, ASK or DESCRIBE fails.
+            """
+            offenders = sorted(relative for relative in every_question()
+                               if prepared(contract.query(relative)).algebra.name != "SelectQuery")
+            assert offenders == []
+
+        def test_returns_for_every_label_column_the_column_it_is_named_for(self):
+            """returns, for every column ending in `Label`, the column it is named for
+
+            For each column of a question named `xLabel`, the column `x` must be one of the question's columns too.
+            """
+            offenders = {}
+            for relative in every_question():
+                columns = {str(v) for v in prepared(contract.query(relative)).algebra["PV"]}
+                labelled = {column[:-len("Label")] for column in columns if column.endswith("Label")}
+                if not labelled <= columns:
+                    offenders[relative] = sorted(labelled - columns)
+            assert offenders == {}
+
+        def test_asks_for_no_absence_the_derivations_already_record(self):
+            """asks for no absence the derivations already record
+
+            An absence is a link that is not there, such as a version no `dct:replaces`, `prov:invalidated` or
+            `prov:wasRevisionOf` points at. The derivations already record such absences, so a question reads what they
+            recorded. A question fails if it works one out again by not finding the link: a `NOT EXISTS` or a `MINUS` over
+            one of the three, or an `OPTIONAL` over one followed by a test that its variable is unbound.
+            """
+            offenders = {relative: restated for relative in every_question()
+                         if (restated := restated_absences(contract.query(relative)))}
+            assert offenders == {}
+
+    class TestGivenAQuestionFiledUnderAKind:
+        def test_returns_a_column_named_for_the_kind(self):
+            """returns a column named for the kind
+
+            A question filed under `entry`, `record`, `judgment` or `profile` must give a column of that very name,
+            which holds the thing it is about.
+            """
+            offenders = sorted(relative for relative in every_question() if Path(relative).parent.name in KINDS
+                               and Path(relative).parent.name not in
+                               [str(v) for v in prepared(contract.query(relative)).algebra["PV"]])
+            assert offenders == []
+
+
+class TestMatcherComparisons:
+    """Matcher comparisons a runtime binds to records · queries/matcher/, runtime/rule-list/
+
+    A comparison is a query the matcher runs with `?record` bound to the records it compares. A runtime whose engine takes
+    no initial binding writes a `VALUES ?record` block after the query's first brace and after each group marked
+    `# bound: ?record`, so every comparison is written to take that block.
+
+    @rule matcher M4
+    @rule matcher M7
+    """
+
+    class TestGivenAnyComparison:
+        def test_binds_record_in_a_triple_pattern_of_its_outermost_group(self):
+            """binds `?record` in a triple pattern of its outermost group
+
+            In each comparison under `matcher/`, `?record` is in a triple pattern directly in the outermost group, not
+            inside a sub-select, MINUS, OPTIONAL or UNION, so a VALUES block opening that group binds it.
+            """
+            offenders = sorted(relative for relative in contract.named("matcher").values()
+                               if not binds_record_outermost(parsed(relative)))
+            assert offenders == []
+
+        def test_opens_its_outermost_group_with_the_querys_first_brace(self):
+            """writes its outermost group, the WHERE group, at the query's first brace, with no brace before it
+
+            Over every comparison under `matcher/`: the text is split at its `WHERE {`, and a comparison with none, or
+            with a brace before it, fails.
+            """
+            offenders = []
+            for relative in contract.named("matcher").values():
+                head, where, _ = contract.query(relative).partition("\nWHERE {")
+                if not where or "{" in head:
+                    offenders.append(relative)
+            assert sorted(offenders) == []
+
+        def test_marks_only_a_group_inside_a_sub_select_that_keeps_every_row_of_a_record(self):
+            """marks only a group inside a sub-select that keeps every row of a record and binds `?record` in a triple
+            pattern of its own
+
+            In each comparison, every `# bound: ?record` line marks a group; with a VALUES block opened there, that
+            group sits in a sub-select that cuts off no row (no LIMIT, OFFSET or HAVING; grouped, if at all, by
+            `?record`) and holds `?record` in a triple pattern of its own.
+            """
+            offenders = sorted(relative for relative in contract.named("matcher").values()
+                               if not marked_groups_bind_record(contract.query(relative)))
+            assert offenders == []
+
+    class TestGivenAPublishedRuleListOrComparison:
+        def test_keeps_the_bytes_it_was_published_with(self):
+            """keeps the bytes it was published with
+
+            A judgment names its rule's query by the hash of its bytes, so an edit in place makes every pod's judgments
+            stale: a changed rule is a new file.
+            """
+            held = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in PUBLISHED}
+            edited = sorted(name for name in PUBLISHED if held[name] != PUBLISHED[name])
+            assert not edited, f"publish a new file instead of editing {edited}"
+
+        def test_is_listed_in_published_bytes(self):
+            """is listed in `tests/published-bytes.json`"""
+            listed = {p.relative_to(ROOT).as_posix() for pattern in PUBLISHED_FILES for p in ROOT.glob(pattern)}
+            assert listed <= set(PUBLISHED), \
+                f"a new rule list or matcher query is listed in tests/published-bytes.json: {sorted(listed - set(PUBLISHED))}"
+
+
+class TestChecksOfTheQueryChecks:
+    """Checks of the checks on a query's text · tests/test_queries.py
+
+    Each rule above is checked by a function of this module. These cases show each function a query that breaks its rule,
+    so a rule that every query keeps is known to be checked.
+    """
+
+    class TestBindsRecordOutermost:
+        """`binds_record_outermost()`"""
+
+        @pytest.mark.parametrize("form", [
+            "SELECT ?record ?other WHERE { ?other ?p ?c { SELECT ?record ?c WHERE { ?record ?p ?c } } }",
+            "SELECT ?record ?other WHERE { ?other ?p ?c OPTIONAL { ?record ?p ?c } }",
+            "SELECT ?record ?other WHERE { ?other ?p ?c MINUS { ?record ?p ?c } }",
+        ], ids=["a sub-select", "an OPTIONAL", "a MINUS"])
+        def test_returns_false_for_record_bound_only_inside(self, form):
+            """returns false for `?record` bound only inside
+
+            Given `?record` in a sub-select, an OPTIONAL or a MINUS only, and none in the outermost group,
+            `binds_record_outermost()` returns False.
+            """
+            assert not binds_record_outermost(parseQuery(form))
+
+    class TestMarkedGroupsBindRecord:
+        """`marked_groups_bind_record()`"""
+
+        @pytest.mark.parametrize("form", [
+            "SELECT ?record WHERE {\n  # bound: ?record\n  ?record ?p ?o { ?o ?q ?r }\n}",
+            "SELECT ?record\n# bound: ?record\nWHERE { ?record ?p ?o }",
+            "SELECT ?record WHERE { { SELECT ?record ?c\n  # bound: ?record\n  WHERE { OPTIONAL { ?record ?p ?c } } } ?record ?p ?c }",
+            "SELECT ?record WHERE {\n  # bound: ?record\n  { SELECT ?record WHERE { ?record ?p ?c } } ?record ?p ?c }",
+            "SELECT ?record WHERE { { SELECT (SAMPLE(?r) AS ?record) ?c\n  # bound: ?record\n  WHERE { ?record ?p ?c ; ?q ?r }\n"
+            "  GROUP BY ?c } ?record ?p ?c }",
+        ], ids=["a mark on a group in no sub-select", "a mark on no group", "a sub-select binding ?record only in an OPTIONAL",
+                "a mark on the brace of a sub-select", "a sub-select grouped by another variable"])
+        def test_returns_false_for(self, form):
+            """returns false for a form that marks a group wrongly
+
+            Given a mark on a group in no sub-select, a mark on no group, a sub-select that binds `?record` only in an
+            OPTIONAL, a mark on the brace of a sub-select that is not the group, or a sub-select grouped by another
+            variable, `marked_groups_bind_record()` returns False.
+            """
+            assert not marked_groups_bind_record(form)
+
+    class TestEnginesToken:
+        """`engines.TOKEN`"""
+
+        def test_matches_no_iri_in_a_less_than_comparison(self):
+            """matches no IRI in a less-than comparison
+
+            From a text mixing `<3&&?y>1` and `?a<=?b` with the IRIs `<urn:a#b>` and `<>`, the token pattern that finds
+            IRIs yields those two IRIs and nothing from the comparisons.
+            """
+            iris = [token.group() for token in TOKEN.finditer("FILTER (?x <3&&?y>1) ?s <urn:a#b> <> ?o FILTER (?a<=?b&&?b>=?c)")
+                    if token.group().startswith("<")]
+            assert iris == ["<urn:a#b>", "<>"]
+
+    class TestNestedForms:
+        """`nested_forms()`"""
+
+        @pytest.mark.parametrize("form", sorted(NESTED))
+        def test_returns_the_name_of(self, form):
+            """returns the name of the nested form
+
+            For each of five queries written with one nested form, `nested_forms()` returns a list holding that form's
+            name only.
+            """
+            assert nested_forms(parseQuery(NESTED[form])) == [form]
+
+        def test_returns_nothing_for_a_union_whose_branches_are_each_complete(self):
+            """returns nothing for a union whose branches are each complete
+
+            Given a UNION whose branches hold their own NOT EXISTS, OPTIONAL and sub-select, `nested_forms()` returns an
+            empty list, as no branch is joined to another pattern.
+            """
+            assert nested_forms(parseQuery("""SELECT * WHERE {
+              { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d } OPTIONAL { ?a ?e ?f } }
+              UNION { { SELECT ?a WHERE { ?a ?b ?c } } ?a ?d ?c }
+            }""")) == []
+
+        def test_returns_nothing_for_a_graph_around_a_whole_pattern(self):
+            """returns nothing for a graph around a whole pattern
+
+            Given a GRAPH whose braces hold a whole pattern, in a UNION branch, `nested_forms()` returns an empty list,
+            as the GRAPH is not inside an inner group.
+            """
+            assert nested_forms(parseQuery("""SELECT * WHERE {
+              { GRAPH ?g { ?a ?b ?c OPTIONAL { ?a ?e ?f } } ?g ?h ?i }
+              UNION { VALUES ?a { <urn:x:a> } GRAPH ?g { ?a ?d ?c } }
+            }""")) == []
+
+    class TestKindsNamedOutOfPlace:
+        """`kinds_named_out_of_place()`"""
+
+        def test_returns_a_type_named_by_a_derivation_or_by_a_question_of_another_kind(self):
+            """returns a type named by a derivation or by a question of another kind
+
+            Given an allergy type written in `derivations/entries.rq` and in a question about conditions, and a
+            medication type in a question about procedures, `kinds_named_out_of_place()` returns that type each time.
+            """
+            allergy = URIRef("https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance")
+            query = f"SELECT ?r WHERE {{ ?r a <{allergy}> }}"
+            assert kinds_named_out_of_place("derivations/entries.rq", query) == {allergy}
+            assert kinds_named_out_of_place("questions/pod/My active conditions.rq", query) == {allergy}
+            medication = URIRef("https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication")
+            query = f"SELECT ?r WHERE {{ ?r a <{medication}> }}"
+            assert kinds_named_out_of_place("questions/pod/My procedures.rq", query) == {medication}
+
+        def test_returns_nothing_for_a_view_or_a_question_named_for_the_kind(self):
+            """returns nothing for a view or a question named for the kind, singular or plural
+
+            Given the allergy, lab result and medication types in `questions/pod/My active allergies.rq`,
+            `views/allergies.rq`, `questions/pod/My lab results.rq` and `questions/pod/My medication history.rq`,
+            `kinds_named_out_of_place()` returns an empty set for each.
+            """
+            allergy = URIRef("https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance")
+            query = f"SELECT ?r WHERE {{ ?r a <{allergy}> }}"
+            assert kinds_named_out_of_place("questions/pod/My active allergies.rq", query) == set()
+            assert kinds_named_out_of_place("views/allergies.rq", query) == set()
+            lab = URIRef("https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult")
+            assert kinds_named_out_of_place("questions/pod/My lab results.rq", f"SELECT ?r WHERE {{ ?r a <{lab}> }}") == set()
+            medication = URIRef("https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication")
+            query = f"SELECT ?r WHERE {{ ?r a <{medication}> }}"
+            assert kinds_named_out_of_place("questions/pod/My medication history.rq", query) == set()
+
+    class TestRestatedAbsences:
+        """`restated_absences()`"""
+
+        @pytest.mark.parametrize("form", sorted(RESTATING))
+        def test_returns_the_name_of(self, form):
+            """returns the name of the restated absence
+
+            For each of three queries that work an absence out again (NOT EXISTS, MINUS, an OPTIONAL then a test that
+            its variable is unbound), `restated_absences()` returns a list holding that form's name only.
+            """
+            assert restated_absences(RESTATING[form]) == [form]
+
+        def test_returns_nothing_for_a_term_the_query_only_reads(self):
+            """returns nothing for a term the query only reads
+
+            Given an OPTIONAL over `dct:replaces` whose variable is never tested as unbound, `restated_absences()`
+            returns an empty list.
+            """
+            assert restated_absences("""SELECT ?j ?by WHERE {
+              ?j ?p ?o OPTIONAL { ?by <http://purl.org/dc/terms/replaces> ?j } FILTER (BOUND(?o)) }""") == []
+
+    class TestMissingProse:
+        """`missing_prose()`"""
+
+        def test_returns_no_prose_for_a_query_with_no_leading_comment(self):
+            """returns `no prose` for a query with no leading comment
+
+            `missing_prose()` is given a SELECT with no comment above it, and returns the string `no prose`.
+            """
+            assert missing_prose("pod/Which file states each thing.rq", "SELECT ?s WHERE { ?s ?p ?o }") == "no prose"
+
+        def test_returns_prose_opening_with_its_name(self):
+            """returns `prose opening with its name` for a comment that begins with the file's name
+
+            `missing_prose()` is given a comment that starts with the words of the file's name, as `Which file states
+            each thing` and `Same pairs`, and returns the string `prose opening with its name` for each.
+            """
+            query = "SELECT ?s WHERE { ?s ?p ?o }"
+            assert missing_prose("pod/Which file states each thing.rq", "# Which file states each thing.\n" + query) == \
+                "prose opening with its name"
+            assert missing_prose("derivations/same-pairs.rq", "# Same pairs: ...\n" + query) == "prose opening with its name"
+
+        def test_returns_none_for_prose_that_opens_otherwise(self):
+            """returns None for prose that opens otherwise
+
+            `missing_prose()` is given a comment whose first words are not the file's name, and returns None.
+            """
+            query = "SELECT ?s WHERE { ?s ?p ?o }"
+            assert missing_prose("pod/Which file states each thing.rq", "# Each file is its own graph.\n" + query) is None
