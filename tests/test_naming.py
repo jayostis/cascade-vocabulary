@@ -7,9 +7,8 @@ import re
 from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import PROV, RDF, RDFS
 
-from contract import ROOT
+from contract import ROOT, feature_documents
 from naming import CASCADE, matcher_judgment_name, named, record_from_server_name
-from test_features import documents
 
 PAV = Namespace("http://purl.org/pav/")
 MATCHER_JUDGMENT_VERSIONS = json.loads((ROOT / "tests" / "matcher-judgment-versions.json").read_text(encoding="utf-8"))
@@ -30,7 +29,7 @@ def inputs_of(cell):
 
 
 def written():
-    for _, _, pickles in documents():
+    for _, _, pickles in feature_documents():
         for pickle in pickles:
             for step in pickle["steps"]:
                 header, *rows = [[cell["value"] for cell in row["cells"]]
@@ -54,7 +53,7 @@ def test_every_name_written_beside_its_inputs_follows_its_rule():
 def matcher_judgments_written_with_what_they_used():
     """Each kit matcher judgment a feature writes with its justification, members, the rule list versions it is
     asserted under, what it used and its name, with its kit."""
-    for path, _, pickles in documents():
+    for path, _, pickles in feature_documents():
         kit = path.parent
         if kit.parent != ROOT / "conformance":
             continue

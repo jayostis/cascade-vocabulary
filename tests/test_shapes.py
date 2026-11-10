@@ -11,8 +11,8 @@ from rdflib.namespace import OWL, RDF, SH
 
 from contract import KITS, CASCADE, ROOT
 from manifests import MF, path
+from naming_vectors import VECTORS, vectors
 from pods import FIXTURES, every_fixture
-from test_naming_rules import VECTORS, vectors
 
 SHT = Namespace("http://www.w3.org/ns/shacl-test#")
 CASES = ROOT / "tests" / "shape-cases"

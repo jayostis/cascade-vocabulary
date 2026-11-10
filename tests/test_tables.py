@@ -3,17 +3,16 @@ named by N12 (runtime/naming.feature)."""
 
 import json
 import re
-from functools import cache
 
 import pytest
-from pyshacl import validate
 from rdflib import Dataset, Graph, Namespace, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import OWL, RDF, SH, SKOS, XSD
+from rdflib.namespace import OWL, RDF, SH, XSD
 
 from contract import QUERIES, CASCADE, ROOT, file_stem
 from engines import parsed
 from naming import content, table_row_name, table_version_name
+from ontologies import row_messages, shapes, terms
 
 
 PROV = Namespace("http://www.w3.org/ns/prov#")
@@ -55,26 +54,6 @@ DIABETES = "<http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.1
 MEMBER = f"a owl:Axiom ; owl:annotatedSource <http://snomed.info/id/1481000119100> ; owl:annotatedProperty obo:RO_0002350 ; owl:annotatedTarget {DIABETES}"
 
 
-@cache
-def shapes():
-    return Graph().parse(ROOT / "ontologies" / "cascade.shapes.ttl")
-
-
-@cache
-def kinds():
-    return Graph().parse(ROOT / "ontologies" / "cascade.ttl")
-
-
-def messages(kind, rows):
-    """The messages the kind's row shape gives about the rows, every subject of them a focus node."""
-    shape = kinds().value(kind, CASCADE.rowShape)
-    targeted = Graph() + shapes()
-    for subject in set(rows.subjects()):
-        targeted.add((shape, SH.targetNode, subject))
-    _, report, _ = validate(rows, shacl_graph=targeted)
-    return {str(message) for message in report.objects(None, SH.resultMessage)}
-
-
 def versions():
     """Each table version of every kit and vector: its folder, its file, its kind and its rows."""
     for folder in FOLDERS:
@@ -103,12 +82,12 @@ def test_a_story_folder_leaves_the_vocabularys_rule_list_to_it_and_every_version
 
 
 def test_every_kind_names_one_row_shape_and_what_its_rows_are_found_by():
-    declared = set(kinds().subjects(RDF.type, CASCADE.TableKind))
+    declared = set(terms().subjects(RDF.type, CASCADE.TableKind))
     series_kind = next(p for p in shapes().objects(CASCADE.ReferenceSeriesShape, SH.property)
                        if shapes().value(p, SH.path) == CASCADE.tableKind)
     assert declared and set(Collection(shapes(), shapes().value(series_kind, SH["in"]))) == declared
-    assert {kind for kind in declared if len(set(kinds().objects(kind, CASCADE.rowShape))) != 1
-            or not set(kinds().objects(kind, CASCADE.foundBy))} == set()
+    assert {kind for kind in declared if len(set(terms().objects(kind, CASCADE.rowShape))) != 1
+            or not set(terms().objects(kind, CASCADE.foundBy))} == set()
 
 
 STEM = re.compile(r"https?://(?:snomed\.info|loinc\.org|id\.nlm\.nih\.gov|ns\.cascadeprotocol\.org/codes)/[A-Za-z0-9._/-]*/"
@@ -116,9 +95,9 @@ STEM = re.compile(r"https?://(?:snomed\.info|loinc\.org|id\.nlm\.nih\.gov|ns\.ca
 
 
 def test_every_iri_stem_a_query_or_an_ontology_writes_is_a_code_systems_uri_space():
-    registered = {str(space) for space in kinds().objects(None, VOID.uriSpace)}
-    system_uris = [f'"{uri}"' for uri in kinds().objects(None, CASCADE.codingSystemUri)]
-    templates = [f'"{template}"' for template in kinds().objects(None, CASCADE.codePageUrlTemplate)]
+    registered = {str(space) for space in terms().objects(None, VOID.uriSpace)}
+    system_uris = [f'"{uri}"' for uri in terms().objects(None, CASCADE.codingSystemUri)]
+    templates = [f'"{template}"' for template in terms().objects(None, CASCADE.codePageUrlTemplate)]
     written = {}
     for path in [*sorted(QUERIES.parent.rglob("*.rq")), *sorted((ROOT / "ontologies").rglob("*.ttl"))]:
         text = path.read_text(encoding="utf-8").replace("\\\\.", ".")
@@ -130,21 +109,21 @@ def test_every_iri_stem_a_query_or_an_ontology_writes_is_a_code_systems_uri_spac
 
 
 def test_every_code_system_has_one_iri_stem_ending_in_a_slash_or_a_colon_and_one_system_uri_ending_in_neither():
-    systems = set(kinds().subjects(RDF.type, CASCADE.CodeSystem))
+    systems = set(terms().subjects(RDF.type, CASCADE.CodeSystem))
     assert {system.removeprefix(str(CASCADE)) for system in systems} == {
         "CVX", "RxNorm", "NDC", "ICD10CM", "SNOMEDCT", "LOINC", "UNII", "CPT", "ICD9CM", "HGVS", "ClinVar", "MEDRT", "MeSH",
         "DataAbsentReason", "NullFlavor", "ObservationInterpretation"}
     for system in systems:
-        stems, uris = list(kinds().objects(system, VOID.uriSpace)), list(kinds().objects(system, CASCADE.codingSystemUri))
+        stems, uris = list(terms().objects(system, VOID.uriSpace)), list(terms().objects(system, CASCADE.codingSystemUri))
         assert len(stems) == 1 and str(stems[0]).endswith(("/", ":")), system
         assert len(uris) == 1 and uris[0].datatype == XSD.anyURI and not str(uris[0]).endswith(("/", ":")), system
 
 
 def test_every_page_template_is_one_address_with_the_code_as_its_only_expression():
-    templated = {system: list(kinds().objects(system, CASCADE.codePageUrlTemplate)) for system in set(kinds().subjects(CASCADE.codePageUrlTemplate, None))}
+    templated = {system: list(terms().objects(system, CASCADE.codePageUrlTemplate)) for system in set(terms().subjects(CASCADE.codePageUrlTemplate, None))}
     assert templated.keys() == {CASCADE.ClinVar, CASCADE.LOINC, CASCADE.MeSH}
     for system, templates in templated.items():
-        assert (system, RDF.type, CASCADE.CodeSystem) in kinds() and len(templates) == 1, system
+        assert (system, RDF.type, CASCADE.CodeSystem) in terms() and len(templates) == 1, system
         template = str(templates[0])
         assert template.startswith("https://") and template.count("{code}") == 1, system
         assert template.replace("{code}", "").count("{") == 0 and template.replace("{code}", "").count("}") == 0, system
@@ -162,7 +141,7 @@ def name_inputs(rows, row):
 
 def test_a_panel_member_listed_at_two_sequences_is_two_rows_with_two_names_and_a_nested_panel_is_its_own_rows():
     rows = parsed(VERSIONS / "panel-members-1.ttl")
-    assert messages(CASCADE.PanelMembers, rows) == set()
+    assert row_messages(CASCADE.PanelMembers, rows) == set()
     named = {}
     for row in rows.subjects(RDF.type, OWL.Axiom):
         assert str(row) == table_row_name(*name_inputs(rows, row))
@@ -182,7 +161,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
     for folder, stem, kind, rows in versions():
         found += 1
         held_as_published = folder.parent == PUBLISHED_BEFORE_RO and kind in (CASCADE.ProductIngredients, CASCADE.VaccineGroups)
-        if (said := messages(kind, rows)) and not held_as_published:
+        if (said := row_messages(kind, rows)) and not held_as_published:
             broken[f"{folder.relative_to(ROOT).as_posix()}/{stem}"] = said
         for row in rows.subjects(RDF.type, OWL.Axiom):
             if str(row) != table_row_name(*name_inputs(rows, row)):
@@ -309,7 +288,7 @@ def test_every_row_of_every_kit_and_vector_conforms_to_its_kind_and_every_mappin
      "holds only its variation"),
 ])
 def test_the_row_shapes_accept_a_row_of_each_kind_and_refuse_each_break_with_its_message(kind, rows, message):
-    said = messages(kind, Graph().parse(data=PREFIXES + rows, format="turtle"))
+    said = row_messages(kind, Graph().parse(data=PREFIXES + rows, format="turtle"))
     assert (said == set()) if message is None else any(message in m for m in said), said
 
 
@@ -319,7 +298,7 @@ def test_the_row_shapes_accept_a_row_of_each_kind_and_refuse_each_break_with_its
     (f"<urn:x:r> {CONVERSION} ; {CURATED} ; skos:note \"x\" .", "A mapping row is an owl:Axiom named by an IRI"),
 ])
 def test_a_conversion_row_broken_otherwise_does_not_also_say_its_form_is_wrong(rows, message):
-    said = messages(CASCADE.CodeConversions, Graph().parse(data=PREFIXES + rows, format="turtle"))
+    said = row_messages(CASCADE.CodeConversions, Graph().parse(data=PREFIXES + rows, format="turtle"))
     assert any(message in m for m in said), said
     assert not any("with dct:isReplacedBy" in m for m in said), said
 
@@ -330,7 +309,7 @@ def test_each_table_version_is_named_by_n12_from_its_series_the_version_it_revis
     for case in cases:
         rows = set()
         if case["rows"]:
-            assert messages(CASCADE[case["kind"]], parsed(VERSIONS / case["rows"])) == set(), case["rows"]
+            assert row_messages(CASCADE[case["kind"]], parsed(VERSIONS / case["rows"])) == set(), case["rows"]
             rows = content((VERSIONS / case["rows"]).read_text(encoding="utf-8"), "turtle")
         named.append(table_version_name(case["series"], case["revises"] or None, rows))
     assert named == [case["name"] for case in cases]

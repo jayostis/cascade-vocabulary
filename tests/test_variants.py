@@ -4,7 +4,6 @@ change what a query may do with a code (runtime/matcher.feature, rule M4)."""
 
 import json
 import re
-from functools import cache
 
 import pytest
 from pyshacl import validate
@@ -13,10 +12,9 @@ from rdflib.collection import Collection
 from rdflib.compare import isomorphic
 from rdflib.namespace import RDF, SH, SKOS, XSD
 
-from contract import QUERIES, CASCADE, ROOT
-from engines import ENGINES, parsed, prepared
-from test_queries import every_query, nodes
-from test_tables import kinds, messages, shapes
+from contract import CASCADE, ROOT
+from engines import ENGINES, parsed
+from ontologies import row_messages, shapes, terms
 
 VOID = Namespace("http://rdfs.org/ns/void#")
 VECTORS = ROOT / "tests" / "vectors" / "clinvar"
@@ -27,17 +25,12 @@ def vector(name):
     return json.loads((VECTORS / name).read_text(encoding="utf-8"))
 
 
-@cache
-def genomics_shapes():
-    return Graph().parse(ROOT / "ontologies" / "cascade.shapes.ttl")
-
-
 def said(data):
     """The messages the genomics shapes give about the data."""
     prefixes = ("@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .\n"
                 "@prefix prov: <http://www.w3.org/ns/prov#> .\n"
                 "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n")
-    _, report, _ = validate(Graph().parse(data=prefixes + data, format="turtle"), shacl_graph=genomics_shapes())
+    _, report, _ = validate(Graph().parse(data=prefixes + data, format="turtle"), shacl_graph=shapes())
     return {str(message) for message in report.objects(None, SH.resultMessage)}
 
 
@@ -81,7 +74,7 @@ def test_the_genomics_shapes_accept_each_normal_form_and_refuse_each_break_with_
 
 
 def evaluated(engine, system, literal):
-    stem = str(kinds().value(CASCADE[system], VOID.uriSpace))
+    stem = str(terms().value(CASCADE[system], VOID.uriSpace))
     query = f"SELECT (CONCAT({json.dumps(stem)}, ENCODE_FOR_URI({json.dumps(literal)})) AS ?iri) WHERE {{}}"
     return str(ENGINES[engine]().select(query)[0]["iri"])
 
@@ -118,7 +111,7 @@ def row_from_json(row):
 
 def test_the_row_in_turtle_conforms_to_its_shape_and_the_row_in_json_is_the_same_triples():
     turtle = parsed(VECTORS / "row.ttl")
-    assert messages(CASCADE.VariantClassifications, turtle) == set()
+    assert row_messages(CASCADE.VariantClassifications, turtle) == set()
     assert isomorphic(turtle, row_from_json(vector("row.json")))
     assert re.fullmatch(r"urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
                         vector("row.json")["series"])
@@ -126,8 +119,8 @@ def test_the_row_in_turtle_conforms_to_its_shape_and_the_row_in_json_is_the_same
 
 def members(scheme):
     """The concepts of a scheme with each label they go by, preferred or alternative."""
-    return {concept: [str(label) for p in (SKOS.prefLabel, SKOS.altLabel) for label in kinds().objects(concept, p)]
-            for concept in kinds().subjects(SKOS.inScheme, scheme)}
+    return {concept: [str(label) for p in (SKOS.prefLabel, SKOS.altLabel) for label in terms().objects(concept, p)]
+            for concept in terms().subjects(SKOS.inScheme, scheme)}
 
 
 def parse_classification(written, scheme):
@@ -135,10 +128,10 @@ def parse_classification(written, scheme):
     term matches a label exactly; a term matching none is a finding."""
     labelled = {label: concept for concept, labels in members(scheme).items() for label in labels}
     if written == "-":
-        return {kinds().value(None, SKOS.notation, Literal("-"))}, []
-    terms = [term for part in written.split("; ") for term in part.split("/")]
-    return ({labelled[term] for term in terms if term in labelled},
-            [term for term in terms if term not in labelled])
+        return {terms().value(None, SKOS.notation, Literal("-"))}, []
+    words = [word for part in written.split("; ") for word in part.split("/")]
+    return ({labelled[word] for word in words if word in labelled},
+            [word for word in words if word not in labelled])
 
 
 def test_each_classification_value_parses_to_its_concepts_and_each_review_status_to_its_concept():
@@ -157,8 +150,8 @@ ACMG_FIVE = {"Pathogenic", "LikelyPathogenic", "UncertainSignificance", "LikelyB
 
 
 def test_the_five_acmg_values_are_matched_by_the_labels_clinvar_spells_them_with():
-    spelled = {name: str(kinds().value(CASCADE[name], SKOS.prefLabel)) for name in ACMG_FIVE}
-    assert {name for name in ACMG_FIVE if (CASCADE[name], SKOS.inScheme, CASCADE.ClinVarClassifications) in kinds()} == ACMG_FIVE
+    spelled = {name: str(terms().value(CASCADE[name], SKOS.prefLabel)) for name in ACMG_FIVE}
+    assert {name for name in ACMG_FIVE if (CASCADE[name], SKOS.inScheme, CASCADE.ClinVarClassifications) in terms()} == ACMG_FIVE
     assert spelled == {"Pathogenic": "Pathogenic", "LikelyPathogenic": "Likely pathogenic",
                        "UncertainSignificance": "Uncertain significance", "LikelyBenign": "Likely benign", "Benign": "Benign"}
 
@@ -179,35 +172,9 @@ def test_the_concepts_two_schemes_share_are_one_iri_each():
 
 
 def test_the_kinds_an_app_keeps_are_those_a_rule_list_names_and_those_marked_read_by_pages():
-    declared = set(kinds().subjects(RDF.type, CASCADE.TableKind))
-    marked = {kind for kind in declared if (kind, CASCADE.readByAppPages, Literal(True)) in kinds()}
+    declared = set(terms().subjects(RDF.type, CASCADE.TableKind))
+    marked = {kind for kind in declared if (kind, CASCADE.readByAppPages, Literal(True)) in terms()}
     named = {kind for path in (ROOT / "runtime" / "rule-list").glob("*.ttl") if path.name != "references.ttl"
              for kind in parsed(path).objects(None, CASCADE.tableKind)}
     assert marked == {CASCADE.CodeNames, CASCADE.RetiredCodes, CASCADE.VariantClassifications, CASCADE.PanelMembers, CASCADE.DrugClasses}
     assert declared - named - marked == {CASCADE.SubstanceIngredients, CASCADE.ValueSetExpansions}
-
-
-def joins_a_stem_to_a_literal_without_encoding(text, stems):
-    """Whether a CONCAT of the query has a stem for an argument and an argument that is not ENCODE_FOR_URI."""
-    for node in nodes(prepared(text).algebra):
-        if node.name == "Builtin_CONCAT":
-            arguments = list(node["arg"])
-            if any(isinstance(a, Literal) and str(a) in stems for a in arguments):
-                if any(not isinstance(a, Literal) and getattr(a, "name", None) != "Builtin_ENCODE_FOR_URI"
-                       for a in arguments):
-                    return True
-    return False
-
-
-def test_the_encoding_check_sees_a_stem_joined_to_a_literal_without_ENCODE_FOR_URI():
-    stems = {"http://x/"}
-    assert joins_a_stem_to_a_literal_without_encoding('SELECT * { BIND (CONCAT("http://x/", STR(?a)) AS ?b) }', stems)
-    assert not joins_a_stem_to_a_literal_without_encoding(
-        'SELECT * { BIND (CONCAT("http://x/", ENCODE_FOR_URI(STR(?a))) AS ?b) }', stems)
-    assert not joins_a_stem_to_a_literal_without_encoding('SELECT * { BIND (CONCAT("a", STR(?a)) AS ?b) }', stems)
-
-
-def test_every_query_that_joins_a_stem_to_a_literal_encodes_it():
-    stems = {str(space) for space in kinds().objects(None, VOID.uriSpace)}
-    assert {relative for relative in every_query()
-            if joins_a_stem_to_a_literal_without_encoding((QUERIES / relative).read_text(encoding="utf-8"), stems)} == set()

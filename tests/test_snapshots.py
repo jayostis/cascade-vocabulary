@@ -10,7 +10,7 @@ from pyoxigraph import Literal, NamedNode, Store, Variable
 
 import naming
 from contract import ROOT
-from test_naming_rules import flattened, v8_query
+from naming_vectors import flattened, v8_query
 
 VECTORS = json.loads((ROOT / "tests" / "vectors" / "snapshot" / "vectors.json").read_text(encoding="utf-8"))
 SET_HASHES = VECTORS["setHashes"]
