@@ -220,15 +220,24 @@ def perform(api, repo, actions):
     return said
 
 
+def refused(error):
+    return error.status in (403, 404) and "rate limit" not in str(error).lower()
+
+
 def failed_annotations(api, base, jobs):
-    """The annotations of a run's failed jobs, the first job first, until there are enough to show."""
+    """The annotations of a run's failed jobs, the first job first, until there are enough to show, and whether a job's were refused."""
     found = []
     for job in jobs:
         if job.get("conclusion") in FAILED_JOB:
-            found += api.get(f"{base}/check-runs/{job['id']}/annotations", per_page=100)
+            try:
+                found += api.get(f"{base}/check-runs/{job['id']}/annotations", per_page=100)
+            except GitHubError as error:
+                if not refused(error):
+                    raise
+                return found, True
             if len(failure_messages(found)) == SHOWN_MESSAGES:
                 break
-    return found
+    return found, False
 
 
 def visit(api, repo):
@@ -247,13 +256,9 @@ def visit(api, repo):
         for run in latest_runs(runs[str(workflow["id"])], now):
             if is_red(run):
                 jobs[str(run["id"])] = api.get(f"{base}/actions/runs/{run['id']}/jobs", filter="latest", per_page=100)["jobs"]
-                try:
-                    annotations[str(run["id"])] = failed_annotations(api, base, jobs[str(run["id"])])
-                except GitHubError as error:
-                    if error.status not in (403, 404):
-                        raise
-                    if not notes:
-                        notes.append(f"{repo}: the token cannot read check-run annotations (it needs Checks read), so its alerts name the failing step only")
+                annotations[str(run["id"])], denied = failed_annotations(api, base, jobs[str(run["id"])])
+                if denied and not notes:
+                    notes.append(f"{repo}: the token cannot read check-run annotations (it needs Checks read), so its alerts name the failing step only")
     issues = [i for i in api.pages(f"{base}/issues", labels=LABEL, state="open") if "pull_request" not in i]
     comments = {str(i["number"]): api.pages(f"{base}/issues/{i['number']}/comments") for i in issues}
     return notes + perform(api, repo, decide(repo, workflows, runs, jobs, annotations, issues, comments, now))

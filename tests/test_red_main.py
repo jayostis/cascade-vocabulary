@@ -162,6 +162,40 @@ def test_a_token_that_cannot_read_annotations_still_opens_the_issue_and_says_so_
     assert len([line for line in said if "Checks" in line]) == 1
 
 
+def test_the_messages_read_before_a_job_whose_annotations_are_refused_are_kept():
+    answers = a_red_repository({51: [{"annotation_level": "failure", "message": "not checked: ncbi-clinvar"}]})
+    answers["/repos/jayostis/cascade-a/actions/runs/5/jobs"]["jobs"].append({"id": 52, "name": "late", "conclusion": "failure", "steps": []})
+    answers["/repos/jayostis/cascade-a/actions/runs/5/jobs"]["jobs"][0] = {"id": 50, "name": "first", "conclusion": "failure", "steps": []}
+    answers["/repos/jayostis/cascade-a/check-runs/50/annotations"] = [{"annotation_level": "failure", "message": "first job said this"}]
+    api = Fake(answers)
+    get = api.get
+
+    def refusing(path, **params):
+        if path.endswith("/check-runs/51/annotations"):
+            raise red_main.GitHubError("GitHub answered 403 to GET " + path + ": Resource not accessible by personal access token", 403)
+        return get(path, **params)
+
+    api.get = refusing
+    assert red_main.run(api) == []
+    assert "first job said this" in api.sent[1][2]["body"]
+
+
+def test_a_secondary_rate_limit_is_an_error_for_the_repository_not_a_missing_checks_permission():
+    api = Fake(a_red_repository({}))
+    get = api.get
+
+    def limited(path, **params):
+        if "/check-runs/" in path:
+            raise red_main.GitHubError("GitHub answered 403 to GET " + path + ": You have exceeded a secondary rate limit", 403)
+        return get(path, **params)
+
+    api.get = limited
+    said = []
+    errors = red_main.run(api, say=said.append)
+    assert len(errors) == 1 and "rate limit" in errors[0]
+    assert not any("Checks" in line for line in said)
+
+
 def test_a_repository_it_cannot_reach_is_one_plain_line_and_the_others_are_still_read():
     api = Fake(a_pod_of_repositories(), refuse=("/repos/jayostis/cascade-a/",))
     errors = red_main.run(api)

@@ -87,7 +87,8 @@ than 14 days is ignored.
 
 - **Opens** on the first red run: the issue links the run, names its first failing step and lists the failure messages
   the run printed as annotations (a step that continues on error is green, so a feed check names its failed feeds
-  there). **Comments** once for each later red run.
+  there). **Comments** once for each later red run. A workflow says what is red by printing `::error::<what>` lines;
+  the alert quotes them, and without them it names only the step.
 - **Closes** at the first red-main run after the latest `push`, `schedule` and `workflow_run` run of that workflow are all
   green. A manual run does not close it, and a run still going or cancelled holds it as it is. Dispatch `red-main` to
   close it sooner than its next daily run.
