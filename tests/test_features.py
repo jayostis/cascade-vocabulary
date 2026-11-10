@@ -107,7 +107,8 @@ class TestFeatureFiles:
     class TestGivenEveryFeatureFile:
         """given every feature file
 
-        A name in parentheses at the end of a Given or a When is how a later line names what that one made.
+        Each file holds examples, and each example is a few lines beginning Given, When or Then. These cases read the
+        lines of every example in every file.
         """
 
         def test_writes_every_given_when_and_then_in_a_phrase(self):
@@ -118,7 +119,10 @@ class TestFeatureFiles:
             assert unlisted == set()
 
         def test_ends_only_a_given_or_a_when_with_a_name_in_parentheses(self):
-            """ends only a Given or a When with a name in parentheses"""
+            """ends only a Given or a When with a name in parentheses
+
+            A name in parentheses at the end of a Given or a When is how a later line names what that one made.
+            """
             named = {(path.name, step["text"]) for path, _, pickles in documents() for pickle in pickles
                      for step in pickle["steps"] if LABEL.search(step["text"]) and step.get("type") == "Outcome"}
             assert named == set()
@@ -135,7 +139,11 @@ class TestFeatureFiles:
             assert clashes == []
 
         def test_puts_each_examples_dated_lines_in_time_order(self):
-            """puts each example's dated lines in time order"""
+            """puts each example's dated lines in time order, earliest first
+
+            A dated line is one that gives a moment, as "on 2026-03-01 at 09:30": it ends with that date and time of day, or
+            has it just before a name in parentheses. The moments of an example's dated lines never go back.
+            """
             backwards = []
             for path, _, pickles in documents():
                 for pickle in pickles:

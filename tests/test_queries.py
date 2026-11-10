@@ -356,6 +356,12 @@ class TestDerivationOrder:
     """
 
     class TestGivenTheRootCrate:
+        """given the root crate
+
+        `ro-crate-metadata.json` lists each derivation and lens with the position at which a runtime runs it. A position is
+        a whole number; derivations run in the order of their positions.
+        """
+
         def test_gives_every_derivation_and_lens_a_position(self):
             positions = contract.positions()
             derivations = list(contract.named("derivations").values())
@@ -482,8 +488,10 @@ class TestNamedQuestions:
         def test_asks_for_no_absence_the_derivations_already_record(self):
             """asks for no absence the derivations already record
 
-            The absences are those `dct:replaces`, `prov:invalidated` and `prov:wasRevisionOf` say, asked for by a NOT EXISTS,
-            a MINUS, or an OPTIONAL filtered to unbound.
+            An absence is a link that is not there, such as a version no `dct:replaces`, `prov:invalidated` or
+            `prov:wasRevisionOf` points at. The derivations already record such absences, so a question reads what they
+            recorded. A question fails if it works one out again by not finding the link: a `NOT EXISTS` or a `MINUS` over
+            one of the three, or an `OPTIONAL` over one followed by a test that its variable is unbound.
             """
             offenders = {relative: restated for relative in every_question()
                          if (restated := restated_absences(contract.query(relative)))}

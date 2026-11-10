@@ -288,10 +288,18 @@ class TestTermsDeclared:
     """
 
     class TestGivenEveryPodFileTheVocabularyCarries:
+        """given every pod file the vocabulary carries
+
+        The files of the fixtures, the valid shape cases, the examples' scripted input and the kits' scripted input and
+        expected files: each is a file a pod could hold, and each is read for the terms it writes.
+        """
+
         def test_writes_no_term_of_the_vocabularys_namespaces_that_no_ontology_file_declares(self):
             """writes no term of the vocabulary's namespaces that no ontology file declares
 
-            But for `cascade:NoSuchRecord`: Finn's type-filed-nowhere export files a record of a type no folder holds.
+            One term is allowed to go undeclared, on purpose: `cascade:NoSuchRecord`, the type that a hand-made failure
+            fixture (`runtime/scripted-input/finn/bridge/type-filed-nowhere/`) gives its record, to show a record of a type
+            the pod files nowhere. Any other undeclared term fails, naming it and its file.
             """
             declared = {str(term) for term in ontology().subjects(RDF.type, None)} | set(map(str, UNDECLARED_ON_PURPOSE))
             ours = namespaces()
@@ -308,6 +316,12 @@ class TestNameShapes:
     """
 
     class TestGivenARecordWithASourceAddress:
+        """given a record with a source address
+
+        A record pulled from a server keeps the address it was fetched from, as `cascade:sourceUrl`, and its name is the
+        one `RecordFromServerNamingRule` gives for that address.
+        """
+
         def test_embeds_the_query_of_its_naming_rule_after_binding_its_inputs(self):
             """embeds the query of `RecordFromServerNamingRule` after binding its inputs"""
             rule = (VECTORS / "RecordFromServerNamingRule.rq").read_text(encoding="utf-8")
@@ -316,8 +330,12 @@ class TestNameShapes:
             assert body in select
             assert select.index("AS ?input3") < select.index(body)
 
-        def test_takes_each_server_vectors_name_for_its_address_and_no_other(self):
-            """takes each server vector's name for its address, and no other"""
+        def test_accepts_each_server_vectors_name_for_its_address_and_no_other_name(self):
+            """accepts each server vector's name for its address, and no other vector's name for it
+
+            A record at each vector's address, named as the vector says, passes the shape; the same records with the names
+            rotated one place along all fail it.
+            """
             found = server_vectors()
             assert len(found) >= 2
             conforms, _, _ = validate(records((vector.expected, vector) for vector in found), shacl_graph=shapes())
@@ -340,8 +358,12 @@ class TestNameShapes:
             body = (VECTORS / "ServerNamingRule.rq").read_text(encoding="utf-8").split(" WHERE {\n", 1)[1].rsplit("\n}", 1)[0]
             assert body in str(shapes().value(constraint, SH.select))
 
-        def test_takes_each_server_vectors_name_for_its_base_address_and_no_other(self):
-            """takes each server vector's name for its base address, and no other"""
+        def test_accepts_each_server_vectors_name_for_its_base_address_and_no_other_name(self):
+            """accepts each server vector's name for its base address, and no other vector's name for it
+
+            A server at each vector's base address, named as the vector says, passes the shape; the same servers with the
+            names rotated one place along all fail it.
+            """
             found = [vector for vector in vectors() if vector.rule == "ServerNamingRule"]
             assert len(found) >= 2
             conforms, _, _ = validate(servers((vector.expected, vector) for vector in found), shacl_graph=shapes())
