@@ -215,12 +215,15 @@ def selectable_codes(concepts):
         yield from selectable_codes(concept.get("concept", []))
 
 
-HL7_CODE_SYSTEMS = pytest.mark.parametrize("shape, system, file", [
+HL7_CODE_SYSTEM_ROWS = [
     (CASCADE.DataAbsentReasonCodeShape, CASCADE.DataAbsentReason, "CodeSystem-data-absent-reason.json"),
     (CASCADE.NullFlavorCodeShape, CASCADE.NullFlavor, "CodeSystem-v3-NullFlavor.json"),
     (CASCADE.ObservationInterpretationCodeShape, CASCADE.ObservationInterpretation,
      "CodeSystem-v3-ObservationInterpretation.json"),
-], ids=["DataAbsentReason", "NullFlavor", "ObservationInterpretation"])
+]
+HL7_IDS = ["DataAbsentReason", "NullFlavor", "ObservationInterpretation"]
+HL7_CODE_SYSTEMS = pytest.mark.parametrize("shape, system, file", HL7_CODE_SYSTEM_ROWS, ids=HL7_IDS)
+HL7_SYSTEM_FILES = pytest.mark.parametrize("system, file", [row[1:] for row in HL7_CODE_SYSTEM_ROWS], ids=HL7_IDS)
 
 
 class TestShapesThatFindAWrongPod:
@@ -371,8 +374,8 @@ class TestHl7CodeShapes:
     """
 
     class TestGivenOneOfTheThreeCodeSystems:
-        @HL7_CODE_SYSTEMS
-        def test_is_declared_with_the_url_that_hl7_publishes_it_under(self, shape, system, file):
+        @HL7_SYSTEM_FILES
+        def test_is_declared_with_the_url_that_hl7_publishes_it_under(self, system, file):
             """is declared with the URL that HL7 publishes it under"""
             published = json.loads((ROOT / "tests" / "terminology" / "hl7-terminology" / file).read_text(encoding="utf-8"))
             assert published["url"] == str(ontology().value(system, CASCADE.codingSystemUri))
