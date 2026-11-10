@@ -120,6 +120,11 @@ class TestNarrativeAccountedFor:
         """given the C-CDA downloads that have saved output"""
 
         def test_leaves_no_section_with_text_wholly_unread(self):
+            """leaves no section with text wholly unread
+
+            For each C-CDA download with saved output (at least twelve), the sections whose text no record's statement
+            references into and no saved note holds are listed; the list must be empty.
+            """
             assert len(CASES) >= 12
             unread = {re.sub(r"\s+", " ", name): sections for name, document in CASES
                       if (sections := list(unread_sections(document, saved_texts(ROOT / name))))}
@@ -137,6 +142,11 @@ class TestChecksOfTheNarrativeCheck:
         """`unread_sections()`"""
 
         def test_returns_nothing_for_a_section_that_an_allergy_observation_references_into(self):
+            """returns nothing for a section that an allergy observation references into
+
+            Given an Allergies section whose allergy observation points at the table row of its text,
+            `unread_sections()` returns an empty list.
+            """
             sections = SECTION.format(section="2.16.840.1.113883.10.20.22.2.6.1", title="Allergies", entry=ALLERGY)
             assert list(unread_sections(document(sections), kept=[])) == []
 
@@ -146,5 +156,10 @@ class TestChecksOfTheNarrativeCheck:
             ("2.16.840.1.113883.10.20.22.2.1.1", "Medications", PLANNED_MEDICATION),
         ], ids=["a vital sign", "a concern act", "a medication in the request mood"])
         def test_returns_a_section_whose_text_is_referenced_only_from(self, section, title, entry):
+            """returns a section whose text is referenced only from a statement that is no record
+
+            Given a section whose text is pointed at only by a vital sign, a concern act, or a medication in the request
+            mood, `unread_sections()` returns that section's title.
+            """
             sections = SECTION.format(section=section, title=title, entry=entry)
             assert list(unread_sections(document(sections), kept=[])) == [title]

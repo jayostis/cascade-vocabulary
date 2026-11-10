@@ -297,7 +297,11 @@ class TestQueryForm:
 
     class TestGivenAnyQuery:
         def test_puts_every_sub_select_first_in_its_group(self):
-            """puts every sub-select first in its group"""
+            """puts every sub-select first in its group
+
+            Parses every query under `queries/`; one with a sub-select after a triple pattern or any other part of the
+            same group fails.
+            """
             offenders = sorted(relative for relative in every_query() if has_a_subselect_after_a_pattern(parsed(relative)))
             assert offenders == []
 
@@ -322,6 +326,11 @@ class TestQueryForm:
             assert offenders == {}
 
         def test_writes_with_its_prefix_every_iri_of_a_namespace_the_queries_declare(self):
+            """writes, with its prefix, every IRI of a namespace the queries declare
+
+            Every namespace that any query declares a prefix for is collected from the queries and the ontology files; a
+            query that spells out an IRI inside one of them, instead of using the prefix, fails.
+            """
             prefixes = {prefix for other in every_query() for prefix, _ in declared(other)}
             declared_namespaces = tuple(namespace for prefix in prefixes for namespace in namespaces_by_prefix()[prefix])
             spelled_out = {relative: sorted({str(iri) for iri in iris(parsed(relative)[1])
@@ -330,12 +339,21 @@ class TestQueryForm:
             assert {relative: found for relative, found in spelled_out.items() if found} == {}
 
         def test_opens_with_prose_that_does_not_begin_with_its_own_name(self):
+            """opens with prose that does not begin with its own name
+
+            Each query's leading comment is read: one with no comment, or whose words begin with the words of the file's
+            name, fails.
+            """
             offenders = {relative: why for relative in every_query()
                          if (why := missing_prose(relative, contract.query(relative)))}
             assert offenders == {}
 
         def test_names_a_view_entry_only_by_n13s_placeholder(self):
-            """names a view entry only by N13's placeholder"""
+            """names a view entry only by N13's placeholder
+
+            Counts `CONCAT("urn:cascade:entry:"` in each query's text against the count of the full placeholder,
+            `CONCAT("urn:cascade:entry:", SHA256(MIN(STR(`; a query that builds an entry IRI any other way fails.
+            """
             offenders = []
             for relative in every_query():
                 text = contract.query(relative)
@@ -345,6 +363,11 @@ class TestQueryForm:
 
     class TestGivenTheQueriesAndTheOntologyFilesTogether:
         def test_binds_each_prefix_to_one_namespace(self):
+            """binds each prefix to one namespace
+
+            Collects every prefix declaration of every query and of every ontology file; a prefix bound to two
+            namespaces anywhere fails.
+            """
             assert {prefix: bound for prefix, bound in namespaces_by_prefix().items() if len(bound) > 1} == {}
 
 
@@ -363,16 +386,30 @@ class TestDerivationOrder:
         """
 
         def test_gives_every_derivation_and_lens_a_position(self):
+            """gives every derivation and lens a position
+
+            The positions in the root crate name exactly the derivations and lenses the vocabulary carries: none
+            missing, none extra.
+            """
             positions = contract.positions()
             derivations = list(contract.named("derivations").values())
             lenses = list(contract.named("lenses").values())
             assert sorted(positions) == sorted(derivations + lenses)
 
         def test_gives_every_lens_the_same_position(self):
+            """gives every lens the same position
+
+            The lenses' positions in the root crate are one value, as a lens runs last among the derivations, in place
+            of the others.
+            """
             positions = contract.positions()
             assert len({positions[lens] for lens in contract.named("lenses").values()}) == 1
 
         def test_numbers_the_positions_from_1_with_no_gap(self):
+            """numbers the positions from 1 with no gap
+
+            The derivations' positions, with one lens's, sorted, equal 1 to their count.
+            """
             positions = contract.positions()
             derivations = list(contract.named("derivations").values())
             lenses = list(contract.named("lenses").values())
@@ -382,7 +419,11 @@ class TestDerivationOrder:
     class TestGivenALens:
         @pytest.mark.parametrize("lens", sorted(contract.named("lenses")))
         def test_reads_in_no_derivation_a_term_a_later_one_writes(self, lens):
-            """reads, in no derivation, a term a later one writes"""
+            """reads, in no derivation, a term a later one writes
+
+            Takes the derivations a lens runs, in order; one that reads a term (a class or a property) which a later
+            derivation writes fails, so the order never needs a second pass.
+            """
             steps = contract.derivations(lens)
             found = {(step, later, str(term)) for i, step in enumerate(steps) for later in steps[i + 1:]
                      for term in reads(step) & writes(later)}
@@ -405,11 +446,21 @@ class TestKindsOfRecord:
         """given `derivations/records.rq`"""
 
         def test_gives_each_kind_of_record_a_word_no_other_has(self):
+            """gives each kind of record a word no other has
+
+            The words in the table of `derivations/records.rq`, one per kind, are compared with the same list as a set:
+            a word given to two kinds fails.
+            """
             words = [str(row[Variable("kind")]) for row in kinds_of_record()]
             assert sorted(words) == sorted(set(words))
 
     class TestGivenAnyQuery:
         def test_names_a_record_type_only_when_it_is_about_that_one_kind(self):
+            """names a record type only when it is about that one kind
+
+            Every query's algebra is searched for the record types the records derivation lists; a type named outside
+            that derivation, its own view, and a question named for that view fails.
+            """
             offenders = {relative: sorted(map(str, kinds)) for relative in every_query()
                          if (kinds := kinds_named_out_of_place(relative, contract.query(relative)))}
             assert offenders == {}
@@ -477,12 +528,19 @@ class TestNamedQuestions:
 
     class TestGivenAnyQuestion:
         def test_is_a_select(self):
+            """is a select
+
+            Every named question is compared with the form SELECT; one written as a CONSTRUCT, ASK or DESCRIBE fails.
+            """
             offenders = sorted(relative for relative in every_question()
                                if prepared(contract.query(relative)).algebra.name != "SelectQuery")
             assert offenders == []
 
         def test_returns_for_every_label_column_the_column_it_is_named_for(self):
-            """returns, for every column ending in `Label`, the column it is named for"""
+            """returns, for every column ending in `Label`, the column it is named for
+
+            For each column of a question named `xLabel`, the column `x` must be one of the question's columns too.
+            """
             offenders = {}
             for relative in every_question():
                 columns = {str(v) for v in prepared(contract.query(relative)).algebra["PV"]}
@@ -505,6 +563,11 @@ class TestNamedQuestions:
 
     class TestGivenAQuestionFiledUnderAKind:
         def test_returns_a_column_named_for_the_kind(self):
+            """returns a column named for the kind
+
+            A question filed under `entry`, `record`, `judgment` or `profile` must give a column of that very name,
+            which holds the thing it is about.
+            """
             offenders = sorted(relative for relative in every_question() if Path(relative).parent.name in KINDS
                                and Path(relative).parent.name not in
                                [str(v) for v in prepared(contract.query(relative)).algebra["PV"]])
@@ -524,7 +587,11 @@ class TestMatcherComparisons:
 
     class TestGivenAnyComparison:
         def test_binds_record_in_a_triple_pattern_of_its_outermost_group(self):
-            """binds `?record` in a triple pattern of its outermost group"""
+            """binds `?record` in a triple pattern of its outermost group
+
+            In each comparison under `matcher/`, `?record` is in a triple pattern directly in the outermost group, not
+            inside a sub-select, MINUS, OPTIONAL or UNION, so a VALUES block opening that group binds it.
+            """
             offenders = sorted(relative for relative in contract.named("matcher").values()
                                if not binds_record_outermost(parsed(relative)))
             assert offenders == []
@@ -544,7 +611,12 @@ class TestMatcherComparisons:
 
         def test_marks_only_a_group_inside_a_sub_select_that_keeps_every_row_of_a_record(self):
             """marks only a group inside a sub-select that keeps every row of a record and binds `?record` in a triple
-            pattern of its own"""
+            pattern of its own
+
+            In each comparison, every `# bound: ?record` line marks a group; with a VALUES block opened there, that
+            group sits in a sub-select that cuts off no row (no LIMIT, OFFSET or HAVING; grouped, if at all, by
+            `?record`) and holds `?record` in a triple pattern of its own.
+            """
             offenders = sorted(relative for relative in contract.named("matcher").values()
                                if not marked_groups_bind_record(contract.query(relative)))
             assert offenders == []
@@ -583,7 +655,11 @@ class TestChecksOfTheQueryChecks:
             "SELECT ?record ?other WHERE { ?other ?p ?c MINUS { ?record ?p ?c } }",
         ], ids=["a sub-select", "an OPTIONAL", "a MINUS"])
         def test_returns_false_for_record_bound_only_inside(self, form):
-            """returns false for `?record` bound only inside"""
+            """returns false for `?record` bound only inside
+
+            Given `?record` in a sub-select, an OPTIONAL or a MINUS only, and none in the outermost group,
+            `binds_record_outermost()` returns False.
+            """
             assert not binds_record_outermost(parseQuery(form))
 
     class TestMarkedGroupsBindRecord:
@@ -599,12 +675,23 @@ class TestChecksOfTheQueryChecks:
         ], ids=["a mark on a group in no sub-select", "a mark on no group", "a sub-select binding ?record only in an OPTIONAL",
                 "a mark on the brace of a sub-select", "a sub-select grouped by another variable"])
         def test_returns_false_for(self, form):
+            """returns false for a form that marks a group wrongly
+
+            Given a mark on a group in no sub-select, a mark on no group, a sub-select that binds `?record` only in an
+            OPTIONAL, a mark on the brace of a sub-select that is not the group, or a sub-select grouped by another
+            variable, `marked_groups_bind_record()` returns False.
+            """
             assert not marked_groups_bind_record(form)
 
     class TestEnginesToken:
         """`engines.TOKEN`"""
 
         def test_matches_no_iri_in_a_less_than_comparison(self):
+            """matches no IRI in a less-than comparison
+
+            From a text mixing `<3&&?y>1` and `?a<=?b` with the IRIs `<urn:a#b>` and `<>`, the token pattern that finds
+            IRIs yields those two IRIs and nothing from the comparisons.
+            """
             iris = [token.group() for token in TOKEN.finditer("FILTER (?x <3&&?y>1) ?s <urn:a#b> <> ?o FILTER (?a<=?b&&?b>=?c)")
                     if token.group().startswith("<")]
             assert iris == ["<urn:a#b>", "<>"]
@@ -614,15 +701,30 @@ class TestChecksOfTheQueryChecks:
 
         @pytest.mark.parametrize("form", sorted(NESTED))
         def test_returns_the_name_of(self, form):
+            """returns the name of the nested form
+
+            For each of five queries written with one nested form, `nested_forms()` returns a list holding that form's
+            name only.
+            """
             assert nested_forms(parseQuery(NESTED[form])) == [form]
 
         def test_returns_nothing_for_a_union_whose_branches_are_each_complete(self):
+            """returns nothing for a union whose branches are each complete
+
+            Given a UNION whose branches hold their own NOT EXISTS, OPTIONAL and sub-select, `nested_forms()` returns an
+            empty list, as no branch is joined to another pattern.
+            """
             assert nested_forms(parseQuery("""SELECT * WHERE {
               { ?a ?b ?c FILTER NOT EXISTS { ?a ?b ?d } OPTIONAL { ?a ?e ?f } }
               UNION { { SELECT ?a WHERE { ?a ?b ?c } } ?a ?d ?c }
             }""")) == []
 
         def test_returns_nothing_for_a_graph_around_a_whole_pattern(self):
+            """returns nothing for a graph around a whole pattern
+
+            Given a GRAPH whose braces hold a whole pattern, in a UNION branch, `nested_forms()` returns an empty list,
+            as the GRAPH is not inside an inner group.
+            """
             assert nested_forms(parseQuery("""SELECT * WHERE {
               { GRAPH ?g { ?a ?b ?c OPTIONAL { ?a ?e ?f } } ?g ?h ?i }
               UNION { VALUES ?a { <urn:x:a> } GRAPH ?g { ?a ?d ?c } }
@@ -632,6 +734,11 @@ class TestChecksOfTheQueryChecks:
         """`kinds_named_out_of_place()`"""
 
         def test_returns_a_type_named_by_a_derivation_or_by_a_question_of_another_kind(self):
+            """returns a type named by a derivation or by a question of another kind
+
+            Given an allergy type written in `derivations/entries.rq` and in a question about conditions, and a
+            medication type in a question about procedures, `kinds_named_out_of_place()` returns that type each time.
+            """
             allergy = URIRef("https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance")
             query = f"SELECT ?r WHERE {{ ?r a <{allergy}> }}"
             assert kinds_named_out_of_place("derivations/entries.rq", query) == {allergy}
@@ -641,7 +748,12 @@ class TestChecksOfTheQueryChecks:
             assert kinds_named_out_of_place("questions/pod/My procedures.rq", query) == {medication}
 
         def test_returns_nothing_for_a_view_or_a_question_named_for_the_kind(self):
-            """returns nothing for a view or a question named for the kind, singular or plural"""
+            """returns nothing for a view or a question named for the kind, singular or plural
+
+            Given the allergy, lab result and medication types in `questions/pod/My active allergies.rq`,
+            `views/allergies.rq`, `questions/pod/My lab results.rq` and `questions/pod/My medication history.rq`,
+            `kinds_named_out_of_place()` returns an empty set for each.
+            """
             allergy = URIRef("https://ns.cascadeprotocol.org/cascade#AllergyOrIntolerance")
             query = f"SELECT ?r WHERE {{ ?r a <{allergy}> }}"
             assert kinds_named_out_of_place("questions/pod/My active allergies.rq", query) == set()
@@ -657,9 +769,19 @@ class TestChecksOfTheQueryChecks:
 
         @pytest.mark.parametrize("form", sorted(RESTATING))
         def test_returns_the_name_of(self, form):
+            """returns the name of the restated absence
+
+            For each of three queries that work an absence out again (NOT EXISTS, MINUS, an OPTIONAL then a test that
+            its variable is unbound), `restated_absences()` returns a list holding that form's name only.
+            """
             assert restated_absences(RESTATING[form]) == [form]
 
         def test_returns_nothing_for_a_term_the_query_only_reads(self):
+            """returns nothing for a term the query only reads
+
+            Given an OPTIONAL over `dct:replaces` whose variable is never tested as unbound, `restated_absences()`
+            returns an empty list.
+            """
             assert restated_absences("""SELECT ?j ?by WHERE {
               ?j ?p ?o OPTIONAL { ?by <http://purl.org/dc/terms/replaces> ?j } FILTER (BOUND(?o)) }""") == []
 
@@ -667,17 +789,27 @@ class TestChecksOfTheQueryChecks:
         """`missing_prose()`"""
 
         def test_returns_no_prose_for_a_query_with_no_leading_comment(self):
-            """returns `no prose` for a query with no leading comment"""
+            """returns `no prose` for a query with no leading comment
+
+            `missing_prose()` is given a SELECT with no comment above it, and returns the string `no prose`.
+            """
             assert missing_prose("pod/Which file states each thing.rq", "SELECT ?s WHERE { ?s ?p ?o }") == "no prose"
 
         def test_returns_prose_opening_with_its_name(self):
-            """returns `prose opening with its name` for a comment that begins with the file's name"""
+            """returns `prose opening with its name` for a comment that begins with the file's name
+
+            `missing_prose()` is given a comment that starts with the words of the file's name, as `Which file states
+            each thing` and `Same pairs`, and returns the string `prose opening with its name` for each.
+            """
             query = "SELECT ?s WHERE { ?s ?p ?o }"
             assert missing_prose("pod/Which file states each thing.rq", "# Which file states each thing.\n" + query) == \
                 "prose opening with its name"
             assert missing_prose("derivations/same-pairs.rq", "# Same pairs: ...\n" + query) == "prose opening with its name"
 
         def test_returns_none_for_prose_that_opens_otherwise(self):
-            """returns None for prose that opens otherwise"""
+            """returns None for prose that opens otherwise
+
+            `missing_prose()` is given a comment whose first words are not the file's name, and returns None.
+            """
             query = "SELECT ?s WHERE { ?s ?p ?o }"
             assert missing_prose("pod/Which file states each thing.rq", "# Each file is its own graph.\n" + query) is None

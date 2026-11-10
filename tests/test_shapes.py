@@ -236,6 +236,11 @@ class TestShapesThatFindAWrongPod:
     class TestGivenAShapeCase:
         @pytest.mark.parametrize("name", sorted(cases()))
         def test_reports_exactly_the_results_the_manifest_lists_for_it(self, name):
+            """reports exactly the results the manifest lists for it
+
+            For each shape case, the (shape, property) pairs that validating it reports are compared with the pairs its
+            manifest entry lists, and the severity the manifest pins for a pair is compared with the severity reported.
+            """
             expected, found = cases()[name][1], reported()[name]
             assert found == expected, {"expected": sorted(map(str, expected)), "reported": sorted(map(str, found))}
             unpinned = {str(key): sorted(map(str, severity)) for key, severity in severity_pins()[name].items()
@@ -248,6 +253,11 @@ class TestShapesThatFindAWrongPod:
             assert {file for file in CASES.rglob("*.ttl") if file.name != "manifest.ttl"} == {f for f, _ in cases().values()}
 
         def test_says_that_a_case_conforms_exactly_when_it_lists_no_result_for_it(self):
+            """says that a case conforms exactly when it lists no result for it
+
+            Each manifest entry's `sh:conforms` is compared with whether it lists any result: true if none, false
+            otherwise.
+            """
             manifest = parsed(CASES / "manifest.ttl")
             conforms = {str(entry).rpartition("#")[2]: manifest.value(manifest.value(entry, MF.result), SH.conforms)
                         for entry in manifest.subjects(RDF.type, SHT.Validate)}
@@ -270,11 +280,22 @@ class TestShapesThatFindAWrongPod:
     class TestGivenAnyFixture:
         @every_fixture
         def test_conforms_to_the_shapes(self, fixture):
+            """conforms to the shapes
+
+            Each fixture's files, as one graph, are validated against all the shapes, and the validation must report no
+            result.
+            """
             conforms, _, text = validate(fixture_pod(fixture), shacl_graph=shapes())
             assert conforms, text
 
     class TestGivenAnyFixtureOrValidCase:
         def test_takes_every_subject_of_a_kind_the_shapes_cover_as_a_focus_node_of_its_shape(self):
+            """takes every subject of a kind the shapes cover as a focus node of its shape
+
+            For every fixture and valid shape case, each instance of a class of this vocabulary, and each subject of a
+            property only one shape constrains, is compared with the targets of the shapes; any subject no shape picks
+            as a focus node fails, as it would go unchecked.
+            """
             pods = {fixture.name: fixture_pod(fixture) for fixture in FIXTURES}
             pods |= {name: parsed(file) for name, (file, expected) in cases().items() if not expected}
             assert {name: sorted(found) for name, data in pods.items() if (found := untargeted(data))} == {}
@@ -345,6 +366,11 @@ class TestNameShapes:
             assert {str(node) for node in report.objects(None, SH.focusNode)} == {vector.expected for vector in found}
 
         def test_leaves_alone_an_address_that_holds_a_delete_character(self):
+            """leaves alone an address that holds a delete character
+
+            A record whose `cascade:sourceUrl` holds the control character U+007F is validated against the shapes, and
+            conforms: the name shape does not report it.
+            """
             pod = Graph()
             pod.add((URIRef("urn:uuid:11111111-1111-8111-8111-111111111106"), CASCADE.sourceUrl,
                      URIRef("https://fhir.example/r4\x7f/Observation/obs-9")))
@@ -377,6 +403,11 @@ class TestNameShapes:
 
         @pytest.mark.parametrize("kit", KITS, ids=lambda kit: kit.name)
         def test_reports_no_record_named_otherwise_than_its_source_address_gives(self, kit):
+            """reports no record named otherwise than its source address gives
+
+            For each kit, its scripted input and expected files are validated against the record name shape alone; no
+            record may be reported by `cascade:ServerRecordNameShape`.
+            """
             pod = Graph()
             for folder in ("scripted-input", "expected"):
                 for file in sorted((kit / folder).rglob("*.ttl")):
@@ -398,7 +429,11 @@ class TestHl7CodeShapes:
     class TestGivenOneOfTheThreeCodeSystems:
         @HL7_SYSTEM_FILES
         def test_is_declared_with_the_url_that_hl7_publishes_it_under(self, system, file):
-            """is declared with the URL that HL7 publishes it under"""
+            """is declared with the URL that HL7 publishes it under
+
+            The `url` in HL7's published code system file is compared with the `cascade:codingSystemUri` the ontology
+            gives the matching code system.
+            """
             published = json.loads((ROOT / "tests" / "terminology" / "hl7-terminology" / file).read_text(encoding="utf-8"))
             assert published["url"] == str(ontology().value(system, CASCADE.codingSystemUri))
 

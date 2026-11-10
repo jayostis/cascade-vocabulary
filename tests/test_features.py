@@ -162,6 +162,11 @@ class TestFeatureFiles:
             assert silent == []
 
         def test_parses_every_query_written_inline_in_an_example(self):
+            """parses every query written inline in an example
+
+            Each doc string argument of a step in any example, which is a SPARQL query, is parsed after the shared
+            prefixes; one that does not parse fails, named with the start of the error.
+            """
             broken = []
             for path, _, pickles in documents():
                 for pickle in pickles:
@@ -178,7 +183,11 @@ class TestFeatureFiles:
         """given the kits' features"""
 
         def test_has_for_every_planted_case_a_kit_names_a_rule_with_an_example(self):
-            """has, for every planted case a kit names, a rule with an example"""
+            """has, for every planted case a kit names, a rule with an example
+
+            A kit's feature file says `planted cases X1 to Xn`; each number from 1 to n must head a rule of that feature
+            whose name starts with that letter and number and which has an example.
+            """
             planted, shown = {}, {}
             for kit in KITS:
                 feature = Parser().parse((kit / f"{kit.name}.feature").read_text(encoding="utf-8"))["feature"]
@@ -229,7 +238,12 @@ class TestRuleLists:
                                   ("tables/app-new-rules", "matcher/same-code-and-date.rq")}
 
         def test_reads_a_tables_rows_exactly_when_its_row_names_one_table_kind(self):
-            """reads a table's rows exactly when its row names one table kind, joined on that kind"""
+            """reads a table's rows exactly when its row names one table kind, joined on that kind
+
+            For each rule list row, its query reads `GRAPH ?origin` exactly when the row names a table kind, and then
+            joins `?origin prov:specializationOf/cascade:tableKind` on that one kind outside any graph, OPTIONAL or
+            UNION.
+            """
             lists = rule_lists()
             assert lists
             unguarded = {(path, str(rows.value(row, CASCADE.queryPath))) for path, rows in lists.items()
@@ -250,6 +264,11 @@ class TestChecksOfTheRuleListCheck:
         """`guarded()`"""
 
         def test_accepts_a_query_that_joins_the_guard_on_the_one_kind_its_row_names(self):
+            """accepts a query that joins the guard on the one kind its row names
+
+            Given a query that joins `?origin prov:specializationOf/cascade:tableKind` on the vaccine groups kind and
+            reads `GRAPH ?origin`, and a row naming that kind, `guarded()` is true.
+            """
             query = ("SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . "
                      "GRAPH ?origin { ?s ?p ?o } }")
             assert guarded(frozenset({CASCADE.VaccineGroups}), PREFIXES + query)
@@ -269,4 +288,9 @@ class TestChecksOfTheRuleListCheck:
         ], ids=["a guard only in a comment", "a guard on another kind", "a guard with no kind in the row",
                 "a row naming two kinds", "a guard inside an OPTIONAL", "a guard written as two triples"])
         def test_refuses(self, kinds, query):
+            """refuses a query that only seems to join the guard
+
+            Given a guard only in a comment, on another kind than the row names, with no kind in the row, with two kinds
+            in the row, inside an OPTIONAL, or written as two triples, `guarded()` is false.
+            """
             assert not guarded(frozenset(kinds), PREFIXES + query)

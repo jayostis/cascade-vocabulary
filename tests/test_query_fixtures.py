@@ -100,14 +100,23 @@ class TestWhatEachQueryGives:
 
         @pytest.mark.parametrize("fixture, entry", ENTRIES)
         def test_gives_the_rows_the_manifest_expects_on_each_engine(self, fixture, entry):
-            """gives the rows the manifest expects, on each engine"""
+            """gives the rows the manifest expects, on each engine
+
+            For each query a fixture's manifest lists, the fixture is built on Oxigraph and on rdflib under the entry's
+            lens, the query is run on each, and its rows are compared with the entry's expected result; an engine that
+            gives other rows fails.
+            """
             stores = {engine: built_once(fixture, engine, lens_name(entry.lens)).store for engine in sorted(ENGINES)}
             failed = {engine: why for engine, store in stores.items() if (why := failure(entry, store))}
             assert not failed, "\n\n".join(f"on {engine}:\n{why}" for engine, why in failed.items())
 
         @pytest.mark.parametrize("fixture, entry", ORDERED_ENTRIES)
         def test_gives_an_ordered_querys_rows_in_one_order_on_both_engines(self, fixture, entry):
-            """gives an ordered query's rows in one order on both engines"""
+            """gives an ordered query's rows in one order on both engines
+
+            For each manifest entry whose query has an ORDER BY, the rows from Oxigraph and from rdflib are compared as
+            lists: they must be equal row for row, not only as sets.
+            """
             stores = {engine: built_once(fixture, engine, lens_name(entry.lens)).store for engine in sorted(ENGINES)}
             text = Path(entry.query).read_text(encoding="utf-8")
             one, other = (store.select(text) for store in stores.values())
@@ -127,6 +136,12 @@ class TestWhatEachQueryGives:
 
     class TestGivenTheFixturesTogether:
         def test_leaves_no_query_without_a_fixture_over_which_it_adds_a_triple_or_gives_a_row(self):
+            """leaves no query without a fixture over which it adds a triple or gives a row
+
+            Takes every derivation, lens, view and question or comparison, and strikes off each that, over some fixture,
+            adds a triple to the derived state, makes a view file hold a subject of its own, or (under a lens that
+            matters there) gives rows; any query left unstruck is never shown to do anything by a fixture.
+            """
             quiet = {*derivations(LENSES[0]), *named("lenses").values(), *built().values(), *ASKED.values()}
             for fixture in FIXTURES:
                 for lens in LENSES:
@@ -149,6 +164,11 @@ class TestDerivedStateOnTwoEngines:
     class TestGivenAnyFixture:
         @every_fixture
         def test_builds_the_same_derived_state_and_the_same_files_on_both_engines(self, fixture):
+            """builds the same derived state and the same files on both engines
+
+            Each fixture is built on Oxigraph and on rdflib, under every lens if it holds a judgment and under the first
+            otherwise; the triples each derivation adds, and the files written, are compared between the two builds.
+            """
             judged = holds_a_judgment(fixture)
             for lens in LENSES if judged else LENSES[:1]:
                 one, other = (built_once(fixture, engine, lens) for engine in sorted(ENGINES))
@@ -157,10 +177,20 @@ class TestDerivedStateOnTwoEngines:
 
         @every_fixture
         def test_differs_between_the_lenses_only_when_the_pod_holds_a_judgment(self, fixture):
+            """differs between the lenses only when the pod holds a judgment
+
+            A fixture with no judgment must have one derived state under every lens, so the lenses that differ over it
+            are the first lens alone.
+            """
             assert holds_a_judgment(fixture) or lenses_that_differ(fixture) == LENSES[:1]
 
         @every_fixture
         def test_adds_only_triples_that_no_file_of_the_pod_states(self, fixture):
+            """adds only triples that no file of the pod states
+
+            For each lens, the triples the derivations add are compared with the triples of the fixture's own files: the
+            added set is not empty, and shares no triple with them.
+            """
             for lens in LENSES:
                 build = built_once(fixture, "oxigraph", lens)
                 files = set().union(*(build.store.triples(ADDRESS + path) for path in fixture.files()))
@@ -190,6 +220,11 @@ class TestWhatIsTrueOfAnyPod:
 
         @every_fixture
         def test_leaves_a_record_out_of_every_view_exactly_when_a_derivation_recorded_a_reason(self, fixture):
+            """leaves a record out of every view exactly when a derivation recorded a reason
+
+            Under each lens, a record that is in a view (`cascade:inEntry`) and one that has a recorded reason to be
+            left out (`cascade:leftOutFor`) are the same as each other: none has both or neither.
+            """
             for lens in LENSES:
                 assert built_once(fixture, "oxigraph", lens).store.select(SHOWN_AND_LEFT_OUT_ALIKE) == [], lens
 
@@ -214,7 +249,12 @@ class TestWhatIsTrueOfAnyPod:
 
         @every_fixture
         def test_reads_a_persons_judgment_exactly_when_the_everyday_lens_counts_it(self, fixture):
-            """reads a person's judgment in `derivations/revision-judgments.rq` exactly when the everyday lens counts it"""
+            """reads a person's judgment in `derivations/revision-judgments.rq` exactly when the everyday lens counts it
+
+            Each person-attributed judgment gets probe triples for three verdicts (erroneous, before, clock-discounted);
+            the judgments `revision-judgments.rq` writes a result for are compared with those the everyday lens marks as
+            counted, and must be the same set for each verdict.
+            """
             store = ENGINES["oxigraph"]()
             for path in fixture.files():
                 store.load(fixture.folder / path, ADDRESS + path)
@@ -294,6 +334,11 @@ class TestChecksOfTheFixtureTools:
             assert used_by_no_activity(store) == []
 
         def test_returns_a_thing_that_uses_something_and_is_no_act(self):
+            """returns a thing that uses something and is no act
+
+            Given an act that uses a thing and that thing using the act in turn, `used_by_no_activity()` returns exactly
+            one subject: the thing.
+            """
             act, thing = URIRef("urn:cascade:act:1"), URIRef("urn:cascade:thing:1")
             store = Oxigraph()
             store.add([(act, RDF.type, CASCADE.MatcherRun), (act, PROV.used, thing), (thing, PROV.used, act)])
