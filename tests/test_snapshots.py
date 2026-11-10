@@ -32,7 +32,8 @@ class TestSnapshotVectors:
 
     Every act leaves a snapshot, named from the act, its description, the snapshots before it and a set hash: one hash
     of the files the pod then holds, which can be kept up as files come and go. The set hash is MuHash3072, as Bitcoin
-    Core computes it; these vectors are chains of snapshots worked out by the reference implementation.
+    Core computes it; these vectors are runs of snapshots, each after the one before, worked out by the reference
+    implementation.
 
     @rule naming N14
     """
