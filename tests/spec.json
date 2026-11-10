@@ -1,0 +1,397 @@
+{
+  "about": "The vocabulary's own tests: what its queries, shapes, fixtures, features and kits are held to, beside the rules a runtime runs. Each heading names the files it is about.",
+  "shaped": [
+    "test_features.py",
+    "test_kit_narrative.py",
+    "test_queries.py",
+    "test_query_fixtures.py",
+    "test_shapes.py"
+  ],
+  "capabilities": [
+    "Named questions an app asks a pod · queries/questions/",
+    "What each query gives over a small pod · tests/fixtures/*/manifest.ttl",
+    "What is true of any pod once its derivations have run · queries/derivations/, ontologies/cascade.ttl",
+    "Shapes that find a wrong pod · ontologies/*.shapes.ttl, tests/shape-cases/",
+    "Terms declared for everything a pod writes · ontologies/*.ttl",
+    "Shapes that check a name against the address it comes from · cascade:ServerRecordNameShape, cascade:ServerNameShape",
+    "Shapes that list the codes of an HL7 code system · cascade:DataAbsentReasonCodeShape, cascade:NullFlavorCodeShape, cascade:ObservationInterpretationCodeShape",
+    "The order a runtime runs the derivations and a lens in · queries/derivations/, queries/lenses/, ro-crate-metadata.json",
+    "Derived state two engines build alike · queries/derivations/, queries/lenses/, queries/views/",
+    "Matcher comparisons a runtime binds to records · queries/matcher/, runtime/rule-list/",
+    "Rule lists the features and kits carry · runtime/rule-list/, **/references/*.ttl",
+    "Feature files any runtime can run · runtime/*.feature, conformance/*/*.feature, runtime/steps.md",
+    "C-CDA sections a kit's saved output accounts for · conformance/*/scripted-input/*/downloads/, runtime/scripted-input/*/downloads/",
+    "Kinds of record in the queries · queries/derivations/records.rq, queries/views/",
+    "The form every query is written in · queries/**/*.rq"
+  ],
+  "build": [
+    "Checks of the checks on a query's text · tests/test_queries.py",
+    "Checks of the fixtures' own tools · tests/engines.py, tests/manifests.py",
+    "Checks of the shape cases' own tools · tests/test_shapes.py",
+    "Checks of the checks on a rule list · tests/test_features.py",
+    "Checks of the check on a kit's narrative · tests/test_kit_narrative.py"
+  ],
+  "glossary": [
+    {
+      "term": "act",
+      "definition": "one thing done to a pod that writes files to it: an import, an entry session, a connection to a hospital's server, or a run of the matcher.",
+      "vocabulary": "http://www.w3.org/ns/prov#Activity",
+      "aliases": [
+        "acts"
+      ]
+    },
+    {
+      "term": "adapter",
+      "definition": "the program that converts an export into records; `import` loads it on first use.",
+      "aliases": [
+        "adapters"
+      ]
+    },
+    {
+      "term": "C-CDA",
+      "definition": "Consolidated Clinical Document Architecture: HL7's standard for the XML summary documents patient portals hand out."
+    },
+    {
+      "term": "code system",
+      "aliases": [
+        "code systems"
+      ],
+      "definition": "a published list of codes for one kind of thing, such as RxNorm for medicines, LOINC for lab tests and SNOMED CT for clinical findings."
+    },
+    {
+      "term": "coding",
+      "aliases": [
+        "codings"
+      ],
+      "definition": "one code from one code system, as a record states it."
+    },
+    {
+      "term": "comparison",
+      "aliases": [
+        "comparisons"
+      ],
+      "definition": "a query the matcher runs to find records that are one thing; a rule list names each by its path under `queries/matcher/`."
+    },
+    {
+      "term": "derivation",
+      "aliases": [
+        "derivations"
+      ],
+      "definition": "a query whose answer a runtime adds to a pod's derived state, such as the one that says which version of a record is current."
+    },
+    {
+      "term": "derived state",
+      "definition": "what the derivations and one lens add to a pod's files: statements worked out from them, which the views and questions read."
+    },
+    {
+      "term": "download",
+      "definition": "a file of a person's records as a hospital's server or portal gave it, before any import: FHIR resources in JSON, or a C-CDA document.",
+      "aliases": [
+        "downloads"
+      ]
+    },
+    {
+      "term": "engine",
+      "aliases": [
+        "engines"
+      ],
+      "definition": "a program that runs SPARQL; the tests run every query on two, Oxigraph and rdflib."
+    },
+    {
+      "term": "example",
+      "aliases": [
+        "examples"
+      ],
+      "definition": "one scenario of a feature: a few lines beginning Given, When or Then, which a runtime runs."
+    },
+    {
+      "term": "feature",
+      "aliases": [
+        "features"
+      ],
+      "definition": "a file of rules and examples in Gherkin, the plain-text format Cucumber reads; the rules of a pod are written as features."
+    },
+    {
+      "term": "fixture",
+      "aliases": [
+        "fixtures"
+      ],
+      "definition": "a small hand-made pod under `tests/fixtures/`, with a manifest of the rows that queries give over it; each shows one behaviour."
+    },
+    {
+      "term": "focus node",
+      "aliases": [
+        "focus nodes"
+      ],
+      "definition": "in SHACL, a thing a shape is checked against."
+    },
+    {
+      "term": "group",
+      "aliases": [
+        "groups"
+      ],
+      "definition": "in SPARQL, the patterns between one pair of braces."
+    },
+    {
+      "term": "HL7",
+      "definition": "Health Level Seven, the body that publishes FHIR, C-CDA and the code systems they use."
+    },
+    {
+      "term": "IRI",
+      "aliases": [
+        "IRIs"
+      ],
+      "definition": "a web-style identifier, such as `https://ns.cascadeprotocol.org/cascade#Record`; every term and every record is named by one."
+    },
+    {
+      "term": "judgment",
+      "definition": "a conclusion about records, made by a person or by a machine.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#Judgment",
+      "aliases": [
+        "judgments",
+        "judge",
+        "judges",
+        "judged"
+      ]
+    },
+    {
+      "term": "kind",
+      "aliases": [
+        "kinds"
+      ],
+      "definition": "of record: what a record is, such as an allergy or a lab result; `queries/derivations/records.rq` lists them. Of question: `entry`, `record`, `judgment` or `profile`, the one thing a question outside `pod` is about."
+    },
+    {
+      "term": "kit",
+      "definition": "a story and the exports it uses, which the vocabulary carries for testing, such as `alex-rivera`.",
+      "aliases": [
+        "kits"
+      ]
+    },
+    {
+      "term": "lens",
+      "definition": "a choice of which judgments count when a question is answered: `everyday` is the default, and `export` is stricter, for records sent elsewhere.",
+      "aliases": [
+        "lenses"
+      ]
+    },
+    {
+      "term": "manifest",
+      "aliases": [
+        "manifests"
+      ],
+      "definition": "a Turtle file listing tests in the W3C's test vocabulary: for a fixture, each query and the rows it must give; for the shape cases, each file and what validating it reports."
+    },
+    {
+      "term": "matcher",
+      "definition": "the part of a runtime that compares a pod's records and writes a Same for those its rules find to be one thing, such as one allergy reported by two sources.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#CascadeMatcher",
+      "aliases": [
+        "matchers"
+      ]
+    },
+    {
+      "term": "named question",
+      "definition": "a query the vocabulary carries under a name, such as `pod/My active allergies`.",
+      "aliases": [
+        "named questions"
+      ]
+    },
+    {
+      "term": "namespace",
+      "aliases": [
+        "namespaces"
+      ],
+      "definition": "the common beginning of a vocabulary's IRIs, such as `https://ns.cascadeprotocol.org/cascade#`."
+    },
+    {
+      "term": "naming rule",
+      "aliases": [
+        "naming rules"
+      ],
+      "definition": "a query the vocabulary publishes that gives the name of a thing from what it is made from, such as a record's name from its address on a server."
+    },
+    {
+      "term": "ontology file",
+      "aliases": [
+        "ontology files"
+      ],
+      "definition": "a Turtle file under `ontologies/` that declares terms."
+    },
+    {
+      "term": "phrase",
+      "aliases": [
+        "phrases"
+      ],
+      "definition": "the wording of a Given, a When or a Then, with its parameters in braces; `runtime/steps.md` lists every one a feature may use."
+    },
+    {
+      "term": "placeholder",
+      "aliases": [
+        "placeholders"
+      ],
+      "definition": "a stand-in name a query gives a view entry, `urn:cascade:entry:` and a hash, until a runtime writes the entry's real name."
+    },
+    {
+      "term": "planted case",
+      "aliases": [
+        "planted cases"
+      ],
+      "definition": "a difficulty put into a kit's data on purpose, numbered such as P7, with a rule and an example that show how a pod handles it."
+    },
+    {
+      "term": "pod",
+      "definition": "one person's records, and what that person has said about them, kept as files in one folder.",
+      "aliases": [
+        "pods"
+      ]
+    },
+    {
+      "term": "position",
+      "aliases": [
+        "positions"
+      ],
+      "definition": "a derivation's place in the order a runtime runs them, a number the root crate gives it."
+    },
+    {
+      "term": "prefix",
+      "aliases": [
+        "prefixes"
+      ],
+      "definition": "a short name a file declares for a namespace, such as `cascade:`."
+    },
+    {
+      "term": "prose",
+      "definition": "the comment a query file opens with, saying what its rows are; the site shows it beside the query."
+    },
+    {
+      "term": "record",
+      "definition": "one thing said about a person's health, such as an allergy, a medication or a lab result.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#Record",
+      "aliases": [
+        "records"
+      ]
+    },
+    {
+      "term": "root crate",
+      "definition": "`ro-crate-metadata.json`, the file at the vocabulary's root that lists its files in the RO-Crate format."
+    },
+    {
+      "term": "rule",
+      "definition": "a numbered requirement in the vocabulary that every runtime must meet, such as A14 in `runtime/arrivals.feature`; a heading on this page links the rules its API reaches.",
+      "aliases": [
+        "rules"
+      ]
+    },
+    {
+      "term": "rule list",
+      "definition": "the vocabulary's list of what the matcher compares, each line naming a query and the table kind it reads; it has versions, as a reference table has.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#RuleListRow",
+      "aliases": [
+        "rule lists"
+      ]
+    },
+    {
+      "term": "runtime",
+      "definition": "software that reads and writes pods as the vocabulary requires.",
+      "aliases": [
+        "runtimes"
+      ]
+    },
+    {
+      "term": "saved output",
+      "definition": "the records an adapter made of a kit's download, kept in the kit beside the download."
+    },
+    {
+      "term": "section",
+      "aliases": [
+        "sections"
+      ],
+      "definition": "a part of a C-CDA document with a title, such as Allergies: text for a person to read, and coded statements."
+    },
+    {
+      "term": "server vector",
+      "aliases": [
+        "server vectors"
+      ],
+      "definition": "a worked example of a naming rule for a server or a record pulled from one: its inputs and the name they give."
+    },
+    {
+      "term": "shape case",
+      "aliases": [
+        "shape cases"
+      ],
+      "definition": "a small Turtle file under `tests/shape-cases/`, valid or broken in one way, with what validating it reports."
+    },
+    {
+      "term": "shapes",
+      "definition": "the vocabulary's requirements on what a record, a judgment or a file of a pod must state, written in SHACL, the W3C language for checking data.",
+      "vocabulary": "https://www.w3.org/TR/shacl/"
+    },
+    {
+      "term": "SPARQL",
+      "definition": "the W3C query language for data written as statements, as Turtle writes them.",
+      "vocabulary": "https://www.w3.org/TR/sparql11-query/"
+    },
+    {
+      "term": "sub-select",
+      "aliases": [
+        "sub-selects"
+      ],
+      "definition": "a SELECT written inside another query's group."
+    },
+    {
+      "term": "symmetric property",
+      "aliases": [
+        "symmetric properties"
+      ],
+      "definition": "a term declared to hold both ways: if A is the same as B, B is the same as A."
+    },
+    {
+      "term": "table kind",
+      "definition": "what a reference table's rows say, such as product ingredients or vaccine groups; the vocabulary declares each kind.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#TableKind",
+      "aliases": [
+        "table kinds"
+      ]
+    },
+    {
+      "term": "term",
+      "definition": "one word the vocabulary defines, named by an IRI, a web-style identifier such as `https://ns.cascadeprotocol.org/cascade#allergen`.",
+      "aliases": [
+        "terms"
+      ]
+    },
+    {
+      "term": "Turtle",
+      "definition": "a W3C text format for writing statements in the vocabulary's terms.",
+      "vocabulary": "https://www.w3.org/TR/turtle/"
+    },
+    {
+      "term": "view",
+      "definition": "a pod's records of one kind, such as medications, as its judgments leave them: one line for each thing however many sources reported it. A named question such as `pod/My medication history` returns a view's rows.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#View",
+      "aliases": [
+        "views"
+      ]
+    },
+    {
+      "term": "view entry",
+      "definition": "one thing in a view, such as one medication or one lab result: the records that are one thing, shown as one. A row names it in `entry`, by an IRI that ends in `#` and 64 hexadecimal digits.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#inEntry",
+      "aliases": [
+        "view entries",
+        "entry",
+        "entries"
+      ]
+    },
+    {
+      "term": "vocabulary",
+      "definition": "cascade-vocabulary, the project that defines the words health data is written in, the requirements every pod meets, and a set of ready-made questions.",
+      "vocabulary": "https://ns.cascadeprotocol.org/cascade#",
+      "aliases": [
+        "vocabularies"
+      ]
+    }
+  ]
+}
