@@ -13,6 +13,7 @@ jobs:
       - run: python3 -m pip install -r requirements.txt
       - name: collect the seven case ids
         run: |
+          set +e
           python3 -m pytest --collect-only -q -p no:xdist > all.txt || true
           { grep 'record-server-name/name-tampered' all.txt | grep 'test_shapes' | grep 'reports_exactly'
             grep 'test_puts_every_sub_select_first_in_its_group' all.txt
@@ -22,7 +23,7 @@ jobs:
             grep 'test_passes_every_value_it_adds_after' all.txt
             grep 'test_reads_a_tables_rows_exactly_when' all.txt
           } > cases.txt
-          cat cases.txt
+          cat cases.txt; wc -l cases.txt; grep -i "shacl" all.txt | head -5; grep -c . all.txt; exit 0
       - name: A. whole suite, one process, cold
         run: python3 -m pytest -n 0 --durations=0 -q -p no:cacheprovider 2>&1 | tail -150
       - name: B. each case alone, cold process
