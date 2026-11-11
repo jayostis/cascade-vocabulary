@@ -49,18 +49,20 @@ def prepared(query):
 
 
 @lru_cache(maxsize=None)
-def translated_once(query, base, namespaces):
+def translated_once(query, base, namespaces, normalized):
     return translateQuery(parseQuery(query), base, dict(namespaces) if namespaces else None)
 
 
 def parse_each_query_once():
-    """pyshacl hands a SPARQL constraint's text to rdflib for every focus node, and rdflib parses it each time: a shapes
-    run parses the same seven queries two hundred times. A query evaluates the same from one translation."""
+    """pyshacl hands a SPARQL constraint's text to rdflib for every focus node, and rdflib parses it each time; a query
+    evaluates the same from one translation."""
     evaluate = SPARQLProcessor.query
 
     def query(self, strOrQuery, initBindings=None, initNs=None, base=None, DEBUG=False):
         if isinstance(strOrQuery, str):
-            strOrQuery = translated_once(strOrQuery, base, tuple(sorted(initNs.items())) if initNs else None)
+            strOrQuery = translated_once(
+                strOrQuery, base, tuple(sorted(initNs.items())) if initNs else None, rdflib.NORMALIZE_LITERALS
+            )
         return evaluate(self, strOrQuery, initBindings, initNs, base, DEBUG)
 
     SPARQLProcessor.query = query
