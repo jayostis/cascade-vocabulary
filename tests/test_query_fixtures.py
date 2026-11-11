@@ -14,7 +14,27 @@ LENSES = sorted(named("lenses"))
 JUDGMENT = "https://ns.cascadeprotocol.org/cascade#Judgment"
 ASKED = {**questions(), **{f"matcher/{name}": relative for name, relative in named("matcher").items()}}
 ORDERED = {(QUERIES / relative).resolve() for relative in ASKED.values() if "ORDER BY" in query(relative)}
-ENTRIES = [on_its_worker(fixture, entry, id=f"{fixture.name}-{entry.name}", says=f"{fixture.comment} {entry.comment}")
+
+
+def entry_id(fixture, entry):
+    """What a case's id says once of the fixture and its entry. Ignoring a leading `matcher-` and `the-`, an entry whose
+    words run inside the fixture's is the fixture's name; a fixture whose words run inside the entry's is the entry's
+    name, behind `matcher-` for a matcher fixture; any other pair is joined. No name is cut."""
+    def words(name):
+        return name.removeprefix("matcher-").removeprefix("the-").split("-")
+
+    def runs_inside(inner, outer):
+        return any(outer[start:start + len(inner)] == inner for start in range(len(outer) - len(inner) + 1))
+
+    said, entered = words(fixture.name), words(entry.name)
+    if runs_inside(entered, said):
+        return fixture.name
+    if runs_inside(said, entered):
+        return f"matcher-{entry.name}" if fixture.name.startswith("matcher-") and not entry.name.startswith("matcher-") else entry.name
+    return f"{fixture.name}-{entry.name}"
+
+
+ENTRIES = [on_its_worker(fixture, entry, id=entry_id(fixture, entry), says=f"{fixture.comment} {entry.comment}")
            for fixture in FIXTURES for entry in entries(fixture.manifest)]
 
 
@@ -369,3 +389,17 @@ class TestChecksOfTheFixtureTools:
             result.write_text('{"head": {"vars": ["z"]}, "results": {"bindings": []}}', encoding="utf-8")
             entry = Entry(iri="urn:x:e", name="e", types=frozenset(), lens=None, query=query, result=result)
             assert "variables" in (failure(entry, ENGINES["oxigraph"]()) or "")
+
+    class TestQueryFixtureIds:
+        """`entry_id()`"""
+
+        def test_joins_no_two_names_when_one_contains_the_other_and_keeps_each_id_unique_and_under_120_characters(self):
+            """joins no fixture name to an entry name when one contains the other, keeps each id under 120 characters, and gives no two cases one id"""
+            def bare(name):
+                return name.removeprefix("matcher-").removeprefix("the-")
+            ids = [case.id for case in ENTRIES]
+            joined = [case.id for case in ENTRIES
+                      if case.id == f"{case.values[0].name}-{case.values[1].name}"
+                      and (f"-{bare(case.values[1].name)}-" in f"-{bare(case.values[0].name)}-"
+                           or f"-{bare(case.values[0].name)}-" in f"-{bare(case.values[1].name)}-")]
+            assert not joined and not [i for i in ids if len(i) >= 120] and len(set(ids)) == len(ids)
