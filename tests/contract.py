@@ -38,6 +38,7 @@ def file_stem(name):
     return base64.urlsafe_b64decode(digest + "=" * (-len(digest) % 4)).hex()
 
 
+@cache
 def query(relative):
     return (QUERIES / relative).read_text(encoding="utf-8")
 

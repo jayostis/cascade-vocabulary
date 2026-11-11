@@ -1,6 +1,9 @@
 import pytest
 
+from engines import parse_each_query_once
 from page import page_properties
+
+parse_each_query_once()
 
 
 @pytest.hookimpl(tryfirst=True)
