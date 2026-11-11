@@ -14,18 +14,24 @@ LENSES = sorted(named("lenses"))
 JUDGMENT = "https://ns.cascadeprotocol.org/cascade#Judgment"
 ASKED = {**questions(), **{f"matcher/{name}": relative for name, relative in named("matcher").items()}}
 ORDERED = {(QUERIES / relative).resolve() for relative in ASKED.values() if "ORDER BY" in query(relative)}
+
+
 def entry_id(fixture, entry):
-    """What a case's id says once of the fixture and its entry. A matcher fixture's entries are named for the fixture's
-    own words, so an entry that begins with them is the id; one that begins or ends with two words or more of them adds
-    what it does not repeat to the fixture's name; any other entry is joined to the fixture's name."""
-    said, words = fixture.name.removeprefix("matcher-").split("-"), entry.name.split("-")
-    if words[:len(said)] == said:
-        return entry.name
-    size = range(min(len(said), len(words)), 1, -1)
-    begun = next((n for n in size if said[:n] == words[:n]), 0)
-    ended = next((n for n in size if said[-n:] == words[-n:]), 0)
-    left = words[begun:] if begun else words[:len(words) - ended]
-    return "-".join([fixture.name, *(left if left != ["the"] else [])])
+    """What a case's id says once of the fixture and its entry. Ignoring a leading `matcher-` and `the-`, an entry whose
+    words run inside the fixture's is the fixture's name; a fixture whose words run inside the entry's is the entry's
+    name, behind `matcher-` for a matcher fixture; any other pair is joined. No name is cut."""
+    def words(name):
+        return name.removeprefix("matcher-").removeprefix("the-").split("-")
+
+    def runs_inside(inner, outer):
+        return any(outer[start:start + len(inner)] == inner for start in range(len(outer) - len(inner) + 1))
+
+    said, entered = words(fixture.name), words(entry.name)
+    if runs_inside(entered, said):
+        return fixture.name
+    if runs_inside(said, entered):
+        return f"matcher-{entry.name}" if fixture.name.startswith("matcher-") and not entry.name.startswith("matcher-") else entry.name
+    return f"{fixture.name}-{entry.name}"
 
 
 ENTRIES = [on_its_worker(fixture, entry, id=entry_id(fixture, entry), says=f"{fixture.comment} {entry.comment}")
@@ -385,10 +391,15 @@ class TestChecksOfTheFixtureTools:
             assert "variables" in (failure(entry, ENGINES["oxigraph"]()) or "")
 
     class TestQueryFixtureIds:
-        """The ids of the cases over a fixture's manifest"""
+        """`entry_id()`"""
 
-        def test_says_each_fixture_once_and_keeps_each_id_under_100_characters(self):
-            """says no phrase twice in an id, keeps it under 100 characters, and gives no two cases one id"""
+        def test_joins_no_two_names_when_one_contains_the_other_and_keeps_each_id_unique_and_under_100_characters(self):
+            """joins no fixture name to an entry name when one contains the other, keeps each id under 100 characters, and gives no two cases one id"""
+            def bare(name):
+                return name.removeprefix("matcher-").removeprefix("the-")
             ids = [case.id for case in ENTRIES]
-            said_twice = [i for i in ids if any(count > 1 for count in Counter(zip(*(i.split("-")[n:] for n in range(3)))).values())]
-            assert not said_twice and not [i for i in ids if len(i) >= 100] and len(set(ids)) == len(ids)
+            joined = [case.id for case in ENTRIES
+                      if case.id == f"{case.values[0].name}-{case.values[1].name}"
+                      and (f"-{bare(case.values[1].name)}-" in f"-{bare(case.values[0].name)}-"
+                           or f"-{bare(case.values[0].name)}-" in f"-{bare(case.values[1].name)}-")]
+            assert not joined and not [i for i in ids if len(i) >= 100] and len(set(ids)) == len(ids)
