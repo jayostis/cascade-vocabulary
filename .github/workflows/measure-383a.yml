@@ -1,0 +1,39 @@
+name: measure-383a
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install -r requirements.txt
+      - name: collect the seven case ids
+        run: |
+          python3 -m pytest --collect-only -q -p no:xdist > all.txt || true
+          { grep 'record-server-name/name-tampered' all.txt | grep 'test_shapes' | grep 'reports_exactly'
+            grep 'test_puts_every_sub_select_first_in_its_group' all.txt
+            grep 'matcher-same-note-type-and-text-grown-within-one-organization' all.txt | grep 'rows_the_manifest_expects'
+            grep 'test_leaves_no_query_without_a_fixture' all.txt
+            grep 'test_shapes' all.txt | grep -i 'shacl' | grep 'ontologies/cascade.shapes.ttl' | grep -i 'accept'
+            grep 'test_passes_every_value_it_adds_after' all.txt
+            grep 'test_reads_a_tables_rows_exactly_when' all.txt
+          } > cases.txt
+          cat cases.txt
+      - name: A. whole suite, one process, cold
+        run: python3 -m pytest -n 0 --durations=0 -q -p no:cacheprovider 2>&1 | tail -150
+      - name: B. each case alone, cold process
+        run: |
+          while IFS= read -r id; do
+            echo "=== ALONE: $id"
+            python3 -m pytest -n 0 --durations=5 -q -p no:cacheprovider "$id" 2>&1 | tail -12
+          done < cases.txt
+      - name: C. the seven together in one process (first pays shared builds, later ones warm)
+        run: xargs -d '\n' python3 -m pytest -n 0 --durations=0 -q -p no:cacheprovider < cases.txt 2>&1 | tail -40
+      - name: D. whole suite under -n 2 and -n auto
+        run: |
+          python3 -m pytest -n 2 --dist loadgroup --durations=15 -q 2>&1 | tail -30
+          python3 -m pytest -n auto --dist loadgroup --durations=15 -q 2>&1 | tail -30
