@@ -4,8 +4,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:first a prov:Activity ; rdfs:label "First download" ; prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
-:second a prov:Activity ; rdfs:label "Second download" ; prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:first a prov:Activity, cascade:DocumentImport ; rdfs:label "First download" ; prov:startedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:second a prov:Activity, cascade:DocumentImport ; rdfs:label "Second download" ; prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :a a cascade:AllergyOrIntolerance .
 :aV1 prov:specializationOf :a ; cascade:allergen "Peanut" .
