@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "an act of both kinds is one import" ;
+  rdfs:comment "One act that says it is a document import and a hand entry session, as the runtime writes it when an input says one and the runtime adds the other, and the one allergy it brought." ;
+  mf:entries (
+    <#what-each-import-brought-in>
+  ) .
+
+<#what-each-import-brought-in> a mf:QueryEvaluationTest ;
+  mf:name "what-each-import-brought-in" ;
+  rdfs:comment "The act gives one row for the revision it added, not one for each kind it names." ;
+  mf:action [ qt:query <../../../queries/questions/pod/What%20each%20import%20brought%20in.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-each-import-brought-in.srj> .

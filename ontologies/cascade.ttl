@@ -2977,6 +2977,16 @@ cascade:fileAddedToSet a owl:DatatypeProperty ;
     rdfs:domain cascade:Snapshot ;
     rdfs:range xsd:string .
 
+cascade:DocumentImport a owl:Class ;
+    rdfs:label "document import"@en ;
+    rdfs:comment "An act: one run of the Bridge over the documents of one export, download or pull, filing the records they bring; prov:used each document it kept."@en ;
+    rdfs:subClassOf prov:Activity .
+
+cascade:HandEntrySession a owl:Class ;
+    rdfs:label "hand entry session"@en ;
+    rdfs:comment "An act: one session of a person entering records by hand in an app, filing each as a record with its first revision."@en ;
+    rdfs:subClassOf prov:Activity .
+
 cascade:MatcherRun a owl:Class ;
     rdfs:label "matcher run"@en ;
     rdfs:comment "An act of the matcher over the records an import, an entry session or a sync brought, or over the pod at an open or a recheck; prov:wasInformedBy the act whose records it takes."@en ;

@@ -855,3 +855,35 @@
   mf:action [ sht:dataGraph <document-roles/transmitter-attributed.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:DocumentRoleAttributionShape ] ] .
+
+<#document-import/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <document-import/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#document-import/no-start> a sht:Validate ;
+  mf:action [ sht:dataGraph <document-import/no-start.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DocumentImportShape ; sh:resultPath prov:startedAtTime ] ] .
+
+<#document-import/no-document> a sht:Validate ;
+  mf:action [ sht:dataGraph <document-import/no-document.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:DocumentImportShape ; sh:resultPath prov:used ] ] .
+
+<#hand-entry-session/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <hand-entry-session/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#hand-entry-session/no-start> a sht:Validate ;
+  mf:action [ sht:dataGraph <hand-entry-session/no-start.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:HandEntrySessionShape ; sh:resultPath prov:startedAtTime ] ] .
+
+<#connect-to-server/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <connect-to-server/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#connect-to-server/no-start> a sht:Validate ;
+  mf:action [ sht:dataGraph <connect-to-server/no-start.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ConnectToServerShape ; sh:resultPath prov:startedAtTime ] ] .

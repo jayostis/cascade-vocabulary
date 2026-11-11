@@ -1,0 +1,25 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:connect a prov:Activity, cascade:ConnectToServer ; prov:startedAtTime "2026-03-01T08:55:00Z"^^xsd:dateTime .
+:pull a prov:Activity, cascade:DocumentImport ; rdfs:label "FHIR pull" ; prov:used :bundle ; prov:startedAtTime "2026-03-01T09:00:00Z"^^xsd:dateTime .
+:entered a prov:Activity, cascade:HandEntrySession ; rdfs:label "entered in the Cascade app" ;
+    prov:startedAtTime "2026-03-02T09:00:00Z"^^xsd:dateTime .
+
+<urn:uuid:2a9d950c-1569-8bcd-82c8-498ead29a162> a cascade:Server ; cascade:serverBaseUrl "https://fhir.example-hospital.example/api/FHIR/R4" .
+:serverV1 prov:specializationOf <urn:uuid:2a9d950c-1569-8bcd-82c8-498ead29a162> ; cascade:serverSoftwareName "Example EHR" .
+:serverR1 a cascade:Revision ; cascade:revisionOf <urn:uuid:2a9d950c-1569-8bcd-82c8-498ead29a162> ; cascade:version :serverV1 ; prov:wasGeneratedBy :connect ;
+    prov:generatedAtTime "2026-03-01T08:55:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T08:55:00Z"^^xsd:dateTime .
+
+:a a cascade:AllergyOrIntolerance .
+:aV1 prov:specializationOf :a ; cascade:allergen "Peanut" .
+:aR1 a cascade:Revision ; cascade:revisionOf :a ; cascade:version :aV1 ; prov:wasGeneratedBy :pull ;
+    prov:generatedAtTime "2026-03-01T09:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T09:00:05Z"^^xsd:dateTime .
+
+:b a cascade:AllergyOrIntolerance .
+:bV1 prov:specializationOf :b ; cascade:allergen "Latex" .
+:bR1 a cascade:Revision ; cascade:revisionOf :b ; cascade:version :bV1 ; prov:wasGeneratedBy :entered ;
+    prov:generatedAtTime "2026-03-02T09:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-02T09:00:00Z"^^xsd:dateTime .
