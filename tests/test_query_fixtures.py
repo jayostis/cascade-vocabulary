@@ -14,7 +14,21 @@ LENSES = sorted(named("lenses"))
 JUDGMENT = "https://ns.cascadeprotocol.org/cascade#Judgment"
 ASKED = {**questions(), **{f"matcher/{name}": relative for name, relative in named("matcher").items()}}
 ORDERED = {(QUERIES / relative).resolve() for relative in ASKED.values() if "ORDER BY" in query(relative)}
-ENTRIES = [on_its_worker(fixture, entry, id=f"{fixture.name}-{entry.name}", says=f"{fixture.comment} {entry.comment}")
+def entry_id(fixture, entry):
+    """What a case's id says once of the fixture and its entry. A matcher fixture's entries are named for the fixture's
+    own words, so an entry that begins with them is the id; one that begins or ends with two words or more of them adds
+    what it does not repeat to the fixture's name; any other entry is joined to the fixture's name."""
+    said, words = fixture.name.removeprefix("matcher-").split("-"), entry.name.split("-")
+    if words[:len(said)] == said:
+        return entry.name
+    size = range(min(len(said), len(words)), 1, -1)
+    begun = next((n for n in size if said[:n] == words[:n]), 0)
+    ended = next((n for n in size if said[-n:] == words[-n:]), 0)
+    left = words[begun:] if begun else words[:len(words) - ended]
+    return "-".join([fixture.name, *(left if left != ["the"] else [])])
+
+
+ENTRIES = [on_its_worker(fixture, entry, id=entry_id(fixture, entry), says=f"{fixture.comment} {entry.comment}")
            for fixture in FIXTURES for entry in entries(fixture.manifest)]
 
 
@@ -369,3 +383,12 @@ class TestChecksOfTheFixtureTools:
             result.write_text('{"head": {"vars": ["z"]}, "results": {"bindings": []}}', encoding="utf-8")
             entry = Entry(iri="urn:x:e", name="e", types=frozenset(), lens=None, query=query, result=result)
             assert "variables" in (failure(entry, ENGINES["oxigraph"]()) or "")
+
+    class TestQueryFixtureIds:
+        """The ids of the cases over a fixture's manifest"""
+
+        def test_says_each_fixture_once_and_keeps_each_id_under_100_characters(self):
+            """says no phrase twice in an id, keeps it under 100 characters, and gives no two cases one id"""
+            ids = [case.id for case in ENTRIES]
+            said_twice = [i for i in ids if any(count > 1 for count in Counter(zip(*(i.split("-")[n:] for n in range(3)))).values())]
+            assert not said_twice and not [i for i in ids if len(i) >= 100] and len(set(ids)) == len(ids)
