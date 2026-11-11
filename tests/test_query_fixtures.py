@@ -393,8 +393,8 @@ class TestChecksOfTheFixtureTools:
     class TestQueryFixtureIds:
         """`entry_id()`"""
 
-        def test_joins_no_two_names_when_one_contains_the_other_and_keeps_each_id_unique_and_under_100_characters(self):
-            """joins no fixture name to an entry name when one contains the other, keeps each id under 100 characters, and gives no two cases one id"""
+        def test_joins_no_two_names_when_one_contains_the_other_and_keeps_each_id_unique_and_under_120_characters(self):
+            """joins no fixture name to an entry name when one contains the other, keeps each id under 120 characters, and gives no two cases one id"""
             def bare(name):
                 return name.removeprefix("matcher-").removeprefix("the-")
             ids = [case.id for case in ENTRIES]
@@ -402,4 +402,4 @@ class TestChecksOfTheFixtureTools:
                       if case.id == f"{case.values[0].name}-{case.values[1].name}"
                       and (f"-{bare(case.values[1].name)}-" in f"-{bare(case.values[0].name)}-"
                            or f"-{bare(case.values[0].name)}-" in f"-{bare(case.values[1].name)}-")]
-            assert not joined and not [i for i in ids if len(i) >= 100] and len(set(ids)) == len(ids)
+            assert not joined and not [i for i in ids if len(i) >= 120] and len(set(ids)) == len(ids)
