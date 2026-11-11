@@ -2781,6 +2781,44 @@ cascade:FindingOfTwoLabResultsShape a sh:NodeShape ;
     sh:message "A finding of different result values or units at one instant names two lab results and the two versions it compared, and no rule list version."@en ;
     sh:severity sh:Violation .
 
+cascade:DocumentImportShape a sh:NodeShape ;
+    sh:targetClass cascade:DocumentImport ;
+    sh:property [
+        sh:path prov:startedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "An import states the one time it started, an xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path prov:used ;
+        sh:minCount 1 ;
+        sh:message "An import that is written kept a document, and names each it kept with prov:used."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:HandEntrySessionShape a sh:NodeShape ;
+    sh:targetClass cascade:HandEntrySession ;
+    sh:property [
+        sh:path prov:startedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "An entry session states the one time it started, an xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] .
+
+cascade:ConnectToServerShape a sh:NodeShape ;
+    sh:targetClass cascade:ConnectToServer ;
+    sh:property [
+        sh:path prov:startedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A connect states the one time it started, an xsd:dateTime."@en ;
+        sh:severity sh:Violation
+    ] .
+
 cascade:MatcherRunShape a sh:NodeShape ;
     sh:targetClass cascade:MatcherRun ;
     sh:property [

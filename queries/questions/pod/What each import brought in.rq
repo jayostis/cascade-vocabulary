@@ -4,7 +4,7 @@ PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?started ?import ?importLabel ?record ?recordLabel ?revision ?revisionLabel ?version ?versionLabel
+SELECT DISTINCT ?started ?import ?importLabel ?record ?recordLabel ?revision ?revisionLabel ?version ?versionLabel
 WHERE {
   VALUES ?kind { cascade:DocumentImport cascade:HandEntrySession }
   ?import a ?kind ; prov:startedAtTime ?started .
