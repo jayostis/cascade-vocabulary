@@ -11,30 +11,15 @@ jobs:
         with:
           python-version: '3.12'
       - run: python3 -m pip install -r requirements.txt
-      - name: collect the seven case ids
+      - name: the two cases the first run missed, and the shared builds, alone then paired
         run: |
-          set +e
-          python3 -m pytest --collect-only -q -p no:xdist > all.txt || true
-          { grep 'record-server-name/name-tampered' all.txt | grep 'test_shapes' | grep 'reports_exactly'
-            grep 'test_puts_every_sub_select_first_in_its_group' all.txt
-            grep 'matcher-same-note-type-and-text-grown-within-one-organization' all.txt | grep 'rows_the_manifest_expects'
-            grep 'test_leaves_no_query_without_a_fixture' all.txt
-            grep 'test_shapes' all.txt | grep -i 'shacl' | grep 'ontologies/cascade.shapes.ttl' | grep -i 'accept'
-            grep 'test_passes_every_value_it_adds_after' all.txt
-            grep 'test_reads_a_tables_rows_exactly_when' all.txt
-          } > cases.txt
-          cat cases.txt; wc -l cases.txt; grep -i "shacl" all.txt | head -5; grep -c . all.txt; exit 0
-      - name: A. whole suite, one process, cold
-        run: python3 -m pytest -n 0 --durations=0 -q -p no:cacheprovider 2>&1 | tail -150
-      - name: B. each case alone, cold process
-        run: |
-          while IFS= read -r id; do
-            echo "=== ALONE: $id"
-            python3 -m pytest -n 0 --durations=5 -q -p no:cacheprovider "$id" 2>&1 | tail -12
-          done < cases.txt
-      - name: C. the seven together in one process (first pays shared builds, later ones warm)
-        run: xargs -d '\n' python3 -m pytest -n 0 --durations=0 -q -p no:cacheprovider < cases.txt 2>&1 | tail -40
-      - name: D. whole suite under -n 2 and -n auto
-        run: |
-          python3 -m pytest -n 2 --dist loadgroup --durations=15 -q 2>&1 | tail -30
-          python3 -m pytest -n auto --dist loadgroup --durations=15 -q 2>&1 | tail -30
+          P="python3 -m pytest -n 0 -q -p no:cacheprovider --durations=6"
+          S='test_vocabulary.py::TestTermsTheShapesAndOntologyAgreeOn::TestGivenAnyShapesFile::test_is_shacl_that_shacl_accepts[ontologies/cascade.shapes.ttl]'
+          E='test_queries.py::TestQueryForm::TestGivenAnyQuery::test_passes_every_value_it_adds_to_a_stem_through_encode_for_uri'
+          F='test_queries.py::TestQueryForm::TestGivenAnyQuery::test_puts_every_sub_select_first_in_its_group'
+          V='test_shapes.py::TestShapesThatFindAWrongPod::TestGivenAShapeCase::test_reports_exactly_the_results_the_manifest_lists_for_it[record-server-name/valid]'
+          T='test_shapes.py::TestShapesThatFindAWrongPod::TestGivenAShapeCase::test_reports_exactly_the_results_the_manifest_lists_for_it[record-server-name/name-tampered]'
+          for x in "$S" "$E" "$F" "$V"; do echo "=== ALONE $x"; $P "tests/$x" 2>&1 | tail -8; done
+          echo "=== PAIR sub-select then encode"; $P "tests/$F" "tests/$E" 2>&1 | tail -9
+          echo "=== PAIR valid then tampered"; $P "tests/$V" "tests/$T" 2>&1 | tail -9
+          echo "=== setup/teardown of the cases, whole file test_queries.py"; python3 -m pytest -n 0 -q -p no:cacheprovider --durations=12 tests/test_queries.py 2>&1 | tail -18
