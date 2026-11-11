@@ -6,7 +6,8 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?started ?import ?importLabel ?record ?recordLabel ?revision ?revisionLabel ?version ?versionLabel
 WHERE {
-  ?import a prov:Activity ; prov:startedAtTime ?started .
+  VALUES ?kind { cascade:DocumentImport cascade:HandEntrySession }
+  ?import a ?kind ; prov:startedAtTime ?started .
   ?revision prov:wasGeneratedBy ?import ; cascade:revisionOf ?record ; cascade:version ?version .
   OPTIONAL { ?import rdfs:label ?importLabel }
   OPTIONAL { ?record rdfs:label ?recordLabel }
