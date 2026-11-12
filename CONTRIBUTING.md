@@ -33,7 +33,7 @@ While you work, run only what you touched: a file, or `-k <words from a test nam
 fixture should also run every test file that goes over all the fixtures, `tests/test_shapes.py` among them.
 
 The tests run in random order and print their seed. To repeat a failing order, pass it back with
-`-p randomly --randomly-seed=N`.
+`--randomly-seed=N`.
 
 ## What a pull request must pass
 
@@ -46,10 +46,10 @@ CI runs on every pull request. All of it must be green before a merge.
   "given" or "with".
 - **`compatibility`**: the reference runtime, [cascade-runtime-js](https://github.com/jayostis/cascade-runtime-js),
   is run over your checkout. A change to a rule, an example or a query that breaks the runtime fails it.
-- **`ready-to-merge`**: holds a pull request until every pull request it depends on can merge (see below).
+- **`ready-to-merge`**: holds a pull request until every pull request it depends on can merge (see "A change that spans two repositories").
 
-There is no formatter or linter step in this repository. Keep the style of the file you are in, and add no comment that
-restates a name, a constraint or another file.
+There is no formatter or linter step in this repository. Keep the style of the file you are in; [`CLAUDE.md`](CLAUDE.md)
+says what a comment may not do.
 
 ## Commits and pull requests
 
@@ -72,9 +72,12 @@ Depends-On: https://github.com/jayostis/cascade-runtime-js/pull/123
 
 The `compatibility` check then runs the other repository's pull request together with yours, and `ready-to-merge`
 holds each until the other can merge. Nothing pins one repository to a commit of another, so a pull request that names
-no other is tried against the other repository's default branch. Editing a description to add or cut a line re-runs
-the checks that read it. If the named pull request changes after your checks have run, re-run yours with
-`gh run rerun`.
+no other is tried against the other repository's branch of the same name as the branch it targets, and failing that
+its default branch. Editing a description to add or cut a line re-runs the checks that read it. If the named pull
+request changes after your checks have run, re-run yours with `gh run rerun`.
+
+A named pull request must be from a branch of the repository itself: one from a fork fails the check. A contributor
+without write access to the other repository asks a maintainer to open the counterpart.
 
 The full rules, and where they differ from the OpenStack Zuul model they follow, are in cascade-bridge-spec's
 [`compatibility.md`](https://github.com/jayostis/cascade-bridge-spec/blob/main/compatibility.md).
