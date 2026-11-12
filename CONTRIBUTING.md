@@ -5,8 +5,7 @@ the standard queries, the runtime rules, and the conformance kits. [`README.md`]
 [`CLAUDE.md`](CLAUDE.md) holds the rules a change here follows; read it before you propose a new term, query or
 fixture.
 
-Please follow the organisation's code of conduct and security policy. Report a security problem privately, as that
-policy says, never in a public issue.
+Report a security problem privately, by email to contact@cascadeprotocol.org, never in a public issue.
 
 ## Set up
 
