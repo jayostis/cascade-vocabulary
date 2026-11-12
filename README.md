@@ -51,8 +51,8 @@ It runs every example of the feature files, the rules' and the kit's, and passes
 `expected/`, every file conforming to the shapes, every name following its rule, and every file where the layout says.
 It reports each in EARL.
 
-The reference runtime is [cascade-runtime-js](https://github.com/jayostis/cascade-runtime-js). To see it build Alex's
-pod and the site that documents it:
+The reference runtime is [cascade-runtime-js](https://github.com/jayostis/cascade-runtime-js). From a clone of
+`cascade-runtime-js`, with this repository cloned beside it, see it build Alex's pod and the site that documents it:
 
 ```sh
 npm install
