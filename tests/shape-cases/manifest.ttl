@@ -903,6 +903,16 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:PersonJudgmentShape ] ] .
 
+<#model-proposed-write/yes-not-the-makers> a sht:Validate ;
+  mf:action [ sht:dataGraph <model-proposed-write/yes-not-the-makers.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PersonRetractionAuthorShape ] ] .
+
+<#model-proposed-write/two-proposers> a sht:Validate ;
+  mf:action [ sht:dataGraph <model-proposed-write/two-proposers.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:OneModelProposerShape ; sh:resultPath prov:qualifiedAssociation ] ] .
+
 <#connect-to-server/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <connect-to-server/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
