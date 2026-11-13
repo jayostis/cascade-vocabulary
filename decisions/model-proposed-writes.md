@@ -1,7 +1,8 @@
 # What a write a model proposed records
 
 Status: draft, 2026-11-13, for jayostis/cascade-runtime-js#758. Adds `cascade:ModelProposerRole`, the shapes
-`cascade:ModelProposedActShape`, `cascade:ModelProposerAssociationShape` and `cascade:ModelProposedJudgmentShape`, and
+`cascade:ModelProposedActShape`, `cascade:ModelProposerAssociationShape`, `cascade:OneModelProposerShape`,
+`cascade:PersonRetractionAuthorShape` and `cascade:ModelProposedJudgmentShape`, and
 the rule Y3 of `runtime/consent.feature`, with Y2's examples. Amends `cascade:PersonJudgmentShape`, which allowed an
 act one association, and `judgments.md`, row "maker". Depends on `consent-tiers.md` (a write to a pod is at ask) and
 `judgments.md`.
@@ -66,8 +67,8 @@ cascade-runtime-js on 2026-11-13; the comments on jayostis/cascade-runtime-js#75
 | where it is said | PROV-DM association with a role; FHIR's one `Provenance` per activity | on the act that wrote it, as a document's parts are (`republishing-sources.md`): an entry's session, the blank-node act a judgment's `prov:wasGeneratedBy` names, or a retraction, itself an act (`Y3`) | borrowed from PROV-DM |
 | the model | FHIR `Device`; PROV `prov:SoftwareAgent`; the AI Transparency IG's AI agent | one `prov:qualifiedAssociation` of the act, in `cascade:ModelProposerRole`, whose `prov:agent` is the model, a `prov:SoftwareAgent` named by an IRI, typed in the act's file, never the runtime (`Y3`; `cascade:ModelProposerAssociationShape`) | borrowed: an agent in a role; the role is ours |
 | the person who said yes | HL7 `verifier`; FHIR `onBehalfOf` | the act's association in `cascade:PatientRole`, as the person's own acts carry, whose agent is the pod's owner; an act a model proposed has one (`Y3`; `cascade:ModelProposedActShape`) | borrowed: the role the person's own acts already name |
-| a judgment's author | HL7 `author` "therefore has responsibility"; PROV attribution | the person who said yes: a judgment a model proposed is `prov:wasAttributedTo` them, never the model, and is a person's judgment in every rule and view; a retraction is `prov:wasAssociatedWith` them (`Y3`; `cascade:ModelProposedJudgmentShape`, `cascade:PersonJudgmentShape`) | diverged from the AI Transparency IG, which makes the AI the author |
-| told apart | the IG's `AIAST` label | a write the person made directly names no association in `cascade:ModelProposerRole`; one a model proposed names exactly one, so a reader asks for the role alone (`Y3`) | ours: the role is the label |
+| a judgment's author | HL7 `author` "therefore has responsibility"; PROV attribution | the person who said yes: a judgment a model proposed is `prov:wasAttributedTo` them, never the model, and is a person's judgment in every rule and view; a retraction is `prov:wasAssociatedWith` them, the same person as its association in `cascade:PatientRole` (`Y3`; `cascade:ModelProposedJudgmentShape`, `cascade:PersonJudgmentShape`, `cascade:PersonRetractionAuthorShape`) | diverged from the AI Transparency IG, which makes the AI the author |
+| told apart | the IG's `AIAST` label | a write the person made directly names no association in `cascade:ModelProposerRole`; one a model proposed names exactly one, so a reader asks for the role alone (`Y3`; `cascade:OneModelProposerShape`) | ours: the role is the label |
 | when | | the act's time is the yes's: the step's, as a person's own act carries its own (`Y3`) | ours |
 | asking | MCP elicitation | the door asks once per call, and writes on a yes only; a no, a dismissal and no answer write nothing (`Y2`, whose examples this note adds) | borrowed from `consent-tiers.md` |
 

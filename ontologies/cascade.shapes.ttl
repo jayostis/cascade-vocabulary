@@ -2686,6 +2686,24 @@ cascade:ModelProposerAssociationShape a sh:NodeShape ;
     sh:message "The model that proposed an act is its association's one agent, a prov:SoftwareAgent named by its IRI."@en ;
     sh:severity sh:Violation .
 
+cascade:OneModelProposerShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:qualifiedAssociation ;
+    sh:property [ sh:path prov:qualifiedAssociation ;
+                  sh:qualifiedValueShape [ sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:ModelProposerRole ] ] ;
+                  sh:qualifiedMaxCount 1 ] ;
+    sh:message "An act names at most one association in cascade:ModelProposerRole: the one model that proposed it."@en ;
+    sh:severity sh:Violation .
+
+cascade:PersonRetractionAuthorShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:invalidated ;
+    sh:not [ sh:path prov:qualifiedAssociation ;
+             sh:qualifiedValueShape [ sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:PatientRole ] ;
+                                      sh:not [ sh:path ( [ sh:inversePath prov:qualifiedAssociation ] prov:wasAssociatedWith ) ;
+                                               sh:equals prov:agent ] ] ;
+             sh:qualifiedMinCount 1 ] ;
+    sh:message "The person a retraction names in cascade:PatientRole is the person it is prov:wasAssociatedWith."@en ;
+    sh:severity sh:Violation .
+
 cascade:MatcherJudgmentAssertionShape a sh:NodeShape ;
     sh:targetClass cascade:MatcherJudgmentAssertion ;
     sh:property [

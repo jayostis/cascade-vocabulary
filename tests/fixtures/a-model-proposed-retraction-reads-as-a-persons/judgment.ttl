@@ -16,3 +16,8 @@
     prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ,
                               [ prov:agent :model ; prov:hadRole cascade:ModelProposerRole ] ;
     prov:startedAtTime "2026-01-03T09:00:00Z"^^xsd:dateTime .
+
+:kept a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :record , :another ;
+    prov:wasAttributedTo :person ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-01-01T09:00:00Z"^^xsd:dateTime .

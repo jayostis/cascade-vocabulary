@@ -17,7 +17,7 @@ named. A `Then` reads the pod as the writer that took the step read at holds it.
 
 A `Given` or `When` step may end with a label in parentheses, `(E13)`, which names it. Otherwise a step is named by the
 name it quotes: an import by its export's, its download's or its pull's, a download's extension kept, a connect by its
-folder's, an entry or a judgment by its file's, an open by its tables folder's. The pod's creation, a reference
+folder's, an entry, a judgment or a proposal by its file's, an open by its tables folder's. The pod's creation, a reference
 version's arrival, a matcher run and a recheck are named `pod`, `reference`, `matcher` and `recheck`, a second
 writer's start `writer` and a writer's receiving of files `sync`. Two steps of one example never share a name: where
 they would, the later is labelled. A name is letters, digits, `-`, `_` and `.`, so that `urn:cascade:step:NAME` below
@@ -261,11 +261,14 @@ nothing.
 
 A model calls the runtime's tool at `cascade:ConsentTierAsk` that writes what `proposals/<name>.ttl` holds, through a
 door that can ask the person, with that write as the tool's input. The door asks the person, showing what this call
-will do, and the person answers so: yes, no, dismissing the question, or leaving it unanswered until the door stops
-waiting (for an MCP door, an elicitation the client accepts, declines, cancels, or never answers). A door that writes
-without asking, or asks more than once, fails the step. On a yes the door writes it at the step's time, as Y3 says,
-naming the session, the judgment or the retraction by a new random UUID; on any other answer the step writes nothing.
-The person who said yes is the pod's owner, named as the owner's profile names them (A13), a `prov:Person`.
+will do, and the person answers so: yes, no, dismissing the question, or leaving it unanswered until the {time} the step
+names, when the door stops waiting (for an MCP door, an elicitation the client accepts, declines, cancels, or never
+answers). The door asks exactly once for each proposal it is given, so a repeated proposal is asked again. A door that
+does not ask fails the step, as does one that writes without a yes. On a yes the door writes it at the step's time, as
+Y3 says, naming the session, the judgment or the retraction by a new random UUID; on any other answer the step writes
+nothing. The person who said yes is the pod's owner, named as the owner's profile names them (A13). The door writes
+that person's `prov:Person` type in the act's own file, and writes no `prov:wasAssociatedWith` from the act to the
+model, so a retraction is `prov:wasAssociatedWith` the person alone.
 
 ### `the pod is read as it stood after {step}`, `the pod is read as it stood after {step}, under the {lens} lens`
 

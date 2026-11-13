@@ -13,3 +13,10 @@
     prov:qualifiedAssociation [ prov:agent :blair ; prov:hadRole cascade:PatientRole ] ,
                               [ prov:agent :model ; prov:hadRole cascade:ModelProposerRole ] ;
     prov:startedAtTime "2026-03-01T09:10:00Z"^^xsd:dateTime .
+
+:judgment a cascade:Judgment ;
+    cascade:verdict cascade:Different ;
+    prov:hadMember :one , :other ;
+    prov:wasAttributedTo :blair ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :blair ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-03-01T09:05:00Z"^^xsd:dateTime .

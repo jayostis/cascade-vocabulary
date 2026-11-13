@@ -76,8 +76,10 @@ Feature: Consent tiers
     prov:qualifiedAssociation in cascade:ModelProposerRole, whose prov:agent is the model, a prov:SoftwareAgent named
     by an IRI and typed in the act's file, never the runtime; and one in cascade:PatientRole, whose prov:agent is the
     person who said yes. A judgment is prov:wasAttributedTo that person, and a retraction prov:wasAssociatedWith them,
-    as the person's own are. Its time is the yes. A write the person makes themselves names no model, so a reader tells
-    the two apart by the role alone.
+    as the person's own are, and the agent of a retraction's association in cascade:PatientRole is that same person.
+    The door writes the person's prov:Person type in the act's own file, and no prov:wasAssociatedWith from the act to
+    the model. Its time is the yes. A write the person makes themselves names no model, so a reader tells the two apart
+    by the role alone.
 
     Example: an entry a model proposed names, on its session, the model and the person who said yes
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -89,6 +91,7 @@ Feature: Consent tiers
           GRAPH ?sessionFile {
             ?session a cascade:HandEntrySession ; prov:startedAtTime ?started ;
               prov:qualifiedAssociation [ prov:hadRole cascade:PatientRole ; prov:agent ?person ] .
+              ?person a prov:Person .
             OPTIONAL {
               ?session prov:qualifiedAssociation [ prov:hadRole cascade:ModelProposerRole ; prov:agent ?model ] .
               ?model a prov:SoftwareAgent
@@ -117,6 +120,7 @@ Feature: Consent tiers
             ?judgment a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember ?member ;
               prov:wasAttributedTo ?author ; prov:generatedAtTime ?at ; prov:wasGeneratedBy ?act .
             ?act prov:qualifiedAssociation [ prov:hadRole cascade:PatientRole ; prov:agent ?author ] .
+            ?author a prov:Person .
             OPTIONAL {
               ?act prov:qualifiedAssociation [ prov:hadRole cascade:ModelProposerRole ; prov:agent ?model ] .
               ?model a prov:SoftwareAgent
@@ -144,6 +148,7 @@ Feature: Consent tiers
           GRAPH ?file {
             ?retraction prov:invalidated ?retracted ; prov:wasAssociatedWith ?person ; prov:startedAtTime ?at ;
               prov:qualifiedAssociation [ prov:hadRole cascade:PatientRole ; prov:agent ?person ] .
+              ?person a prov:Person .
             OPTIONAL {
               ?retraction prov:qualifiedAssociation [ prov:hadRole cascade:ModelProposerRole ; prov:agent ?model ] .
               ?model a prov:SoftwareAgent
