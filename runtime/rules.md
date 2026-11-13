@@ -1,7 +1,7 @@
 # Runtime rules
 
 What a runtime does when it fills a pod: how it names what it writes, which arrivals it writes, how the matcher judges,
-the order it writes in, and what passing a kit means. Each section is a [Gherkin](https://cucumber.io/docs/gherkin/)
+the order it writes in, what a model it offers pods to may do, and what passing a kit means. Each section is a [Gherkin](https://cucumber.io/docs/gherkin/)
 feature file beside this one. Each numbered rule is a `Rule:` whose title is the rule and whose description holds the
 rest of its prose, with the examples that show it beneath it; a rule no example can show says why.
 
@@ -16,6 +16,7 @@ rest of its prose, with the examples that show it beneath it; a rule no example 
 | Nothing is edited or deleted | [`nothing-is-edited.feature`](nothing-is-edited.feature) |
 | Write order | [`write-order.feature`](write-order.feature) |
 | Syncs | [`sync.feature`](sync.feature) |
+| Consent tiers | [`consent.feature`](consent.feature) |
 | The conformance kit | [`the-kit.feature`](the-kit.feature) |
 
 [`steps.md`](steps.md) lists every step the files use, what each means, the dataset a `Then` reads and where the

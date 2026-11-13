@@ -34,12 +34,12 @@ def the_check():
 
 
 def answered(tools):
-    """The tools Y1's query names, over a listing of `tools`, each a name with the kind and the tier it declares."""
+    """The tools Y1's query names, over a listing of `tools`, each a name with the kinds and the tiers it declares."""
     store = Store()
     store.load(ONTOLOGY.read_bytes(), format=RdfFormat.TURTLE, to_graph=VOCABULARY)
-    for name, kind, tier in tools:
-        for predicate, value in ((CASCADE.modelToolActKind, kind), (CASCADE.consentTier, tier)):
-            if value is not None:
+    for name, kinds, tiers in tools:
+        for predicate, values in ((CASCADE.modelToolActKind, kinds), (CASCADE.consentTier, tiers)):
+            for value in values:
                 store.add(Quad(NamedNode(TOOL[name]), NamedNode(predicate), NamedNode(value), TOOLS))
     return sorted(solution["tool"].value for solution in store.query(PREFIXES + the_check()))
 
@@ -69,10 +69,10 @@ class TestConsentTiers:
                 CASCADE.ConsentTierFree, CASCADE.ConsentTierAsk, CASCADE.ConsentTierNever}
 
     class TestGivenTheConsentTiers:
-        """given the consent tiers, in `cascade:ConsentTiers`"""
+        """given the scheme of consent tiers, `cascade:ConsentTiers`"""
 
-        def test_are_free_ask_and_never_each_by_its_one_notation(self):
-            """are free, ask and never, each by its one notation, as a tool declares its tier"""
+        def test_holds_free_ask_and_never_each_with_its_one_notation(self):
+            """holds free, ask and never, each with its one notation, as a tool declares its tier"""
             notations = {tier: list(ontology().objects(tier, SKOS.notation)) for tier in in_scheme(CASCADE.ConsentTiers)}
             assert notations == {CASCADE.ConsentTierFree: [Literal("free")], CASCADE.ConsentTierAsk: [Literal("ask")],
                                  CASCADE.ConsentTierNever: [Literal("never")]}
@@ -83,21 +83,23 @@ class TestConsentTiers:
         Each case lists two tools that agree with their kinds, a read and a write, and one more tool as the case says.
         """
 
-        AGREEING = [("reads", CASCADE.ReadingPodsOrTables, CASCADE.ConsentTierFree),
-                    ("writes", CASCADE.WritingToAPod, CASCADE.ConsentTierAsk)]
+        AGREEING = [("reads", [CASCADE.ReadingPodsOrTables], [CASCADE.ConsentTierFree]),
+                    ("writes", [CASCADE.WritingToAPod], [CASCADE.ConsentTierAsk])]
 
         def test_answers_nothing_when_every_tool_runs_at_its_kinds_tier(self):
             """answers nothing when every tool runs at its kind's tier"""
             assert answered(self.AGREEING) == []
 
-        @pytest.mark.parametrize("kind, tier", [
-            (CASCADE.WritingToAPod, CASCADE.ConsentTierFree),
-            (CASCADE.DeletingPods, CASCADE.ConsentTierNever),
-            (None, CASCADE.ConsentTierFree),
-            (CASCADE.ReadingPodsOrTables, None),
-            (URIRef(CASCADE + "NoSuchKind"), CASCADE.ConsentTierFree),
-        ], ids=["a write at free", "an act whose tier is never", "with no kind",
-                "with no tier", "of a kind the vocabulary does not list"])
-        def test_names_the_one_tool(self, kind, tier):
+        @pytest.mark.parametrize("kinds, tiers", [
+            ([CASCADE.WritingToAPod], [CASCADE.ConsentTierFree]),
+            ([CASCADE.DeletingPods], [CASCADE.ConsentTierNever]),
+            ([], [CASCADE.ConsentTierFree]),
+            ([CASCADE.ReadingPodsOrTables], []),
+            ([URIRef(CASCADE + "NoSuchKind")], [CASCADE.ConsentTierFree]),
+            ([CASCADE.ReadingPodsOrTables, CASCADE.WritingToAPod], [CASCADE.ConsentTierFree]),
+            ([CASCADE.ReadingPodsOrTables], [CASCADE.ConsentTierFree, CASCADE.ConsentTierAsk]),
+        ], ids=["a write at free", "an act whose tier is never", "with no kind", "with no tier",
+                "of a kind the vocabulary does not list", "with two kinds", "with two tiers"])
+        def test_names_the_one_tool(self, kinds, tiers):
             """names the one tool that runs"""
-            assert answered([*self.AGREEING, ("odd", kind, tier)]) == [str(TOOL["odd"])]
+            assert answered([*self.AGREEING, ("odd", kinds, tiers)]) == [str(TOOL["odd"])]

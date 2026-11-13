@@ -241,6 +241,14 @@ The first writer named is given every file the second holds in a folder the layo
 the views' folder aside, writes each it lacks, and writes a sync if `sync.feature` says it does. The steps after it are
 the receiving writer's.
 
+### `the tools offered a model are listed`
+
+The runtime lists every tool it offers a model (Y1), whichever door offers it, as two graphs of the dataset, both
+outside the default graph. `urn:cascade:tools` holds, for each tool, `<urn:cascade:tool:NAME>`, NAME its name, with
+the `cascade:modelToolActKind` it declares and its `cascade:consentTier`, the tier whose `skos:notation` is the one it
+declares; a tool that declares no kind or no tier states none. `urn:cascade:vocabulary` holds
+[`ontologies/cascade.ttl`](../ontologies/cascade.ttl). It changes nothing.
+
 ### `the pod is read as it stood after {step}`, `the pod is read as it stood after {step}, under the {lens} lens`
 
 The `Then` steps that follow read the pod as it stood after that step, under that lens, `everyday` if none is named.
