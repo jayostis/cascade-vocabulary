@@ -76,11 +76,11 @@ https://w3c-cg.github.io/dpv/2.3/dpv/dpv.ttl), PROV-O (https://www.w3.org/TR/pro
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| kind of act | ODRL actions, DPV operations, FHIR consent actions, SMART's `cruds` | the vocabulary lists the kinds of act a tool lets a model take, `cascade:ModelToolActKinds`, and each tool takes one: reading pods or tables, moving the app's view, writing to a pod, changing the app's tables or settings, making, unlocking or locking an encrypted pod, signing in at a source, importing records from a source, deleting pods (`Y1`) | ours, mapped with `skos:closeMatch` where an ODRL action or a DPV operation is close: none of them has the kinds that decide consent here |
+| kind of act | ODRL actions, DPV operations, FHIR consent actions, SMART's `cruds` | the vocabulary lists the kinds of act a tool lets a model take, `cascade:ModelToolActKinds`, and each tool takes one: reading pods or tables, moving the app's view, writing to a pod, making a pod that is not encrypted, changing the app's tables or settings, making, unlocking or locking an encrypted pod, signing in at a source, importing records from a source, deleting pods (`Y1`) | ours, mapped with `skos:closeMatch` where an ODRL action or a DPV operation is close: none of them has the kinds that decide consent here |
 | tier | ODRL permission, permission with `obtainConsent`, prohibition | three tiers, `cascade:ConsentTiers`: free, ask, never, each with its `skos:notation`; each kind of act has one, as its `cascade:consentTier` (`Y1`) | borrowed: ODRL's three shapes; diverged: named values, which a tool can declare |
 | a tool's tier | the kit's and the runtime's `tier` | a tool declares its kind and its tier, by the tier's notation, and the tier is its kind's; a runtime shows it by listing its tools (`Y1`) | ours |
 | free | SMART's granted scope; ODRL permission | runs when the model calls it: the person consented when they offered the model their pods; reading and moving the app's view; writes nothing to a pod (`Y1`) | borrowed: a standing grant |
-| ask | ODRL `obtainConsent`; DPV `ExplicitlyExpressedConsent` | runs only once the person, shown what this call will do, says yes to it; a no, a dismissal or no answer does nothing; a yes is for one call: writing to a pod, changing the app's tables or settings (`Y2`) | borrowed: consent per act, expressed explicitly |
+| ask | ODRL `obtainConsent`; DPV `ExplicitlyExpressedConsent` | runs only once the person, shown what this call will do, says yes to it; a no, a dismissal or no answer does nothing; a yes is for one call: writing to a pod, making a pod that is not encrypted, changing the app's tables or settings (`Y2`) | borrowed: consent per act, expressed explicitly |
 | a door that cannot ask | MCP elicitation, which a client may lack | a door that cannot ask the person offers no tool at ask (`Y2`) | ours: fail closed |
 | never | ODRL prohibition; the kit's `NEVER` | the tier of a kind of act no tool takes, whatever the person says: the person takes it in the app. A tool carries free or ask, never this tier (`Y1`) | borrowed: a prohibition on an act, not a tool that exists and is hidden |
 | what a confirmed write records | PROV-O qualified association | written by jayostis/cascade-runtime-js#758 and its vocabulary half | not ruled here |
@@ -90,7 +90,7 @@ https://w3c-cg.github.io/dpv/2.3/dpv/dpv.ttl), PROV-O (https://www.w3.org/TR/pro
 **Why the tier belongs to a kind of act, not to a tool.** (rows "kind of act", "a tool's tier") The tools are each
 implementation's own: the kit has `open_trend`, the runtime `find_changes`, and another app will have neither. What
 must be alike from app to app is what the person is asked before, and that depends on what the tool does, not on its
-name. So the protocol names what tools do, in eight kinds, and gives each kind its tier; a tool declares which kind it
+name. So the protocol names what tools do, in nine kinds, and gives each kind its tier; a tool declares which kind it
 takes. A tool whose declared tier is not its kind's is the one mistake a check can catch without knowing the tool, and
 `Y1`'s query catches it.
 
@@ -118,12 +118,17 @@ nor misleads the model. Annotations such as `readOnlyHint` may be set from the t
 ignore, so they are never the safeguard.
 
 **Why our own terms, mapped to ODRL and DPV.** (rows "kind of act", "tier") ODRL's `modify` is "To change existing
-content of the Asset", and nothing a pod holds is changed: a write only adds. Neither ODRL nor DPV has an action for
+content of the Asset", and nothing a pod holds is changed: a write only adds. ODRL's `annotate`, "to add explanatory
+notations/commentaries to the Asset without modifying the Asset in any other way", is close to writing to a pod, a
+judgment or an entry added and nothing edited, but it stops at notes, and a person's entry is not a note on an asset,
+so it is a `skos:closeMatch` and no more. Neither ODRL nor DPV has an action for
 signing in as the person, or for unlocking their encrypted store, and those are the acts that most need a name here.
 A tier expressed as an ODRL policy is a shape (a permission with or without a duty), so a tool could not declare it as
 one value, and every reader would rebuild it from three patterns. The kinds that do match carry `skos:closeMatch` to
-ODRL's `read`, `display` and `delete` and DPV's `Consult`, `Display` and `Erase`, and importing has DPV's `Collect` as
-its `skos:broadMatch`, so a reader who knows those schemes can follow.
+ODRL's `read`, `display`, `annotate` and `delete` and DPV's `Consult`, `Display` and `Erase`, and importing has DPV's `Collect` as
+its `skos:broadMatch`, so a reader who knows those schemes can follow. The three tiers carry `skos:relatedMatch` to
+the ODRL shapes they borrow, `Permission`, `obtainConsent` and `Prohibition`: related, not close, because each ODRL
+term is a policy part and a tier is one value a tool declares.
 
 ## Alternatives that lost
 
@@ -157,7 +162,7 @@ its `skos:broadMatch`, so a reader who knows those schemes can follow.
 
 ## What would change our mind
 
-- A tool any app needs whose act is none of the eight kinds, or two kinds at once: the list grows, or a kind splits.
+- A tool any app needs whose act is none of the nine kinds, or two kinds at once: the list grows, or a kind splits.
 - A person, shown ask's question each time, saying yes without reading it: a per-session yes, or a different kind of
   question, would then serve consent better.
 - ODRL or DPV gaining an action for acting under the person's own credentials, or a value for a tier: the terms would

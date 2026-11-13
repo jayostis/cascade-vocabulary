@@ -244,9 +244,10 @@ the receiving writer's.
 ### `the tools offered a model are listed`
 
 The runtime lists every tool it offers a model (Y1), whichever door offers it, as two graphs of the dataset, both
-outside the default graph. `urn:cascade:tools` holds, for each tool, `<urn:cascade:tool:NAME>`, NAME its name, with
-the `cascade:modelToolActKind` it declares and its `cascade:consentTier`, the tier whose `skos:notation` is the one it
-declares; a tool that declares no kind or no tier states none. `urn:cascade:vocabulary` holds
+outside the default graph. `urn:cascade:tools` holds, for each tool, `<urn:cascade:tool:NAME> rdfs:label "NAME"`, NAME
+its name, whatever it declares, with the `cascade:modelToolActKind` it declares and its `cascade:consentTier`, the tier
+whose `skos:notation` is the one it declares; a tool that declares no kind or no tier states none of that, and is still
+stated by its label. `urn:cascade:vocabulary` holds
 [`ontologies/cascade.ttl`](../ontologies/cascade.ttl). It changes nothing.
 
 ### `the pod is read as it stood after {step}`, `the pod is read as it stood after {step}, under the {lens} lens`

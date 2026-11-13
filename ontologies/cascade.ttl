@@ -2366,7 +2366,20 @@ skos:exactMatch a owl:ObjectProperty ;
     dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> ;
     dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
 
-skos:closeMatch a owl:ObjectProperty ;
+skos:mappingRelation a owl:ObjectProperty ;
+    rdfs:label "is in mapping relation with"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+skos:relatedMatch a owl:ObjectProperty , owl:SymmetricProperty ;
+    rdfs:label "has related match"@en ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
+    rdfs:subPropertyOf skos:mappingRelation ;
+    dct:source <https://www.w3.org/TR/2009/REC-skos-reference-20090818/> ;
+    dct:license <https://www.w3.org/Consortium/Legal/copyright-documents> .
+
+skos:closeMatch a owl:ObjectProperty , owl:SymmetricProperty ;
     rdfs:label "has close match"@en ;
     rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> ;
     rdfs:subPropertyOf skos:mappingRelation ;
@@ -3224,25 +3237,28 @@ cascade:ConsentTierFree a skos:Concept ;
     skos:inScheme cascade:ConsentTiers ;
     skos:prefLabel "free"@en ;
     skos:notation "free" ;
-    skos:definition "The tool runs when the model calls it: the person consented when they offered the model their pods. It writes nothing to a pod."@en .
+    skos:definition "The tool runs when the model calls it: the person consented when they offered the model their pods. It writes nothing to a pod."@en ;
+    skos:relatedMatch <http://www.w3.org/ns/odrl/2/Permission> .
 
 cascade:ConsentTierAsk a skos:Concept ;
     skos:inScheme cascade:ConsentTiers ;
     skos:prefLabel "ask"@en ;
     skos:notation "ask" ;
-    skos:definition "The tool runs only once the person, shown what this call will do, has said yes to it. A no, no answer, or a door that cannot ask the person, does nothing."@en .
+    skos:definition "The tool runs only once the person, shown what this call will do, has said yes to it. A no, no answer, or a door that cannot ask the person, does nothing."@en ;
+    skos:relatedMatch <http://www.w3.org/ns/odrl/2/obtainConsent> .
 
 cascade:ConsentTierNever a skos:Concept ;
     skos:inScheme cascade:ConsentTiers ;
     skos:prefLabel "never"@en ;
     skos:notation "never" ;
-    skos:definition "No tool takes the act, whatever the person says: they take it themselves, in the app. A tool carries free or ask, never this tier."@en .
+    skos:definition "No tool takes the act, whatever the person says: they take it themselves, in the app. A tool carries free or ask, never this tier."@en ;
+    skos:relatedMatch <http://www.w3.org/ns/odrl/2/Prohibition> .
 
 cascade:ModelToolActKinds a skos:ConceptScheme ;
     rdfs:label "kinds of act a model tool takes"@en ;
     rdfs:comment "Each kind of act a tool may let a model take on the person's pods or on the app that holds them, with its cascade:consentTier. A tool takes one kind."@en ;
     skos:hasTopConcept cascade:ReadingPodsOrTables , cascade:MovingTheAppsView , cascade:WritingToAPod ,
-        cascade:ChangingTheAppsTablesOrSettings , cascade:MakingUnlockingOrLockingAnEncryptedPod , cascade:SigningInAtASource ,
+        cascade:MakingAPodThatIsNotEncrypted , cascade:ChangingTheAppsTablesOrSettings , cascade:MakingUnlockingOrLockingAnEncryptedPod , cascade:SigningInAtASource ,
         cascade:ImportingRecordsFromASource , cascade:DeletingPods .
 
 cascade:ReadingPodsOrTables a skos:Concept ;
@@ -3262,7 +3278,14 @@ cascade:MovingTheAppsView a skos:Concept ;
 cascade:WritingToAPod a skos:Concept ;
     skos:inScheme cascade:ModelToolActKinds ;
     skos:prefLabel "writing to a pod"@en ;
-    skos:definition "Adds to a pod what the person states or judges, an entry, a judgment or a retraction of one, or makes a new pod that is not encrypted. It edits nothing a pod holds."@en ;
+    skos:definition "Adds to an existing pod what the person states or judges, an entry, a judgment or a retraction of one. It edits nothing a pod holds."@en ;
+    skos:closeMatch <http://www.w3.org/ns/odrl/2/annotate> ;
+    cascade:consentTier cascade:ConsentTierAsk .
+
+cascade:MakingAPodThatIsNotEncrypted a skos:Concept ;
+    skos:inScheme cascade:ModelToolActKinds ;
+    skos:prefLabel "making a pod that is not encrypted"@en ;
+    skos:definition "Makes a new pod whose files are not encrypted, with no one's words or password."@en ;
     cascade:consentTier cascade:ConsentTierAsk .
 
 cascade:ChangingTheAppsTablesOrSettings a skos:Concept ;

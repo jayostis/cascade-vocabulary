@@ -1,9 +1,10 @@
 from functools import cache
 
 import pytest
+from pyoxigraph import Literal as StoreLiteral
 from pyoxigraph import NamedNode, Quad, RdfFormat, Store
 from rdflib import Graph, Literal, Namespace, URIRef
-from rdflib.namespace import SKOS
+from rdflib.namespace import OWL, RDF, RDFS, SKOS
 
 from contract import CASCADE, ROOT, feature_documents
 from test_features import PREFIXES
@@ -38,6 +39,7 @@ def answered(tools):
     store = Store()
     store.load(ONTOLOGY.read_bytes(), format=RdfFormat.TURTLE, to_graph=VOCABULARY)
     for name, kinds, tiers in tools:
+        store.add(Quad(NamedNode(TOOL[name]), NamedNode(RDFS.label), StoreLiteral(name), TOOLS))
         for predicate, values in ((CASCADE.modelToolActKind, kinds), (CASCADE.consentTier, tiers)):
             for value in values:
                 store.add(Quad(NamedNode(TOOL[name]), NamedNode(predicate), NamedNode(value), TOOLS))
@@ -68,6 +70,17 @@ class TestConsentTiers:
                     for tier in ontology().objects(kind, CASCADE.consentTier)} == {
                 CASCADE.ConsentTierFree, CASCADE.ConsentTierAsk, CASCADE.ConsentTierNever}
 
+        def test_keeps_writing_to_a_pod_apart_from_making_a_pod_that_is_not_encrypted(self):
+            """keeps writing to a pod apart from making a pod that is not encrypted, each at ask"""
+            writing = ontology().value(CASCADE.WritingToAPod, SKOS.definition)
+            assert "new pod" not in str(writing)
+            assert (CASCADE.MakingAPodThatIsNotEncrypted, CASCADE.consentTier, CASCADE.ConsentTierAsk) in ontology()
+            assert CASCADE.MakingAPodThatIsNotEncrypted in in_scheme(CASCADE.ModelToolActKinds)
+
+        def test_maps_writing_to_a_pod_to_odrls_annotate(self):
+            """maps writing to a pod to ODRL's annotate, which adds notes without modifying the asset"""
+            assert (CASCADE.WritingToAPod, SKOS.closeMatch, URIRef("http://www.w3.org/ns/odrl/2/annotate")) in ontology()
+
     class TestGivenTheConsentTiers:
         """given the scheme of consent tiers, `cascade:ConsentTiers`"""
 
@@ -76,6 +89,24 @@ class TestConsentTiers:
             notations = {tier: list(ontology().objects(tier, SKOS.notation)) for tier in in_scheme(CASCADE.ConsentTiers)}
             assert notations == {CASCADE.ConsentTierFree: [Literal("free")], CASCADE.ConsentTierAsk: [Literal("ask")],
                                  CASCADE.ConsentTierNever: [Literal("never")]}
+
+        def test_maps_each_tier_to_the_odrl_shape_it_borrows(self):
+            """maps each tier to the ODRL shape it borrows, with `skos:relatedMatch`"""
+            odrl = "http://www.w3.org/ns/odrl/2/"
+            assert {tier: set(ontology().objects(tier, SKOS.relatedMatch)) for tier in in_scheme(CASCADE.ConsentTiers)} == {
+                CASCADE.ConsentTierFree: {URIRef(odrl + "Permission")},
+                CASCADE.ConsentTierAsk: {URIRef(odrl + "obtainConsent")},
+                CASCADE.ConsentTierNever: {URIRef(odrl + "Prohibition")}}
+
+        def test_declares_the_skos_mapping_properties_it_uses_as_skos_does(self):
+            """declares the SKOS mapping properties it uses as SKOS does, with their type and superproperty"""
+            graph = ontology()
+            assert (SKOS.closeMatch, RDF.type, OWL.SymmetricProperty) in graph
+            assert (SKOS.relatedMatch, RDF.type, OWL.SymmetricProperty) in graph
+            for match in (SKOS.closeMatch, SKOS.relatedMatch, SKOS.broadMatch):
+                assert (match, RDFS.subPropertyOf, SKOS.mappingRelation) in graph
+            assert (SKOS.mappingRelation, RDF.type, OWL.ObjectProperty) in graph
+            assert graph.value(SKOS.mappingRelation, RDFS.label) is not None
 
     class TestGivenY1sQueryOverAListingOfTools:
         """given Y1's query, over a listing of tools and the vocabulary
@@ -95,11 +126,12 @@ class TestConsentTiers:
             ([CASCADE.DeletingPods], [CASCADE.ConsentTierNever]),
             ([], [CASCADE.ConsentTierFree]),
             ([CASCADE.ReadingPodsOrTables], []),
+            ([], []),
             ([URIRef(CASCADE + "NoSuchKind")], [CASCADE.ConsentTierFree]),
             ([CASCADE.ReadingPodsOrTables, CASCADE.WritingToAPod], [CASCADE.ConsentTierFree]),
             ([CASCADE.ReadingPodsOrTables], [CASCADE.ConsentTierFree, CASCADE.ConsentTierAsk]),
         ], ids=["a write at free", "an act whose tier is never", "with no kind", "with no tier",
-                "of a kind the vocabulary does not list", "with two kinds", "with two tiers"])
+                "with no kind and no tier", "of a kind the vocabulary does not list", "with two kinds", "with two tiers"])
         def test_names_the_one_tool(self, kinds, tiers):
             """names the one tool that runs"""
             assert answered([*self.AGREEING, ("odd", kinds, tiers)]) == [str(TOOL["odd"])]

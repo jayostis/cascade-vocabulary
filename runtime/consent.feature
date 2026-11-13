@@ -9,9 +9,8 @@ Feature: Consent tiers
     decisions/consent-tiers.md, rows "kind of act", "a tool's tier" and "never".
     The kinds are cascade:ModelToolActKinds in ontologies/cascade.ttl, each with its cascade:consentTier. A tool
     declares the one kind it takes and its tier, by the tier's skos:notation, and the tier is its kind's. No tool takes
-    a kind whose tier is cascade:ConsentTierNever, so no door offers one, whatever the person says. A tool at
-    cascade:ConsentTierFree writes nothing to a pod. A runtime that offers no tool offers nothing to consent to, and
-    passes.
+    a kind whose tier is cascade:ConsentTierNever, so no door offers one, whatever the person says. A runtime that
+    offers no tool offers nothing to consent to, and passes.
 
     Example: no tool the runtime offers a model runs at a tier other than its kind's, or takes a kind whose tier is never
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -20,7 +19,7 @@ Feature: Consent tiers
         """
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
         SELECT DISTINCT ?tool WHERE {
-          GRAPH <urn:cascade:tools> { ?tool cascade:modelToolActKind|cascade:consentTier ?declared }
+          GRAPH <urn:cascade:tools> { ?tool rdfs:label ?name }
           FILTER (NOT EXISTS {
             GRAPH <urn:cascade:tools> { ?tool cascade:modelToolActKind ?kind ; cascade:consentTier ?tier }
             GRAPH <urn:cascade:vocabulary> { ?kind skos:inScheme cascade:ModelToolActKinds ; cascade:consentTier ?tier }
