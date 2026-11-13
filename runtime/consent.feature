@@ -33,7 +33,7 @@ Feature: Consent tiers
       Then it answers nothing
 
   Rule: Y2. A tool at ask does nothing until the person says yes to that call
-    decisions/consent-tiers.md, rows "ask" and "a door that cannot ask".
+    decisions/consent-tiers.md, rows "ask" and "a door that cannot ask"; decisions/model-proposed-writes.md, row "asking".
     The door that offers the tool shows the person what this call will do, and runs it only once they say yes to it.
     A no, or a question dismissed or left unanswered, does nothing. A yes is for the one call it answers. A door that
     cannot ask the person offers no tool at cascade:ConsentTierAsk.
@@ -71,7 +71,7 @@ Feature: Consent tiers
       Then it answers nothing
 
   Rule: Y3. A write a model proposed names the model as its proposer, and the person who said yes
-    decisions/model-proposed-writes.md, rows "the model", "the person who said yes", "where it is said" and "told apart".
+    decisions/model-proposed-writes.md, rows "where it is said", "the model", "the person who said yes", "a judgment's author", "told apart" and "when".
     The act that wrote it, an entry's session, the act that generated a judgment or a retraction, has one
     prov:qualifiedAssociation in cascade:ModelProposerRole, whose prov:agent is the model, a prov:SoftwareAgent named
     by an IRI and typed in the act's file, never the runtime; and one in cascade:PatientRole, whose prov:agent is the

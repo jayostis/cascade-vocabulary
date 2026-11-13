@@ -2783,6 +2783,10 @@ cascade:PatientRole a prov:Role ;
     rdfs:label "patient role"@en ;
     rdfs:comment "The person the pod is about, acting for themselves."@en .
 
+cascade:ModelProposerRole a prov:Role ;
+    rdfs:label "model proposer role"@en ;
+    rdfs:comment "The part a model played in an act it proposed through a tool at cascade:ConsentTierAsk, which was written once the person said yes: an entry's session, the act that generated a judgment, or a retraction. The person who said yes is the agent of the act's association in cascade:PatientRole."@en .
+
 dct:replaces a rdf:Property ;
     rdfs:label "Replaces"@en ;
     rdfs:isDefinedBy <http://purl.org/dc/terms/> ;

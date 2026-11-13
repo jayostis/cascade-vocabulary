@@ -53,7 +53,7 @@ Each quotation was read at its source on 2026-11-13 (verified), but where a line
   its operations describe data processing in general, and none is "sign in as the person" or "unlock their encrypted
   store"; its rules, like ODRL's, are shapes rather than a value a tool declares.
 - **PROV-O.** Records who did an act and in what role (`prov:qualifiedAssociation`, `prov:hadRole`), after the fact;
-  it says nothing of what was permitted beforehand. jayostis/cascade-runtime-js#758 records a confirmed write with it.
+  it says nothing of what was permitted beforehand. `model-proposed-writes.md` records a confirmed write with it.
 - **MCP 2025-06-18.** `ToolAnnotations` carry `readOnlyHint` ("If true, the tool does not modify its environment") and
   `destructiveHint` ("If true, the tool may perform destructive updates to its environment. If false, the tool performs
   only additive updates."), but "all properties in ToolAnnotations are **hints**" and "Clients should never make tool
@@ -83,7 +83,7 @@ https://w3c-cg.github.io/dpv/2.3/dpv/dpv.ttl), PROV-O (https://www.w3.org/TR/pro
 | ask | ODRL `obtainConsent`; DPV `ExplicitlyExpressedConsent` | runs only once the person, shown what this call will do, says yes to it; a no, a dismissal or no answer does nothing; a yes is for one call: writing to a pod, making a pod that is not encrypted, changing the app's tables or settings (`Y2`) | borrowed: consent per act, expressed explicitly |
 | a door that cannot ask | MCP elicitation, which a client may lack | a door that cannot ask the person offers no tool at ask (`Y2`) | ours: fail closed |
 | never | ODRL prohibition; the kit's `NEVER` | the tier of a kind of act no tool takes, whatever the person says: the person takes it in the app. A tool carries free or ask, never this tier (`Y1`) | borrowed: a prohibition on an act, not a tool that exists and is hidden |
-| what a confirmed write records | PROV-O qualified association | written by jayostis/cascade-runtime-js#758 and its vocabulary half | not ruled here |
+| what a confirmed write records | PROV-O qualified association | the model, in `cascade:ModelProposerRole`, and the person who said yes, in `cascade:PatientRole`, each on an association of the act that wrote it (`Y3`; `model-proposed-writes.md`) | borrowed from PROV-DM; ruled in `model-proposed-writes.md` |
 
 ## Why
 
@@ -155,8 +155,6 @@ term is a policy part and a tier is one value a tool declares.
 
 - **A yes for more than one call** (as "allow for this chat"). Lean: no; each call is asked, until a person's use shows
   the questions are too many.
-- **What a confirmed write records of who proposed it and who said yes.** jayostis/cascade-runtime-js#758 rules it,
-  with PROV's qualified association.
 - **Whether a hosted model may read real records at all.** The kit warns of it; it is the person's choice of model,
   which no tier decides.
 

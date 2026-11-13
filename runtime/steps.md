@@ -53,6 +53,7 @@ and `scripted-input/people.ttl` gives each person's subject (`foaf:name`) and po
 | `bridge/<step>/<file stem>/graph.ttl`, `findings.ttl` | the Bridge's saved output for each document an import step converts, in a folder named as the step, because a conversion carries its import's start; `unaccepted.txt` instead for a document no adapter accepted |
 | `entries/<entry>.ttl` | an entry: its session, the `urn:uuid:` the app minted for it once, and its drafts `urn:cascade:output-N`, with their versions |
 | `judgments/<judgment>.ttl` | one judgment a person makes, under the IRI it keeps |
+| `proposals/<proposal>.ttl` | one write a model proposes, as it would ask a tool at `cascade:ConsentTierAsk` for it, saying nothing of who or when: an entry's drafts `urn:cascade:output-N`, with their versions; a judgment, a blank node with its verdict and members; or a retraction, a blank node that `prov:invalidated` a judgment |
 | `references/` | the matcher's reference tables, below |
 | `tables/<name>/` | the tables an open step gives the pod, laid out as `references/` |
 
@@ -249,6 +250,22 @@ its name, whatever it declares, with the `cascade:modelToolActKind` it declares 
 whose `skos:notation` is the one it declares; a tool that declares no kind or no tier states none of that, and is still
 stated by its label. `urn:cascade:vocabulary` holds
 [`ontologies/cascade.ttl`](../ontologies/cascade.ttl). It changes nothing.
+
+### `the tools offered a model through a door that cannot ask are listed`
+
+As `the tools offered a model are listed`, of the tools one of the runtime's doors offers a model when it cannot ask the
+person (Y2): an MCP server's, to a client that declares no elicitation capability when it initialises. It changes
+nothing.
+
+### `a model proposes {name} and {person} says yes/no on {time}`, `a model proposes {name} and {person} dismisses the question on {time}`, `a model proposes {name} and {person} leaves the question unanswered on {time}`
+
+A model calls the runtime's tool at `cascade:ConsentTierAsk` that writes what `proposals/<name>.ttl` holds, through a
+door that can ask the person, with that write as the tool's input. The door asks the person, showing what this call
+will do, and the person answers so: yes, no, dismissing the question, or leaving it unanswered until the door stops
+waiting (for an MCP door, an elicitation the client accepts, declines, cancels, or never answers). A door that writes
+without asking, or asks more than once, fails the step. On a yes the door writes it at the step's time, as Y3 says,
+naming the session, the judgment or the retraction by a new random UUID; on any other answer the step writes nothing.
+The person who said yes is the pod's owner, named as the owner's profile names them (A13), a `prov:Person`.
 
 ### `the pod is read as it stood after {step}`, `the pod is read as it stood after {step}, under the {lens} lens`
 
