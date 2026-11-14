@@ -172,6 +172,21 @@ class TestFeatureFiles:
     class TestGivenTheKitsFeatures:
         """given the kits' features"""
 
+        def test_opens_every_kits_description_with_a_two_sentence_introduction(self):
+            """opens every kit's description with an introduction of exactly two sentences, a paragraph of its own
+
+            The first paragraph of the Feature description says who the person is and what the pod shows; the
+            description it replaces follows it, after a blank line.
+            """
+            introductions = {}
+            for kit in KITS:
+                feature = Parser().parse((kit / f"{kit.name}.feature").read_text(encoding="utf-8"))["feature"]
+                paragraphs = re.split(r"\n\s*\n", feature["description"].strip())
+                first = " ".join(paragraphs[0].split())
+                sentences = re.split(r"(?<=[.!?])\s+", first)
+                introductions[kit.name] = len(paragraphs) > 1 and len(sentences) == 2 and first[-1] in ".!?"
+            assert introductions == {kit.name: True for kit in KITS}
+
         def test_has_for_every_planted_case_a_kit_names_a_rule_with_an_example(self):
             """has, for every planted case a kit names, a rule with an example
 
