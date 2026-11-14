@@ -1,0 +1,13 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+:model a prov:SoftwareAgent .
+
+:judgment a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :record , :other ;
+    prov:wasAttributedTo :person ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ,
+                                                    [ prov:agent :model ; prov:hadRole cascade:ModelProposerRole ] ] ;
+    prov:generatedAtTime "2026-01-02T09:00:00Z"^^xsd:dateTime .

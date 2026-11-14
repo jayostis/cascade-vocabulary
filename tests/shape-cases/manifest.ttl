@@ -879,6 +879,40 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:HandEntrySessionShape ; sh:resultPath prov:startedAtTime ] ] .
 
+<#model-proposed-write/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <model-proposed-write/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#model-proposed-write/no-one-said-yes> a sht:Validate ;
+  mf:action [ sht:dataGraph <model-proposed-write/no-one-said-yes.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ModelProposedActShape ] ] .
+
+<#model-proposed-write/proposer-a-person> a sht:Validate ;
+  mf:action [ sht:dataGraph <model-proposed-write/proposer-a-person.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ModelProposerAssociationShape ] ] .
+
+<#model-proposed-write/attributed-to-the-model> a sht:Validate ;
+  mf:action [ sht:dataGraph <model-proposed-write/attributed-to-the-model.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ModelProposedJudgmentShape ] ] .
+
+<#model-proposed-write/yes-not-the-authors> a sht:Validate ;
+  mf:action [ sht:dataGraph <model-proposed-write/yes-not-the-authors.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PersonJudgmentShape ] ] .
+
+<#model-proposed-write/yes-not-the-makers> a sht:Validate ;
+  mf:action [ sht:dataGraph <model-proposed-write/yes-not-the-makers.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PersonRetractionAuthorShape ] ] .
+
+<#model-proposed-write/two-proposers> a sht:Validate ;
+  mf:action [ sht:dataGraph <model-proposed-write/two-proposers.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:OneModelProposerShape ; sh:resultPath prov:qualifiedAssociation ] ] .
+
 <#connect-to-server/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <connect-to-server/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

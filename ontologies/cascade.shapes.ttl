@@ -2647,13 +2647,61 @@ cascade:PersonJudgmentShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
         [ sh:not [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:Person ] ]
-        [ sh:property [ sh:path ( prov:wasGeneratedBy prov:qualifiedAssociation ) ; sh:minCount 1 ; sh:maxCount 1 ;
-                        sh:node cascade:PersonJudgmentAssociationShape ] ,
-                      [ sh:path ( prov:wasGeneratedBy prov:qualifiedAssociation prov:agent ) ;
-                        sh:equals prov:wasAttributedTo ] ,
+        [ sh:property [ sh:path ( prov:wasGeneratedBy prov:qualifiedAssociation ) ; sh:minCount 1 ; sh:maxCount 2 ;
+                        sh:node cascade:PersonJudgmentAssociationShape ;
+                        sh:qualifiedValueShape cascade:PersonJudgmentAuthorAssociationShape ;
+                        sh:qualifiedMinCount 1 ; sh:qualifiedMaxCount 1 ] ,
                       [ sh:path prov:generatedAtTime ; sh:minCount 1 ] ]
     ) ;
-    sh:message "A person's judgment carries the time it was made and names the role its author acted in, in one association of the act that generated it, whose agent is the author."@en ;
+    sh:message "A person's judgment carries the time it was made and names the role its author acted in, in one association of the act that generated it, whose agent is the author; the act's only other association is the model's that proposed it."@en ;
+    sh:severity sh:Violation .
+
+cascade:ModelProposedJudgmentShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path ( prov:wasGeneratedBy prov:qualifiedAssociation prov:hadRole ) ; sh:hasValue cascade:ModelProposerRole ] ]
+        [ sh:path prov:wasAttributedTo ; sh:class prov:Person ]
+    ) ;
+    sh:message "A judgment a model proposed is the person's who said yes to it: its author is a prov:Person, never the model."@en ;
+    sh:severity sh:Violation .
+
+cascade:ModelProposedActShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:qualifiedAssociation ;
+    sh:or (
+        [ sh:not [ sh:path ( prov:qualifiedAssociation prov:hadRole ) ; sh:hasValue cascade:ModelProposerRole ] ]
+        [ sh:path prov:qualifiedAssociation ;
+          sh:qualifiedValueShape [ sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:PatientRole ] ,
+                                               [ sh:path prov:agent ; sh:minCount 1 ; sh:class prov:Person ] ] ;
+          sh:qualifiedMinCount 1 ]
+    ) ;
+    sh:message "An act a model proposed names the person who said yes to it: an association in cascade:PatientRole whose agent is a prov:Person."@en ;
+    sh:severity sh:Violation .
+
+cascade:ModelProposerAssociationShape a sh:NodeShape ;
+    sh:targetObjectsOf prov:qualifiedAssociation ;
+    sh:or (
+        [ sh:not [ sh:path prov:hadRole ; sh:hasValue cascade:ModelProposerRole ] ]
+        [ sh:path prov:agent ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ; sh:class prov:SoftwareAgent ]
+    ) ;
+    sh:message "The model that proposed an act is its association's one agent, a prov:SoftwareAgent named by its IRI."@en ;
+    sh:severity sh:Violation .
+
+cascade:OneModelProposerShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:qualifiedAssociation ;
+    sh:property [ sh:path prov:qualifiedAssociation ;
+                  sh:qualifiedValueShape [ sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:ModelProposerRole ] ] ;
+                  sh:qualifiedMaxCount 1 ] ;
+    sh:message "An act names at most one association in cascade:ModelProposerRole: the one model that proposed it."@en ;
+    sh:severity sh:Violation .
+
+cascade:PersonRetractionAuthorShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:invalidated ;
+    sh:not [ sh:path prov:qualifiedAssociation ;
+             sh:qualifiedValueShape [ sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:PatientRole ] ;
+                                      sh:not [ sh:path ( [ sh:inversePath prov:qualifiedAssociation ] prov:wasAssociatedWith ) ;
+                                               sh:equals prov:agent ] ] ;
+             sh:qualifiedMinCount 1 ] ;
+    sh:message "The person a retraction names in cascade:PatientRole is the person it is prov:wasAssociatedWith."@en ;
     sh:severity sh:Violation .
 
 cascade:MatcherJudgmentAssertionShape a sh:NodeShape ;
@@ -2899,7 +2947,12 @@ cascade:RuleListVersionRowShape a sh:NodeShape ;
 
 cascade:PersonJudgmentAssociationShape a sh:NodeShape ;
     sh:property [ sh:path prov:agent ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
-                [ sh:path prov:hadRole ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( cascade:PatientRole ) ] .
+                [ sh:path prov:hadRole ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( cascade:PatientRole cascade:ModelProposerRole ) ] .
+
+cascade:PersonJudgmentAuthorAssociationShape a sh:NodeShape ;
+    sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:PatientRole ] ,
+                [ sh:path ( [ sh:inversePath prov:qualifiedAssociation ] [ sh:inversePath prov:wasGeneratedBy ] prov:wasAttributedTo ) ;
+                  sh:equals prov:agent ] .
 
 cascade:DocumentRoleAttributionShape a sh:NodeShape ;
     sh:targetSubjectsOf prov:wasGeneratedBy ;
