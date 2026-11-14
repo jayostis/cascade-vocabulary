@@ -1,4 +1,8 @@
 Feature: Tamsin Vale's pod
+  Tamsin Vale is a patient whose records were pulled twice, a year apart, from Cascade North, a demo hospital that keeps
+  every version of a record. Her pod shows how an app reads the same record at two dates: a medication taken at the
+  first pull and stopped by the second, and three more A1c results that came in between.
+
   The fourth scenario every runtime must pass, cascade-runtime-js#343: one hospital's record pulled twice, a year
   apart, with a medication stopped between the pulls. Cascade North, a demo hospital that keeps every version of a
   record, answers each pull as the record stood on its date: on 2024-02-01 Tamsin's metformin is taken and three of her
