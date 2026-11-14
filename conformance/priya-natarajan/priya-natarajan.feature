@@ -1,4 +1,8 @@
 Feature: Priya Natarajan's pod
+  Priya Natarajan is a patient whose records reach her pod from Kestrel Harbor Hospital as FHIR and as a C-CDA, and from
+  Fernhill Family Clinic as a C-CDA alone. Her pod shows how an app joins the same medication or lab result across the
+  two formats, although the copies differ in dates, units and where the code sits.
+
   The second scenario every runtime must pass, https://github.com/jayostis/cascade-runtime-js/issues/70: one pod built
   from FHIR and C-CDA together, medications and lab results included. Kestrel Harbor Hospital sends Priya's records as
   FHIR, through Apple Health, and as a C-CDA from its patient portal; Fernhill Family Clinic sends only a C-CDA. Each

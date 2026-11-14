@@ -1,4 +1,8 @@
 Feature: Martin Okafor's pod
+  Martin Okafor is a patient whose one genetic variant is reported twice, in a 2022 panel from Harbourline Genetics and
+  a 2024 exome from St Columba's Hospital, each as a FHIR report. His pod shows how an app joins the two reports into
+  one variant and sets it beside what ClinVar says of it.
+
   The third scenario every runtime must pass, https://github.com/jayostis/cascade-vocabulary/issues/138: one variant
   in two FHIR reports, joined by the matcher, beside what ClinVar says of it. Harbourline Genetics' panel report of
   2022 and St Columba's Hospital's exome of 2024 each reach the pod as a saved pull. Each planted case M1 to M6 is a
