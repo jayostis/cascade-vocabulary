@@ -12,9 +12,7 @@ from contract import LAYOUT, QUERIES, ROOT
 
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
 SHAPES = [path for path in ONTOLOGIES if path.name.endswith(".shapes.ttl")]
-SPEC = "https://github.com/the-cascade-protocol/spec/"
-SOURCE_COMMIT = SPEC + "blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/"
-CC_BY = URIRef("https://creativecommons.org/licenses/by/4.0/")
+SPEC = "https://github.com/the-cascade-protocol/spec"
 CASCADE = "https://ns.cascadeprotocol.org/"
 CASCADE_NS = Namespace(CASCADE + "cascade#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
@@ -163,19 +161,6 @@ def partial_date_properties():
         if isinstance(range_, BNode) and vocabulary().value(range_, OWL.unionOf) is not None
         and set(Collection(vocabulary(), vocabulary().value(range_, OWL.unionOf))) == PARTIAL_DATE
     }
-
-
-@cache
-def terms_copied_from_the_spec():
-    """Each ontology file, as its path and its graph, with the terms whose `dct:source` is in the earlier Cascade
-    specification, the ontology itself apart."""
-    found = []
-    for path in ONTOLOGIES:
-        graph = Graph().parse(path)
-        ontology = next(graph.subjects(RDF.type, OWL.Ontology), None)
-        found.append((relative(path), graph, {term for term, source in graph.subject_objects(DCTERMS.source)
-                                              if str(source).startswith(SPEC) and term != ontology}))
-    return found
 
 
 def reaches_every_domain(graph, subject_class, predicate):
@@ -386,41 +371,40 @@ class TestTermsTheShapesAndOntologyAgreeOn:
                         for systems in HELD_AS_CODE_IRIS[path].values() for system in systems}
             assert refused == expected
 
+    class TestGivenAnyTermInCascade:
+        def test_says_what_it_is_in_a_comment(self):
+            """says what it is in a comment
+
+            Collects each class and property in `cascade#` the ontology files declare (more than two hundred); one with
+            no `rdfs:comment` fails.
+            """
+            graph = vocabulary()
+            ours = {s for kind in (OWL.Class, *DECLARES_A_PREDICATE) for s in graph.subjects(RDF.type, kind)
+                    if str(s).startswith(str(CASCADE_NS))}
+            assert len(ours) > 200
+            assert sorted(s for s in ours if (s, RDFS.comment, None) not in graph) == []
+
 
 class TestCopiedTerms:
     """Terms copied from another vocabulary · ontologies/*.ttl
 
     Where PROV, PAV or another published vocabulary has a term, the vocabulary uses it and copies its declaration, with
-    where it was copied from and its licence. A file here may name such a term only once it is so declared.
+    where it was copied from and its licence. A file here may name such a term only once it is so declared. A term in
+    `cascade#` is copied from nothing: it is first declared here, and says what it is itself.
     """
 
-    class TestGivenAnyTermCopiedFromTheSpecification:
-        """given any term copied from the earlier Cascade specification"""
+    class TestGivenAnyTermInCascade:
+        """given any term in `cascade#` that an ontology file declares"""
 
-        def test_names_the_commit_it_was_copied_at_as_its_source(self):
-            """names the commit it was copied at as its source
+        def test_cites_nothing_in_the_earlier_cascade_specification(self):
+            """cites nothing in the earlier Cascade specification
 
-            In each ontology file, each term whose `dct:source` is in the earlier specification must have only sources at
-            the one commit the terms were copied at; a term with a source at another commit fails. A file with no such term
-            fails too.
+            In each ontology and shapes file, each triple whose object is an IRI beginning
+            https://github.com/the-cascade-protocol/spec, with or without a path, whatever its predicate, fails.
             """
-            files = terms_copied_from_the_spec()
-            assert all(copied for _, _, copied in files)
-            offenders = sorted(f"{file}: {term}" for file, graph, copied in files for term in copied
-                               if not all(str(source).startswith(SOURCE_COMMIT) for source in graph.objects(term, DCTERMS.source)))
-            assert offenders == []
-
-        def test_carries_the_cc_by_4_0_licence(self):
-            """carries the CC BY 4.0 licence
-
-            In each ontology file, each term whose `dct:source` is in the earlier specification must have
-            `dct:license` the Creative Commons CC BY 4.0 licence; one without it fails. A file with no such term fails too.
-            """
-            files = terms_copied_from_the_spec()
-            assert all(copied for _, _, copied in files)
-            offenders = sorted(f"{file}: {term}" for file, graph, copied in files for term in copied
-                               if (term, DCTERMS.license, CC_BY) not in graph)
-            assert offenders == []
+            assert sorted(f"{relative(path)}: {subject} {predicate}" for path in ONTOLOGIES
+                          for subject, predicate, cited in Graph().parse(path)
+                          if isinstance(cited, URIRef) and str(cited).startswith(SPEC)) == []
 
     class TestGivenAnyTermOutsideCascade:
         """given any term outside `cascade#` that an ontology file declares"""
