@@ -4,7 +4,7 @@ Status: ruled 2026-10-22, from #132 and the FHIR mapping on #128. The owner rule
 per coding), on renamed terms being removed in the re-mint, and the descriptive-name rule; the remaining rows were
 accepted as proposed after the independent critical read, under the owner's delegation, and are listed on #204 for him
 to reverse. Applied by #132, which writes the terms, shapes, adapter queries and the feature rules each row names. The
-final name of every term is in `epic-alpha/term-map.csv`'s `new` column, which this note follows. Amends M4's
+final name of every term is in `epic-alpha/term-map.csv`'s `new` column, which this note follows. Amends M4c's
 literal example (`health:vaccineCode "141"`), M14's status clause, the time term M12 reads, and #132's "deprecated, not
 deleted". The duplicate declarations (`snomedCode`, `sourceRecordId`) and the `status` collision across namespaces are
 #193's, ruled by `naming.md` and merged there; this note rules only what the merge leaves: what a status value means.
@@ -136,7 +136,7 @@ Every row is ruled, as the status line says. "#132" in the last column means the
 | 3. a medication's status | R4 MedicationRequest and MedicationStatement status; R5's recorded-status plus `adherence`; C-CDA on FHIR's ConceptMap | the status stays the source's text, listed by no shape, because a person types it in an entry; its one meaning for any reader is L1's lifecycle class. L1 unchanged | borrowed from FHIR's codes and C-CDA on FHIR's map, through L1 |
 | 4. the C-CDA crosswalk at write time | C-CDA on FHIR's maps; `partial-dates-and-absent-reasons.md` row 6, no crosswalk for a reason | kept: the C-CDA adapter writes the FHIR code its scheme maps a SNOMED or v3 status to, and a code its scheme lacks is not written and is a finding, as today | borrowed from C-CDA on FHIR; differs from row 6 there, see Why |
 | 5. one status for every kind | nothing: no standard defines one | refused: a page that needs "is it current?" for a kind derives a class from that kind's list, as the medication lifecycle does (L1) | ours, by having none |
-| 6. `vaccineCode` | FHIR CodeableConcept; `testCode`, `allergenCode`, `icd10Code` here, one IRI per coding | keeps its name, becomes an IRI per coding in a registered code system (CVX now), and becomes repeatable, as `testCode` is; the immunization view and `My immunizations.rq` show the CVX code among them, and the vaccine comparisons change in a new rule list version. M4 rewritten by #132 | borrowed from FHIR, flattened as `testCode` is |
+| 6. `vaccineCode` | FHIR CodeableConcept; `testCode`, `allergenCode`, `icd10Code` here, one IRI per coding | keeps its name, becomes an IRI per coding in a registered code system (CVX now), and becomes repeatable, as `testCode` is; the immunization view and `My immunizations.rq` show the CVX code among them, and the vaccine comparisons change in a new rule list version. M4c rewritten by #132 | borrowed from FHIR, flattened as `testCode` is |
 | 7. `reaction` | FHIR `reaction` backbone, its `manifestation` a CodeableConcept | renamed `reactionManifestationText`, beside `manifestationCode` renamed `reactionManifestationCode` (row 12). Shapes and adapters; #132; `ontologies/cascade.ttl` | borrowed from FHIR's element name |
 | 8. a lab result's time | FHIR `effective[x]`; C-CDA "clinically relevant time"; FHIR `performed[x]` is an R4 procedure's | renamed `resultClinicallyRelevantTime`, with FHIR's definition; never the time the lab ran the test. M12 and `quantities.md`'s matcher row read it under the new name; #132 | borrowed from FHIR and C-CDA |
 | 9. a medication's start | FHIR `MedicationStatement.effective[x]`; `MedicationRequest.authoredOn`, written; R5 `effectiveDosePeriod`; C-CDA `effectiveTime` low; PAV `authoredOn` | `startDate`, renamed `medicationUseStartDate` (row 12), never takes `authoredOn`; a new `prescriptionWrittenDate` holds the day the prescription was written; an R5 source's `effectiveDosePeriod.start` is a start; `records.rq`'s date for a medication becomes `COALESCE(medicationUseStartDate, prescriptionWrittenDate)`, so a prescription keeps a place on a timeline; the view shows both. #132; `ontologies/cascade.ttl`, `queries/derivations/records.rq` | borrowed from FHIR's split; diverges from PAV's term, see Why |
@@ -186,7 +186,7 @@ list, with the step that chose it recorded.
 
 **Names that say what they hold.** (rows "6. vaccineCode", "7. reaction", "8. a lab result's time") The clinical code terms hold an IRI per coding (`testCode`, `allergenCode`,
 `manifestationCode`, `icd10Code`, the condition's `snomedCode`; verified in the adapters' queries and fixtures), except
-`cptCode`, the procedure's `snomedCode` and `vaccineCode`, which hold the code as a literal; and M4 already turns
+`cptCode`, the procedure's `snomedCode` and `vaccineCode`, which hold the code as a literal; and M4c already turns
 `vaccineCode "141"` into `<http://hl7.org/fhir/sid/cvx/141>` to join a table (`runtime/matcher.feature:89-91`). An IRI
 per coding makes `vaccineCode` mean what FHIR's does, flattened as every code term is, and lets an NDC or SNOMED coding
 join later without a new term; that is also why it becomes repeatable, and why the readers that assume one code, the

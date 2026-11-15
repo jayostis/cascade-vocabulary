@@ -213,6 +213,7 @@ class TestRuleLists:
     reads. The lists under the features' and kits' scripted input are held to that, but for two that show a mismatch.
 
     @rule matcher M4
+    @rule matcher M4b
     @rule matcher M7
     """
 

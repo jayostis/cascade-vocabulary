@@ -36,7 +36,7 @@ Feature: The matcher's procedure
     arrival is its earliest first revision's prov:generatedAtTime. A record the matcher takes (M2) with no first revision
     fails the run. A run compares
     only its step's records, each with every other record the matcher takes: each comparison query is evaluated with
-    ?record bound to the step's records (M4), never over every pair in the pod.
+    ?record bound to the step's records (M4a), never over every pair in the pod.
 
     Two runs compare the whole pod, with ?record unbound, and no other: a recheck (M7), which follows a new version of a
     table or of the rule list, and an open (O1), which then takes the records of the pairs its tables newly join.
@@ -133,14 +133,25 @@ Feature: The matcher's procedure
         | same code     | allergy RxNorm 1191 "Bayer aspirin", allergy RxNorm 1191 "Ecotrin"                                |
 
   Rule: M4. Each row of the rule list runs its comparison query
-    decisions/code-iris.md, row "a literal joining as an IRI", decisions/one-meaning-per-term.md, row "6. `vaccineCode`",
-    and decisions/performance.md, row "runs bound to arrivals, scoped within an organisation".
+    No note rules this.
     For each row of the current rule list, the matcher runs the query the row names, with ?record bound to the records
     the run compares (M1), over the pod, its derived state under the everyday lens, and, for a row naming a table kind
     (cascade:tableKind), the rows of the current version of every series of that kind (M13). A row (record, other) of
     its answer, with the version whose rows joined it as ?origin when the rule reads a table, is a match when the
     record's class is one the row applies to (cascade:appliesToClass). A recheck and an open run it with ?record unbound.
 
+    Background:
+      Given a new pod for Dev on 2026-04-01 at 09:00
+      And Dev enters "pairs" on 2026-04-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-04-02 at 09:05
+
+    Example: two allergies with one code are the same by code, and one with another code joins neither
+      Then the matcher's judgments holding allergy RxNorm 10180 "Sulfamethoxazole", allergy RxNorm 10180 "Bactrim" and allergy RxNorm 2670 are:
+        | justification | members                                                                 |
+        | same code     | allergy RxNorm 10180 "Sulfamethoxazole", allergy RxNorm 10180 "Bactrim" |
+
+  Rule: M4a. A run binds ?record to its records as an initial binding, or as a VALUES block on an engine that takes none
+    decisions/performance.md, row "runs bound to arrivals, scoped within an organisation".
     ?record is bound as SPARQL's substitution binds a variable: an initial binding, as pyoxigraph's substitutions and
     rdflib's initBindings give it, one evaluation per record; or, on an engine that takes no initial binding, as
     Oxigraph's JavaScript build does not, a VALUES ?record block of the run's records opening the query's outermost
@@ -156,8 +167,20 @@ Feature: The matcher's procedure
     sub-select or MINUS reads it, and binding a marked group drops no row of the run's records. A query is plain SPARQL,
     which an adapter or an app may run unbound.
 
+    No example can tell the two ways of binding ?record apart, since they give the same rows. Each runtime tests its
+    own.
+
+  Rule: M4b. A query reads a table's rows only inside GRAPH ?origin, guarded by the table's kind
+    No note rules this.
     A query reads a table's rows only inside GRAPH ?origin, guarded by ?origin prov:specializationOf/cascade:tableKind
-    and its kind. A record's code joins a row by the code's IRI, one form per code system (cascade:CodeSystem in
+    and its kind.
+
+    No example shows this rule: it is the form of every query that reads a table, which the vocabulary's tests check
+    against the table kind each rule list's row names.
+
+  Rule: M4c. A code joins a table's row as an IRI, a code written as a literal as its system's stem and the literal percent-encoded
+    decisions/code-iris.md, row "a literal joining as an IRI", and decisions/one-meaning-per-term.md, row "6. `vaccineCode`".
+    A record's code joins a row by the code's IRI, one form per code system (cascade:CodeSystem in
     cascade.ttl): a code held as an IRI, as a vaccine code is, <https://ns.cascadeprotocol.org/codes/cvx/141>, joins as
     it is; a code written as a literal is its system's void:uriSpace followed by the literal percent-encoded as SPARQL's
     ENCODE_FOR_URI does (every character but A-Z a-z 0-9 - _ . ~ as % and two upper-case hexadecimal digits of its
@@ -165,6 +188,11 @@ Feature: The matcher's procedure
     "NM_000249.4:c.2042C>T", is <https://ns.cascadeprotocol.org/codes/hgvs/NM_000249.4%3Ac.2042C%3ET>. Every query that
     joins a literal to a stem encodes it. The rationale is decisions/code-iris.md.
 
+    No example here shows this rule alone: M4d's vaccine group example joins CVX codes held as IRIs to a table's rows,
+    and M17's join an HGVS expression to a row through its encoding.
+
+  Rule: M4d. Each version of the rule list names, for each of its rules from R1 to R21, the query that rule's row runs
+    No note rules this.
     - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code.rq.
     - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
     - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
@@ -299,7 +327,7 @@ Feature: The matcher's procedure
 
     Version 15 of the vocabulary's list changes the queries of R6, R15, R16, R17 and R18, each of which works out each
     side of a pair in a sub-select, so that a run binds ?record in the record's side and reads the other side only for
-    the keys its records carry: the test code, and for R18 the business identifier and the test code (M4). Each gives
+    the keys its records carry: the test code, and for R18 the business identifier and the test code (M4a). Each gives
     the rows the query it replaces gives, so the examples under M21, M22 and M23 hold for it; versions 1 to 14 pin the
     old files:
 
@@ -383,11 +411,6 @@ Feature: The matcher's procedure
       Given a new pod for Dev on 2026-04-01 at 09:00
       And Dev enters "pairs" on 2026-04-02 at 09:00
       And the matcher runs on the records of that entry on 2026-04-02 at 09:05
-
-    Example: two allergies with one code are the same by code, and one with another code joins neither
-      Then the matcher's judgments holding allergy RxNorm 10180 "Sulfamethoxazole", allergy RxNorm 10180 "Bactrim" and allergy RxNorm 2670 are:
-        | justification | members                                                                 |
-        | same code     | allergy RxNorm 10180 "Sulfamethoxazole", allergy RxNorm 10180 "Bactrim" |
 
     Example: two procedures of one code are the same by code whatever their dates
       Then the matcher's judgments holding procedure SNOMED 73761001 "Colonoscopy" and procedure SNOMED 73761001 "Screening colonoscopy" are:
@@ -979,7 +1002,7 @@ Feature: The matcher's procedure
     R12 joins two variants whose current versions carry one ClinVar VariationID, the digits alone. R13 joins two
     variants whose current versions find one row of one version of a variant classifications table. A version that
     carries a VariationID finds the row of that variation through the ID alone, and its HGVS expression is not read; a
-    version that carries none finds the row that holds its expression (M4). The classification plays no part: the join
+    version that carries none finds the row that holds its expression (M4c). The classification plays no part: the join
     is identity. A pair that shares an ID is R12's alone, so no pair has two justifications; a pair whose versions carry
     different IDs is joined by neither, whatever expressions they hold; and a variant whose expression is on more than
     one row is left alone, rows being counted as distinct row subjects over every version held. The reasons are in

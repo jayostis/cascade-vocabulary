@@ -76,7 +76,7 @@ A break of one day is a break in what the sources said, and the pair goes to a p
 first runs version 18 asserts again every matcher judgment its rules still reach, and files one finding naming the matcher judgments it no
 longer reaches, the pairs now apart. New rule names would make that finding name every medication matcher judgment of version 17,
 including the pairs the new rules join again, and file each again under a new matcher judgment. Which query a matcher judgment was judged
-by is already on its assertion (rule list version and query hash, M4), as it was when versions 7, 12 and 14 changed the
+by is already on its assertion (rule list version and query hash, M4d), as it was when versions 7, 12 and 14 changed the
 queries of R5, R6 and R8.
 
 **Measured.** Each comparison was timed in Oxigraph JS on a pod of 16,500 records with 3,000 medications, each with an
