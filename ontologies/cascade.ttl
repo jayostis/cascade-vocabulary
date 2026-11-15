@@ -1263,27 +1263,27 @@ cascade:leftOutBecauseOf a owl:ObjectProperty ;
 
 cascade:EnteredInErrorAtSource a skos:Concept ;
     skos:inScheme cascade:LeftOutReasons ;
-    rdfs:label "entered-in-error at its source"@en .
+    skos:prefLabel "entered-in-error at its source"@en .
 
 cascade:RefutedAtSource a skos:Concept ;
     skos:inScheme cascade:LeftOutReasons ;
-    rdfs:label "refuted at its source"@en .
+    skos:prefLabel "refuted at its source"@en .
 
 cascade:JudgedErroneous a skos:Concept ;
     skos:inScheme cascade:LeftOutReasons ;
-    rdfs:label "judged erroneous"@en .
+    skos:prefLabel "judged erroneous"@en .
 
 cascade:ImportJudgedErroneous a skos:Concept ;
     skos:inScheme cascade:LeftOutReasons ;
-    rdfs:label "the import that brought it was judged erroneous"@en .
+    skos:prefLabel "the import that brought it was judged erroneous"@en .
 
 cascade:PatientProfileNotClaimed a skos:Concept ;
     skos:inScheme cascade:LeftOutReasons ;
-    rdfs:label "its patient profile has no counting About"@en .
+    skos:prefLabel "its patient profile has no counting About"@en .
 
 cascade:NoPatient a skos:Concept ;
     skos:inScheme cascade:LeftOutReasons ;
-    rdfs:label "it names no patient"@en .
+    skos:prefLabel "it names no patient"@en .
 
 cascade:inEntry a owl:ObjectProperty ;
     rdfs:label "in entry"@en ;
@@ -2807,7 +2807,8 @@ dct:replaces a rdf:Property ;
 cascade:matcherRuleDeclaredWrong a owl:ObjectProperty ;
     rdfs:label "matcher rule declared wrong"@en ;
     rdfs:comment "Of a rule list version, the release, a matcher rule it declares wrong: once a pod's current rule list version is the release or a version after it, the pod's cascade:RuleListVersionMigration retracts each assertion of that rule's matcher judgments under a version the release revises, so a known-bad join is not offered back. An assertion under the release or a later version is not declared wrong: a version that ships the rule fixed, or runs it again, can join the pair again."@en ;
-    rdfs:domain prov:Entity .
+    rdfs:domain prov:Entity ;
+    rdfs:range cascade:MatcherRule .
 
 cascade:RuleListVersionMigration a owl:Class ;
     rdfs:label "rule list version migration"@en ;

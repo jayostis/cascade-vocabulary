@@ -236,7 +236,8 @@
 <#judgment-same-by-the-matcher/not-a-matcher-rule> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-same-by-the-matcher/not-a-matcher-rule.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
-              sh:result [ sh:sourceShape cascade:JudgmentShape ; sh:resultPath cascade:matcherRule ] ] .
+              sh:result [ sh:sourceShape cascade:JudgmentShape ; sh:resultPath cascade:matcherRule ] ,
+                        [ sh:sourceShape cascade:MachineSameShape ] ] .
 
 <#judgment-same-by-the-matcher/used-beside-derived-from> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-same-by-the-matcher/used-beside-derived-from.ttl> ] ;
