@@ -297,14 +297,14 @@ class TestTermsTheShapesAndOntologyAgreeOn:
         def test_is_in_a_scheme_in_a_list_a_shape_accepts_or_in_a_class(self):
             """is in a scheme, in an `sh:in` list, or an instance of a class
 
-            Each `owl:NamedIndividual` under `cascade#` is a concept of a scheme, a member of an `sh:in` list of the
-            shapes, or typed as a class of `cascade#`, or as the one instance of its class the ontology files declare;
-            one that is none of them is a name with no kind, and fails.
+            Each `owl:NamedIndividual` or `skos:Concept` under `cascade#` is a concept of a scheme, a member of an
+            `sh:in` list of the shapes, or typed as a class of `cascade#`, or as the one instance of its class the
+            ontology files declare; one that is none of them is a name with no kind, and fails.
             """
             graph = vocabulary()
             listed = {m for lst in shape_graphs().objects(None, SH["in"]) for m in Collection(shape_graphs(), lst)}
             kindless = []
-            for individual in graph.subjects(RDF.type, OWL.NamedIndividual):
+            for individual in {*graph.subjects(RDF.type, OWL.NamedIndividual), *graph.subjects(RDF.type, SKOS.Concept)}:
                 if not str(individual).startswith(CASCADE):
                     continue
                 classes = set(graph.objects(individual, RDF.type)) - {OWL.NamedIndividual}
