@@ -45,7 +45,7 @@ cascade:dateOfBirth a owl:DatatypeProperty ;
 
 cascade:sourceRecordId a owl:DatatypeProperty ;
     rdfs:label "Source Record ID"@en ;
-    rdfs:comment "Of a record, the identifier its source gave it: FHIR's Resource.id; the first id of a C-CDA entry's statement, as its root and extension joined by a colon, or its root alone where it has no extension; or a ClinVar record's accession. A source that gives none leaves it absent."@en ;
+    rdfs:comment "Of a record, the identifier its source gave it: FHIR's Resource.id; the first id of a C-CDA entry's statement, as its root and extension joined by a colon, or its root alone where it has no extension. A source that gives none leaves it absent."@en ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/resource-definitions.html#Resource.id> .
 
@@ -264,7 +264,7 @@ cascade:administrationSite a owl:DatatypeProperty ;
 
 cascade:LaboratoryTestResult a owl:Class ;
     rdfs:label "Laboratory Test Result"@en ;
-    rdfs:comment "One result of a laboratory test, as a FHIR Observation in the laboratory category or a C-CDA Result Observation inside a Result Organizer: the test's name and codes, its value and unit, its reference range, the time it is about and its status. A vital sign is not one."@en ;
+    rdfs:comment "One result of a laboratory test, as a FHIR Observation in the laboratory category, or with no category and a LOINC code that is not a vital sign's, or a C-CDA Result Observation inside a Result Organizer: the test's name and codes, its value and unit, its reference range, the time it is about and its status. A vital sign is not one."@en ;
     rdfs:subClassOf prov:Entity ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation> .
 
@@ -290,14 +290,14 @@ cascade:testCodeInOtherSystem a owl:DatatypeProperty ;
 
 cascade:resultValue a owl:DatatypeProperty ;
     rdfs:label "Result Value"@en ;
-    rdfs:comment "Of a version of a lab result, its value as one string: from FHIR, Observation.valueString or a valueCodeableConcept's text or first display, or a number the typed forms refuse, written out; from C-CDA, a Result Observation's first value whatever its type, as written. A number is also typed on the cascade:Quantity nodes cascade:resultValueKind says hold it."@en ;
+    rdfs:comment "Of a version of a lab result, its value as one string, written only for a value that is words or a number the typed forms refuse: from FHIR, Observation.valueString or a valueCodeableConcept's text or first display, or the refused number written out; from C-CDA, a Result Observation's first value where it is an ST or a coded value, or the refused number as the document wrote it. A number the typed forms hold has no cascade:resultValue: it is on the cascade:Quantity nodes cascade:resultValueKind says hold it."@en ;
     rdfs:domain cascade:LaboratoryTestResult ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.value_x_> .
 
 cascade:resultUnit a owl:DatatypeProperty ;
     rdfs:label "Result Unit"@en ;
-    rdfs:comment "Of a version of a lab result, the unit of its cascade:resultValue as the source wrote it: a C-CDA value's unit, or the unit or code of a FHIR valueQuantity whose number the typed form refuses. A typed quantity's unit is its cascade:ucumUnit and cascade:unitText."@en ;
+    rdfs:comment "Of a version of a lab result, the unit of a number the typed forms refuse, as the source wrote it, beside that number in its cascade:resultValue, and written only then: from FHIR, a valueQuantity's unit or else its code; from C-CDA, a PQ's or one-bound IVL_PQ's unit. A number the typed forms hold has no cascade:resultUnit: its unit is its cascade:ucumUnit and cascade:unitText."@en ;
     rdfs:domain cascade:LaboratoryTestResult ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.value_x_> .
@@ -430,12 +430,12 @@ cascade:medicationUseEndDate a owl:DatatypeProperty ;
 
 cascade:GeneticVariantFinding a owl:Class ;
     rdfs:label "Genetic Variant Finding"@en ;
-    rdfs:comment "A genetic variant found in the person, as a FHIR Observation coded LOINC 69548-6 or a ClinVar variation record: its HGVS coding DNA expression, its ClinVar Variation ID and its gene. What the variant means is a cascade:VariantInterpretation of it."@en ;
+    rdfs:comment "A genetic variant found in the person, as a FHIR Observation coded LOINC 69548-6: its HGVS coding DNA expression, its ClinVar Variation ID and its gene. What the variant means is a cascade:VariantInterpretation of it."@en ;
     rdfs:subClassOf prov:Entity .
 
 cascade:hgvsCodingDnaExpression a owl:DatatypeProperty ;
     rdfs:label "HGVS Coding DNA Expression"@en ;
-    rdfs:comment "Of a version of a genetic variant finding, the variant as an HGVS expression on a coding DNA reference sequence, a RefSeq or LRG transcript followed by :c., as a FHIR variant Observation's component coded LOINC 48004-6, or ClinVar's coding HGVS, its MANE Select one first. One at most."@en ;
+    rdfs:comment "Of a version of a genetic variant finding, the variant as an HGVS expression on a coding DNA reference sequence: the sequence with its version (NM_, NG_, XM_, NC_ or LRG_), a colon, c. and the change, as a FHIR variant Observation's component coded LOINC 48004-6. One at most."@en ;
     rdfs:domain cascade:GeneticVariantFinding ;
     rdfs:range xsd:string .
 
@@ -447,31 +447,31 @@ cascade:clinvarVariationId a owl:DatatypeProperty ;
 
 cascade:geneSymbol a owl:DatatypeProperty ;
     rdfs:label "Gene Symbol (HGNC Approved)"@en ;
-    rdfs:comment "Of a version of a genetic variant finding, the HGNC approved symbol of the gene it is in, as the HGNC coding's display of a FHIR variant Observation's component coded LOINC 48018-6, or the first gene of ClinVar's GeneList. One at most."@en ;
+    rdfs:comment "Of a version of a genetic variant finding, the HGNC approved symbol of the gene it is in, as the HGNC coding's display of a FHIR variant Observation's component coded LOINC 48018-6. One at most."@en ;
     rdfs:domain cascade:GeneticVariantFinding ;
     rdfs:range xsd:string .
 
 cascade:VariantInterpretation a owl:Class ;
     rdfs:label "Variant Interpretation"@en ;
-    rdfs:comment "A classification of what a genetic variant means for the person's health, by a lab's report or a ClinVar submission, as a FHIR Observation coded diagnostic-implication or a ClinVar RCV record's classification for one condition: its ACMG/AMP class, the variant it interprets, the condition it is for, its evidence codes and when it was made. Two calls on one variant are two records; neither replaces the other."@en ;
+    rdfs:comment "A classification of what a genetic variant means for the person's health, by a lab's report, as a FHIR Observation coded diagnostic-implication: its ACMG/AMP class, the variant it interprets, the condition it is for, its evidence codes and when it was made. Two calls on one variant are two records; neither replaces the other."@en ;
     rdfs:subClassOf prov:Entity .
 
 cascade:variantInterpreted a owl:ObjectProperty ;
     rdfs:label "Variant Interpreted"@en ;
-    rdfs:comment "Of a version of a variant interpretation, the genetic variant finding it interprets, by that record's IRI, never a version's: from FHIR, the one variant Observation its derivedFrom names; from ClinVar, the variation its RCV record is about. One at most."@en ;
+    rdfs:comment "Of a version of a variant interpretation, the genetic variant finding it interprets, by that record's IRI, never a version's: from FHIR, as FHIR's derivedFrom, the one variant Observation it names. One at most."@en ;
     rdfs:domain cascade:VariantInterpretation ;
     rdfs:range cascade:GeneticVariantFinding ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.derivedFrom> .
 
 cascade:acmgClassification a owl:ObjectProperty ;
     rdfs:label "ACMG/AMP Classification"@en ;
-    rdfs:comment "Of a version of a variant interpretation, its class on the ACMG/AMP 2015 five-tier scale: cascade:Pathogenic, cascade:LikelyPathogenic, cascade:UncertainSignificance, cascade:LikelyBenign or cascade:Benign, as a FHIR interpretation's component coded LOINC 53037-8, its LOINC answer mapped, or ClinVar's germline classification mapped. One at most."@en ;
+    rdfs:comment "Of a version of a variant interpretation, its class on the ACMG/AMP 2015 five-tier scale: cascade:Pathogenic, cascade:LikelyPathogenic, cascade:UncertainSignificance, cascade:LikelyBenign or cascade:Benign, as a FHIR interpretation's component coded LOINC 53037-8, its LOINC answer mapped. One at most."@en ;
     rdfs:domain cascade:VariantInterpretation ;
     rdfs:range skos:Concept .
 
 cascade:interpretedDate a owl:DatatypeProperty ;
     rdfs:label "Interpretation Date"@en ;
-    rdfs:comment "Of a version of a variant interpretation, the day it was made, or the year or month where the source gives no day, with no time: FHIR's Observation.issued or else its effective time, or ClinVar's DateLastEvaluated. One at most."@en ;
+    rdfs:comment "Of a version of a variant interpretation, the day it was made, or the year or month where the source gives no day, with no time: as FHIR's Observation.issued or else its effective time. One at most."@en ;
     rdfs:domain cascade:VariantInterpretation ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.issued> .

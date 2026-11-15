@@ -12,7 +12,7 @@ from contract import LAYOUT, QUERIES, ROOT
 
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
 SHAPES = [path for path in ONTOLOGIES if path.name.endswith(".shapes.ttl")]
-SPEC = "https://github.com/the-cascade-protocol/spec/"
+SPEC = "https://github.com/the-cascade-protocol/spec"
 CASCADE = "https://ns.cascadeprotocol.org/"
 CASCADE_NS = Namespace(CASCADE + "cascade#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
@@ -371,6 +371,19 @@ class TestTermsTheShapesAndOntologyAgreeOn:
                         for systems in HELD_AS_CODE_IRIS[path].values() for system in systems}
             assert refused == expected
 
+    class TestGivenAnyTermInCascade:
+        def test_says_what_it_is_in_a_comment(self):
+            """says what it is in a comment
+
+            Collects each class and property in `cascade#` the ontology files declare (more than two hundred); one with
+            no `rdfs:comment` fails.
+            """
+            graph = vocabulary()
+            ours = {s for kind in (OWL.Class, *DECLARES_A_PREDICATE) for s in graph.subjects(RDF.type, kind)
+                    if str(s).startswith(str(CASCADE_NS))}
+            assert len(ours) > 200
+            assert sorted(s for s in ours if (s, RDFS.comment, None) not in graph) == []
+
 
 class TestCopiedTerms:
     """Terms copied from another vocabulary · ontologies/*.ttl
@@ -383,26 +396,15 @@ class TestCopiedTerms:
     class TestGivenAnyTermInCascade:
         """given any term in `cascade#` that an ontology file declares"""
 
-        def test_cites_no_source_in_the_earlier_cascade_specification(self):
-            """cites no source in the earlier Cascade specification
+        def test_cites_nothing_in_the_earlier_cascade_specification(self):
+            """cites nothing in the earlier Cascade specification
 
-            In each ontology and shapes file, each subject with a `dct:source` in the-cascade-protocol/spec fails.
+            In each ontology and shapes file, each triple whose object is an IRI beginning
+            https://github.com/the-cascade-protocol/spec, with or without a path, whatever its predicate, fails.
             """
-            assert sorted(f"{relative(path)}: {subject}" for path in ONTOLOGIES
-                          for subject, source in Graph().parse(path).subject_objects(DCTERMS.source)
-                          if str(source).startswith(SPEC)) == []
-
-        def test_says_what_it_is_in_a_comment(self):
-            """says what it is in a comment
-
-            Collects each class and property in `cascade#` the ontology files declare (more than two hundred); one with
-            no `rdfs:comment` fails.
-            """
-            graph = vocabulary()
-            ours = {s for kind in (OWL.Class, *DECLARES_A_PREDICATE) for s in graph.subjects(RDF.type, kind)
-                    if str(s).startswith(str(CASCADE_NS))}
-            assert len(ours) > 200
-            assert sorted(s for s in ours if (s, RDFS.comment, None) not in graph) == []
+            assert sorted(f"{relative(path)}: {subject} {predicate}" for path in ONTOLOGIES
+                          for subject, predicate, cited in Graph().parse(path)
+                          if isinstance(cited, URIRef) and str(cited).startswith(SPEC)) == []
 
     class TestGivenAnyTermOutsideCascade:
         """given any term outside `cascade#` that an ontology file declares"""
