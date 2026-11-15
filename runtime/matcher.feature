@@ -168,7 +168,7 @@ Feature: The matcher's procedure
     which an adapter or an app may run unbound.
 
     No example can tell the two ways of binding ?record apart, since they give the same rows. Each runtime tests its
-    own.
+    own, and the vocabulary's tests check the mark.
 
   Rule: M4b. A query reads a table's rows only inside GRAPH ?origin, guarded by the table's kind
     No note rules this.
@@ -178,7 +178,7 @@ Feature: The matcher's procedure
     No example shows this rule: it is the form of every query that reads a table, which the vocabulary's tests check
     against the table kind each rule list's row names.
 
-  Rule: M4c. A code joins a table's row as an IRI, a code written as a literal as its system's stem and the literal percent-encoded
+  Rule: M4c. A code joins a table's row as its IRI: its system's stem and, for a code written as a literal, the literal percent-encoded
     decisions/code-iris.md, row "a literal joining as an IRI", and decisions/one-meaning-per-term.md, row "6. `vaccineCode`".
     A record's code joins a row by the code's IRI, one form per code system (cascade:CodeSystem in
     cascade.ttl): a code held as an IRI, as a vaccine code is, <https://ns.cascadeprotocol.org/codes/cvx/141>, joins as
@@ -193,6 +193,9 @@ Feature: The matcher's procedure
 
   Rule: M4d. Each version of the rule list names, for each of its rules from R1 to R21, the query that rule's row runs
     No note rules this.
+    Each row names its rule, the rule's class and justification (a finding, for a rule that files no judgment), and the
+    query it runs, with the table kind it reads, if any; the first four rows, whose examples close this rule, are:
+
     - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code.rq.
     - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
     - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
