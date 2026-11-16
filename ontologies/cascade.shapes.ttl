@@ -2180,6 +2180,13 @@ cascade:CodeInAListedSystemShape a sh:NodeShape ;
         [ sh:or ( [ sh:not [ sh:pattern "^http://snomed\\.info/id/" ] ] cascade:SnomedCtCodeShape ) ]
         [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/icd10cm/" ] ] cascade:IcdTenCmCodeShape ) ]
         [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cpt/" ] ] cascade:CptCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cvx/" ] ] cascade:CvxCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/rxnorm/" ] ] cascade:RxNormCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/ndc11/" ] ] cascade:NdcCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^http://loinc\\.org/rdf/" ] ] cascade:LoincCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/medrt/" ] ] cascade:MedrtCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^http://id\\.nlm\\.nih\\.gov/mesh/" ] ] cascade:MeshCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^https://identifiers\\.org/clinvar:" ] ] cascade:ClinVarCodeShape ) ]
     ) .
 
 cascade:CptCodeShape a sh:NodeShape ;
@@ -2214,7 +2221,7 @@ cascade:NdcCodeShape a sh:NodeShape ;
 
 cascade:IcdTenCmCodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
-    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/icd10cm/[A-Z][0-9A-Z]{2}(\\.[0-9A-Z]{1,4})?$" .
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/icd10cm/[A-Z][0-9A-Z]{2}(\\.?[0-9A-Z]{1,4})?$" .
 
 cascade:RxNormCodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
