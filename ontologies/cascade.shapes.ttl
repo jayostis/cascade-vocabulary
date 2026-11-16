@@ -1,11 +1,6 @@
 # The shapes of the Cascade vocabulary, https://ns.cascadeprotocol.org/cascade#.
 #
-# Licensed Apache-2.0 AND CC-BY-4.0. A shape carrying a dct:source in https://github.com/the-cascade-protocol/spec/ is
-# adapted from "The Cascade Protocol specification" by Cascade Agentic Labs LLC, its ontologies/ folder at commit
-# d819bc2c045266f9f79ebf9398cbbb82a6156d27
-# (https://github.com/the-cascade-protocol/spec/tree/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies), licensed
-# under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Adapted: shapes trimmed to the terms here, renamed
-# into this namespace, and merged. Every other shape is Apache-2.0.
+# Licensed Apache-2.0 AND CC-BY-4.0, as NOTICE says.
 
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
 @prefix dct: <http://purl.org/dc/terms/> .
@@ -25,11 +20,9 @@
 @prefix sssom: <https://w3id.org/sssom/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-# Copied from the spec's core
+# The person
 
 cascade:PatientProfileShape a sh:NodeShape ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/core/v1/core.shapes.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:PatientProfile ;
     sh:targetSubjectsOf cascade:dateOfBirth , foaf:givenName , foaf:familyName , foaf:name ,
         cascade:administrativeGender , cascade:deceased , cascade:dateOfDeath ;
@@ -108,11 +101,9 @@ cascade:PatientProfileShape a sh:NodeShape ;
     sh:message "A time of death is a death: a version that holds a date of death does not say the person has not died."@en ;
     sh:severity sh:Violation .
 
-# Copied from the spec's health
+# Allergies, conditions, vaccinations and lab results
 
 cascade:AllergyOrIntoleranceShape a sh:NodeShape ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:AllergyOrIntolerance ;
     sh:targetSubjectsOf cascade:allergen , cascade:allergenCode , cascade:reactionManifestationText , cascade:reactionManifestationCode ,
         cascade:allergySeverity , cascade:allergyCategory , cascade:allergyType , cascade:allergyCriticality ;
@@ -216,9 +207,6 @@ cascade:AllergyOrIntoleranceShape a sh:NodeShape ;
     ] .
 
 cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ,
-        <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:ProblemOrDiagnosis ;
     sh:targetSubjectsOf cascade:conditionName , cascade:icd10Code , cascade:conditionCategory , cascade:abatementDate ,
         cascade:conditionCodeInOtherSystem ;
@@ -312,8 +300,6 @@ cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
     ] .
 
 cascade:VaccinationShape a sh:NodeShape ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:Vaccination ;
     sh:targetSubjectsOf cascade:vaccineName , cascade:vaccineCode , cascade:vaccinationOccurrenceTime , cascade:lotNumber ,
         cascade:doseQuantity , cascade:routeOfAdministration , cascade:administrationSite ;
@@ -388,8 +374,6 @@ cascade:VaccinationShape a sh:NodeShape ;
     ] .
 
 cascade:LaboratoryTestResultShape a sh:NodeShape ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/health/v1/health.shapes.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:LaboratoryTestResult ;
     sh:targetSubjectsOf cascade:testName , cascade:testCode , cascade:testCodeInOtherSystem , cascade:resultValue , cascade:resultUnit ,
         cascade:referenceRange , cascade:resultClinicallyRelevantTime ;
@@ -487,11 +471,9 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
         sh:maxCount 1
     ] .
 
-# Copied from the spec's clinical
+# Procedures and medications
 
 cascade:MedicalProcedureShape a sh:NodeShape ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:MedicalProcedure ;
     sh:targetSubjectsOf cascade:procedureName , cascade:procedureDate , cascade:cptCode , cascade:procedureCodeInOtherSystem ;
 
@@ -562,8 +544,6 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
     ] .
 
 cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/clinical/v1/clinical.shapes.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:PrescribedOrReportedMedication ;
     sh:targetSubjectsOf cascade:drugName , cascade:rxNormCode , cascade:ndcCode , cascade:medicationCodeInOtherSystem , cascade:userSelectedCode ,
         cascade:prescribedOrReported , cascade:dosage , cascade:medicationUseStartDate , cascade:medicationUseEndDate ,
@@ -807,11 +787,9 @@ cascade:StructuredDosageShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
-# Copied from the spec's genomics
+# Genetic variants and their interpretations
 
 cascade:GeneticVariantFindingShape a sh:NodeShape ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.shapes.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:GeneticVariantFinding ;
     sh:targetSubjectsOf cascade:hgvsCodingDnaExpression , cascade:clinvarVariationId , cascade:geneSymbol ;
 
@@ -879,8 +857,6 @@ cascade:GeneticVariantFindingShape a sh:NodeShape ;
     ] .
 
 cascade:VariantInterpretationShape a sh:NodeShape ;
-    dct:source <https://github.com/the-cascade-protocol/spec/blob/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies/genomics/v1-draft/genomics.shapes.ttl> ;
-    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     sh:targetClass cascade:VariantInterpretation ;
     sh:targetSubjectsOf cascade:acmgClassification , cascade:variantInterpreted , cascade:interpretedDate , cascade:objectCondition , cascade:acmgEvidenceCode ;
 
@@ -2191,6 +2167,18 @@ cascade:CodeShape a sh:NodeShape ;
     sh:message "A code is an IRI of one of the code systems' forms."@en ;
     sh:severity sh:Violation .
 
+cascade:MatcherRuleShape a sh:NodeShape ;
+    sh:in ( cascade:SameCodeRule cascade:SameCodeAndDateRule cascade:SameMappedCodeRule cascade:SameMappedCodeAndDateRule
+            cascade:SameMedicationCodeRule cascade:SameResultRule cascade:SameConvertedCodeRule cascade:SameCodeAndPeriodRule
+            cascade:SameBrandGenericRule cascade:SameProductCodeRule cascade:SameVariationRule cascade:SameVariationThroughTableRule
+            cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule cascade:DifferentResultValuesRule
+            cascade:DifferentResultUnitsRule cascade:SameResultOnOneDayRule
+            cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule
+            cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule cascade:SameNoteTypeAndTextRule
+            cascade:SameNoteOrDocumentMasterIdentifierRule ) ;
+    sh:message "A matcher rule is one of the 20 cascade:MatcherRule terms."@en ;
+    sh:severity sh:Violation .
+
 cascade:CvxCodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
     sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cvx/(0[1-9]|[1-9][0-9]{1,2})$" .
@@ -2455,9 +2443,9 @@ cascade:JudgmentShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:matcherRule ;
-        sh:nodeKind sh:IRI ;
+        sh:node cascade:MatcherRuleShape ;
         sh:maxCount 1 ;
-        sh:message "A judgment names at most one matcher rule, by its IRI."@en ;
+        sh:message "A judgment names at most one matcher rule, one of the 20 cascade:MatcherRule terms."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:justification ;
@@ -2506,7 +2494,7 @@ cascade:RetractionByPersonOrReleaseShape a sh:NodeShape ;
     sh:xone (
         [ sh:path prov:wasAssociatedWith ; sh:minCount 1 ]
         [ sh:path prov:used ; sh:minCount 1 ;
-          sh:node [ sh:property [ sh:path cascade:matcherRuleDeclaredWrong ; sh:minCount 1 ] ] ]
+          sh:node [ sh:property [ sh:path cascade:matcherRuleDeclaredWrong ; sh:minCount 1 ; sh:node cascade:MatcherRuleShape ] ] ]
     ) ;
     sh:message "A retraction is made either by a person (prov:wasAssociatedWith) or by a release, prov:used: a rule list version that declares a matcher rule wrong; not both and not neither."@en ;
     sh:severity sh:Violation .
@@ -2636,7 +2624,7 @@ cascade:MachineSameShape a sh:NodeShape ;
             [ sh:path cascade:verdict ; sh:hasValue cascade:Same ]
         ) ] ]
         [ sh:property [ sh:path cascade:justification ; sh:minCount 1 ] ,
-                      [ sh:path cascade:matcherRule ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                      [ sh:path cascade:matcherRule ; sh:node cascade:MatcherRuleShape ; sh:minCount 1 ; sh:maxCount 1 ] ,
                       [ sh:path prov:wasDerivedFrom ; sh:minCount 1 ] ,
                       [ sh:path prov:generatedAtTime ; sh:maxCount 0 ] ]
     ) ;
@@ -2647,13 +2635,61 @@ cascade:PersonJudgmentShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
         [ sh:not [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:Person ] ]
-        [ sh:property [ sh:path ( prov:wasGeneratedBy prov:qualifiedAssociation ) ; sh:minCount 1 ; sh:maxCount 1 ;
-                        sh:node cascade:PersonJudgmentAssociationShape ] ,
-                      [ sh:path ( prov:wasGeneratedBy prov:qualifiedAssociation prov:agent ) ;
-                        sh:equals prov:wasAttributedTo ] ,
+        [ sh:property [ sh:path ( prov:wasGeneratedBy prov:qualifiedAssociation ) ; sh:minCount 1 ; sh:maxCount 2 ;
+                        sh:node cascade:PersonJudgmentAssociationShape ;
+                        sh:qualifiedValueShape cascade:PersonJudgmentAuthorAssociationShape ;
+                        sh:qualifiedMinCount 1 ; sh:qualifiedMaxCount 1 ] ,
                       [ sh:path prov:generatedAtTime ; sh:minCount 1 ] ]
     ) ;
-    sh:message "A person's judgment carries the time it was made and names the role its author acted in, in one association of the act that generated it, whose agent is the author."@en ;
+    sh:message "A person's judgment carries the time it was made and names the role its author acted in, in one association of the act that generated it, whose agent is the author; the act's only other association is the model's that proposed it."@en ;
+    sh:severity sh:Violation .
+
+cascade:ModelProposedJudgmentShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path ( prov:wasGeneratedBy prov:qualifiedAssociation prov:hadRole ) ; sh:hasValue cascade:ModelProposerRole ] ]
+        [ sh:path prov:wasAttributedTo ; sh:class prov:Person ]
+    ) ;
+    sh:message "A judgment a model proposed is the person's who said yes to it: its author is a prov:Person, never the model."@en ;
+    sh:severity sh:Violation .
+
+cascade:ModelProposedActShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:qualifiedAssociation ;
+    sh:or (
+        [ sh:not [ sh:path ( prov:qualifiedAssociation prov:hadRole ) ; sh:hasValue cascade:ModelProposerRole ] ]
+        [ sh:path prov:qualifiedAssociation ;
+          sh:qualifiedValueShape [ sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:PatientRole ] ,
+                                               [ sh:path prov:agent ; sh:minCount 1 ; sh:class prov:Person ] ] ;
+          sh:qualifiedMinCount 1 ]
+    ) ;
+    sh:message "An act a model proposed names the person who said yes to it: an association in cascade:PatientRole whose agent is a prov:Person."@en ;
+    sh:severity sh:Violation .
+
+cascade:ModelProposerAssociationShape a sh:NodeShape ;
+    sh:targetObjectsOf prov:qualifiedAssociation ;
+    sh:or (
+        [ sh:not [ sh:path prov:hadRole ; sh:hasValue cascade:ModelProposerRole ] ]
+        [ sh:path prov:agent ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ; sh:class prov:SoftwareAgent ]
+    ) ;
+    sh:message "The model that proposed an act is its association's one agent, a prov:SoftwareAgent named by its IRI."@en ;
+    sh:severity sh:Violation .
+
+cascade:OneModelProposerShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:qualifiedAssociation ;
+    sh:property [ sh:path prov:qualifiedAssociation ;
+                  sh:qualifiedValueShape [ sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:ModelProposerRole ] ] ;
+                  sh:qualifiedMaxCount 1 ] ;
+    sh:message "An act names at most one association in cascade:ModelProposerRole: the one model that proposed it."@en ;
+    sh:severity sh:Violation .
+
+cascade:PersonRetractionAuthorShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:invalidated ;
+    sh:not [ sh:path prov:qualifiedAssociation ;
+             sh:qualifiedValueShape [ sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:PatientRole ] ;
+                                      sh:not [ sh:path ( [ sh:inversePath prov:qualifiedAssociation ] prov:wasAssociatedWith ) ;
+                                               sh:equals prov:agent ] ] ;
+             sh:qualifiedMinCount 1 ] ;
+    sh:message "The person a retraction names in cascade:PatientRole is the person it is prov:wasAssociatedWith."@en ;
     sh:severity sh:Violation .
 
 cascade:MatcherJudgmentAssertionShape a sh:NodeShape ;
@@ -2885,8 +2921,9 @@ cascade:RuleListVersionRowShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:matcherRule ;
+        sh:node cascade:MatcherRuleShape ;
         sh:minCount 1 ;
-        sh:message "A row described in a pod gives its matcher rule."@en ;
+        sh:message "A row described in a pod gives its matcher rule, one of the 20 cascade:MatcherRule terms."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:queryHash ;
@@ -2899,7 +2936,12 @@ cascade:RuleListVersionRowShape a sh:NodeShape ;
 
 cascade:PersonJudgmentAssociationShape a sh:NodeShape ;
     sh:property [ sh:path prov:agent ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
-                [ sh:path prov:hadRole ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( cascade:PatientRole ) ] .
+                [ sh:path prov:hadRole ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( cascade:PatientRole cascade:ModelProposerRole ) ] .
+
+cascade:PersonJudgmentAuthorAssociationShape a sh:NodeShape ;
+    sh:property [ sh:path prov:hadRole ; sh:hasValue cascade:PatientRole ] ,
+                [ sh:path ( [ sh:inversePath prov:qualifiedAssociation ] [ sh:inversePath prov:wasGeneratedBy ] prov:wasAttributedTo ) ;
+                  sh:equals prov:agent ] .
 
 cascade:DocumentRoleAttributionShape a sh:NodeShape ;
     sh:targetSubjectsOf prov:wasGeneratedBy ;

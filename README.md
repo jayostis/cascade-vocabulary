@@ -6,12 +6,9 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
 - [`ontologies/`](ontologies): the terms and shapes a
   [Cascade Bridge Adapter](https://github.com/jayostis/cascade-bridge-spec)'s output and a pod are read against, every
   one in the namespace `https://ns.cascadeprotocol.org/cascade#`: [`cascade.ttl`](ontologies/cascade.ttl) and
-  [`cascade.shapes.ttl`](ontologies/cascade.shapes.ttl), under `Apache-2.0 AND CC-BY-4.0`. The clinical terms and
-  their shapes are adapted from "The Cascade Protocol specification" by Cascade Agentic Labs LLC,
-  [the-cascade-protocol/spec](https://github.com/the-cascade-protocol/spec/tree/d819bc2c045266f9f79ebf9398cbbb82a6156d27/ontologies),
-  licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): trimmed to type, label, domain, range and
-  superclasses, renamed into this namespace, and merged; each carries its `dct:source` and `dct:license`. Every other
-  term is first declared here, under Apache-2.0.
+  [`cascade.shapes.ttl`](ontologies/cascade.shapes.ttl), under `Apache-2.0 AND CC-BY-4.0`, as [`NOTICE`](NOTICE)
+  says. Each term in the namespace says what it is in its `rdfs:comment`; a term copied from another vocabulary
+  carries its `dct:source` and `dct:license`.
 - [`decisions/`](decisions): why a term or a rule is as it is, one note for each, with what others do, the alternatives
   that lost and what would change our mind.
 - [`queries/`](queries): the standard queries over a pod: the derivations and lenses, the views and

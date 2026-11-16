@@ -101,7 +101,7 @@ def leaves(tree):
 
 def binds_record_outermost(tree):
     """Whether a triple pattern of the query's outermost group, outside any sub-select, MINUS, OPTIONAL or UNION, holds
-    ?record: then a VALUES block opening that group binds it as an initial binding does (M4)."""
+    ?record: then a VALUES block opening that group binds it as an initial binding does (M4a)."""
     [query] = [node for node in nodes(tree) if node.name == "SelectQuery"]
     blocks = [part for part in query["where"].get("part") or [] if part.name == "TriplesBlock"]
     return Variable("record") in set(leaves(blocks))
@@ -123,7 +123,7 @@ def keeps_every_row_of_a_record(subselect):
 def marked_groups_bind_record(text):
     """Whether every `# bound: ?record` line marks a group, and each group marked is inside a sub-select that keeps
     every row of a record and holds ?record in a triple pattern of its own, outside any nested pattern, so the VALUES
-    block opening it binds ?record there as the one opening the outermost group does (M4)."""
+    block opening it binds ?record there as the one opening the outermost group does (M4a)."""
     marks = len(re.findall(r"^\s*#\s*bound:", text, re.MULTILINE))
     if marks != len(marked_groups(text)):
         return False
@@ -279,11 +279,9 @@ def short(term):
 
 
 def reasons():
-    """The named individuals of the vocabulary the derivations that leave records out name, but for the verdicts they
-    read, which say what they are in an rdfs:comment."""
+    """The concepts of cascade:LeftOutReasons that the derivations that leave records out name."""
     graph = Graph().parse(ROOT / "ontologies" / "cascade.ttl")
-    declared = {s for s in graph.subjects(RDF.type, URIRef("http://www.w3.org/2002/07/owl#NamedIndividual"))
-                if (s, URIRef("http://www.w3.org/2000/01/rdf-schema#comment"), None) not in graph}
+    declared = set(graph.subjects(URIRef("http://www.w3.org/2004/02/skos/core#inScheme"), URIRef(CASCADE + "LeftOutReasons")))
     named = {iri for relative in every_query() if relative.startswith("derivations/excluded-")
              for iri in iris(prepared(contract.query(relative)).algebra)}
     return frozenset(named & declared)
@@ -303,7 +301,7 @@ class TestQueryForm:
     rows Oxigraph does not; this form keeps every sub-select where the two agree.
 
     @rule naming N13
-    @rule matcher M4
+    @rule matcher M4a
     """
 
     class TestGivenAnyQuery:
@@ -604,7 +602,7 @@ class TestMatcherComparisons:
     no initial binding writes a `VALUES ?record` block after the query's first brace and after each group marked
     `# bound: ?record`, so every comparison is written to take that block.
 
-    @rule matcher M4
+    @rule matcher M4a
     @rule matcher M7
     """
 

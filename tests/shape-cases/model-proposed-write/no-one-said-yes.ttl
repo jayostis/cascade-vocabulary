@@ -1,0 +1,10 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:model a prov:SoftwareAgent .
+
+:session a prov:Activity , cascade:HandEntrySession ;
+    prov:startedAtTime "2026-03-01T09:00:00Z"^^xsd:dateTime ;
+    prov:qualifiedAssociation [ prov:agent :model ; prov:hadRole cascade:ModelProposerRole ] .

@@ -241,9 +241,10 @@ Feature: Naming
     judgment can name another person's judgment, and an answer can name it, on every run. A person's retraction, a
     prov:Activity that prov:invalidated a judgment (decisions/naming.md, row "retraction"), arrives with its name too and
     is filed under it, in the folder pod-layout.ttl gives what states prov:invalidated, even when it also states prov:used
-    (cascade:Placement). A person's judgment names the part its author acted in, cascade:PatientRole, on the one
+    (cascade:Placement). A person's judgment names the part its author acted in, cascade:PatientRole, on a
     prov:qualifiedAssociation of the act that generated it, a blank node filed with the judgment; a retraction, an act
-    itself, names it on its own association.
+    itself, names it on its own association. A model that proposed either is named on another association of the same
+    act (Y3).
 
     Example: a person's About and its retraction are each filed under the IRI they arrived with, in their own step's file
       Given a new pod for Cleo on 2026-03-01 at 09:00

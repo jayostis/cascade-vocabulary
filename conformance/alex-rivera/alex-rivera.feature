@@ -1,4 +1,9 @@
 Feature: Alex Rivera's pod
+  Alex Rivera is a patient whose records come from two hospitals, Meridian Health System and Larkspur Valley Health, in
+  the Apple Health exports she imports into her own pod. Her pod shows how an app builds one account of her allergies,
+  conditions, immunizations and procedures from FHIR records, joins the same fact across sources, keeps her own
+  judgments apart from a matcher's, and carries on when a hospital moves to a new server.
+
   The scenario every runtime must pass, https://github.com/jayostis/cascade-vocabulary/issues/4: Alex's story, the
   planted cases P1 to P25 under the case each shows, and the scenario's other outcomes. Each example reads the pod at
   the smallest set of steps and lenses at which it can fail for its own reason. A record, a profile and a person's

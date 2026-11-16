@@ -1,14 +1,14 @@
 # The variant record
 
-Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the review on #202. Terms: `genomics:Variant`,
-`hgvsCDot`, `clinvarVariationId`, `geneSymbol`. Replaces this note's own "the record is named by its HGVS expression",
+Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the review on #202. Terms: `cascade:GeneticVariantFinding`,
+`hgvsCodingDnaExpression`, `clinvarVariationId`, `geneSymbol`. Replaces this note's own "the record is named by its HGVS expression",
 which yields to `naming.md`: the rubric's first test names a thing by what its source says identifies it, and that an
 expression is a variant is an inference across sources, since two transcripts' expressions are one variant only where a
 table says so (`variant-identity.md`). No rule ever named a variant by its expression; the kit's are named by their
 source (`conformance/martin-okafor/scripted-input/martin/bridge/E3/bundle/graph.ttl`). Names are `naming.md`; which
 revision is current is `currency.md`; the lab behind a report is an organisation record in `republishing-sources.md`;
-when two variant records are one is `variant-identity.md`. #193 renames the `genomics/v1#` namespace into the one
-unversioned namespace, and #191 the rule terms.
+when two variant records are one is `variant-identity.md`. #193 moved the terms into the one
+unversioned namespace, `cascade#`, and #191 the rule terms.
 
 ## Question
 
@@ -88,9 +88,9 @@ verified); PROV-O (https://www.w3.org/TR/prov-o/, verified). Research: #107's bo
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| the variant | FHIR IG Variant, an Observation coded 69548-6; openEHR `genomic_variant_result`; SPHN `VariantDescriptor` | its own record, `genomics:Variant`, a `prov:Entity`, copied with its IRI from the retired spec (d819bc2) (`ontologies/cascade.ttl`) | diverged from FHIR's Observation; the reason is owed (Still open) |
+| the variant | FHIR IG Variant, an Observation coded 69548-6; openEHR `genomic_variant_result`; SPHN `VariantDescriptor` | its own record, `cascade:GeneticVariantFinding`, a `prov:Entity` (`ontologies/cascade.ttl`) | diverged from FHIR's Observation; the reason is owed (Still open) |
 | its name | `naming.md` | named as any record from its source is: a server's by server, type and id; a document's by document and selector; a C-CDA entry's by custodian, patient and id. Never by its HGVS expression (`runtime/naming.feature`, N1) | borrowed from `naming.md` |
-| HGVS expression | FHIR c.HGVS component 48004-6; HGVS nomenclature | `hgvsCDot`, at most one per version, in the normal form: a reference sequence with its version (`NM_`, `NG_`, `XM_`, `NC_`, `LRG_`), a colon, `c.` and the change. It is the record's display name and a join key for the identity rules (`ontologies/cascade.shapes.ttl`) | borrowed; one per version is ours |
+| HGVS expression | FHIR c.HGVS component 48004-6; HGVS nomenclature | `hgvsCodingDnaExpression`, at most one per version, in the normal form: a reference sequence with its version (`NM_`, `NG_`, `XM_`, `NC_`, `LRG_`), a colon, `c.` and the change. It is the record's display name and a join key for the identity rules (`ontologies/cascade.shapes.ttl`) | borrowed; one per version is ours |
 | ClinVar variation | FHIR variation code 81252-9, ClinVar's variant ID as code; ClinVar VariationID | `clinvarVariationId`, at most one per version, the digits with no leading zero (`ontologies/cascade.shapes.ttl`) | borrowed |
 | gene | FHIR gene studied 48018-6: HGNC ID as code, symbol as display; HGNC | `geneSymbol`, at most one per version, the display of the gene-studied coding under HGNC (`http://www.genenames.org/geneId` or `http://www.genenames.org`); never the HGNC ID; with no display a source writes none and records a finding (`ontologies/cascade.shapes.ttl`) | diverged from FHIR's code: the symbol is what a table's gene list states (Why) |
 | content | FHIR versions; `naming.md` | on a version; a reclassified or corrected report is a new version (`runtime/naming.feature`, N3) | borrowed from the vocabulary's rule |
