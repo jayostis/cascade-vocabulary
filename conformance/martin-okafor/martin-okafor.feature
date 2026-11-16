@@ -57,8 +57,8 @@ Feature: Martin Okafor's pod
         """
         PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
         SELECT ?interpretation ?variant WHERE {
-          ?entry a cascade:VariantInterpretation ; cascade:mergedFrom ?interpretation ; cascade:variantInterpreted ?variantEntry .
-          ?variantEntry a cascade:GeneticVariantFinding ; cascade:clinvarVariationId "90011" ; cascade:mergedFrom ?variant .
+          ?entry a cascade:VariantInterpretation ; cascade:entryMember ?interpretation ; cascade:variantInterpreted ?variantEntry .
+          ?variantEntry a cascade:GeneticVariantFinding ; cascade:clinvarVariationId "90011" ; cascade:entryMember ?variant .
         }
         """
       Then it answers:
@@ -82,8 +82,8 @@ Feature: Martin Okafor's pod
       When the query is:
         """
         SELECT ?interpretation ?variant WHERE {
-          ?entry a cascade:VariantInterpretation ; cascade:mergedFrom ?interpretation ; cascade:variantInterpreted ?variantEntry .
-          ?variantEntry a cascade:GeneticVariantFinding ; cascade:clinvarVariationId "8931" ; cascade:mergedFrom ?variant .
+          ?entry a cascade:VariantInterpretation ; cascade:entryMember ?interpretation ; cascade:variantInterpreted ?variantEntry .
+          ?variantEntry a cascade:GeneticVariantFinding ; cascade:clinvarVariationId "8931" ; cascade:entryMember ?variant .
         }
         """
       Then it answers:

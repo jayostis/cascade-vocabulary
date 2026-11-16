@@ -50,7 +50,7 @@ WHERE {
           OPTIONAL { ?entry cascade:reportCodeInOtherSystem ?reportOther }
           OPTIONAL { ?entry cascade:noteOrDocumentType ?noteType }
           OPTIONAL { ?entry cascade:noteOrDocumentTypeInOtherSystem ?noteOther }
-          OPTIONAL { ?entry cascade:mergedFrom/pav:hasCurrentVersion/cascade:attachment ?attached .
+          OPTIONAL { ?entry cascade:entryMember/pav:hasCurrentVersion/cascade:attachment ?attached .
                      ?attached cascade:attachmentContentType ?contentType .
                      OPTIONAL { ?attached cascade:attachmentTitle ?attachmentTitle }
                      BIND (CONCAT(?contentType, COALESCE(CONCAT(" ", ?attachmentTitle), "")) AS ?attachment) }
@@ -97,7 +97,7 @@ WHERE {
               { SELECT ?entry ?record ?document ?retrievedOn ?hospital
                 WHERE {
                   VALUES ?type { cascade:DiagnosticReport cascade:ClinicalNoteOrDocument }
-                  ?entry a ?type ; cascade:mergedFrom ?record .
+                  ?entry a ?type ; cascade:entryMember ?record .
                   OPTIONAL { ?record cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                              OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .

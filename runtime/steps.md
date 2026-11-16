@@ -164,7 +164,7 @@ judgment is named `the matcher's <justification> of <records>`, the justificatio
 reference series is named by its `rdfs:label` in `references/` or any of the person's `tables/` folders, one series per label, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
 name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5. An entry of a view is
-`the entry of <record>`: the entry, in the views of the lens read at, that holds the record (`cascade:mergedFrom`).
+`the entry of <record>`: the entry, in the views of the lens read at, that holds the record (`cascade:entryMember`).
 Exactly one entry must hold it, or the example is in error.
 
 The matcher is `https://ns.cascadeprotocol.org/cascade#CascadeMatcher`, a `prov:SoftwareAgent` labelled `Cascade matcher`.
@@ -405,7 +405,7 @@ Whether the judgment has `cascade:lapsed true` under the lens.
 |---|
 
 The entries of the view that hold any record the table names are exactly these, each with exactly those members
-(`cascade:mergedFrom`).
+(`cascade:entryMember`).
 
 ### `the {view} view has no entry`
 

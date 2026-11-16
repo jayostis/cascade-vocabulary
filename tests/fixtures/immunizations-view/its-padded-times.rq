@@ -5,7 +5,7 @@ WHERE {
   GRAPH <https://pod.example/clinical/immunizations.ttl> {
     ?holder cascade:paddedDateTime ?node .
     ?node cascade:paddedDateTimeProperty ?property ; cascade:writtenDate ?written .
-    BIND (IF(EXISTS { ?holder cascade:mergedFrom [] }, "entry", "member's values") AS ?holds)
+    BIND (IF(EXISTS { ?holder cascade:entryMember [] }, "entry", "member's values") AS ?holds)
     BIND (STR(?node) = CONCAT(STR(?holder), "-padded-vaccinationOccurrenceTime") AS ?named)
   }
 }

@@ -48,7 +48,7 @@ SELECT DISTINCT ?entry ?entryLabel ?needs ?finding ?judgment ?judgmentLabel ?rec
 WHERE {
   { { SELECT ?entry
       WHERE {
-        ?member ^cascade:mergedFrom ?entry ;
+        ?member ^cascade:entryMember ?entry ;
                 pav:hasCurrentVersion/cascade:allergyCriticality ?criticality .
       }
       GROUP BY ?entry
@@ -60,7 +60,7 @@ WHERE {
       WHERE {
         ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification ?why ;
               prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
-        ?member ^cascade:mergedFrom ?entry .
+        ?member ^cascade:entryMember ?entry .
         FILTER (?why != cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization)
       }
       GROUP BY ?entry
@@ -71,8 +71,8 @@ WHERE {
     BIND ("joined through two kinds of machine sameness" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel } }
   UNION
-  { ?record cascade:currentlyDifferent ?otherRecord ; ^cascade:mergedFrom ?entry .
-    ?otherRecord ^cascade:mergedFrom ?entry .
+  { ?record cascade:currentlyDifferent ?otherRecord ; ^cascade:entryMember ?entry .
+    ?otherRecord ^cascade:entryMember ?entry .
     FILTER (STR(?record) < STR(?otherRecord))
     BIND ("judged different, still joined" AS ?needs)
     OPTIONAL { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Different ; prov:hadMember ?record , ?otherRecord }
@@ -89,8 +89,8 @@ WHERE {
       }
       GROUP BY ?record ?otherRecord }
     ?judgment cascade:lapsed true ; prov:hadMember ?record , ?otherRecord .
-    ?record ^cascade:mergedFrom ?entry .
-    ?otherRecord ^cascade:mergedFrom ?otherEntry .
+    ?record ^cascade:entryMember ?entry .
+    ?otherRecord ^cascade:entryMember ?otherEntry .
     FILTER (STR(?judgment) = ?first && ?entry != ?otherEntry
             && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord })
     BIND ("joined before, apart under newer tables or rules" AS ?needs)
@@ -108,8 +108,8 @@ WHERE {
         GROUP BY ?finding ?record ?otherRecord }
       FILTER (BOUND(?first)) }
     BIND (IRI(?first) AS ?judgment)
-    ?record ^cascade:mergedFrom ?entry .
-    ?otherRecord ^cascade:mergedFrom ?otherEntry .
+    ?record ^cascade:entryMember ?entry .
+    ?otherRecord ^cascade:entryMember ?otherEntry .
     FILTER (?entry != ?otherEntry
             && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord }
             && !EXISTS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
@@ -124,7 +124,7 @@ WHERE {
     { SELECT ?record ?entry ?property ?code ?dated ?from ?to ?open
       WHERE {
         VALUES ?property { cascade:icd10Code cascade:snomedCode }
-        ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
+        ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version ; ^cascade:entryMember ?entry .
         ?version ?property ?code .
         OPTIONAL { ?version cascade:displayDate ?onset }
         OPTIONAL { ?version cascade:abatementDate ?end }
@@ -144,7 +144,7 @@ WHERE {
     { SELECT ?otherRecord ?otherEntry ?property ?code ?otherDated ?otherFrom ?otherTo ?otherOpen
       WHERE {
         VALUES ?property { cascade:icd10Code cascade:snomedCode }
-        ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
+        ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:entryMember ?otherEntry .
         ?otherVersion ?property ?code .
         OPTIONAL { ?otherVersion cascade:displayDate ?otherOnset }
         OPTIONAL { ?otherVersion cascade:abatementDate ?otherEnd }
@@ -172,8 +172,8 @@ WHERE {
   { VALUES ?codeProperty { cascade:rxNormCode cascade:ndcCode }
     ?version ?codeProperty ?code .
     ?otherVersion ?codeProperty ?code .
-    ?record cascade:recordKind "Medication" ; pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
-    ?otherRecord cascade:recordKind "Medication" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:mergedFrom ?otherEntry .
+    ?record cascade:recordKind "Medication" ; pav:hasCurrentVersion ?version ; ^cascade:entryMember ?entry .
+    ?otherRecord cascade:recordKind "Medication" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:entryMember ?otherEntry .
     FILTER (STR(?record) < STR(?otherRecord) && ?entry != ?otherEntry)
     MINUS { ?record cascade:currentlyDifferent ?otherRecord }
     MINUS { ?lapsed cascade:lapsed true ; prov:hadMember ?record , ?otherRecord }
@@ -184,7 +184,7 @@ WHERE {
   UNION
   { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification cascade:SameResultOnOneDay ;
               prov:hadMember ?member .
-    ?member ^cascade:mergedFrom ?entry .
+    ?member ^cascade:entryMember ?entry .
     BIND ("joined on one day, with no time to tell two draws apart" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
@@ -194,7 +194,7 @@ WHERE {
       (cascade:DifferentResultUnitsAtOneInstant "one test at one instant, in units that differ")
     }
     ?finding oa:hasBody ?kind ; oa:hasTarget ?record , ?otherRecord ; prov:wasDerivedFrom ?version , ?otherVersion .
-    ?record pav:hasCurrentVersion ?version ; ^cascade:mergedFrom ?entry .
+    ?record pav:hasCurrentVersion ?version ; ^cascade:entryMember ?entry .
     ?otherRecord pav:hasCurrentVersion ?otherVersion .
     FILTER (STR(?record) < STR(?otherRecord))
     MINUS { ?record cascade:currentlyDifferent ?otherRecord }

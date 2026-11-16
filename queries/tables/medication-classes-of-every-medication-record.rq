@@ -17,7 +17,7 @@ WHERE {
   {
     { SELECT ?record ?entry ?code
       WHERE {
-        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:mergedFrom ?entry ; pav:hasCurrentVersion ?version .
+        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:entryMember ?entry ; pav:hasCurrentVersion ?version .
         ?version (cascade:userSelectedCode | cascade:rxNormCode) ?written .
         BIND (COALESCE(IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))), "") AS ?code)
         FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/rxnorm/"))
@@ -40,7 +40,7 @@ WHERE {
       GROUP BY ?product ?ingredient ?origin ?relation ?code }
     { SELECT ?record ?entry ?code
       WHERE {
-        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:mergedFrom ?entry ; pav:hasCurrentVersion ?version .
+        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:entryMember ?entry ; pav:hasCurrentVersion ?version .
         ?version (cascade:userSelectedCode | cascade:rxNormCode) ?written .
         BIND (COALESCE(IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))), "") AS ?code)
         FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/rxnorm/"))
@@ -71,7 +71,7 @@ WHERE {
       GROUP BY ?product }
     { SELECT ?record ?entry ?code
       WHERE {
-        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:mergedFrom ?entry ; pav:hasCurrentVersion ?version .
+        ?record a cascade:PrescribedOrReportedMedication ; ^cascade:entryMember ?entry ; pav:hasCurrentVersion ?version .
         ?version (cascade:userSelectedCode | cascade:rxNormCode) ?written .
         BIND (COALESCE(IF(isIRI(?written), ?written, IRI(CONCAT("https://ns.cascadeprotocol.org/codes/rxnorm/", ENCODE_FOR_URI(STR(?written))))), "") AS ?code)
         FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/rxnorm/"))

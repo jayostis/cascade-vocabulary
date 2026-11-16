@@ -407,6 +407,27 @@ class TestTermsTheShapesAndOntologyAgreeOn:
             assert len(ours) > 200
             assert sorted(s for s in ours if (s, RDFS.comment, None) not in graph) == []
 
+        def test_is_labelled_in_lower_case_but_for_proper_nouns_and_acronyms(self):
+            """is labelled in lower case but for proper nouns and acronyms
+
+            Splits the `rdfs:label` of each term in `cascade#` into words; a word with a capital that is not one of the
+            listed proper nouns and acronyms fails, so a label in Title Case is named.
+            """
+            graph = vocabulary()
+            proper = {"ACMG", "ACMG/AMP", "Bridge", "C-CDA", "Cascade", "ClinVar", "CPT", "CVX", "DNA", "FHIR", "HGNC",
+                      "HGVS", "HL7", "ICD-10-CM", "ICD-9-CM", "ID", "IRI", "LOINC", "MED-RT", "MeSH", "NDC", "RxNorm",
+                      "UCUM", "UNII", "URI", "URL"}
+            names = ("SNOMED CT", "HL7 v3 NullFlavor", "HL7 v3 ObservationInterpretation")
+            def capitalised(label):
+                for name in names:
+                    label = label.replace(name, "")
+                return [w for w in (w.strip("(),") for w in label.split())
+                        if w != w.lower() and w not in proper and not re.fullmatch(r"R\d+", w)]
+            labelled = {s: str(label) for s, label in graph.subject_objects(RDFS.label)
+                        if str(s).startswith(str(CASCADE_NS)) and s != URIRef(CASCADE_NS)}
+            assert len(labelled) > 200
+            assert sorted(f"{s}: {w}" for s, label in labelled.items() for w in capitalised(label)) == []
+
 
 class TestCopiedTerms:
     """Terms copied from another vocabulary · ontologies/*.ttl

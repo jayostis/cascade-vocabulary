@@ -23,7 +23,7 @@ WHERE {
             WHERE {
               { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
-                  ?entry a cascade:ProblemOrDiagnosis ; cascade:clinicalStatus "active" ; cascade:mergedFrom ?sourceRecord .
+                  ?entry a cascade:ProblemOrDiagnosis ; cascade:clinicalStatus "active" ; cascade:entryMember ?sourceRecord .
                   FILTER NOT EXISTS { ?entry cascade:verificationStatus "refuted" }
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
@@ -46,7 +46,7 @@ WHERE {
     }
     GROUP BY ?entry }
   ?entry a cascade:ProblemOrDiagnosis ; cascade:clinicalStatus "active" ;
-         cascade:conditionName ?condition ; cascade:mergedFrom ?record .
+         cascade:conditionName ?condition ; cascade:entryMember ?record .
   FILTER NOT EXISTS { ?entry cascade:verificationStatus "refuted" }
   OPTIONAL {
     ?entry cascade:snomedCode ?writtenSnomed .

@@ -54,7 +54,7 @@ WHERE {
                   OPTIONAL {
                     ?about cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?sourceRecord ;
                            cascade:subject ?subject .
-                    ?entry a cascade:PatientProfile ; cascade:mergedFrom ?sourceRecord .
+                    ?entry a cascade:PatientProfile ; cascade:entryMember ?sourceRecord .
                     OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                                OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                                OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .

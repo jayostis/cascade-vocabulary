@@ -8,7 +8,7 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT {
   ?entry a cascade:PatientProfile ;
-    cascade:mergedFrom ?profile .
+    cascade:entryMember ?profile .
   ?entry cascade:memberCurrentValues ?memberValues .
   ?memberValues cascade:valuesOfMember ?profile ;
     cascade:dateOfBirth ?memberDateOfBirth ;

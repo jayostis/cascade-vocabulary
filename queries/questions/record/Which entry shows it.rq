@@ -6,9 +6,9 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?record ?recordLabel ?entry ?entryLabel ?view
 WHERE {
   { SELECT ?entry ?entryLabel
-    WHERE { { SELECT DISTINCT ?entry WHERE { GRAPH ?shownIn { ?entry cascade:mergedFrom ?member } } }
+    WHERE { { SELECT DISTINCT ?entry WHERE { GRAPH ?shownIn { ?entry cascade:entryMember ?member } } }
             OPTIONAL { ?entry rdfs:label ?entryLabel } } }
-  GRAPH ?view { ?entry cascade:mergedFrom ?record }
+  GRAPH ?view { ?entry cascade:entryMember ?record }
   ?record a cascade:Record .
   OPTIONAL { ?record rdfs:label ?recordLabel }
 }
