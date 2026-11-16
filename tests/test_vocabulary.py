@@ -414,14 +414,19 @@ class TestTermsTheShapesAndOntologyAgreeOn:
             listed proper nouns and acronyms fails, so a label in Title Case is named.
             """
             graph = vocabulary()
-            proper = {"ACMG/AMP", "C-CDA", "ClinVar", "CPT", "CT", "CVX", "DNA", "FHIR", "HGNC", "HGVS", "HL7", "ICD-10-CM",
-                      "ICD-9-CM", "ID", "IRI", "LOINC", "MED-RT", "MeSH", "NDC", "NullFlavor", "ObservationInterpretation",
-                      "R14", "RxNorm", "SNOMED", "UCUM", "UNII", "URI", "URL"}
-            words = {s: [w.strip("(),") for w in str(label).split()] for s, label in graph.subject_objects(RDFS.label)
-                     if str(s).startswith(str(CASCADE_NS)) and s != URIRef(CASCADE_NS)}
-            assert len(words) > 200
-            assert sorted(f"{s}: {w}" for s, found in words.items() for w in found
-                          if w != w.lower() and w not in proper) == []
+            proper = {"ACMG", "ACMG/AMP", "Bridge", "C-CDA", "Cascade", "ClinVar", "CPT", "CVX", "DNA", "FHIR", "HGNC",
+                      "HGVS", "HL7", "ICD-10-CM", "ICD-9-CM", "ID", "IRI", "LOINC", "MED-RT", "MeSH", "NDC", "RxNorm",
+                      "UCUM", "UNII", "URI", "URL"}
+            names = ("SNOMED CT", "HL7 v3 NullFlavor", "HL7 v3 ObservationInterpretation")
+            def capitalised(label):
+                for name in names:
+                    label = label.replace(name, "")
+                return [w for w in (w.strip("(),") for w in label.split())
+                        if w != w.lower() and w not in proper and not re.fullmatch(r"R\d+", w)]
+            labelled = {s: str(label) for s, label in graph.subject_objects(RDFS.label)
+                        if str(s).startswith(str(CASCADE_NS)) and s != URIRef(CASCADE_NS)}
+            assert len(labelled) > 200
+            assert sorted(f"{s}: {w}" for s, label in labelled.items() for w in capitalised(label)) == []
 
 
 class TestCopiedTerms:

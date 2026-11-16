@@ -483,7 +483,7 @@ cascade:objectCondition a owl:ObjectProperty ;
     rdfs:seeAlso <https://github.com/ga4gh/va-spec/blob/11c4a3add0e4a9d0eef7e13f8ec9cb17346e9fa0/schema/va-spec/acmg-2015/profile-source.yaml> .
 
 cascade:acmgEvidenceCode a owl:DatatypeProperty ;
-    rdfs:label "acmg evidence code"@en ;
+    rdfs:label "ACMG evidence code"@en ;
     rdfs:comment "Of a version of a variant interpretation, one ACMG/AMP 2015 evidence criterion and its outcome, written as VA-spec's ACMG 2015 profile writes one, such as PM2, PS3_moderate or PS3_not_met, or no_criteria_met; one for each the source states."@en ;
     rdfs:domain cascade:VariantInterpretation ;
     rdfs:range xsd:string ;
@@ -3038,7 +3038,7 @@ cascade:SyncFromAnotherWriter a owl:Class ;
 # The matcher and its rules
 
 cascade:CascadeMatcher a prov:SoftwareAgent ;
-    rdfs:label "cascade matcher"@en ;
+    rdfs:label "Cascade matcher"@en ;
     rdfs:comment "Any runtime that follows runtime/matcher.feature and the Cascade rule list, as the maker of the judgments it writes; unversioned, since the runtime that ran is on the act."@en .
 
 cascade:MatcherJudgmentAssertion a owl:Class ;
@@ -3059,51 +3059,51 @@ cascade:assertedUnderRuleListVersion a owl:ObjectProperty ;
     rdfs:range prov:Entity .
 
 cascade:SameCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r1, same code"@en ;
+    rdfs:label "R1, same code"@en ;
     rdfs:comment "Rule R1 of runtime/matcher.feature; its judgments are justified cascade:SameCode."@en .
 
 cascade:SameCodeAndDateRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r2, same code and date"@en ;
+    rdfs:label "R2, same code and date"@en ;
     rdfs:comment "Rule R2 of runtime/matcher.feature; its judgments are justified cascade:SameCodeAndDate."@en .
 
 cascade:SameMappedCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r3, same mapped code"@en ;
+    rdfs:label "R3, same mapped code"@en ;
     rdfs:comment "Rule R3 of runtime/matcher.feature; its judgments are justified cascade:SameMappedCode."@en .
 
 cascade:SameMappedCodeAndDateRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r4, same mapped code and date"@en ;
+    rdfs:label "R4, same mapped code and date"@en ;
     rdfs:comment "Rule R4 of runtime/matcher.feature; its judgments are justified cascade:SameMappedCodeAndDate."@en .
 
 cascade:SameMedicationCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r5, same medication code"@en ;
+    rdfs:label "R5, same medication code"@en ;
     rdfs:comment "Rule R5 of runtime/matcher.feature; its judgments are justified cascade:SameMedicationCode."@en .
 
 cascade:SameResultRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r6, same result"@en ;
+    rdfs:label "R6, same result"@en ;
     rdfs:comment "Rule R6 of runtime/matcher.feature; its judgments are justified cascade:SameResult."@en .
 
 cascade:SameConvertedCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r7, same converted code"@en ;
+    rdfs:label "R7, same converted code"@en ;
     rdfs:comment "Rule R7 of runtime/matcher.feature; its judgments are justified cascade:SameConvertedCode."@en .
 
 cascade:SameCodeAndPeriodRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r8, same code and period"@en ;
+    rdfs:label "R8, same code and period"@en ;
     rdfs:comment "Rule R8 of runtime/matcher.feature; its judgments are justified cascade:SameCodeAndPeriod."@en .
 
 cascade:SameBrandGenericRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r10, same brand generic"@en ;
+    rdfs:label "R10, same brand generic"@en ;
     rdfs:comment "Rule R10 of runtime/matcher.feature; its judgments are justified cascade:SameBrandGeneric."@en .
 
 cascade:SameProductCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r11, same product code"@en ;
+    rdfs:label "R11, same product code"@en ;
     rdfs:comment "Rule R11 of runtime/matcher.feature; its judgments are justified cascade:SameProductCode."@en .
 
 cascade:SameVariationRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r12, same variation"@en ;
+    rdfs:label "R12, same variation"@en ;
     rdfs:comment "Rule R12 of runtime/matcher.feature; its judgments are justified cascade:SameVariation."@en .
 
 cascade:SameVariationThroughTableRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r13, same variation through the table"@en ;
+    rdfs:label "R13, same variation through the table"@en ;
     rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
 
 cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule a owl:NamedIndividual , cascade:MatcherRule ;
@@ -3111,31 +3111,31 @@ cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule a owl:Named
     rdfs:comment "Rule R14 of runtime/matcher.feature; its judgments are justified cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost."@en .
 
 cascade:DifferentResultValuesRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r16, different result values"@en ;
+    rdfs:label "R16, different result values"@en ;
     rdfs:comment "Rule R16 of runtime/matcher.feature; it files no judgment, but a finding for review of kind cascade:DifferentResultValuesAtOneInstant."@en .
 
 cascade:DifferentResultUnitsRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r17, different result units"@en ;
+    rdfs:label "R17, different result units"@en ;
     rdfs:comment "Rule R17 of runtime/matcher.feature; it files no judgment, but a finding for review of kind cascade:DifferentResultUnitsAtOneInstant."@en .
 
 cascade:SameResultOnOneDayRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r15, same result on one day"@en ;
+    rdfs:label "R15, same result on one day"@en ;
     rdfs:comment "Rule R15 of runtime/matcher.feature; its judgments are justified cascade:SameResultOnOneDay."@en .
 
 cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r18, same business identifier and test code within one organization"@en ;
+    rdfs:label "R18, same business identifier and test code within one organization"@en ;
     rdfs:comment "Rule R18 of runtime/matcher.feature; its judgments are justified cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization."@en .
 
 cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r19, same note type and text grown within one organization"@en ;
+    rdfs:label "R19, same note type and text grown within one organization"@en ;
     rdfs:comment "Rule R19 of runtime/matcher.feature; its judgments are justified cascade:SameNoteTypeAndTextGrownWithinOneOrganization."@en .
 
 cascade:SameNoteTypeAndTextRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r20, same note type and text"@en ;
+    rdfs:label "R20, same note type and text"@en ;
     rdfs:comment "Rule R20 of runtime/matcher.feature; its judgments are justified cascade:SameNoteTypeAndText."@en .
 
 cascade:SameNoteOrDocumentMasterIdentifierRule a owl:NamedIndividual , cascade:MatcherRule ;
-    rdfs:label "r21, same note or document master identifier"@en ;
+    rdfs:label "R21, same note or document master identifier"@en ;
     rdfs:comment "Rule R21 of runtime/matcher.feature; its judgments are justified cascade:SameNoteOrDocumentMasterIdentifier."@en .
 
 # Servers and organizations
@@ -3232,7 +3232,7 @@ cascade:authenticatedAsProxy a owl:DatatypeProperty ;
     rdfs:range xsd:boolean .
 
 cascade:BridgeFindingKinds a skos:ConceptScheme ;
-    rdfs:label "bridge finding kinds"@en ;
+    rdfs:label "Bridge finding kinds"@en ;
     rdfs:comment "The kinds of gap a Bridge finding kept with its document names as its oa:hasBody."@en .
 
 cascade:SourcePathNotAccounted a skos:Concept ;
