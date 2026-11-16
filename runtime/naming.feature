@@ -296,6 +296,12 @@ Feature: Naming
     cites a variant's entry as <variants.ttl#hex>. A member's current values in the view (cascade:memberCurrentValues)
     are a node named as the entry is, followed by -, and the lower-case hexadecimal SHA-256 of the member's IRI: <#hex-hex>.
 
+    Nothing outside the view cites an entry. An app's statement about an entry names the records the entry holds, never
+    the entry, and finds the entry again by the question record/Which entry shows it, read after every import or
+    rebuild; each time it reads, it adds the found entry's current records to the statement's and only ever adds. A
+    record is in at most one entry: it has a row in that question, or none and a row in record/Why it is in no view, or
+    neither, which means the pod no longer holds it. A statement whose records are now in two entries is shown with each.
+
     No example shows this rule, because a query reads an entry's IRI resolved against the view's address, and the
     derived state, which examples query, holds the placeholder. The kit's
     check 6 holds every view a replay writes to it, and tests/vectors/naming/ names an entry.

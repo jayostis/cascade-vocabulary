@@ -189,5 +189,9 @@ every_fixture = pytest.mark.parametrize("fixture", [on_its_worker(fixture, id=fi
 
 
 @cache
-def built_once(fixture, engine, lens, without=frozenset()):
+def _built(fixture, engine, lens, without):
     return fixture.build(engine, lens, without)
+
+
+def built_once(fixture, engine, lens, without=()):
+    return _built(fixture, engine, lens, frozenset(without))
