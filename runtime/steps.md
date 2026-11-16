@@ -124,7 +124,7 @@ A record is named by what a person reads in it, never by its IRI, except where a
 
 - **`<kind> <system> <code> "<name>"`**, as `allergy RxNorm 1191 "Ecotrin"`, with the code, the name or both: the
   record of that kind whose version gives them. The kinds are `allergy`, `condition`, `immunization`, `procedure`,
-  `medication`, `lab result`, `note`, `variant` and `variant interpretation`; the systems `SNOMED` (an `http://snomed.info/id/` IRI, or a `cascade:snomedCode`),
+  `medication`, `lab result`, `note`, `variant` and `variant interpretation`; the systems `SNOMED` (an `http://snomed.info/id/` IRI, a condition's `cascade:conditionCode` or a procedure's `cascade:procedureCode`),
   `RxNorm` (an `https://ns.cascadeprotocol.org/codes/rxnorm/` IRI), `NDC` (an
   `https://ns.cascadeprotocol.org/codes/ndc11/` IRI, a medication's `cascade:ndcCode`), `ICD-10-CM` (an
   `https://ns.cascadeprotocol.org/codes/icd10cm/` IRI), `LOINC` (an `http://loinc.org/rdf/` IRI) and `CVX`

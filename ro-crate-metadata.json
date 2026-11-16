@@ -15,6 +15,7 @@
       "version": "0.1.0",
       "license": { "@id": "https://spdx.org/licenses/Apache-2.0" },
       "isBasedOn": { "@id": "https://github.com/the-cascade-protocol/spec" },
+      "mentions": [{ "@id": "#pipeline-phase-1" }, { "@id": "#pipeline-phase-2" }, { "@id": "#pipeline-phase-3" }, { "@id": "#pipeline-phase-4" }, { "@id": "#pipeline-phase-5" }, { "@id": "#pipeline-phase-6" }],
       "hasPart": [
         { "@id": "queries/derivations/narrative-texts-as-trimmed-lines.rq" },
         { "@id": "queries/matcher/same-ndc-code-and-overlapping-exposure-periods.rq" },
@@ -1869,6 +1870,12 @@
     { "@id": "runtime/scripted-input/gus/entries/two-courses.ttl", "@type": "File", "encodingFormat": "text/turtle" },
     { "@id": "runtime/scripted-input/gus/tables/app-courses/references.ttl", "@type": "File", "encodingFormat": "text/turtle" },
     { "@id": "runtime/scripted-input/gus/tables/app-courses/39475983daa95995e8c74b9fde9293ec4a8bc78a3d7da4921951badb3df1b6bc.ttl", "@type": "File", "encodingFormat": "text/turtle" },
-    { "@id": "runtime/scripted-input/gus/tables/app-courses/49da8dae027629a059a950c81de8e634e862864efc68b2acbd4ed4d2dd52321e.ttl", "@type": "File", "encodingFormat": "text/turtle" }
+    { "@id": "runtime/scripted-input/gus/tables/app-courses/49da8dae027629a059a950c81de8e634e862864efc68b2acbd4ed4d2dd52321e.ttl", "@type": "File", "encodingFormat": "text/turtle" },
+    {"@id": "#pipeline-phase-1", "@type": "HowToSection", "name": "Reading what arrived", "position": 1, "itemListElement": [{"@id": "queries/derivations/records.rq"}, {"@id": "queries/derivations/revision-judgments.rq"}, {"@id": "queries/derivations/current-revision-candidates.rq"}, {"@id": "queries/derivations/candidates-ordered-by-ancestry.rq"}, {"@id": "queries/derivations/current-revisions.rq"}, {"@id": "queries/derivations/current-reference-versions.rq"}]},
+    {"@id": "#pipeline-phase-2", "@type": "HowToSection", "name": "Which judgments count", "position": 2, "itemListElement": [{"@id": "queries/lenses/everyday.rq"}, {"@id": "queries/lenses/export.rq"}]},
+    {"@id": "#pipeline-phase-3", "@type": "HowToSection", "name": "Which records are the same", "position": 3, "itemListElement": [{"@id": "queries/derivations/different-pairs.rq"}, {"@id": "queries/derivations/same-pairs.rq"}, {"@id": "queries/derivations/same-records-under-same-servers.rq"}, {"@id": "queries/derivations/same-organizations.rq"}]},
+    {"@id": "#pipeline-phase-4", "@type": "HowToSection", "name": "What no view shows", "position": 4, "itemListElement": [{"@id": "queries/derivations/excluded-at-source.rq"}, {"@id": "queries/derivations/excluded-by-judgment.rq"}, {"@id": "queries/derivations/excluded-with-their-activity.rq"}, {"@id": "queries/derivations/subjects.rq"}, {"@id": "queries/derivations/excluded-for-their-patient.rq"}]},
+    {"@id": "#pipeline-phase-5", "@type": "HowToSection", "name": "Joining records into entries", "position": 5, "itemListElement": [{"@id": "queries/derivations/entries.rq"}, {"@id": "queries/derivations/lead-member-candidates.rq"}, {"@id": "queries/derivations/lead-members.rq"}, {"@id": "queries/derivations/status-sources.rq"}, {"@id": "queries/derivations/date-sources.rq"}, {"@id": "queries/derivations/top-criticalities.rq"}, {"@id": "queries/derivations/lapsed-sames.rq"}]},
+    {"@id": "#pipeline-phase-6", "@type": "HowToSection", "name": "Medications and notes", "position": 6, "itemListElement": [{"@id": "queries/derivations/medication-lifecycles.rq"}, {"@id": "queries/derivations/medication-dispense-lifecycles.rq"}, {"@id": "queries/derivations/medication-exposure-periods.rq"}, {"@id": "queries/derivations/narrative-texts-as-trimmed-lines.rq"}]}
   ]
 }

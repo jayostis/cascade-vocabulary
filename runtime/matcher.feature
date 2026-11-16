@@ -197,6 +197,8 @@ Feature: The matcher's procedure
     query it runs, with the table kind it reads, if any; the first four rows, whose examples close this rule, are:
 
     - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code.rq.
+      R1 reads a procedure's or a condition's code only where its IRI is in SNOMED CT's space, http://snomed.info/id/: two
+      procedures coded CPT 36415 a year apart are two entries, and a CPT or an ICD-10-CM code joins nothing under R1.
     - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
     - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
       cascade:SubstanceIngredients, a kind only the stories fill; in the vocabulary's list from its version 2,
@@ -218,7 +220,7 @@ Feature: The matcher's procedure
     Version 4 of the vocabulary's list adds one row, whose examples are under M14 and O1, and takes conditions out of R1:
 
     - R8, cascade:SameCodeAndPeriodRule, justified cascade:SameCodeAndPeriod: queries/matcher/same-code-and-period.rq, for conditions only. Two conditions
-      of one ICD-10-CM or SNOMED CT code are the same when their periods overlap.
+      of one condition code are the same when their periods overlap.
 
     Version 5 of the vocabulary's list changes R7's query, whose example is under O1:
 
@@ -827,7 +829,7 @@ Feature: The matcher's procedure
 
   Rule: M14. A condition is compared by its code and its period
     decisions/one-meaning-per-term.md, row "1. clinical state and workflow state".
-    R8 joins two conditions of one ICD-10-CM or SNOMED CT code whose periods overlap. A period runs from the onset's
+    R8 joins two conditions of one condition code (a `cascade:conditionCode`) whose periods overlap. A period runs from the onset's
     day to the abatement's day. An abatement that is not a date, or falls before the onset, counts as none. With none,
     the period runs on while the status is active, recurrence or relapse, and is the onset's day alone otherwise
     (resolved, inactive, remission, or no status). A day is the first ten characters of the date as written, so a date
@@ -1355,7 +1357,7 @@ Feature: The matcher's procedure
     section again as it was names the same record, and one that sends it grown, as a clinic's plan of treatment that
     keeps each visit's paragraph and adds the latest, names another; and two custodians' copies of one note are two
     records in two scopes. From the rule list's version 17, R19 joins two notes whose current versions share a note
-    type, a LOINC code (cascade:noteOrDocumentType), or a code of another system (cascade:noteOrDocumentTypeInOtherSystem)
+    type, a LOINC code (cascade:noteOrDocumentTypeCode), or a code of another system (cascade:noteOrDocumentTypeCodeInOtherSystem)
     when neither has a LOINC code, from documents naming one organization record, or two currently the same
     organization, as custodian or author, as R18 reads them, when the shorter one's text, read as lines with the white
     space in each line made one space and trimmed, and blank lines dropped, begins or ends the longer one's as whole
