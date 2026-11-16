@@ -15,14 +15,14 @@ SELECT ?entry ?entryLabel ?place (COUNT(DISTINCT ?record) AS ?records) ?places
 WHERE {
   { SELECT ?entry (COUNT(DISTINCT ?somewhere) AS ?places)
     WHERE {
-      ?member a cascade:Record ; ^cascade:mergedFrom ?entry ; cascade:currentRevision ?memberRevision .
+      ?member a cascade:Record ; ^cascade:entryMember ?entry ; cascade:currentRevision ?memberRevision .
       OPTIONAL { ?memberRevision prov:wasGeneratedBy/rdfs:label ?memberImportLabel }
       OPTIONAL { ?memberRevision prov:wasDerivedFrom/prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?memberHospital }
       BIND (COALESCE(?memberHospital, ?memberImportLabel) AS ?somewhere)
     }
     GROUP BY ?entry
     HAVING (COUNT(DISTINCT ?member) > 1) }
-  ?record ^cascade:mergedFrom ?entry ; cascade:currentRevision ?revision .
+  ?record ^cascade:entryMember ?entry ; cascade:currentRevision ?revision .
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   OPTIONAL { ?revision prov:wasGeneratedBy/rdfs:label ?importLabel }
   OPTIONAL { ?revision prov:wasDerivedFrom/prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital }

@@ -46,7 +46,7 @@ WHERE {
             WHERE {
               { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
-                  ?entry a cascade:LaboratoryTestResult ; cascade:mergedFrom ?sourceRecord .
+                  ?entry a cascade:LaboratoryTestResult ; cascade:entryMember ?sourceRecord .
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                              OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .
@@ -67,7 +67,7 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
-  ?entry a cascade:LaboratoryTestResult ; cascade:mergedFrom ?record .
+  ?entry a cascade:LaboratoryTestResult ; cascade:entryMember ?record .
   OPTIONAL { ?entry cascade:resultClinicallyRelevantTime ?performed }
   OPTIONAL { ?entry cascade:testName ?test }
   OPTIONAL { ?entry cascade:testCode ?code }

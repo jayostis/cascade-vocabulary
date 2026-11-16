@@ -7,7 +7,7 @@ PREFIX solid: <http://www.w3.org/ns/solid/terms#>
 SELECT ?title ?type ?view (COUNT(DISTINCT ?entry) AS ?entries)
 WHERE {
   ?registration a solid:TypeRegistration ; solid:forClass ?type ; solid:instance ?view ; dct:title ?title .
-  OPTIONAL { ?entry a ?type ; cascade:mergedFrom [] }
+  OPTIONAL { ?entry a ?type ; cascade:entryMember [] }
 }
 GROUP BY ?title ?type ?view
 ORDER BY ?title ?view

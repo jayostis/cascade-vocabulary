@@ -144,7 +144,7 @@ WHERE {
   UNION
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
-      GRAPH ?view { ?view a cascade:View . ?thing a cascade:PatientProfile ; cascade:mergedFrom [] }
+      GRAPH ?view { ?view a cascade:View . ?thing a cascade:PatientProfile ; cascade:entryMember [] }
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       BIND ("Patient entry" AS ?l)
     }

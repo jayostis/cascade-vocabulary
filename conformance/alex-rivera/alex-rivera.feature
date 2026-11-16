@@ -288,7 +288,7 @@ Feature: Alex Rivera's pod
         """
         SELECT DISTINCT ?justification WHERE {
           GRAPH <https://pod.alex-rivera.example/clinical/immunizations.ttl> {
-            ?entry cascade:mergedFrom ?member , ?other FILTER (?member != ?other)
+            ?entry cascade:entryMember ?member , ?other FILTER (?member != ?other)
           }
           ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification ?justification ;
                 prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .
@@ -305,7 +305,7 @@ Feature: Alex Rivera's pod
         """
         SELECT DISTINCT ?justification WHERE {
           GRAPH <https://pod.alex-rivera.example/clinical/immunizations.ttl> {
-            ?entry cascade:mergedFrom ?member , ?other FILTER (?member != ?other)
+            ?entry cascade:entryMember ?member , ?other FILTER (?member != ?other)
           }
           ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; cascade:justification ?justification ;
                 prov:wasAttributedTo/a prov:SoftwareAgent ; prov:hadMember ?member .

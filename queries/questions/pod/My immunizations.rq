@@ -20,7 +20,7 @@ WHERE {
             WHERE {
               { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
-                  ?entry a cascade:Vaccination ; cascade:mergedFrom ?sourceRecord .
+                  ?entry a cascade:Vaccination ; cascade:entryMember ?sourceRecord .
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                              OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .
@@ -41,7 +41,7 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
-  ?entry a cascade:Vaccination ; cascade:mergedFrom ?record .
+  ?entry a cascade:Vaccination ; cascade:entryMember ?record .
   OPTIONAL { ?entry cascade:vaccinationOccurrenceTime ?given }
   OPTIONAL { ?entry cascade:vaccineName ?vaccine }
   OPTIONAL { ?entry cascade:vaccineCode ?code }

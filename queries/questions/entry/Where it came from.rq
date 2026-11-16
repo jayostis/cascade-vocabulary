@@ -8,7 +8,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT DISTINCT ?entry ?entryLabel ?record ?recordLabel ?arrived ?import ?importLabel ?document ?documentLabel ?hospital ?retrieved
 WHERE {
-  ?record ^cascade:mergedFrom ?entry ; cascade:currentRevision ?revision .
+  ?record ^cascade:entryMember ?entry ; cascade:currentRevision ?revision .
   ?revision prov:generatedAtTime ?arrived .
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   OPTIONAL { ?record rdfs:label ?recordLabel }

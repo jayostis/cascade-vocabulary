@@ -50,7 +50,7 @@ STATEMENTS = [
     pytest.param('<urn:x:r> a cascade:GeneticVariantFinding . <urn:x:v> prov:specializationOf <urn:x:r> ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T", "NM_000249.3:c.2042C>T" .',
      "at most one HGVS",
                  id="two expressions on one version"),
-    pytest.param('<urn:x:e> cascade:mergedFrom <urn:x:a>, <urn:x:b> ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T", "NM_000249.3:c.2042C>T" ;'
+    pytest.param('<urn:x:e> cascade:entryMember <urn:x:a>, <urn:x:b> ; cascade:hgvsCodingDnaExpression "NM_000249.4:c.2042C>T", "NM_000249.3:c.2042C>T" ;'
      ' cascade:geneSymbol "MLH1", "EPCAM" ; cascade:clinvarVariationId "90011", "90012" .', None,
                  id="a merged entry with two of each"),
     pytest.param('<urn:x:v> cascade:clinvarVariationId "90011" .', None,

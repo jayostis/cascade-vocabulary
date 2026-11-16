@@ -14,13 +14,13 @@ SELECT DISTINCT ?variant ?gene ?hgvs ?variation ?sources
 WHERE {
   { SELECT ?variant ?gene ?hgvs ?variation
     WHERE {
-      { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:hgvsCodingDnaExpression ?hgvs .
+      { ?variant a cascade:GeneticVariantFinding ; cascade:entryMember [] ; cascade:hgvsCodingDnaExpression ?hgvs .
         OPTIONAL { ?variant cascade:geneSymbol ?gene } }
       UNION
-      { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] ; cascade:clinvarVariationId ?variation .
+      { ?variant a cascade:GeneticVariantFinding ; cascade:entryMember [] ; cascade:clinvarVariationId ?variation .
         OPTIONAL { ?variant cascade:geneSymbol ?gene } }
       UNION
-      { ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom [] .
+      { ?variant a cascade:GeneticVariantFinding ; cascade:entryMember [] .
         OPTIONAL { ?variant cascade:geneSymbol ?gene }
         FILTER NOT EXISTS { ?variant cascade:hgvsCodingDnaExpression [] }
         FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] } }
@@ -34,7 +34,7 @@ WHERE {
             WHERE {
               { SELECT ?variant ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
-                  ?variant a cascade:GeneticVariantFinding ; cascade:mergedFrom ?sourceRecord .
+                  ?variant a cascade:GeneticVariantFinding ; cascade:entryMember ?sourceRecord .
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                              OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .
