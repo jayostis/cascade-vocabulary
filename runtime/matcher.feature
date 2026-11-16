@@ -628,7 +628,7 @@ Feature: The matcher's procedure
       Then that step wrote no file
       And the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
         | justification    | members                                       | used                                                                                                                  | name                                          |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:d9369a14-2bff-818e-9628-53cd1a1577b5 |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:95e3d83c-1b6a-89a2-9178-c48ca77f23d5 |
       And the matcher's same mapped code of allergy SNOMED 373270004 and allergy RxNorm 7980 counts
 
     Example: a Same a person retracted is not rechecked
@@ -763,8 +763,8 @@ Feature: The matcher's procedure
       When the matcher runs on the records of that entry on 2026-04-04 at 09:05 (match-later)
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy SNOMED 91936005 are:
         | justification    | members                                                      | used                                                                                                                                 | name                                          |
-        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:91b68197-9076-86ae-bcbe-f2d2d467244b |
-        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:2f16d97d-95ad-8134-ba5c-e864e744c2d1 |
+        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:cbccf631-0a7c-8eba-8f23-f15672b6c080 |
+        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:e99fff6f-2737-8f06-b6e6-3267d1456cdb |
 
   Rule: M11. A rule list whose row names a query that does not hash to the row's cascade:queryHash refuses the run
     No note rules this.
