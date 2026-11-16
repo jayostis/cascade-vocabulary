@@ -103,3 +103,4 @@ brought to it on 2026-10-22 under #202:
 - [`the-person.md`](the-person.md): what a version of the person's profile holds for gender and death, and why sex waits for the rule that reads it.
 - [`consent-tiers.md`](consent-tiers.md): what a model offered a person's pods may do through a tool, what waits for the person's yes, and what no tool does.
 - [`model-proposed-writes.md`](model-proposed-writes.md): what a write a model proposed and the person said yes to records of the model and of the person.
+- [`statements-name-records.md`](statements-name-records.md): what an app's statement about an entry names, so that it still finds the entry when a source joins, and what it shows when its records are gone.
