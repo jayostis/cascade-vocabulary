@@ -937,3 +937,33 @@
   mf:action [ sht:dataGraph <connect-to-server/no-start.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:ConnectToServerShape ; sh:resultPath prov:startedAtTime ] ] .
+
+<#record-condition/code-of-an-absent-reason-system> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/code-of-an-absent-reason-system.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCode ] ] .
+
+<#record-condition/snomed-code-not-a-concept-id> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/snomed-code-not-a-concept-id.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCode ] ] .
+
+<#record-condition/icd10cm-code-malformed> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/icd10cm-code-malformed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCode ] ] .
+
+<#record-procedure/code-of-an-absent-reason-system> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/code-of-an-absent-reason-system.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:procedureCode ] ] .
+
+<#record-procedure/snomed-code-not-a-concept-id> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/snomed-code-not-a-concept-id.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:procedureCode ] ] .
+
+<#record-procedure/cpt-code-malformed> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/cpt-code-malformed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:procedureCode ] ] .

@@ -3,6 +3,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <ni:///sha-256;dates-valid-condition> prov:specializationOf <urn:uuid:5a0b1c2d-0000-4000-8000-000000000001> ;
+    cascade:valueAbsentForReason <ni:///sha-256;dates-valid-condition#absent-conditionCode> ;
     cascade:onsetDate "2019"^^xsd:gYear ;
     cascade:abatementDate "2023-05-31T14:00:00"^^xsd:dateTime ;
     cascade:paddedDateTime <ni:///sha-256;dates-valid-condition#padded-abatementDate> .
@@ -10,7 +11,11 @@
     cascade:timeAsWritten "2023053114" .
 
 <ni:///sha-256;dates-valid-procedure> prov:specializationOf <urn:uuid:5a0b1c2d-0000-4000-8000-000000000008> ;
-    cascade:valueAbsentForReason <ni:///sha-256;dates-valid-procedure#absent-procedureDate> .
+    cascade:valueAbsentForReason <ni:///sha-256;dates-valid-procedure#absent-procedureDate> , <ni:///sha-256;dates-valid-procedure#absent-procedureCode> .
+<ni:///sha-256;dates-valid-procedure#absent-procedureCode> cascade:absentValueProperty cascade:procedureCode ;
+    cascade:absentReasonCode <https://ns.cascadeprotocol.org/codes/data-absent-reason/unknown> .
+<ni:///sha-256;dates-valid-condition#absent-conditionCode> cascade:absentValueProperty cascade:conditionCode ;
+    cascade:absentReasonCode <https://ns.cascadeprotocol.org/codes/nullflavor/UNK> .
 <ni:///sha-256;dates-valid-procedure#absent-procedureDate> cascade:absentValueProperty cascade:procedureDate ;
     cascade:absentReasonCode <https://ns.cascadeprotocol.org/codes/nullflavor/UNK> .
 
