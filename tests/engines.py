@@ -75,7 +75,7 @@ BEFORE_BRACE = re.compile(r"\s*(?:WHERE\s*)?", re.IGNORECASE)
 
 
 def marked_groups(query):
-    """Just after the brace of each group a `# bound: ?record` line marks, with nothing but WHERE between them (M4)."""
+    """Just after the brace of each group a `# bound: ?record` line marks, with nothing but WHERE between them (M4a)."""
     found, mark = [], None
     for token in TOKEN.finditer(query):
         if token.group() != "{":
@@ -96,7 +96,7 @@ def opened(query, places, records):
 
 
 def bound_to_records(query, records):
-    """The query as an engine with no initial binding runs it bound to the records (M4): a VALUES ?record block opening
+    """The query as an engine with no initial binding runs it bound to the records (M4a): a VALUES ?record block opening
     its outermost group and each group it marks."""
     outermost = next(token.end() for token in TOKEN.finditer(query) if token.group() == "{")
     return opened(query, [outermost, *marked_groups(query)], records)
