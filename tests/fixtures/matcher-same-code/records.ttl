@@ -1,5 +1,6 @@
 @prefix : <urn:x:> .
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix icd: <https://ns.cascadeprotocol.org/codes/icd10cm/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rxnorm: <https://ns.cascadeprotocol.org/codes/rxnorm/> .
 @prefix snomed: <http://snomed.info/id/> .
@@ -56,4 +57,24 @@
 :procedureCptB a cascade:MedicalProcedure .
 :procedureCptBVersion prov:specializationOf :procedureCptB ; cascade:procedureCode <https://ns.cascadeprotocol.org/codes/cpt/36415> ; cascade:procedureDate "2025-03-11"^^xsd:date .
 :procedureCptBRevision a cascade:Revision ; cascade:revisionOf :procedureCptB ; cascade:version :procedureCptBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:snomedConditionA a cascade:ProblemOrDiagnosis .
+:snomedConditionAVersion prov:specializationOf :snomedConditionA ; cascade:conditionCode snomed:44054006 .
+:snomedConditionARevision a cascade:Revision ; cascade:revisionOf :snomedConditionA ; cascade:version :snomedConditionAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:snomedConditionB a cascade:ProblemOrDiagnosis .
+:snomedConditionBVersion prov:specializationOf :snomedConditionB ; cascade:conditionCode snomed:44054006 .
+:snomedConditionBRevision a cascade:Revision ; cascade:revisionOf :snomedConditionB ; cascade:version :snomedConditionBVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:icdConditionA a cascade:ProblemOrDiagnosis .
+:icdConditionAVersion prov:specializationOf :icdConditionA ; cascade:conditionCode icd:E11.9 .
+:icdConditionARevision a cascade:Revision ; cascade:revisionOf :icdConditionA ; cascade:version :icdConditionAVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:icdConditionB a cascade:ProblemOrDiagnosis .
+:icdConditionBVersion prov:specializationOf :icdConditionB ; cascade:conditionCode icd:E11.9 .
+:icdConditionBRevision a cascade:Revision ; cascade:revisionOf :icdConditionB ; cascade:version :icdConditionBVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -21,7 +21,7 @@ WHERE {
       sssom:mapping_cardinality "1:1" ;
       owl:annotatedSource|owl:annotatedTarget ?otherCode .
   }
-  FILTER (!sameTerm(?code, ?otherCode))
+  FILTER (!sameTerm(?code, ?otherCode) && STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/icd10cm/") && STRSTARTS(STR(?otherCode), "https://ns.cascadeprotocol.org/codes/icd10cm/"))
   ?otherVersion cascade:conditionCode ?otherCode .
   ?other pav:hasCurrentVersion ?otherVersion .
   ?record cascade:recordKind ?kind .

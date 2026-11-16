@@ -21,4 +21,5 @@ WHERE {
       owl:annotatedSource|owl:annotatedTarget ?otherCode .
   }
   FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
+  FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/icd10cm/") && STRSTARTS(STR(?otherCode), "https://ns.cascadeprotocol.org/codes/icd10cm/"))
 }
