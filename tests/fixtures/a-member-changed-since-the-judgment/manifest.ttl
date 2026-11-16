@@ -5,14 +5,14 @@
 
 <> a mf:Manifest ;
   rdfs:label "a-member-changed-since-the-judgment" ;
-  rdfs:comment "Two Same judgments, each made from its members' first versions; one member of each has a second version since, and a later Same, made from it, supersedes the second judgment." ;
+  rdfs:comment "Two of a person's Same judgments, each naming the January document its members were shown from; one member of the first has a second revision since, from a March document." ;
   mf:entries (
     <#a-member-changed>
   ) .
 
 <#a-member-changed> a mf:QueryEvaluationTest ;
   mf:name "a-member-changed" ;
-  rdfs:comment "The judgment made before a member changed is listed until a later one supersedes it." ;
+  rdfs:comment "The Same whose member's current revision came from a document it does not name is listed; the Same over records unchanged since is not." ;
   mf:action [ qt:query <../../../queries/questions/judgment/What%20needs%20review.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <a-member-changed.srj> .

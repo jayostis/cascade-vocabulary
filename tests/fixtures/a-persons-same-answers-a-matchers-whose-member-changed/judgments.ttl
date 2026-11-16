@@ -1,0 +1,33 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+:person a prov:Person .
+
+:matcherXY a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
+    prov:hadMember :x , :y ; prov:wasDerivedFrom :xFirst , :yFirst ;
+    cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:matcherPQ a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
+    prov:hadMember :p , :q ; prov:wasDerivedFrom :pFirst , :qFirst ;
+    cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:matcherXYUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :matcherXY ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:matcherPQUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :matcherPQ ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
+
+:personXY a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :x , :y ;
+    prov:wasDerivedFrom :marchDocument , :januaryDocument ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-04-01T00:00:00Z"^^xsd:dateTime .

@@ -296,10 +296,11 @@ Feature: Naming
     cites a variant's entry as <variants.ttl#hex>. A member's current values in the view (cascade:memberCurrentValues)
     are a node named as the entry is, followed by -, and the lower-case hexadecimal SHA-256 of the member's IRI: <#hex-hex>.
 
-    Nothing outside the view cites an entry. An app's statement about an entry names the records the entry holds, never
-    the entry, and finds the entry again by the question record/Which entry shows it, read after every import or
-    rebuild; each time it reads, it adds the found entry's current records to the statement's and only ever adds. A
-    record is in at most one entry: it has a row in that question, or none and a row in record/Why it is in no view, or
+    Nothing outside the view cites an entry. An app's statement about an entry names the records the person was shown in
+    it, never the entry, and never changes after; it finds the entry again by the question record/Which entry shows it,
+    read after every import or rebuild, and a read adds nothing to it. A runtime that removes an original carries a
+    statement whose every record it removes to the records their entry then holds, signed as the runtime and listed for
+    review; no runtime removes an original yet. A record is in at most one entry: it has a row in that question, or none and a row in record/Why it is in no view, or
     neither, which means the pod no longer holds it. A statement whose records are now in two entries is shown with each.
 
     No example shows this rule, because a query reads an entry's IRI resolved against the view's address, and the
@@ -391,8 +392,7 @@ Feature: Naming
     assertions no retraction invalidates: one whose every assertion a release retracted neither counts nor lapses, so
     "What needs review" never offers its pair back. An assertion under the release or a version after it is not
     declared wrong: a version that ships the rule fixed, or runs it again, asserts the matcher judgment again and it can join its
-    pair again (M9). A person's retraction invalidates the judgment it names, a person's or the matcher's, and its pair is never filed
-    again (O1). Hana's pod and the apps' tables are opening.feature's.
+    pair again (M9). A person's retraction invalidates a person's judgment, never the matcher's (N16). Hana's pod and the apps' tables are opening.feature's.
 
     Example: adopting a release that declares R4 wrong retracts the assertions of R4's two matcher judgments before the open's matcher runs, and neither matcher judgment counts nor lapses
       Opened with "app-fewer-rules" instead, the two matcher judgments lapse and "What needs review" lists their pairs (O1).
@@ -434,3 +434,43 @@ Feature: Naming
       Then it answers:
         | migrations |
         | 1          |
+
+  Rule: N16. A person's judgment names records and the documents they were shown from, never a version, and never replaces or retracts a machine's judgment
+    decisions/naming.md, row "person's judgment" and its Why "Nothing kept cites anything derived"; decisions/judgments.md, row "what a judgment, a finding or a view came from".
+    A person's judgment is kept, and versions, revisions, matcher judgments, findings and entries are derived, so it
+    names none of them. When a person files a judgment whose members are records, the runtime adds, by
+    prov:wasDerivedFrom, the document each member's current revision was derived from, which is what the person was
+    shown, and never a version (cascade:PersonJudgmentDerivedFromNoVersionShape); a member entered by hand, whose
+    revisions came from no document, adds none. A prov:wasDerivedFrom the input states is not filed. A runtime refuses a
+    person's judgment that replaces (dct:replaces) a machine's judgment, and a person's retraction of one
+    (cascade:PersonJudgmentReplacesNoMachineJudgmentShape, cascade:RetractionInvalidatesNoMachineJudgmentShape): a
+    person who agrees with the matcher files a Same over the records, and one who disagrees a Different over them.
+
+    Example: a person's Same over two imported records names the document each was shown from, and no version
+      Given a new pod for Cleo on 2026-01-01 at 09:00
+      And the export "first-export" is imported on 2026-01-02 at 10:00
+      When Cleo files the judgment "same-sulfa" on 2026-01-03 at 09:00
+      And the query is:
+        """
+        SELECT ?from WHERE { <urn:uuid:c4e9a2d7-5b18-4f63-9a0e-7d2b8c6f1e54> prov:wasDerivedFrom ?from }
+        """
+      Then it answers:
+        | from                                                        |
+        | <ni:///sha-256;ia0W-ov4DzjbXqU9rRMLYEtbJpVewYVtL83fNzhesBE> |
+        | <ni:///sha-256;vj5fTxByVxl2nnEtMHUs-LFJg_mzMb25VTMxz1cbTJQ> |
+
+    Example: a person's Same that replaces the matcher's judgment is refused
+      Given a new pod for Gus on 2026-09-01 at 09:00
+      And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
+      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-09-02 at 09:05
+      When Gus files the judgment "same-instead-of-the-lisinopril-matcher-judgment" on 2026-09-02 at 12:00
+      Then that step is refused
+
+    Example: a person's retraction of the matcher's judgment is refused
+      Given a new pod for Gus on 2026-09-01 at 09:00
+      And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
+      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-09-02 at 09:05
+      When Gus files the judgment "retract-the-lisinopril-matcher-judgment" on 2026-09-02 at 12:00
+      Then that step is refused

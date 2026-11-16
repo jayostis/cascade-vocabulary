@@ -345,6 +345,25 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:RetractionByPersonOrReleaseShape ] ] .
 
+<#judgment-retraction/of-a-matcher-judgment> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-retraction/of-a-matcher-judgment.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RetractionInvalidatesNoMachineJudgmentShape ; sh:resultPath prov:invalidated ] ] .
+
+<#judgment-same-by-a-person/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-same-by-a-person/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-same-by-a-person/replaces-a-matcher-judgment> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-same-by-a-person/replaces-a-matcher-judgment.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PersonJudgmentReplacesNoMachineJudgmentShape ] ] .
+
+<#judgment-same-by-a-person/derived-from-a-version> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-same-by-a-person/derived-from-a-version.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:PersonJudgmentDerivedFromNoVersionShape ] ] .
+
 <#view-allergies/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <view-allergies/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
