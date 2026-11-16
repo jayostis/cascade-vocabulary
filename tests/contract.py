@@ -67,7 +67,7 @@ def positions():
     """Each query the root crate gives a position, by its path under QUERIES."""
     crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]
     return {(ROOT / entity["@id"]).relative_to(QUERIES).as_posix(): entity["position"]
-            for entity in crate if "position" in entity}
+            for entity in crate if entity.get("@type") == "File" and "position" in entity}
 
 
 def derivations(lens):

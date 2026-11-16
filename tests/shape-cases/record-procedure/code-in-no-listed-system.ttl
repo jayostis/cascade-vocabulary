@@ -1,0 +1,11 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:fe4d5ae1-ea6c-8c03-b1d3-fc5f20c4fdaf> a cascade:MedicalProcedure ;
+    cascade:sourceUrl <https://fhir.example/Procedure/record-procedure-code-in-no-listed-system> .
+
+:version prov:specializationOf <urn:uuid:fe4d5ae1-ea6c-8c03-b1d3-fc5f20c4fdaf> ;
+    cascade:patient :patient ;
+    cascade:procedureName "Colonoscopy" ;
+    cascade:procedureCode <http://example.org/procedure/45378> .

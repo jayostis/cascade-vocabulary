@@ -6,21 +6,21 @@
 :subject a cascade:Subject .
 
 :x a cascade:AllergyOrIntolerance .
-:xFirst prov:specializationOf :x ; cascade:patient :subject ; cascade:allergen "Oak" .
-:xSecond prov:specializationOf :x ; cascade:patient :subject ; cascade:allergen "Oak pollen" .
+:xFirst prov:specializationOf :x ; cascade:patient :subject ; cascade:allergenName "Oak" .
+:xSecond prov:specializationOf :x ; cascade:patient :subject ; cascade:allergenName "Oak pollen" .
 :xR1 a cascade:Revision ; cascade:revisionOf :x ; cascade:version :xFirst ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :xR2 a cascade:Revision ; cascade:revisionOf :x ; cascade:version :xSecond ; prov:wasRevisionOf :xR1 ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:00Z"^^xsd:dateTime .
 :y a cascade:AllergyOrIntolerance .
-:yFirst prov:specializationOf :y ; cascade:patient :subject ; cascade:allergen "Oak" .
+:yFirst prov:specializationOf :y ; cascade:patient :subject ; cascade:allergenName "Oak" .
 :yR1 a cascade:Revision ; cascade:revisionOf :y ; cascade:version :yFirst ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :p a cascade:AllergyOrIntolerance .
-:pFirst prov:specializationOf :p ; cascade:patient :subject ; cascade:allergen "Pine" .
-:pSecond prov:specializationOf :p ; cascade:patient :subject ; cascade:allergen "Pine nut" .
+:pFirst prov:specializationOf :p ; cascade:patient :subject ; cascade:allergenName "Pine" .
+:pSecond prov:specializationOf :p ; cascade:patient :subject ; cascade:allergenName "Pine nut" .
 :pR1 a cascade:Revision ; cascade:revisionOf :p ; cascade:version :pFirst ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :pR2 a cascade:Revision ; cascade:revisionOf :p ; cascade:version :pSecond ; prov:wasRevisionOf :pR1 ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:00Z"^^xsd:dateTime .
 :q a cascade:AllergyOrIntolerance .
-:qFirst prov:specializationOf :q ; cascade:patient :subject ; cascade:allergen "Pine" .
+:qFirst prov:specializationOf :q ; cascade:patient :subject ; cascade:allergenName "Pine" .
 :qR1 a cascade:Revision ; cascade:revisionOf :q ; cascade:version :qFirst ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

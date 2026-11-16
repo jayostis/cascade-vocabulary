@@ -8,15 +8,15 @@
 :second a prov:Activity, cascade:DocumentImport ; rdfs:label "Second download" ; prov:used :secondBundle ; prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :a a cascade:AllergyOrIntolerance .
-:aV1 prov:specializationOf :a ; cascade:allergen "Peanut" .
-:aV2 prov:specializationOf :a ; cascade:allergen "Peanuts" .
+:aV1 prov:specializationOf :a ; cascade:allergenName "Peanut" .
+:aV2 prov:specializationOf :a ; cascade:allergenName "Peanuts" .
 :aR1 a cascade:Revision ; cascade:revisionOf :a ; cascade:version :aV1 ; prov:wasGeneratedBy :first ;
     prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
 :aR2 a cascade:Revision ; cascade:revisionOf :a ; cascade:version :aV2 ; prov:wasRevisionOf :aR1 ; prov:wasGeneratedBy :second ;
     prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:05Z"^^xsd:dateTime .
 
 :b a cascade:AllergyOrIntolerance .
-:bV1 prov:specializationOf :b ; cascade:allergen "Latex" .
+:bV1 prov:specializationOf :b ; cascade:allergenName "Latex" .
 :bR1 a cascade:Revision ; cascade:revisionOf :b ; cascade:version :bV1 ; prov:wasGeneratedBy :second ;
     prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:05Z"^^xsd:dateTime .
 

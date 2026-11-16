@@ -18,7 +18,7 @@
 
 :progress a cascade:ClinicalNoteOrDocument .
 :progressVersion prov:specializationOf :progress ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;
-    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ; cascade:noteOrDocumentTitle "Follow-up visit" ;
+    cascade:noteOrDocumentTypeCode <http://loinc.org/rdf/11506-3> ; cascade:noteOrDocumentTitle "Follow-up visit" ;
     cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ; cascade:noteOrDocumentContentStatus "final" ;
     cascade:workflowStatus "current" ;
     cascade:narrativeText "Lung nodule, 6 mm, right upper lobe.\nRepeat chest CT in 12 months." ; prov:wasAttributedTo :clinic .
@@ -27,8 +27,8 @@
 
 :plan a cascade:ClinicalNoteOrDocument .
 :planVersion prov:specializationOf :plan ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Plan of care note" ;
-    cascade:noteOrDocumentType <http://loinc.org/rdf/18776-5> ;
-    cascade:noteOrDocumentTypeInOtherSystem "PLAN"^^<urn:oid:2.16.840.1.113883.19.6> ;
+    cascade:noteOrDocumentTypeCode <http://loinc.org/rdf/18776-5> ;
+    cascade:noteOrDocumentTypeCodeInOtherSystem "PLAN"^^<urn:oid:2.16.840.1.113883.19.6> ;
     cascade:noteOrDocumentDate "2025-02-01"^^xsd:date ; cascade:workflowStatus "current" .
 :planRevision a cascade:Revision ; cascade:revisionOf :plan ; cascade:version :planVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

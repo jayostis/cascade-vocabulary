@@ -9,7 +9,7 @@
 :alpha rdfs:label "Alpha" .
 
 :differ a cascade:AllergyOrIntolerance .
-:differVersion prov:specializationOf :differ ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:differVersion prov:specializationOf :differ ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "active" .
 :differRevision a cascade:Revision ; cascade:revisionOf :differ ; cascade:version :differVersion ; prov:wasDerivedFrom :downloadDiffer ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :downloadDiffer prov:wasAttributedTo :northgate , :alpha ;
@@ -17,7 +17,7 @@
                                           [ prov:hadRole cascade:CustodianRole ; prov:agent :alpha ] ] .
 
 :custodianOnly a cascade:AllergyOrIntolerance .
-:custodianOnlyVersion prov:specializationOf :custodianOnly ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:custodianOnlyVersion prov:specializationOf :custodianOnly ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "active" .
 :custodianOnlyRevision a cascade:Revision ; cascade:revisionOf :custodianOnly ; cascade:version :custodianOnlyVersion ; prov:wasDerivedFrom :downloadCustodian ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :downloadCustodian prov:wasAttributedTo :alpha ;

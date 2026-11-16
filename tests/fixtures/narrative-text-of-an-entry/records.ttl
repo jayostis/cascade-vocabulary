@@ -13,7 +13,7 @@
 
 :colonoscopyResent a cascade:MedicalProcedure .
 :colonoscopyResentVersion prov:specializationOf :colonoscopyResent ; cascade:patient :subject ; cascade:procedureName "Colonoscopy, screening" ;
-    cascade:snomedCode <http://snomed.info/id/73761001> ; cascade:narrativeText "Two polyps removed." .
+    cascade:procedureCode <http://snomed.info/id/73761001> ; cascade:narrativeText "Two polyps removed." .
 :colonoscopyResentRevision a cascade:Revision ; cascade:revisionOf :colonoscopyResent ; cascade:version :colonoscopyResentVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
@@ -25,7 +25,7 @@
 
 :tsh a cascade:LaboratoryTestResult .
 :tshVersion prov:specializationOf :tsh ; cascade:patient :subject ; cascade:testName "TSH" ;
-    cascade:testCode <http://loinc.org/rdf/3016-3> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "2.1" ; cascade:resultUnit "mIU/L" ;
+    cascade:testCode <http://loinc.org/rdf/3016-3> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValueText "2.1" ; cascade:resultUnitText "mIU/L" ;
     cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-03-27T12:00:00Z"^^xsd:dateTime ;
     cascade:narrativeText "historical result" .
 :tshRevision a cascade:Revision ; cascade:revisionOf :tsh ; cascade:version :tshVersion ;
@@ -33,13 +33,13 @@
 
 :tshResent a cascade:LaboratoryTestResult .
 :tshResentVersion prov:specializationOf :tshResent ; cascade:patient :subject ; cascade:testName "Thyrotropin" ;
-    cascade:testCode <http://loinc.org/rdf/3016-3> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "2.1" ; cascade:resultUnit "mIU/L" .
+    cascade:testCode <http://loinc.org/rdf/3016-3> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValueText "2.1" ; cascade:resultUnitText "mIU/L" .
 :tshResentRevision a cascade:Revision ; cascade:revisionOf :tshResent ; cascade:version :tshResentVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :glucose a cascade:LaboratoryTestResult .
 :glucoseVersion prov:specializationOf :glucose ; cascade:patient :subject ; cascade:testName "Glucose" ;
-    cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "95" ; cascade:resultUnit "mg/dL" ;
+    cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValueText "95" ; cascade:resultUnitText "mg/dL" ;
     cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-04-10T08:00:00Z"^^xsd:dateTime .
 :glucoseRevision a cascade:Revision ; cascade:revisionOf :glucose ; cascade:version :glucoseVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
@@ -73,7 +73,7 @@
 
 :progress a cascade:ClinicalNoteOrDocument .
 :progressVersion prov:specializationOf :progress ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;
-    cascade:noteOrDocumentType <http://loinc.org/rdf/11506-3> ; cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ;
+    cascade:noteOrDocumentTypeCode <http://loinc.org/rdf/11506-3> ; cascade:noteOrDocumentDate "2025-05-06T10:00:00Z"^^xsd:dateTime ;
     cascade:workflowStatus "current" ; cascade:narrativeText "  Lung nodule, 6 mm.  \n\n  Repeat chest CT in 12 months.\n" .
 :progressRevision a cascade:Revision ; cascade:revisionOf :progress ; cascade:version :progressVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

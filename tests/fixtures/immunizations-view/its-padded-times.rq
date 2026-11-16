@@ -4,7 +4,7 @@ SELECT ?holds ?property ?written ?named
 WHERE {
   GRAPH <https://pod.example/clinical/immunizations.ttl> {
     ?holder cascade:paddedDateTime ?node .
-    ?node cascade:paddedDateTimeProperty ?property ; cascade:writtenDate ?written .
+    ?node cascade:paddedDateTimeProperty ?property ; cascade:timeAsWritten ?written .
     BIND (IF(EXISTS { ?holder cascade:entryMember [] }, "entry", "member's values") AS ?holds)
     BIND (STR(?node) = CONCAT(STR(?holder), "-padded-vaccinationOccurrenceTime") AS ?named)
   }

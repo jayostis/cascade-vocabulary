@@ -6,7 +6,7 @@ import pytest
 from pyshacl import validate
 from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, SKOS, XSD
+from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, SKOS, VOID, XSD
 
 from contract import LAYOUT, QUERIES, ROOT
 
@@ -27,17 +27,33 @@ A_PREFIXED_NAME = re.compile(r"(?<![\w:#-])([A-Za-z][\w-]*):([A-Za-z]\w*)\b")
 BOUND_IN_CASCADE = dict(
     Graph(bind_namespaces="none").parse(ROOT / "ontologies/cascade.ttl").namespaces())
 PARTIAL_DATE = {XSD.gYear, XSD.gYearMonth, XSD.date, XSD.dateTime}
+EVERY_LISTED_SYSTEM = object()
+RE_MINTED = {
+    "notes": "addedNoteText", "dosage": "dosageInstructionText", "resultValue": "resultValueText",
+    "resultUnit": "resultUnitText", "referenceRange": "referenceRangeText", "doseQuantity": "vaccineDoseQuantityText",
+    "interpretedDate": "variantInterpretationDate", "snomedCode": "conditionCode", "icd10Code": "conditionCode",
+    "cptCode": "procedureCode", "allergen": "allergenName", "writtenDate": "timeAsWritten",
+    "variantInterpreted": "subjectVariant", "resultCode": "resultValueCode",
+    "routeOfAdministration": "vaccinationRouteText", "administrationSite": "vaccinationBodySiteText",
+    "noteOrDocumentType": "noteOrDocumentTypeCode",
+    "noteOrDocumentTypeInOtherSystem": "noteOrDocumentTypeCodeInOtherSystem",
+    "dispenseValidityPeriodStart": "dispenseRequestValidityPeriodStart",
+    "dispenseValidityPeriodEnd": "dispenseRequestValidityPeriodEnd", "resultRangeLow": "resultValueRangeLow",
+    "resultRangeHigh": "resultValueRangeHigh", "lotNumber": "vaccineLotNumber",
+}
+PIPELINE_PHASES = [
+    "Reading what arrived", "Which judgments count", "Which records are the same", "What no view shows",
+    "Joining records into entries", "Medications and notes",
+]
 HELD_AS_CODE_IRIS = {
     CASCADE_NS.testCodeInOtherSystem: {CASCADE_NS.testCode: (CASCADE_NS.LOINC, CASCADE_NS.SNOMEDCT)},
     CASCADE_NS.medicationCodeInOtherSystem: {CASCADE_NS.rxNormCode: (CASCADE_NS.RxNorm,),
                                              CASCADE_NS.ndcCode: (CASCADE_NS.NDC,)},
-    CASCADE_NS.conditionCodeInOtherSystem: {CASCADE_NS.icd10Code: (CASCADE_NS.ICD10CM,),
-                                            CASCADE_NS.snomedCode: (CASCADE_NS.SNOMEDCT,)},
-    CASCADE_NS.procedureCodeInOtherSystem: {CASCADE_NS.cptCode: (CASCADE_NS.CPT,),
-                                            CASCADE_NS.snomedCode: (CASCADE_NS.SNOMEDCT,)},
+    CASCADE_NS.conditionCodeInOtherSystem: {CASCADE_NS.conditionCode: EVERY_LISTED_SYSTEM},
+    CASCADE_NS.procedureCodeInOtherSystem: {CASCADE_NS.procedureCode: EVERY_LISTED_SYSTEM},
     CASCADE_NS.dosageRouteCodeInOtherSystem: {CASCADE_NS.dosageRouteCode: (CASCADE_NS.SNOMEDCT,)},
     CASCADE_NS.reportCodeInOtherSystem: {CASCADE_NS.reportCode: (CASCADE_NS.LOINC, CASCADE_NS.SNOMEDCT)},
-    CASCADE_NS.noteOrDocumentTypeInOtherSystem: {CASCADE_NS.noteOrDocumentType: (CASCADE_NS.LOINC,)},
+    CASCADE_NS.noteOrDocumentTypeCodeInOtherSystem: {CASCADE_NS.noteOrDocumentTypeCode: (CASCADE_NS.LOINC,)},
 }
 
 
@@ -372,7 +388,7 @@ class TestTermsTheShapesAndOntologyAgreeOn:
             pytest.param(CASCADE_NS.procedureCodeInOtherSystem, id="procedure"),
             pytest.param(CASCADE_NS.dosageRouteCodeInOtherSystem, id="dosage route"),
             pytest.param(CASCADE_NS.reportCodeInOtherSystem, id="report"),
-            pytest.param(CASCADE_NS.noteOrDocumentTypeInOtherSystem, id="note or document type"),
+            pytest.param(CASCADE_NS.noteOrDocumentTypeCodeInOtherSystem, id="note or document type"),
         ])
         def test_refuses_exactly_the_system_uris_its_kind_holds(self, path):
             """refuses exactly the system URIs its kind already holds as code IRIs
@@ -385,14 +401,51 @@ class TestTermsTheShapesAndOntologyAgreeOn:
             refused = {
                 datatype
                 for shape in shapes.subjects(SH.path, path)
-                for negated in shapes.objects(shape, SH["not"]) if isinstance(negated, BNode)
+                for negated in shapes.objects(shape, SH["not"])
+                if isinstance(negated, BNode) or negated == CASCADE_NS.LiteralTypedByAListedSystemUriShape
                 for alternatives in shapes.objects(negated, SH["or"])
                 for alternative in Collection(shapes, alternatives)
                 for datatype in shapes.objects(alternative, SH.datatype)
             }
+            listed = set(vocabulary().subjects(RDF.type, CASCADE_NS.CodeSystem))
             expected = {URIRef(vocabulary().value(system, CASCADE_NS.codingSystemUri))
-                        for systems in HELD_AS_CODE_IRIS[path].values() for system in systems}
+                        for systems in HELD_AS_CODE_IRIS[path].values()
+                        for system in (listed if systems is EVERY_LISTED_SYSTEM else systems)}
             assert refused == expected
+
+    class TestGivenAPropertyForACodeInAnyListedSystem:
+        @pytest.mark.parametrize("property", [
+            pytest.param(CASCADE_NS.conditionCode, id="condition"),
+            pytest.param(CASCADE_NS.procedureCode, id="procedure"),
+        ])
+        def test_takes_the_code_iri_of_every_system_the_vocabulary_lists_a_stem_for(self, property):
+            """takes the code IRI of every system the vocabulary lists a stem for
+
+            The case is a kind's code property, which its shape holds to `cascade:CodeInAListedSystemShape`. The stems
+            that shape's pattern allows are compared with the `void:uriSpace` of every `cascade:CodeSystem`; a system
+            listed and not allowed, or allowed and not listed, fails, and the property must be declared with its kind
+            as its domain.
+            """
+            graph, shapes = vocabulary(), shape_graphs()
+            held_to = {shapes.value(shape, SH.node) for shape in shapes.subjects(SH.path, property)}
+            assert held_to == {CASCADE_NS.CodeInAListedSystemShape}
+            pattern = str(shapes.value(CASCADE_NS.CodeInAListedSystemShape, SH.pattern))
+            allowed = set(re.fullmatch(r"\^\((.*)\)\.\+\$", pattern).group(1).replace("\\.", ".").split("|"))
+            assert allowed == {str(graph.value(system, VOID.uriSpace))
+                               for system in graph.subjects(RDF.type, CASCADE_NS.CodeSystem)}
+            assert (property, RDFS.domain, None) in graph
+
+    class TestGivenAReMintedTerm:
+        @pytest.mark.parametrize("old, new", [
+            pytest.param(old, new, id=old) for old, new in RE_MINTED.items()])
+        def test_is_declared_under_its_new_name_and_not_its_old(self, old, new):
+            """is declared under its new name and not its old
+
+            The case is a term of the one re-mint. Its new name must be declared in the ontology, and its old name
+            must not be, as a term or as an alias.
+            """
+            graph = vocabulary()
+            assert (CASCADE_NS[new], RDF.type, None) in graph and (CASCADE_NS[old], None, None) not in graph
 
     class TestGivenAnyTermInCascade:
         def test_says_what_it_is_in_a_comment(self):
@@ -585,6 +638,22 @@ class TestRootCrate:
             """
             described = [path for path, entity in crate().items() if "isBasedOn" in entity or "citation" in entity]
             assert described and [path for path in described if path != "./" and not (ROOT / path).is_file()] == []
+
+        def test_puts_every_positioned_step_in_exactly_one_pipeline_section_in_order(self):
+            """puts every positioned step in exactly one of the six pipeline sections, in order
+
+            The crate's `HowToSection` entities are read in the order of their `position`; their steps together are
+            compared with the files that have a `position`. A step in no section or in two, a section out of its
+            name, or a step listed before one of an earlier position fails.
+            """
+            entities = crate()
+            positioned = {path: entity["position"] for path, entity in entities.items() if entity.get("@type") == "File" and "position" in entity}
+            sections = sorted((e for e in entities.values() if e.get("@type") == "HowToSection"),
+                              key=lambda e: e["position"])
+            listed = [step["@id"] for section in sections for step in section["itemListElement"]]
+            assert [section["name"] for section in sections] == PIPELINE_PHASES
+            assert sorted(listed) == sorted(positioned)
+            assert [positioned[path] for path in listed] == sorted(positioned.values())
 
         def test_reaches_every_item_from_its_metadata_descriptor(self):
             """reaches every item from its metadata descriptor

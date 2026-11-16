@@ -8,7 +8,7 @@
 :subject a cascade:Subject .
 
 :record a cascade:AllergyOrIntolerance .
-:recordVersion prov:specializationOf :record ; cascade:patient :subject ; cascade:allergen "Peanut" .
+:recordVersion prov:specializationOf :record ; cascade:patient :subject ; cascade:allergenName "Peanut" .
 :recordRevision a cascade:Revision ; cascade:revisionOf :record ; cascade:version :recordVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
@@ -23,6 +23,6 @@
     cascade:queryHash :sameMappedCodeQuery .
 
 :other a cascade:AllergyOrIntolerance .
-:otherVersion prov:specializationOf :other ; cascade:patient :subject ; cascade:allergen "Peanut oil" .
+:otherVersion prov:specializationOf :other ; cascade:patient :subject ; cascade:allergenName "Peanut oil" .
 :otherRevision a cascade:Revision ; cascade:revisionOf :other ; cascade:version :otherVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

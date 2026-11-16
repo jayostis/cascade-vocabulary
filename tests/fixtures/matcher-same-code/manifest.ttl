@@ -5,20 +5,21 @@
 
 <> a mf:Manifest ;
   rdfs:label "matcher-same-code" ;
-  rdfs:comment "Two allergies sharing an RxNorm allergen code; two procedures sharing a SNOMED CT code on different dates; an allergy and a condition sharing a code; and two allergies that shared a code only before one was revised." ;
+  rdfs:comment "Two allergies sharing an RxNorm allergen code; two procedures sharing a SNOMED CT code on different dates; two procedures coded CPT 36415 a year apart; a procedure and a condition sharing a code; and two allergies that shared a code only before one was revised." ;
   mf:entries (
     <#same-code>
   ) .
 
 <#same-code> a mf:QueryEvaluationTest ;
   mf:name "same-code" ;
-  rdfs:comment "Records of one kind whose current versions share a code match whatever their dates; records of two kinds, or sharing a code only through an earlier version, do not." ;
+  rdfs:comment "Records of one kind whose current versions share a code match whatever their dates; records of two kinds, sharing a code only through an earlier version, or sharing a CPT code, do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-code.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               ctm:boundRecord <urn:x:allergyB> ,
-                                  <urn:x:allergyOfOneKind> ,
+                                  <urn:x:procedureOfOneKind> ,
                                   <urn:x:conditionOfAnother> ,
                                   <urn:x:procedureB> ,
+                                  <urn:x:procedureCptB> ,
                                   <urn:x:revisedAway> ,
                                   <urn:x:stillThere> ] ;
   mf:result <same-code.srj> .

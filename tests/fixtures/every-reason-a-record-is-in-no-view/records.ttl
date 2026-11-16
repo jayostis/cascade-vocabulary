@@ -7,7 +7,7 @@
 :import a prov:Activity .
 
 :inError a cascade:AllergyOrIntolerance .
-:inErrorVersion prov:specializationOf :inError ; cascade:patient :subject ; cascade:allergen "Peanut" ;
+:inErrorVersion prov:specializationOf :inError ; cascade:patient :subject ; cascade:allergenName "Peanut" ;
     cascade:verificationStatus "entered-in-error" .
 :inErrorRevision a cascade:Revision ; cascade:revisionOf :inError ; cascade:version :inErrorVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
@@ -38,7 +38,7 @@
 
 :interpretationInError a cascade:VariantInterpretation .
 :interpretationInErrorVersion prov:specializationOf :interpretationInError ; cascade:patient :subject ;
-    cascade:interpretedDate "2025-05-01"^^xsd:date ; cascade:workflowStatus "entered-in-error" .
+    cascade:variantInterpretationDate "2025-05-01"^^xsd:date ; cascade:workflowStatus "entered-in-error" .
 :interpretationInErrorRevision a cascade:Revision ; cascade:revisionOf :interpretationInError ;
     cascade:version :interpretationInErrorVersion ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
@@ -49,34 +49,34 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :refuted a cascade:AllergyOrIntolerance .
-:refutedVersion prov:specializationOf :refuted ; cascade:patient :subject ; cascade:allergen "Latex" ;
+:refutedVersion prov:specializationOf :refuted ; cascade:patient :subject ; cascade:allergenName "Latex" ;
     cascade:verificationStatus "refuted" .
 :refutedRevision a cascade:Revision ; cascade:revisionOf :refuted ; cascade:version :refutedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :judged a cascade:AllergyOrIntolerance .
-:judgedVersion prov:specializationOf :judged ; cascade:patient :subject ; cascade:allergen "Egg" .
+:judgedVersion prov:specializationOf :judged ; cascade:patient :subject ; cascade:allergenName "Egg" .
 :judgedRevision a cascade:Revision ; cascade:revisionOf :judged ; cascade:version :judgedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :fromTheImport a cascade:AllergyOrIntolerance .
-:fromTheImportVersion prov:specializationOf :fromTheImport ; cascade:patient :subject ; cascade:allergen "Soy" .
+:fromTheImportVersion prov:specializationOf :fromTheImport ; cascade:patient :subject ; cascade:allergenName "Soy" .
 :fromTheImportRevision a cascade:Revision ; cascade:revisionOf :fromTheImport ; cascade:version :fromTheImportVersion ;
     prov:wasGeneratedBy :import ; prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :unclaimed a cascade:AllergyOrIntolerance .
-:unclaimedVersion prov:specializationOf :unclaimed ; cascade:patient :profile ; cascade:allergen "Wheat" .
+:unclaimedVersion prov:specializationOf :unclaimed ; cascade:patient :profile ; cascade:allergenName "Wheat" .
 :unclaimedRevision a cascade:Revision ; cascade:revisionOf :unclaimed ; cascade:version :unclaimedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :noPatient a cascade:AllergyOrIntolerance .
-:noPatientVersion prov:specializationOf :noPatient ; cascade:allergen "Fish" .
+:noPatientVersion prov:specializationOf :noPatient ; cascade:allergenName "Fish" .
 :noPatientRevision a cascade:Revision ; cascade:revisionOf :noPatient ; cascade:version :noPatientVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :unrevised a cascade:AllergyOrIntolerance .
 
 :shown a cascade:AllergyOrIntolerance .
-:shownVersion prov:specializationOf :shown ; cascade:patient :subject ; cascade:allergen "Sesame" .
+:shownVersion prov:specializationOf :shown ; cascade:patient :subject ; cascade:allergenName "Sesame" .
 :shownRevision a cascade:Revision ; cascade:revisionOf :shown ; cascade:version :shownVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

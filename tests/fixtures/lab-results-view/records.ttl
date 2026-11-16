@@ -23,7 +23,7 @@
 
 :glucose a cascade:LaboratoryTestResult .
 :glucoseVersion prov:specializationOf :glucose ; cascade:patient :subject ; cascade:testName "Glucose" ;
-    cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValue "95" ; cascade:resultUnit "mg/dL" ;
+    cascade:testCode <http://loinc.org/rdf/2345-7> ; cascade:resultValueKind cascade:TextResultValue ; cascade:resultValueText "95" ; cascade:resultUnitText "mg/dL" ;
     cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-04-10T08:00:00Z"^^xsd:dateTime .
 :glucoseRevision a cascade:Revision ; cascade:revisionOf :glucose ; cascade:version :glucoseVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
@@ -50,7 +50,7 @@
 :urine a cascade:LaboratoryTestResult .
 :urineVersion prov:specializationOf :urine ; cascade:patient :subject ; cascade:testName "WBC, urine sediment" ;
     cascade:testCode <http://loinc.org/rdf/5821-4> ; cascade:resultValueKind cascade:RangeResultValue ;
-    cascade:resultRangeLow <urn:x:urineVersion#range-low> ; cascade:resultRangeHigh <urn:x:urineVersion#range-high> ;
+    cascade:resultValueRangeLow <urn:x:urineVersion#range-low> ; cascade:resultValueRangeHigh <urn:x:urineVersion#range-high> ;
     cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-04-12T09:00:00Z"^^xsd:dateTime .
 <urn:x:urineVersion#range-low> cascade:decimalValue "0"^^xsd:decimal ; cascade:writtenValue "0" ; cascade:ucumUnit "/[HPF]" .
 <urn:x:urineVersion#range-high> cascade:decimalValue "5"^^xsd:decimal ; cascade:writtenValue "5" ; cascade:ucumUnit "/[HPF]" .
@@ -62,7 +62,7 @@
     cascade:testCode <http://loinc.org/rdf/787-2> ; cascade:resultValueKind cascade:QuantityResultValue ; cascade:resultQuantity <urn:x:mcvVersion#value> ;
     cascade:resultInterpretationCode <https://ns.cascadeprotocol.org/codes/observationinterpretation/H> ,
         <https://ns.cascadeprotocol.org/codes/observationinterpretation/A> ;
-    cascade:referenceRange "80-100 fL" ;
+    cascade:referenceRangeText "80-100 fL" ;
     cascade:referenceRangeLow <urn:x:mcvVersion#reference-low> ; cascade:referenceRangeHigh <urn:x:mcvVersion#reference-high> ;
     cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-04-13T09:00:00Z"^^xsd:dateTime .
 <urn:x:mcvVersion#value> cascade:decimalValue "101"^^xsd:decimal ; cascade:writtenValue "101" ; cascade:ucumUnit "fL" .
