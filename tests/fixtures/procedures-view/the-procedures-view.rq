@@ -1,4 +1,4 @@
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 
 SELECT DISTINCT ?entry ?field ?value
-WHERE { GRAPH <https://pod.example/clinical/procedures.ttl> { ?entry cascade:mergedFrom [] ; ?field ?value FILTER (?field != cascade:memberCurrentValues) } }
+WHERE { GRAPH <https://pod.example/clinical/procedures.ttl> { ?entry cascade:entryMember [] ; ?field ?value FILTER (?field != cascade:memberCurrentValues) } }

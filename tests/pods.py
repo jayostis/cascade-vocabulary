@@ -162,7 +162,7 @@ def resolved(views):
     """Each view's triples with every entry placeholder resolved against the address of the view that gives the entry its
     members, or of the view naming it where none does, as a runtime's dataset holds a view it writes <#hex> (N13)."""
     owner = {str(s): ADDRESS + path for path, triples in views.items()
-             for s, p, _ in triples if p == CASCADE.mergedFrom and str(s).startswith(ENTRY)}
+             for s, p, _ in triples if p == CASCADE.entryMember and str(s).startswith(ENTRY)}
 
     def rename(term, path):
         text = str(term)

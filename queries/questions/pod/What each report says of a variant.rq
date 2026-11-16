@@ -11,7 +11,7 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 
 SELECT DISTINCT ?report ?variant ?classification ?date ?lab ?labName
 WHERE {
-  ?report cascade:variantInterpreted ?variant ; cascade:mergedFrom [] .
+  ?report cascade:variantInterpreted ?variant ; cascade:entryMember [] .
   OPTIONAL { ?report cascade:acmgClassification ?classification }
   OPTIONAL { ?report cascade:interpretedDate ?date }
   OPTIONAL { ?report prov:wasAttributedTo ?lab .

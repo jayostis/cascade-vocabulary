@@ -63,7 +63,7 @@ WHERE {
             WHERE {
               { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
-                  ?entry a cascade:AllergyOrIntolerance ; cascade:mergedFrom ?sourceRecord .
+                  ?entry a cascade:AllergyOrIntolerance ; cascade:entryMember ?sourceRecord .
                   FILTER NOT EXISTS { ?entry cascade:clinicalStatus ?other FILTER (?other != "active") }
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
@@ -86,7 +86,7 @@ WHERE {
     }
     GROUP BY ?entry }
   ?entry a cascade:AllergyOrIntolerance ;
-         cascade:allergen ?allergen ; cascade:mergedFrom ?record .
+         cascade:allergen ?allergen ; cascade:entryMember ?record .
   OPTIONAL { ?entry cascade:clinicalStatus ?stated }
   FILTER (!BOUND(?stated) || ?stated = "active")
   OPTIONAL { ?entry cascade:allergenCode ?code }

@@ -46,7 +46,7 @@ WHERE {
             WHERE {
               { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
-                  ?entry a cascade:ProblemOrDiagnosis ; cascade:mergedFrom ?sourceRecord .
+                  ?entry a cascade:ProblemOrDiagnosis ; cascade:entryMember ?sourceRecord .
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                              OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .
@@ -67,7 +67,7 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
-  ?entry a cascade:ProblemOrDiagnosis ; cascade:conditionName ?condition ; cascade:mergedFrom ?record .
+  ?entry a cascade:ProblemOrDiagnosis ; cascade:conditionName ?condition ; cascade:entryMember ?record .
   OPTIONAL { ?entry cascade:clinicalStatus ?clinicalStatus }
   OPTIONAL { ?entry cascade:verificationStatus ?verificationStatus }
   OPTIONAL {

@@ -71,7 +71,7 @@ WHERE {
               { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
                   ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
-                         cascade:mergedFrom ?sourceRecord .
+                         cascade:entryMember ?sourceRecord .
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                              OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .
@@ -104,7 +104,7 @@ WHERE {
     GROUP BY ?entry
   }
   ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
-         cascade:drugName ?medication ; cascade:mergedFrom ?record .
+         cascade:drugName ?medication ; cascade:entryMember ?record .
   OPTIONAL { ?entry cascade:userSelectedCode ?chosen }
   OPTIONAL { ?entry cascade:medicationUseStartDate ?started }
   OPTIONAL { ?entry cascade:prescriptionWrittenDate ?written }

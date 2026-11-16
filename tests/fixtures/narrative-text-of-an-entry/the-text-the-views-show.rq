@@ -4,7 +4,7 @@ SELECT DISTINCT ?name ?text ?member ?memberText
 WHERE {
   VALUES ?view { <https://pod.example/clinical/procedures.ttl> <https://pod.example/clinical/lab-results.ttl> <https://pod.example/clinical/medications.ttl> }
   GRAPH ?view {
-    ?entry cascade:mergedFrom [] ; cascade:leadMember [] .
+    ?entry cascade:entryMember [] ; cascade:leadMember [] .
     OPTIONAL { ?entry cascade:procedureName ?procedure }
     OPTIONAL { ?entry cascade:testName ?test }
     OPTIONAL { ?entry cascade:drugName ?drug }

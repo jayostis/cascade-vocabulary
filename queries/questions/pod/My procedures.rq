@@ -33,7 +33,7 @@ WHERE {
             WHERE {
               { SELECT ?entry ?sourceRecord ?document ?retrievedOn ?hospital
                 WHERE {
-                  ?entry a cascade:MedicalProcedure ; cascade:mergedFrom ?sourceRecord .
+                  ?entry a cascade:MedicalProcedure ; cascade:entryMember ?sourceRecord .
                   OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                              OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                              OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .
@@ -54,7 +54,7 @@ WHERE {
         ORDER BY ?entry ?sourceText }
     }
     GROUP BY ?entry }
-  ?entry a cascade:MedicalProcedure ; cascade:mergedFrom ?record .
+  ?entry a cascade:MedicalProcedure ; cascade:entryMember ?record .
   OPTIONAL { ?entry cascade:procedureDate ?performed }
   OPTIONAL { ?entry cascade:procedureName ?procedure }
   OPTIONAL { ?entry cascade:snomedCode ?snomed }

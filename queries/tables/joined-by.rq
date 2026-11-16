@@ -12,6 +12,6 @@ WHERE {
   ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:wasAttributedTo/a prov:SoftwareAgent ;
             prov:hadMember ?member ; prov:wasDerivedFrom ?used .
   ?used prov:specializationOf/cascade:tableKind ?kind .
-  ?member ^cascade:mergedFrom ?entry .
+  ?member ^cascade:entryMember ?entry .
 }
 ORDER BY ?entry ?used
