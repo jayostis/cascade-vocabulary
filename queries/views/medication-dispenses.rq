@@ -37,9 +37,9 @@ CONSTRUCT {
     cascade:authorizingPrescription ?memberAuthorizingPrescription ;
     cascade:workflowStatus ?memberWorkflowStatus .
   ?entry cascade:paddedDateTime ?leadPadded .
-  ?leadPadded cascade:paddedDateTimeProperty ?leadPaddedProperty ; cascade:writtenDate ?leadWritten .
+  ?leadPadded cascade:paddedDateTimeProperty ?leadPaddedProperty ; cascade:timeAsWritten ?leadWritten .
   ?memberValues cascade:paddedDateTime ?memberPadded .
-  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten .
 }
 WHERE {
   { ?record a cascade:MedicationDispense ; cascade:inEntry ?entry .
@@ -56,7 +56,7 @@ WHERE {
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?entry cascade:statusLifecycle ?lifecycle }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?leadPaddedAt .
-               ?leadPaddedAt cascade:paddedDateTimeProperty ?leadPaddedProperty ; cascade:writtenDate ?leadWritten }
+               ?leadPaddedAt cascade:paddedDateTimeProperty ?leadPaddedProperty ; cascade:timeAsWritten ?leadWritten }
     BIND (IF(BOUND(?leadWritten), IRI(CONCAT(STR(?entry), "-padded-", STRAFTER(STR(?leadPaddedProperty), "#"))), 1/0)
           AS ?leadPadded) }
   UNION
@@ -72,7 +72,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:authorizingPrescription ?memberAuthorizingPrescription }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
-               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
           AS ?memberPadded) }
 }

@@ -12,7 +12,7 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?allergen ?code ?criticality ?status ?reactionsByRecord (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
+SELECT ?allergenName ?code ?criticality ?status ?reactionsByRecord (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?memberText, "; "), ""); separator=""), "; $", "") AS ?allReactions)
     WHERE {
@@ -86,7 +86,7 @@ WHERE {
     }
     GROUP BY ?entry }
   ?entry a cascade:AllergyOrIntolerance ;
-         cascade:allergen ?allergen ; cascade:entryMember ?record .
+         cascade:allergenName ?allergenName ; cascade:entryMember ?record .
   OPTIONAL { ?entry cascade:clinicalStatus ?stated }
   FILTER (!BOUND(?stated) || ?stated = "active")
   OPTIONAL { ?entry cascade:allergenCode ?code }
@@ -95,5 +95,5 @@ WHERE {
   BIND (COALESCE(?stated, "not stated") AS ?status)
   BIND (IF(?allReactions = "", 1/0, ?allReactions) AS ?reactionsByRecord)
 }
-GROUP BY ?entry ?allergen ?code ?criticality ?status ?reactionsByRecord ?entryLabel ?sources
-ORDER BY ?allergen ?entry
+GROUP BY ?entry ?allergenName ?code ?criticality ?status ?reactionsByRecord ?entryLabel ?sources
+ORDER BY ?allergenName ?entry

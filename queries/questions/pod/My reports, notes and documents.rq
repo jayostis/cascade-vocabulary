@@ -48,8 +48,8 @@ WHERE {
           OPTIONAL { ?entry cascade:narrativeText ?text }
           OPTIONAL { ?entry cascade:reportCode ?reportCode }
           OPTIONAL { ?entry cascade:reportCodeInOtherSystem ?reportOther }
-          OPTIONAL { ?entry cascade:noteOrDocumentType ?noteType }
-          OPTIONAL { ?entry cascade:noteOrDocumentTypeInOtherSystem ?noteOther }
+          OPTIONAL { ?entry cascade:noteOrDocumentTypeCode ?noteType }
+          OPTIONAL { ?entry cascade:noteOrDocumentTypeCodeInOtherSystem ?noteOther }
           OPTIONAL { ?entry cascade:entryMember/pav:hasCurrentVersion/cascade:attachment ?attached .
                      ?attached cascade:attachmentContentType ?contentType .
                      OPTIONAL { ?attached cascade:attachmentTitle ?attachmentTitle }
@@ -71,9 +71,9 @@ WHERE {
                   ?entry a ?type .
                   OPTIONAL { ?entry obo:RO_0002351 ?result .
                              OPTIONAL { ?result cascade:testName ?test }
-                             OPTIONAL { ?result cascade:resultValue ?value }
-                             OPTIONAL { ?result cascade:resultUnit ?unit }
-                             OPTIONAL { ?result cascade:referenceRange ?range }
+                             OPTIONAL { ?result cascade:resultValueText ?value }
+                             OPTIONAL { ?result cascade:resultUnitText ?unit }
+                             OPTIONAL { ?result cascade:referenceRangeText ?range }
                              OPTIONAL { ?result cascade:resultInterpretationCode ?interpretation }
                              BIND (REPLACE(STR(?interpretation), "^.*/", "") AS ?flag) }
                 }

@@ -11,7 +11,7 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?performed ?test ?code ?value ?unit ?status ?interpretations ?referenceRange ?referenceRangeLow ?referenceRangeHigh
+SELECT ?performed ?test ?code ?value ?unit ?status ?interpretations ?referenceRangeText ?referenceRangeLow ?referenceRangeHigh
        ?narrativeTexts (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?narrativeLine; separator=""), "; $", "") AS ?said)
@@ -71,10 +71,10 @@ WHERE {
   OPTIONAL { ?entry cascade:resultClinicallyRelevantTime ?performed }
   OPTIONAL { ?entry cascade:testName ?test }
   OPTIONAL { ?entry cascade:testCode ?code }
-  OPTIONAL { ?entry cascade:resultValue ?value }
-  OPTIONAL { ?entry cascade:resultUnit ?unit }
+  OPTIONAL { ?entry cascade:resultValueText ?value }
+  OPTIONAL { ?entry cascade:resultUnitText ?unit }
   OPTIONAL { ?entry cascade:workflowStatus ?status }
-  OPTIONAL { ?entry cascade:referenceRange ?referenceRange }
+  OPTIONAL { ?entry cascade:referenceRangeText ?referenceRangeText }
   OPTIONAL { ?entry cascade:referenceRangeLow ?low .
              ?low cascade:writtenValue ?lowWritten .
              OPTIONAL { ?low cascade:unitText ?lowUnitText }
@@ -89,6 +89,6 @@ WHERE {
   BIND (CONCAT(?lowWritten, COALESCE(CONCAT(" ", COALESCE(?lowUnitText, ?lowUcum)), "")) AS ?referenceRangeLow)
   BIND (CONCAT(?highWritten, COALESCE(CONCAT(" ", COALESCE(?highUnitText, ?highUcum)), "")) AS ?referenceRangeHigh)
 }
-GROUP BY ?entry ?performed ?test ?code ?value ?unit ?status ?interpretations ?referenceRange ?referenceRangeLow
+GROUP BY ?entry ?performed ?test ?code ?value ?unit ?status ?interpretations ?referenceRangeText ?referenceRangeLow
          ?referenceRangeHigh ?narrativeTexts ?entryLabel ?sources
 ORDER BY DESC(COALESCE(SUBSTR(STR(?performed), 1, 10), "")) DESC(COALESCE(STR(?performed), "")) ?test ?entry

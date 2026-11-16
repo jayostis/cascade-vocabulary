@@ -1,4 +1,4 @@
-# Two conditions match when their current versions share an ICD-10-CM or SNOMED CT code and their periods
+# Two conditions match when their current versions share a condition code and their periods
 # overlap, bounds included. Each date is read as the days its precision covers, as FHIR search reads a date: a year
 # from its 1 January to its 31 December, a month from its first day to its last, and a day, or a time, as its day, the
 # first ten characters as written, so a time zone never moves one. A period runs from the onset's first day to the
@@ -15,7 +15,7 @@ SELECT DISTINCT ?record ?other
 WHERE {
   { SELECT ?record ?version ?property ?code ?from ?to
     WHERE {
-      VALUES ?property { cascade:icd10Code cascade:snomedCode }
+      VALUES ?property { cascade:conditionCode }
       ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version .
       ?version ?property ?code ; cascade:displayDate ?onset .
       OPTIONAL { ?version cascade:abatementDate ?end }
@@ -32,7 +32,7 @@ WHERE {
     } }
   { SELECT ?other ?property ?code ?otherFrom ?otherTo
     WHERE {
-      VALUES ?property { cascade:icd10Code cascade:snomedCode }
+      VALUES ?property { cascade:conditionCode }
       ?other cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion .
       ?otherVersion ?property ?code ; cascade:displayDate ?otherOnset .
       OPTIONAL { ?otherVersion cascade:abatementDate ?otherEnd }

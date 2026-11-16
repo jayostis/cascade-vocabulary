@@ -42,7 +42,7 @@ WHERE {
           ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
                  cascade:memberCurrentValues ?values .
           ?values cascade:valuesOfMember ?member .
-          OPTIONAL { ?values cascade:dosage ?memberDosage }
+          OPTIONAL { ?values cascade:dosageInstructionText ?memberDosage }
           BIND (IF(BOUND(?memberDosage), CONCAT(STR(?member), " ", ?memberDosage, "; "), "") AS ?dosageText)
         }
         ORDER BY ?entry ?dosageText }

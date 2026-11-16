@@ -9,8 +9,7 @@ PREFIX pav: <http://purl.org/pav/>
 CONSTRUCT {
   ?entry a cascade:ProblemOrDiagnosis ;
     cascade:conditionName ?name ;
-    cascade:snomedCode ?snomed ;
-    cascade:icd10Code ?icd10 ;
+    cascade:conditionCode ?code ;
     cascade:clinicalStatus ?status ;
     cascade:verificationStatus ?verification ;
     cascade:abatementDate ?abatement ;
@@ -21,48 +20,45 @@ CONSTRUCT {
   ?entry cascade:memberCurrentValues ?memberValues .
   ?memberValues cascade:valuesOfMember ?member ;
     cascade:conditionName ?memberConditionName ;
-    cascade:snomedCode ?memberSnomedCode ;
-    cascade:icd10Code ?memberIcd10Code ;
+    cascade:conditionCode ?memberConditionCode ;
     cascade:clinicalStatus ?memberClinicalStatus ;
     cascade:verificationStatus ?memberVerificationStatus ;
     cascade:abatementDate ?memberAbatementDate ;
     cascade:onsetDate ?memberOnsetDate .
   ?entry cascade:paddedDateTime ?onsetPadded .
-  ?onsetPadded cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:writtenDate ?onsetWritten .
+  ?onsetPadded cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?onsetWritten .
   ?entry cascade:paddedDateTime ?abatementPadded .
-  ?abatementPadded cascade:paddedDateTimeProperty cascade:abatementDate ; cascade:writtenDate ?abatementWritten .
+  ?abatementPadded cascade:paddedDateTimeProperty cascade:abatementDate ; cascade:timeAsWritten ?abatementWritten .
   ?memberValues cascade:paddedDateTime ?memberPadded .
-  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten .
 }
 WHERE {
   { ?record a cascade:ProblemOrDiagnosis ; cascade:inEntry ?entry .
     ?entry cascade:leadMember ?lead .
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:conditionName ?name }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:snomedCode ?snomed }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:icd10Code ?icd10 }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:conditionCode ?code }
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:clinicalStatus ?status }
     OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:verificationStatus ?verification }
     OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:abatementDate ?abatement }
     OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:onsetDate ?onset }
     OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?onsetPaddedAt .
-               ?onsetPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:writtenDate ?onsetWritten }
+               ?onsetPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?onsetWritten }
     BIND (IF(BOUND(?onsetWritten), IRI(CONCAT(STR(?entry), "-padded-onsetDate")), 1/0) AS ?onsetPadded)
     OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?abatementPaddedAt .
-               ?abatementPaddedAt cascade:paddedDateTimeProperty cascade:abatementDate ; cascade:writtenDate ?abatementWritten }
+               ?abatementPaddedAt cascade:paddedDateTimeProperty cascade:abatementDate ; cascade:timeAsWritten ?abatementWritten }
     BIND (IF(BOUND(?abatementWritten), IRI(CONCAT(STR(?entry), "-padded-abatementDate")), 1/0) AS ?abatementPadded) }
   UNION
   { ?member a cascade:ProblemOrDiagnosis ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
     OPTIONAL { ?memberVersion cascade:conditionName ?memberConditionName }
-    OPTIONAL { ?memberVersion cascade:snomedCode ?memberSnomedCode }
-    OPTIONAL { ?memberVersion cascade:icd10Code ?memberIcd10Code }
+    OPTIONAL { ?memberVersion cascade:conditionCode ?memberConditionCode }
     OPTIONAL { ?memberVersion cascade:clinicalStatus ?memberClinicalStatus }
     OPTIONAL { ?memberVersion cascade:verificationStatus ?memberVerificationStatus }
     OPTIONAL { ?memberVersion cascade:abatementDate ?memberAbatementDate }
     OPTIONAL { ?memberVersion cascade:onsetDate ?memberOnsetDate }
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
-               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
           AS ?memberPadded) }
 }

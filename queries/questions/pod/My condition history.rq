@@ -7,17 +7,16 @@
 # entries whose status is active and not ruled out are the ones `pod/My active conditions` lists. A record's own status
 # is its clinical status, "ruled out" alone when it is refuted; the day it abated follows a clinical status, never "ruled out". A list
 # holds its values in order,
-# each ended by "; " but the last; a value's own parts are ended by ", ". Each code is its system's IRI, SNOMED CT's or
-# ICD-10-CM's: the one the entry states, or http://snomed.info/id/ or https://ns.cascadeprotocol.org/codes/icd10cm/
-# followed by the code as written, percent-encoded as ENCODE_FOR_URI does (rule M4c). An entry stating several codes of one
-# system gives the first as written, in code point order, so that each entry is one row.
+# each ended by "; " but the last; a value's own parts are ended by ", ". Its code is the code IRI the
+# entry states, in whichever listed system, the first in code point order when it states several, so that each entry
+# is one row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?condition ?snomed ?icd10 ?status ?verificationStatus ?onset ?abated ?statuses (COUNT(?record) AS ?records) ?entry
+SELECT ?condition ?conditionCode ?status ?verificationStatus ?onset ?abated ?statuses (COUNT(?record) AS ?records) ?entry
        ?entryLabel ?sources
 WHERE {
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "; "); separator=""), "; $", "") AS ?statuses)
@@ -71,22 +70,11 @@ WHERE {
   OPTIONAL { ?entry cascade:clinicalStatus ?clinicalStatus }
   OPTIONAL { ?entry cascade:verificationStatus ?verificationStatus }
   OPTIONAL {
-    ?entry cascade:snomedCode ?writtenSnomed .
+    ?entry cascade:conditionCode ?conditionCode .
     FILTER NOT EXISTS {
-      ?entry cascade:snomedCode ?earlierSnomed .
-      FILTER (STR(?earlierSnomed) < STR(?writtenSnomed))
+      ?entry cascade:conditionCode ?earlier .
+      FILTER (STR(?earlier) < STR(?conditionCode))
     }
-    BIND (IF(isIRI(?writtenSnomed), ?writtenSnomed,
-             IRI(CONCAT("http://snomed.info/id/", ENCODE_FOR_URI(STR(?writtenSnomed))))) AS ?snomed)
-  }
-  OPTIONAL {
-    ?entry cascade:icd10Code ?writtenIcd10 .
-    FILTER NOT EXISTS {
-      ?entry cascade:icd10Code ?earlierIcd10 .
-      FILTER (STR(?earlierIcd10) < STR(?writtenIcd10))
-    }
-    BIND (IF(isIRI(?writtenIcd10), ?writtenIcd10,
-             IRI(CONCAT("https://ns.cascadeprotocol.org/codes/icd10cm/", ENCODE_FOR_URI(STR(?writtenIcd10))))) AS ?icd10)
   }
   OPTIONAL { ?entry cascade:onsetDate ?onset }
   OPTIONAL { ?entry cascade:abatementDate ?abated
@@ -94,5 +82,5 @@ WHERE {
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   BIND (IF(BOUND(?verificationStatus) && ?verificationStatus = "refuted", "ruled out", ?clinicalStatus) AS ?status)
 }
-GROUP BY ?entry ?condition ?snomed ?icd10 ?status ?verificationStatus ?onset ?abated ?entryLabel ?statuses ?sources
+GROUP BY ?entry ?condition ?conditionCode ?status ?verificationStatus ?onset ?abated ?entryLabel ?statuses ?sources
 ORDER BY ?condition ?entry

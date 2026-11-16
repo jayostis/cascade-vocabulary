@@ -40,7 +40,7 @@ WHERE {
     }
     GROUP BY ?variant
     HAVING (COUNT(DISTINCT ?found) = 1) }
-  ?report cascade:variantInterpreted ?variant ; cascade:acmgClassification ?acmg .
+  ?report cascade:subjectVariant ?variant ; cascade:acmgClassification ?acmg .
   ?origin prov:specializationOf/cascade:tableKind cascade:VariantClassifications .
   GRAPH ?origin {
     ?row ?present [] .

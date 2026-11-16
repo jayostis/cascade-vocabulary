@@ -22,9 +22,9 @@ CONSTRUCT {
     cascade:workflowStatus ?memberWorkflowStatus ;
     cascade:vaccinationOccurrenceTime ?memberVaccinationOccurrenceTime .
   ?entry cascade:paddedDateTime ?datePadded .
-  ?datePadded cascade:paddedDateTimeProperty cascade:vaccinationOccurrenceTime ; cascade:writtenDate ?dateWritten .
+  ?datePadded cascade:paddedDateTimeProperty cascade:vaccinationOccurrenceTime ; cascade:timeAsWritten ?dateWritten .
   ?memberValues cascade:paddedDateTime ?memberPadded .
-  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten .
 }
 WHERE {
   { ?record a cascade:Vaccination ; cascade:inEntry ?entry .
@@ -35,7 +35,7 @@ WHERE {
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:vaccinationOccurrenceTime ?date }
     OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
-               ?datePaddedAt cascade:paddedDateTimeProperty cascade:vaccinationOccurrenceTime ; cascade:writtenDate ?dateWritten }
+               ?datePaddedAt cascade:paddedDateTimeProperty cascade:vaccinationOccurrenceTime ; cascade:timeAsWritten ?dateWritten }
     BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-vaccinationOccurrenceTime")), 1/0) AS ?datePadded) }
   UNION
   { ?member a cascade:Vaccination ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
@@ -45,7 +45,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:vaccinationOccurrenceTime ?memberVaccinationOccurrenceTime }
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
-               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
           AS ?memberPadded) }
 }

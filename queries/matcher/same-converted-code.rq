@@ -13,8 +13,8 @@ WHERE {
   ?origin prov:specializationOf/cascade:tableKind cascade:CodeConversions .
   ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
   ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
-  ?version cascade:icd10Code ?code .
-  ?otherVersion cascade:icd10Code ?otherCode .
+  ?version cascade:conditionCode ?code .
+  ?otherVersion cascade:conditionCode ?otherCode .
   GRAPH ?origin {
     ?row owl:annotatedProperty skos:exactMatch ;
       owl:annotatedSource|owl:annotatedTarget ?code ;
