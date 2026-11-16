@@ -6,9 +6,10 @@ A rule list row names its query by `cascade:queryPath` and the hash of the query
 in every rule list version and in the copies of them under runtime/scripted-input/ and conformance/, whose hash is the
 one the query had at <ref> (default origin/main) gets the hash of the query as it is now; a row with some other hash,
 as the examples that give a run a hash its bytes do not have, is left as it is. The hex hash in tests/published-bytes.json, which
-the test "keeps the bytes it was published with" compares, is written again only for a rule list this run wrote and for a matcher
-query whose rows it re-hashed; a file new to the listed globs is added, and every other entry, those outside the globs too, is kept.
-A published file edited for any other reason keeps its pin and fails that test, so the edit is a named change.
+the test "keeps the bytes it was published with" compares, is written again only for a rule list this run wrote whose bytes at <ref>, with the same
+rows re-hashed, are the bytes it has now, and for a matcher query whose rows it re-hashed; a file new to the listed globs is
+added, and every other entry, a deleted file's and those outside the globs too, is kept. A published file edited for any other
+reason keeps its pin and fails that test, so the edit is a named change.
 With --check nothing is written and the exit status says whether anything would change.
 """
 
@@ -54,14 +55,18 @@ def main():
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     changed = []
-    queries, written = set(), set()
+    queries, written, only_rehashed = set(), set(), set()
     for folder in ("runtime", "conformance"):
         for path in sorted((ROOT / folder).rglob("*.ttl")):
+            name = path.relative_to(ROOT).as_posix()
             text = path.read_text(encoding="utf-8")
             new = rehashed(text, args.was, queries)
+            was = bytes_at(args.was, name)
+            if was is not None and rehashed(was.decode("utf-8").replace("\r\n", "\n"), args.was, set()) == new:
+                only_rehashed.add(name)
             if new != text:
-                changed.append(path.relative_to(ROOT).as_posix())
-                written.add(path.relative_to(ROOT).as_posix())
+                changed.append(name)
+                written.add(name)
                 if not args.check:
                     path.write_text(new, encoding="utf-8", newline="")
     listing = ROOT / "tests" / "published-bytes.json"
@@ -69,9 +74,8 @@ def main():
     for pattern in PUBLISHED_FILES:
         for p in ROOT.glob(pattern):
             name = p.relative_to(ROOT).as_posix()
-            if name not in published or name in written or name in queries:
+            if name not in published or (name in written and name in only_rehashed) or name in queries:
                 published[name] = hashlib.sha256(p.read_bytes()).hexdigest()
-    published = {name: pin for name, pin in published.items() if (ROOT / name).exists()}
     text = json.dumps(dict(sorted(published.items())), indent=2) + "\n"
     if listing.read_text(encoding="utf-8") != text:
         changed.append("tests/published-bytes.json")
