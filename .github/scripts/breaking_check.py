@@ -12,9 +12,24 @@ LINE_END = re.compile("\r\n|[\n\r" + chr(0x2028) + chr(0x2029) + "]")
 HEADING = re.compile(r"^##[ \t]+Breaking[ \t]*$")
 ANY_HEADING = re.compile(r"^#{1,6}[ \t]")
 RULE = re.compile(r"^-{3,}$")
-DEPENDS_ON = re.compile(r"^Depends-On:", re.IGNORECASE)
-ITEM = re.compile(r"^(?:[-*+]|\d+\.)[ \t]+")
-NONE = re.compile(r"^none\.?$", re.IGNORECASE)
+DEPENDS_ON = re.compile(r"^Depends-On:", re.IGNORECASE | re.ASCII)
+ITEM = re.compile(r"^(?:[-*+]|\d+\.)[ \t]+", re.ASCII)
+NONE = re.compile(r"^none\.?$", re.IGNORECASE | re.ASCII)
+SPACE = (
+    " \t"
+    + chr(0x0B)
+    + chr(0x0C)
+    + chr(0xA0)
+    + chr(0x1680)
+    + "".join(map(chr, range(0x2000, 0x200B)))
+    + "".join(map(chr, (0x202F, 0x205F, 0x3000)))
+)
+ARROW = "->"
+
+
+def is_old_to_new(line):
+    old, arrow, new = line.partition(ARROW)
+    return bool(arrow) and old.strip(SPACE) != "" and new.strip(SPACE) != ""
 
 
 def breaking_of(body):
@@ -28,10 +43,11 @@ def breaking_of(body):
         return [], "the body has no `## Breaking` section"
     section = []
     for row in rows[start + 1:]:
-        if ANY_HEADING.match(row) or RULE.match(row.strip()) or DEPENDS_ON.match(row.strip()):
+        trimmed = row.strip(SPACE)
+        if ANY_HEADING.match(row) or RULE.match(trimmed) or DEPENDS_ON.match(trimmed):
             break
         section.append(row)
-    lines = [ITEM.sub("", row.strip()).strip() for row in section]
+    lines = [ITEM.sub("", row.strip(SPACE)).strip(SPACE) for row in section]
     lines = [line for line in lines if line not in ("", "-", "*", "+")]
     if not lines:
         return [], "the `## Breaking` section is empty: list each `old -> new` or `old -> removed`, or write None"
@@ -40,7 +56,7 @@ def breaking_of(body):
         return [], None
     if nones:
         return [], "the `## Breaking` section has None beside lines"
-    loose = next((line for line in lines if "->" not in line), None)
+    loose = next((line for line in lines if not is_old_to_new(line)), None)
     if loose is not None:
         return [], f'"{loose}" is not `old -> new` or `old -> removed`'
     return lines, None
