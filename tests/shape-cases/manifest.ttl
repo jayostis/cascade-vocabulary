@@ -967,3 +967,17 @@
   mf:action [ sht:dataGraph <record-procedure/cpt-code-malformed.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:procedureCode ] ] .
+
+<#record-condition/rxnorm-code-malformed> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/rxnorm-code-malformed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCode ] ] .
+
+<#record-condition/icd10cm-code-without-its-dot> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/icd10cm-code-without-its-dot.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-procedure/loinc-code-malformed> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/loinc-code-malformed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:procedureCode ] ] .
