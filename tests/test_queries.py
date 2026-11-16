@@ -279,11 +279,9 @@ def short(term):
 
 
 def reasons():
-    """The named individuals of the vocabulary the derivations that leave records out name, but for the verdicts they
-    read, which say what they are in an rdfs:comment."""
+    """The concepts of cascade:LeftOutReasons that the derivations that leave records out name."""
     graph = Graph().parse(ROOT / "ontologies" / "cascade.ttl")
-    declared = {s for s in graph.subjects(RDF.type, URIRef("http://www.w3.org/2002/07/owl#NamedIndividual"))
-                if (s, URIRef("http://www.w3.org/2000/01/rdf-schema#comment"), None) not in graph}
+    declared = set(graph.subjects(URIRef("http://www.w3.org/2004/02/skos/core#inScheme"), URIRef(CASCADE + "LeftOutReasons")))
     named = {iri for relative in every_query() if relative.startswith("derivations/excluded-")
              for iri in iris(prepared(contract.query(relative)).algebra)}
     return frozenset(named & declared)

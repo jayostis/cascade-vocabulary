@@ -6,7 +6,7 @@ import pytest
 from pyshacl import validate
 from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, XSD
+from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, SKOS, XSD
 
 from contract import LAYOUT, QUERIES, ROOT
 
@@ -290,6 +290,29 @@ class TestTermsTheShapesAndOntologyAgreeOn:
             }
             undeclared = {c for c in named if str(c).startswith(CASCADE) and (c, RDF.type, None) not in graph}
             assert undeclared == set()
+
+    class TestGivenAnyNamedIndividual:
+        """given any named individual of `cascade#`"""
+
+        def test_is_in_a_scheme_in_a_list_a_shape_accepts_or_in_a_class(self):
+            """is in a scheme, in an `sh:in` list, or an instance of a class
+
+            Each `owl:NamedIndividual` or `skos:Concept` under `cascade#` is a concept of a scheme, a member of an
+            `sh:in` list of the shapes, or typed as a class of `cascade#`, or as the one instance of its class the
+            ontology files declare; one that is none of them is a name with no kind, and fails.
+            """
+            graph = vocabulary()
+            listed = {m for lst in shape_graphs().objects(None, SH["in"]) for m in Collection(shape_graphs(), lst)}
+            kindless = []
+            for individual in {*graph.subjects(RDF.type, OWL.NamedIndividual), *graph.subjects(RDF.type, SKOS.Concept)}:
+                if not str(individual).startswith(CASCADE):
+                    continue
+                classes = set(graph.objects(individual, RDF.type)) - {OWL.NamedIndividual}
+                alone = any(set(graph.subjects(RDF.type, c)) == {individual} for c in classes)
+                of_ours = any(str(c).startswith(CASCADE) for c in classes)
+                if not (alone or of_ours or individual in listed or (individual, SKOS.inScheme, None) in graph):
+                    kindless.append(str(individual))
+            assert sorted(kindless) == []
 
     class TestGivenAnyPartialDateProperty:
         """given any property whose range is the four date types together

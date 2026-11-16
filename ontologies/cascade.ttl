@@ -1250,29 +1250,40 @@ cascade:leftOutFor a owl:ObjectProperty ;
 
 cascade:leftOutReason a owl:ObjectProperty ;
     rdfs:label "left out reason"@en ;
-    rdfs:comment "Derived: which of the reasons a record can be left out for this one is."@en .
+    rdfs:comment "Derived: which of the reasons a record can be left out for this one is, a concept of cascade:LeftOutReasons."@en ;
+    rdfs:range skos:Concept .
+
+cascade:LeftOutReasons a skos:ConceptScheme ;
+    rdfs:label "left out reasons"@en ;
+    rdfs:comment "The reasons the derivations leave a record out of every view, as its cascade:leftOutReason."@en .
 
 cascade:leftOutBecauseOf a owl:ObjectProperty ;
     rdfs:label "left out because of"@en ;
     rdfs:comment "Derived: the thing a reason for leaving a record out rests on, where it rests on one."@en .
 
-cascade:EnteredInErrorAtSource a owl:NamedIndividual ;
-    rdfs:label "entered-in-error at its source"@en .
+cascade:EnteredInErrorAtSource a skos:Concept ;
+    skos:inScheme cascade:LeftOutReasons ;
+    skos:prefLabel "entered-in-error at its source"@en .
 
-cascade:RefutedAtSource a owl:NamedIndividual ;
-    rdfs:label "refuted at its source"@en .
+cascade:RefutedAtSource a skos:Concept ;
+    skos:inScheme cascade:LeftOutReasons ;
+    skos:prefLabel "refuted at its source"@en .
 
-cascade:JudgedErroneous a owl:NamedIndividual ;
-    rdfs:label "judged erroneous"@en .
+cascade:JudgedErroneous a skos:Concept ;
+    skos:inScheme cascade:LeftOutReasons ;
+    skos:prefLabel "judged erroneous"@en .
 
-cascade:ImportJudgedErroneous a owl:NamedIndividual ;
-    rdfs:label "the import that brought it was judged erroneous"@en .
+cascade:ImportJudgedErroneous a skos:Concept ;
+    skos:inScheme cascade:LeftOutReasons ;
+    skos:prefLabel "the import that brought it was judged erroneous"@en .
 
-cascade:PatientProfileNotClaimed a owl:NamedIndividual ;
-    rdfs:label "its patient profile has no counting About"@en .
+cascade:PatientProfileNotClaimed a skos:Concept ;
+    skos:inScheme cascade:LeftOutReasons ;
+    skos:prefLabel "its patient profile has no counting About"@en .
 
-cascade:NoPatient a owl:NamedIndividual ;
-    rdfs:label "it names no patient"@en .
+cascade:NoPatient a skos:Concept ;
+    skos:inScheme cascade:LeftOutReasons ;
+    skos:prefLabel "it names no patient"@en .
 
 cascade:inEntry a owl:ObjectProperty ;
     rdfs:label "in entry"@en ;
@@ -1606,8 +1617,14 @@ cascade:appliesToClass a owl:ObjectProperty ;
 
 cascade:matcherRule a owl:ObjectProperty ;
     rdfs:label "matcher rule"@en ;
-    rdfs:comment "The matcher rule a row of a rule list runs, or that a matcher judgment was made by: one of the rule terms R1 to R17 of runtime/matcher.feature. A matcher judgment's name takes it."@en ;
-    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:RuleListRow cascade:Judgment ) ] .
+    rdfs:comment "The matcher rule a row of a rule list runs, or that a matcher judgment was made by: one of the cascade:MatcherRule terms of runtime/matcher.feature. A matcher judgment's name takes it."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:RuleListRow cascade:Judgment ) ] ;
+    rdfs:range cascade:MatcherRule .
+
+cascade:MatcherRule a owl:Class ;
+    rdfs:label "matcher rule"@en ;
+    rdfs:comment "One of the rules of runtime/matcher.feature, R1 and on, each a set of steps a matcher follows to compare two records and judge them the same or different, or to file a finding for review of them."@en ;
+    rdfs:subClassOf prov:Plan .
 
 cascade:queryPath a owl:DatatypeProperty ;
     rdfs:label "query path"@en ;
@@ -2790,7 +2807,8 @@ dct:replaces a rdf:Property ;
 cascade:matcherRuleDeclaredWrong a owl:ObjectProperty ;
     rdfs:label "matcher rule declared wrong"@en ;
     rdfs:comment "Of a rule list version, the release, a matcher rule it declares wrong: once a pod's current rule list version is the release or a version after it, the pod's cascade:RuleListVersionMigration retracts each assertion of that rule's matcher judgments under a version the release revises, so a known-bad join is not offered back. An assertion under the release or a later version is not declared wrong: a version that ships the rule fixed, or runs it again, can join the pair again."@en ;
-    rdfs:domain prov:Entity .
+    rdfs:domain prov:Entity ;
+    rdfs:range cascade:MatcherRule .
 
 cascade:RuleListVersionMigration a owl:Class ;
     rdfs:label "rule list version migration"@en ;
@@ -2865,99 +2883,103 @@ cascade:DifferentResultUnitsAtOneInstant a skos:Concept ;
 
 # Naming rules: each name a runtime or an adapter mints follows one, and a changed recipe is a new rule
 
-cascade:RecordFromServerNamingRule a owl:NamedIndividual ;
+cascade:NamingRule a owl:Class ;
+    rdfs:label "naming rule"@en ;
+    rdfs:comment "A recipe that computes the name of a record, file or other thing a runtime or an adapter mints, from what the thing is. Its IRI, not its type, is what a name is hashed over."@en .
+
+cascade:RecordFromServerNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "record from a server naming rule"@en ;
     rdfs:comment "A record a client pulled from a FHIR server is named urn:uuid: and a version 8 UUID: the first 128 bits of SHA-256 over 90c60849-c5ef-4ca6-bfb8-8662bd07d2b5, this rule's IRI and the inputs, each with % written %25 and | written %7C, joined by |, with the version bits 1000 and the variant bits 10. Inputs in order: the base URL the client used, normalised by RFC 3986 sections 6.2.2 and 6.2.3 with every trailing / removed, its host an ASCII reg-name or a bracketed IPv6 address or IPvFuture with no zone id, its port empty (no port) or ASCII digits read as an integer with leading zeros dropped, refused above 65535, then dropped if it is the scheme's default (a URL with userinfo, a query, a fragment, a control character or space, no scheme, no host, any other host or any other port names nothing); the resource type; the resource's id."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2> ,
         <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.3> .
 
-cascade:RecordFromDocumentNamingRule a owl:NamedIndividual ;
+cascade:RecordFromDocumentNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "record from a document naming rule"@en ;
     rdfs:comment "A record named by its document and its place in it: a record of a document with no known server, one whose id repeats in its document or that has none, one with a urn:uuid fullUrl, every record of a C-CDA document whose custodian has no id that names an organization record, or that states not exactly one patient with an id, the patient's included, and any record no other rule names. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the document's ni:///sha-256; name (cascade:DocumentNamingRule); the rdf:value of the oa:hasSelector of the revision that brought it, the selector of its arrival."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.w3.org/TR/annotation-model/#selectors> .
 
-cascade:RecordFromCcdaNamingRule a owl:NamedIndividual ;
+cascade:RecordFromCcdaNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "record from C-CDA naming rule"@en ;
     rdfs:comment "A C-CDA statement with an id, or the patient with one, named inside its custodian's and its patient's scope. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the custodian's id that names its organization record, as cascade:OrganizationNamingRule picks it, as a root and an extension (the NPI's URI as its OID, a root alone as its urn:oid: or urn:uuid: IRI's tail, a UUID root in lower case); the patient id's root, its extension; the entry id's root, its extension; an absent extension is the empty string. The patient is named with its own id as the patient scope and again as the entry id. Two entries of one document carrying one id with different content are named by cascade:RecordFromDocumentNamingRule instead. Used only in a document whose custodian has an id that names an organization record and that states exactly one patient with an id."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:RecordFromCcdaWithoutIdNamingRule a owl:NamedIndividual ;
+cascade:RecordFromCcdaWithoutIdNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "record from C-CDA without an id naming rule"@en ;
     rdfs:comment "A C-CDA statement with no id, named inside its custodian's and its patient's scope. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the custodian's root and extension, as cascade:RecordFromCcdaNamingRule picks them; the patient id's root, its extension; the IRI of the class the entry's record is; its key fingerprint; its members fingerprint when it has no key fingerprint; the empty string for each it lacks. Used only in a document whose custodian has an id that names an organization record and that states exactly one patient with an id, and never for the patient."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:ContainedRecordNamingRule a owl:NamedIndividual ;
+cascade:ContainedRecordNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "contained record naming rule"@en ;
     rdfs:comment "A FHIR contained resource, named inside its container's source version. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the container record's name; the container's meta.versionId, else its meta.lastUpdated as written, else the empty string; the contained resource's id."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:EnteredRecordNamingRule a owl:NamedIndividual ;
+cascade:EnteredRecordNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "entered record naming rule"@en ;
     rdfs:comment "A record a person entered. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the entry session's IRI; the draft's position in its session, in decimal."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:VersionNamingRule a owl:NamedIndividual ;
+cascade:VersionNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "version naming rule"@en ;
     rdfs:comment "A version is named ni:///sha-256; and the unpadded base64url SHA-256 of the RDFC-1.0 canonical N-Quads of exactly its triples, its subject written urn:cascade:this-version and its prov:specializationOf its record among them: each line once, in code point order, no blank node, a literal's lexical form as written and a language tag in lower case."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
 
-cascade:RevisionNamingRule a owl:NamedIndividual ;
+cascade:RevisionNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "revision naming rule"@en ;
     rdfs:comment "A revision is named as cascade:VersionNamingRule names a version, over its own triples, its subject written urn:cascade:this-revision and a node inside it urn:cascade:this-revision# and the node's own fragment."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
 
-cascade:FindingNamingRule a owl:NamedIndividual ;
+cascade:FindingNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "finding naming rule"@en ;
     rdfs:comment "A cascade:FindingForReview is named as cascade:VersionNamingRule names a version, over its own triples, its subject written urn:cascade:this-finding."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
 
-cascade:TableVersionNamingRule a owl:NamedIndividual ;
+cascade:TableVersionNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "table version naming rule"@en ;
     rdfs:comment "A version of a reference table is named as cascade:VersionNamingRule names a version, over exactly these triples: urn:cascade:this-version prov:specializationOf its series, urn:cascade:this-version prov:wasRevisionOf the version it revises when there is one, and its rows."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> , <https://www.w3.org/TR/rdf-canon/> .
 
-cascade:DocumentNamingRule a owl:NamedIndividual ;
+cascade:DocumentNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "document naming rule"@en ;
     rdfs:comment "A document is named ni:///sha-256; and the unpadded base64url SHA-256 of its bytes."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc6920> .
 
-cascade:TableRowNamingRule a owl:NamedIndividual ;
+cascade:TableRowNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "table row naming rule"@en ;
     rdfs:comment "A mapping row, its SSSOM record_id. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the IRIs of its owl:annotatedSource, owl:annotatedProperty and owl:annotatedTarget; for a panel member row, the canonical lexical form of its cascade:panelSequence."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://mapping-commons.github.io/sssom/dev/record_id/> .
 
-cascade:ViewEntryNamingRule a owl:NamedIndividual ;
+cascade:ViewEntryNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "view entry naming rule"@en ;
     rdfs:comment "An entry of a view is named by a relative reference: the view's path as runtime/pod-layout.ttl places it, #, and the lower-case hexadecimal SHA-256 of the IRI of its least member in code point order. It holds no pod address, and no file writes it absolutised."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc3986#section-4.2> .
 
-cascade:SnapshotNamingRule a owl:NamedIndividual ;
+cascade:SnapshotNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "snapshot naming rule"@en ;
     rdfs:comment "The snapshot of an act. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the act's IRI; the act's description, every triple of the act's file but those whose subject is the snapshot, named as cascade:VersionNamingRule names a version but with its blank nodes labelled by RDFC-1.0; its cascade:firstParentSnapshot as a list of none or one; its cascade:mergedParentSnapshot values as a list; its cascade:setHash as written. A list is its count, then its distinct items in code point order."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.w3.org/TR/rdf-canon/> .
 
-cascade:ServerNamingRule a owl:NamedIndividual ;
+cascade:ServerNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "server naming rule"@en ;
     rdfs:comment "A server a client pulled from or connected to, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and the normalised base URL the client used."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> , <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2> ,
         <https://www.rfc-editor.org/rfc/rfc3986#section-6.2.3> .
 
-cascade:OrganizationNamingRule a owl:NamedIndividual ;
+cascade:OrganizationNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "organization naming rule"@en ;
     rdfs:comment "An organization, as a record. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, from a server, in order: the normalised base URL, Organization, the resource's id; from a document, in order: the IRI of the datatype and the lexical form of the org:identifier literal its version carries, so the name and the version state the identifier alike: a FHIR Organization.identifier's system and value; a C-CDA id as HL7's CDA-to-FHIR identifier mapping makes it one, a root and extension as the root's registered URI and the extension where the FHIR identifier registry gives the root one (http://hl7.org/fhir/sid/us-npi for the NPI's 2.16.840.1.113883.4.6), else as urn:oid: and the root (urn:uuid: and the root in lower case, for a UUID root) and the extension, a root alone that registers no identifier system as urn:ietf:rfc:3986 and the root's urn:oid: or urn:uuid: IRI; a FHIR system urn:oid: and a registered root is that root's URI too, so one NPI names one organization in either format."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:MatcherJudgmentNamingRule a owl:NamedIndividual ;
+cascade:MatcherJudgmentNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "matcher judgment naming rule"@en ;
     rdfs:comment "A matcher judgment. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the maker; the matcher rule term; the justification; the members as a list; what it used as a list. A list is its count, then its distinct items in code point order."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:MatcherJudgmentAssertionNamingRule a owl:NamedIndividual ;
+cascade:MatcherJudgmentAssertionNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "assertion naming rule"@en ;
     rdfs:comment "A matcher judgment asserted under a version of the rule list. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the rule list version; the matcher judgment."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
 
-cascade:ReleaseRetractionNamingRule a owl:NamedIndividual ;
+cascade:ReleaseRetractionNamingRule a owl:NamedIndividual , cascade:NamingRule ;
     rdfs:label "retraction naming rule"@en ;
     rdfs:comment "A release's retraction of a matcher judgment's assertion. A version 8 UUID as cascade:RecordFromServerNamingRule says, over this rule's IRI and, in order: the release; the assertion; the matcher rule the release declares wrong."@en ;
     rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9562#section-5.8> .
@@ -3037,83 +3059,83 @@ cascade:assertedUnderRuleListVersion a owl:ObjectProperty ;
     rdfs:domain cascade:MatcherJudgmentAssertion ;
     rdfs:range prov:Entity .
 
-cascade:SameCodeRule a owl:NamedIndividual ;
+cascade:SameCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R1, same code"@en ;
     rdfs:comment "Rule R1 of runtime/matcher.feature; its judgments are justified cascade:SameCode."@en .
 
-cascade:SameCodeAndDateRule a owl:NamedIndividual ;
+cascade:SameCodeAndDateRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R2, same code and date"@en ;
     rdfs:comment "Rule R2 of runtime/matcher.feature; its judgments are justified cascade:SameCodeAndDate."@en .
 
-cascade:SameMappedCodeRule a owl:NamedIndividual ;
+cascade:SameMappedCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R3, same mapped code"@en ;
     rdfs:comment "Rule R3 of runtime/matcher.feature; its judgments are justified cascade:SameMappedCode."@en .
 
-cascade:SameMappedCodeAndDateRule a owl:NamedIndividual ;
+cascade:SameMappedCodeAndDateRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R4, same mapped code and date"@en ;
     rdfs:comment "Rule R4 of runtime/matcher.feature; its judgments are justified cascade:SameMappedCodeAndDate."@en .
 
-cascade:SameMedicationCodeRule a owl:NamedIndividual ;
+cascade:SameMedicationCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R5, same medication code"@en ;
     rdfs:comment "Rule R5 of runtime/matcher.feature; its judgments are justified cascade:SameMedicationCode."@en .
 
-cascade:SameResultRule a owl:NamedIndividual ;
+cascade:SameResultRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R6, same result"@en ;
     rdfs:comment "Rule R6 of runtime/matcher.feature; its judgments are justified cascade:SameResult."@en .
 
-cascade:SameConvertedCodeRule a owl:NamedIndividual ;
+cascade:SameConvertedCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R7, same converted code"@en ;
     rdfs:comment "Rule R7 of runtime/matcher.feature; its judgments are justified cascade:SameConvertedCode."@en .
 
-cascade:SameCodeAndPeriodRule a owl:NamedIndividual ;
+cascade:SameCodeAndPeriodRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R8, same code and period"@en ;
     rdfs:comment "Rule R8 of runtime/matcher.feature; its judgments are justified cascade:SameCodeAndPeriod."@en .
 
-cascade:SameBrandGenericRule a owl:NamedIndividual ;
+cascade:SameBrandGenericRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R10, same brand generic"@en ;
     rdfs:comment "Rule R10 of runtime/matcher.feature; its judgments are justified cascade:SameBrandGeneric."@en .
 
-cascade:SameProductCodeRule a owl:NamedIndividual ;
+cascade:SameProductCodeRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R11, same product code"@en ;
     rdfs:comment "Rule R11 of runtime/matcher.feature; its judgments are justified cascade:SameProductCode."@en .
 
-cascade:SameVariationRule a owl:NamedIndividual ;
+cascade:SameVariationRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R12, same variation"@en ;
     rdfs:comment "Rule R12 of runtime/matcher.feature; its judgments are justified cascade:SameVariation."@en .
 
-cascade:SameVariationThroughTableRule a owl:NamedIndividual ;
+cascade:SameVariationThroughTableRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R13, same variation through the table"@en ;
     rdfs:comment "Rule R13 of runtime/matcher.feature; its judgments are justified cascade:SameVariationThroughTable."@en .
 
-cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule a owl:NamedIndividual ;
+cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R14, same self-asserted base URL and authorization endpoint on one host"@en ;
     rdfs:comment "Rule R14 of runtime/matcher.feature; its judgments are justified cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost."@en .
 
-cascade:DifferentResultValuesRule a owl:NamedIndividual ;
+cascade:DifferentResultValuesRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R16, different result values"@en ;
     rdfs:comment "Rule R16 of runtime/matcher.feature; it files no judgment, but a finding for review of kind cascade:DifferentResultValuesAtOneInstant."@en .
 
-cascade:DifferentResultUnitsRule a owl:NamedIndividual ;
+cascade:DifferentResultUnitsRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R17, different result units"@en ;
     rdfs:comment "Rule R17 of runtime/matcher.feature; it files no judgment, but a finding for review of kind cascade:DifferentResultUnitsAtOneInstant."@en .
 
-cascade:SameResultOnOneDayRule a owl:NamedIndividual ;
+cascade:SameResultOnOneDayRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R15, same result on one day"@en ;
     rdfs:comment "Rule R15 of runtime/matcher.feature; its judgments are justified cascade:SameResultOnOneDay."@en .
 
-cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule a owl:NamedIndividual ;
+cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R18, same business identifier and test code within one organization"@en ;
     rdfs:comment "Rule R18 of runtime/matcher.feature; its judgments are justified cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization."@en .
 
-cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule a owl:NamedIndividual ;
+cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R19, same note type and text grown within one organization"@en ;
     rdfs:comment "Rule R19 of runtime/matcher.feature; its judgments are justified cascade:SameNoteTypeAndTextGrownWithinOneOrganization."@en .
 
-cascade:SameNoteTypeAndTextRule a owl:NamedIndividual ;
+cascade:SameNoteTypeAndTextRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R20, same note type and text"@en ;
     rdfs:comment "Rule R20 of runtime/matcher.feature; its judgments are justified cascade:SameNoteTypeAndText."@en .
 
-cascade:SameNoteOrDocumentMasterIdentifierRule a owl:NamedIndividual ;
+cascade:SameNoteOrDocumentMasterIdentifierRule a owl:NamedIndividual , cascade:MatcherRule ;
     rdfs:label "R21, same note or document master identifier"@en ;
     rdfs:comment "Rule R21 of runtime/matcher.feature; its judgments are justified cascade:SameNoteOrDocumentMasterIdentifier."@en .
 

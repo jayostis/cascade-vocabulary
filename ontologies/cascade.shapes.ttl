@@ -2167,6 +2167,18 @@ cascade:CodeShape a sh:NodeShape ;
     sh:message "A code is an IRI of one of the code systems' forms."@en ;
     sh:severity sh:Violation .
 
+cascade:MatcherRuleShape a sh:NodeShape ;
+    sh:in ( cascade:SameCodeRule cascade:SameCodeAndDateRule cascade:SameMappedCodeRule cascade:SameMappedCodeAndDateRule
+            cascade:SameMedicationCodeRule cascade:SameResultRule cascade:SameConvertedCodeRule cascade:SameCodeAndPeriodRule
+            cascade:SameBrandGenericRule cascade:SameProductCodeRule cascade:SameVariationRule cascade:SameVariationThroughTableRule
+            cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule cascade:DifferentResultValuesRule
+            cascade:DifferentResultUnitsRule cascade:SameResultOnOneDayRule
+            cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule
+            cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule cascade:SameNoteTypeAndTextRule
+            cascade:SameNoteOrDocumentMasterIdentifierRule ) ;
+    sh:message "A matcher rule is one of the 20 cascade:MatcherRule terms."@en ;
+    sh:severity sh:Violation .
+
 cascade:CvxCodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
     sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cvx/(0[1-9]|[1-9][0-9]{1,2})$" .
@@ -2431,9 +2443,9 @@ cascade:JudgmentShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:matcherRule ;
-        sh:nodeKind sh:IRI ;
+        sh:node cascade:MatcherRuleShape ;
         sh:maxCount 1 ;
-        sh:message "A judgment names at most one matcher rule, by its IRI."@en ;
+        sh:message "A judgment names at most one matcher rule, one of the 20 cascade:MatcherRule terms."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:justification ;
@@ -2482,7 +2494,7 @@ cascade:RetractionByPersonOrReleaseShape a sh:NodeShape ;
     sh:xone (
         [ sh:path prov:wasAssociatedWith ; sh:minCount 1 ]
         [ sh:path prov:used ; sh:minCount 1 ;
-          sh:node [ sh:property [ sh:path cascade:matcherRuleDeclaredWrong ; sh:minCount 1 ] ] ]
+          sh:node [ sh:property [ sh:path cascade:matcherRuleDeclaredWrong ; sh:minCount 1 ; sh:node cascade:MatcherRuleShape ] ] ]
     ) ;
     sh:message "A retraction is made either by a person (prov:wasAssociatedWith) or by a release, prov:used: a rule list version that declares a matcher rule wrong; not both and not neither."@en ;
     sh:severity sh:Violation .
@@ -2612,7 +2624,7 @@ cascade:MachineSameShape a sh:NodeShape ;
             [ sh:path cascade:verdict ; sh:hasValue cascade:Same ]
         ) ] ]
         [ sh:property [ sh:path cascade:justification ; sh:minCount 1 ] ,
-                      [ sh:path cascade:matcherRule ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                      [ sh:path cascade:matcherRule ; sh:node cascade:MatcherRuleShape ; sh:minCount 1 ; sh:maxCount 1 ] ,
                       [ sh:path prov:wasDerivedFrom ; sh:minCount 1 ] ,
                       [ sh:path prov:generatedAtTime ; sh:maxCount 0 ] ]
     ) ;
@@ -2909,8 +2921,9 @@ cascade:RuleListVersionRowShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:matcherRule ;
+        sh:node cascade:MatcherRuleShape ;
         sh:minCount 1 ;
-        sh:message "A row described in a pod gives its matcher rule."@en ;
+        sh:message "A row described in a pod gives its matcher rule, one of the 20 cascade:MatcherRule terms."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:queryHash ;
