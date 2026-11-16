@@ -68,6 +68,39 @@ class TestChecksOfThePullRequestBodyCheck:
             """
             assert breaking_check.breaking_of(body("- a -> b").replace("\n", "\r\n")) == (["a -> b"], None)
 
+        def test_reads_a_body_written_with_lone_carriage_returns_a_byte_order_mark_and_unicode_line_ends(self):
+            """reads a body written with lone carriage returns, a byte order mark and unicode line ends
+
+            A lone carriage return, U+2028 and U+2029 end a line as a line feed does, and a byte order mark is dropped,
+            as the runtime repository's reader of the same section does.
+            """
+            bom, separator, paragraph = chr(0xFEFF), chr(0x2028), chr(0x2029)
+            assert breaking_check.breaking_of(f"{bom}## Breaking\r- a -> b\r- c -> d") == (["a -> b", "c -> d"], None)
+            assert breaking_check.breaking_of(f"## Breaking{separator}- a -> b{paragraph}- c -> d") == (
+                ["a -> b", "c -> d"],
+                None,
+            )
+            assert breaking_check.breaking_of(f"## Breaking{separator}None{paragraph}## Tests") == ([], None)
+
+        def test_strips_a_number_from_a_numbered_item_as_it_does_a_bullet(self):
+            """strips a number from a numbered item as it does a bullet
+
+            A line written `1. a -> b` comes back as `a -> b`.
+            """
+            assert breaking_check.breaking_of(body("1. a -> b\n2. c -> removed")) == (["a -> b", "c -> removed"], None)
+
+        def test_stops_the_section_at_a_rule_or_a_depends_on_line(self):
+            """stops the section at a rule or a Depends-On line
+
+            A footer under a final Breaking heading is not a line of the section.
+            """
+            assert breaking_check.breaking_of("## Breaking\n- a -> b\n\n---\nGenerated with a tool\n") == (["a -> b"], None)
+            assert breaking_check.breaking_of("## Breaking\nNone\nDepends-On: https://github.com/o/r/pull/1\n") == ([], None)
+            assert breaking_check.breaking_of("## Breaking\n- a -> b\ndepends-on: https://github.com/o/r/pull/1") == (
+                ["a -> b"],
+                None,
+            )
+
         def test_stops_the_section_at_the_next_heading(self):
             """stops the section at the next heading
 

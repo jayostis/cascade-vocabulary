@@ -7,24 +7,31 @@ import os
 import re
 import sys
 
+BOM = chr(0xFEFF)
+LINE_END = re.compile("\r\n|[\n\r" + chr(0x2028) + chr(0x2029) + "]")
 HEADING = re.compile(r"^##[ \t]+Breaking[ \t]*$")
 ANY_HEADING = re.compile(r"^#{1,6}[ \t]")
-BULLET = re.compile(r"^[-*+][ \t]+")
+RULE = re.compile(r"^-{3,}$")
+DEPENDS_ON = re.compile(r"^Depends-On:", re.IGNORECASE)
+ITEM = re.compile(r"^(?:[-*+]|\d+\.)[ \t]+")
 NONE = re.compile(r"^none\.?$", re.IGNORECASE)
 
 
 def breaking_of(body):
-    """The lines of the section and the problem with it: the lines are empty when there is a problem or the body says None."""
-    rows = re.sub(r"<!--.*?-->", "", body or "", flags=re.DOTALL).splitlines()
+    """The lines of the section and the problem with it: the lines are empty when there is a problem or the body says None.
+
+    The section ends at the next heading, a `---` rule or a `Depends-On:` line."""
+    text = re.sub(r"<!--.*?-->", "", (body or "").replace(BOM, ""), flags=re.DOTALL)
+    rows = LINE_END.split(text)
     start = next((i for i, row in enumerate(rows) if HEADING.match(row)), None)
     if start is None:
         return [], "the body has no `## Breaking` section"
     section = []
     for row in rows[start + 1:]:
-        if ANY_HEADING.match(row):
+        if ANY_HEADING.match(row) or RULE.match(row.strip()) or DEPENDS_ON.match(row.strip()):
             break
         section.append(row)
-    lines = [BULLET.sub("", row.strip()).strip() for row in section]
+    lines = [ITEM.sub("", row.strip()).strip() for row in section]
     lines = [line for line in lines if line not in ("", "-", "*", "+")]
     if not lines:
         return [], "the `## Breaking` section is empty: list each `old -> new` or `old -> removed`, or write None"
