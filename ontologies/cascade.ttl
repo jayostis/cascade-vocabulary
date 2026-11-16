@@ -118,8 +118,8 @@ cascade:Vaccination a owl:Class ;
     rdfs:subClassOf prov:Entity ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/immunization-definitions.html#Immunization> .
 
-cascade:allergen a owl:DatatypeProperty ;
-    rdfs:label "allergen"@en ;
+cascade:allergenName a owl:DatatypeProperty ;
+    rdfs:label "allergen name"@en ;
     rdfs:comment "Of a version of an allergy or intolerance, the substance as the source names it, as FHIR's AllergyIntolerance.code, its text or else its first coding's display, or a C-CDA allergy's participant playingEntity, its code's original text, its name or its code's displayName."@en ;
     rdfs:domain cascade:AllergyOrIntolerance ;
     rdfs:range xsd:string ;
@@ -165,8 +165,8 @@ cascade:onsetDate a owl:DatatypeProperty ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/allergyintolerance-definitions.html#AllergyIntolerance.onset_x_> , <https://hl7.org/fhir/R4/condition-definitions.html#Condition.onset_x_> .
 
-cascade:notes a owl:DatatypeProperty ;
-    rdfs:label "notes"@en ;
+cascade:addedNoteText a owl:DatatypeProperty ;
+    rdfs:label "added note text"@en ;
     rdfs:comment "Of a version of an allergy or intolerance, a condition, a vaccination or a lab result, the text of one note a person added to it, as FHIR's note, one for each note. The text a source wrote for the record itself is cascade:narrativeText."@en ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:LaboratoryTestResult cascade:ProblemOrDiagnosis cascade:AllergyOrIntolerance cascade:Vaccination ) ] ;
     rdfs:range xsd:string ;
@@ -195,20 +195,15 @@ cascade:workflowStatus a owl:DatatypeProperty ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/immunization-definitions.html#Immunization.status> , <https://hl7.org/fhir/R4/procedure-definitions.html#Procedure.status> , <https://hl7.org/fhir/R4/observation-definitions.html#Observation.status> , <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.status> , <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.status> , <https://hl7.org/fhir/R4/medicationdispense-definitions.html#MedicationDispense.status> , <https://hl7.org/fhir/R4/diagnosticreport-definitions.html#DiagnosticReport.status> , <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.status> .
 
-cascade:icd10Code a owl:ObjectProperty ;
-    rdfs:label "ICD-10-CM code"@en ;
-    rdfs:comment "Of a version of a condition, an ICD-10-CM code for it, as a coding of FHIR's Condition.code or a C-CDA Problem Observation's value and its translations: a code IRI, one for each such code."@en ;
+cascade:conditionCode a owl:ObjectProperty ;
+    rdfs:label "condition code"@en ;
+    rdfs:comment "Of a version of a condition, a code the source gave for it, as a coding of FHIR's Condition.code or a C-CDA Problem Observation's value and its translations: a code IRI, one for each such coding in a code system cascade:CodeSystem names, whichever the system is: ICD-10-CM, SNOMED CT, ICD-9-CM. A code in a system no cascade:CodeSystem names is a cascade:conditionCodeInOtherSystem."@en ;
     rdfs:domain cascade:ProblemOrDiagnosis ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/condition-definitions.html#Condition.code> .
 
-cascade:snomedCode a owl:ObjectProperty ;
-    rdfs:label "SNOMED CT code"@en ;
-    rdfs:comment "Of a version of a condition or a procedure, a SNOMED CT code for it, as a coding of FHIR's Condition.code or Procedure.code, or a C-CDA Problem Observation's value or procedure's code and their translations: a code IRI, one for each such code."@en ;
-    rdfs:seeAlso <https://hl7.org/fhir/R4/condition-definitions.html#Condition.code> , <https://hl7.org/fhir/R4/procedure-definitions.html#Procedure.code> .
-
 cascade:conditionCodeInOtherSystem a owl:DatatypeProperty ;
     rdfs:label "condition code in another system"@en ;
-    rdfs:comment "Of a version of a condition, a code the source gave for it in a system this kind has no property of its own for, such as ICD-9-CM, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. An ICD-10-CM or SNOMED CT code is a cascade:icd10Code or cascade:snomedCode IRI instead."@en ;
+    rdfs:comment "Of a version of a condition, a code the source gave for it in a system the vocabulary lists no IRI form for, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. A code in a system it does list one for, such as ICD-10-CM, ICD-9-CM or SNOMED CT, is a cascade:conditionCode IRI instead."@en ;
     rdfs:domain cascade:ProblemOrDiagnosis ;
     rdfs:range rdfs:Literal ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/condition-definitions.html#Condition.code> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
@@ -233,29 +228,29 @@ cascade:vaccinationOccurrenceTime a owl:DatatypeProperty ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/immunization-definitions.html#Immunization.occurrence_x_> .
 
-cascade:lotNumber a owl:DatatypeProperty ;
-    rdfs:label "lot number"@en ;
+cascade:vaccineLotNumber a owl:DatatypeProperty ;
+    rdfs:label "vaccine lot number"@en ;
     rdfs:comment "Of a version of a vaccination, the lot number of the vaccine given, as FHIR's Immunization.lotNumber or a C-CDA manufacturedMaterial's lotNumberText."@en ;
     rdfs:domain cascade:Vaccination ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/immunization-definitions.html#Immunization.lotNumber> .
 
-cascade:doseQuantity a owl:DatatypeProperty ;
-    rdfs:label "dose quantity"@en ;
+cascade:vaccineDoseQuantityText a owl:DatatypeProperty ;
+    rdfs:label "vaccine dose quantity text"@en ;
     rdfs:comment "Of a version of a vaccination, the amount of vaccine given, as FHIR's Immunization.doseQuantity or a C-CDA doseQuantity: its value and unit as one string, 0.5 mL, or its value alone where it has no unit."@en ;
     rdfs:domain cascade:Vaccination ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/immunization-definitions.html#Immunization.doseQuantity> .
 
-cascade:routeOfAdministration a owl:DatatypeProperty ;
-    rdfs:label "route of administration"@en ;
+cascade:vaccinationRouteText a owl:DatatypeProperty ;
+    rdfs:label "vaccination route text"@en ;
     rdfs:comment "Of a version of a vaccination, how the vaccine entered the body, as the source names it: FHIR's Immunization.route, its text or else its first coding's display, or a C-CDA routeCode's displayName."@en ;
     rdfs:domain cascade:Vaccination ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/immunization-definitions.html#Immunization.route> .
 
-cascade:administrationSite a owl:DatatypeProperty ;
-    rdfs:label "administration site"@en ;
+cascade:vaccinationBodySiteText a owl:DatatypeProperty ;
+    rdfs:label "vaccination body site text"@en ;
     rdfs:comment "Of a version of a vaccination, the body site the vaccine was given at, as the source names it: FHIR's Immunization.site, its text or else its first coding's display, or a C-CDA approachSiteCode's displayName."@en ;
     rdfs:domain cascade:Vaccination ;
     rdfs:range xsd:string ;
@@ -287,22 +282,22 @@ cascade:testCodeInOtherSystem a owl:DatatypeProperty ;
     rdfs:range rdfs:Literal ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.code> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
 
-cascade:resultValue a owl:DatatypeProperty ;
-    rdfs:label "result value"@en ;
-    rdfs:comment "Of a version of a lab result, its value as one string, written only for a value that is words or a number the typed forms refuse: from FHIR, Observation.valueString or a valueCodeableConcept's text or first display, or the refused number written out; from C-CDA, a Result Observation's first value where it is an ST or a coded value, or the refused number as the document wrote it. A number the typed forms hold has no cascade:resultValue: it is on the cascade:Quantity nodes cascade:resultValueKind says hold it."@en ;
+cascade:resultValueText a owl:DatatypeProperty ;
+    rdfs:label "result value text"@en ;
+    rdfs:comment "Of a version of a lab result, its value as one string, written only for a value that is words or a number the typed forms refuse: from FHIR, Observation.valueString or a valueCodeableConcept's text or first display, or the refused number written out; from C-CDA, a Result Observation's first value where it is an ST or a coded value, or the refused number as the document wrote it. A number the typed forms hold has no cascade:resultValueText: it is on the cascade:Quantity nodes cascade:resultValueKind says hold it."@en ;
     rdfs:domain cascade:LaboratoryTestResult ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.value_x_> .
 
-cascade:resultUnit a owl:DatatypeProperty ;
-    rdfs:label "result unit"@en ;
-    rdfs:comment "Of a version of a lab result, the unit of a number the typed forms refuse, as the source wrote it, beside that number in its cascade:resultValue, and written only then: from FHIR, a valueQuantity's unit or else its code; from C-CDA, a PQ's or one-bound IVL_PQ's unit. A number the typed forms hold has no cascade:resultUnit: its unit is its cascade:ucumUnit and cascade:unitText."@en ;
+cascade:resultUnitText a owl:DatatypeProperty ;
+    rdfs:label "result unit text"@en ;
+    rdfs:comment "Of a version of a lab result, the unit of a number the typed forms refuse, as the source wrote it, beside that number in its cascade:resultValueText, and written only then: from FHIR, a valueQuantity's unit or else its code; from C-CDA, a PQ's or one-bound IVL_PQ's unit. A number the typed forms hold has no cascade:resultUnitText: its unit is its cascade:ucumUnit and cascade:unitText."@en ;
     rdfs:domain cascade:LaboratoryTestResult ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/observation-definitions.html#Observation.value_x_> .
 
-cascade:referenceRange a owl:DatatypeProperty ;
-    rdfs:label "reference range"@en ;
+cascade:referenceRangeText a owl:DatatypeProperty ;
+    rdfs:label "reference range text"@en ;
     rdfs:comment "Of a version of a lab result, its first reference range as text, as FHIR's Observation.referenceRange or a C-CDA referenceRange's observationRange: the source's text for it, or else its bounds written out, low-high and the unit, >=low or <=high. The typed bounds of its normal range are cascade:referenceRangeLow and cascade:referenceRangeHigh."@en ;
     rdfs:domain cascade:LaboratoryTestResult ;
     rdfs:range xsd:string ;
@@ -337,15 +332,15 @@ cascade:procedureDate a owl:DatatypeProperty ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/procedure-definitions.html#Procedure.performed_x_> .
 
-cascade:cptCode a owl:ObjectProperty ;
-    rdfs:label "CPT code"@en ;
-    rdfs:comment "Of a version of a procedure, its CPT code, as a coding of FHIR's Procedure.code or a C-CDA procedure's code or its translation: a code IRI, the first the source gave."@en ;
+cascade:procedureCode a owl:ObjectProperty ;
+    rdfs:label "procedure code"@en ;
+    rdfs:comment "Of a version of a procedure, a code the source gave for it, as a coding of FHIR's Procedure.code or a C-CDA procedure's code and its translations: a code IRI, one for each such coding in a code system cascade:CodeSystem names, whichever the system is: SNOMED CT, CPT. A code in a system no cascade:CodeSystem names is a cascade:procedureCodeInOtherSystem."@en ;
     rdfs:domain cascade:MedicalProcedure ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/procedure-definitions.html#Procedure.code> .
 
 cascade:procedureCodeInOtherSystem a owl:DatatypeProperty ;
     rdfs:label "procedure code in another system"@en ;
-    rdfs:comment "Of a version of a procedure, a code the source gave for it in a system this kind has no property of its own for, such as HCPCS, ICD-10-PCS, CDT or LOINC, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. A CPT or SNOMED CT code is a cascade:cptCode or cascade:snomedCode instead."@en ;
+    rdfs:comment "Of a version of a procedure, a code the source gave for it in a system the vocabulary lists no IRI form for, such as HCPCS, ICD-10-PCS or CDT, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. A code in a system it does list one for, such as CPT, SNOMED CT or LOINC, is a cascade:procedureCode IRI instead."@en ;
     rdfs:domain cascade:MedicalProcedure ;
     rdfs:range rdfs:Literal ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/procedure-definitions.html#Procedure.code> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
@@ -406,8 +401,8 @@ cascade:prescribedOrReported a owl:DatatypeProperty ;
     rdfs:range xsd:string ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.reported_x_> .
 
-cascade:dosage a owl:DatatypeProperty ;
-    rdfs:label "dosage"@en ;
+cascade:dosageInstructionText a owl:DatatypeProperty ;
+    rdfs:label "dosage instruction text"@en ;
     rdfs:comment "Of a version of a medication, how it is to be taken as the source wrote it in words, as the text of FHIR's first MedicationRequest.dosageInstruction or MedicationStatement.dosage, or a C-CDA Medication Free Text Sig. A dosage given as structured elements is a cascade:StructuredDosage."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range xsd:string ;
@@ -455,8 +450,8 @@ cascade:VariantInterpretation a owl:Class ;
     rdfs:comment "A classification of what a genetic variant means for the person's health, by a lab's report, as a FHIR Observation coded diagnostic-implication: its ACMG/AMP class, the variant it interprets, the condition it is for, its evidence codes and when it was made. Two calls on one variant are two records; neither replaces the other."@en ;
     rdfs:subClassOf prov:Entity .
 
-cascade:variantInterpreted a owl:ObjectProperty ;
-    rdfs:label "variant interpreted"@en ;
+cascade:subjectVariant a owl:ObjectProperty ;
+    rdfs:label "subject variant"@en ;
     rdfs:comment "Of a version of a variant interpretation, the genetic variant finding it interprets, by that record's IRI, never a version's: from FHIR, as FHIR's derivedFrom, the one variant Observation it names. One at most."@en ;
     rdfs:domain cascade:VariantInterpretation ;
     rdfs:range cascade:GeneticVariantFinding ;
@@ -468,8 +463,8 @@ cascade:acmgClassification a owl:ObjectProperty ;
     rdfs:domain cascade:VariantInterpretation ;
     rdfs:range skos:Concept .
 
-cascade:interpretedDate a owl:DatatypeProperty ;
-    rdfs:label "interpretation date"@en ;
+cascade:variantInterpretationDate a owl:DatatypeProperty ;
+    rdfs:label "variant interpretation date"@en ;
     rdfs:comment "Of a version of a variant interpretation, the day it was made, or the year or month where the source gives no day, with no time: as FHIR's Observation.issued or else its effective time. One at most."@en ;
     rdfs:domain cascade:VariantInterpretation ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date ) ] ;
@@ -557,15 +552,15 @@ cascade:ClinicalNoteOrDocument a owl:Class ;
     rdfs:subClassOf prov:Entity ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference> .
 
-cascade:noteOrDocumentType a owl:ObjectProperty ;
-    rdfs:label "note or document type"@en ;
+cascade:noteOrDocumentTypeCode a owl:ObjectProperty ;
+    rdfs:label "note or document type code"@en ;
     rdfs:comment "Of a version of a note or document, what kind of note it is, as FHIR's DocumentReference.type, a C-CDA Note Activity's or section's code: a LOINC code IRI, one for each LOINC coding the source gave."@en ;
     rdfs:domain cascade:ClinicalNoteOrDocument ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.type> .
 
-cascade:noteOrDocumentTypeInOtherSystem a owl:DatatypeProperty ;
-    rdfs:label "note or document type in another system"@en ;
-    rdfs:comment "Of a version of a note or document, a type the source gave in a system other than LOINC, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. A LOINC type is a cascade:noteOrDocumentType IRI instead."@en ;
+cascade:noteOrDocumentTypeCodeInOtherSystem a owl:DatatypeProperty ;
+    rdfs:label "note or document type code in another system"@en ;
+    rdfs:comment "Of a version of a note or document, a type the source gave in a system other than LOINC, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. A LOINC type is a cascade:noteOrDocumentTypeCode IRI instead."@en ;
     rdfs:domain cascade:ClinicalNoteOrDocument ;
     rdfs:range rdfs:Literal ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/documentreference-definitions.html#DocumentReference.type> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
@@ -752,15 +747,15 @@ cascade:expectedSupplyDuration a owl:ObjectProperty ;
     rdfs:range cascade:Quantity ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dispenseRequest.expectedSupplyDuration> .
 
-cascade:dispenseValidityPeriodStart a owl:DatatypeProperty ;
-    rdfs:label "dispense validity period start"@en ;
+cascade:dispenseRequestValidityPeriodStart a owl:DatatypeProperty ;
+    rdfs:label "dispense request validity period start"@en ;
     rdfs:comment "Of a version of a prescribed medication, the earliest the prescription may first be filled, the start of FHIR's MedicationRequest.dispenseRequest.validityPeriod; never the start of use."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dispenseRequest.validityPeriod> .
 
-cascade:dispenseValidityPeriodEnd a owl:DatatypeProperty ;
-    rdfs:label "dispense validity period end"@en ;
+cascade:dispenseRequestValidityPeriodEnd a owl:DatatypeProperty ;
+    rdfs:label "dispense request validity period end"@en ;
     rdfs:comment "Of a version of a prescribed medication, the last the prescription may be filled, the end of FHIR's MedicationRequest.dispenseRequest.validityPeriod (its stale date); never the end of use."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
@@ -773,7 +768,7 @@ cascade:StructuredDosage a owl:Class ;
 
 cascade:structuredDosage a owl:ObjectProperty ;
     rdfs:label "structured dosage"@en ;
-    rdfs:comment "Of a version of a medication, one dosage its source gave as structured elements, from FHIR's MedicationRequest.dosageInstruction or MedicationStatement.dosage, one per dosage; its text stays the version's cascade:dosage."@en ;
+    rdfs:comment "Of a version of a medication, one dosage its source gave as structured elements, from FHIR's MedicationRequest.dosageInstruction or MedicationStatement.dosage, one per dosage; its text stays the version's cascade:dosageInstructionText."@en ;
     rdfs:domain cascade:PrescribedOrReportedMedication ;
     rdfs:range cascade:StructuredDosage ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.dosageInstruction> , <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.dosage> .
@@ -1475,12 +1470,12 @@ cascade:RangeResultValue a skos:Concept ;
 cascade:CodedResultValue a skos:Concept ;
     skos:inScheme cascade:ResultValueKinds ;
     skos:prefLabel "coded" ;
-    skos:definition "An answer from a code system, as the code's IRI, one cascade:resultCode for each coding the source gave."@en .
+    skos:definition "An answer from a code system, as the code's IRI, one cascade:resultValueCode for each coding the source gave."@en .
 
 cascade:TextResultValue a skos:Concept ;
     skos:inScheme cascade:ResultValueKinds ;
     skos:prefLabel "text" ;
-    skos:definition "Words, in cascade:resultValue, which no rule compares: two spellings of one finding are not one value."@en .
+    skos:definition "Words, in cascade:resultValueText, which no rule compares: two spellings of one finding are not one value."@en .
 
 cascade:resultQuantity a owl:ObjectProperty ;
     rdfs:label "result quantity"@en ;
@@ -1500,20 +1495,20 @@ cascade:resultRatioDenominator a owl:ObjectProperty ;
     rdfs:domain cascade:LaboratoryTestResult ;
     rdfs:range cascade:Quantity .
 
-cascade:resultRangeLow a owl:ObjectProperty ;
-    rdfs:label "result range low"@en ;
+cascade:resultValueRangeLow a owl:ObjectProperty ;
+    rdfs:label "result value range low"@en ;
     rdfs:comment "Of a lab result whose value is a range, its low bound, <version>#range-low."@en ;
     rdfs:domain cascade:LaboratoryTestResult ;
     rdfs:range cascade:Quantity .
 
-cascade:resultRangeHigh a owl:ObjectProperty ;
-    rdfs:label "result range high"@en ;
+cascade:resultValueRangeHigh a owl:ObjectProperty ;
+    rdfs:label "result value range high"@en ;
     rdfs:comment "Of a lab result whose value is a range, its high bound, <version>#range-high."@en ;
     rdfs:domain cascade:LaboratoryTestResult ;
     rdfs:range cascade:Quantity .
 
-cascade:resultCode a owl:ObjectProperty ;
-    rdfs:label "result code"@en ;
+cascade:resultValueCode a owl:ObjectProperty ;
+    rdfs:label "result value code"@en ;
     rdfs:comment "Of a lab result whose value is coded, the answer's code IRI, one for each coding the source gave in a code system cascade:CodeSystem names."@en ;
     rdfs:domain cascade:LaboratoryTestResult .
 
@@ -1541,7 +1536,7 @@ cascade:resultInterpretationCode a owl:ObjectProperty ;
 
 cascade:PaddedDateTime a owl:Class ;
     rdfs:label "padded date-time"@en ;
-    rdfs:comment "That one of a version's times was written by its source to the hour or the minute, and is held as an xsd:dateTime padded with zeros to the second, with no time zone where the source gave none: a node of the version, named by the version's IRI, #padded- and the local name of the property it is about, and hashed with it. The padded time sorts, compares and falls in a range as any xsd:dateTime does, and is never read as exact to the second: a query that needs its precision reads cascade:writtenDate. A year, a month or a day is no padded time, since its own type holds its precision."@en ;
+    rdfs:comment "That one of a version's times was written by its source to the hour or the minute, and is held as an xsd:dateTime padded with zeros to the second, with no time zone where the source gave none: a node of the version, named by the version's IRI, #padded- and the local name of the property it is about, and hashed with it. The padded time sorts, compares and falls in a range as any xsd:dateTime does, and is never read as exact to the second: a query that needs its precision reads cascade:timeAsWritten. A year, a month or a day is no padded time, since its own type holds its precision."@en ;
     rdfs:seeAlso <https://hl7.org/fhir/us/ccda/en/mappingGuidance.html> .
 
 cascade:paddedDateTime a owl:ObjectProperty ;
@@ -1555,8 +1550,8 @@ cascade:paddedDateTimeProperty a owl:ObjectProperty ;
     rdfs:domain cascade:PaddedDateTime ;
     rdfs:range rdf:Property .
 
-cascade:writtenDate a owl:DatatypeProperty ;
-    rdfs:label "written date"@en ;
+cascade:timeAsWritten a owl:DatatypeProperty ;
+    rdfs:label "time as written"@en ;
     rdfs:comment "The time exactly as the source wrote it, every character kept: a CDA time to the hour, 2023053114, is written 2023053114, its offset too where it had one. How many digits it has is its precision."@en ;
     rdfs:domain cascade:PaddedDateTime ;
     rdfs:range xsd:string .

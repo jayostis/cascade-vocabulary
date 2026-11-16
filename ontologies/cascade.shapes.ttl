@@ -105,15 +105,15 @@ cascade:PatientProfileShape a sh:NodeShape ;
 
 cascade:AllergyOrIntoleranceShape a sh:NodeShape ;
     sh:targetClass cascade:AllergyOrIntolerance ;
-    sh:targetSubjectsOf cascade:allergen , cascade:allergenCode , cascade:reactionManifestationText , cascade:reactionManifestationCode ,
+    sh:targetSubjectsOf cascade:allergenName , cascade:allergenCode , cascade:reactionManifestationText , cascade:reactionManifestationCode ,
         cascade:allergySeverity , cascade:allergyCategory , cascade:allergyType , cascade:allergyCriticality ;
 
     sh:property [
-        sh:path cascade:allergen ;
+        sh:path cascade:allergenName ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
         sh:minLength 1 ;
-        sh:message "An allergy states at most one non-empty allergen"@en ;
+        sh:message "An allergy states at most one non-empty allergenName"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -208,7 +208,7 @@ cascade:AllergyOrIntoleranceShape a sh:NodeShape ;
 
 cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
     sh:targetClass cascade:ProblemOrDiagnosis ;
-    sh:targetSubjectsOf cascade:conditionName , cascade:icd10Code , cascade:conditionCategory , cascade:abatementDate ,
+    sh:targetSubjectsOf cascade:conditionName , cascade:conditionCode , cascade:conditionCategory , cascade:abatementDate ,
         cascade:conditionCodeInOtherSystem ;
 
     sh:property [
@@ -280,15 +280,15 @@ cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:conditionCodeInOtherSystem ;
-        sh:not [ sh:or ( [ sh:datatype <http://hl7.org/fhir/sid/icd-10-cm> ] [ sh:datatype <http://snomed.info/sct> ] ) ] ;
-        sh:message "An ICD-10-CM or SNOMED CT condition code is a cascade:icd10Code or cascade:snomedCode IRI, never a literal typed by http://hl7.org/fhir/sid/icd-10-cm or http://snomed.info/sct"@en ;
+        sh:not cascade:LiteralTypedByAListedSystemUriShape ;
+        sh:message "A condition code in a system the vocabulary lists a code IRI form for is a cascade:conditionCode IRI, never a literal typed by that system's URI"@en ;
         sh:severity sh:Violation
     ] ;
 
     sh:property [
-        sh:path cascade:snomedCode ;
-        sh:node cascade:SnomedCtCodeShape ;
-        sh:message "A SNOMED CT code is SNOMED's own IRI, http://snomed.info/id/ and the concept id"@en ;
+        sh:path cascade:conditionCode ;
+        sh:node cascade:CodeInAListedSystemShape ;
+        sh:message "A condition code is a code IRI of a code system the vocabulary lists: its stem and the code, one per coding the source gave"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -301,8 +301,8 @@ cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
 
 cascade:VaccinationShape a sh:NodeShape ;
     sh:targetClass cascade:Vaccination ;
-    sh:targetSubjectsOf cascade:vaccineName , cascade:vaccineCode , cascade:vaccinationOccurrenceTime , cascade:lotNumber ,
-        cascade:doseQuantity , cascade:routeOfAdministration , cascade:administrationSite ;
+    sh:targetSubjectsOf cascade:vaccineName , cascade:vaccineCode , cascade:vaccinationOccurrenceTime , cascade:vaccineLotNumber ,
+        cascade:vaccineDoseQuantityText , cascade:vaccinationRouteText , cascade:vaccinationBodySiteText ;
 
     sh:property [
         sh:path cascade:vaccineName ;
@@ -338,29 +338,29 @@ cascade:VaccinationShape a sh:NodeShape ;
     ] ;
 
     sh:property [
-        sh:path cascade:lotNumber ;
+        sh:path cascade:vaccineLotNumber ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
-        sh:message "Immunization must not carry more than one lotNumber; a lot number identifies a single administered dose"@en ;
+        sh:message "Immunization must not carry more than one vaccineLotNumber; a lot number identifies a single administered dose"@en ;
         sh:severity sh:Violation
     ] ;
 
     sh:property [
-        sh:path cascade:doseQuantity ;
-        sh:datatype xsd:string ;
-        sh:maxCount 1 ;
-        sh:severity sh:Violation
-    ] ;
-
-    sh:property [
-        sh:path cascade:routeOfAdministration ;
+        sh:path cascade:vaccineDoseQuantityText ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
         sh:severity sh:Violation
     ] ;
 
     sh:property [
-        sh:path cascade:administrationSite ;
+        sh:path cascade:vaccinationRouteText ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation
+    ] ;
+
+    sh:property [
+        sh:path cascade:vaccinationBodySiteText ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
         sh:severity sh:Violation
@@ -375,8 +375,8 @@ cascade:VaccinationShape a sh:NodeShape ;
 
 cascade:LaboratoryTestResultShape a sh:NodeShape ;
     sh:targetClass cascade:LaboratoryTestResult ;
-    sh:targetSubjectsOf cascade:testName , cascade:testCode , cascade:testCodeInOtherSystem , cascade:resultValue , cascade:resultUnit ,
-        cascade:referenceRange , cascade:resultClinicallyRelevantTime ;
+    sh:targetSubjectsOf cascade:testName , cascade:testCode , cascade:testCodeInOtherSystem , cascade:resultValueText , cascade:resultUnitText ,
+        cascade:referenceRangeText , cascade:resultClinicallyRelevantTime ;
 
     sh:property [
         sh:path cascade:testName ;
@@ -417,20 +417,20 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
     ] ;
 
     sh:property [
-        sh:path cascade:resultValue ;
+        sh:path cascade:resultValueText ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
-        sh:message "Lab result must not carry more than one resultValue; two readings of the same analyte are two records"@en
+        sh:message "Lab result must not carry more than one resultValueText; two readings of the same analyte are two records"@en
     ] ;
 
     sh:property [
-        sh:path cascade:resultUnit ;
+        sh:path cascade:resultUnitText ;
         sh:datatype xsd:string ;
         sh:maxCount 1
     ] ;
 
     sh:property [
-        sh:path cascade:referenceRange ;
+        sh:path cascade:referenceRangeText ;
         sh:datatype xsd:string ;
         sh:maxCount 1
     ] ;
@@ -475,7 +475,7 @@ cascade:LaboratoryTestResultShape a sh:NodeShape ;
 
 cascade:MedicalProcedureShape a sh:NodeShape ;
     sh:targetClass cascade:MedicalProcedure ;
-    sh:targetSubjectsOf cascade:procedureName , cascade:procedureDate , cascade:cptCode , cascade:procedureCodeInOtherSystem ;
+    sh:targetSubjectsOf cascade:procedureName , cascade:procedureDate , cascade:procedureCode , cascade:procedureCodeInOtherSystem ;
 
     sh:property [
         sh:path cascade:procedureName ;
@@ -500,11 +500,10 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
     ] ;
 
     sh:property [
-        sh:path cascade:cptCode ;
-        sh:nodeKind sh:IRI ;
-        sh:maxCount 1 ;
-        sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cpt/[0-9]{4}[0-9FTU]$" ;
-        sh:message "A CPT code is Cascade's IRI, https://ns.cascadeprotocol.org/codes/cpt/ and the five-character code: five digits (Category I), or four digits followed by F (Category II), T (Category III) or U (Proprietary Laboratory Analyses)"@en
+        sh:path cascade:procedureCode ;
+        sh:node cascade:CodeInAListedSystemShape ;
+        sh:message "A procedure code is a code IRI of a code system the vocabulary lists: its stem and the code, one per coding the source gave"@en ;
+        sh:severity sh:Violation
     ] ;
 
     sh:property [
@@ -525,15 +524,8 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
 
     sh:property [
         sh:path cascade:procedureCodeInOtherSystem ;
-        sh:not [ sh:or ( [ sh:datatype <http://www.ama-assn.org/go/cpt> ] [ sh:datatype <http://snomed.info/sct> ] ) ] ;
-        sh:message "A CPT or SNOMED CT procedure code is a cascade:cptCode or cascade:snomedCode, never a literal typed by http://www.ama-assn.org/go/cpt or http://snomed.info/sct"@en ;
-        sh:severity sh:Violation
-    ] ;
-
-    sh:property [
-        sh:path cascade:snomedCode ;
-        sh:node cascade:SnomedCtCodeShape ;
-        sh:message "A SNOMED CT code is SNOMED's own IRI, http://snomed.info/id/ and the concept id"@en ;
+        sh:not cascade:LiteralTypedByAListedSystemUriShape ;
+        sh:message "A procedure code in a system the vocabulary lists a code IRI form for is a cascade:procedureCode IRI, never a literal typed by that system's URI"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -546,10 +538,10 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
 cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
     sh:targetClass cascade:PrescribedOrReportedMedication ;
     sh:targetSubjectsOf cascade:drugName , cascade:rxNormCode , cascade:ndcCode , cascade:medicationCodeInOtherSystem , cascade:userSelectedCode ,
-        cascade:prescribedOrReported , cascade:dosage , cascade:medicationUseStartDate , cascade:medicationUseEndDate ,
+        cascade:prescribedOrReported , cascade:dosageInstructionText , cascade:medicationUseStartDate , cascade:medicationUseEndDate ,
         cascade:prescriptionWrittenDate , cascade:medicationRequestIntent , cascade:courseOfTherapyType ,
-        cascade:numberOfRepeatsAllowed , cascade:expectedSupplyDuration , cascade:dispenseValidityPeriodStart ,
-        cascade:dispenseValidityPeriodEnd , cascade:structuredDosage ;
+        cascade:numberOfRepeatsAllowed , cascade:expectedSupplyDuration , cascade:dispenseRequestValidityPeriodStart ,
+        cascade:dispenseRequestValidityPeriodEnd , cascade:structuredDosage ;
 
     sh:property [
         sh:path [ sh:inversePath prov:specializationOf ] ;
@@ -624,7 +616,7 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
     ] ;
 
     sh:property [
-        sh:path cascade:dosage ;
+        sh:path cascade:dosageInstructionText ;
         sh:datatype xsd:string ;
         sh:maxCount 1
     ] ;
@@ -693,7 +685,7 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
     ] ;
 
     sh:property [
-        sh:path cascade:dispenseValidityPeriodStart ;
+        sh:path cascade:dispenseRequestValidityPeriodStart ;
         sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
         sh:message "A medication states at most one start of its dispensing window, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
@@ -701,7 +693,7 @@ cascade:PrescribedOrReportedMedicationShape a sh:NodeShape ;
     ] ;
 
     sh:property [
-        sh:path cascade:dispenseValidityPeriodEnd ;
+        sh:path cascade:dispenseRequestValidityPeriodEnd ;
         sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ] ) ;
         sh:maxCount 1 ;
         sh:message "A medication states at most one end of its dispensing window, which is one xsd:gYear, xsd:gYearMonth, xsd:date or xsd:dateTime, typed by the precision its source wrote"@en ;
@@ -858,7 +850,7 @@ cascade:GeneticVariantFindingShape a sh:NodeShape ;
 
 cascade:VariantInterpretationShape a sh:NodeShape ;
     sh:targetClass cascade:VariantInterpretation ;
-    sh:targetSubjectsOf cascade:acmgClassification , cascade:variantInterpreted , cascade:interpretedDate , cascade:objectCondition , cascade:acmgEvidenceCode ;
+    sh:targetSubjectsOf cascade:acmgClassification , cascade:subjectVariant , cascade:variantInterpretationDate , cascade:objectCondition , cascade:acmgEvidenceCode ;
 
     sh:property [
         sh:path cascade:workflowStatus ;
@@ -878,7 +870,7 @@ cascade:VariantInterpretationShape a sh:NodeShape ;
     ] ;
 
     sh:property [
-        sh:path cascade:variantInterpreted ;
+        sh:path cascade:subjectVariant ;
         sh:nodeKind sh:IRI ;
         sh:maxCount 1 ;
         sh:message "A variant interpretation is about at most one variant, named by the variant record's IRI (its urn:uuid: record name, resolved like cascade:patient), never a version; the record is one in the same document, since a urn:uuid names a record within one document only"@en
@@ -899,7 +891,7 @@ cascade:VariantInterpretationShape a sh:NodeShape ;
     ] ;
 
     sh:property [
-        sh:path cascade:interpretedDate ;
+        sh:path cascade:variantInterpretationDate ;
         sh:or ( [ sh:datatype xsd:gYear ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:date ] ) ;
         sh:maxCount 1 ;
         sh:message "An interpretation date is one xsd:gYear, xsd:gYearMonth or xsd:date, the day the interpretation was issued, or the year or the month where its source wrote no day, with no time"@en
@@ -1012,7 +1004,7 @@ cascade:DiagnosticReportShape a sh:NodeShape ;
 
 cascade:ClinicalNoteOrDocumentShape a sh:NodeShape ;
     sh:targetClass cascade:ClinicalNoteOrDocument ;
-    sh:targetSubjectsOf cascade:noteOrDocumentType , cascade:noteOrDocumentTypeInOtherSystem , cascade:noteOrDocumentTypeName ,
+    sh:targetSubjectsOf cascade:noteOrDocumentTypeCode , cascade:noteOrDocumentTypeCodeInOtherSystem , cascade:noteOrDocumentTypeName ,
         cascade:noteOrDocumentTitle , cascade:noteOrDocumentDate , cascade:noteOrDocumentContentStatus ,
         cascade:noteOrDocumentMasterIdentifier ;
     sh:property [
@@ -1023,27 +1015,27 @@ cascade:ClinicalNoteOrDocumentShape a sh:NodeShape ;
         sh:message "A note or document's content status should be one of the FHIR R4 CompositionStatus codes: preliminary, final, amended, entered-in-error"@en ;
         sh:severity sh:Warning
     ] , [
-        sh:path cascade:noteOrDocumentType ;
+        sh:path cascade:noteOrDocumentTypeCode ;
         sh:nodeKind sh:IRI ;
         sh:node cascade:LoincCodeShape ;
         sh:message "A note or document's type is a LOINC code IRI, one per LOINC coding the source gave"@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:noteOrDocumentTypeInOtherSystem ;
+        sh:path cascade:noteOrDocumentTypeCodeInOtherSystem ;
         sh:nodeKind sh:Literal ;
         sh:minLength 1 ;
         sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
         sh:message "A note or document's type in another system is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:noteOrDocumentTypeInOtherSystem ;
+        sh:path cascade:noteOrDocumentTypeCodeInOtherSystem ;
         sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
         sh:message "A note or document's type in another system is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:noteOrDocumentTypeInOtherSystem ;
+        sh:path cascade:noteOrDocumentTypeCodeInOtherSystem ;
         sh:not [ sh:or ( [ sh:datatype <http://loinc.org> ] ) ] ;
-        sh:message "A LOINC note type is a cascade:noteOrDocumentType IRI, never a literal typed by http://loinc.org"@en ;
+        sh:message "A LOINC note type is a cascade:noteOrDocumentTypeCode IRI, never a literal typed by http://loinc.org"@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:noteOrDocumentMasterIdentifier ;
@@ -1396,8 +1388,8 @@ cascade:DocumentScopeShape a sh:NodeShape ;
 
 cascade:LaboratoryTestResultValueShape a sh:NodeShape ;
     sh:targetSubjectsOf cascade:resultValueKind , cascade:resultQuantity , cascade:resultRatioNumerator ,
-        cascade:resultRatioDenominator , cascade:resultRangeLow , cascade:resultRangeHigh , cascade:resultCode ,
-        cascade:resultValue , cascade:referenceRangeLow , cascade:referenceRangeHigh , cascade:resultInterpretationCode ;
+        cascade:resultRatioDenominator , cascade:resultValueRangeLow , cascade:resultValueRangeHigh , cascade:resultValueCode ,
+        cascade:resultValueText , cascade:referenceRangeLow , cascade:referenceRangeHigh , cascade:resultInterpretationCode ;
     sh:property [
         sh:path cascade:resultValueKind ;
         sh:maxCount 1 ;
@@ -1423,21 +1415,21 @@ cascade:LaboratoryTestResultValueShape a sh:NodeShape ;
         sh:message "A ratio has at most one denominator, a quantity node of its version."@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:resultRangeLow ;
+        sh:path cascade:resultValueRangeLow ;
         sh:nodeKind sh:IRI ;
         sh:maxCount 1 ;
         sh:node cascade:BoundQuantityShape ;
         sh:message "A range has at most one low bound, a quantity node of its version with no comparator."@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:resultRangeHigh ;
+        sh:path cascade:resultValueRangeHigh ;
         sh:nodeKind sh:IRI ;
         sh:maxCount 1 ;
         sh:node cascade:BoundQuantityShape ;
         sh:message "A range has at most one high bound, a quantity node of its version with no comparator."@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:resultCode ;
+        sh:path cascade:resultValueCode ;
         sh:node cascade:CodeShape ;
         sh:message "A coded result's answer is a code IRI of one of the code systems' forms."@en ;
         sh:severity sh:Violation
@@ -1477,10 +1469,10 @@ cascade:LaboratoryTestResultValueShape a sh:NodeShape ;
           || (?property IN (<https://ns.cascadeprotocol.org/cascade#resultRatioNumerator>,
                             <https://ns.cascadeprotocol.org/cascade#resultRatioDenominator>)
               && ?kind != <https://ns.cascadeprotocol.org/cascade#RatioResultValue>)
-          || (?property IN (<https://ns.cascadeprotocol.org/cascade#resultRangeLow>,
-                            <https://ns.cascadeprotocol.org/cascade#resultRangeHigh>)
+          || (?property IN (<https://ns.cascadeprotocol.org/cascade#resultValueRangeLow>,
+                            <https://ns.cascadeprotocol.org/cascade#resultValueRangeHigh>)
               && ?kind != <https://ns.cascadeprotocol.org/cascade#RangeResultValue>)
-          || (?property = <https://ns.cascadeprotocol.org/cascade#resultCode>
+          || (?property = <https://ns.cascadeprotocol.org/cascade#resultValueCode>
               && ?kind != <https://ns.cascadeprotocol.org/cascade#CodedResultValue>))
 }"""
     ] , [
@@ -1490,9 +1482,9 @@ cascade:LaboratoryTestResultValueShape a sh:NodeShape ;
         sh:select """SELECT $this ?property WHERE {
   $this ?property ?value .
   FILTER (?property IN (<https://ns.cascadeprotocol.org/cascade#resultQuantity>, <https://ns.cascadeprotocol.org/cascade#resultRatioNumerator>,
-                        <https://ns.cascadeprotocol.org/cascade#resultRatioDenominator>, <https://ns.cascadeprotocol.org/cascade#resultRangeLow>,
-                        <https://ns.cascadeprotocol.org/cascade#resultRangeHigh>, <https://ns.cascadeprotocol.org/cascade#resultCode>,
-                        <https://ns.cascadeprotocol.org/cascade#resultValue>))
+                        <https://ns.cascadeprotocol.org/cascade#resultRatioDenominator>, <https://ns.cascadeprotocol.org/cascade#resultValueRangeLow>,
+                        <https://ns.cascadeprotocol.org/cascade#resultValueRangeHigh>, <https://ns.cascadeprotocol.org/cascade#resultValueCode>,
+                        <https://ns.cascadeprotocol.org/cascade#resultValueText>))
   FILTER NOT EXISTS { $this <https://ns.cascadeprotocol.org/cascade#resultValueKind> ?kind }
   FILTER NOT EXISTS { $this <https://ns.cascadeprotocol.org/cascade#entryMember> ?member }
 }"""
@@ -1563,19 +1555,19 @@ cascade:BoundQuantityShape a sh:NodeShape ;
     ] .
 
 cascade:PaddedDateTimeShape a sh:NodeShape ;
-    sh:targetSubjectsOf cascade:paddedDateTimeProperty , cascade:writtenDate ;
+    sh:targetSubjectsOf cascade:paddedDateTimeProperty , cascade:timeAsWritten ;
     sh:property [
         sh:path cascade:paddedDateTimeProperty ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
-                cascade:dispenseValidityPeriodStart cascade:dispenseValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
+                cascade:dispenseRequestValidityPeriodStart cascade:dispenseRequestValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
                 cascade:reportEffectiveTime cascade:noteOrDocumentDate cascade:dispensePreparedTime cascade:dispenseHandedOverTime ) ;
         sh:message "A padded time names the one property that holds it, a property whose value may be a time."@en ;
         sh:severity sh:Violation
     ] , [
-        sh:path cascade:writtenDate ;
+        sh:path cascade:timeAsWritten ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
@@ -1615,7 +1607,7 @@ cascade:ValueAbsentForReasonShape a sh:NodeShape ;
         sh:maxCount 1 ;
         sh:in ( cascade:dateOfBirth cascade:dateOfDeath cascade:onsetDate cascade:abatementDate cascade:vaccinationOccurrenceTime cascade:resultClinicallyRelevantTime
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
-                cascade:dispenseValidityPeriodStart cascade:dispenseValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
+                cascade:dispenseRequestValidityPeriodStart cascade:dispenseRequestValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
                 cascade:reportEffectiveTime cascade:reportIssuedTime cascade:noteOrDocumentDate cascade:dispensePreparedTime cascade:dispenseHandedOverTime
                 cascade:resultValueKind cascade:administrativeGender ) ;
         sh:message "A value absent for a reason names the one property it stands for, a date, a lab result's value kind or an administrative gender."@en ;
@@ -2160,6 +2152,29 @@ cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape a sh:NodeShape ;
         [ sh:datatype <http://terminology.hl7.org/CodeSystem/icd10PCS> ]
         [ sh:datatype <http://terminology.hl7.org/CodeSystem/CD2> ]
     ) .
+
+cascade:LiteralTypedByAListedSystemUriShape a sh:NodeShape ;
+    sh:or (
+        [ sh:datatype <http://hl7.org/fhir/sid/cvx> ]
+        [ sh:datatype <http://www.nlm.nih.gov/research/umls/rxnorm> ]
+        [ sh:datatype <http://hl7.org/fhir/sid/ndc> ]
+        [ sh:datatype <http://hl7.org/fhir/sid/icd-10-cm> ]
+        [ sh:datatype <http://snomed.info/sct> ]
+        [ sh:datatype <http://loinc.org> ]
+        [ sh:datatype <http://va.gov/terminology/medrt> ]
+        [ sh:datatype <https://www.nlm.nih.gov/mesh> ]
+        [ sh:datatype <http://fdasis.nlm.nih.gov> ]
+        [ sh:datatype <http://www.ama-assn.org/go/cpt> ]
+        [ sh:datatype <http://hl7.org/fhir/sid/icd-9-cm> ]
+        [ sh:datatype <http://varnomen.hgvs.org> ]
+        [ sh:datatype <http://www.ncbi.nlm.nih.gov/clinvar> ]
+        [ sh:datatype <http://terminology.hl7.org/CodeSystem/data-absent-reason> ]
+        [ sh:datatype <http://terminology.hl7.org/CodeSystem/v3-NullFlavor> ]
+        [ sh:datatype <http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation> ] ) .
+
+cascade:CodeInAListedSystemShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^(https://ns\\.cascadeprotocol\\.org/codes/cvx/|https://ns\\.cascadeprotocol\\.org/codes/rxnorm/|https://ns\\.cascadeprotocol\\.org/codes/ndc11/|https://ns\\.cascadeprotocol\\.org/codes/icd10cm/|http://snomed\\.info/id/|http://loinc\\.org/rdf/|https://ns\\.cascadeprotocol\\.org/codes/medrt/|http://id\\.nlm\\.nih\\.gov/mesh/|https://identifiers\\.org/unii:|https://ns\\.cascadeprotocol\\.org/codes/cpt/|https://ns\\.cascadeprotocol\\.org/codes/icd9cm/|https://ns\\.cascadeprotocol\\.org/codes/hgvs/|https://identifiers\\.org/clinvar:|https://ns\\.cascadeprotocol\\.org/codes/data-absent-reason/|https://ns\\.cascadeprotocol\\.org/codes/nullflavor/|https://ns\\.cascadeprotocol\\.org/codes/observationinterpretation/).+$" .
 
 cascade:CodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
