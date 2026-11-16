@@ -288,7 +288,7 @@ cascade:ProblemOrDiagnosisShape a sh:NodeShape ;
     sh:property [
         sh:path cascade:conditionCode ;
         sh:node cascade:CodeInAListedSystemShape ;
-        sh:message "A condition code is a code IRI of a code system the vocabulary lists: its stem and the code, one per coding the source gave"@en ;
+        sh:message "A condition code is a code IRI of a code system the vocabulary lists, in that system's form, one per coding the source gave; a NullFlavor or data absent reason is no code, it is a value absent for a reason"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -502,7 +502,7 @@ cascade:MedicalProcedureShape a sh:NodeShape ;
     sh:property [
         sh:path cascade:procedureCode ;
         sh:node cascade:CodeInAListedSystemShape ;
-        sh:message "A procedure code is a code IRI of a code system the vocabulary lists: its stem and the code, one per coding the source gave"@en ;
+        sh:message "A procedure code is a code IRI of a code system the vocabulary lists, in that system's form, one per coding the source gave; a NullFlavor or data absent reason is no code, it is a value absent for a reason"@en ;
         sh:severity sh:Violation
     ] ;
 
@@ -1609,8 +1609,8 @@ cascade:ValueAbsentForReasonShape a sh:NodeShape ;
                 cascade:procedureDate cascade:medicationUseStartDate cascade:medicationUseEndDate cascade:prescriptionWrittenDate
                 cascade:dispenseRequestValidityPeriodStart cascade:dispenseRequestValidityPeriodEnd cascade:dosageBoundsPeriodStart cascade:dosageBoundsPeriodEnd
                 cascade:reportEffectiveTime cascade:reportIssuedTime cascade:noteOrDocumentDate cascade:dispensePreparedTime cascade:dispenseHandedOverTime
-                cascade:resultValueKind cascade:administrativeGender ) ;
-        sh:message "A value absent for a reason names the one property it stands for, a date, a lab result's value kind or an administrative gender."@en ;
+                cascade:resultValueKind cascade:administrativeGender cascade:conditionCode cascade:procedureCode ) ;
+        sh:message "A value absent for a reason names the one property it stands for, a date, a lab result's value kind, an administrative gender or a condition's or a procedure's code."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:absentReasonCode ;
@@ -2174,7 +2174,17 @@ cascade:LiteralTypedByAListedSystemUriShape a sh:NodeShape ;
 
 cascade:CodeInAListedSystemShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
-    sh:pattern "^(https://ns\\.cascadeprotocol\\.org/codes/cvx/|https://ns\\.cascadeprotocol\\.org/codes/rxnorm/|https://ns\\.cascadeprotocol\\.org/codes/ndc11/|https://ns\\.cascadeprotocol\\.org/codes/icd10cm/|http://snomed\\.info/id/|http://loinc\\.org/rdf/|https://ns\\.cascadeprotocol\\.org/codes/medrt/|http://id\\.nlm\\.nih\\.gov/mesh/|https://identifiers\\.org/unii:|https://ns\\.cascadeprotocol\\.org/codes/cpt/|https://ns\\.cascadeprotocol\\.org/codes/icd9cm/|https://ns\\.cascadeprotocol\\.org/codes/hgvs/|https://identifiers\\.org/clinvar:|https://ns\\.cascadeprotocol\\.org/codes/data-absent-reason/|https://ns\\.cascadeprotocol\\.org/codes/nullflavor/|https://ns\\.cascadeprotocol\\.org/codes/observationinterpretation/).+$" .
+    sh:pattern "^(https://ns\\.cascadeprotocol\\.org/codes/cvx/|https://ns\\.cascadeprotocol\\.org/codes/rxnorm/|https://ns\\.cascadeprotocol\\.org/codes/ndc11/|https://ns\\.cascadeprotocol\\.org/codes/icd10cm/|http://snomed\\.info/id/|http://loinc\\.org/rdf/|https://ns\\.cascadeprotocol\\.org/codes/medrt/|http://id\\.nlm\\.nih\\.gov/mesh/|https://identifiers\\.org/unii:|https://ns\\.cascadeprotocol\\.org/codes/cpt/|https://ns\\.cascadeprotocol\\.org/codes/icd9cm/|https://ns\\.cascadeprotocol\\.org/codes/hgvs/|https://identifiers\\.org/clinvar:|https://ns\\.cascadeprotocol\\.org/codes/data-absent-reason/|https://ns\\.cascadeprotocol\\.org/codes/nullflavor/|https://ns\\.cascadeprotocol\\.org/codes/observationinterpretation/).+$" ;
+    sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/(data-absent-reason|nullflavor)/" ] ;
+    sh:and (
+        [ sh:or ( [ sh:not [ sh:pattern "^http://snomed\\.info/id/" ] ] cascade:SnomedCtCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/icd10cm/" ] ] cascade:IcdTenCmCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cpt/" ] ] cascade:CptCodeShape ) ]
+    ) .
+
+cascade:CptCodeShape a sh:NodeShape ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/cpt/[0-9]{4}[0-9FTU]$" .
 
 cascade:CodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
