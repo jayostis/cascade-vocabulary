@@ -27,6 +27,13 @@ REFUSED = [
     (body("a term was renamed"), '"a term was renamed" is not'),
     (body("None\n- a -> b"), "None beside lines"),
     (body("Nothing"), '"Nothing" is not'),
+    (body("->"), '"->" is not'),
+    (body("- ->"), '"->" is not'),
+    (body("a ->"), '"a ->" is not'),
+    (body("-> b"), '"-> b" is not'),
+    (body("a ->" + chr(0xA0)), "is not"),
+    (body("None" + chr(0x85)), "is not"),
+    (body(chr(0xFF11) + ". None"), "is not"),
 ]
 
 
@@ -88,6 +95,15 @@ class TestChecksOfThePullRequestBodyCheck:
             A line written `1. a -> b` comes back as `a -> b`.
             """
             assert breaking_check.breaking_of(body("1. a -> b\n2. c -> removed")) == (["a -> b", "c -> removed"], None)
+
+        def test_reads_a_next_line_character_a_full_width_digit_and_an_arrow_beside_one_as_text(self):
+            """reads a next line character, a full-width digit and an arrow beside one as text
+
+            The runtime repository's reader, which counts only ASCII digits and a fixed set of spaces, reads them so too.
+            """
+            nel, one = chr(0x85), chr(0xFF11)
+            assert breaking_check.breaking_of(body(f"a ->{nel}\n{nel}-> b")) == ([f"a ->{nel}", f"{nel}-> b"], None)
+            assert breaking_check.breaking_of(body(f"{one}. a -> b")) == ([f"{one}. a -> b"], None)
 
         def test_stops_the_section_at_a_rule_or_a_depends_on_line(self):
             """stops the section at a rule or a Depends-On line
