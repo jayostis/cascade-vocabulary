@@ -1,3 +1,4 @@
+import hashlib
 from collections import Counter
 from functools import cache
 from pathlib import Path
@@ -153,6 +154,43 @@ class TestWhatEachQueryGives:
             rows = answers(fixture, lens)["pod/My active conditions"]
             keys = [(str(row["condition"]), str(row["entry"])) for row in rows]
             assert len(keys) > 1 and keys == sorted(keys)
+
+    class TestGivenAnImmunizationASecondSourceJoins:
+        """given `a-second-source-joins-an-immunization`, its pod built with and without each original"""
+
+        JOINS = next(fixture for fixture in FIXTURES if fixture.name == "a-second-source-joins-an-immunization")
+        PORTAL, DOWNLOAD = URIRef("urn:x:mmrFromPortal"), URIRef("urn:x:mmrFromDownload")
+
+        @staticmethod
+        def entry_named_from(member):
+            return URIRef(f"{ADDRESS}clinical/immunizations.ttl#{hashlib.sha256(str(member).encode()).hexdigest()}")
+
+        def asked(self, question, record, without):
+            store = built_once(self.JOINS, "oxigraph", LENSES[0], frozenset(without)).store
+            return store.select(bound_to_records(query(questions()[question]), [str(record)]))
+
+        def shows(self, record, *without):
+            return {(row["record"], row["entry"]) for row in self.asked("record/Which entry shows it", record, without)}
+
+        @pytest.mark.xdist_group(JOINS.name)
+        def test_shows_the_first_record_in_the_entry_renamed_for_both_records_once_the_second_joins(self):
+            """shows the first record, once the second source joins, in the entry renamed from the record that sorts first, which holds both"""
+            before = self.shows(self.PORTAL, "download.ttl", "judgments.ttl")
+            after = self.shows(self.PORTAL) | self.shows(self.DOWNLOAD)
+            renamed = self.entry_named_from(self.DOWNLOAD)
+            assert before == {(self.PORTAL, self.entry_named_from(self.PORTAL))}
+            assert after == {(self.PORTAL, renamed), (self.DOWNLOAD, renamed)}
+
+        @pytest.mark.xdist_group(JOINS.name)
+        def test_shows_a_record_whose_original_was_removed_in_no_entry_and_gives_no_reason(self):
+            """shows a record whose original was removed in no entry once the pod is rebuilt, and gives no reason it is in none
+
+            So the pod no longer holds it, which a record hidden from every view, with its reason, is not.
+            """
+            removed = ("portal.ttl",)
+            assert self.shows(self.PORTAL, *removed) == set()
+            assert self.asked("record/Why it is in no view", self.PORTAL, removed) == []
+            assert self.shows(self.DOWNLOAD, *removed) == {(self.DOWNLOAD, self.entry_named_from(self.DOWNLOAD))}
 
     class TestGivenTheFixturesTogether:
         def test_leaves_no_query_without_a_fixture_over_which_it_adds_a_triple_or_gives_a_row(self):

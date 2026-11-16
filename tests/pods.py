@@ -55,10 +55,14 @@ class Fixture:
         return sorted(path.relative_to(self.folder).as_posix() for path in self.folder.rglob("*.ttl")
                       if path != self.manifest)
 
-    def build(self, engine, lens):
+    def build(self, engine, lens, without=frozenset()):
+        """The pod of the fixture's files, or, as a rebuild from fewer originals makes it, of all but those `without`
+        names."""
+        assert without <= set(self.files()), without - set(self.files())
         store = ENGINES[engine]()
         for path in self.files():
-            store.load(self.folder / path, ADDRESS + path)
+            if path not in without:
+                store.load(self.folder / path, ADDRESS + path)
         for path in sorted(self.folder.glob("*.trig")):
             store.load_graphs(path, ADDRESS + path.name)
         added = derive(store, lens)
@@ -185,5 +189,9 @@ every_fixture = pytest.mark.parametrize("fixture", [on_its_worker(fixture, id=fi
 
 
 @cache
-def built_once(fixture, engine, lens):
-    return fixture.build(engine, lens)
+def _built(fixture, engine, lens, without):
+    return fixture.build(engine, lens, without)
+
+
+def built_once(fixture, engine, lens, without=()):
+    return _built(fixture, engine, lens, frozenset(without))
