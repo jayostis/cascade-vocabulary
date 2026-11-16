@@ -13,11 +13,13 @@ the file names naming.feature's N9 gives, and tests/matcher-judgment-versions.js
    conformance file but a downloaded one, and in tests/matcher-judgment-versions.json;
 3. reads tests/matcher-judgment-versions.json again from the saved graphs, a record's versions in the order of the episodes
    that wrote them;
-4. gives every name a feature writes beside its inputs, and every name a kit's matcher judgment table writes beside its
+4. writes each list in an `inputs` cell of the matcher judgment rule in code point order, the order the rule counts it in, which
+   a renamed member or version may have left;
+5. gives every name a feature writes beside its inputs, and every name a kit's matcher judgment table writes beside its
    members and what it used, the name its rule gives, until none changes: a matcher judgment's name holds its members' and
    its used versions' names, so one round renames the judgments and the next the assertions.
 
-5. gives each file name naming.feature's N9 writes beside an ni: name the hex of that name's hash.
+6. gives each file name naming.feature's N9 writes beside an ni: name the hex of that name's hash.
 
 <ref> is the commit the saved output and the entries were last consistent with the names: a version renamed before it is not
 found. It does not reach a name beside no inputs in a runtime feature, as a table of members and used under runtime/matcher.feature:
@@ -181,6 +183,12 @@ def main():
         written.add(VERSIONS_FILE.relative_to(ROOT).as_posix())
         if not args.check:
             VERSIONS_FILE.write_text(text, encoding="utf-8", newline="")
+
+    lists = re.compile(r"\(((?:urn:uuid:|ni:)[^()|]*)\)")
+    ordered = lambda match: "(" + ", ".join(sorted(item.strip() for item in match[1].split(","))) + ")"  # noqa: E731
+    rewrite(lambda text: "".join(
+        lists.sub(ordered, line) if "cascade:MatcherJudgmentNamingRule," in line else line for line in text.splitlines(True)),
+        args.check, written)
 
     for _ in range(6):
         for module in (contract, test_naming):
