@@ -199,7 +199,7 @@ versions pin (`same-mapped-code-and-date.rq`, versions 1 to 8; `same-vaccine-gro
 successor in a new version; whether the old versions survive #191's re-mint is #191's (lean: they go, since no pod
 holds a matcher judgment under them). `reactionManifestationText` takes FHIR's path, `reaction.manifestation.text`.
 `resultClinicallyRelevantTime` takes FHIR's name for FHIR's element, prefixed with what it is the time of, as
-`resultValue` is; C-CDA calls the same time "clinically relevant" and gives the sample's draw as its example,
+`resultValueText` is; C-CDA calls the same time "clinically relevant" and gives the sample's draw as its example,
 so "performed" says something neither source says.
 
 **A start is not a prescription's date.** (row "9. a medication's start") R4's MedicationRequest has no `effective[x]`, so the FHIR adapter's
