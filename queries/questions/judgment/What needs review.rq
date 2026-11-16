@@ -13,7 +13,8 @@ WHERE {
               prov:hadMember ?record .
     ?record cascade:currentRevision/prov:wasDerivedFrom ?document .
     FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?document }
-    BIND ("a member changed since it was judged" AS ?needs) }
+    BIND ("a member changed since it was judged" AS ?needs)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
   UNION
   { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
     FILTER NOT EXISTS { ?judgment prov:wasAttributedTo/a prov:Person }
@@ -25,12 +26,13 @@ WHERE {
       ?record cascade:currentRevision/prov:wasDerivedFrom ?document .
       FILTER NOT EXISTS { ?judgment prov:hadMember ?member FILTER NOT EXISTS { ?answer prov:hadMember ?member } }
     }
-    BIND ("a member changed since it was judged" AS ?needs) }
+    BIND ("a member changed since it was judged" AS ?needs)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
   UNION
   { ?retraction prov:invalidated ?judgment ; prov:wasAssociatedWith ?retractor .
     ?judgment a cascade:Judgment ; prov:wasAttributedTo ?maker .
     FILTER (?retractor != ?maker)
-    BIND ("retracted by someone other than who made it" AS ?needs) }
-  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+    BIND ("retracted by someone other than who made it" AS ?needs)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
 }
 ORDER BY ?judgmentLabel ?judgment

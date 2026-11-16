@@ -31,3 +31,8 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:wasDerivedFrom :marchDocument , :januaryDocument ;
     prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-04-01T00:00:00Z"^^xsd:dateTime .
+
+:personPS a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :p , :s ;
+    prov:wasDerivedFrom :marchDocument , :januaryDocument ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-04-01T00:00:00Z"^^xsd:dateTime .
