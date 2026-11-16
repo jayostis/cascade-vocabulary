@@ -213,7 +213,7 @@ By #133, 2026-10-24, under the owner's delegation (jayostis/cascade-vocabulary#2
 - **A padded time in a view.** A view copies each padded time it shows with its node, so no view shows one as exact;
   the node is named after its holder, the entry or a member's values, `-padded-` and the local name, since a view
   entry's IRI has its fragment already (`naming.md`, row "view entry").
-- **A variant interpretation's date.** `cascade:interpretedDate` takes `xsd:gYear`, `xsd:gYearMonth` or `xsd:date`: the
+- **A variant interpretation's date.** `cascade:variantInterpretationDate` (was `interpretedDate`) takes `xsd:gYear`, `xsd:gYearMonth` or `xsd:date`: the
   day the interpretation was issued, as before, or its year or month where the source wrote no day. A time still gives
   its day, since the property is a date.
 - **Two immunizations of one year.** Term equality keeps a year from joining a day, but two shots dated "2019" are

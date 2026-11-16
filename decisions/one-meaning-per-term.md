@@ -8,6 +8,10 @@ final name of every term is in `epic-alpha/term-map.csv`'s `new` column, which t
 literal example (`health:vaccineCode "141"`), M14's status clause, the time term M12 reads, and #132's "deprecated, not
 deleted". The duplicate declarations (`snomedCode`, `sourceRecordId`) and the `status` collision across namespaces are
 #193's, ruled by `naming.md` and merged there; this note rules only what the merge leaves: what a status value means.
+Amended 2026-11-16 by the one re-mint (`code-iris.md` row "a condition's or a procedure's code"): `snomedCode` and `icd10Code` on
+conditions, and `snomedCode` and `cptCode` on procedures, are `conditionCode` and `procedureCode`, a code IRI in any system listed
+with a stem; the other names below are as the re-mint left them in the ontology (`notes` is `addedNoteText`, `dosage` is
+`dosageInstructionText`, `allergen` is `allergenName`), and the rows and prose that follow keep the names they were ruled under.
 Partial dates on the date terms renamed here are `partial-dates-and-absent-reasons.md`'s; a lab result's time as the
 matcher reads it is `quantities.md` row "matcher". Terms are named by local name, since #193 moves every one of them
 into the one unversioned Cascade namespace.
