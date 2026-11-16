@@ -414,6 +414,8 @@ class TestTermsTheShapesAndOntologyAgreeOn:
             assert refused == expected
 
     class TestGivenAPropertyForACodeInAnyListedSystem:
+        """given a property for a code in any listed system"""
+
         @pytest.mark.parametrize("property", [
             pytest.param(CASCADE_NS.conditionCode, id="condition"),
             pytest.param(CASCADE_NS.procedureCode, id="procedure"),
@@ -436,6 +438,8 @@ class TestTermsTheShapesAndOntologyAgreeOn:
             assert (property, RDFS.domain, None) in graph
 
     class TestGivenAReMintedTerm:
+        """given a term of the one re-mint"""
+
         @pytest.mark.parametrize("old, new", [
             pytest.param(old, new, id=old) for old, new in RE_MINTED.items()])
         def test_is_declared_under_its_new_name_and_not_its_old(self, old, new):
