@@ -123,7 +123,7 @@ WHERE {
   {
     { SELECT ?record ?entry ?property ?code ?dated ?from ?to ?open
       WHERE {
-        VALUES ?property { cascade:icd10Code cascade:snomedCode }
+        VALUES ?property { cascade:conditionCode }
         ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version ; ^cascade:entryMember ?entry .
         ?version ?property ?code .
         OPTIONAL { ?version cascade:displayDate ?onset }
@@ -143,7 +143,7 @@ WHERE {
       } }
     { SELECT ?otherRecord ?otherEntry ?property ?code ?otherDated ?otherFrom ?otherTo ?otherOpen
       WHERE {
-        VALUES ?property { cascade:icd10Code cascade:snomedCode }
+        VALUES ?property { cascade:conditionCode }
         ?otherRecord cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion ; ^cascade:entryMember ?otherEntry .
         ?otherVersion ?property ?code .
         OPTIONAL { ?otherVersion cascade:displayDate ?otherOnset }

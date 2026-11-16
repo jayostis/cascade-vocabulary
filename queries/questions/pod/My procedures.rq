@@ -1,5 +1,5 @@
 # Read from the view alone, as an app would, newest first by the date as written, so a year follows its months and
-# days, with how many records each entry joins, SNOMED CT's IRI for each procedure, the text each record's source wrote
+# days, with how many records each entry joins, its code IRI, the first in code point order when it states several, the text each record's source wrote
 # for it, such as the finding beside a screening (none when no record has one), and each record it joins with the
 # document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it, in order, each
 # ended by "; " but the last, its own parts by ", ". Times written with a zone are ordered by their wall time as written,
@@ -10,7 +10,7 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?performed ?procedure ?snomed ?status ?narrativeTexts (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
+SELECT ?performed ?procedure ?procedureCode ?status ?narrativeTexts (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?narrativeLine; separator=""), "; $", "") AS ?said)
     WHERE {
@@ -57,10 +57,16 @@ WHERE {
   ?entry a cascade:MedicalProcedure ; cascade:entryMember ?record .
   OPTIONAL { ?entry cascade:procedureDate ?performed }
   OPTIONAL { ?entry cascade:procedureName ?procedure }
-  OPTIONAL { ?entry cascade:snomedCode ?snomed }
+  OPTIONAL {
+    ?entry cascade:procedureCode ?procedureCode .
+    FILTER NOT EXISTS {
+      ?entry cascade:procedureCode ?earlier .
+      FILTER (STR(?earlier) < STR(?procedureCode))
+    }
+  }
   OPTIONAL { ?entry cascade:workflowStatus ?status }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   BIND (IF(?said = "", ?nothing, ?said) AS ?narrativeTexts)
 }
-GROUP BY ?entry ?performed ?procedure ?snomed ?status ?narrativeTexts ?entryLabel ?sources
+GROUP BY ?entry ?performed ?procedure ?procedureCode ?status ?narrativeTexts ?entryLabel ?sources
 ORDER BY DESC(COALESCE(STR(?performed), "")) ?procedure ?entry

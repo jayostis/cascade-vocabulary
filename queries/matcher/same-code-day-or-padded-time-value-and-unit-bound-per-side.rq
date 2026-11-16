@@ -32,7 +32,7 @@ WHERE {
                  OPTIONAL { ?firstNumerator cascade:quantityComparator ?firstNumeratorComparator }
                  OPTIONAL { ?firstNumerator cascade:ucumUnit ?firstNumeratorUcum }
                  OPTIONAL { ?firstNumerator cascade:unitText ?firstNumeratorText } }
-      OPTIONAL { ?version cascade:resultRangeLow ?firstLow . ?firstLow cascade:decimalValue ?firstLowNumber .
+      OPTIONAL { ?version cascade:resultValueRangeLow ?firstLow . ?firstLow cascade:decimalValue ?firstLowNumber .
                  OPTIONAL { ?firstLow cascade:quantityComparator ?firstLowComparator }
                  OPTIONAL { ?firstLow cascade:ucumUnit ?firstLowUcum }
                  OPTIONAL { ?firstLow cascade:unitText ?firstLowText } }
@@ -40,7 +40,7 @@ WHERE {
                  OPTIONAL { ?secondDenominator cascade:quantityComparator ?secondDenominatorComparator }
                  OPTIONAL { ?secondDenominator cascade:ucumUnit ?secondDenominatorUcum }
                  OPTIONAL { ?secondDenominator cascade:unitText ?secondDenominatorText } }
-      OPTIONAL { ?version cascade:resultRangeHigh ?secondHigh . ?secondHigh cascade:decimalValue ?secondHighNumber .
+      OPTIONAL { ?version cascade:resultValueRangeHigh ?secondHigh . ?secondHigh cascade:decimalValue ?secondHighNumber .
                  OPTIONAL { ?secondHigh cascade:quantityComparator ?secondHighComparator }
                  OPTIONAL { ?secondHigh cascade:ucumUnit ?secondHighUcum }
                  OPTIONAL { ?secondHigh cascade:unitText ?secondHighText } }
@@ -84,7 +84,7 @@ WHERE {
                  OPTIONAL { ?otherFirstNumerator cascade:quantityComparator ?otherFirstNumeratorComparator }
                  OPTIONAL { ?otherFirstNumerator cascade:ucumUnit ?otherFirstNumeratorUcum }
                  OPTIONAL { ?otherFirstNumerator cascade:unitText ?otherFirstNumeratorText } }
-      OPTIONAL { ?otherVersion cascade:resultRangeLow ?otherFirstLow . ?otherFirstLow cascade:decimalValue ?otherFirstLowNumber .
+      OPTIONAL { ?otherVersion cascade:resultValueRangeLow ?otherFirstLow . ?otherFirstLow cascade:decimalValue ?otherFirstLowNumber .
                  OPTIONAL { ?otherFirstLow cascade:quantityComparator ?otherFirstLowComparator }
                  OPTIONAL { ?otherFirstLow cascade:ucumUnit ?otherFirstLowUcum }
                  OPTIONAL { ?otherFirstLow cascade:unitText ?otherFirstLowText } }
@@ -92,7 +92,7 @@ WHERE {
                  OPTIONAL { ?otherSecondDenominator cascade:quantityComparator ?otherSecondDenominatorComparator }
                  OPTIONAL { ?otherSecondDenominator cascade:ucumUnit ?otherSecondDenominatorUcum }
                  OPTIONAL { ?otherSecondDenominator cascade:unitText ?otherSecondDenominatorText } }
-      OPTIONAL { ?otherVersion cascade:resultRangeHigh ?otherSecondHigh . ?otherSecondHigh cascade:decimalValue ?otherSecondHighNumber .
+      OPTIONAL { ?otherVersion cascade:resultValueRangeHigh ?otherSecondHigh . ?otherSecondHigh cascade:decimalValue ?otherSecondHighNumber .
                  OPTIONAL { ?otherSecondHigh cascade:quantityComparator ?otherSecondHighComparator }
                  OPTIONAL { ?otherSecondHigh cascade:ucumUnit ?otherSecondHighUcum }
                  OPTIONAL { ?otherSecondHigh cascade:unitText ?otherSecondHighText } }
@@ -118,7 +118,7 @@ WHERE {
   ?record pav:hasCurrentVersion ?version .
   FILTER (?record != ?other && ?day = ?otherDay && (?dayAlone || ?otherDayAlone))
   FILTER (IF(?valueKind = cascade:CodedResultValue,
-                EXISTS { ?version cascade:resultCode ?sharedCode . ?otherVersion cascade:resultCode ?sharedCode },
+                EXISTS { ?version cascade:resultValueCode ?sharedCode . ?otherVersion cascade:resultValueCode ?sharedCode },
                 (BOUND(?firstNumber) || BOUND(?secondNumber))
                 && BOUND(?firstNumber) = BOUND(?otherFirstNumber) && BOUND(?secondNumber) = BOUND(?otherSecondNumber)
                 && (!BOUND(?firstNumber)

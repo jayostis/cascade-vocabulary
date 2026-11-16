@@ -32,8 +32,8 @@ WHERE {
               # bound: ?record
               WHERE {
                 ?record pav:hasCurrentVersion ?version .
-                ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                ?version cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentTypeCode ?loincOfVersion })
                 ?version cascade:narrativeTextAsTrimmedLines ?text .
                 OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
                 BIND (STRLEN(?text) AS ?length)
@@ -46,11 +46,11 @@ WHERE {
                 { SELECT DISTINCT ?type
                   # bound: ?record
                   WHERE { ?record pav:hasCurrentVersion ?runVersion .
-                          ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                          ?runVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentTypeCode ?loincOfRunVersion }) } }
                 ?other pav:hasCurrentVersion ?otherVersion .
-                ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                ?otherVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentTypeCode ?loincOfOtherVersion })
                 ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                 OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
                 BIND (STRLEN(?otherText) AS ?otherLength)
@@ -81,8 +81,8 @@ WHERE {
               # bound: ?record
               WHERE {
                 ?record pav:hasCurrentVersion ?version .
-                ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                ?version cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentTypeCode ?loincOfVersion })
                 ?version cascade:narrativeTextAsTrimmedLines ?text .
                 OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
                 BIND (STRLEN(?text) AS ?length)
@@ -95,11 +95,11 @@ WHERE {
                 { SELECT DISTINCT ?type
                   # bound: ?record
                   WHERE { ?record pav:hasCurrentVersion ?runVersion .
-                          ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                          ?runVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentTypeCode ?loincOfRunVersion }) } }
                 ?other pav:hasCurrentVersion ?otherVersion .
-                ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                ?otherVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentTypeCode ?loincOfOtherVersion })
                 ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                 OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
                 BIND (STRLEN(?otherText) AS ?otherLength)
@@ -137,8 +137,8 @@ WHERE {
                         # bound: ?record
                         WHERE {
                           ?record pav:hasCurrentVersion ?version .
-                          ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                          ?version cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentTypeCode ?loincOfVersion })
                           ?version cascade:narrativeTextAsTrimmedLines ?text .
                           OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
                           BIND (STRLEN(?text) AS ?length)
@@ -151,11 +151,11 @@ WHERE {
                           { SELECT DISTINCT ?type
                             # bound: ?record
                             WHERE { ?record pav:hasCurrentVersion ?runVersion .
-                                    ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                                    ?runVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentTypeCode ?loincOfRunVersion }) } }
                           ?other pav:hasCurrentVersion ?otherVersion .
-                          ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                          ?otherVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentTypeCode ?loincOfOtherVersion })
                           ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                           OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
                           BIND (STRLEN(?otherText) AS ?otherLength)
@@ -186,8 +186,8 @@ WHERE {
                         # bound: ?record
                         WHERE {
                           ?record pav:hasCurrentVersion ?version .
-                          ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                          ?version cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentTypeCode ?loincOfVersion })
                           ?version cascade:narrativeTextAsTrimmedLines ?text .
                           OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
                           BIND (STRLEN(?text) AS ?length)
@@ -200,11 +200,11 @@ WHERE {
                           { SELECT DISTINCT ?type
                             # bound: ?record
                             WHERE { ?record pav:hasCurrentVersion ?runVersion .
-                                    ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                                    ?runVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentTypeCode ?loincOfRunVersion }) } }
                           ?other pav:hasCurrentVersion ?otherVersion .
-                          ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                          ?otherVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentTypeCode ?loincOfOtherVersion })
                           ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                           OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
                           BIND (STRLEN(?otherText) AS ?otherLength)
@@ -236,11 +236,11 @@ WHERE {
                     { SELECT DISTINCT ?type
                       # bound: ?record
                       WHERE { ?record pav:hasCurrentVersion ?runVersion .
-                              ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                              FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                              ?runVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                              FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentTypeCode ?loincOfRunVersion }) } }
                     ?witness1 pav:hasCurrentVersion ?witness1Version .
-                    ?witness1Version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                    FILTER (isIRI(?type) || NOT EXISTS { ?witness1Version cascade:noteOrDocumentType ?loincOfWitness1Version })
+                    ?witness1Version cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                    FILTER (isIRI(?type) || NOT EXISTS { ?witness1Version cascade:noteOrDocumentTypeCode ?loincOfWitness1Version })
                     ?witness1Version cascade:narrativeTextAsTrimmedLines ?witness1Text .
                     OPTIONAL { ?witness1Version cascade:noteOrDocumentDate ?witness1Date }
                     BIND (STRLEN(?witness1Text) AS ?witness1Length)
@@ -282,8 +282,8 @@ WHERE {
                         # bound: ?record
                         WHERE {
                           ?record pav:hasCurrentVersion ?version .
-                          ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                          ?version cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentTypeCode ?loincOfVersion })
                           ?version cascade:narrativeTextAsTrimmedLines ?text .
                           OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
                           BIND (STRLEN(?text) AS ?length)
@@ -296,11 +296,11 @@ WHERE {
                           { SELECT DISTINCT ?type
                             # bound: ?record
                             WHERE { ?record pav:hasCurrentVersion ?runVersion .
-                                    ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                                    ?runVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentTypeCode ?loincOfRunVersion }) } }
                           ?other pav:hasCurrentVersion ?otherVersion .
-                          ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                          ?otherVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentTypeCode ?loincOfOtherVersion })
                           ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                           OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
                           BIND (STRLEN(?otherText) AS ?otherLength)
@@ -331,8 +331,8 @@ WHERE {
                         # bound: ?record
                         WHERE {
                           ?record pav:hasCurrentVersion ?version .
-                          ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+                          ?version cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentTypeCode ?loincOfVersion })
                           ?version cascade:narrativeTextAsTrimmedLines ?text .
                           OPTIONAL { ?version cascade:noteOrDocumentDate ?date }
                           BIND (STRLEN(?text) AS ?length)
@@ -345,11 +345,11 @@ WHERE {
                           { SELECT DISTINCT ?type
                             # bound: ?record
                             WHERE { ?record pav:hasCurrentVersion ?runVersion .
-                                    ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                                    ?runVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                                    FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentTypeCode ?loincOfRunVersion }) } }
                           ?other pav:hasCurrentVersion ?otherVersion .
-                          ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+                          ?otherVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                          FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentTypeCode ?loincOfOtherVersion })
                           ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherText .
                           OPTIONAL { ?otherVersion cascade:noteOrDocumentDate ?otherDate }
                           BIND (STRLEN(?otherText) AS ?otherLength)
@@ -381,11 +381,11 @@ WHERE {
                     { SELECT DISTINCT ?type
                       # bound: ?record
                       WHERE { ?record pav:hasCurrentVersion ?runVersion .
-                              ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                              FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                              ?runVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                              FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentTypeCode ?loincOfRunVersion }) } }
                     ?witness2 pav:hasCurrentVersion ?witness2Version .
-                    ?witness2Version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                    FILTER (isIRI(?type) || NOT EXISTS { ?witness2Version cascade:noteOrDocumentType ?loincOfWitness2Version })
+                    ?witness2Version cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                    FILTER (isIRI(?type) || NOT EXISTS { ?witness2Version cascade:noteOrDocumentTypeCode ?loincOfWitness2Version })
                     ?witness2Version cascade:narrativeTextAsTrimmedLines ?witness2Text .
                     OPTIONAL { ?witness2Version cascade:noteOrDocumentDate ?witness2Date }
                     BIND (STRLEN(?witness2Text) AS ?witness2Length)

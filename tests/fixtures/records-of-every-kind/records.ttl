@@ -4,7 +4,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :allergy a cascade:AllergyOrIntolerance .
-:allergyVersion prov:specializationOf :allergy ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:allergyVersion prov:specializationOf :allergy ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "active" .
 :allergyRevision a cascade:Revision ; cascade:revisionOf :allergy ; cascade:version :allergyVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
@@ -52,7 +52,7 @@
 
 :interpretation a cascade:VariantInterpretation .
 :interpretationVersion prov:specializationOf :interpretation ; cascade:acmgClassification cascade:LikelyPathogenic ;
-    cascade:interpretedDate "2024-03-12"^^xsd:date ; cascade:workflowStatus "final" .
+    cascade:variantInterpretationDate "2024-03-12"^^xsd:date ; cascade:workflowStatus "final" .
 :interpretationRevision a cascade:Revision ; cascade:revisionOf :interpretation ; cascade:version :interpretationVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 

@@ -1,0 +1,10 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:74f38e25-e9b0-8692-bea0-e4620cc3f706> a cascade:ProblemOrDiagnosis ;
+    cascade:sourceUrl <https://fhir.example/Condition/record-condition-snomed-code-not-a-concept-id> .
+
+:version prov:specializationOf <urn:uuid:74f38e25-e9b0-8692-bea0-e4620cc3f706> ;
+    cascade:patient :patient ;
+    cascade:conditionCode <http://snomed.info/id/abc> .

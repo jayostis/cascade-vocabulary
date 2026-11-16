@@ -5,7 +5,7 @@
 
 <> a mf:Manifest ;
   rdfs:label "conditions-view" ;
-  rdfs:comment "An active condition entry of two members, the later naming it, stating its SNOMED CT code as an IRI and its ICD-10-CM code as a literal, and stating no status and no onset; and a resolved condition." ;
+  rdfs:comment "An active condition entry of two members, the later naming it, stating two SNOMED CT codes and two ICD-10-CM codes, each as its code IRI, and stating no status and no onset; and a resolved condition." ;
   mf:entries (
     <#the-conditions-view>
     <#my-active-conditions>
@@ -20,7 +20,7 @@
 
 <#my-active-conditions> a mf:QueryEvaluationTest ;
   mf:name "my-active-conditions" ;
-  rdfs:comment "Only the active entry, one row, with the first of its SNOMED CT and of its ICD-10-CM codes, its onset and how many records it joins." ;
+  rdfs:comment "Only the active entry, one row, with the first of its codes in code point order, its onset and how many records it joins." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20active%20conditions.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-active-conditions.srj> .

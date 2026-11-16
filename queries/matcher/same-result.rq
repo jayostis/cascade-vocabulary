@@ -8,7 +8,7 @@ SELECT DISTINCT ?record ?other
 WHERE {
   ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
   ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
-  ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time ; cascade:resultValue ?value .
-  ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime ; cascade:resultValue ?value .
+  ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time ; cascade:resultValueText ?value .
+  ?otherVersion cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?otherTime ; cascade:resultValueText ?value .
   FILTER (?record != ?other && DATATYPE(?time) = DATATYPE(?otherTime) && ?time = ?otherTime)
 }

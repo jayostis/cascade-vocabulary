@@ -6,7 +6,7 @@ PREFIX pav: <http://purl.org/pav/>
 
 CONSTRUCT {
   ?entry a cascade:AllergyOrIntolerance ;
-    cascade:allergen ?allergen ;
+    cascade:allergenName ?allergenName ;
     cascade:allergenCode ?code ;
     cascade:reactionManifestationText ?reaction ;
     cascade:reactionManifestationCode ?reactionCode ;
@@ -18,7 +18,7 @@ CONSTRUCT {
     cascade:entryMember ?record .
   ?entry cascade:memberCurrentValues ?memberValues .
   ?memberValues cascade:valuesOfMember ?member ;
-    cascade:allergen ?memberAllergen ;
+    cascade:allergenName ?memberAllergen ;
     cascade:allergenCode ?memberAllergenCode ;
     cascade:reactionManifestationText ?memberReaction ;
     cascade:reactionManifestationCode ?memberReactionCode ;
@@ -29,7 +29,7 @@ CONSTRUCT {
 WHERE {
   { ?record a cascade:AllergyOrIntolerance ; cascade:inEntry ?entry .
     ?entry cascade:leadMember ?lead .
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergen ?allergen }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenName ?allergenName }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenCode ?code }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reactionManifestationText ?reaction }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reactionManifestationCode ?reactionCode }
@@ -40,7 +40,7 @@ WHERE {
   UNION
   { ?member a cascade:AllergyOrIntolerance ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
-    OPTIONAL { ?memberVersion cascade:allergen ?memberAllergen }
+    OPTIONAL { ?memberVersion cascade:allergenName ?memberAllergen }
     OPTIONAL { ?memberVersion cascade:allergenCode ?memberAllergenCode }
     OPTIONAL { ?memberVersion cascade:reactionManifestationText ?memberReaction }
     OPTIONAL { ?memberVersion cascade:reactionManifestationCode ?memberReactionCode }

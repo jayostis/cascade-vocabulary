@@ -1,0 +1,10 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:8456b90f-83dc-8f5f-88b7-09c784ff0009> a cascade:MedicalProcedure ;
+    cascade:sourceUrl <https://fhir.example/Procedure/record-procedure-code-of-an-absent-reason-system> .
+
+:version prov:specializationOf <urn:uuid:8456b90f-83dc-8f5f-88b7-09c784ff0009> ;
+    cascade:patient :patient ;
+    cascade:procedureCode <https://ns.cascadeprotocol.org/codes/data-absent-reason/unknown> .

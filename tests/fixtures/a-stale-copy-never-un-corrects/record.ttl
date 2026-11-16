@@ -14,9 +14,9 @@
     [ prov:hadRole cascade:TransmitterRole ; prov:agent [ rdfs:label "Apple Health" ] ] ] .
 
 :record a cascade:AllergyOrIntolerance .
-:active prov:specializationOf :record ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
-:inactive prov:specializationOf :record ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "inactive" .
-:resolved prov:specializationOf :record ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "resolved" .
+:active prov:specializationOf :record ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "active" .
+:inactive prov:specializationOf :record ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "inactive" .
+:resolved prov:specializationOf :record ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "resolved" .
 :original a cascade:Revision ; cascade:revisionOf :record ; cascade:version :active ; prov:wasDerivedFrom :document ;
     pav:lastUpdateOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
     prov:generatedAtTime "2026-01-02T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:00Z"^^xsd:dateTime .

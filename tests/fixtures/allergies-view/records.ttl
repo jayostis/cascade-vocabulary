@@ -11,7 +11,7 @@
 :session a prov:Activity ; rdfs:label "Entry session" ; prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :peanutFromDocument a cascade:AllergyOrIntolerance .
-:peanutFromDocumentVersion prov:specializationOf :peanutFromDocument ; cascade:patient :subject ; cascade:allergen "Peanut" ;
+:peanutFromDocumentVersion prov:specializationOf :peanutFromDocument ; cascade:patient :subject ; cascade:allergenName "Peanut" ;
     cascade:clinicalStatus "active" ; cascade:allergyCriticality "high" ; cascade:reactionManifestationText "Anaphylaxis" ;
     cascade:reactionManifestationCode <http://snomed.info/id/39579001> ; cascade:allergySeverity "severe" .
 :peanutFromDocumentRevision a cascade:Revision ; cascade:revisionOf :peanutFromDocument ;
@@ -19,14 +19,14 @@
     prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
 
 :peanutEntered a cascade:AllergyOrIntolerance .
-:peanutEnteredVersion prov:specializationOf :peanutEntered ; cascade:patient :subject ; cascade:allergen "Peanut allergy" ;
+:peanutEnteredVersion prov:specializationOf :peanutEntered ; cascade:patient :subject ; cascade:allergenName "Peanut allergy" ;
     cascade:allergenCode <http://snomed.info/id/91935009> ; cascade:reactionManifestationText "Urticaria" , "Itching" ;
     cascade:reactionManifestationCode <http://snomed.info/id/126485001> ; cascade:allergySeverity "moderate" .
 :peanutEnteredRevision a cascade:Revision ; cascade:revisionOf :peanutEntered ; cascade:version :peanutEnteredVersion ;
     prov:wasGeneratedBy :session ; prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:05Z"^^xsd:dateTime .
 
 :latex a cascade:AllergyOrIntolerance .
-:latexVersion prov:specializationOf :latex ; cascade:patient :subject ; cascade:allergen "Latex" ;
+:latexVersion prov:specializationOf :latex ; cascade:patient :subject ; cascade:allergenName "Latex" ;
     cascade:clinicalStatus "inactive" .
 :latexRevision a cascade:Revision ; cascade:revisionOf :latex ; cascade:version :latexVersion ;
     prov:wasDerivedFrom :latexDocument ; prov:wasGeneratedBy :northImport ;

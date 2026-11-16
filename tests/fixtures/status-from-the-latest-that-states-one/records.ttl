@@ -20,12 +20,12 @@ _:northgate rdfs:label "Northgate" .
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :allergyFromDocument a cascade:AllergyOrIntolerance .
-:allergyFromDocumentVersion prov:specializationOf :allergyFromDocument ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:allergyFromDocumentVersion prov:specializationOf :allergyFromDocument ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "active" .
 :allergyFromDocumentRevision a cascade:Revision ; cascade:revisionOf :allergyFromDocument ; cascade:version :allergyFromDocumentVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :allergyEntered a cascade:AllergyOrIntolerance .
-:allergyEnteredVersion prov:specializationOf :allergyEntered ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "inactive" .
+:allergyEnteredVersion prov:specializationOf :allergyEntered ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "inactive" .
 :allergyEnteredRevision a cascade:Revision ; cascade:revisionOf :allergyEntered ; cascade:version :allergyEnteredVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
@@ -35,7 +35,7 @@ _:northgate rdfs:label "Northgate" .
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :allergyEnteredAlone a cascade:AllergyOrIntolerance .
-:allergyEnteredAloneVersion prov:specializationOf :allergyEnteredAlone ; cascade:patient :subject ; cascade:allergen "Latex" ; cascade:clinicalStatus "active" .
+:allergyEnteredAloneVersion prov:specializationOf :allergyEnteredAlone ; cascade:patient :subject ; cascade:allergenName "Latex" ; cascade:clinicalStatus "active" .
 :allergyEnteredAloneRevision a cascade:Revision ; cascade:revisionOf :allergyEnteredAlone ; cascade:version :allergyEnteredAloneVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 

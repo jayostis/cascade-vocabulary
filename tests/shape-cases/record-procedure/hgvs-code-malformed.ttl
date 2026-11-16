@@ -1,0 +1,10 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:c2c276d7-e2cd-8ba0-9b15-fc6b5d487849> a cascade:MedicalProcedure ;
+    cascade:sourceUrl <https://fhir.example/Procedure/record-procedure-hgvs-code-malformed> .
+
+:version prov:specializationOf <urn:uuid:c2c276d7-e2cd-8ba0-9b15-fc6b5d487849> ;
+    cascade:patient :patient ;
+    cascade:procedureCode <https://ns.cascadeprotocol.org/codes/hgvs/garbage> .

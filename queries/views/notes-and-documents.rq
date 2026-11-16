@@ -10,8 +10,8 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 CONSTRUCT {
   ?entry a cascade:ClinicalNoteOrDocument ;
     cascade:noteOrDocumentTypeName ?name ;
-    cascade:noteOrDocumentType ?type ;
-    cascade:noteOrDocumentTypeInOtherSystem ?otherType ;
+    cascade:noteOrDocumentTypeCode ?type ;
+    cascade:noteOrDocumentTypeCodeInOtherSystem ?otherType ;
     cascade:noteOrDocumentTitle ?title ;
     cascade:noteOrDocumentDate ?date ;
     cascade:noteOrDocumentContentStatus ?contentStatus ;
@@ -24,8 +24,8 @@ CONSTRUCT {
   ?entry cascade:memberCurrentValues ?memberValues .
   ?memberValues cascade:valuesOfMember ?member ;
     cascade:noteOrDocumentTypeName ?memberNoteOrDocumentTypeName ;
-    cascade:noteOrDocumentType ?memberNoteOrDocumentType ;
-    cascade:noteOrDocumentTypeInOtherSystem ?memberNoteOrDocumentTypeInOtherSystem ;
+    cascade:noteOrDocumentTypeCode ?memberNoteOrDocumentType ;
+    cascade:noteOrDocumentTypeCodeInOtherSystem ?memberNoteOrDocumentTypeInOtherSystem ;
     cascade:noteOrDocumentTitle ?memberNoteOrDocumentTitle ;
     cascade:noteOrDocumentDate ?memberNoteOrDocumentDate ;
     cascade:noteOrDocumentContentStatus ?memberNoteOrDocumentContentStatus ;
@@ -33,16 +33,16 @@ CONSTRUCT {
     prov:wasAttributedTo ?memberWasAttributedTo ;
     cascade:workflowStatus ?memberWorkflowStatus .
   ?entry cascade:paddedDateTime ?datePadded .
-  ?datePadded cascade:paddedDateTimeProperty cascade:noteOrDocumentDate ; cascade:writtenDate ?dateWritten .
+  ?datePadded cascade:paddedDateTimeProperty cascade:noteOrDocumentDate ; cascade:timeAsWritten ?dateWritten .
   ?memberValues cascade:paddedDateTime ?memberPadded .
-  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten .
 }
 WHERE {
   { ?record a cascade:ClinicalNoteOrDocument ; cascade:inEntry ?entry .
     ?entry cascade:leadMember ?lead .
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTypeName ?name }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentType ?type }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTypeInOtherSystem ?otherType }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTypeCode ?type }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTypeCodeInOtherSystem ?otherType }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentTitle ?title }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentDate ?date }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:noteOrDocumentContentStatus ?contentStatus }
@@ -51,14 +51,14 @@ WHERE {
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
-               ?datePaddedAt cascade:paddedDateTimeProperty cascade:noteOrDocumentDate ; cascade:writtenDate ?dateWritten }
+               ?datePaddedAt cascade:paddedDateTimeProperty cascade:noteOrDocumentDate ; cascade:timeAsWritten ?dateWritten }
     BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-noteOrDocumentDate")), 1/0) AS ?datePadded) }
   UNION
   { ?member a cascade:ClinicalNoteOrDocument ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
     OPTIONAL { ?memberVersion cascade:noteOrDocumentTypeName ?memberNoteOrDocumentTypeName }
-    OPTIONAL { ?memberVersion cascade:noteOrDocumentType ?memberNoteOrDocumentType }
-    OPTIONAL { ?memberVersion cascade:noteOrDocumentTypeInOtherSystem ?memberNoteOrDocumentTypeInOtherSystem }
+    OPTIONAL { ?memberVersion cascade:noteOrDocumentTypeCode ?memberNoteOrDocumentType }
+    OPTIONAL { ?memberVersion cascade:noteOrDocumentTypeCodeInOtherSystem ?memberNoteOrDocumentTypeInOtherSystem }
     OPTIONAL { ?memberVersion cascade:noteOrDocumentTitle ?memberNoteOrDocumentTitle }
     OPTIONAL { ?memberVersion cascade:noteOrDocumentDate ?memberNoteOrDocumentDate }
     OPTIONAL { ?memberVersion cascade:noteOrDocumentContentStatus ?memberNoteOrDocumentContentStatus }
@@ -66,7 +66,7 @@ WHERE {
     OPTIONAL { ?memberVersion prov:wasAttributedTo ?memberWasAttributedTo }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
-               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
           AS ?memberPadded) }
 }

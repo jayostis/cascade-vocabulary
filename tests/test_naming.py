@@ -87,6 +87,18 @@ def resolver(kit):
     return record, used, justification, matcher_rule
 
 
+def kit_judgment_names(judgments):
+    """Each of a kit's matcher judgments with the name N6's rule gives from its members, its justification and what it used."""
+    for kit, justified, members, asserted_under, used_labels, name in judgments:
+        record, used, justification, matcher_rule = resolver(kit)
+        justified_as = justification(justified)
+        uses = [used(label.strip()) for label in used_labels.split(",")]
+        rule = next(filter(None, (matcher_rule(used(label.strip()), justified_as)
+                                  for label in asserted_under.split(","))))
+        yield kit, justified, members, name, matcher_judgment_name(
+            CASCADE + "CascadeMatcher", rule, justified_as, [record(m.strip()) for m in members.split(",")], uses)
+
+
 class TestNamesAFeatureWrites:
     """Names a feature writes beside their inputs · runtime/*.feature, conformance/*/*.feature, runtime/steps.md
 
@@ -124,18 +136,9 @@ class TestNamesAFeatureWrites:
             """
             judgments = list(matcher_judgments_written_with_what_they_used())
             assert len(judgments) >= 11
-            wrong = []
-            for kit, justified, members, asserted_under, used_labels, name in judgments:
-                record, used, justification, matcher_rule = resolver(kit)
-                justified_as = justification(justified)
-                uses = [used(label.strip()) for label in used_labels.split(",")]
-                rule = next(filter(None, (matcher_rule(used(label.strip()), justified_as)
-                                          for label in asserted_under.split(","))))
-                computed = matcher_judgment_name(CASCADE + "CascadeMatcher", rule, justified_as,
-                                                 [record(m.strip()) for m in members.split(",")], uses)
-                if computed != name:
-                    wrong.append((kit.name, justified, members, name, computed))
-            assert wrong == []
+            assert [(kit.name, justified, members, name, computed)
+                    for kit, justified, members, name, computed in kit_judgment_names(judgments)
+                    if computed != name] == []
 
 
 class TestChecksOfTheNameCheck:

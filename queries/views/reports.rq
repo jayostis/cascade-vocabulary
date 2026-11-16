@@ -42,9 +42,9 @@ CONSTRUCT {
     prov:wasAttributedTo ?memberWasAttributedTo ;
     cascade:workflowStatus ?memberWorkflowStatus .
   ?entry cascade:paddedDateTime ?datePadded .
-  ?datePadded cascade:paddedDateTimeProperty cascade:reportEffectiveTime ; cascade:writtenDate ?dateWritten .
+  ?datePadded cascade:paddedDateTimeProperty cascade:reportEffectiveTime ; cascade:timeAsWritten ?dateWritten .
   ?memberValues cascade:paddedDateTime ?memberPadded .
-  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten .
 }
 WHERE {
   { ?record a cascade:DiagnosticReport ; cascade:inEntry ?entry .
@@ -63,7 +63,7 @@ WHERE {
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
-               ?datePaddedAt cascade:paddedDateTimeProperty cascade:reportEffectiveTime ; cascade:writtenDate ?dateWritten }
+               ?datePaddedAt cascade:paddedDateTimeProperty cascade:reportEffectiveTime ; cascade:timeAsWritten ?dateWritten }
     BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-reportEffectiveTime")), 1/0) AS ?datePadded) }
   UNION
   { ?member a cascade:DiagnosticReport ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
@@ -81,7 +81,7 @@ WHERE {
     OPTIONAL { ?memberVersion prov:wasAttributedTo ?memberWasAttributedTo }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
-               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
           AS ?memberPadded) }
 }

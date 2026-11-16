@@ -1,8 +1,9 @@
 # The variant interpretation
 
 Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the review on #202; the lab applied on
-2026-10-24 (#219). Terms: `genomics:VariantInterpretation`, `acmgClassification`, `variantInterpreted`,
-`interpretedDate`, `objectCondition`, `acmgEvidenceCode`, `prov:wasAttributedTo` on its version, and the concepts `Pathogenic`, `LikelyPathogenic`, `UncertainSignificance`, `LikelyBenign`,
+2026-10-24 (#219). Terms: `genomics:VariantInterpretation`, `acmgClassification`, `subjectVariant` (was `variantInterpreted`, renamed
+2026-11-16 after GA4GH VA-spec's proposition subject),
+`variantInterpretationDate` (was `interpretedDate`), `objectCondition`, `acmgEvidenceCode`, `prov:wasAttributedTo` on its version, and the concepts `Pathogenic`, `LikelyPathogenic`, `UncertainSignificance`, `LikelyBenign`,
 `Benign`. Replaces this note's own "it is unnamed" and "the record may be outside the document it came from", which
 yield to `naming.md`: the interpretation is named like any record, and `naming.md` never lets a `urn:uuid` be identity
 across documents; how a variant held from another document is reached is open. Applied in `genomics.shapes.ttl:83`,
@@ -65,10 +66,10 @@ verified). Research: #107's body (https://github.com/jayostis/cascade-vocabulary
 |---|---|---|---|
 | the interpretation | FHIR Diagnostic Implication, an Observation; VA-spec Statement; SEPIO | its own record, `genomics:VariantInterpretation`, a `prov:Entity`, separate from the variant (`ontologies/cascade.ttl`) | borrowed from FHIR in being separate; diverged from FHIR's Observation and VA-spec's Statement in form; the reason is owed (Still open) |
 | its name | `naming.md` | named as any record from its source is (`runtime/naming.feature`, N1) | borrowed from `naming.md` |
-| link to its variant | FHIR `derivedFrom`; VA-spec proposition's subject | `variantInterpreted`, at most one, the variant record's IRI, as `rec:patient` points to its profile record; within one document that is a name; a `urn:uuid` never crosses documents, and how a variant held from another document is reached is open (Still open) (`ontologies/cascade.shapes.ttl`) | borrowed from FHIR's `derivedFrom` |
+| link to its variant | FHIR `derivedFrom`; VA-spec proposition's subject | `subjectVariant` (was `variantInterpreted`), at most one, the variant record's IRI, as `rec:patient` points to its profile record; within one document that is a name; a `urn:uuid` never crosses documents, and how a variant held from another document is reached is open (Still open) (`ontologies/cascade.shapes.ttl`) | borrowed from FHIR's `derivedFrom` |
 | classification | FHIR 53037-8, LOINC LL4034-6 (example); ACMG/AMP 2015; VA-spec classification | `acmgClassification`, at most one, one of the five concepts of `cascade:ClinVarClassifications` named above; a report whose answer is not one of the five states none (`ontologies/cascade.shapes.ttl`) | borrowed: the five ACMG terms as `skos:Concept`s of the ClinVar scheme, each `skos:exactMatch` its LOINC answer; a coded value is what the IG writes |
-| date | FHIR `issued`, else `effective[x]` | `interpretedDate`, at most one `xsd:date` (`ontologies/cascade.shapes.ttl`) | borrowed |
-| which revision is current | `currency.md` | `currency.md`'s ladder; `interpretedDate` is content, not a rung (`runtime/currency.feature`, C2) | borrowed from `currency.md` |
+| date | FHIR `issued`, else `effective[x]` | `variantInterpretationDate` (was `interpretedDate`), at most one `xsd:date` (`ontologies/cascade.shapes.ttl`) | borrowed |
+| which revision is current | `currency.md` | `currency.md`'s ladder; `variantInterpretationDate` is content, not a rung (`runtime/currency.feature`, C2) | borrowed from `currency.md` |
 | condition | FHIR predicted phenotype 81259-4; VA-spec proposition's `objectCondition`; ClinVar RCV | `objectCondition`, at most one, the IRI of a `cascade:ProblemOrDiagnosis` record in the same document; none when the report states none (`ontologies/cascade.shapes.ttl`) | borrowed: VA-spec's name; the therapy objects wait (Why) |
 | evidence | FHIR evidence level 93044-6; VA-spec ACMG 2015 profile evidence outcomes; SEPIO | `acmgEvidenceCode`, any number of strings, each written as VA-spec's ACMG 2015 profile writes an evidence outcome (`PM2`, `PS3_moderate`, `PS3_not_met`, `no_criteria_met`) (`ontologies/cascade.shapes.ttl`) | borrowed: VA-spec's string form, copied as a pattern |
 | who called it | FHIR `Observation.performer`; VA-spec contributions; ClinVar SCV submitter; PROV-O `wasAttributedTo`; `republishing-sources.md` organisation | the version is `prov:wasAttributedTo` the lab's `cascade:Organization` record, at most one, named by `OrganizationNamingRule`; from FHIR, the one organisation record a Diagnostic Implication's `performer` names; none where it names none, or more than one, which the adapter reports (`ontologies/cascade.shapes.ttl`) | borrowed from PROV-O, the property judgments use; FHIR's performer as its source |
@@ -143,7 +144,7 @@ found hard to compare (#107: "written as a code IRI, not a string").
 - Cases neither the record nor a judgment frame handles, for that build: a somatic variant (AMP/ASCO/CAP tiers, not
   ACMG classes; a pharmacogenomic implication names a drug and a phenotype, not a pathogenicity); a VUS later resolved
   by a reissued report with a new id, which leaves both calls current unless the source declares the replacement.
-- Which revision is current follows `currency.md`'s ladder, not `interpretedDate`: the view
+- Which revision is current follows `currency.md`'s ladder, not `variantInterpretationDate`: the view
   (`views/variant-interpretations.rq`) takes its classification, date and lab from `cascade:leadMember` over
   `pav:hasCurrentVersion`, both derived by the ladder (`runtime/currency.feature`, C2 and C6).
 - Whom a ClinVar interpretation is attributed to, the SCV's submitter or ClinVar, is left out of #219: the ClinVar

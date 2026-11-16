@@ -11,8 +11,8 @@
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
 :asthmaNew a cascade:ProblemOrDiagnosis .
-:asthmaNewVersion prov:specializationOf :asthmaNew ; cascade:patient :subject ; cascade:conditionName "Asthma, allergic" ; cascade:snomedCode <http://snomed.info/id/389145006>, <http://snomed.info/id/195967001> ;
-    cascade:icd10Code "J45.909", <https://ns.cascadeprotocol.org/codes/icd10cm/J45.50> .
+:asthmaNewVersion prov:specializationOf :asthmaNew ; cascade:patient :subject ; cascade:conditionName "Asthma, allergic" ; cascade:conditionCode <http://snomed.info/id/389145006>, <http://snomed.info/id/195967001> ;
+    cascade:conditionCode <https://ns.cascadeprotocol.org/codes/icd10cm/J45.909>, <https://ns.cascadeprotocol.org/codes/icd10cm/J45.50> .
 :asthmaNewRevision a cascade:Revision ; cascade:revisionOf :asthmaNew ; cascade:version :asthmaNewVersion ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 

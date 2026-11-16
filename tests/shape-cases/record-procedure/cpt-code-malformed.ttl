@@ -1,0 +1,10 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:f595c31e-b976-8626-8ff6-0a914ab7ec7e> a cascade:MedicalProcedure ;
+    cascade:sourceUrl <https://fhir.example/Procedure/record-procedure-cpt-code-malformed> .
+
+:version prov:specializationOf <urn:uuid:f595c31e-b976-8626-8ff6-0a914ab7ec7e> ;
+    cascade:patient :patient ;
+    cascade:procedureCode <https://ns.cascadeprotocol.org/codes/cpt/453> .

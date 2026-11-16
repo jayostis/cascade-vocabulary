@@ -197,6 +197,8 @@ Feature: The matcher's procedure
     query it runs, with the table kind it reads, if any; the first four rows, whose examples close this rule, are:
 
     - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code.rq.
+      R1 reads a procedure's or a condition's code only where its IRI is in SNOMED CT's space, http://snomed.info/id/: two
+      procedures coded CPT 36415 a year apart are two entries, and a CPT or an ICD-10-CM code joins nothing under R1.
     - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
     - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
       cascade:SubstanceIngredients, a kind only the stories fill; in the vocabulary's list from its version 2,
@@ -218,7 +220,7 @@ Feature: The matcher's procedure
     Version 4 of the vocabulary's list adds one row, whose examples are under M14 and O1, and takes conditions out of R1:
 
     - R8, cascade:SameCodeAndPeriodRule, justified cascade:SameCodeAndPeriod: queries/matcher/same-code-and-period.rq, for conditions only. Two conditions
-      of one ICD-10-CM or SNOMED CT code are the same when their periods overlap.
+      of one condition code are the same when their periods overlap.
 
     Version 5 of the vocabulary's list changes R7's query, whose example is under O1:
 
@@ -626,7 +628,7 @@ Feature: The matcher's procedure
       Then that step wrote no file
       And the matcher's judgments holding allergy SNOMED 373270004 and allergy RxNorm 7980 are:
         | justification    | members                                       | used                                                                                                                  | name                                          |
-        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:d9369a14-2bff-818e-9628-53cd1a1577b5 |
+        | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:95e3d83c-1b6a-89a2-9178-c48ca77f23d5 |
       And the matcher's same mapped code of allergy SNOMED 373270004 and allergy RxNorm 7980 counts
 
     Example: a Same a person retracted is not rechecked
@@ -761,8 +763,8 @@ Feature: The matcher's procedure
       When the matcher runs on the records of that entry on 2026-04-04 at 09:05 (match-later)
       Then the matcher's judgments holding allergy SNOMED 373270004 and allergy SNOMED 91936005 are:
         | justification    | members                                                      | used                                                                                                                                 | name                                          |
-        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:91b68197-9076-86ae-bcbe-f2d2d467244b |
-        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:2f16d97d-95ad-8134-ba5c-e864e744c2d1 |
+        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy SNOMED 373270004 | urn:uuid:cbccf631-0a7c-8eba-8f23-f15672b6c080 |
+        | same mapped code | allergy RxNorm 733 "Principen", allergy SNOMED 91936005      | SNOMED CT to RxNorm ingredient map version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy SNOMED 91936005      | urn:uuid:e99fff6f-2737-8f06-b6e6-3267d1456cdb |
 
   Rule: M11. A rule list whose row names a query that does not hash to the row's cascade:queryHash refuses the run
     No note rules this.
@@ -827,7 +829,7 @@ Feature: The matcher's procedure
 
   Rule: M14. A condition is compared by its code and its period
     decisions/one-meaning-per-term.md, row "1. clinical state and workflow state".
-    R8 joins two conditions of one ICD-10-CM or SNOMED CT code whose periods overlap. A period runs from the onset's
+    R8 joins two conditions of one condition code (a `cascade:conditionCode`) whose periods overlap. A period runs from the onset's
     day to the abatement's day. An abatement that is not a date, or falls before the onset, counts as none. With none,
     the period runs on while the status is active, recurrence or relapse, and is the onset's day alone otherwise
     (resolved, inactive, remission, or no status). A day is the first ten characters of the date as written, so a date
@@ -1355,7 +1357,7 @@ Feature: The matcher's procedure
     section again as it was names the same record, and one that sends it grown, as a clinic's plan of treatment that
     keeps each visit's paragraph and adds the latest, names another; and two custodians' copies of one note are two
     records in two scopes. From the rule list's version 17, R19 joins two notes whose current versions share a note
-    type, a LOINC code (cascade:noteOrDocumentType), or a code of another system (cascade:noteOrDocumentTypeInOtherSystem)
+    type, a LOINC code (cascade:noteOrDocumentTypeCode), or a code of another system (cascade:noteOrDocumentTypeCodeInOtherSystem)
     when neither has a LOINC code, from documents naming one organization record, or two currently the same
     organization, as custodian or author, as R18 reads them, when the shorter one's text, read as lines with the white
     space in each line made one space and trimmed, and blank lines dropped, begins or ends the longer one's as whole

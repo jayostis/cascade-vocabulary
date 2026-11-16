@@ -15,8 +15,8 @@ WHERE {
   ?origin prov:specializationOf/cascade:tableKind cascade:CodeConversions .
   ?record cascade:recordKind ?kind ; pav:hasCurrentVersion ?version .
   ?other cascade:recordKind ?kind ; pav:hasCurrentVersion ?otherVersion .
-  ?version cascade:icd10Code ?code .
-  ?otherVersion cascade:icd10Code ?otherCode .
+  ?version cascade:conditionCode ?code .
+  ?otherVersion cascade:conditionCode ?otherCode .
   GRAPH ?origin {
     ?row owl:annotatedProperty dct:isReplacedBy ;
       sssom:mapping_cardinality "1:1" ;
@@ -24,4 +24,5 @@ WHERE {
       owl:annotatedSource|owl:annotatedTarget ?otherCode .
   }
   FILTER (?record != ?other && !sameTerm(?code, ?otherCode))
+  FILTER (STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/icd10cm/") && STRSTARTS(STR(?otherCode), "https://ns.cascadeprotocol.org/codes/icd10cm/"))
 }

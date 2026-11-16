@@ -684,11 +684,11 @@ Feature: Alex Rivera's pod
     Example: E5 writes J3 to J7 as the scenario gives them, and the reference descriptions it was the first to use
       Then "E5" wrote these matcher judgments:
         | justification      | members                     | asserted under                       | used                                                                                                  | name                                          |
-        | same code          | H1-ALG-SULFA, H2O-ALG-SULFA | Cascade matcher rules version 2026.1 | version 1 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA                                                 | urn:uuid:56c3d40a-d387-8c09-b089-42abd21c0630 |
-        | same mapped code   | H1-ALG-PCN, H2O-ALG-PCN     | Cascade matcher rules version 2026.1 | SNOMED CT to RxNorm ingredient map version 2026-09, version 1 of H1-ALG-PCN, version 1 of H2O-ALG-PCN | urn:uuid:add40d7a-cc32-8b73-9f17-83324261d34f |
-        | same code          | H1-CON-HTN, H2O-CON-HTN     | Cascade matcher rules version 2026.1 | version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN                                                     | urn:uuid:c0a86c98-1a45-813a-b5d0-90374e46ffb3 |
+        | same code          | H1-ALG-SULFA, H2O-ALG-SULFA | Cascade matcher rules version 2026.1 | version 1 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA                                                 | urn:uuid:761cfeb7-6da9-89ca-b552-4d9256e93019 |
+        | same mapped code   | H1-ALG-PCN, H2O-ALG-PCN     | Cascade matcher rules version 2026.1 | SNOMED CT to RxNorm ingredient map version 2026-09, version 1 of H1-ALG-PCN, version 1 of H2O-ALG-PCN | urn:uuid:d2cb7877-544f-8048-9523-e8942715a653 |
+        | same code          | H1-CON-HTN, H2O-CON-HTN     | Cascade matcher rules version 2026.1 | version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN                                                     | urn:uuid:e58cc995-3c2c-863d-9d53-33918db323df |
         | same code and date | H1-IMM-FLU25, H2O-IMM-FLU25 | Cascade matcher rules version 2026.1 | version 1 of H1-IMM-FLU25, version 1 of H2O-IMM-FLU25                                                 | urn:uuid:30cdc218-6a03-8a37-b582-c67b80eac626 |
-        | same code          | H1-PROC-COLO, H2O-PROC-COLO | Cascade matcher rules version 2026.1 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO                                                 | urn:uuid:66382f38-8e83-8da9-81b5-55025a9beabe |
+        | same code          | H1-PROC-COLO, H2O-PROC-COLO | Cascade matcher rules version 2026.1 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO                                                 | urn:uuid:b889c1e2-5260-8ceb-a27e-ccb207039868 |
       And "E5" wrote these reference descriptions:
         | reference                                          |
         | Cascade matcher rules                              |
@@ -699,12 +699,12 @@ Feature: Alex Rivera's pod
     Example: E13 writes J13 to J18 as the scenario gives them, and the reference descriptions it was the first to use
       Then "E13" wrote these matcher judgments:
         | justification             | members                                    | asserted under                       | used                                                                                           | name                                          |
-        | same code                 | H1-ALG-SULFA, H2F-ALG-SULFA                | Cascade matcher rules version 2026.1 | version 2 of H1-ALG-SULFA, version 1 of H2F-ALG-SULFA                                          | urn:uuid:35a7773d-30b3-816f-946d-1514c8cae269 |
-        | same code                 | H2O-ALG-PCN, H2F-ALG-PCN                   | Cascade matcher rules version 2026.1 | version 1 of H2O-ALG-PCN, version 1 of H2F-ALG-PCN                                             | urn:uuid:0d3233e8-1d91-8a97-81c7-54c0a1c943ad |
-        | same code                 | H1-CON-HTN, H2F-CON-HTN                    | Cascade matcher rules version 2026.1 | version 1 of H1-CON-HTN, version 1 of H2F-CON-HTN                                              | urn:uuid:94bdd837-2c72-8eae-a894-6860ec6795a7 |
-        | same code                 | H2O-CON-ASTHMA, H2F-CON-ASTHMA             | Cascade matcher rules version 2026.1 | version 1 of H2O-CON-ASTHMA, version 1 of H2F-CON-ASTHMA                                       | urn:uuid:364153c1-f0cc-8db2-beb9-7c765316d316 |
+        | same code                 | H1-ALG-SULFA, H2F-ALG-SULFA                | Cascade matcher rules version 2026.1 | version 2 of H1-ALG-SULFA, version 1 of H2F-ALG-SULFA                                          | urn:uuid:ee6f88c0-7e89-8fd0-89b7-2624d2daff06 |
+        | same code                 | H2O-ALG-PCN, H2F-ALG-PCN                   | Cascade matcher rules version 2026.1 | version 1 of H2O-ALG-PCN, version 1 of H2F-ALG-PCN                                             | urn:uuid:5f006452-83ab-856c-a0d5-32ee8b182d40 |
+        | same code                 | H1-CON-HTN, H2F-CON-HTN                    | Cascade matcher rules version 2026.1 | version 1 of H1-CON-HTN, version 1 of H2F-CON-HTN                                              | urn:uuid:b0df49d4-6384-8e13-9159-43baa1dc2bed |
+        | same code                 | H2O-CON-ASTHMA, H2F-CON-ASTHMA             | Cascade matcher rules version 2026.1 | version 1 of H2O-CON-ASTHMA, version 1 of H2F-CON-ASTHMA                                       | urn:uuid:66595eb0-41aa-8a16-8798-373671df9817 |
         | same mapped code and date | H1-IMM-FLU25, H2F-IMM-FLU25                | Cascade matcher rules version 2026.1 | CVX vaccine group table version 2026-08, version 1 of H1-IMM-FLU25, version 1 of H2F-IMM-FLU25 | urn:uuid:1fde2b84-7510-8f6d-939c-b904952d6072 |
-        | same code                 | H1-PROC-COLO, H2O-PROC-COLO, H2F-PROC-COLO | Cascade matcher rules version 2026.1 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO, version 1 of H2F-PROC-COLO              | urn:uuid:d673ec6a-bd1b-8034-9402-353b6c5e03d9 |
+        | same code                 | H1-PROC-COLO, H2O-PROC-COLO, H2F-PROC-COLO | Cascade matcher rules version 2026.1 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO, version 1 of H2F-PROC-COLO              | urn:uuid:441ab5d9-5359-80f1-9102-ea2b69e635f1 |
       And "E13" wrote these reference descriptions:
         | reference                               |
         | CVX vaccine group table                 |

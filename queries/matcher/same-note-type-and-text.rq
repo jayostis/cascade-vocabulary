@@ -15,8 +15,8 @@ WHERE {
     # bound: ?record
     WHERE {
       ?record pav:hasCurrentVersion ?version .
-      ?version cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-      FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentType ?loincOfVersion })
+      ?version cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+      FILTER (isIRI(?type) || NOT EXISTS { ?version cascade:noteOrDocumentTypeCode ?loincOfVersion })
       ?version cascade:narrativeTextAsTrimmedLines ?lines .
       BIND (COALESCE(REPLACE(?lines, "\n", " "), "") AS ?text)
       FILTER (STRLEN(?text) >= 200)
@@ -26,11 +26,11 @@ WHERE {
       { SELECT DISTINCT ?type
         # bound: ?record
         WHERE { ?record pav:hasCurrentVersion ?runVersion .
-                ?runVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-                FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentType ?loincOfRunVersion }) } }
+                ?runVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+                FILTER (isIRI(?type) || NOT EXISTS { ?runVersion cascade:noteOrDocumentTypeCode ?loincOfRunVersion }) } }
       ?other pav:hasCurrentVersion ?otherVersion .
-      ?otherVersion cascade:noteOrDocumentType|cascade:noteOrDocumentTypeInOtherSystem ?type .
-      FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentType ?loincOfOtherVersion })
+      ?otherVersion cascade:noteOrDocumentTypeCode|cascade:noteOrDocumentTypeCodeInOtherSystem ?type .
+      FILTER (isIRI(?type) || NOT EXISTS { ?otherVersion cascade:noteOrDocumentTypeCode ?loincOfOtherVersion })
       ?otherVersion cascade:narrativeTextAsTrimmedLines ?otherLines .
       BIND (COALESCE(REPLACE(?otherLines, "\n", " "), "") AS ?text)
     } }

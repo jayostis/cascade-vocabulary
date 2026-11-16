@@ -838,7 +838,7 @@ Feature: Arrivals
                         ?association prov:hadRole ?role ; prov:agent ?agent .
                         ?agent rdfs:label ?party
                         BIND (EXISTS { ?document prov:wasAttributedTo ?agent } AS ?attributed) }
-          ?revision prov:wasDerivedFrom ?document ; cascade:version/cascade:allergen "Peanut" .
+          ?revision prov:wasDerivedFrom ?document ; cascade:version/cascade:allergenName "Peanut" .
         }
         """
       Then it answers:

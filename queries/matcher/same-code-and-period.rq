@@ -1,4 +1,4 @@
-# Two conditions match when their current versions share an ICD-10-CM or SNOMED CT code and their periods
+# Two conditions match when their current versions share a condition code and their periods
 # overlap, bounds included. A period runs from the onset's day to the abatement's day. An abatement that is not a date
 # or falls before the onset counts as none; with none, the period runs on while the status is active, recurrence or
 # relapse, and is the onset's day alone otherwise. Days are the first ten characters as written, so a time zone never
@@ -9,7 +9,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?record ?other
 WHERE {
-  VALUES ?property { cascade:icd10Code cascade:snomedCode }
+  VALUES ?property { cascade:conditionCode }
   ?record cascade:recordKind "Condition" ; pav:hasCurrentVersion ?version .
   ?other cascade:recordKind "Condition" ; pav:hasCurrentVersion ?otherVersion .
   ?version ?property ?code ; cascade:displayDate ?onset .

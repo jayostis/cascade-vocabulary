@@ -14,15 +14,15 @@ SELECT DISTINCT ?record ?other ?origin
 WHERE {
   ?origin prov:specializationOf/cascade:tableKind cascade:CodeConversions .
   ?record pav:hasCurrentVersion ?version .
-  ?version cascade:icd10Code ?code .
+  ?version cascade:conditionCode ?code .
   GRAPH ?origin {
     ?row owl:annotatedSource|owl:annotatedTarget ?code ;
       owl:annotatedProperty dct:isReplacedBy ;
       sssom:mapping_cardinality "1:1" ;
       owl:annotatedSource|owl:annotatedTarget ?otherCode .
   }
-  FILTER (!sameTerm(?code, ?otherCode))
-  ?otherVersion cascade:icd10Code ?otherCode .
+  FILTER (!sameTerm(?code, ?otherCode) && STRSTARTS(STR(?code), "https://ns.cascadeprotocol.org/codes/icd10cm/") && STRSTARTS(STR(?otherCode), "https://ns.cascadeprotocol.org/codes/icd10cm/"))
+  ?otherVersion cascade:conditionCode ?otherCode .
   ?other pav:hasCurrentVersion ?otherVersion .
   ?record cascade:recordKind ?kind .
   ?other cascade:recordKind ?otherKind .

@@ -17,13 +17,13 @@ CONSTRUCT {
   ?entry a cascade:LaboratoryTestResult ;
     cascade:testName ?name ;
     cascade:testCode ?code ;
-    cascade:resultValue ?value ;
-    cascade:resultUnit ?unit ;
+    cascade:resultValueText ?value ;
+    cascade:resultUnitText ?unit ;
     cascade:narrativeText ?narrativeText ;
     cascade:workflowStatus ?status ;
     cascade:resultClinicallyRelevantTime ?date ;
     cascade:resultInterpretationCode ?interpretation ;
-    cascade:referenceRange ?range ;
+    cascade:referenceRangeText ?range ;
     cascade:referenceRangeLow ?rangeLow ;
     cascade:referenceRangeHigh ?rangeHigh ;
     cascade:leadMember ?lead ;
@@ -33,13 +33,13 @@ CONSTRUCT {
   ?memberValues cascade:valuesOfMember ?member ;
     cascade:testName ?memberTestName ;
     cascade:testCode ?memberTestCode ;
-    cascade:resultValue ?memberResultValue ;
-    cascade:resultUnit ?memberResultUnit ;
+    cascade:resultValueText ?memberResultValue ;
+    cascade:resultUnitText ?memberResultUnit ;
     cascade:narrativeText ?memberNarrativeText ;
     cascade:workflowStatus ?memberWorkflowStatus ;
     cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime ;
     cascade:resultInterpretationCode ?memberInterpretation ;
-    cascade:referenceRange ?memberRange ;
+    cascade:referenceRangeText ?memberRange ;
     cascade:referenceRangeLow ?memberRangeLow ;
     cascade:referenceRangeHigh ?memberRangeHigh .
   ?rangeLow cascade:decimalValue ?lowDecimal ; cascade:writtenValue ?lowWritten ; cascade:ucumUnit ?lowUcum ; cascade:unitText ?lowUnitText .
@@ -49,9 +49,9 @@ CONSTRUCT {
   ?memberRangeHigh cascade:decimalValue ?memberHighDecimal ; cascade:writtenValue ?memberHighWritten ; cascade:ucumUnit ?memberHighUcum ;
     cascade:unitText ?memberHighUnitText .
   ?entry cascade:paddedDateTime ?datePadded .
-  ?datePadded cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ; cascade:writtenDate ?dateWritten .
+  ?datePadded cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ; cascade:timeAsWritten ?dateWritten .
   ?memberValues cascade:paddedDateTime ?memberPadded .
-  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten .
+  ?memberPadded cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten .
 }
 WHERE {
   { ?record a cascade:LaboratoryTestResult ; cascade:inEntry ?entry .
@@ -59,8 +59,8 @@ WHERE {
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testName ?name }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:testCode ?code }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:narrativeText ?narrativeText }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultValue ?text }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultUnit ?textUnit }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultValueText ?text }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultUnitText ?textUnit }
     OPTIONAL {
       ?lead pav:hasCurrentVersion/cascade:resultQuantity ?quantity .
       ?quantity cascade:writtenValue ?written .
@@ -73,8 +73,8 @@ WHERE {
       ?ratioVersion cascade:resultRatioNumerator/cascade:writtenValue ?numerator ;
                     cascade:resultRatioDenominator/cascade:writtenValue ?denominator .
     }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultRangeLow/cascade:writtenValue ?low }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultRangeHigh/cascade:writtenValue ?high }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultValueRangeLow/cascade:writtenValue ?low }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultValueRangeHigh/cascade:writtenValue ?high }
     BIND (COALESCE(CONCAT(COALESCE(?comparator, ""), ?written),
                    CONCAT(?numerator, ":", ?denominator),
                    IF(BOUND(?low) && BOUND(?high), CONCAT(?low, "-", ?high),
@@ -85,7 +85,7 @@ WHERE {
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultClinicallyRelevantTime ?date }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:resultInterpretationCode ?interpretation }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:referenceRange ?range }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:referenceRangeText ?range }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:referenceRangeLow ?lowAt .
                ?lowAt cascade:decimalValue ?lowDecimal ; cascade:writtenValue ?lowWritten .
                OPTIONAL { ?lowAt cascade:ucumUnit ?lowUcum }
@@ -97,20 +97,20 @@ WHERE {
                OPTIONAL { ?highAt cascade:unitText ?highUnitText } }
     BIND (IF(BOUND(?highAt), IRI(CONCAT(STR(?entry), "-reference-high")), 1/0) AS ?rangeHigh)
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
-               ?datePaddedAt cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ; cascade:writtenDate ?dateWritten }
+               ?datePaddedAt cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ; cascade:timeAsWritten ?dateWritten }
     BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-resultClinicallyRelevantTime")), 1/0) AS ?datePadded) }
   UNION
   { ?member a cascade:LaboratoryTestResult ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
     OPTIONAL { ?memberVersion cascade:testName ?memberTestName }
     OPTIONAL { ?memberVersion cascade:testCode ?memberTestCode }
-    OPTIONAL { ?memberVersion cascade:resultValue ?memberResultValue }
-    OPTIONAL { ?memberVersion cascade:resultUnit ?memberResultUnit }
+    OPTIONAL { ?memberVersion cascade:resultValueText ?memberResultValue }
+    OPTIONAL { ?memberVersion cascade:resultUnitText ?memberResultUnit }
     OPTIONAL { ?memberVersion cascade:narrativeText ?memberNarrativeText }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:resultClinicallyRelevantTime ?memberResultClinicallyRelevantTime }
     OPTIONAL { ?memberVersion cascade:resultInterpretationCode ?memberInterpretation }
-    OPTIONAL { ?memberVersion cascade:referenceRange ?memberRange }
+    OPTIONAL { ?memberVersion cascade:referenceRangeText ?memberRange }
     OPTIONAL { ?memberVersion cascade:referenceRangeLow ?memberLowAt .
                ?memberLowAt cascade:decimalValue ?memberLowDecimal ; cascade:writtenValue ?memberLowWritten .
                OPTIONAL { ?memberLowAt cascade:ucumUnit ?memberLowUcum }
@@ -122,7 +122,7 @@ WHERE {
                OPTIONAL { ?memberHighAt cascade:unitText ?memberHighUnitText } }
     BIND (IF(BOUND(?memberHighAt), IRI(CONCAT(STR(?memberValues), "-reference-high")), 1/0) AS ?memberRangeHigh)
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
-               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:writtenDate ?memberWritten }
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
           AS ?memberPadded) }
 }

@@ -10,8 +10,8 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 CONSTRUCT {
   ?entry a cascade:VariantInterpretation ;
     cascade:acmgClassification ?classification ;
-    cascade:interpretedDate ?date ;
-    cascade:variantInterpreted ?variantEntry ;
+    cascade:variantInterpretationDate ?date ;
+    cascade:subjectVariant ?variantEntry ;
     cascade:workflowStatus ?status ;
     prov:wasAttributedTo ?lab ;
     cascade:leadMember ?lead ;
@@ -20,8 +20,8 @@ CONSTRUCT {
   ?entry cascade:memberCurrentValues ?memberValues .
   ?memberValues cascade:valuesOfMember ?member ;
     cascade:acmgClassification ?memberAcmgClassification ;
-    cascade:interpretedDate ?memberInterpretedDate ;
-    cascade:variantInterpreted ?memberVariantInterpreted ;
+    cascade:variantInterpretationDate ?memberInterpretedDate ;
+    cascade:subjectVariant ?memberVariantInterpreted ;
     cascade:workflowStatus ?memberWorkflowStatus ;
     prov:wasAttributedTo ?memberWasAttributedTo .
 }
@@ -29,17 +29,17 @@ WHERE {
   { ?record a cascade:VariantInterpretation ; cascade:inEntry ?entry .
     ?entry cascade:leadMember ?lead .
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:acmgClassification ?classification }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:interpretedDate ?date }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:variantInterpretationDate ?date }
     OPTIONAL { ?lead pav:hasCurrentVersion/prov:wasAttributedTo ?lab }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:variantInterpreted/cascade:inEntry ?variantEntry }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:subjectVariant/cascade:inEntry ?variantEntry }
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status } }
   UNION
   { ?member a cascade:VariantInterpretation ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
     BIND (IRI(CONCAT(STR(?entry), "-", SHA256(STR(?member)))) AS ?memberValues)
     OPTIONAL { ?memberVersion cascade:acmgClassification ?memberAcmgClassification }
-    OPTIONAL { ?memberVersion cascade:interpretedDate ?memberInterpretedDate }
-    OPTIONAL { ?memberVersion cascade:variantInterpreted ?memberVariantInterpreted }
+    OPTIONAL { ?memberVersion cascade:variantInterpretationDate ?memberInterpretedDate }
+    OPTIONAL { ?memberVersion cascade:subjectVariant ?memberVariantInterpreted }
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion prov:wasAttributedTo ?memberWasAttributedTo } }
 }

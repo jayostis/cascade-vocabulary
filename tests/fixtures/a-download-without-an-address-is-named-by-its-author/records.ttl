@@ -8,7 +8,7 @@
 :northgate rdfs:label "Northgate" .
 
 :first a cascade:AllergyOrIntolerance .
-:firstVersion prov:specializationOf :first ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:firstVersion prov:specializationOf :first ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "active" .
 :firstRevision a cascade:Revision ; cascade:revisionOf :first ; cascade:version :firstVersion ; prov:wasDerivedFrom :downloadOne ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 :downloadOne prov:wasAttributedTo :northgate ;
@@ -16,7 +16,7 @@
                                        [ prov:hadRole cascade:CustodianRole ; prov:agent :northgate ] ] .
 
 :second a cascade:AllergyOrIntolerance .
-:secondVersion prov:specializationOf :second ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:secondVersion prov:specializationOf :second ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "active" .
 :secondRevision a cascade:Revision ; cascade:revisionOf :second ; cascade:version :secondVersion ; prov:wasDerivedFrom :downloadTwo ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
 :downloadTwo prov:wasAttributedTo :northgate ;
@@ -24,7 +24,7 @@
                                        [ prov:hadRole cascade:CustodianRole ; prov:agent :northgate ] ] .
 
 :unsigned a cascade:AllergyOrIntolerance .
-:unsignedVersion prov:specializationOf :unsigned ; cascade:patient :subject ; cascade:allergen "Peanut" ; cascade:clinicalStatus "active" .
+:unsignedVersion prov:specializationOf :unsigned ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "active" .
 :unsignedRevision a cascade:Revision ; cascade:revisionOf :unsigned ; cascade:version :unsignedVersion ; prov:wasDerivedFrom :downloadThree ;
     prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:00Z"^^xsd:dateTime .
 :downloadThree a prov:Entity .

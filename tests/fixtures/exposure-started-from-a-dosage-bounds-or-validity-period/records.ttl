@@ -29,8 +29,8 @@
 :validity a cascade:PrescribedOrReportedMedication .
 :validityVersion prov:specializationOf :validity ; cascade:patient :subject ; cascade:drugName "validity: only a dispensing window" ;
     cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
-    cascade:dispenseValidityPeriodStart "2025-03-05"^^xsd:date ;
-    cascade:dispenseValidityPeriodEnd "2025-09-05"^^xsd:date .
+    cascade:dispenseRequestValidityPeriodStart "2025-03-05"^^xsd:date ;
+    cascade:dispenseRequestValidityPeriodEnd "2025-09-05"^^xsd:date .
 :validityRevision a cascade:Revision ; cascade:revisionOf :validity ; cascade:version :validityVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 

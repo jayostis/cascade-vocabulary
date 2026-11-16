@@ -1,0 +1,10 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:c2709e5b-5954-8e90-855f-19febeba58ff> a cascade:MedicalProcedure ;
+    cascade:sourceUrl <https://fhir.example/Procedure/record-procedure-loinc-code-malformed> .
+
+:version prov:specializationOf <urn:uuid:c2709e5b-5954-8e90-855f-19febeba58ff> ;
+    cascade:patient :patient ;
+    cascade:procedureCode <http://loinc.org/rdf/not-a-code> .

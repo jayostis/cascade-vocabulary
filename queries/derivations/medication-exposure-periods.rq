@@ -26,7 +26,7 @@ WHERE {
   OPTIONAL { ?version cascade:structuredDosage ?startDosage . ?startDosage cascade:dosageBoundsPeriodStart ?boundsStart
              FILTER NOT EXISTS { ?version cascade:structuredDosage ?otherStartDosage FILTER (!sameTerm(?otherStartDosage, ?startDosage)) } }
   OPTIONAL { ?version cascade:prescriptionWrittenDate ?written }
-  OPTIONAL { ?version cascade:dispenseValidityPeriodStart ?validFrom }
+  OPTIONAL { ?version cascade:dispenseRequestValidityPeriodStart ?validFrom }
   OPTIONAL { ?version cascade:medicationUseEndDate ?useEnd }
   OPTIONAL { ?version cascade:structuredDosage ?endDosage . ?endDosage cascade:dosageBoundsPeriodEnd ?boundsEnd
              FILTER NOT EXISTS { ?version cascade:structuredDosage ?otherEndDosage FILTER (!sameTerm(?otherEndDosage, ?endDosage)) } }
