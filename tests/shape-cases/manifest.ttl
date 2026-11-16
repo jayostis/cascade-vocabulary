@@ -981,3 +981,18 @@
   mf:action [ sht:dataGraph <record-procedure/loinc-code-malformed.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:procedureCode ] ] .
+
+<#record-condition/icd10cm-code-with-a-point-and-nothing-after-it> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/icd10cm-code-with-a-point-and-nothing-after-it.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCode ] ] .
+
+<#record-condition/hgvs-code-malformed> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-condition/hgvs-code-malformed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:ProblemOrDiagnosisShape ; sh:resultPath cascade:conditionCode ] ] .
+
+<#record-procedure/hgvs-code-malformed> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/hgvs-code-malformed.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MedicalProcedureShape ; sh:resultPath cascade:procedureCode ] ] .

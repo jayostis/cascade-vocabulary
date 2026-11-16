@@ -2187,11 +2187,12 @@ cascade:CodeInAListedSystemShape a sh:NodeShape ;
         [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/medrt/" ] ] cascade:MedrtCodeShape ) ]
         [ sh:or ( [ sh:not [ sh:pattern "^http://id\\.nlm\\.nih\\.gov/mesh/" ] ] cascade:MeshCodeShape ) ]
         [ sh:or ( [ sh:not [ sh:pattern "^https://identifiers\\.org/clinvar:" ] ] cascade:ClinVarCodeShape ) ]
+        [ sh:or ( [ sh:not [ sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/hgvs/" ] ] cascade:HgvsCodeShape ) ]
     ) .
 
 cascade:IcdTenCmCodeWithOrWithoutItsPointShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
-    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/icd10cm/[A-Z][0-9A-Z]{2}\\.?[0-9A-Z]{0,4}$" .
+    sh:pattern "^https://ns\\.cascadeprotocol\\.org/codes/icd10cm/[A-Z][0-9A-Z]{2}(\\.?[0-9A-Z]{1,4})?$" .
 
 cascade:CptCodeShape a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
