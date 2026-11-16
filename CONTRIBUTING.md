@@ -45,7 +45,10 @@ CI runs on every pull request. All of it must be green before a merge.
   "given" or "with".
 - **`compatibility`**: the reference runtime, [cascade-runtime-js](https://github.com/jayostis/cascade-runtime-js),
   is run over your checkout. A change to a rule, an example or a query that breaks the runtime fails it.
-- **`ready-to-merge`**: holds a pull request until every pull request it depends on can merge (see "A change that spans two repositories").
+- **`ready-to-merge`**: holds a pull request until every pull request it depends on can merge (see "A change that spans two repositories"), and
+  refuses a description with no `## Breaking` section or an empty one. The section lists each term, shape or named question the pull
+  request renames or removes, one `old -> new` or `old -> removed` line each, or says `None`; the notes of a runtime build copy the
+  lines of every pull request it carries.
 
 There is no formatter or linter step in this repository. Keep the style of the file you are in; [`CLAUDE.md`](CLAUDE.md)
 says what a comment may not do.
