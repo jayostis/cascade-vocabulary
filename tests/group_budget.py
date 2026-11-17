@@ -10,11 +10,12 @@ CASES = []
 
 def over_budget(seconds_by_case, budget, groups=()):
     """Each group, of those listed or of all, whose cases' seconds add up to more than the budget, with its seconds,
-    longest first. A case id with no `@group` has no group and is not counted."""
+    longest first. A group `name/part` is a part of `name`: listing `name` lists each of its parts, each by itself. A
+    case id with no `@group` has no group and is not counted."""
     totals = defaultdict(float)
     for nodeid, seconds in seconds_by_case:
         group = nodeid.rpartition("@")[2] if "@" in nodeid else None
-        if group is not None and (not groups or group in groups):
+        if group is not None and (not groups or group in groups or group.partition("/")[0] in groups):
             totals[group] += seconds
     return sorted(((group, seconds) for group, seconds in totals.items() if seconds > budget), key=lambda found: -found[1])
 

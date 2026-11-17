@@ -27,7 +27,9 @@ The contract a Cascade pod is built and read by; [`README.md`](README.md) names 
   nightly. One the runtime must follow is a pair of pull requests, here and in cascade-runtime-js, each naming the other
   on a `Depends-On:` line.
 - **The suite runs in parallel** (`python3 -m pytest -n auto --dist loadgroup`): what a test builds is built once per
-  worker, and the cases that share it are put on one worker with `xdist_group`.
+  worker, and the cases that share it are put on one worker with `xdist_group`. A case that takes seconds on rdflib is
+  a `part` of its fixture's group (`on_its_worker(..., part=)`), built again there, so the fixture's other cases do not
+  wait behind it; `--group-budget SECONDS` fails a parallel run in which a group takes longer.
 - **Every test sits in a top-level class whose docstring's first paragraph is a heading of the tests page,** written
   word for word in tests/spec.json (under capabilities, or build for the suite's checks of its own tools); CI's
   spec-shape step refuses one that is not, and pytest does not check it.

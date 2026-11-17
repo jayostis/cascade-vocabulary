@@ -37,7 +37,8 @@ def entry_id(fixture, entry):
     return f"{fixture.name}-{entry.name}"
 
 
-ENTRIES = [on_its_worker(fixture, entry, id=entry_id(fixture, entry), says=f"{fixture.comment} {entry.comment}")
+ENTRIES = [on_its_worker(fixture, entry, id=entry_id(fixture, entry), says=f"{fixture.comment} {entry.comment}",
+                         part=entry.name if fixture.name.startswith("matcher-") else None)
            for fixture in FIXTURES for entry in entries(fixture.manifest)]
 
 
@@ -100,6 +101,8 @@ PERSONS_JUDGMENTS = """
 
 
 MATCHER_FIXTURES = [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES if fixture.name.startswith("matcher-")]
+COMPARISONS_MADE_FROM = [on_its_worker(fixture, relative, id=f"{fixture.name}-{Path(relative).stem}", part=Path(relative).stem)
+                         for fixture in FIXTURES if fixture.name.startswith("matcher-") for relative in MADE_FROM]
 ORDERED_ENTRIES = [case for case in ENTRIES if Path(case.values[1].query).resolve() in ORDERED]
 
 
@@ -200,17 +203,21 @@ class TestWhatEachQueryGives:
 
             Takes every derivation, lens, view and question or comparison, and strikes off each that, over some fixture,
             adds a triple to the derived state, makes a view file hold a subject of its own, or (under a lens that
-            matters there) gives rows; any query left unstruck is never shown to do anything by a fixture.
+            matters there) gives rows; any query left unstruck is never shown to do anything by a fixture. A fixture that
+            holds no judgment is read under the first lens only, for every lens gives it one derived state, and a question
+            is run only until some fixture strikes it off.
             """
             quiet = {*derivations(LENSES[0]), *named("lenses").values(), *built().values(), *ASKED.values()}
             for fixture in FIXTURES:
-                for lens in LENSES:
+                judged = holds_a_judgment(fixture)
+                differing = lenses_that_differ(fixture) if judged else LENSES[:1]
+                for lens in LENSES if judged else LENSES[:1]:
                     build = built_once(fixture, "oxigraph", lens)
                     quiet -= {step for step, added in build.added_by_step.items() if added}
                     quiet -= {built()[path] for path, triples in build.files.items()
                               if any(subject != URIRef(ADDRESS + path) for subject, _, _ in triples)}
-                    if lens in lenses_that_differ(fixture):
-                        quiet -= {ASKED[name] for name, rows in answers(fixture, lens).items() if rows}
+                    if lens in differing:
+                        quiet -= {relative for relative in set(ASKED.values()) & quiet if build.store.gives_a_row(query(relative))}
             assert quiet == set()
 
     class TestGivenThreeHundredMachineDifferents:
@@ -397,33 +404,33 @@ class TestMatcherComparisons:
             """gives, bound in the groups it marks, the rows it gives unbound for the same records"""
             store = built_once(fixture, "oxigraph", LENSES[0]).store
             records = every_other_current_record(store)
-            assert MARKED and records
+            assert MARKED and MADE_FROM and records
             for name, relative in MARKED.items():
                 text = query(relative)
                 unbound = Counter(row(found) for found in store.select(text) if str(found["record"]) in records)
                 assert rows_of(store, bound_to_records(text, records)) == unbound, name
 
-        @pytest.mark.parametrize("fixture", MATCHER_FIXTURES)
-        def test_gives_the_rows_of_the_comparison_it_was_made_from(self, fixture):
+        @pytest.mark.parametrize("fixture, relative", COMPARISONS_MADE_FROM)
+        def test_gives_the_rows_of_the_comparison_it_was_made_from(self, fixture, relative):
             """gives, bound per side or joined on its key first, the rows of the comparison it was made from
 
             Bound and unbound, on each engine; on rdflib only where the pair gives rows over the fixture, for two texts
-            that agree on no rows show nothing, and rdflib parses each bound text again for every fixture.
+            that agree on no rows show nothing, and rdflib parses each bound text again for every fixture. Each pair
+            runs apart from the fixture's other cases, for a pair that gives rows takes rdflib seconds.
             """
             oxigraph = built_once(fixture, "oxigraph", LENSES[0]).store
             records = every_other_current_record(oxigraph)
-            assert MADE_FROM and records
+            assert records
             giving_rows = []
-            for relative, made_from in MADE_FROM.items():
-                for texts in ((query(relative), query(made_from)),
-                              (bound_to_records(query(relative), records), bound_to_records(query(made_from), records))):
-                    new, old = (rows_of(oxigraph, text) for text in texts)
-                    assert new == old, ("oxigraph", relative)
-                    if new:
-                        giving_rows.append((relative, texts))
+            for texts in ((query(relative), query(MADE_FROM[relative])),
+                          (bound_to_records(query(relative), records), bound_to_records(query(MADE_FROM[relative]), records))):
+                new, old = (rows_of(oxigraph, text) for text in texts)
+                assert new == old, ("oxigraph", relative)
+                if new:
+                    giving_rows.append(texts)
             if giving_rows:
                 held = built_once(fixture, "rdflib", LENSES[0]).store
-                for relative, texts in giving_rows:
+                for texts in giving_rows:
                     new, old = (rows_of(held, text) for text in texts)
                     assert new == old, ("rdflib", relative)
 
@@ -451,6 +458,21 @@ class TestChecksOfTheFixtureTools:
         def test_lists_no_group_that_takes_exactly_the_budget(self):
             """lists no group that takes exactly the budget"""
             assert over_budget(self.CASES, 21.0) == []
+
+        def test_lists_each_part_of_a_group_the_budget_names_by_itself(self):
+            """lists each part of a group the budget names by itself, not the group's parts added up"""
+            parts = [("t.py::a@one/x", 12.0), ("t.py::b@one/y", 9.0), ("t.py::c@one", 3.0), ("t.py::d@two/z", 30.0)]
+            assert over_budget(parts, 10, ["one"]) == [("one/x", 12.0)]
+
+    class TestGivesARow:
+        """`Oxigraph.gives_a_row()`"""
+
+        def test_is_true_of_a_select_with_a_row_and_false_of_one_with_none(self):
+            """is true of a select that gives a row and false of one that gives none"""
+            store = Oxigraph()
+            store.add([(URIRef("urn:x:a"), RDF.type, CASCADE.Record)])
+            assert store.gives_a_row(f"SELECT ?s WHERE {{ ?s a <{CASCADE.Record}> }}")
+            assert not store.gives_a_row(f"SELECT ?s WHERE {{ ?s a <{CASCADE.Judgment}> }}")
 
     class TestUsedByNoActivity:
         """`used_by_no_activity()`"""
