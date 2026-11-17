@@ -33,7 +33,8 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     oa:motivatedBy oa:classifying ; oa:hasTarget :countPlain , :countAnnotated ;
     prov:wasDerivedFrom <urn:x:countPlainVersion> , <urn:x:countAnnotatedVersion> .
 
-:seen a cascade:Judgment ; cascade:verdict cascade:Acknowledged ; prov:hadMember :countsDiffer ;
+:seen a cascade:Judgment ; cascade:verdict cascade:Acknowledged ;
+    cascade:answersWarningOfKind cascade:DifferentResultValuesAtOneInstant ; prov:hadMember :countPlain , :countAnnotated ;
     prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
 
