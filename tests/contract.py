@@ -4,8 +4,10 @@ files pod-layout.ttl says a query writes."""
 import base64
 import itertools
 import json
+import re
 from functools import cache
 from pathlib import Path
+from urllib.parse import unquote
 
 from gherkin.parser import Parser
 from gherkin.pickles.compiler import Compiler
@@ -65,9 +67,48 @@ def questions():
 @cache
 def positions():
     """Each query the root crate gives a position, by its path under QUERIES."""
-    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]
-    return {(ROOT / entity["@id"]).relative_to(QUERIES).as_posix(): entity["position"]
-            for entity in crate if entity.get("@type") == "File" and "position" in entity}
+    return {(ROOT / path).relative_to(QUERIES).as_posix(): entity["position"]
+            for path, entity in crate_entities().items() if entity.get("@type") == "File" and "position" in entity}
+
+
+CRATE_BASE = "https://crate.example/"
+
+
+@cache
+def crate_graph():
+    """The root crate as a JSON-LD reader reads it, its `@id`s as written. The crate's own context is fetched from the
+    web, so it is left out and a `@vocab` stands in; the crate's other context terms are kept as they are."""
+    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
+    context = [part for part in crate["@context"] if isinstance(part, dict)]
+    return Graph().parse(data=json.dumps({"@context": [{"@vocab": "https://schema.org/"}, *context],
+                                          "@graph": crate["@graph"]}),
+                         format="json-ld", publicID=CRATE_BASE)
+
+
+def is_path_id(id):
+    return isinstance(id, str) and not id.startswith("#") and not re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", id)
+
+
+def decoded_ids(value):
+    """The crate's JSON, each path `@id` decoded: a file's `@id` is its path as a URI path, percent-encoded. An `@id` with
+    a URI scheme or starting `#` is not a path and is kept as written."""
+    if isinstance(value, dict):
+        return {key: unquote(item) if key == "@id" and is_path_id(item) else decoded_ids(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [decoded_ids(item) for item in value]
+    return value
+
+
+@cache
+def crate_entities():
+    """The root crate's entities, each by the path of the file it names as it is on disk, every reference decoded too."""
+    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
+    return {entity["@id"]: entity for entity in decoded_ids(crate["@graph"])}
+
+
+def crate_path(node):
+    """The path of the file a crate's node names, as it is on disk: the node's IRI under the crate, decoded."""
+    return unquote(str(node).removeprefix(CRATE_BASE))
 
 
 def derivations(lens):

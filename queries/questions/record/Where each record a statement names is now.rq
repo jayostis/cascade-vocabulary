@@ -96,7 +96,7 @@ WHERE {
                                                cascade:currentVersionStatusLifecycle, cascade:currentVersionStatusLifecycleStep,
                                                cascade:medicationExposureStart, cascade:medicationExposureEnd, cascade:medicationExposureOngoing,
                                                pav:hasCurrentVersion)
-                                 && !sameTerm(?value, cascade:Record)) },
+                                 && !(?held = <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> && ?value = cascade:Record)) },
                 "in no entry", "not in the pod"))) AS ?outcome)
 }
 ORDER BY ?statement ?recordLabel ?record
