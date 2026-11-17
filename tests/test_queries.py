@@ -3,7 +3,6 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
-from urllib.parse import unquote
 
 import pytest
 from pyparsing import ParseException, ParseResults
@@ -286,35 +285,17 @@ def joined_columns(node):
 
 
 CSVW = Namespace("http://www.w3.org/ns/csvw#")
-CRATE_BASE = "https://crate.example/"
 UNIT_SEPARATOR = "\x1f"
-
-
-def with_ids_as_iris(value):
-    if isinstance(value, dict):
-        return {key: item.replace(" ", "%20") if key == "@id" else with_ids_as_iris(item) for key, item in value.items()}
-    if isinstance(value, list):
-        return [with_ids_as_iris(item) for item in value]
-    return value
 
 
 @lru_cache(maxsize=None)
 def declared_columns():
     """Each question's columns the crate declares as CSVW says them once it is read as JSON-LD: the path under QUERIES
-    gives each column's name with its separator, or None.
-
-    The crate's own context is fetched from the web, so it is left out and a `@vocab` stands in; the crate's other
-    context terms are kept as they are. A file's `@id` is its path, spaces and all, which is not an IRI and which a
-    JSON-LD reader drops, so each space of an `@id` is written `%20` before the crate is read."""
-    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
-    context = [part for part in crate["@context"] if isinstance(part, dict)]
-    graph = Graph().parse(data=json.dumps({"@context": [{"@vocab": "https://schema.org/"}, *context],
-                                           "@graph": with_ids_as_iris(crate["@graph"])}),
-                          format="json-ld", publicID=CRATE_BASE)
+    gives each column's name with its separator, or None."""
+    graph = contract.crate_graph()
     declared = {}
     for file, schema in graph.subject_objects(CSVW.tableSchema):
-        relative = unquote(str(file)[len(CRATE_BASE):])
-        declared[Path(relative).relative_to("queries").as_posix()] = {
+        declared[Path(contract.crate_path(file)).relative_to("queries").as_posix()] = {
             str(graph.value(column, CSVW["name"])):
                 None if (separator := graph.value(column, CSVW.separator)) is None else str(separator)
             for column in graph.objects(schema, CSVW.column)}
