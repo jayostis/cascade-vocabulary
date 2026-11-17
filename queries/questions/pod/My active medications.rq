@@ -4,10 +4,16 @@
 # with the day its prescription was written where it states one, in order of that day and the records stating none last
 # (none when no record states one; a record that states a written day and no dosage text is not in it), the text each
 # record's source wrote for it, such as a note beside the row (none when
-# no record has one), what each record was given for: each condition it names, by the condition's name and entry, and
-# each code of its reason, as "<record> for <name>, <entry>", "<record> for <code>" and, for a code in a system the
-# vocabulary lists none of, "<record> for <code> in <system>" (none when no record gives a reason, and no condition
-# whose record is in no entry), in order of the name or code, then the entry or system, then the record, and each record
+# no record has one), what each record was given for: each condition it names, by the condition's entry and name, and
+# each code of its reason, as "<record> for <entry>, <name>", "<record> for <code IRI>" and, for a code in a system the
+# vocabulary lists none of, "<record> for <system IRI> <code>" (none when no record gives a reason, and no condition
+# whose record is in no entry). Each item puts its IRIs first and its one free-text part last, so a reader takes its
+# kind from the token after "for ", never from the text: an entry IRI followed by ", " is a condition (then its name, which
+# may hold anything), a code IRI alone is a code in a listed system, a system IRI followed by one space is a code in
+# another system (then the code as written, which may hold spaces and commas). A condition entry with no name gives
+# "<record> for <entry>" alone, which a reader tells from a code IRI by the entry IRI being the pod's, under the pod's
+# address. Items are in code point order of the name or code (a condition with no name first), then the entry or
+# system, then the record, and each record
 # with the document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. An
 # entry whose status was
 # taken from a record that stopped it is not listed, even when another record says it is active: that record's status is
@@ -81,9 +87,10 @@ WHERE {
           { ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
                    cascade:memberCurrentValues ?values .
             ?values cascade:valuesOfMember ?member ; cascade:reasonCondition ?conditionRecord .
-            ?conditionEntry cascade:entryMember ?conditionRecord ; cascade:conditionName ?conditionName .
-            BIND (CONCAT(STR(?member), " for ", ?conditionName, ", ", STR(?conditionEntry), "\u001F") AS ?reasonLine)
-            BIND (?conditionName AS ?reasonKey)
+            ?conditionEntry cascade:entryMember ?conditionRecord .
+            OPTIONAL { ?conditionEntry cascade:conditionName ?conditionName }
+            BIND (CONCAT(STR(?member), " for ", STR(?conditionEntry), COALESCE(CONCAT(", ", ?conditionName), ""), "\u001F") AS ?reasonLine)
+            BIND (COALESCE(?conditionName, "") AS ?reasonKey)
             BIND (STR(?conditionEntry) AS ?reasonTail) }
           UNION
           { ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
@@ -96,7 +103,7 @@ WHERE {
           { ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
                    cascade:memberCurrentValues ?values .
             ?values cascade:valuesOfMember ?member ; cascade:reasonCodeInOtherSystem ?otherCode .
-            BIND (CONCAT(STR(?member), " for ", STR(?otherCode), " in ", STR(DATATYPE(?otherCode)), "\u001F") AS ?reasonLine)
+            BIND (CONCAT(STR(?member), " for ", STR(DATATYPE(?otherCode)), " ", STR(?otherCode), "\u001F") AS ?reasonLine)
             BIND (STR(?otherCode) AS ?reasonKey)
             BIND (STR(DATATYPE(?otherCode)) AS ?reasonTail) }
         }
