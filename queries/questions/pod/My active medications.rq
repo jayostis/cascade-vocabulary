@@ -1,7 +1,9 @@
 # Read from the view alone, as an app would: each entry whose status is of the active lifecycle class (rule L1), so not
 # one on hold, stopped, not taken or without a status, with its RxNorm code, when it started, the day its prescription was
 # written, how many records it joins, each record's own status and the day it ended, the dosage text each record states
-# (none when no record states one), the text each record's source wrote for it, such as a note beside the row (none when
+# with the day its prescription was written where it states one, in order of that day and the records stating none last
+# (none when no record states one; a record that states a written day and no dosage text is not in it), the text each
+# record's source wrote for it, such as a note beside the row (none when
 # no record has one), and each record with the document it was derived from, when that was retrieved, and the hospitals
 # that wrote it and that keep it. An entry whose status was
 # taken from a record that stopped it is not listed, even when another record says it is active: that record's status is
@@ -10,7 +12,8 @@
 # joins medications by a shared code reads it: the code the source selected, when that is an RxNorm code; else the
 # entry's one RxNorm code, even when the source selected an NDC; none when it states several and the source chose none.
 # A pod holds no table, so it cannot tell a product from an ingredient among several, and no code stands in for the
-# choice. A list holds its values in order, each ended by "; " but the last; a value's own parts are ended by ", ".
+# choice. A list holds its values in order, each ended by "; " but the last, so a value ends at the "; " before the next
+# record's IRI, as a dosage's own text can hold "; " and ", "; a value's own parts are ended by ", ".
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
@@ -43,9 +46,12 @@ WHERE {
                  cascade:memberCurrentValues ?values .
           ?values cascade:valuesOfMember ?member .
           OPTIONAL { ?values cascade:dosageInstructionText ?memberDosage }
-          BIND (IF(BOUND(?memberDosage), CONCAT(STR(?member), " ", ?memberDosage, "; "), "") AS ?dosageText)
+          OPTIONAL { ?values cascade:prescriptionWrittenDate ?memberWritten }
+          BIND (IF(BOUND(?memberDosage),
+                   CONCAT(STR(?member), " ", ?memberDosage, COALESCE(CONCAT(", written ", STR(?memberWritten)), ""), "; "), "") AS ?dosageText)
+          BIND (COALESCE(STR(?memberWritten), "~") AS ?writtenKey)
         }
-        ORDER BY ?entry ?dosageText }
+        ORDER BY ?entry ?writtenKey ?dosageText }
     }
     GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?narrativeLine; separator=""), "; $", "") AS ?said)

@@ -1,0 +1,37 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:fiftyMg a cascade:PrescribedOrReportedMedication .
+:fiftyMgVersion prov:specializationOf :fiftyMg ; cascade:patient :subject ; cascade:drugName "sertraline 50 MG Oral Tablet" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:dosageInstructionText "50 mg daily" ;
+    cascade:prescriptionWrittenDate "2026-10-14"^^xsd:date .
+:fiftyMgRevision a cascade:Revision ; cascade:revisionOf :fiftyMg ; cascade:version :fiftyMgVersion ;
+    prov:generatedAtTime "2026-10-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-20T00:00:00Z"^^xsd:dateTime .
+
+:twentyFiveMg a cascade:PrescribedOrReportedMedication .
+:twentyFiveMgVersion prov:specializationOf :twentyFiveMg ; cascade:patient :subject ; cascade:drugName "sertraline 25 MG Oral Tablet" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "completed" ;
+    cascade:dosageInstructionText "25 mg daily" ;
+    cascade:prescriptionWrittenDate "2026-09-16"^^xsd:date .
+:twentyFiveMgRevision a cascade:Revision ; cascade:revisionOf :twentyFiveMg ; cascade:version :twentyFiveMgVersion ;
+    prov:generatedAtTime "2026-10-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-20T00:00:00Z"^^xsd:dateTime .
+
+:aListed a cascade:PrescribedOrReportedMedication .
+:aListedVersion prov:specializationOf :aListed ; cascade:patient :subject ; cascade:drugName "Lisinopril 10 mg tablet" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:dosageInstructionText "Take 1 tablet daily" .
+:aListedRevision a cascade:Revision ; cascade:revisionOf :aListed ; cascade:version :aListedVersion ;
+    prov:generatedAtTime "2026-10-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-20T00:00:00Z"^^xsd:dateTime .
+
+:bPrescribed a cascade:PrescribedOrReportedMedication .
+:bPrescribedVersion prov:specializationOf :bPrescribed ; cascade:patient :subject ; cascade:drugName "lisinopril 10 MG Oral Tablet" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:dosageInstructionText "1 tablet by mouth every morning" ;
+    cascade:prescriptionWrittenDate "2026-01-05"^^xsd:date .
+:bPrescribedRevision a cascade:Revision ; cascade:revisionOf :bPrescribed ; cascade:version :bPrescribedVersion ;
+    prov:generatedAtTime "2026-10-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-10-20T00:00:00Z"^^xsd:dateTime .
