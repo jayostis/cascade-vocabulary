@@ -2518,10 +2518,10 @@ cascade:MachineBasisShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
         [ sh:not [ sh:property [ sh:path cascade:basis ; sh:minCount 1 ;
-                                 sh:in ( cascade:SameDemographics cascade:PortalAuthenticated ) ] ] ]
-        [ sh:property [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:SoftwareAgent ] ]
+                                 sh:in ( cascade:SameDemographics cascade:PortalAuthenticated cascade:RelatedPersonConnection ) ] ] ]
+        [ sh:property [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:SoftwareAgent ; sh:not [ sh:class prov:Person ] ] ]
     ) ;
-    sh:message "A judgment whose basis is cascade:SameDemographics or cascade:PortalAuthenticated is a software agent's: a person's About has the basis cascade:OwnerStatement."@en ;
+    sh:message "A judgment whose basis is cascade:SameDemographics, cascade:PortalAuthenticated or cascade:RelatedPersonConnection is a software agent's, never also a person's: a person's About has the basis cascade:OwnerStatement."@en ;
     sh:severity sh:Violation .
 
 cascade:AboutShape a sh:NodeShape ;

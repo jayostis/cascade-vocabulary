@@ -32,8 +32,8 @@ its confidence and its retraction, or does the pod define one?
 Sources: FHIR `Linkage` (https://hl7.org/fhir/R4/linkage.html), `Patient.link`
 (https://hl7.org/fhir/R4/patient.html#links); OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
 (https://mapping-commons.github.io/sssom/1.0/spec-model/) and SEMAPV (https://w3id.org/semapv); nanopublication
-guidelines (https://nanopub.net/guidelines/working_draft/) and `npx:retracts`
-(http://purl.org/nanopub/x/retracts); PROV-O (https://www.w3.org/TR/prov-o/); SKOS (https://www.w3.org/TR/skos-reference/#mapping).
+guidelines (https://nanopub.net/guidelines/working_draft/), whose `npx:retracts` is
+`http://purl.org/nanopub/x/retracts`; PROV-O (https://www.w3.org/TR/prov-o/); SKOS (https://www.w3.org/TR/skos-reference/#mapping).
 
 ## Choice
 
@@ -108,9 +108,10 @@ answers lift it again.
 
 **Why only an About with basis OwnerStatement stands against a NotAbout, and a machine basis needs a software agent.**
 (row "not about") A basis says who judged: `cascade:SameDemographics` is a matcher's, `cascade:PortalAuthenticated` a
-login's, and `cascade:OwnerStatement` the one a person states. An About is a person's, and so stands against a person's
-NotAbout, when it is attributed to a `prov:Person`; the shape (`cascade:MachineBasisShape`) refuses a judgment with either
-machine basis that is not attributed to a `prov:SoftwareAgent`, so a person's name never carries a machine's word. Were
+login's, `cascade:RelatedPersonConnection` a portal's word that a person is related (not a person's statement), and
+`cascade:OwnerStatement` the one a person states. These are the three machine bases, and only a `cascade:OwnerStatement`
+About by a person stands against a person's NotAbout; the shape (`cascade:MachineBasisShape`) refuses a judgment with
+a machine basis that is not attributed to a `prov:SoftwareAgent`, or whose author is also a `prov:Person`, so a person's name never carries a machine's word. Were
 it allowed, an import that files a portal or demographics About in the owner's name, which is the claim the import no
 longer makes, would put every profile the owner denied back on review after each import.
 

@@ -332,6 +332,16 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:MachineBasisShape ] ] .
 
+<#judgment-about/related-person-connection-by-a-person> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/related-person-connection-by-a-person.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MachineBasisShape ] ] .
+
+<#judgment-about/same-demographics-by-an-author-typed-person-and-software> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/same-demographics-by-an-author-typed-person-and-software.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MachineBasisShape ] ] .
+
 <#judgment-not-about/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-not-about/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
