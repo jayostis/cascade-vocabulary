@@ -258,6 +258,40 @@ def restated_absences(text):
     return found
 
 
+def variables_in(expression):
+    if isinstance(expression, Variable):
+        return {str(expression)}
+    if isinstance(expression, CompValue):
+        return set().union(*(variables_in(value) for value in expression.values()))
+    if isinstance(expression, (list, tuple)):
+        return set().union(*(variables_in(value) for value in expression))
+    return set()
+
+
+def joined_columns(node):
+    """The variables a node's solutions give that hold text a GROUP_CONCAT joined, or that an expression or a sample of
+    such a variable gives."""
+    inner = set().union(*(joined_columns(node[key]) for key in ("p", "p1", "p2")
+                          if key in node and isinstance(node[key], CompValue)))
+    if node.name == "AggregateJoin":
+        return inner | {str(a["res"]) for a in node["A"] if a.name == "Aggregate_GroupConcat"
+                        or (a.name in ("Aggregate_Sample", "Aggregate_Min", "Aggregate_Max")
+                            and variables_in(a["vars"]) & inner)}
+    if node.name == "Extend":
+        return inner | ({str(node["var"])} if variables_in(node["expr"]) & inner else set())
+    if node.name == "Project":
+        return inner & {str(v) for v in node["PV"]}
+    return inner
+
+
+@lru_cache(maxsize=None)
+def declared_list_columns():
+    """Each question's list columns the crate declares, by its path under QUERIES."""
+    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]
+    return {(ROOT / entity["@id"]).relative_to(contract.QUERIES).as_posix(): entity["listColumns"]
+            for entity in crate if "listColumns" in entity}
+
+
 def words(text):
     return re.findall(r"[a-z0-9]+", text.lower())
 
@@ -580,6 +614,42 @@ class TestNamedQuestions:
             """
             offenders = {relative: restated for relative in every_question()
                          if (restated := restated_absences(contract.query(relative)))}
+            assert offenders == {}
+
+        def test_declares_in_the_crate_each_column_it_joins_with_group_concat_and_no_column_it_lacks(self):
+            """declares in the crate each column it joins with `GROUP_CONCAT`, and no column it lacks
+
+            A column whose text a `GROUP_CONCAT` joins, or an expression or a sample of one, is a list, and the question's
+            entry in `ro-crate-metadata.json` names it in `listColumns`, so a runtime gives it as a list without
+            guessing. A question fails if a list column is not named, or if a column named is not one of its columns.
+            """
+            offenders = {}
+            for relative in every_question():
+                algebra = prepared(contract.query(relative)).algebra
+                named = {entry.get("column") for entry in declared_list_columns().get(relative, [])}
+                unnamed = joined_columns(algebra["p"]) - named
+                absent = named - {str(v) for v in algebra["PV"]}
+                if unnamed or absent:
+                    offenders[relative] = {"joined and not named": sorted(unnamed), "named and not a column": sorted(absent)}
+            assert offenders == {}
+
+        def test_gives_each_list_column_one_separator_and_at_most_the_start_its_values_share(self):
+            """gives each list column one separator and at most the start its values share
+
+            A `listColumns` entry has a `column`, a `separator` that is text, and a `followedBy` that is text when the
+            values begin alike, so that a separator inside a value does not end it: a runtime ends a value at the
+            separator only when `followedBy` comes next. A column is named once, and an entry holds nothing else.
+            """
+            offenders = {}
+            for relative, entries in declared_list_columns().items():
+                columns = [entry.get("column") for entry in entries]
+                kept = {"column", "separator", "followedBy"}
+                if (len(set(columns)) != len(columns)
+                        or any(not isinstance(entry.get("column"), str) or not entry["column"]
+                               or not isinstance(entry.get("separator"), str) or not entry["separator"]
+                               or not isinstance(entry.get("followedBy", "x"), str) or not entry.get("followedBy", "x")
+                               or set(entry) - kept for entry in entries)):
+                    offenders[relative] = entries
             assert offenders == {}
 
     class TestGivenAQuestionFiledUnderAKind:
