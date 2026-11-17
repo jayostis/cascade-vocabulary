@@ -105,7 +105,7 @@ what was typed into an entry, every person's statement, a model's statement or a
 `judgments.md`), and the pod's own choices. Derived is what the pod works out from the kept: versions, revisions,
 matcher judgments, findings and entries. A statement about something derived names the kept things that define it, and
 its kind, never the derived thing's name: a person's judgment names records and the document each member was shown
-from, never a version, and replaces or retracts only a person's judgment, never a machine's (row "person's judgment",
+from, never a version, and replaces or retracts anyone's judgment but a matcher's (row "person's judgment",
 `runtime/naming.feature`, N16); a statement about an entry names the records the person was shown (row "view entry").
 The kept side holds still only as its names do. A change to a record-naming recipe ships a kept table of each old
 record name to its new one, and statements are read through it; and a statement moved between pods names the same
@@ -311,8 +311,7 @@ its records are in, and a read never adds the entry's current records to it: tha
 spread it across a wrong join, and leave two devices that read at different times holding two different statements.
 The one moment a statement can be stranded, a statement whose every record's original is removed while records that
 joined since still hold the thing, is handled once, at removal: the runtime carries the statement to the records the
-entry then holds, in a statement signed as the runtime and listed for review. No runtime removes an original yet
-(https://github.com/the-cascade-protocol/planning/issues/35); the carrying is built with removal, in the runtime's
+entry then holds, in a statement signed as the runtime and listed for review. No runtime removes an original yet; the carrying is built with removal, in the runtime's
 kept-and-built work (https://github.com/jayostis/cascade-runtime-js/issues/819).
 A record is in at most one entry, so it is in one of three states: in an entry, where the question returns a row; in no
 entry for a reason, where `record/Why it is in no view` returns a row and the app shows the reason; or in neither, which

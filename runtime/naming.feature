@@ -435,16 +435,18 @@ Feature: Naming
         | migrations |
         | 1          |
 
-  Rule: N16. A person's judgment names records and the documents they were shown from, never a version, and never replaces or retracts a machine's judgment
+  Rule: N16. A person's judgment names records and the documents they were shown from, never a version, and never replaces or retracts a matcher's judgment
     decisions/naming.md, row "person's judgment" and its Why "Nothing kept cites anything derived"; decisions/judgments.md, row "what a judgment, a finding or a view came from".
     A person's judgment is kept, and versions, revisions, matcher judgments, findings and entries are derived, so it
     names none of them. When a person files a judgment whose members are records, the runtime adds, by
     prov:wasDerivedFrom, the document each member's current revision was derived from, which is what the person was
     shown, and never a version (cascade:PersonJudgmentDerivedFromNoVersionShape); a member entered by hand, whose
     revisions came from no document, adds none. A prov:wasDerivedFrom the input states is not filed. A runtime refuses a
-    person's judgment that replaces (dct:replaces) a machine's judgment, and a person's retraction of one
-    (cascade:PersonJudgmentReplacesNoMachineJudgmentShape, cascade:RetractionInvalidatesNoMachineJudgmentShape): a
-    person who agrees with the matcher files a Same over the records, and one who disagrees a Different over them.
+    person's judgment that replaces (dct:replaces) a matcher's judgment, and a person's retraction of one, a matcher's
+    judgment being any judgment that carries cascade:matcherRule, whatever its agent is typed
+    (cascade:PersonJudgmentReplacesNoMatcherJudgmentShape, cascade:RetractionInvalidatesNoMatcherJudgmentShape): a
+    person who agrees with the matcher files a Same over the records, and one who disagrees a Different over them. A
+    judgment without cascade:matcherRule, such as a model's, is kept as it was minted, and a person may retract it.
 
     Example: a person's Same over two imported records names the document each was shown from, and no version
       Given a new pod for Cleo on 2026-01-01 at 09:00
@@ -453,6 +455,19 @@ Feature: Naming
       And the query is:
         """
         SELECT ?from WHERE { <urn:uuid:c4e9a2d7-5b18-4f63-9a0e-7d2b8c6f1e54> prov:wasDerivedFrom ?from }
+        """
+      Then it answers:
+        | from                                                        |
+        | <ni:///sha-256;ia0W-ov4DzjbXqU9rRMLYEtbJpVewYVtL83fNzhesBE> |
+        | <ni:///sha-256;vj5fTxByVxl2nnEtMHUs-LFJg_mzMb25VTMxz1cbTJQ> |
+
+    Example: a person's Same whose input states the two versions is filed without them, naming the documents instead
+      Given a new pod for Cleo on 2026-01-01 at 09:00
+      And the export "first-export" is imported on 2026-01-02 at 10:00
+      When Cleo files the judgment "same-sulfa-naming-versions" on 2026-01-03 at 09:00
+      And the query is:
+        """
+        SELECT ?from WHERE { <urn:uuid:7d3b1f90-2c64-4e8a-b5d1-9a0e6c4f2b87> prov:wasDerivedFrom ?from }
         """
       Then it answers:
         | from                                                        |
