@@ -109,7 +109,7 @@ answers lift it again.
 **Why only an About with basis OwnerStatement stands against a NotAbout, and a machine basis needs a software agent.**
 (row "not about") A basis says who judged: `cascade:SameDemographics` is a matcher's, `cascade:PortalAuthenticated` a
 login's, `cascade:RelatedPersonConnection` a portal's word that a person is related (not a person's statement), and
-`cascade:OwnerStatement` the one a person states. These are the three machine bases, and only a `cascade:OwnerStatement`
+`cascade:OwnerStatement` the one a person states. The first three are machine bases, and only a `cascade:OwnerStatement`
 About by a person stands against a person's NotAbout; the shape (`cascade:MachineBasisShape`) refuses a judgment with
 a machine basis that is not attributed to a `prov:SoftwareAgent`, or whose author is also a `prov:Person`, so a person's name never carries a machine's word. Were
 it allowed, an import that files a portal or demographics About in the owner's name, which is the claim the import no
