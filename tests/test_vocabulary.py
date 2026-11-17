@@ -8,6 +8,7 @@ from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, SKOS, VOID, XSD
 
+import contract
 from contract import LAYOUT, QUERIES, ROOT
 
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
@@ -633,6 +634,21 @@ class TestRootCrate:
                      + sorted(path for folder in ("runtime", "conformance", "people") for path in (ROOT / folder).rglob("*")
                               if path.is_file()))
             assert parts(crate(), "./") == {path.relative_to(ROOT).as_posix(): FORMATS[path.suffix] for path in files}
+
+        def test_names_every_file_by_an_id_a_json_ld_reader_keeps_with_its_table_schema(self):
+            """names every file by an id a JSON-LD reader keeps, and gives each question its table schema there
+
+            The crate is read as JSON-LD, each `@id` as written and none re-encoded. The files the crate lists as parts are
+            exactly the files that have an `encodingFormat` in what the reader gives, and each file whose entry has a
+            `csvw:tableSchema` has one there. An `@id` that is not an IRI, such as a path with a space, is dropped by the
+            reader and fails.
+            """
+            graph = contract.crate_graph()
+            read = {contract.crate_path(file) for file in graph.subjects(URIRef("https://schema.org/encodingFormat"))}
+            declared = {path for path, entity in crate().items() if "csvw:tableSchema" in entity}
+            schemas = {contract.crate_path(file) for file in graph.subjects(URIRef("http://www.w3.org/ns/csvw#tableSchema"))}
+            assert read == set(parts(crate(), "./"))
+            assert declared and schemas == declared
 
         def test_describes_with_is_based_on_or_citation_only_files_that_exist(self):
             """describes with `isBasedOn` or `citation` only files that exist

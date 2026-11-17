@@ -6,6 +6,7 @@ import itertools
 import json
 from functools import cache
 from pathlib import Path
+from urllib.parse import unquote
 
 from gherkin.parser import Parser
 from gherkin.pickles.compiler import Compiler
@@ -68,6 +69,25 @@ def positions():
     crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]
     return {(ROOT / entity["@id"]).relative_to(QUERIES).as_posix(): entity["position"]
             for entity in crate if entity.get("@type") == "File" and "position" in entity}
+
+
+CRATE_BASE = "https://crate.example/"
+
+
+@cache
+def crate_graph():
+    """The root crate as a JSON-LD reader reads it, its `@id`s as written. The crate's own context is fetched from the
+    web, so it is left out and a `@vocab` stands in; the crate's other context terms are kept as they are."""
+    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
+    context = [part for part in crate["@context"] if isinstance(part, dict)]
+    return Graph().parse(data=json.dumps({"@context": [{"@vocab": "https://schema.org/"}, *context],
+                                          "@graph": crate["@graph"]}),
+                         format="json-ld", publicID=CRATE_BASE)
+
+
+def crate_path(node):
+    """The path of the file a crate's node names, as it is on disk: the node's IRI under the crate, decoded."""
+    return unquote(str(node).removeprefix(CRATE_BASE))
 
 
 def derivations(lens):
