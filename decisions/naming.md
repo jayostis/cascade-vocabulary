@@ -212,8 +212,8 @@ retractions, a run writes matcher judgments and assertions; folding them into an
 a migration by a writer that never imports, happened inside one. So each is an act with a random id, a start, an
 agent and a snapshot, and the snapshot exists because per-file integrity says nothing about the set being whole. The
 snapshot is a chain, its previous snapshot and this act's additions with an order-free hash of the set, because
-a list of every file per act grows with the square of the pod: 170 to 490 GB over ten years and 12,300 acts (5,000 and 7,300 pulls; the 70 to 200 GB of 5,000 acts scaled by 2.46) against a pod of 36 to 54 GB, where
-git's tree with this layout is 1 to 2 GB and the chain 60 to 115 MB (computed from a stated ten-year pod,
+a list of every file per act grows with the square of the pod: 170 to 490 GB over ten years and 12,300 acts (5,000 and 7,300 pulls; the 70 to 200 GB of 5,000 acts scaled by 2.46) against a pod of 36 to 38 GB, where
+git's tree with this layout is 2.5 to 5 GB over those acts (the 1 to 2 GB of 5,000 acts scaled by 2.46) and the chain 60 to 115 MB (computed from a stated ten-year pod,
 [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)); the set only grows, so a chain loses nothing, and
 "in sync" is one comparison of two hashes. A sync is an act because "when did this writer first see that import" is
 history nothing else records, and the matcher run the union calls for needs a cause to name; it is written only when
@@ -424,7 +424,7 @@ the join and the removal.
   persistent entries per summary, #206); a member's new version voids every matcher judgment using its old one.
 - **A snapshot naming the set of files the act left.** The strongest case: git's tree, one canonical node that says
   exactly what the writer held, compared without a walk. Summed over 12,300 acts (5,000 and 7,300 pulls) it is 2.7 to 5.2
-  billion entries, 170 to 490 GB against a pod of 36 to 54 GB (the figures of 5,000 acts, 1.1 to 2.1 billion and 70 to 200 GB, scaled by 2.46); git's own tree with this layout is 1 to 2 GB, the chain 60 to 115 MB (computed, #206).
+  billion entries, 170 to 490 GB against a pod of 36 to 38 GB (the figures of 5,000 acts, 1.1 to 2.1 billion and 70 to 200 GB, scaled by 2.46); git's own tree with this layout is 2.5 to 5 GB (the 1 to 2 GB of 5,000 acts, scaled), the chain 60 to 115 MB (computed, #206).
 - **AdHash, Clarke et al.'s MSet-Add-Hash: the sum modulo 2^256 of each path's SHA-256.** The strongest case: the
   simplest incremental set hash, 256 bits of state, a file added being one addition. Unkeyed, Wagner's generalized
   birthday attack finds paths with any chosen sum in about 2^32 work, and paths are names derived from documents an
