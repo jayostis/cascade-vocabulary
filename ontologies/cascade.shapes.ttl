@@ -2521,7 +2521,7 @@ cascade:MachineBasisShape a sh:NodeShape ;
                                  sh:in ( cascade:SameDemographics cascade:PortalAuthenticated cascade:RelatedPersonConnection ) ] ] ]
         [ sh:property [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:SoftwareAgent ; sh:not [ sh:class prov:Person ] ] ]
     ) ;
-    sh:message "A judgment whose basis is cascade:SameDemographics, cascade:PortalAuthenticated or cascade:RelatedPersonConnection is a software agent's, never also a person's: a person's About has the basis cascade:OwnerStatement."@en ;
+    sh:message "A judgment whose basis is cascade:SameDemographics, cascade:PortalAuthenticated or cascade:RelatedPersonConnection is a software agent's: it is attributed to an agent typed prov:SoftwareAgent and never prov:Person, and a person's About has the basis cascade:OwnerStatement."@en ;
     sh:severity sh:Violation .
 
 cascade:AboutShape a sh:NodeShape ;
