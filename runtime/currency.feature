@@ -118,10 +118,15 @@ Feature: Currency
     its status and dates from are ranked the same way. A pick ancestry orders is untouched, ancestry being no clock.
     Nothing is rewritten, and retracting the judgment restores the ranking. It is not Erroneous over the act: the
     content is sound, only its clock is not. The review page lists a finding that a writer's clock was behind with each
-    revision it names until the person acknowledges it or discounts the act, and a finding that a source reported
+    revision it names until the person acknowledges it, with an acknowledgement of that kind naming the act that
+    generated the revision, or discounts the act, and a finding that a source reported
     older states as one line, "this source reports N records at states older than it reported on" the last date of the
-    revisions it contradicts, expanding to each record, until the person acknowledges it or files a Before between a
-    record's older revision and one the finding names it contradicts (A18); N counts the records no such Before answers.
+    revisions it contradicts, expanding to each record, until the person acknowledges it, with an acknowledgement of that
+    kind naming the record, the document of its older state and the document of every state of it the finding says the
+    source contradicted, or files a Before between a
+    record's older revision and one the finding names it contradicts (A18); N counts the records neither answers. One
+    person's acknowledgement naming some of those documents and another's naming the rest do not add up: the record
+    stays listed, since neither saw the whole.
 
     No example here shows this rule; A19 shows a discount answering a finding. The fixtures
     tests/fixtures/an-act-whose-clock-is-discounted, a-clock-found-behind and a-source-that-went-back show the rest.

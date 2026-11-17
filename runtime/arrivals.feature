@@ -680,8 +680,9 @@ Feature: Arrivals
     cascade:ClockBehind, whose oa:motivatedBy is oa:classifying, whose oa:hasTarget is each revision either check
     found, and whose cascade:writerClockBehindByAtLeastDays is the greatest whole number of days one of them shows; it
     files none when an act in the first-parent ancestry of its snapshot (cascade:firstParentSnapshot, N14) filed one
-    that no person's judgment answers, neither a cascade:Acknowledged whose member is the finding nor a
-    cascade:ClockDiscounted whose member is the act that filed it, each standing as C7 reads a person's judgment. So a
+    that no person's judgment answers: a cascade:Acknowledged of cascade:ClockBehind naming the act that filed it, or a
+    cascade:ClockDiscounted whose member is that act, each standing as C7 reads a person's judgment; an Acknowledged
+    of another kind answers nothing here. So a
     writer has one unanswered at a time, and a clock that stays wrong is found once more after each answer; another
     writer's finding, received by a sync, silences nothing. Its name follows cascade:FindingNamingRule.
 
@@ -752,6 +753,43 @@ Feature: Arrivals
       Then it answers:
         | days | record           |
         | 5    | allergy "Sesame" |
+
+    Example: a writer whose clock finding the person acknowledged by its kind files one more
+      Finn acknowledged a warning of kind clock behind over the act that filed the first finding, which answers it.
+
+      Given a new pod for Finn on 2026-05-31 at 09:00
+      And the pull "hospital-unstamped-pull" is imported on 2026-06-10 at 09:00
+      And the pull "hospital-pull-on-a-clock-behind" is imported on 2026-06-11 at 09:00
+      And Finn files the judgment "acknowledge-the-clock-behind" on 2026-06-11 at 12:00
+      When the pull "hospital-pull-stamped-after-it" is imported on 2026-06-12 at 09:00
+      When the query is:
+        """
+        SELECT ?days ?record WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-pull-stamped-after-it> prov:generated ?file }
+          GRAPH ?file { ?finding oa:hasBody cascade:ClockBehind ; cascade:writerClockBehindByAtLeastDays ?days ; oa:hasTarget ?revision }
+          ?revision cascade:revisionOf ?record .
+        }
+        """
+      Then it answers:
+        | days | record           |
+        | 5    | allergy "Sesame" |
+
+    Example: a writer whose clock finding the person acknowledged under another kind files no second
+      Finn acknowledged a warning of kind matcher judgments no longer reached over the act that filed the first finding, which answers nothing about a clock.
+
+      Given a new pod for Finn on 2026-05-31 at 09:00
+      And the pull "hospital-unstamped-pull" is imported on 2026-06-10 at 09:00
+      And the pull "hospital-pull-on-a-clock-behind" is imported on 2026-06-11 at 09:00
+      And Finn files the judgment "acknowledge-the-clock-behind-under-another-kind" on 2026-06-11 at 12:00
+      When the pull "hospital-pull-stamped-after-it" is imported on 2026-06-12 at 09:00
+      When the query is:
+        """
+        SELECT ?finding WHERE {
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:hospital-pull-stamped-after-it> prov:generated ?file }
+          GRAPH ?file { ?finding a cascade:FindingForReview }
+        }
+        """
+      Then it answers nothing
 
   Rule: A20. A pull writes the record of each Organization it holds, and a lab result names the organization that performed it
     decisions/republishing-sources.md, row "organisation"; decisions/naming.md, row "server, organisation".

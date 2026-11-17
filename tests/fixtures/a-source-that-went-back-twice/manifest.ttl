@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-source-that-went-back-twice" ;
+  rdfs:comment "Psoriasis pulled four times from one source: active, stamped 20 December; then, after the source restored a backup, resolved, stamped 1 December, whose finding the person acknowledged, naming the record, the document of the older state and the document of the state it contradicted; then inactive, stamped 15 January; then resolved again after a second restore. The fourth pull's finding names the same older state, contradicting both the first pull's state and the third's." ;
+  mf:entries (
+    <#what-needs-review>
+  ) .
+
+<#what-needs-review> a mf:QueryEvaluationTest ;
+  mf:name "what-needs-review" ;
+  rdfs:comment "The second restore is listed, one record at states older than the source reported on 20 January: the acknowledgement names the first pull's document but not the third's, so it does not answer a warning that contradicts the third. The first restore's finding is not listed." ;
+  mf:action [ qt:query <../../../queries/questions/record/What%20needs%20review.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-needs-review.srj> .

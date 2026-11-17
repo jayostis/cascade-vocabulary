@@ -106,7 +106,20 @@ what was typed into an entry, every person's statement, a model's statement or a
 matcher judgments, findings and entries. A statement about something derived names the kept things that define it, and
 its kind, never the derived thing's name: a person's judgment names records and the document each member was shown
 from, never a version, and replaces or retracts anyone's judgment but a matcher's (row "person's judgment",
-`runtime/naming.feature`, N16); a statement about an entry names the records the person was shown (row "view entry").
+`runtime/naming.feature`, N16); a statement about an entry names the records the person was shown (row "view entry");
+and an answer to a warning names its kind and what it is about, never the warning (row "document, finding"). Each kind
+of finding says which kept things its targets resolve to: a matcher judgment no longer reached, its member records; a
+state a source went back to, its record, the document that gave that state and the document of each later state it
+contradicts, a state being the record and the document that gave it; a writer's clock found behind, the act whose
+revisions show it; two results that disagree, the two records. A `cascade:Acknowledged` names the kind as its
+`cascade:answersWarningOfKind` and those things as its members, and answers every warning of the kind about nothing it
+does not name, so a finding worked out again under another name stays answered and one about other things is listed;
+a judgment naming a finding is refused (`runtime/matcher.feature`, M19). Two answers that have no code yet will follow
+the rule when built: a Before answering a rollback finding names, for each record that went back, the record and the
+documents of the two states it orders (`currency.md`, row "Before over a finding"); a response to a care hypothesis a
+rule raises, which is derived and never stored, names the hypothesis's kind, its rule, and the records of the entries
+it rests on, while one to a model's hypothesis, which is minted once and kept, may name the hypothesis
+(`readings-and-care-hypotheses.md`, row "response to a care hypothesis").
 The kept side holds still only as its names do. A change to a record-naming recipe ships a kept table of each old
 record name to its new one, and statements are read through it; and a statement moved between pods names the same
 records only under the same naming scheme and key (row "scheme").
@@ -130,7 +143,7 @@ records only under the same naming scheme and key (row "scheme").
 | assertion, retraction by a release | | deterministic, with no time and no run: an assertion from the rule list version and the matcher judgment, so at most one per version per matcher judgment however many runs reach it, and none under a version whose row for the matcher judgment's rule carries the `rec:queryHash` of a version the matcher judgment is already asserted under, so a new version asserts only the matcher judgments of the rules it changed; the run that wrote it is known from its snapshot; a release's retraction of an assertion from the release, the assertion and the rule it declares wrong; two writers on one release write one file with one content (N6, M5 and M9 for the assertion; N15 for the retraction) | ours |
 | maker | PROV agents | the Cascade matcher is `jdg:CascadeMatcher`, one `prov:SoftwareAgent`, unversioned, for any runtime that follows `runtime/matcher.feature`; a matcher of another procedure is its own agent term in its own namespace; the runtime that ran is on the act, not the matcher judgment (M5) | borrowed; one agent for one procedure is ours |
 | retraction | nanopub `npx:retracts` | a `prov:Activity` that `prov:invalidated`; replacement by `dcterms:replaces`; a person's keeps the IRI it arrived with (N10), a release's is named by its rule (N15) | diverges: `npx:retracts` has domain `foaf:Agent`, making the retractor an agent and the retracted a nanopublication, where ours is an activity over any entity |
-| document, finding | RFC 6920; Web Annotation; W3C DQV; FHIR `DetectedIssue`; SHACL results | bytes hashed; content hashed, a finding over its own triples with no act and no time, so two writers' first runs file one file; a finding is `cascade:FindingForReview`, a `oa:Annotation` whose `oa:hasBody` is its kind, `oa:motivatedBy` `oa:classifying`, and `oa:hasTarget` what it names, each kind saying whether its body applies to each target alone (`cascade:MatcherJudgmentsNoLongerReached`: each target is a matcher judgment no longer reached) or to its targets together (a later finding of two records' differing values) (looked at DQV's `dqv:QualityAnnotation`, feedback about a dataset or its distribution, its motivation fixed to quality assessment; FHIR's `DetectedIssue`, a clinical issue between a patient's actions; SHACL's `sh:ValidationResult`, which needs the shape and constraint that failed; none names a finding a pod files for its person about its own matcher judgments); the matcher judgments a rule list version no longer reaches are one finding of kind `cascade:MatcherJudgmentsNoLongerReached`, filed by that version's first run over the whole pod (`runtime/matcher.feature`, M18 and M19) (`runtime/naming.feature`, N5; `runtime/arrivals.feature`, A1) | borrowed from RFC 6920 and Web Annotation; the class is ours, named for what it is for, since a bare "finding" reads as a clinical one |
+| document, finding | RFC 6920; Web Annotation; W3C DQV; FHIR `DetectedIssue`; SHACL results | bytes hashed; content hashed, a finding over its own triples with no act and no time, so two writers' first runs file one file; a finding is `cascade:FindingForReview`, a `oa:Annotation` whose `oa:hasBody` is its kind, `oa:motivatedBy` `oa:classifying`, and `oa:hasTarget` what it names, each kind saying whether its body applies to each target alone (`cascade:MatcherJudgmentsNoLongerReached`: each target is a matcher judgment no longer reached) or to its targets together (a later finding of two records' differing values) (looked at DQV's `dqv:QualityAnnotation`, feedback about a dataset or its distribution, its motivation fixed to quality assessment; FHIR's `DetectedIssue`, a clinical issue between a patient's actions; SHACL's `sh:ValidationResult`, which needs the shape and constraint that failed; none names a finding a pod files for its person about its own matcher judgments); the matcher judgments a rule list version no longer reaches are one finding of kind `cascade:MatcherJudgmentsNoLongerReached`, filed by that version's first run over the whole pod (`runtime/matcher.feature`, M18 and M19) (`runtime/naming.feature`, N5; `runtime/arrivals.feature`, A1); a finding's name is derived, so no judgment names it, and an answer names its kind and the kept things its kind says it is about ("Nothing kept cites anything derived"; `judgments.md`, row "acknowledgement") | borrowed from RFC 6920 and Web Annotation; the class is ours, named for what it is for, since a bare "finding" reads as a clinical one |
 | view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; named in the view that gives it members and rebuilt with it; another view in the same folder cites it by a relative reference, as the variant interpretations view cites a variant's entry `<variants.ttl#hex>`; carries every member's current state, with a lead per `currency.md`, each member's values a node `<view>#` + the entry's hash, `-`, and the hash of the member's IRI; a padded time it copies a node of its holder, the entry's or the member values' IRI, `-padded-` and the local name, since the holder's IRI has its fragment already; an app's statement about an entry names the records the person was shown, never the entry, never changes after, and finds the entry by `record/Which entry shows it` (`runtime/naming.feature`, N13; `runtime/the-kit.feature`, Check 6) | ours |
 | snapshot | git tree; git commit parents; Bitcoin Core's MuHash3072 | one node per act, in the act's file, a chain as git's commits are: its first parent, the writer's own previous snapshot, kept outside the pod as git keeps HEAD (a browser app beside the pod's name and key), none on a writer's first or when the head it was handed is no snapshot the pod holds; for a sync, every head it holds but the first parent as a merged parent, as git merges, and on a writer's first, every head it holds; the files of the set this act wrote, never a file a step that is no act wrote, and none for a sync; and an order-free hash of the set, every file N9 names in a folder the layout gives but the sync row's files that change in place, the syncs' act files, filed apart, and the act's own file: MuHash3072 exactly as Bitcoin Core computes it, over the path, a 0x00 byte and the SHA-256 of each file's bytes, so a changed byte changes it; the name binds the act's description, as a git commit binds its message outside its tree; two writers hold one set when the set hashes of what each holds agree; never a list of every file (`runtime/naming.feature`, N14; `runtime/sync.feature`, S3 and S5) | borrowed from git's chain of commits and from Bitcoin Core's UTXO set hash, with its vectors; diverged from git's tree, which with this layout rewrites a leaf folder per act |
 | pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID; a judgment that leaves the pod carries it as the author, so a receiver can cite the person and reconcile their shares, and whether the author leaves at all is the share-time choice like every field; keying it hides nothing more, since it is random already, and a per-receiver id is open below (`runtime/arrivals.feature`, A13) | diverges from Solid, which names a pod by its URL |
@@ -248,9 +261,9 @@ a used table version stays current for a matcher judgment while the current vers
 join is asked of the matcher judgment's rule, run over its members against the current version (M7), so a matcher judgment names no rows
 and its recipe stays as ruled. A rule list version that merely tightens a rule retracts nothing: the matcher judgments it no
 longer reaches have no assertion under it and stop counting by derivation, and its first run files one finding naming
-them, which the review page lists as one line with the three answers of `currency.md`'s rollback, a Same over the
-finding deriving a person's Same per pair, an acknowledgement, or pairs one by one; a person's Same already filed on a
-pair is untouched. A release retracts only what it declares wrong, so a known-bad join is never offered back. The
+them, which the review page lists as one line, answered pair by pair over records: a Same or a Different over a pair's
+records, which an app may file for every pair at once, or an acknowledgement of the kind naming exactly them; a person's Same
+already filed on a pair is untouched. A release retracts only what it declares wrong, so a known-bad join is never offered back. The
 Cascade matcher is one unversioned agent because the matcher feature promises every runtime that follows it reaches
 the same matcher judgments, so which runtime ran is forensics, and it sits on the run's act with every other act's performer: a
 bug in a rule list version is found by the assertions under it, a bug in a runtime by the acts it performed, a bug in
@@ -296,6 +309,30 @@ field names. A person states Same or Different over records rather than replacin
 judgment, whose name hashes the versions it used and is re-minted when they change; the Same or the Different says the
 same thing of names that hold, and a person outranks every machine (`judgments.md`). A record's name is a recipe, and has
 been re-minted once, so the recipe's change carries its table of old names to new.
+
+**Why an answer to a warning names its kind and what it is about.** (row "document, finding") A finding is named by its
+triples, and its targets by theirs: a field rename re-mints the versions a matcher judgment and a revision hash, and with
+them the finding, so an acknowledgement naming the finding put the warning back on the review page after a release, and
+a Same over it stopped joining its pairs. The kind and the kept things hold still. A rollback or a clock finding is
+answered by one acknowledgement over everything the line is about: a 30-day restore can name hundreds of records, and a
+judgment per record would file as many, so an acknowledgement answers each record it names with the documents of its
+states, and a clock finding each act it names. Two things stay one warning each, since a warning about a thing is the
+same warning whichever others the person answered beside it. A finding of matcher judgments no longer reached is about
+a pair of records, and so is a finding of two results that disagree: an acknowledgement answers a pair only when its
+members are exactly that pair's two records. One that names the records of two pairs answers neither, since a later
+warning about one record from each of them, which the person never saw, would otherwise count as seen (a matcher
+retuned twice drops the pairs one and two, then one and three). The cost is a judgment per pair, which a Same or a
+Different already costs and which an app files for every pair of a line at once. Two people's partial acknowledgements
+of one rollback do not add up: each names some of the documents a record's finding contradicts, and neither saw the
+whole. A rollback is about the documents of the states it contradicts as well as its record, so a source that
+goes forward and back again, contradicting a later report, is listed again. Two results that disagree are about their
+two records alone, so a new value from either, which is a new finding of the same two, stays answered: naming the
+document of each compared value would leave an entered result, which has none, never answerable. The Same over a finding
+is gone, not kept with a derivation, as proposal 2.1 rules: it joined every pair the finding named, pairs the person had
+not looked at, with a person's weight over every machine, where a Same or a Different per pair says the same of names
+that hold. Looked at: keeping the finding's name and carrying answers across releases by a table of old finding names to
+new, as records do, which serves a recipe change but not a retuned matcher or a rebuild in another order, where no
+table exists; and requiring every acknowledgement's members to equal its warning's, which needs a judgment per record of a restore.
 
 **Why an app's statement names records, never its entry.** (row "view entry") What an app keeps about an entry, an
 answer, a note, a link or a cached list, names the records the person was shown in it, by their IRIs, and never the
