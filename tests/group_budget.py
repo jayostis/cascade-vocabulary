@@ -1,7 +1,8 @@
 """A budget for the seconds one xdist_group takes. A group runs on one worker, so the longest group is the shortest a
 parallel run can be; `--group-budget SECONDS` fails a run in which a group takes longer, and names it. `--budget-groups`
 limits the check to the groups it lists, comma-separated; with none, every group is checked. A run with no `-n` has no
-groups: a worker names a case's group by the `@group` pytest-xdist adds to its id."""
+groups: a worker names a case's group by the `@group` pytest-xdist adds to its id. A run narrowed with `-k` that leaves out
+a group `--budget-groups` lists fails, for no case ran in it: name only the groups the run keeps."""
 
 from collections import defaultdict
 
@@ -9,7 +10,8 @@ CASES = []
 
 
 def group_of(nodeid):
-    return nodeid.rpartition("@")[2] if "@" in nodeid else None
+    tail = nodeid.rpartition("@")[2]
+    return tail if "@" in nodeid and "]" not in tail else None
 
 
 def over_budget(seconds_by_case, budget, groups=()):
@@ -52,6 +54,13 @@ def pytest_sessionfinish(session):
     session.config.unchecked = unseen(CASES, groups)
     if session.config.over_budget or session.config.unchecked:
         session.exitstatus = 1
+
+
+def pytest_unconfigure(config):
+    """The last line of the run, after the count of cases that passed, says the budget failed."""
+    reporter = config.pluginmanager.get_plugin("terminalreporter")
+    if reporter and (getattr(config, "over_budget", None) or getattr(config, "unchecked", None)):
+        reporter.write_line("FAILED: the xdist group budget (see the sections above); every case passed", red=True)
 
 
 def pytest_terminal_summary(terminalreporter, config):

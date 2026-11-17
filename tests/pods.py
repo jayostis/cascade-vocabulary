@@ -180,8 +180,8 @@ FIXTURES = [Fixture(manifest) for manifest in sorted((ROOT / "tests" / "fixtures
 
 def on_its_worker(fixture, *values, id, marks=(), says=None, part=None):
     """A case about the fixture, run on the worker that builds it, so each fixture is built once a run. A case with a
-    `part` is run with the cases of that part alone and builds the fixture again there: for a case that takes seconds on
-    rdflib, which the other cases of the fixture should not wait behind. The tests page shows what it says, else what the
+    `part` is run with the cases of that part alone and builds the fixture again on the worker that draws it: for a case
+    that takes seconds on rdflib, which the other cases of the fixture should not wait behind. The tests page shows what it says, else what the
     fixture's manifest says the fixture shows."""
     group = fixture.name if part is None else f"{fixture.name}/{part}"
     return pytest.param(fixture, *values, id=id,

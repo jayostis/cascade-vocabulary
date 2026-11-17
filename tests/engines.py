@@ -166,7 +166,8 @@ class Oxigraph(Store):
         return bool(self.store.query(query))
 
     def gives_a_row(self, query):
-        """Whether the SELECT gives a row, found without making the others."""
+        """Whether the SELECT gives a row, found without making the others; so an error the query raises after its
+        first row is not seen."""
         return next(iter(self.store.query(query)), None) is not None
 
     def triples(self, graph=None):

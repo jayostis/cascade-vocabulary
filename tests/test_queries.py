@@ -331,6 +331,9 @@ def reasons():
     return frozenset(named & declared)
 
 
+PARSED_TREES = pytest.mark.xdist_group("test_queries/parsed")
+
+
 PUBLISHED = json.loads((ROOT / "tests" / "published-bytes.json").read_text())
 PUBLISHED_FILES = ("runtime/rule-list/[0-9a-f]*.ttl", "queries/matcher/*.rq")
 
@@ -349,6 +352,7 @@ class TestQueryForm:
     """
 
     class TestGivenAnyQuery:
+        @PARSED_TREES
         def test_puts_every_sub_select_first_in_its_group(self):
             """puts every sub-select first in its group
 
@@ -358,6 +362,7 @@ class TestQueryForm:
             offenders = sorted(relative for relative in every_query() if has_a_subselect_after_a_pattern(parsed(relative)))
             assert offenders == []
 
+        @PARSED_TREES
         def test_is_one_flat_pattern(self):
             """is one flat pattern, with none of the three nested forms
 
@@ -367,6 +372,7 @@ class TestQueryForm:
             offenders = {relative: forms for relative in every_query() if (forms := nested_forms(parsed(relative)))}
             assert offenders == {}
 
+        @PARSED_TREES
         def test_declares_exactly_the_prefixes_it_uses_in_alphabetical_order(self):
             """declares exactly the prefixes it uses, in alphabetical order"""
             offenders = {}
@@ -378,6 +384,7 @@ class TestQueryForm:
                     offenders[relative] = {"declared": declared_here, "used": used}
             assert offenders == {}
 
+        @PARSED_TREES
         def test_writes_with_its_prefix_every_iri_of_a_namespace_the_queries_declare(self):
             """writes, with its prefix, every IRI of a namespace the queries declare
 
@@ -427,6 +434,7 @@ class TestQueryForm:
             assert offenders == []
 
     class TestGivenTheQueriesAndTheOntologyFilesTogether:
+        @PARSED_TREES
         def test_binds_each_prefix_to_one_namespace(self):
             """binds each prefix to one namespace
 
@@ -685,6 +693,7 @@ class TestMatcherComparisons:
     """
 
     class TestGivenAnyComparison:
+        @PARSED_TREES
         def test_binds_record_in_a_triple_pattern_of_its_outermost_group(self):
             """binds `?record` in a triple pattern of its outermost group
 
