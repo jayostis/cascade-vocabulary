@@ -1,6 +1,8 @@
-# Each entry takes the allergen, code, reactions and severity of its lead, the status of the member chosen for status, and
-# the highest criticality any member states. Each member's current values are a node of the view of their own, named
-# after the entry and the member, which says the member they came from.
+# Each entry takes the allergen, code, category, onset, reactions and severity of its lead, the status of the member
+# chosen for status, and the highest criticality any member states. Each member's current values are a node of the view
+# of their own, named after the entry and the member, which says the member they came from. An onset its source wrote
+# short of the second keeps the node saying so (cascade:PaddedDateTime), named after the entry or the member's values
+# and -padded-, so the view never shows a padded time as exact.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -8,6 +10,8 @@ CONSTRUCT {
   ?entry a cascade:AllergyOrIntolerance ;
     cascade:allergenName ?allergenName ;
     cascade:allergenCode ?code ;
+    cascade:allergyCategory ?category ;
+    cascade:onsetDate ?onset ;
     cascade:reactionManifestationText ?reaction ;
     cascade:reactionManifestationCode ?reactionCode ;
     cascade:allergySeverity ?severity ;
@@ -24,13 +28,24 @@ CONSTRUCT {
     cascade:reactionManifestationCode ?memberReactionCode ;
     cascade:allergySeverity ?memberSeverity ;
     cascade:clinicalStatus ?memberClinicalStatus ;
-    cascade:allergyCriticality ?memberAllergyCriticality .
+    cascade:allergyCriticality ?memberAllergyCriticality ;
+    cascade:allergyCategory ?memberCategory ;
+    cascade:onsetDate ?memberOnsetDate .
+  ?entry cascade:paddedDateTime ?onsetPadded .
+  ?onsetPadded cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?onsetWritten .
+  ?memberValues cascade:paddedDateTime ?memberPadded .
+  ?memberPadded cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?memberWritten .
 }
 WHERE {
   { ?record a cascade:AllergyOrIntolerance ; cascade:inEntry ?entry .
     ?entry cascade:leadMember ?lead .
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenName ?allergenName }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenCode ?code }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergyCategory ?category }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:onsetDate ?onset }
+    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?onsetPaddedAt .
+               ?onsetPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?onsetWritten }
+    BIND (IF(BOUND(?onsetWritten), IRI(CONCAT(STR(?entry), "-padded-onsetDate")), 1/0) AS ?onsetPadded)
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reactionManifestationText ?reaction }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reactionManifestationCode ?reactionCode }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergySeverity ?severity }
@@ -46,5 +61,10 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:reactionManifestationCode ?memberReactionCode }
     OPTIONAL { ?memberVersion cascade:allergySeverity ?memberSeverity }
     OPTIONAL { ?memberVersion cascade:clinicalStatus ?memberClinicalStatus }
-    OPTIONAL { ?memberVersion cascade:allergyCriticality ?memberAllergyCriticality } }
+    OPTIONAL { ?memberVersion cascade:allergyCriticality ?memberAllergyCriticality }
+    OPTIONAL { ?memberVersion cascade:allergyCategory ?memberCategory }
+    OPTIONAL { ?memberVersion cascade:onsetDate ?memberOnsetDate }
+    OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
+               ?memberPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?memberWritten }
+    BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-onsetDate")), 1/0) AS ?memberPadded) }
 }

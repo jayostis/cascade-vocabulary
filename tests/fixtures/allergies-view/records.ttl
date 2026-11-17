@@ -29,7 +29,9 @@
 
 :latex a cascade:AllergyOrIntolerance .
 :latexVersion prov:specializationOf :latex ; cascade:patient :subject ; cascade:allergenName "Latex" ;
-    cascade:clinicalStatus "inactive" .
+    cascade:clinicalStatus "inactive" ; cascade:onsetDate "2020-02-14T09:00:00"^^xsd:dateTime ;
+    cascade:paddedDateTime <urn:x:latexVersion#padded-onsetDate> .
+<urn:x:latexVersion#padded-onsetDate> cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten "2020021409" .
 :latexRevision a cascade:Revision ; cascade:revisionOf :latex ; cascade:version :latexVersion ;
     prov:wasDerivedFrom :latexDocument ; prov:wasGeneratedBy :northImport ;
     prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
