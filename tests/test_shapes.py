@@ -19,7 +19,7 @@ CASES = ROOT / "tests" / "shape-cases"
 TARGETS = (SH.targetClass, SH.targetSubjectsOf, SH.targetObjectsOf, SH.targetNode)
 BROKEN_ELSEWHERE = {CASCADE.PlacementShape: "test_pod_layout.py breaks the layout's placements"}
 REFUSED_ON_PURPOSE = {"an-acknowledgement-of-two-pairs-at-once": "the query answers a pod whose acknowledgement of a pair kind names four records, which AcknowledgedShape refuses"}
-UNDECLARED_ON_PURPOSE ={CASCADE.NoSuchRecord: "Finn's type-filed-nowhere export files a record of a type no folder holds"}
+UNDECLARED_ON_PURPOSE = {CASCADE.NoSuchRecord: "Finn's type-filed-nowhere export files a record of a type no folder holds"}
 
 
 @cache
