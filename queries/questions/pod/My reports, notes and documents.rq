@@ -5,7 +5,7 @@
 # type and title, a file the pod keeps but does not read, so a report sent only as a PDF says so; each result a report
 # names, by its entry in the lab results view, with its test, value, unit, reference range and the interpretation flags
 # its source gave it; and each record the entry joins, with the document it was derived from, when that was retrieved,
-# and the hospitals that wrote it and that keep it. A list holds its values in order, each ended by "; " but the last,
+# and the hospitals that wrote it and that keep it. A list holds its values in order, separated by U+001F,
 # and a list with nothing in it is unbound; a value's own parts are ended by ", ". A day and a time are not comparable,
 # so entries are ordered by their day first, then by the time as written; an entry with no date by the time it was
 # issued.
@@ -20,12 +20,12 @@ SELECT ?date ?issued ?kind ?codes ?name ?title ?status ?contentStatus ?conclusio
        ?entryLabel ?sources
 WHERE {
   { SELECT ?entry ?entryLabel ?kind ?date ?issued ?name ?title ?status ?contentStatus ?conclusion ?text
-           (REPLACE(CONCAT(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?reportCode), "; "), ""); separator=""),
-                           GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?reportOther), " in ", STR(DATATYPE(?reportOther)), "; "), ""); separator=""),
-                           GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?noteType), "; "), ""); separator=""),
-                           GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?noteOther), " in ", STR(DATATYPE(?noteOther)), "; "), ""); separator="")),
-                    "; $", "") AS ?allCodes)
-           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?attachment, "; "), ""); separator=""), "; $", "") AS ?allAttachments)
+           (REPLACE(CONCAT(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?reportCode), "\u001F"), ""); separator=""),
+                           GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?reportOther), " in ", STR(DATATYPE(?reportOther)), "\u001F"), ""); separator=""),
+                           GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?noteType), "\u001F"), ""); separator=""),
+                           GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?noteOther), " in ", STR(DATATYPE(?noteOther)), "\u001F"), ""); separator="")),
+                    "\u001F$", "") AS ?allCodes)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?attachment, "\u001F"), ""); separator=""), "\u001F$", "") AS ?allAttachments)
     WHERE {
       { SELECT ?entry ?entryLabel ?kind ?date ?issued ?name ?title ?status ?contentStatus ?conclusion ?text ?reportCode ?reportOther
                ?noteType ?noteOther ?attachment
@@ -58,7 +58,7 @@ WHERE {
         ORDER BY ?entry ?reportCode ?reportOther ?noteType ?noteOther ?attachment }
     }
     GROUP BY ?entry ?entryLabel ?kind ?date ?issued ?name ?title ?status ?contentStatus ?conclusion ?text }
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?resultText, "; "), ""); separator=""), "; $", "") AS ?allResults)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?resultText, "\u001F"), ""); separator=""), "\u001F$", "") AS ?allResults)
     WHERE {
       { SELECT ?entry ?resultText
         WHERE {
@@ -87,7 +87,7 @@ WHERE {
         ORDER BY ?entry ?resultText }
     }
     GROUP BY ?entry }
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?allSources)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?allSources)
     WHERE {
       { SELECT ?entry ?sourceText
         WHERE {

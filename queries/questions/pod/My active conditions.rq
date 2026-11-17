@@ -1,7 +1,7 @@
 # Read from the view alone, as an app would: each entry whose status is active and not ruled out, so not one whose
 # status was taken from a refuted record (`pod/My condition history` lists those), with its codes, its onset, how many
 # records it joins, and each record with the document it was derived from, when that was retrieved, and the hospitals
-# that wrote it and that keep it, in order, each ended by "; " but the last, its own parts by ", ". Its code is the code IRI the
+# that wrote it and that keep it, in order, separated by U+001F, its own parts by ", ". Its code is the code IRI the
 # entry states, in whichever listed system, the first in code point order when it states several, so that each entry
 # is one row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
@@ -12,7 +12,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?condition ?conditionCode ?onset (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?sources)
     WHERE {
       { SELECT ?entry ?sourceText
         WHERE {

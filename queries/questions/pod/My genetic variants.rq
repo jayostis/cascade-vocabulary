@@ -3,7 +3,7 @@
 # are the literals as the entry states them, an HGVS expression or a ClinVar VariationID on a row of its own. An entry
 # that states no code has one row without either. The page turns a literal into its code system's IRI (rule M4c). Each
 # row names each record the entry joins with the document it was derived from, when that was retrieved, and the
-# hospitals that wrote it and that keep it, in order, each ended by "; " but the last, its own parts by ", ".
+# hospitals that wrote it and that keep it, in order, separated by U+001F, its own parts by ", ".
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
@@ -25,7 +25,7 @@ WHERE {
         FILTER NOT EXISTS { ?variant cascade:hgvsCodingDnaExpression [] }
         FILTER NOT EXISTS { ?variant cascade:clinvarVariationId [] } }
     } }
-  { SELECT ?variant (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+  { SELECT ?variant (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?sources)
     WHERE {
       { SELECT ?variant ?sourceText
         WHERE {

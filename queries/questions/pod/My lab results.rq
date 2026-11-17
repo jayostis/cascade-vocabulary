@@ -2,8 +2,8 @@
 # the code of HL7's ObservationInterpretation, its reference range as text and each bound as written, with its unit,
 # the text each record's source wrote for it, such as a label beside the value (none when no record has one), how many
 # records each entry joins, and each record it joins, with the document it was derived from, when that was
-# retrieved, and the hospitals that wrote it and that keep it. A list holds its values in order, each ended by "; " but
-# the last, and a list with nothing in it is unbound; a value's own parts are ended by ", ". A day and a time are not
+# retrieved, and the hospitals that wrote it and that keep it. A list holds its values in order, separated by U+001F,
+# and a list with nothing in it is unbound; a value's own parts are ended by ", ". A day and a time are not
 # comparable, so entries are ordered by their day first, then by the time as written.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -14,19 +14,19 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?performed ?test ?code ?value ?unit ?status ?interpretations ?referenceRangeText ?referenceRangeLow ?referenceRangeHigh
        ?narrativeTexts (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?narrativeLine; separator=""), "; $", "") AS ?said)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?narrativeLine; separator=""), "\u001F$", "") AS ?said)
     WHERE {
       { SELECT ?entry ?narrativeLine
         WHERE {
           ?entry a cascade:LaboratoryTestResult ; cascade:memberCurrentValues ?values .
           ?values cascade:valuesOfMember ?member .
           OPTIONAL { ?values cascade:narrativeText ?memberNarrativeText }
-          BIND (IF(BOUND(?memberNarrativeText), CONCAT(STR(?member), " ", ?memberNarrativeText, "; "), "") AS ?narrativeLine)
+          BIND (IF(BOUND(?memberNarrativeText), CONCAT(STR(?member), " ", ?memberNarrativeText, "\u001F"), "") AS ?narrativeLine)
         }
         ORDER BY ?entry ?narrativeLine }
     }
     GROUP BY ?entry }
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?flag, "; "), ""); separator=""), "; $", "") AS ?flags)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?flag, "\u001F"), ""); separator=""), "\u001F$", "") AS ?flags)
     WHERE {
       { SELECT ?entry ?flag
         WHERE {
@@ -37,7 +37,7 @@ WHERE {
         ORDER BY ?entry ?flag }
     }
     GROUP BY ?entry }
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?sources)
     WHERE {
       { SELECT ?entry ?sourceText
         WHERE {
