@@ -4,7 +4,8 @@
 # the entry took, the dosage text each record states with the day its prescription was written where it states one, in
 # order of that day and the records stating none last, so a dose changed reads in the order it was written (none when
 # no record states one; a record that states a written day and no dosage text is not in it), the text each record's source
-# wrote for it, such as a stop reason (none when no record has one), how many records it joins, and each record with the
+# wrote for it, such as a stop reason (none when no record has one), what each record was given for, as
+# `pod/My active medications` gives it, how many records it joins, and each record with the
 # document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. A source that states no stop gives no end date: none is
 # inferred from a medication's last appearance. The code is the one `pod/My active medications` gives, and the entries
 # whose lifecycle is cascade:MedicationActive are the ones it lists. A list holds its values in order, separated by U+001F, which no value holds;
@@ -15,7 +16,7 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?medication ?code ?status ?lifecycle ?started ?written ?ended ?statuses ?dosages ?narrativeTexts
+SELECT ?medication ?code ?status ?lifecycle ?started ?written ?ended ?statuses ?dosages ?narrativeTexts ?reasons
        (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "\u001F"); separator=""), "\u001F$", "") AS ?statuses)
@@ -57,6 +58,25 @@ WHERE {
           BIND (IF(BOUND(?memberNarrativeText), CONCAT(STR(?member), " ", ?memberNarrativeText, "\u001F"), "") AS ?narrativeLine)
         }
         ORDER BY ?entry ?narrativeLine }
+    }
+    GROUP BY ?entry }
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?reasonLine; separator=""), "\u001F$", "") AS ?given)
+    WHERE {
+      { SELECT ?entry ?reasonLine
+        WHERE {
+          ?entry a cascade:PrescribedOrReportedMedication ; cascade:memberCurrentValues ?values .
+          ?values cascade:valuesOfMember ?member .
+          OPTIONAL {
+            { ?values cascade:reasonCondition ?conditionRecord .
+              ?conditionEntry a cascade:ProblemOrDiagnosis ; cascade:entryMember ?conditionRecord .
+              OPTIONAL { ?conditionEntry cascade:conditionName ?conditionName }
+              BIND (CONCAT(COALESCE(CONCAT(?conditionName, ", "), ""), STR(?conditionEntry)) AS ?reason) }
+            UNION
+            { ?values cascade:reasonCode ?reasonCode .
+              BIND (STR(?reasonCode) AS ?reason) } }
+          BIND (IF(BOUND(?reason), CONCAT(STR(?member), " for ", ?reason, "\u001F"), "") AS ?reasonLine)
+        }
+        ORDER BY ?entry ?reasonLine }
     }
     GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?sources)
@@ -110,8 +130,9 @@ WHERE {
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   BIND (IF(?stated = "", ?nothing, ?stated) AS ?dosages)
   BIND (IF(?said = "", ?nothing, ?said) AS ?narrativeTexts)
+  BIND (IF(?given = "", ?nothing, ?given) AS ?reasons)
   BIND (COALESCE(IF(STRSTARTS(STR(?chosen), "https://ns.cascadeprotocol.org/codes/rxnorm/"), ?chosen, ?nothing),
                  IF(?candidates = 1, ?only, ?nothing)) AS ?code)
 }
-GROUP BY ?entry ?medication ?code ?status ?lifecycle ?started ?written ?ended ?statuses ?dosages ?narrativeTexts ?entryLabel ?sources
+GROUP BY ?entry ?medication ?code ?status ?lifecycle ?started ?written ?ended ?statuses ?dosages ?narrativeTexts ?reasons ?entryLabel ?sources
 ORDER BY ?medication ?entry

@@ -420,6 +420,27 @@ cascade:medicationUseEndDate a owl:DatatypeProperty ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.effective_x_> .
 
+# What a record was given for; decisions/reasons.md
+
+cascade:reasonCondition a owl:ObjectProperty ;
+    rdfs:label "reason condition"@en ;
+    rdfs:comment "Of a version of a medication, a procedure or a vaccination, a condition it was given or done for, as FHIR's reasonReference to a Condition or a C-CDA Indication whose id is that of a Problem Observation of the same document: the IRI of that condition's record, one for each the source named. It names a record, never a version, and may name a record no source of the pod sent. A reason given only as a code is a cascade:reasonCode."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicalProcedure cascade:Vaccination ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.reasonReference> , <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.reasonReference> , <https://hl7.org/fhir/R4/procedure-definitions.html#Procedure.reasonReference> , <https://hl7.org/fhir/R4/immunization-definitions.html#Immunization.reasonReference> .
+
+cascade:reasonCode a owl:ObjectProperty ;
+    rdfs:label "reason code"@en ;
+    rdfs:comment "Of a version of a medication, a procedure or a vaccination, a code for why it was given or done, as a coding of FHIR's reasonCode or the value of a C-CDA Indication and its translations: a code IRI, one for each such coding in a code system cascade:CodeSystem names, whichever the system is: SNOMED CT, ICD-10-CM. A code in a system no cascade:CodeSystem names is a cascade:reasonCodeInOtherSystem; a condition's record the source names is a cascade:reasonCondition."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicalProcedure cascade:Vaccination ) ] ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.reasonCode> , <https://hl7.org/fhir/R4/medicationstatement-definitions.html#MedicationStatement.reasonCode> , <https://hl7.org/fhir/R4/procedure-definitions.html#Procedure.reasonCode> , <https://hl7.org/fhir/R4/immunization-definitions.html#Immunization.reasonCode> .
+
+cascade:reasonCodeInOtherSystem a owl:DatatypeProperty ;
+    rdfs:label "reason code in another system"@en ;
+    rdfs:comment "Of a version of a medication, a procedure or a vaccination, a code for why it was given or done in a system the vocabulary lists no IRI form for, as a literal typed by its Coding.system URI, as cascade:testCodeInOtherSystem is. A code in a system it does list one for, such as SNOMED CT or ICD-10-CM, is a cascade:reasonCode IRI instead."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( cascade:PrescribedOrReportedMedication cascade:MedicalProcedure cascade:Vaccination ) ] ;
+    rdfs:range rdfs:Literal ;
+    rdfs:seeAlso <https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.reasonCode> , <https://hl7.org/fhir/R4/datatypes-definitions.html#Coding.system> .
+
 # Genetic variants and their interpretations
 
 cascade:GeneticVariantFinding a owl:Class ;
