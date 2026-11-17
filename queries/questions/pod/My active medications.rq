@@ -4,8 +4,17 @@
 # with the day its prescription was written where it states one, in order of that day and the records stating none last
 # (none when no record states one; a record that states a written day and no dosage text is not in it), the text each
 # record's source wrote for it, such as a note beside the row (none when
-# no record has one), and each record with the document it was derived from, when that was retrieved, and the hospitals
-# that wrote it and that keep it. An entry whose status was
+# no record has one), what each record was given for: each condition it names, by the condition's entry and name, and
+# each code of its reason, as "<record> for <entry>, <name>", "<record> for <code IRI>" and, for a code in a system the
+# vocabulary lists none of, "<record> for <system IRI> <code>" (none when no record gives a reason, and no condition
+# whose record is in no entry). Each item puts its IRIs first and its one free-text part last, so a reader takes its
+# kind from the token after "for " up to the first space, never from the text: a pod IRI then "," is a condition entry
+# (then its name, which may hold anything); otherwise a pod IRI alone is a condition entry with no name, an IRI that is
+# not the pod's alone is a code in a listed system, and an IRI followed by a space and more text is a system IRI and its
+# code (as written, which may hold spaces and commas). Items are in code point order of the name or code (a condition with no name first), then the entry or
+# system, then the record, and each record
+# with the document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. An
+# entry whose status was
 # taken from a record that stopped it is not listed, even when another record says it is active: that record's status is
 # in `pod/My medication history`. The code is RxNorm's IRI, or https://ns.cascadeprotocol.org/codes/rxnorm/ followed by
 # the code as written, percent-encoded as ENCODE_FOR_URI does (rule M4c). It is the chosen RxNorm code, as the rule that
@@ -20,8 +29,8 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?medication ?code ?started ?written ?statuses ?dosages ?narrativeTexts (COUNT(?record) AS ?records) ?entry ?entryLabel
-       ?sources
+SELECT ?medication ?code ?started ?written ?statuses ?dosages ?narrativeTexts ?reasons (COUNT(?record) AS ?records) ?entry
+       ?entryLabel ?sources
 WHERE {
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "\u001F"); separator=""), "\u001F$", "") AS ?statuses)
     WHERE {
@@ -65,6 +74,39 @@ WHERE {
           BIND (IF(BOUND(?memberNarrativeText), CONCAT(STR(?member), " ", ?memberNarrativeText, "\u001F"), "") AS ?narrativeLine)
         }
         ORDER BY ?entry ?narrativeLine }
+    }
+    GROUP BY ?entry }
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?reasonLine; separator=""), "\u001F$", "") AS ?given)
+    WHERE {
+      { SELECT ?entry ?reasonLine
+        WHERE {
+          { ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive .
+            BIND ("" AS ?reasonLine) }
+          UNION
+          { ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
+                   cascade:memberCurrentValues ?values .
+            ?values cascade:valuesOfMember ?member ; cascade:reasonCondition ?conditionRecord .
+            ?conditionEntry cascade:entryMember ?conditionRecord .
+            OPTIONAL { ?conditionEntry cascade:conditionName ?conditionName }
+            BIND (CONCAT(STR(?member), " for ", STR(?conditionEntry), COALESCE(CONCAT(", ", ?conditionName), ""), "\u001F") AS ?reasonLine)
+            BIND (COALESCE(?conditionName, "") AS ?reasonKey)
+            BIND (STR(?conditionEntry) AS ?reasonTail) }
+          UNION
+          { ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
+                   cascade:memberCurrentValues ?values .
+            ?values cascade:valuesOfMember ?member ; cascade:reasonCode ?reasonCode .
+            BIND (CONCAT(STR(?member), " for ", STR(?reasonCode), "\u001F") AS ?reasonLine)
+            BIND (STR(?reasonCode) AS ?reasonKey)
+            BIND ("" AS ?reasonTail) }
+          UNION
+          { ?entry a cascade:PrescribedOrReportedMedication ; cascade:lifecycle cascade:MedicationActive ;
+                   cascade:memberCurrentValues ?values .
+            ?values cascade:valuesOfMember ?member ; cascade:reasonCodeInOtherSystem ?otherCode .
+            BIND (CONCAT(STR(?member), " for ", STR(DATATYPE(?otherCode)), " ", STR(?otherCode), "\u001F") AS ?reasonLine)
+            BIND (STR(?otherCode) AS ?reasonKey)
+            BIND (STR(DATATYPE(?otherCode)) AS ?reasonTail) }
+        }
+        ORDER BY ?entry ?reasonKey ?reasonTail ?member }
     }
     GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?sources)
@@ -117,8 +159,9 @@ WHERE {
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   BIND (IF(?stated = "", ?nothing, ?stated) AS ?dosages)
   BIND (IF(?said = "", ?nothing, ?said) AS ?narrativeTexts)
+  BIND (IF(?given = "", ?nothing, ?given) AS ?reasons)
   BIND (COALESCE(IF(STRSTARTS(STR(?chosen), "https://ns.cascadeprotocol.org/codes/rxnorm/"), ?chosen, ?nothing),
                  IF(?candidates = 1, ?only, ?nothing)) AS ?code)
 }
-GROUP BY ?entry ?medication ?code ?started ?written ?entryLabel ?statuses ?dosages ?narrativeTexts ?sources
+GROUP BY ?entry ?medication ?code ?started ?written ?entryLabel ?statuses ?dosages ?narrativeTexts ?reasons ?sources
 ORDER BY ?medication ?entry

@@ -1,5 +1,7 @@
 # Read from the view alone, as an app would: each condition entry whatever its status, with its codes, its status, when
-# it started and when it ended, each record's own status, how many records it joins, and each record with the document it
+# it started and when it ended, each record's own status, each entry given for it as `pod/My active conditions` lists
+# them ("<entry>, <name>", the entry IRI alone when it has no name, in code point order of name, then entry, and with a
+# medication entered in error left out), how many records it joins, and each record with the document it
 # was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. The status is "ruled out"
 # when the record the entry took its status from is refuted, whatever its clinical status, so a condition that was
 # considered and refuted is never read as one that resolved; otherwise it is that record's clinical status, or none when
@@ -16,9 +18,26 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?condition ?conditionCode ?status ?verificationStatus ?onset ?abated ?statuses (COUNT(?record) AS ?records) ?entry
-       ?entryLabel ?sources
+SELECT ?condition ?conditionCode ?status ?verificationStatus ?onset ?abated ?statuses ?entriesForIt
+       (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?forLine; separator=""), "\u001F$", "") AS ?forIt)
+    WHERE {
+      { SELECT ?entry ?forLine
+        WHERE {
+          ?entry a cascade:ProblemOrDiagnosis ; cascade:entryMember ?conditionRecord .
+          OPTIONAL { ?forValues cascade:reasonCondition ?conditionRecord .
+                     ?forEntry cascade:memberCurrentValues ?forValues .
+                     OPTIONAL { ?forEntry cascade:drugName ?drugName }
+                     OPTIONAL { ?forEntry cascade:procedureName ?procedureName }
+                     OPTIONAL { ?forEntry cascade:vaccineName ?vaccineName }
+                     FILTER NOT EXISTS { ?forEntry cascade:lifecycle cascade:MedicationEnteredInError } }
+          BIND (COALESCE(?drugName, ?procedureName, ?vaccineName) AS ?forName)
+          BIND (IF(BOUND(?forEntry), CONCAT(STR(?forEntry), COALESCE(CONCAT(", ", ?forName), ""), "\u001F"), "") AS ?forLine)
+        }
+        ORDER BY ?entry ?forName ?forEntry }
+    }
+    GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "\u001F"); separator=""), "\u001F$", "") AS ?statuses)
     WHERE {
       { SELECT ?entry ?statusText
@@ -81,6 +100,7 @@ WHERE {
              FILTER NOT EXISTS { ?entry cascade:verificationStatus "refuted" } }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   BIND (IF(BOUND(?verificationStatus) && ?verificationStatus = "refuted", "ruled out", ?clinicalStatus) AS ?status)
+  BIND (IF(?forIt = "", ?nothing, ?forIt) AS ?entriesForIt)
 }
-GROUP BY ?entry ?condition ?conditionCode ?status ?verificationStatus ?onset ?abated ?entryLabel ?statuses ?sources
+GROUP BY ?entry ?condition ?conditionCode ?status ?verificationStatus ?onset ?abated ?entryLabel ?statuses ?entriesForIt ?sources
 ORDER BY ?condition ?entry

@@ -1,17 +1,37 @@
 # Read from the view alone, as an app would: each entry whose status is active and not ruled out, so not one whose
-# status was taken from a refuted record (`pod/My condition history` lists those), with its codes, its onset, how many
-# records it joins, and each record with the document it was derived from, when that was retrieved, and the hospitals
-# that wrote it and that keep it, in order, separated by U+001F, its own parts by ", ". Its code is the code IRI the
-# entry states, in whichever listed system, the first in code point order when it states several, so that each entry
-# is one row.
+# status was taken from a refuted record (`pod/My condition history` lists those), with its codes, its onset, each entry
+# of a medication, procedure or vaccination a record of which was given for one of its records, once, as "<entry>, <name>"
+# (the entry IRI alone when it has no name; the entry IRI holds no ", ", so the first ", " ends it and the name, which may
+# hold anything, is the rest; none when no record names one; not an entry of a medication its source marked entered in
+# error), in code point order of name (an entry with no name first), then entry, how many records it joins, and each record with the document it was derived from, when that was retrieved,
+# and the hospitals that wrote it and that keep it. A list holds its values in order, separated by U+001F, a value's own
+# parts by ", ". Its code is the code IRI the entry states, in whichever listed system,
+# the first in code point order when it states several, so that each entry is one row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?condition ?conditionCode ?onset (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
+SELECT ?condition ?conditionCode ?onset ?entriesForIt (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?forLine; separator=""), "\u001F$", "") AS ?forIt)
+    WHERE {
+      { SELECT ?entry ?forLine
+        WHERE {
+          ?entry a cascade:ProblemOrDiagnosis ; cascade:entryMember ?conditionRecord .
+          OPTIONAL { ?forValues cascade:reasonCondition ?conditionRecord .
+                     ?forEntry cascade:memberCurrentValues ?forValues .
+                     OPTIONAL { ?forEntry cascade:drugName ?drugName }
+                     OPTIONAL { ?forEntry cascade:procedureName ?procedureName }
+                     OPTIONAL { ?forEntry cascade:vaccineName ?vaccineName }
+                     FILTER NOT EXISTS { ?forEntry cascade:lifecycle cascade:MedicationEnteredInError } }
+          BIND (COALESCE(?drugName, ?procedureName, ?vaccineName) AS ?forName)
+          BIND (IF(BOUND(?forEntry), CONCAT(STR(?forEntry), COALESCE(CONCAT(", ", ?forName), ""), "\u001F"), "") AS ?forLine)
+        }
+        ORDER BY ?entry ?forName ?forEntry }
+    }
+    GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?sources)
     WHERE {
       { SELECT ?entry ?sourceText
@@ -55,6 +75,7 @@ WHERE {
   }
   OPTIONAL { ?entry cascade:onsetDate ?onset }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
+  BIND (IF(?forIt = "", ?nothing, ?forIt) AS ?entriesForIt)
 }
-GROUP BY ?entry ?condition ?conditionCode ?onset ?entryLabel ?sources
+GROUP BY ?entry ?condition ?conditionCode ?onset ?entriesForIt ?entryLabel ?sources
 ORDER BY ?condition ?entry

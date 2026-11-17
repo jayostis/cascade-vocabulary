@@ -1,0 +1,14 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:affa0d96-7960-81ed-a49f-6d6e422a642d> a cascade:PrescribedOrReportedMedication ;
+    cascade:sourceUrl <https://fhir.example/MedicationRequest/record-medication-given-for-a-condition> .
+
+:version prov:specializationOf <urn:uuid:affa0d96-7960-81ed-a49f-6d6e422a642d> ;
+    cascade:patient :patient ;
+    cascade:drugName "albuterol 0.09 MG/ACTUAT Metered Dose Inhaler" ;
+    cascade:prescribedOrReported "prescribed" ;
+    cascade:reasonCondition <urn:uuid:c63062ac-32e5-82a1-b55e-7d3fc53a643e> ;
+    cascade:reasonCode <http://snomed.info/id/195967001> , <https://ns.cascadeprotocol.org/codes/icd10cm/J45.909> ;
+    cascade:reasonCodeInOtherSystem "A-4412"^^<urn:oid:2.16.840.1.113883.19.5.99999.8> .

@@ -1167,6 +1167,37 @@ cascade:NarrativeTextShape a sh:NodeShape ;
         sh:severity sh:Violation
     ] .
 
+cascade:VersionWithReasonShape a sh:NodeShape ;
+    sh:targetSubjectsOf cascade:reasonCondition , cascade:reasonCode , cascade:reasonCodeInOtherSystem ;
+    sh:property [
+        sh:path cascade:reasonCondition ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A version names a condition it was given for by the IRI of that condition's record, one for each the source named"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reasonCode ;
+        sh:node cascade:CodeInAListedSystemShape ;
+        sh:message "A reason code is a code IRI of a code system the vocabulary lists, in that system's form, one per coding the source gave; a NullFlavor or data absent reason is no code"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reasonCodeInOtherSystem ;
+        sh:nodeKind sh:Literal ;
+        sh:minLength 1 ;
+        sh:not cascade:LiteralTypedByAnXsdOrRdfDatatypeShape ;
+        sh:message "A reason code in another system is a non-empty literal typed by its system's URI, never a plain or language-tagged string or another XSD or RDF datatype, one per coding the source gave"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reasonCodeInOtherSystem ;
+        sh:not cascade:LiteralTypedByASystemsOidOrNonPreferredUriShape ;
+        sh:message "A reason code in another system is typed by the URI the system table gives its system, never by urn:oid: or URN:OID: and an OID in the table, or by a URI the table reads as another"@en ;
+        sh:severity sh:Violation
+    ] , [
+        sh:path cascade:reasonCodeInOtherSystem ;
+        sh:not cascade:LiteralTypedByAListedSystemUriShape ;
+        sh:message "A reason code in a system the vocabulary lists a code IRI form for is a cascade:reasonCode IRI, never a literal typed by that system's URI"@en ;
+        sh:severity sh:Violation
+    ] .
+
 # Records
 
 cascade:SourceUrlShape a sh:NodeShape ;

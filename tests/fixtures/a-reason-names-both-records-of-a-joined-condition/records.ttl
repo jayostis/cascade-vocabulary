@@ -1,0 +1,22 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:asthmaOld a cascade:ProblemOrDiagnosis .
+:asthmaOldVersion prov:specializationOf :asthmaOld ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .
+:asthmaOldRevision a cascade:Revision ; cascade:revisionOf :asthmaOld ; cascade:version :asthmaOldVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:asthmaNew a cascade:ProblemOrDiagnosis .
+:asthmaNewVersion prov:specializationOf :asthmaNew ; cascade:patient :subject ; cascade:conditionName "Asthma" ; cascade:clinicalStatus "active" .
+:asthmaNewRevision a cascade:Revision ; cascade:revisionOf :asthmaNew ; cascade:version :asthmaNewVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:albuterol a cascade:PrescribedOrReportedMedication .
+:albuterolVersion prov:specializationOf :albuterol ; cascade:patient :subject ; cascade:drugName "Albuterol inhaler" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ; cascade:reasonCondition :asthmaOld , :asthmaNew .
+:albuterolRevision a cascade:Revision ; cascade:revisionOf :albuterol ; cascade:version :albuterolVersion ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:00Z"^^xsd:dateTime .

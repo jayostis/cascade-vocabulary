@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-vaccination-given-for-a-code" ;
+  rdfs:comment "A completed vaccination whose version gives its reason as a SNOMED CT code and as a code in a system the vocabulary lists none of." ;
+  mf:entries (
+    <#the-codes-the-view-shows>
+  ) .
+
+<#the-codes-the-view-shows> a mf:QueryEvaluationTest ;
+  mf:name "the-codes-the-view-shows" ;
+  rdfs:comment "The immunizations view keeps both of a member's reason codes on its values, the listed one as its IRI and the other as the literal typed by its system." ;
+  mf:action [ qt:query <the-codes-the-view-shows.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-codes-the-view-shows.srj> .

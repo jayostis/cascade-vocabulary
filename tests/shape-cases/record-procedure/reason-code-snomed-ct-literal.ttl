@@ -1,0 +1,11 @@
+@prefix : <#> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<urn:uuid:8b99b615-7909-8caa-971c-5a7bcd351bb4> a cascade:MedicalProcedure ;
+    cascade:sourceUrl <https://fhir.example/Procedure/record-procedure-reason-code-snomed-ct-literal> .
+
+:version prov:specializationOf <urn:uuid:8b99b615-7909-8caa-971c-5a7bcd351bb4> ;
+    cascade:patient :patient ;
+    cascade:procedureName "Spirometry" ;
+    cascade:reasonCodeInOtherSystem "195967001"^^<http://snomed.info/sct> .

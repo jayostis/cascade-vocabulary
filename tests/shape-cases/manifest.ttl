@@ -458,6 +458,20 @@
   mf:action [ sht:dataGraph <record-medication/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .
 
+<#record-medication/given-for-a-condition> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/given-for-a-condition.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#record-medication/reason-a-reference-string> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-medication/reason-a-reference-string.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:VersionWithReasonShape ; sh:resultPath cascade:reasonCondition ] ] .
+
+<#record-procedure/reason-code-snomed-ct-literal> a sht:Validate ;
+  mf:action [ sht:dataGraph <record-procedure/reason-code-snomed-ct-literal.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:VersionWithReasonShape ; sh:resultPath cascade:reasonCodeInOtherSystem ] ] .
+
 <#record-medication/without-intent> a sht:Validate ;
   mf:action [ sht:dataGraph <record-medication/without-intent.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;

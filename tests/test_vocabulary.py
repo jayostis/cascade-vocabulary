@@ -55,6 +55,7 @@ HELD_AS_CODE_IRIS = {
     CASCADE_NS.dosageRouteCodeInOtherSystem: {CASCADE_NS.dosageRouteCode: (CASCADE_NS.SNOMEDCT,)},
     CASCADE_NS.reportCodeInOtherSystem: {CASCADE_NS.reportCode: (CASCADE_NS.LOINC, CASCADE_NS.SNOMEDCT)},
     CASCADE_NS.noteOrDocumentTypeCodeInOtherSystem: {CASCADE_NS.noteOrDocumentTypeCode: (CASCADE_NS.LOINC,)},
+    CASCADE_NS.reasonCodeInOtherSystem: {CASCADE_NS.reasonCode: EVERY_LISTED_SYSTEM},
 }
 
 
@@ -390,6 +391,7 @@ class TestTermsTheShapesAndOntologyAgreeOn:
             pytest.param(CASCADE_NS.dosageRouteCodeInOtherSystem, id="dosage route"),
             pytest.param(CASCADE_NS.reportCodeInOtherSystem, id="report"),
             pytest.param(CASCADE_NS.noteOrDocumentTypeCodeInOtherSystem, id="note or document type"),
+            pytest.param(CASCADE_NS.reasonCodeInOtherSystem, id="reason"),
         ])
         def test_refuses_exactly_the_system_uris_its_kind_holds(self, path):
             """refuses exactly the system URIs its kind already holds as code IRIs
@@ -420,6 +422,7 @@ class TestTermsTheShapesAndOntologyAgreeOn:
         @pytest.mark.parametrize("property", [
             pytest.param(CASCADE_NS.conditionCode, id="condition"),
             pytest.param(CASCADE_NS.procedureCode, id="procedure"),
+            pytest.param(CASCADE_NS.reasonCode, id="reason"),
         ])
         def test_takes_the_code_iri_of_every_system_the_vocabulary_lists_a_stem_for(self, property):
             """takes the code IRI of every system the vocabulary lists a stem for

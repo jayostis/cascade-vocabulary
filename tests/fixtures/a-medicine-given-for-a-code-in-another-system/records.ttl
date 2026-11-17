@@ -1,0 +1,13 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:albuterol a cascade:PrescribedOrReportedMedication .
+:albuterolVersion prov:specializationOf :albuterol ; cascade:patient :subject ; cascade:drugName "Albuterol inhaler" ;
+    cascade:prescribedOrReported "reportedUse" ; cascade:workflowStatus "active" ;
+    cascade:reasonCodeInOtherSystem "A-4412"^^<urn:oid:2.16.840.1.113883.19.5.99999.8> .
+:albuterolRevision a cascade:Revision ; cascade:revisionOf :albuterol ; cascade:version :albuterolVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

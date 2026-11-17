@@ -1,0 +1,42 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-medicine-and-a-procedure-given-for-a-condition" ;
+  rdfs:comment "An active asthma; an active medicine and a completed procedure, each of whose versions names the asthma's record as its reason; and an active eczema no record names." ;
+  mf:entries (
+    <#my-active-conditions>
+    <#my-condition-history>
+    <#my-active-medications>
+    <#my-medication-history>
+  ) .
+
+<#my-active-conditions> a mf:QueryEvaluationTest ;
+  mf:name "my-active-conditions" ;
+  rdfs:comment "The asthma lists the medicine's entry and the procedure's, each with its name; the eczema lists none." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20conditions.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-conditions.srj> .
+
+<#my-condition-history> a mf:QueryEvaluationTest ;
+  mf:name "my-condition-history" ;
+  rdfs:comment "The asthma lists the medicine's entry and the procedure's, each with its name; the eczema lists none." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20condition%20history.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-condition-history.srj> .
+
+<#my-active-medications> a mf:QueryEvaluationTest ;
+  mf:name "my-active-medications" ;
+  rdfs:comment "The medicine's row says its record was given for the asthma, by the asthma's name and entry." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-medications.srj> .
+
+<#my-medication-history> a mf:QueryEvaluationTest ;
+  mf:name "my-medication-history" ;
+  rdfs:comment "The medicine's row says its record was given for the asthma, by the asthma's name and entry." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20medication%20history.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-medication-history.srj> .

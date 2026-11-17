@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-joined-medicine-names-the-condition-twice" ;
+  rdfs:comment "An active asthma, and a prescription and a list entry for one medicine, which the person judged the Same, each of whose versions names the asthma's record as its reason." ;
+  mf:entries (
+    <#my-active-conditions>
+    <#my-active-medications>
+  ) .
+
+<#my-active-conditions> a mf:QueryEvaluationTest ;
+  mf:name "my-active-conditions" ;
+  rdfs:comment "The asthma lists the medicine's one entry once, though two of its records name the asthma." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20conditions.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-conditions.srj> .
+
+<#my-active-medications> a mf:QueryEvaluationTest ;
+  mf:name "my-active-medications" ;
+  rdfs:comment "The medicine's one row has a line for each of its two records, each naming the asthma and its entry." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-medications.srj> .
