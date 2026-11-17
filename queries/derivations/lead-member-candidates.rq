@@ -15,10 +15,12 @@ WHERE {
     WHERE {
       ?member0 cascade:inEntry ?entry ; cascade:currentRevision ?r0 .
       MINUS {
+        { SELECT DISTINCT ?entry WHERE {
+            ?entered0 cascade:inEntry ?entry ; cascade:currentRevision ?enteredRevision0 .
+            FILTER NOT EXISTS { ?enteredRevision0 prov:wasDerivedFrom [] }
+          } }
         ?shadowed0 cascade:inEntry ?entry ; cascade:currentRevision ?r0 .
         ?r0 prov:wasDerivedFrom [] .
-        ?entered0 cascade:inEntry ?entry ; cascade:currentRevision ?enteredRevision0 .
-        FILTER NOT EXISTS { ?enteredRevision0 prov:wasDerivedFrom [] }
       }
       MINUS {
         ?r0 cascade:judgedBefore ?later0 .
@@ -31,10 +33,12 @@ WHERE {
     GROUP BY ?entry }
   ?member cascade:inEntry ?entry ; cascade:currentRevision ?r .
   MINUS {
+    { SELECT DISTINCT ?entry WHERE {
+        ?entered cascade:inEntry ?entry ; cascade:currentRevision ?enteredRevision .
+        FILTER NOT EXISTS { ?enteredRevision prov:wasDerivedFrom [] }
+      } }
     ?shadowed cascade:inEntry ?entry ; cascade:currentRevision ?r .
     ?r prov:wasDerivedFrom [] .
-    ?entered cascade:inEntry ?entry ; cascade:currentRevision ?enteredRevision .
-    FILTER NOT EXISTS { ?enteredRevision prov:wasDerivedFrom [] }
   }
   MINUS {
     ?r cascade:judgedBefore ?later .
