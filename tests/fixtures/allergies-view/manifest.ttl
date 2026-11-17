@@ -5,16 +5,24 @@
 
 <> a mf:Manifest ;
   rdfs:label "allergies-view" ;
-  rdfs:comment "An active allergy entry of two members, the later one entered by the person, stating urticaria and itching, moderate, and no status, the other anaphylaxis, severe; and an inactive allergy." ;
+  rdfs:comment "An active allergy entry of two members, the later one entered by the person, stating urticaria and itching, moderate, and no status, and an onset written to the hour, the other anaphylaxis, severe, and an earlier onset; and an inactive allergy, its onset written to the hour." ;
   mf:entries (
     <#what-it-shows>
     <#where-it-came-from>
     <#my-active-allergies>
+    <#its-padded-onset>
   ) .
+
+<#its-padded-onset> a mf:QueryEvaluationTest ;
+  mf:name "its-padded-onset" ;
+  rdfs:comment "An onset its source wrote to the hour keeps, in the view, the node saying so and what was written, on the entry and on its member's values, each named after its holder and -padded-." ;
+  mf:action [ qt:query <its-padded-onset.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <its-padded-onset.srj> .
 
 <#what-it-shows> a mf:QueryEvaluationTest ;
   mf:name "what-it-shows" ;
-  rdfs:comment "Each statement of each allergy entry in its view and each value its members state, with the member that states it and whether that member leads: the allergen, code, reactions and severity from the lead, the member the person entered, the other member's allergen, reaction and severity beside them, the status from the latest derived from a document, and the highest criticality." ;
+  rdfs:comment "Each statement of each allergy entry in its view and each value its members state, with the member that states it and whether that member leads: the allergen, code, reactions and severity from the lead, the category and onset from the lead, else from the member chosen for each, the member the person entered, the other member's allergen, category, onset, reaction and severity beside them, the status from the latest derived from a document, and the highest criticality." ;
   mf:action [ qt:query <../../../queries/questions/entry/What%20it%20shows.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-it-shows.srj> .
@@ -28,7 +36,7 @@
 
 <#my-active-allergies> a mf:QueryEvaluationTest ;
   mf:name "my-active-allergies" ;
-  rdfs:comment "Only the active entry, with its code, its highest criticality, what each record it joins states of the reaction (texts, codes, severity), how many records it joins, and each of them with its document, when that was retrieved and the hospital that wrote it; the one the person entered has none." ;
+  rdfs:comment "Only the active entry, with its code, its highest criticality, the category and the onset of its lead, else of the members chosen for them, its onset written to the hour, what each record it joins states of the reaction (texts, codes, severity), how many records it joins, and each of them with its document, when that was retrieved and the hospital that wrote it; the one the person entered has none." ;
   mf:action [ qt:query <../../../queries/questions/pod/My%20active%20allergies.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <my-active-allergies.srj> .

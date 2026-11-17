@@ -1,9 +1,12 @@
 @prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 [] a cascade:AllergyOrIntolerance ;
   cascade:entryMember <urn:uuid:69961a65-6383-84b7-96f1-0a88fb755c9c> , <urn:uuid:0f282f2d-4ceb-897a-bdb8-750d6e25db2d> , <urn:uuid:58e34d36-550a-882e-b43a-9225dbdce037> ;
   cascade:allergenName "Penicillin" ;
   cascade:allergenCode <http://snomed.info/id/373270004> ;
+  cascade:allergyCategory "medication" ;
+  cascade:onsetDate "2019-06-14"^^xsd:date ;
   cascade:reactionManifestationText "Hives" ;
   cascade:leadMember <urn:uuid:58e34d36-550a-882e-b43a-9225dbdce037> ;
   cascade:clinicalStatus "active" ;
@@ -14,6 +17,8 @@
   cascade:entryMember <urn:uuid:5a16d5f4-34b0-8fb6-9f5c-59b37aa6d4dc> , <urn:uuid:b0492421-a1b7-8de4-817e-8940bf97f7df> , <urn:uuid:828f3452-da1d-83e7-9fd4-23f49d355848> ;
   cascade:allergenName "Sulfamethoxazole" ;
   cascade:allergenCode <https://ns.cascadeprotocol.org/codes/rxnorm/10180> ;
+  cascade:allergyCategory "medication" ;
+  cascade:onsetDate "2022-05-03"^^xsd:date ;
   cascade:reactionManifestationText "Hives" ;
   cascade:leadMember <urn:uuid:828f3452-da1d-83e7-9fd4-23f49d355848> ;
   cascade:clinicalStatus "active" ;
@@ -24,6 +29,7 @@
   cascade:entryMember <urn:uuid:b28ee795-dd4b-8fae-95cb-fe95c9a908cd> ;
   cascade:allergenName "Latex" ;
   cascade:allergenCode <http://snomed.info/id/111088007> ;
+  cascade:allergyCategory "environment" ;
   cascade:reactionManifestationText "Contact dermatitis" ;
   cascade:leadMember <urn:uuid:b28ee795-dd4b-8fae-95cb-fe95c9a908cd> ;
   cascade:clinicalStatus "active" ;

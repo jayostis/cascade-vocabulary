@@ -1,0 +1,10 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT DISTINCT ?allergenName ?category ?onset
+WHERE {
+  GRAPH <https://pod.example/clinical/allergies.ttl> {
+    ?entry cascade:entryMember [] ; cascade:allergenName ?allergenName .
+    OPTIONAL { ?entry cascade:allergyCategory ?category }
+    OPTIONAL { ?entry cascade:onsetDate ?onset }
+  }
+}

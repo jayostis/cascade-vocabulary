@@ -3,7 +3,8 @@
 # ClockDiscounted leaves carrying none, then the least IRI. A medication entry takes its start of use and the day its
 # prescription was written each the same way, among the members that state that
 # date, so it shows both when no one member states both. A medication entry takes its dosage text the same way, so an
-# entry whose lead states none shows the dosage of the member chosen so.
+# entry whose lead states none shows the dosage of the member chosen so. An allergy entry takes its onset date and its
+# category the same way.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -22,6 +23,8 @@ WHERE {
                 (cascade:medicationUseStartDate  cascade:medicationUseStartDateFrom)
                 (cascade:prescriptionWrittenDate cascade:prescriptionWrittenDateFrom)
                 (cascade:dosageInstructionText                  cascade:dosageFrom)
+                (cascade:onsetDate                              cascade:onsetDateFrom)
+                (cascade:allergyCategory                        cascade:allergyCategoryFrom)
               }
               ?r2 cascade:inEntry ?entry ; cascade:currentRevision ?rev2 ; pav:hasCurrentVersion ?v2 .
               ?v2 ?dateProperty [] .
