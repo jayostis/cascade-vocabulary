@@ -45,7 +45,7 @@ fixes: [#206](https://github.com/jayostis/cascade-vocabulary/issues/206); the ru
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
-| content names and the held-state rule | git's content-named objects | a version is named by its content and an arrival the pod already holds writes nothing (`naming.md`, `currency.md`): an unchanged daily pull costs a hash and a lookup per resource, about 73M hashes in ten years, 0.5 to 2 CPU-hours, and writes 0 files (assumed, computed) (`runtime/arrivals.feature`, A1, A3 and A4) | borrowed |
+| content names and the held-state rule | git's content-named objects | a version is named by its content and an arrival the pod already holds writes no revision, and a document is named by its bytes and kept whenever the pod does not keep those bytes, whether or not it wrote a revision (`naming.md`, `currency.md`): a daily pull whose bytes repeat costs a hash and a lookup per resource, about 73M hashes in ten years, 0.5 to 2 CPU-hours, and writes 0 files (assumed, computed); one whose bytes change and no state does writes 3 files, its document's bytes, the document's description and the import's act: the bytes of the document and about 4.6 KB (measured: 14 KB at 20 resources, 101 KB at 200, 489 KB at 1,000, a pod of 3,004 files and 4.9 MB at 1,000). At year ten that is about 465k files and about 36 GB if every pull's bytes change (assumed, computed) (`runtime/arrivals.feature`, A1, A3, A4 and A10) | borrowed |
 | snapshot chain | git commit parents; delta-state CRDTs | each snapshot is the previous one's hash plus the act's additions, with an order-free hash of the set (`naming.md`): 60 to 115 MB in ten years (computed) (`runtime/naming.feature`, N14) | borrowed from git's chain; diverged from git's tree, 1 to 2 GB with this layout (assumed) |
 | sync as union, with the no-hash test | CRDT union; git's index | a sync is a union of files, written only when the writer holds an act, other than a sync, whose snapshot is no ancestor of its last snapshot; files that change in place are outside the set (`naming.md`): a check costs a walk of the snapshots the writer holds, kept in memory, never a read of every file (`runtime/sync.feature`, S1) | borrowed from CRDTs; the test is ours |
 | current per act, incrementally | openEHR `CONTRIBUTION`; FHIR `_since` | an act rebuilds only the records it wrote revisions for and those its judgments reach by derivation, equal to the full rebuild; a migration, a trusted-makers change and a rule list version change rebuild everything (`currency.md`; `runtime/currency.feature`, C8): the work is what the act touched and its groups; on Oxigraph JS 0.5.11 at 10k records a step's rebuild takes 0.8 to 1.8 s against 9 to 11 s whole, the writing of the views and labels about half of it (measured, on a machine shared with other work) | ours |
@@ -61,9 +61,24 @@ fixes: [#206](https://github.com/jayostis/cascade-vocabulary/issues/206); the ru
 
 ## Why
 
-**Storage follows change, not polling.** (row "content names and the held-state rule") Content names and the held-state rule mean a daily pull that finds nothing
-new writes nothing, so the pod is about 443k files and 1 GB at year ten (assumed, A2) however often it is pulled; the
-cost of a pull is CPU, about two hours over ten years.
+**Storage follows change in a pull's bytes, not polling.** (row "content names and the held-state rule") A daily pull whose bytes repeat writes
+nothing, and one that changes a record's state writes the revision, as before. A pull whose bytes change and no state
+does now writes its document too, because every document the pod does not keep is kept (A10; `currency.md`, "Why every
+document is kept"). Measured on a synthetic pull of the D0 bench's shape, restamped in its Bundle's `meta` and
+imported again: 3 files and the Bundle's bytes, about 484 bytes a resource (1,000 resources: 3 files, 489 KB, of which
+the Bundle is 485 KB); the same bytes again write 0 files. The D0 bench's second import, a second hospital's
+pull of 1,000 resources onto a pod holding the first's, brings one document that is new in bytes and in records, so it
+was kept before this rule and writes the same 3,004 files; its documents do not repeat, and a pull whose documents did would add the 3 files above and no more.
+That breaks this note's bound where a server's Bundle differs each day. #206's A3 reads about 20k resources a day from
+two servers: 7,300 pulls in ten years, each adding about 3 files and 4.6 KB beside the Bundle, so about 22k files,
+about 465k in all, and about 20k resources a day of 484 bytes, 9.7 MB a day and about 35 GB of documents, so **about
+36 GB at year ten, where this note said 1 GB** (computed from the measured bytes; the 20k a day and the Bundle
+differing every day are assumed, as no real server's Bundle is in this repository, and a real resource is larger than
+the bench's, which is not measured here). The files bound holds; the bytes bound holds only for sources that return
+the same bytes when nothing changed. The cost of a pull is still CPU, about two hours over ten years, since a changed
+document was converted before too; the chain of snapshots adds about 3 MB for the 22k names. A way to bound the bytes
+(storing documents compressed, or a rule for a pull that restates what a held pull said) is a new ruling and not made
+here.
 
 **History is a chain, never a list per act.** (row "snapshot chain") Anything that names the whole set on every act is quadratic: 1.1 to 2.1
 billion entries over 5,000 acts. A chain of additions sums to the set itself, 60 to 115 MB, and the order-free hash
