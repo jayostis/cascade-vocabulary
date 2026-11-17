@@ -1,0 +1,20 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:northgate rdfs:label "Northgate" .
+
+:peanut a cascade:AllergyOrIntolerance .
+:peanutVersion prov:specializationOf :peanut ; cascade:patient :subject ; cascade:allergenName "Peanut" ; cascade:clinicalStatus "active" .
+:peanutRevision a cascade:Revision ; cascade:revisionOf :peanut ; cascade:version :peanutVersion ; prov:wasDerivedFrom :named ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:named a prov:Entity ; prov:wasAttributedTo :northgate ;
+    pav:retrievedFrom <https://fhir.example/R4/AllergyIntolerance/peanut> ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ] .
+:unnamed a prov:Entity ; prov:wasAttributedTo :northgate ;
+    pav:retrievedFrom <https://fhir.example/R4/Condition/asthma> ; pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :northgate ] ] .

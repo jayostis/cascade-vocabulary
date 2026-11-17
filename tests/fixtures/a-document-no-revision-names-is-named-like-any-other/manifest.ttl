@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-document-no-revision-names-is-named-like-any-other" ;
+  rdfs:comment "Two downloads of one hospital that both stay in the pod: one a revision was made from, and one that wrote no revision because it said nothing the pod did not already hold." ;
+  mf:entries (
+    <#the-document-labels>
+  ) .
+
+<#the-document-labels> a mf:QueryEvaluationTest ;
+  mf:name "the-document-labels" ;
+  rdfs:comment "A document no revision names is labelled from its author, address and day as one a revision names is." ;
+  mf:action [ qt:query <the-document-labels.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-document-labels.srj> .

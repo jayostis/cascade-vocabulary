@@ -70,7 +70,9 @@ WHERE {
   UNION
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
-      ?revision a cascade:Revision ; prov:wasDerivedFrom ?thing .
+      { ?revision a cascade:Revision ; prov:wasDerivedFrom ?thing }
+      UNION
+      { ?thing a prov:Entity . FILTER NOT EXISTS { ?thing prov:specializationOf [] } FILTER NOT EXISTS { ?thing a cascade:Revision } }
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       OPTIONAL { ?thing prov:wasGeneratedBy/prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?authorName ] }
       OPTIONAL { ?thing prov:wasGeneratedBy/prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?custodianName ] }
