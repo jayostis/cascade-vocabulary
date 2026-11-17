@@ -692,7 +692,7 @@ Feature: Arrivals
     cascade:ClockBehind, whose oa:motivatedBy is oa:classifying, whose oa:hasTarget is each revision either check
     found, and whose cascade:writerClockBehindByAtLeastDays is the greatest whole number of days one of them shows; it
     files none when an act in the first-parent ancestry of its snapshot (cascade:firstParentSnapshot, N14) filed one
-    that no person's judgment answers, neither a cascade:Acknowledged whose member is the finding nor a
+    that no person's judgment answers, neither a cascade:Acknowledged of cascade:ClockBehind nor a
     cascade:ClockDiscounted whose member is the act that filed it, each standing as C7 reads a person's judgment. So a
     writer has one unanswered at a time, and a clock that stays wrong is found once more after each answer; another
     writer's finding, received by a sync, silences nothing. Its name follows cascade:FindingNamingRule.
