@@ -9,6 +9,7 @@ from rdflib import OWL, RDF, RDFS, Graph, Literal, URIRef
 
 from contract import CASCADE, PROV, QUERIES, ROOT, built, derivations, named, query, questions
 from engines import ENGINES, Oxigraph, bound_to_records, marked_groups
+from group_budget import group_of, over_budget, unseen
 from manifests import Entry, entries, failure, lens_name, row
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
@@ -36,7 +37,18 @@ def entry_id(fixture, entry):
     return f"{fixture.name}-{entry.name}"
 
 
-ENTRIES = [on_its_worker(fixture, entry, id=entry_id(fixture, entry), says=f"{fixture.comment} {entry.comment}")
+SLOW_ON_RDFLIB = ("matcher-same-variation-through-table", "matcher-same-result-by-value-and-unit",
+                  "matcher-same-product-code", "matcher-same-note-type-and-text")
+
+
+def slow_on_rdflib(fixture):
+    """Whether a case of the fixture takes seconds on rdflib, which evaluates a comparison once for each record it is
+    bound to: the fixture's cases are each a part of its group, built again on the worker that draws one."""
+    return fixture.name.startswith(SLOW_ON_RDFLIB)
+
+
+ENTRIES = [on_its_worker(fixture, entry, id=entry_id(fixture, entry), says=f"{fixture.comment} {entry.comment}",
+                         part=entry.name if slow_on_rdflib(fixture) else None)
            for fixture in FIXTURES for entry in entries(fixture.manifest)]
 
 
@@ -45,6 +57,23 @@ def answers(fixture, lens):
     """The rows of every question and every matcher comparison."""
     held = built_once(fixture, "oxigraph", lens).store
     return {name: held.select(query(relative)) for name, relative in ASKED.items()}
+
+
+def listing_most_unlisted_queries_first():
+    """The fixtures, each after the ones that list the most queries no fixture before it lists, then those that list
+    none, the more a fixture lists first: a fixture lists a query to show what it gives."""
+    listed = {}
+    for case in ENTRIES:
+        listed.setdefault(case.values[0], set()).add(Path(case.values[1].query).resolve())
+    ordered, unlisted = [], {(QUERIES / relative).resolve() for relative in ASKED.values()}
+    while unlisted:
+        fixture = max(listed, key=lambda fixture: len(listed[fixture] & unlisted), default=None)
+        if fixture is None or not listed[fixture] & unlisted:
+            break
+        ordered.append(fixture)
+        unlisted -= listed.pop(fixture)
+    return ordered + sorted((fixture for fixture in FIXTURES if fixture not in ordered),
+                            key=lambda fixture: -len(listed.get(fixture, ())))
 
 
 def lenses_that_differ(fixture):
@@ -99,6 +128,11 @@ PERSONS_JUDGMENTS = """
 
 
 MATCHER_FIXTURES = [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES if fixture.name.startswith("matcher-")]
+COMPARISONS_MADE_FROM = [
+    on_its_worker(fixture, [relative], id=f"{fixture.name}-{Path(relative).stem}", part=Path(relative).stem)
+    for fixture in FIXTURES if slow_on_rdflib(fixture) for relative in MADE_FROM
+] + [on_its_worker(fixture, list(MADE_FROM), id=fixture.name)
+     for fixture in FIXTURES if fixture.name.startswith("matcher-") and not slow_on_rdflib(fixture)]
 ORDERED_ENTRIES = [case for case in ENTRIES if Path(case.values[1].query).resolve() in ORDERED]
 
 
@@ -199,17 +233,24 @@ class TestWhatEachQueryGives:
 
             Takes every derivation, lens, view and question or comparison, and strikes off each that, over some fixture,
             adds a triple to the derived state, makes a view file hold a subject of its own, or (under a lens that
-            matters there) gives rows; any query left unstruck is never shown to do anything by a fixture.
+            matters there) gives rows; any query left unstruck is never shown to do anything by a fixture. A fixture that
+            holds no judgment is read under the first lens only, for every lens gives it one derived state, and a question
+            is run only until some fixture strikes it off. The fixtures are taken in the order that reaches every query a
+            manifest lists soonest, and no more are built once none is left.
             """
             quiet = {*derivations(LENSES[0]), *named("lenses").values(), *built().values(), *ASKED.values()}
-            for fixture in FIXTURES:
-                for lens in LENSES:
+            for fixture in listing_most_unlisted_queries_first():
+                if not quiet:
+                    break
+                judged = holds_a_judgment(fixture)
+                differing = lenses_that_differ(fixture) if judged else LENSES[:1]
+                for lens in LENSES if judged else LENSES[:1]:
                     build = built_once(fixture, "oxigraph", lens)
                     quiet -= {step for step, added in build.added_by_step.items() if added}
                     quiet -= {built()[path] for path, triples in build.files.items()
                               if any(subject != URIRef(ADDRESS + path) for subject, _, _ in triples)}
-                    if lens in lenses_that_differ(fixture):
-                        quiet -= {ASKED[name] for name, rows in answers(fixture, lens).items() if rows}
+                    if lens in differing:
+                        quiet -= {relative for relative in set(ASKED.values()) & quiet if build.store.gives_a_row(query(relative))}
             assert quiet == set()
 
     class TestGivenThreeHundredMachineDifferents:
@@ -396,26 +437,27 @@ class TestMatcherComparisons:
             """gives, bound in the groups it marks, the rows it gives unbound for the same records"""
             store = built_once(fixture, "oxigraph", LENSES[0]).store
             records = every_other_current_record(store)
-            assert MARKED and records
+            assert MARKED and MADE_FROM and records
             for name, relative in MARKED.items():
                 text = query(relative)
                 unbound = Counter(row(found) for found in store.select(text) if str(found["record"]) in records)
                 assert rows_of(store, bound_to_records(text, records)) == unbound, name
 
-        @pytest.mark.parametrize("fixture", MATCHER_FIXTURES)
-        def test_gives_the_rows_of_the_comparison_it_was_made_from(self, fixture):
+        @pytest.mark.parametrize("fixture, relatives", COMPARISONS_MADE_FROM)
+        def test_gives_the_rows_of_the_comparison_it_was_made_from(self, fixture, relatives):
             """gives, bound per side or joined on its key first, the rows of the comparison it was made from
 
             Bound and unbound, on each engine; on rdflib only where the pair gives rows over the fixture, for two texts
-            that agree on no rows show nothing, and rdflib parses each bound text again for every fixture.
+            that agree on no rows show nothing, and rdflib parses each bound text again for every fixture. Over a fixture
+            whose pairs take rdflib seconds, each pair is a case of its own.
             """
             oxigraph = built_once(fixture, "oxigraph", LENSES[0]).store
             records = every_other_current_record(oxigraph)
             assert MADE_FROM and records
             giving_rows = []
-            for relative, made_from in MADE_FROM.items():
-                for texts in ((query(relative), query(made_from)),
-                              (bound_to_records(query(relative), records), bound_to_records(query(made_from), records))):
+            for relative in relatives:
+                for texts in ((query(relative), query(MADE_FROM[relative])),
+                              (bound_to_records(query(relative), records), bound_to_records(query(MADE_FROM[relative]), records))):
                     new, old = (rows_of(oxigraph, text) for text in texts)
                     assert new == old, ("oxigraph", relative)
                     if new:
@@ -428,10 +470,57 @@ class TestMatcherComparisons:
 
 
 class TestChecksOfTheFixtureTools:
-    """Checks of the fixtures' own tools · tests/engines.py, tests/manifests.py
+    """Checks of the fixtures' own tools · tests/engines.py, tests/manifests.py, tests/group_budget.py
 
     The fixtures are built and compared by code in `tests/`. These cases show that code what it must catch.
     """
+
+    class TestOverBudget:
+        """`group_budget.over_budget()`"""
+
+        CASES = [("t.py::a[x]@one", 12.0), ("t.py::b[x]@one", 9.0), ("t.py::c[y]@two", 15.0), ("t.py::d", 99.0)]
+
+        def test_adds_the_seconds_of_the_cases_of_a_group_and_lists_the_groups_over_longest_first(self):
+            """adds the seconds of the cases of a group and lists the groups over the budget, longest first"""
+            assert over_budget(self.CASES, 10) == [("one", 21.0), ("two", 15.0)]
+
+        def test_counts_no_case_that_names_no_group_and_no_group_the_budget_does_not_name(self):
+            """counts no case that names no group, and no group the budget does not name"""
+            assert over_budget(self.CASES, 10, ["two"]) == [("two", 15.0)]
+            assert over_budget([("t.py::d", 99.0)], 10) == []
+
+        def test_lists_no_group_that_takes_exactly_the_budget(self):
+            """lists no group that takes exactly the budget"""
+            assert over_budget(self.CASES, 21.0) == []
+
+        def test_takes_no_text_after_an_at_sign_in_a_parameter_for_a_group(self):
+            """takes no text after an `@` inside a case's parameter for its group"""
+            assert group_of("t.py::x[a@b]") is None
+            assert group_of("t.py::x[a@b]@one") == "one"
+
+        def test_lists_each_part_of_a_group_the_budget_names_by_itself(self):
+            """lists each part of a group the budget names by itself, not the group's parts added up"""
+            parts = [("t.py::a@one/x", 12.0), ("t.py::b@one/y", 9.0), ("t.py::c@one", 3.0), ("t.py::d@two/z", 30.0)]
+            assert over_budget(parts, 10, ["one"]) == [("one/x", 12.0)]
+
+        def test_names_a_group_no_case_ran_in_and_a_run_with_no_group_at_all(self):
+            """names a listed group no case ran in, and says so of a run with no group at all, which no budget checks"""
+            parts = [("t.py::a@one/x", 1.0), ("t.py::b@two", 1.0)]
+            assert unseen(parts, ["one", "two"]) == []
+            assert unseen(parts, ["one", "tow"]) == ["tow"]
+            assert unseen(parts) == []
+            assert unseen([("t.py::d", 99.0)]) == ["any group"]
+            assert unseen([("t.py::d", 99.0)], ["one"]) == ["one"]
+
+    class TestGivesARow:
+        """`Oxigraph.gives_a_row()`"""
+
+        def test_is_true_of_a_select_with_a_row_and_false_of_one_with_none(self):
+            """is true of a select that gives a row and false of one that gives none"""
+            store = Oxigraph()
+            store.add([(URIRef("urn:x:a"), RDF.type, CASCADE.Record)])
+            assert store.gives_a_row(f"SELECT ?s WHERE {{ ?s a <{CASCADE.Record}> }}")
+            assert not store.gives_a_row(f"SELECT ?s WHERE {{ ?s a <{CASCADE.Judgment}> }}")
 
     class TestUsedByNoActivity:
         """`used_by_no_activity()`"""
