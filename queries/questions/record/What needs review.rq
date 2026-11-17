@@ -10,7 +10,7 @@
 # with its current revision and the revision holding the older state, until a person files a Before between that
 # revision and one the source contradicted, or an acknowledgement of that kind naming the record, the document of the
 # older state and the document of every state of the record the finding says it contradicts, each of which answers that
-# record. A finding that a writer's clock was behind is listed with each revision it names, until a person files an
+# record (two people's acknowledgements each naming some of those documents do not add up). A finding that a writer's clock was behind is listed with each revision it names, until a person files an
 # acknowledgement of that kind naming the act that generated the revision, or discounts the act's clock.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX oa: <http://www.w3.org/ns/oa#>
@@ -53,10 +53,16 @@ WHERE {
           MINUS {
             { SELECT ?finding ?older
               WHERE {
-                ?finding oa:hasBody cascade:SourceReportedOlderStates ; oa:hasTarget ?older ;
-                         cascade:contradictedEarlierRevision ?contradicted .
-                ?older cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?olderDocument .
-                ?contradicted cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?contradictedDocument .
+                { SELECT ?finding ?older ?wentBack ?olderDocument
+                  WHERE {
+                    ?finding oa:hasBody cascade:SourceReportedOlderStates ; oa:hasTarget ?older .
+                    ?older cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?olderDocument
+                  } }
+                { SELECT ?finding ?wentBack ?contradictedDocument
+                  WHERE {
+                    ?finding oa:hasBody cascade:SourceReportedOlderStates ; cascade:contradictedEarlierRevision ?contradicted .
+                    ?contradicted cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?contradictedDocument
+                  } }
                 ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
                                  cascade:answersWarningOfKind cascade:SourceReportedOlderStates ;
                                  prov:hadMember ?wentBack , ?olderDocument .
@@ -85,10 +91,16 @@ WHERE {
     MINUS {
       { SELECT ?finding ?otherRevision
         WHERE {
-          ?finding oa:hasBody cascade:SourceReportedOlderStates ; oa:hasTarget ?otherRevision ;
-                   cascade:contradictedEarlierRevision ?contradicted .
-          ?otherRevision cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?olderDocument .
-          ?contradicted cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?contradictedDocument .
+          { SELECT ?finding ?otherRevision ?wentBack ?olderDocument
+            WHERE {
+              ?finding oa:hasBody cascade:SourceReportedOlderStates ; oa:hasTarget ?otherRevision .
+              ?otherRevision cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?olderDocument
+            } }
+          { SELECT ?finding ?wentBack ?contradictedDocument
+            WHERE {
+              ?finding oa:hasBody cascade:SourceReportedOlderStates ; cascade:contradictedEarlierRevision ?contradicted .
+              ?contradicted cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?contradictedDocument
+            } }
           ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
                            cascade:answersWarningOfKind cascade:SourceReportedOlderStates ;
                            prov:hadMember ?wentBack , ?olderDocument .

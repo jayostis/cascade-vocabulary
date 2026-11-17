@@ -262,7 +262,7 @@ join is asked of the matcher judgment's rule, run over its members against the c
 and its recipe stays as ruled. A rule list version that merely tightens a rule retracts nothing: the matcher judgments it no
 longer reaches have no assertion under it and stop counting by derivation, and its first run files one finding naming
 them, which the review page lists as one line, answered pair by pair over records: a Same or a Different over a pair's
-records, which an app may file for every pair at once, or an acknowledgement of the kind naming them; a person's Same
+records, which an app may file for every pair at once, or an acknowledgement of the kind naming exactly them; a person's Same
 already filed on a pair is untouched. A release retracts only what it declares wrong, so a known-bad join is never offered back. The
 Cascade matcher is one unversioned agent because the matcher feature promises every runtime that follows it reaches
 the same matcher judgments, so which runtime ran is forensics, and it sits on the run's act with every other act's performer: a
@@ -313,12 +313,18 @@ been re-minted once, so the recipe's change carries its table of old names to ne
 **Why an answer to a warning names its kind and what it is about.** (row "document, finding") A finding is named by its
 triples, and its targets by theirs: a field rename re-mints the versions a matcher judgment and a revision hash, and with
 them the finding, so an acknowledgement naming the finding put the warning back on the review page after a release, and
-a Same over it stopped joining its pairs. The kind and the kept things hold still. An acknowledgement answers every
-warning of its kind about nothing it does not name, so one judgment answers a whole line of the review page, where a
-30-day restore or a rule list version's finding can name hundreds of records and a judgment per warning would file as
-many. The cost is that a later warning of the kind about only things one acknowledgement names, in a combination it did
-not list, counts as seen: a pair of one record from each of two pairs acknowledged together is not listed. An app that
-wants each warning answered alone files one acknowledgement per line it shows. A rollback is about the documents of the states it contradicts as well as its record, so a source that
+a Same over it stopped joining its pairs. The kind and the kept things hold still. A rollback or a clock finding is
+answered by one acknowledgement over everything the line is about: a 30-day restore can name hundreds of records, and a
+judgment per record would file as many, so an acknowledgement answers each record it names with the documents of its
+states, and a clock finding each act it names. Two things stay one warning each, since a warning about a thing is the
+same warning whichever others the person answered beside it. A finding of matcher judgments no longer reached is about
+a pair of records, and so is a finding of two results that disagree: an acknowledgement answers a pair only when its
+members are exactly that pair's two records. One that names the records of two pairs answers neither, since a later
+warning about one record from each of them, which the person never saw, would otherwise count as seen (a matcher
+retuned twice drops the pairs one and two, then one and three). The cost is a judgment per pair, which a Same or a
+Different already costs and which an app files for every pair of a line at once. Two people's partial acknowledgements
+of one rollback do not add up: each names some of the documents a record's finding contradicts, and neither saw the
+whole. A rollback is about the documents of the states it contradicts as well as its record, so a source that
 goes forward and back again, contradicting a later report, is listed again. Two results that disagree are about their
 two records alone, so a new value from either, which is a new finding of the same two, stays answered: naming the
 document of each compared value would leave an entered result, which has none, never answerable. The Same over a finding
@@ -326,7 +332,7 @@ is gone, not kept with a derivation, as proposal 2.1 rules: it joined every pair
 not looked at, with a person's weight over every machine, where a Same or a Different per pair says the same of names
 that hold. Looked at: keeping the finding's name and carrying answers across releases by a table of old finding names to
 new, as records do, which serves a recipe change but not a retuned matcher or a rebuild in another order, where no
-table exists; and requiring an acknowledgement's members to equal the warning's, which needs a judgment per warning.
+table exists; and requiring every acknowledgement's members to equal its warning's, which needs a judgment per record of a restore.
 
 **Why an app's statement names records, never its entry.** (row "view entry") What an app keeps about an entry, an
 answer, a note, a link or a cached list, names the records the person was shown in it, by their IRIs, and never the

@@ -2615,15 +2615,22 @@ cascade:JudgmentNamesNoFindingShape a sh:NodeShape ;
 cascade:AcknowledgedShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
-        [ sh:not [ sh:path cascade:verdict ; sh:hasValue cascade:Acknowledged ] ]
-        [ sh:property [ sh:path cascade:answersWarningOfKind ; sh:minCount 1 ; sh:maxCount 1 ;
+        [ sh:and ( [ sh:not [ sh:path cascade:verdict ; sh:hasValue cascade:Acknowledged ] ]
+                   [ sh:path cascade:answersWarningOfKind ; sh:maxCount 0 ] ) ]
+        [ sh:property [ sh:path cascade:verdict ; sh:hasValue cascade:Acknowledged ] ,
+                      [ sh:path cascade:answersWarningOfKind ; sh:minCount 1 ; sh:maxCount 1 ;
                         sh:in ( cascade:MatcherJudgmentsNoLongerReached cascade:SourceReportedOlderStates cascade:ClockBehind
                                 cascade:DifferentResultValuesAtOneInstant cascade:DifferentResultUnitsAtOneInstant ) ] ,
                       [ sh:path prov:hadMember ;
                         sh:not [ sh:or ( [ sh:class cascade:Revision ] [ sh:class cascade:Judgment ]
-                                         [ sh:path prov:specializationOf ; sh:minCount 1 ] ) ] ] ]
+                                         [ sh:class cascade:MatcherJudgmentAssertion ]
+                                         [ sh:path prov:specializationOf ; sh:minCount 1 ] ) ] ] ;
+                      sh:or ( [ sh:not [ sh:path cascade:answersWarningOfKind ; sh:minCount 1 ;
+                                         sh:in ( cascade:MatcherJudgmentsNoLongerReached cascade:DifferentResultValuesAtOneInstant
+                                                 cascade:DifferentResultUnitsAtOneInstant ) ] ]
+                              [ sh:path prov:hadMember ; sh:minCount 2 ; sh:maxCount 2 ] ) ]
     ) ;
-    sh:message "An Acknowledged names the kind of warning it answers and, as its members, what that warning is about: records, documents or acts, never a version, a revision or a judgment."@en ;
+    sh:message "An Acknowledged names the kind of warning it answers and, as its members, what that warning is about: records, documents or acts, never a version, a revision, a judgment or a matcher judgment assertion; one of a pair kind names exactly the pair's two records. No other judgment names a kind of warning."@en ;
     sh:severity sh:Violation .
 
 cascade:ClockDiscountedShape a sh:NodeShape ;

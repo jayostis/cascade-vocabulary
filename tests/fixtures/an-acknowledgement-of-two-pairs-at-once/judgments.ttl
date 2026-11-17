@@ -1,0 +1,20 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+
+:sameY a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :x1 , :x3 ;
+    prov:wasDerivedFrom :x1Version , :x3Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:sameYUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameY ; cascade:assertedUnderRuleListVersion :rules1 .
+
+:finding a cascade:FindingForReview ; oa:hasBody cascade:MatcherJudgmentsNoLongerReached ; oa:motivatedBy oa:classifying ; cascade:noLongerReachedUnderRuleListVersion :rules2 ;
+    oa:hasTarget :sameY .
+
+:acknowledgement a cascade:Judgment ; cascade:verdict cascade:Acknowledged ;
+    cascade:answersWarningOfKind cascade:MatcherJudgmentsNoLongerReached ; prov:hadMember :x1 , :x2 , :x3 , :x4 ; prov:wasAttributedTo :person ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ; prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .

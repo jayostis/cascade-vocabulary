@@ -4,7 +4,7 @@
 # so the pair it joined is apart until a person judges it), a finding of the matcher judgments a rule list version no longer
 # reaches names a lapsed matcher judgment of two records now in two entries (listed as one line, the finding, expanding to its pairs, each
 # with the matcher judgment of least IRI that names it, until a person judges the pair, or files an acknowledgement of that
-# kind naming both its records, which takes the pair off; a lapsed Same such a finding names is listed with it, never alone), or two of
+# kind naming both its records and no other, which takes the pair off; a lapsed Same such a finding names is listed with it, never alone), or two of
 # its conditions, in two entries, carry one code and their dates cannot tell whether they are one condition: either
 # has no onset, or one has an unknown end (no abatement that is a date ending on or after its onset begins, and no
 # status that keeps it going: active, recurrence or relapse) and its onset begins on or before the other's end, the
@@ -32,7 +32,7 @@
 # from the entry of the smaller record, unless a person judged them different: mmol/L and mg/dL may measure one draw,
 # and no rule converts one into the other. A finding of different result values at one instant (R16) is listed, as the
 # finding with its two results, while both are at the versions it compared, until a person files an acknowledgement of
-# its kind naming the two results, or judges them different. A finding of different values or units is not listed while R18 joins the two, as sharing a
+# its kind naming the two results and no other, or judges them different. A finding of different values or units is not listed while R18 joins the two, as sharing a
 # business identifier within one organization, and the current version of one of them says it was corrected or amended:
 # the source said the second value is its correction. Two results R18 joins that neither marks so are still listed, since
 # two channels of one organization disagreeing is for a person to see.
@@ -114,7 +114,8 @@ WHERE {
             && !EXISTS { ?record cascade:currentlyDifferent ?otherRecord })
     MINUS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
                              cascade:answersWarningOfKind cascade:MatcherJudgmentsNoLongerReached ;
-                             prov:hadMember ?record , ?otherRecord }
+                             prov:hadMember ?record , ?otherRecord .
+            FILTER NOT EXISTS { ?acknowledgement prov:hadMember ?third . FILTER (?third NOT IN (?record, ?otherRecord)) } }
     BIND ("no longer joined under a newer rule list version" AS ?needs)
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
@@ -200,7 +201,8 @@ WHERE {
     FILTER (STR(?record) < STR(?otherRecord))
     MINUS { ?record cascade:currentlyDifferent ?otherRecord }
     MINUS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
-                             cascade:answersWarningOfKind ?kind ; prov:hadMember ?record , ?otherRecord }
+                             cascade:answersWarningOfKind ?kind ; prov:hadMember ?record , ?otherRecord .
+            FILTER NOT EXISTS { ?acknowledgement prov:hadMember ?third . FILTER (?third NOT IN (?record, ?otherRecord)) } }
     MINUS { ?same cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record , ?otherRecord .
             FILTER NOT EXISTS { ?same prov:wasAttributedTo/a prov:SoftwareAgent } }
     MINUS { ?certain cascade:countsUnderLens true ; cascade:verdict cascade:Same ;

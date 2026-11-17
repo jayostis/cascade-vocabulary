@@ -1134,9 +1134,10 @@ Feature: The matcher's procedure
     names: an answer names what the finding is about, the records of each pair, never the finding. A person answers a
     pair with a Same or a Different over its records, which joins or parts it as any Same or Different does; an app may
     file one for each pair of the line at once. Or with a cascade:Acknowledged whose cascade:answersWarningOfKind is
-    cascade:MatcherJudgmentsNoLongerReached and whose members are the pair's records: it takes the pair off the review
-    page however the finding is worked out again, and changes nothing else, so the finding still stands and the pair
-    stays apart; one naming the records of every pair takes the whole line off. A judgment one of whose members is a
+    cascade:MatcherJudgmentsNoLongerReached and whose members are exactly the pair's two records: it takes that pair
+    off the review page however the finding is worked out again, and changes nothing else, so the finding still stands
+    and the pair stays apart. One acknowledgement answers one pair: one naming the records of two pairs answers neither,
+    so a later pair of one record from each is listed, and an app that answers the whole line files one per pair. A judgment one of whose members is a
     finding is refused. Each answer is a judgment the lens counts or not, so writers that file them in any order hold
     one answer.
 
@@ -1156,7 +1157,7 @@ Feature: The matcher's procedure
         | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets" | "no longer joined under a newer rule list version" | <ni:///sha-256;r3A6LAf0rxE6bEDIhByAwDGK-E8snI4FU1-73maVfLA> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · eab831dd · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
 
     Example: a person's Same over a pair's records joins it and takes it off the review page
-      When Gus files the judgment "same-over-the-lisinopril-records" on 2026-09-04 at 09:00
+      When Gus files the judgment "same-over-the-lisinopril-records-after-the-tables" on 2026-09-04 at 09:00
       And the query "questions/entry/What needs review.rq" is asked
       Then it answers nothing
       And the medications view holds these entries:
@@ -1241,7 +1242,7 @@ Feature: The matcher's procedure
     M18's is: its type, its kind, its oa:motivatedBy oa:classifying, the two records as its oa:hasTarget and their
     current versions as its prov:wasDerivedFrom. A run files it for each pair the query gives that the pod holds no
     finding of, so a second run files none. "What needs review" lists it while both records are still at those versions, until a
-    person acknowledges it or judges the two the same or different, or while R18 joins them and one says it was
+    person acknowledges it, with an acknowledgement of its kind naming the two results and no other record, or judges the two the same or different, or while R18 joins them and one says it was
     corrected or amended (M22). The review page's
     lines for R15's joins and for the findings are shown by the vocabulary's fixtures.
 
