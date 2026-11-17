@@ -1,10 +1,10 @@
-# Each judgment that may no longer hold, or that a person made and someone else took back or replaced. A person's Same is listed once
-# a member's current revision came from a document it does not name; a machine's Same once a member has a version it
-# was not made from, unless a person's Same that counts holds all its members and names the document that member's
+# Each judgment that may no longer hold, or that a person made and someone else took back or replaced.
+# A person's Same is listed once a member's current revision came from a document it does not name; a machine's Same
+# once a member has a version it was not made from, unless a person's Same that counts holds all its members and names the document that member's
 # current revision came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX pav:<http://purl.org/pav/>
+PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -41,6 +41,7 @@ WHERE {
     ?judgment a cascade:Judgment ; prov:wasAttributedTo ?maker .
     ?maker a prov:Person .
     FILTER (?replacer != ?maker)
+    FILTER NOT EXISTS { ?judgment cascade:countsUnderLens true }
     BIND ("replaced by someone other than who made it" AS ?needs)
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
 }
