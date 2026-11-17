@@ -1,11 +1,12 @@
 # A statement is a judgment a matcher did not make: a person's, or a model's. For each record one names, a row says where
 # that record is now, as Outcome: one when it is in an entry and every record the statement names that is in one is in
 # that entry, split when the statement's records are in more than one, hidden when no entry holds it and Why gives each
-# reason, not in the pod when the pod holds nothing of the kind the statement names. A statement a person retracted or
-# replaced is listed, with Counts false. On the entry's row, Other members are its other records, in order, and Grew by
+# reason, not in the pod when no entry holds it and nothing left it out. What the pod types a member as decides nothing: a
+# member that is no record, a profile an About statement names, is listed as any record is. A statement a person retracted
+# or replaced is listed, with Counts false. On the entry's row, Other members are its other records, in order, and Grew by
 # counts those the statement does not name; Other statements are the other statements naming a record of the entry, in
-# order, and Merged with counts those naming a record this statement does not. An app sums Grew by and Merged with. A
-# list holds its values separated by U+001F, and a list with nothing in it is unbound.
+# order, and Merged with counts those naming a record this statement does not, a retracted or replaced one left out. An
+# app sums Grew by and Merged with. A list holds its values separated by U+001F, and a list with nothing in it is unbound.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -18,8 +19,6 @@ WHERE {
       ?statement a cascade:Judgment ; prov:hadMember ?record .
       OPTIONAL { ?statement cascade:matcherRule ?rule }
       FILTER (!BOUND(?rule))
-      OPTIONAL { ?record a ?type }
-      FILTER (!BOUND(?type) || ?type = cascade:Record)
       OPTIONAL { ?statement cascade:countsUnderLens ?counted }
       BIND (COALESCE(?counted, false) AS ?counts)
       OPTIONAL { ?statement rdfs:label ?statementLabel }
@@ -56,6 +55,7 @@ WHERE {
               ?statement prov:hadMember ?record .
               OPTIONAL { GRAPH ?view { ?entry cascade:entryMember ?record , ?member }
                          ?otherStatement prov:hadMember ?member .
+                         ?otherStatement cascade:countsUnderLens true .
                          FILTER (?otherStatement != ?statement)
                          FILTER NOT EXISTS { ?otherStatement cascade:matcherRule ?otherRule } }
               BIND (IF(!BOUND(?otherStatement) || EXISTS { ?statement prov:hadMember ?member }, 0, 1) AS ?unnamed)
@@ -65,7 +65,7 @@ WHERE {
         ORDER BY ?statement ?record ?otherStatement }
     }
     GROUP BY ?statement ?record }
-  { SELECT ?record (GROUP_CONCAT(STR(?reason); separator="\u001F") AS ?reasons)
+  { SELECT ?record (COUNT(?reason) AS ?reasonCount) (GROUP_CONCAT(STR(?reason); separator="\u001F") AS ?reasons)
     WHERE {
       { SELECT DISTINCT ?record ?reason
         WHERE {
@@ -80,6 +80,6 @@ WHERE {
   BIND (IF(BOUND(?entry), ?grewCount, ?none) AS ?grewBy)
   BIND (IF(STRLEN(?statements) > 0, ?statements, ?none) AS ?otherStatements)
   BIND (IF(BOUND(?entry), ?mergedCount, ?none) AS ?mergedWith)
-  BIND (IF(BOUND(?entry), IF(?entriesReached > 1, "split", "one"), IF(BOUND(?why), "hidden", "not in the pod")) AS ?outcome)
+  BIND (IF(BOUND(?entry), IF(?entriesReached > 1, "split", "one"), IF(?reasonCount > 0, "hidden", "not in the pod")) AS ?outcome)
 }
 ORDER BY ?statement ?recordLabel ?record

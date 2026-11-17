@@ -1,0 +1,9 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+:subject a cascade:Subject .
+
+# the pod holds both profiles; the source typed one and not the other
+:typedProfile a cascade:PatientProfile .
+:untypedProfile rdfs:comment "A profile its source did not type." .

@@ -1,0 +1,18 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:person a prov:Person .
+
+:same a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :a1 , :a2 ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+# the person's second Same, over a2 and a3, is retracted, so it joins nothing
+:sameRetracted a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :a2 , :a3 ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+:retraction a prov:Activity ; prov:invalidated :sameRetracted ;
+    prov:wasAssociatedWith :person ; prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
+    prov:startedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
