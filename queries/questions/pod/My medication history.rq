@@ -7,8 +7,8 @@
 # wrote for it, such as a stop reason (none when no record has one), what each record was given for, as
 # `pod/My active medications` gives it: "<record> for <entry>, <name>" for a condition (an entry with no name gives
 # "<record> for <entry>"), "<record> for <code IRI>" for a code in a listed system and "<record> for <system IRI> <code>"
-# for a code in another system, each read from the token after "for " up to the first space, never from the text: a token
-# ending in "," is a condition entry; otherwise a pod IRI alone is a condition entry with no name, an IRI that is not the
+# for a code in another system, each read from the token after "for " up to the first space, never from the text: a pod
+# IRI then "," is a condition entry; otherwise a pod IRI alone is a condition entry with no name, an IRI that is not the
 # pod's alone is a code in a listed system, and an IRI followed by a space and more text is a system IRI and its code,
 # in code point order of the name or code, then the entry or system, then the
 # record (none when no record gives a reason), how many records it joins, and each record with the
