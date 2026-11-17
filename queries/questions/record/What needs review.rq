@@ -7,9 +7,11 @@
 # Before of its revisions that a cycle of Befores cancels, with the two revisions it orders. Either is fixed by one
 # Before. A finding that a source reported older states is listed as one line, ?finding, saying how many of the records
 # that went back are not yet answered and the last date the source reported later states, expanding to each record,
-# with its current revision and the revision holding the older state, until a person acknowledges the finding or files
-# a Before between that revision and one the source contradicted, which answers that record. A finding that a writer's clock was behind is listed with each revision it names, until
-# a person acknowledges it or discounts the act's clock.
+# with its current revision and the revision holding the older state, until a person files a Before between that
+# revision and one the source contradicted, or an acknowledgement of that kind naming the record, the document of the
+# older state and the document of every state of the record the finding says it contradicts, each of which answers that
+# record (two people's acknowledgements each naming some of those documents do not add up). A finding that a writer's clock was behind is listed with each revision it names, until a person files an
+# acknowledgement of that kind naming the act that generated the revision, or discounts the act's clock.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX oa: <http://www.w3.org/ns/oa#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -48,6 +50,27 @@ WHERE {
             ?older cascade:judgedBefore|^cascade:judgedBefore ?answered .
             ?finding cascade:contradictedEarlierRevision ?answered .
           }
+          MINUS {
+            { SELECT ?finding ?older
+              WHERE {
+                { SELECT ?finding ?older ?wentBack ?olderDocument
+                  WHERE {
+                    ?finding oa:hasBody cascade:SourceReportedOlderStates ; oa:hasTarget ?older .
+                    ?older cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?olderDocument
+                  } }
+                { SELECT ?finding ?wentBack ?contradictedDocument
+                  WHERE {
+                    ?finding oa:hasBody cascade:SourceReportedOlderStates ; cascade:contradictedEarlierRevision ?contradicted .
+                    ?contradicted cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?contradictedDocument
+                  } }
+                ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
+                                 cascade:answersWarningOfKind cascade:SourceReportedOlderStates ;
+                                 prov:hadMember ?wentBack , ?olderDocument .
+                OPTIONAL { ?acknowledgement prov:hadMember ?contradictedDocument . BIND (?contradictedDocument AS ?named) }
+              }
+              GROUP BY ?finding ?older ?acknowledgement
+              HAVING (COUNT(DISTINCT ?named) = COUNT(DISTINCT ?contradictedDocument)) }
+          }
         }
         GROUP BY ?finding }
       FILTER (BOUND(?finding)) }
@@ -61,11 +84,30 @@ WHERE {
     ?finding oa:hasTarget ?otherRevision .
     ?otherRevision cascade:revisionOf ?record .
     ?record cascade:currentRevision ?revision .
-    FILTER NOT EXISTS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
-                                         prov:hadMember ?finding }
     FILTER NOT EXISTS {
       ?otherRevision cascade:judgedBefore|^cascade:judgedBefore ?contradicted .
       ?finding cascade:contradictedEarlierRevision ?contradicted .
+    }
+    MINUS {
+      { SELECT ?finding ?otherRevision
+        WHERE {
+          { SELECT ?finding ?otherRevision ?wentBack ?olderDocument
+            WHERE {
+              ?finding oa:hasBody cascade:SourceReportedOlderStates ; oa:hasTarget ?otherRevision .
+              ?otherRevision cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?olderDocument
+            } }
+          { SELECT ?finding ?wentBack ?contradictedDocument
+            WHERE {
+              ?finding oa:hasBody cascade:SourceReportedOlderStates ; cascade:contradictedEarlierRevision ?contradicted .
+              ?contradicted cascade:revisionOf ?wentBack ; prov:wasDerivedFrom ?contradictedDocument
+            } }
+          ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
+                           cascade:answersWarningOfKind cascade:SourceReportedOlderStates ;
+                           prov:hadMember ?wentBack , ?olderDocument .
+          OPTIONAL { ?acknowledgement prov:hadMember ?contradictedDocument . BIND (?contradictedDocument AS ?named) }
+        }
+        GROUP BY ?finding ?otherRevision ?acknowledgement
+        HAVING (COUNT(DISTINCT ?named) = COUNT(DISTINCT ?contradictedDocument)) }
     }
     BIND (CONCAT("this source reports ", STR(?wentBack), IF(?wentBack = 1, " record", " records"),
                  " at states older than it reported on ", SUBSTR(STR(?lastReported), 1, 10)) AS ?needs)
@@ -74,9 +116,9 @@ WHERE {
     OPTIONAL { ?otherRevision rdfs:label ?otherRevisionLabel } }
   UNION
   { ?finding oa:hasBody cascade:ClockBehind ; oa:hasTarget ?revision ; cascade:writerClockBehindByAtLeastDays ?days .
-    ?revision cascade:revisionOf ?record .
-    FILTER NOT EXISTS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
-                                         prov:hadMember ?finding }
+    ?revision cascade:revisionOf ?record ; prov:wasGeneratedBy ?act .
+    MINUS { ?acknowledgement cascade:countsUnderLens true ; cascade:verdict cascade:Acknowledged ;
+                             cascade:answersWarningOfKind cascade:ClockBehind ; prov:hadMember ?act }
     FILTER NOT EXISTS { ?revision cascade:observationTimeDiscountedBy ?discount }
     BIND (CONCAT("this writer's clock was at least ", STR(?days), IF(?days = 1, " day", " days"), " behind") AS ?needs)
     OPTIONAL { ?record rdfs:label ?recordLabel }

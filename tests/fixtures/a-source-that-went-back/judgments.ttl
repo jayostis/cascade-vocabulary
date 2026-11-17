@@ -8,6 +8,7 @@
     cascade:earlierMember :eczemaSecond ; prov:wasAttributedTo :person ;
     prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
-:secondPullAcknowledged a cascade:Judgment ; cascade:verdict cascade:Acknowledged ; prov:hadMember :wentBackOnTheSecondPull ;
+:secondPullAcknowledged a cascade:Judgment ; cascade:verdict cascade:Acknowledged ;
+    cascade:answersWarningOfKind cascade:SourceReportedOlderStates ; prov:hadMember :psoriasis , :pulledSecond , :pulledFirst ;
     prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-01-11T00:00:00Z"^^xsd:dateTime .
