@@ -3,6 +3,8 @@ import pytest
 from engines import parse_each_query_once
 from page import page_properties
 
+pytest_plugins = ["group_budget"]
+
 parse_each_query_once()
 
 
