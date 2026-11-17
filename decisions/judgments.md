@@ -97,14 +97,27 @@ maker's earlier About because the later word of one person is that person's answ
 
 **Why a person's About after a NotAbout holds the profile back, and does not lift it.** (row "not about") Hiding a real
 allergy is as dangerous as showing a sibling's, so where two people answer a profile differently, neither wins silently:
-the records stay hidden, nothing is removed, and the profile is listed with both names until one side is retracted.
-The same holds when one person files an About after their own NotAbout: only an act that names a NotAbout, its
-retraction or a judgment that replaces it, lifts it, as anyone
+the records stay hidden, nothing is removed, and the profile is listed with both names. It leaves the state three ways: a
+retraction of either side; the About's maker filing a later NotAbout of their own, which makes that About their earlier
+word; or a judgment that replaces either side (`dct:replaces`). The same holds when one person files an About after their
+own NotAbout: only an act that names a NotAbout, its retraction or a judgment that replaces it, lifts it, as anyone
 with standing in the pod may retract a statement (a retraction of someone else's is listed under
 `judgment/What needs review`), so a later About, from an import, a model the person said yes to, or the person
 themselves, is never the act that undoes a no. Read the other way, a later About would let the very import the NotAbout
-answers lift it again. An About is a person's when it is attributed to a `prov:Person`, whatever its basis says; the
-basis says why, not who.
+answers lift it again.
+
+**Why only an About with basis OwnerStatement stands against a NotAbout, and a machine basis needs a software agent.**
+(row "not about") A basis says who judged: `cascade:SameDemographics` is a matcher's, `cascade:PortalAuthenticated` a
+login's, and `cascade:OwnerStatement` the one a person states. An About is a person's, and so stands against a person's
+NotAbout, when it is attributed to a `prov:Person`; the shape (`cascade:MachineBasisShape`) refuses a judgment with either
+machine basis that is not attributed to a `prov:SoftwareAgent`, so a person's name never carries a machine's word. Were
+it allowed, an import that files a portal or demographics About in the owner's name, which is the claim the import no
+longer makes, would put every profile the owner denied back on review after each import.
+
+**Why two people who sign with one author IRI are one maker.** (row "not about") The author IRI is the person: a pod
+cannot tell two people apart who file as the same `prov:Person`, so one's About and the other's later NotAbout are one
+maker's earlier and later word, and the NotAbout wins with no hold-back and no listing. A pod that wants two answers
+names two people.
 
 **Why every maker leaves a trail.** (row "maker") Where a maker went wrong, its trail is what finds the damage: a rule list version
 by the assertions under it, a runtime by the acts it performed, an app by its agent and version, and a person's

@@ -9,6 +9,7 @@
   mf:entries (
     <#why-it-is-in-no-view>
     <#what-needs-review>
+    <#whose-it-is-counted-as>
   ) .
 
 <#why-it-is-in-no-view> a mf:QueryEvaluationTest ;
@@ -24,3 +25,10 @@
   mf:action [ qt:query <../../../queries/questions/profile/What%20needs%20review.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-needs-review.srj> .
+
+<#whose-it-is-counted-as> a mf:QueryEvaluationTest ;
+  mf:name "whose-it-is-counted-as" ;
+  rdfs:comment "Each About is listed with counts false: the parent's NotAbout after their About outranks it, and the parent's earlier NotAbout over the machine's profile outranks the machine's counting About." ;
+  mf:action [ qt:query <../../../queries/questions/profile/Whose%20it%20is%20counted%20as.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <whose-it-is-counted-as.srj> .
