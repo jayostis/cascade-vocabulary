@@ -70,9 +70,24 @@ WHERE {
   UNION
   { SELECT ?thing (MIN(?l) AS ?label)
     WHERE {
-      { ?revision a cascade:Revision ; prov:wasDerivedFrom ?thing }
-      UNION
-      { ?thing a prov:Entity . FILTER NOT EXISTS { ?thing prov:specializationOf [] } FILTER NOT EXISTS { ?thing a cascade:Revision } }
+      ?revision a cascade:Revision ; prov:wasDerivedFrom ?thing .
+      FILTER NOT EXISTS { ?thing rdfs:label [] }
+      OPTIONAL { ?thing prov:wasGeneratedBy/prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?authorName ] }
+      OPTIONAL { ?thing prov:wasGeneratedBy/prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?custodianName ] }
+      BIND (COALESCE(?authorName, ?custodianName) AS ?author)
+      OPTIONAL { ?thing pav:retrievedFrom ?from }
+      OPTIONAL { ?thing pav:retrievedOn ?on }
+      BIND (CONCAT("Document · ", COALESCE(?author, "unknown source"),
+                   COALESCE(CONCAT(" · ", REPLACE(STR(?from), "^.*/([^/]+/[^/]+)$", "$1")), ""),
+                   COALESCE(CONCAT(" · retrieved ", SUBSTR(STR(?on), 1, 10)), "")) AS ?l)
+    }
+    GROUP BY ?thing }
+  UNION
+  { SELECT ?thing (MIN(?l) AS ?label)
+    WHERE {
+      ?thing a prov:Entity .
+      FILTER NOT EXISTS { ?thing prov:specializationOf [] }
+      FILTER NOT EXISTS { ?thing a cascade:Revision }
       FILTER NOT EXISTS { ?thing rdfs:label [] }
       OPTIONAL { ?thing prov:wasGeneratedBy/prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?authorName ] }
       OPTIONAL { ?thing prov:wasGeneratedBy/prov:qualifiedAssociation [ prov:hadRole cascade:CustodianRole ; prov:agent/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?custodianName ] }
