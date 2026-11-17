@@ -242,6 +242,12 @@ The first writer named is given every file the second holds in a folder the layo
 the views' folder aside, writes each it lacks, and writes a sync if `sync.feature` says it does. The steps after it are
 the receiving writer's.
 
+### `{writer} receives the files of {writer} and the file {name} put in them on {time}`
+
+As `{writer} receives the files of {writer} on {time}`, the files the second writer holds being those and, besides, the
+file `judgments/<name>.ttl`, which replaces or retracts a judgment, put in the folder the layout gives what it is, as a
+writer that went around its runtime leaves it (N16).
+
 ### `the tools offered a model are listed`
 
 The runtime lists every tool it offers a model (Y1), whichever door offers it, as two graphs of the dataset, both

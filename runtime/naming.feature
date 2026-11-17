@@ -447,6 +447,10 @@ Feature: Naming
     (cascade:PersonJudgmentReplacesNoMatcherJudgmentShape, cascade:RetractionInvalidatesNoMatcherJudgmentShape): a
     person who agrees with the matcher files a Same over the records, and one who disagrees a Different over them. A
     judgment without cascade:matcherRule, such as a model's, is kept as it was minted, and a person may retract it.
+    Only a writer that went around its runtime leaves such a file in the pod, and a receive of another writer's files
+    that holds one refuses, naming the file's path, and writes nothing, not even the files that came with it (S3 would
+    break on a part of the set). Every later receive from that writer meets the same file and refuses again, so the
+    writer's file is removed on the writer's device, or a Same or a Different over the records is filed instead.
 
     Example: a person's Same over two imported records names the document each was shown from, and no version
       Given a new pod for Cleo on 2026-01-01 at 09:00
@@ -489,3 +493,20 @@ Feature: Naming
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       When Gus files the judgment "retract-the-lisinopril-matcher-judgment" on 2026-09-02 at 12:00
       Then that step is refused
+
+    Example: a receive that holds a person's retraction of the matcher's judgment is refused whole
+      Given a new pod for Gus on 2026-09-01 at 09:00
+      And a second writer of the pod
+      And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
+      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-09-02 at 09:05
+      When the second writer receives the files of the first writer and the file "retract-the-lisinopril-matcher-judgment" put in them on 2026-09-02 at 12:00
+      Then that step is refused
+      And "sync" wrote no file
+
+    Example: a person's retraction of a model's judgment is kept, and "What needs review" does not list it
+      Given a new pod for Cleo on 2026-03-01 at 09:00
+      And Cleo files the judgment "model-about-r" on 2026-03-04 at 07:00
+      When Cleo files the judgment "retract-model-about-r" on 2026-03-04 at 12:00
+      And the query "questions/judgment/What needs review.rq" is asked
+      Then it answers nothing
