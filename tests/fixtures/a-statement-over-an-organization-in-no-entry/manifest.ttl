@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-statement-over-an-organization-in-no-entry" ;
+  rdfs:comment "A person's Same over two organizations the pod holds; an organization is no record, so no entry holds either." ;
+  mf:entries (
+    <#where-each-record-a-statement-names-is-now>
+  ) .
+
+<#where-each-record-a-statement-names-is-now> a mf:QueryEvaluationTest ;
+  mf:name "where-each-record-a-statement-names-is-now" ;
+  rdfs:comment "Both organizations are listed with outcome in no entry, no entry and no reason: the pod holds them, so neither reads not in the pod." ;
+  mf:action [ qt:query <../../../queries/questions/record/Where%20each%20record%20a%20statement%20names%20is%20now.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <where-each-record-a-statement-names-is-now.srj> .
