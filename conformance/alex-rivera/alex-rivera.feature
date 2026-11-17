@@ -171,8 +171,8 @@ Feature: Alex Rivera's pod
 
     Example: H1-ALG-CODEINE, entered in error at its source in x-e6, is in no view, for that reason
       Then these records are in no view, for these reasons:
-        | record         | reason                     | because |
-        | H1-ALG-CODEINE | entered in error at source |         |
+        | record         | reason                         | because |
+        | H1-ALG-CODEINE | entered-in-error at its source |         |
 
     Example: H1-ALG-CODEINE is still an allergy record, with both its versions
       Then H1-ALG-CODEINE has these revisions:
@@ -471,8 +471,8 @@ Feature: Alex Rivera's pod
 
     Example: U-IMM-TDAP is in no view, because its version names no patient
       Then these records are in no view, for these reasons:
-        | record     | reason     | because |
-        | U-IMM-TDAP | no patient |         |
+        | record     | reason              | because |
+        | U-IMM-TDAP | it names no patient |         |
 
     Example: no file E10, E12 or E15 wrote names U-IMM-TDAP
       Then no file that "E10", "E12" or "E15" wrote names U-IMM-TDAP
@@ -622,10 +622,10 @@ Feature: Alex Rivera's pod
     Example: each of Sam's three records is left out because no About that counts claims his profile
       When the pod is read as it stood after "J24"
       Then these records are in no view, for these reasons:
-        | record         | reason              | because |
-        | H1P-ALG-AMOX   | patient profile not claimed | H1P-PAT |
-        | H1P-CON-ECZEMA | patient profile not claimed | H1P-PAT |
-        | H1P-CON-OTITIS | patient profile not claimed | H1P-PAT |
+        | record         | reason                                    | because |
+        | H1P-ALG-AMOX   | its patient profile has no counting About | H1P-PAT |
+        | H1P-CON-ECZEMA | its patient profile has no counting About | H1P-PAT |
+        | H1P-CON-OTITIS | its patient profile has no counting About | H1P-PAT |
 
     Example: J22 no longer counts
       When the pod is read as it stood after "J24"
