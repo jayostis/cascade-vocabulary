@@ -3,10 +3,11 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import unquote
 
 import pytest
 from pyparsing import ParseException, ParseResults
-from rdflib import RDF, Graph, Literal, URIRef, Variable
+from rdflib import RDF, Graph, Literal, Namespace, URIRef, Variable
 from rdflib.paths import Path as PropertyPath
 from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
@@ -284,12 +285,40 @@ def joined_columns(node):
     return inner
 
 
+CSVW = Namespace("http://www.w3.org/ns/csvw#")
+CRATE_BASE = "https://crate.example/"
+UNIT_SEPARATOR = "\x1f"
+
+
+def with_ids_as_iris(value):
+    if isinstance(value, dict):
+        return {key: item.replace(" ", "%20") if key == "@id" else with_ids_as_iris(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [with_ids_as_iris(item) for item in value]
+    return value
+
+
 @lru_cache(maxsize=None)
-def declared_list_columns():
-    """Each question's list columns the crate declares, by its path under QUERIES."""
-    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]
-    return {(ROOT / entity["@id"]).relative_to(contract.QUERIES).as_posix(): entity["listColumns"]
-            for entity in crate if "listColumns" in entity}
+def declared_columns():
+    """Each question's columns the crate declares as CSVW says them once it is read as JSON-LD: the path under QUERIES
+    gives each column's name with its separator, or None.
+
+    The crate's own context is fetched from the web, so it is left out and a `@vocab` stands in; the crate's other
+    context terms are kept as they are. A file's `@id` is its path, spaces and all, which is not an IRI and which a
+    JSON-LD reader drops, so each space of an `@id` is written `%20` before the crate is read."""
+    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
+    context = [part for part in crate["@context"] if isinstance(part, dict)]
+    graph = Graph().parse(data=json.dumps({"@context": [{"@vocab": "https://schema.org/"}, *context],
+                                           "@graph": with_ids_as_iris(crate["@graph"])}),
+                          format="json-ld", publicID=CRATE_BASE)
+    declared = {}
+    for file, schema in graph.subject_objects(CSVW.tableSchema):
+        relative = unquote(str(file)[len(CRATE_BASE):])
+        declared[Path(relative).relative_to("queries").as_posix()] = {
+            str(graph.value(column, CSVW["name"])):
+                None if (separator := graph.value(column, CSVW.separator)) is None else str(separator)
+            for column in graph.objects(schema, CSVW.column)}
+    return declared
 
 
 def words(text):
@@ -616,40 +645,38 @@ class TestNamedQuestions:
                          if (restated := restated_absences(contract.query(relative)))}
             assert offenders == {}
 
-        def test_declares_in_the_crate_each_column_it_joins_with_group_concat_and_no_column_it_lacks(self):
-            """declares in the crate each column it joins with `GROUP_CONCAT`, and no column it lacks
+        def test_declares_in_the_crate_each_column_it_joins_with_group_concat_by_the_unit_separator(self):
+            """declares in the crate each column it joins with `GROUP_CONCAT`, with the separator U+001F, and no other column with one
 
-            A column whose text a `GROUP_CONCAT` joins, or an expression or a sample of one, is a list, and the question's
-            entry in `ro-crate-metadata.json` names it in `listColumns`, so a runtime gives it as a list without
-            guessing. A question fails if a list column is not named, or if a column named is not one of its columns.
+            A column whose text a `GROUP_CONCAT` joins, or an expression or a sample of one, is a list. The question's
+            entry in `ro-crate-metadata.json`, read as JSON-LD, gives it a `csvw:separator` of U+001F, which XML 1.0 and
+            FHIR strings exclude, so a runtime splits it without guessing. A question fails if it has no table schema, if
+            a list column has another separator or none, or if a column that is not a list has one.
             """
             offenders = {}
             for relative in every_question():
-                algebra = prepared(contract.query(relative)).algebra
-                named = {entry.get("column") for entry in declared_list_columns().get(relative, [])}
-                unnamed = joined_columns(algebra["p"]) - named
-                absent = named - {str(v) for v in algebra["PV"]}
-                if unnamed or absent:
-                    offenders[relative] = {"joined and not named": sorted(unnamed), "named and not a column": sorted(absent)}
+                joined = joined_columns(prepared(contract.query(relative)).algebra["p"])
+                declared = declared_columns().get(relative, {})
+                separated = {name for name, separator in declared.items() if separator is not None}
+                wrong = {name for name in joined if declared.get(name) != UNIT_SEPARATOR} | (separated - joined)
+                if wrong:
+                    offenders[relative] = sorted(wrong)
             assert offenders == {}
 
-        def test_gives_each_list_column_one_separator_and_at_most_the_start_its_values_share(self):
-            """gives each list column one separator and at most the start its values share
+        def test_declares_in_the_crate_every_column_it_gives_and_no_column_it_lacks(self):
+            """declares in the crate every column it gives, and no column it lacks
 
-            A `listColumns` entry has a `column`, a `separator` that is text, and a `followedBy` that is text when the
-            values begin alike, so that a separator inside a value does not end it: a runtime ends a value at the
-            separator only when `followedBy` comes next. A column is named once, and an entry holds nothing else.
+            The names of the columns in a question's table schema in `ro-crate-metadata.json` are compared with the
+            variables of its `SELECT`. A column missing from the schema, or one that is not a variable of the `SELECT`,
+            fails; every question that joins a column has such a schema.
             """
             offenders = {}
-            for relative, entries in declared_list_columns().items():
-                columns = [entry.get("column") for entry in entries]
-                kept = {"column", "separator", "followedBy"}
-                if (len(set(columns)) != len(columns)
-                        or any(not isinstance(entry.get("column"), str) or not entry["column"]
-                               or not isinstance(entry.get("separator"), str) or not entry["separator"]
-                               or not isinstance(entry.get("followedBy", "x"), str) or not entry.get("followedBy", "x")
-                               or set(entry) - kept for entry in entries)):
-                    offenders[relative] = entries
+            for relative in every_question():
+                projected = {str(v) for v in prepared(contract.query(relative)).algebra["PV"]}
+                declared = set(declared_columns().get(relative, {}))
+                if (declared or joined_columns(prepared(contract.query(relative)).algebra["p"])) and declared != projected:
+                    offenders[relative] = {"given and not declared": sorted(projected - declared),
+                                           "declared and not given": sorted(declared - projected)}
             assert offenders == {}
 
     class TestGivenAQuestionFiledUnderAKind:
