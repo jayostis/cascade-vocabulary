@@ -12,7 +12,6 @@
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?statement ?statementLabel ?counts ?record ?recordLabel ?outcome ?entry ?entryLabel ?why
@@ -95,7 +94,7 @@ WHERE {
                                                cascade:currentVersionStatusLifecycle, cascade:currentVersionStatusLifecycleStep,
                                                cascade:medicationExposureStart, cascade:medicationExposureEnd, cascade:medicationExposureOngoing,
                                                pav:hasCurrentVersion)
-                                 && !(?held = rdf:type && ?value = cascade:Record)) },
+                                 && !sameTerm(?value, cascade:Record)) },
                 "in no entry", "not in the pod"))) AS ?outcome)
 }
 ORDER BY ?statement ?recordLabel ?record
