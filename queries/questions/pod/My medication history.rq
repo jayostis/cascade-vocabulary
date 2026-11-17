@@ -64,17 +64,17 @@ WHERE {
     WHERE {
       { SELECT ?entry ?reasonLine
         WHERE {
-          ?entry a cascade:PrescribedOrReportedMedication ; cascade:memberCurrentValues ?values .
-          ?values cascade:valuesOfMember ?member .
-          OPTIONAL {
-            { ?values cascade:reasonCondition ?conditionRecord .
-              ?conditionEntry a cascade:ProblemOrDiagnosis ; cascade:entryMember ?conditionRecord .
-              OPTIONAL { ?conditionEntry cascade:conditionName ?conditionName }
-              BIND (CONCAT(COALESCE(CONCAT(?conditionName, ", "), ""), STR(?conditionEntry)) AS ?reason) }
-            UNION
-            { ?values cascade:reasonCode ?reasonCode .
-              BIND (STR(?reasonCode) AS ?reason) } }
-          BIND (IF(BOUND(?reason), CONCAT(STR(?member), " for ", ?reason, "\u001F"), "") AS ?reasonLine)
+          { ?entry a cascade:PrescribedOrReportedMedication .
+            BIND ("" AS ?reasonLine) }
+          UNION
+          { ?entry a cascade:PrescribedOrReportedMedication ; cascade:memberCurrentValues ?values .
+            ?values cascade:valuesOfMember ?member ; cascade:reasonCondition ?conditionRecord .
+            ?conditionEntry cascade:entryMember ?conditionRecord ; cascade:conditionName ?conditionName .
+            BIND (CONCAT(STR(?member), " for ", ?conditionName, ", ", STR(?conditionEntry), "\u001F") AS ?reasonLine) }
+          UNION
+          { ?entry a cascade:PrescribedOrReportedMedication ; cascade:memberCurrentValues ?values .
+            ?values cascade:valuesOfMember ?member ; cascade:reasonCode ?reasonCode .
+            BIND (CONCAT(STR(?member), " for ", STR(?reasonCode), "\u001F") AS ?reasonLine) }
         }
         ORDER BY ?entry ?reasonLine }
     }
