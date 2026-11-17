@@ -1,7 +1,9 @@
 # Read from the view alone, as an app would: each medication entry whatever its status, with its RxNorm code, its status,
 # the lifecycle class of that status (rule L1), when it started, the day its prescription was written, when it ended,
 # each record's own status and the day it ended, so a stop one record states is shown beside another's "active" whichever
-# the entry took, the dosage text each record states (none when no record states one), the text each record's source
+# the entry took, the dosage text each record states with the day its prescription was written where it states one, in
+# order of that day and the records stating none last, so a dose changed reads in the order it was written (none when
+# no record states one), the text each record's source
 # wrote for it, such as a stop reason (none when no record has one), how many records it joins, and each record with the
 # document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. A source that states no stop gives no end date: none is
 # inferred from a medication's last appearance. The code is the one `pod/My active medications` gives, and the entries
@@ -37,9 +39,12 @@ WHERE {
           ?entry a cascade:PrescribedOrReportedMedication ; cascade:memberCurrentValues ?values .
           ?values cascade:valuesOfMember ?member .
           OPTIONAL { ?values cascade:dosageInstructionText ?memberDosage }
-          BIND (IF(BOUND(?memberDosage), CONCAT(STR(?member), " ", ?memberDosage, "; "), "") AS ?dosageText)
+          OPTIONAL { ?values cascade:prescriptionWrittenDate ?memberWritten }
+          BIND (IF(BOUND(?memberDosage),
+                   CONCAT(STR(?member), " ", ?memberDosage, COALESCE(CONCAT(", written ", STR(?memberWritten)), ""), "; "), "") AS ?dosageText)
+          BIND (COALESCE(STR(?memberWritten), "~") AS ?writtenKey)
         }
-        ORDER BY ?entry ?dosageText }
+        ORDER BY ?entry ?writtenKey ?dosageText }
     }
     GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?narrativeLine; separator=""), "; $", "") AS ?said)
