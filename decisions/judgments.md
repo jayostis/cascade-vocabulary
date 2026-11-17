@@ -44,7 +44,8 @@ who makes judgments.
 |---|---|---|---|
 | judgment | nanopub assertion; SSSOM row | `jdg:Judgment`, a `prov:Collection` whose `prov:hadMember` are the records; one verdict (`ontologies/cascade.ttl`) | borrowed from PROV; the verdict is ours |
 | maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` (`runtime/matcher.feature`, M5; `ontologies/cascade.ttl`); a person's judgment also names the part they acted in, `cascade:PatientRole`, on one `prov:qualifiedAssociation` of the act that generated it, a blank node its `prov:wasGeneratedBy` names, whose agent is the person it is attributed to, and the act's one other association, if any, is the model's that proposed it, in `cascade:ModelProposerRole` (`runtime/naming.feature`, N10; `runtime/consent.feature`, Y3; `model-proposed-writes.md`; `cascade:PersonJudgmentShape`) | borrowed; the role sits where PROV-DM puts one, on an association |
-| verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`, and `cascade:Before`, of two revisions, naming the earlier as `cascade:earlierMember`, per `currency.md` (`ontologies/cascade.ttl`) | ours: a belief with a maker, not an axiom, and Different wins over Same |
+| verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`, `cascade:NotAbout`, and `cascade:Before`, of two revisions, naming the earlier as `cascade:earlierMember`, per `currency.md` (`ontologies/cascade.ttl`) | ours: a belief with a maker, not an axiom, and Different wins over Same |
+| not about | FHIR `$match`'s `match-grade` `certainly-not`, an engine's grade on a search result | `cascade:NotAbout`, a person's verdict whose one member is a patient profile, naming the `cascade:subject` it is not about and no basis (`cascade:NotAboutVerdictShape`, `cascade:AboutShape`): while it counts, no record naming the profile is the subject's, whatever About counts, and each is left out for `cascade:PatientProfileJudgedNotAbout`, hidden, never deleted (`queries/derivations/subjects.rq`, `excluded-for-their-patient.rq`). It outranks every machine's About and its own maker's earlier About; a person's About it does not outrank stands against it, and the profile is held back: its records are left out for `cascade:PatientProfileJudgedBothAboutAndNotAbout`, and `profile/What needs review` lists it with the names on both sides, beside every profile no one has answered. Only an act that names it, a retraction or a judgment replacing it, lifts it (`runtime/matcher.feature`, M2a) | ours: a grade is a machine's answer to one search, where this is a person's, kept and retractable |
 | acknowledgement | FHIR `DetectedIssue.mitigation`; `Flag.status` | `cascade:Acknowledged`, a verdict whose one member is a finding: the finding leaves the review page, still stands, and nothing else changes (`runtime/matcher.feature`, M19). A verdict, not a mark outside judgments, because a person's other answers to a finding, a Same or a Before, are judgments whose member is the finding, so the three list, count, retract and sync alike, and writers that file them in any order hold one answer (looked at `DetectedIssue.mitigation`, an action taken on a clinical issue with a practitioner author, and `Flag.status`, which edits the flag in place, where a pod edits nothing) | ours |
 | a clock known wrong | | `cascade:ClockDiscounted`, a person's verdict whose one member is an act: every revision the act generated is ranked as carrying no observation time, per `currency.md` (`runtime/currency.feature`, C7). It discounts and carries no offset: the derivation `currency.md` describes needs only that the times are wrong, and an offset would be a guess at how wrong (#204) | ours |
 | judgment over a source-level thing | | a Same whose members are servers or organisations, a Before whose member is a rollback finding, and a Same whose member is the finding of what a rule list version no longer reaches, each with a derivation to records or pairs, per `republishing-sources.md`, `currency.md` and `naming.md` (`runtime/matcher.feature`, M19) | ours: test 3 of the rubric |
@@ -85,6 +86,25 @@ changed is listed for review until a person's Same over its records, naming the 
 **Why Different outranks Same among machines.** (row "verdict") Keeping two records apart is the mistake that can be undone: a later
 Same joins them and nothing was lost. A wrong merge hides one record behind the other, and the person may never see
 it. So where two makers disagree, the pod errs toward showing two things, and a person's Same settles it.
+
+**Why a person's NotAbout is needed, and outranks a machine's About and its maker's earlier one.** (row "not about")
+The import once filed an About for every profile no counting About claimed, signed by the owner in the patient's role,
+so a parent's only "these are not my child's" was to retract words they never said, and the next import said them again.
+The import now claims nothing by itself, and a person says no with a verdict of its own over the profile record, which
+keeps its name across pulls. It does not borrow Different's reason for winning: Different wins so the pod errs toward
+showing, and a NotAbout hides. It wins over a machine's About because a person outranks every machine, and over its own
+maker's earlier About because the later word of one person is that person's answer.
+
+**Why a person's About after a NotAbout holds the profile back, and does not lift it.** (row "not about") Hiding a real
+allergy is as dangerous as showing a sibling's, so where two people answer a profile differently, neither wins silently:
+the records stay hidden, nothing is removed, and the profile is listed with both names until one side is retracted.
+The same holds when one person files an About after their own NotAbout: only an act that names a NotAbout, its
+retraction or a judgment that replaces it, lifts it, as anyone
+with standing in the pod may retract a statement (a retraction of someone else's is listed under
+`judgment/What needs review`), so a later About, from an import, a model the person said yes to, or the person
+themselves, is never the act that undoes a no. Read the other way, a later About would let the very import the NotAbout
+answers lift it again. An About is a person's when it is attributed to a `prov:Person`, whatever its basis says; the
+basis says why, not who.
 
 **Why every maker leaves a trail.** (row "maker") Where a maker went wrong, its trail is what finds the damage: a rule list version
 by the assertions under it, a runtime by the acts it performed, an app by its agent and version, and a person's

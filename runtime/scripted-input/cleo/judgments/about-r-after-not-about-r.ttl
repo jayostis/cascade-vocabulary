@@ -1,0 +1,13 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:46a1b164-a22c-4e59-b0f6-6392a98c8a69> a cascade:Judgment ;
+  cascade:verdict cascade:About ;
+  cascade:subject <urn:uuid:e3b7a9c2-4d16-4f85-9a3e-7c1b5d9f2e48> ;
+  cascade:basis cascade:OwnerStatement ;
+  prov:hadMember <urn:uuid:428ff610-55f5-8b55-8661-4540e8cb2517> ;
+  prov:wasAttributedTo <https://pod.example/profile/card.ttl#me> ;
+  prov:generatedAtTime "2026-03-04T10:00:00Z"^^xsd:dateTime .
+
+<https://pod.example/profile/card.ttl#me> a prov:Person .

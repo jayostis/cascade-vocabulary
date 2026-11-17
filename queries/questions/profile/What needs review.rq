@@ -1,0 +1,75 @@
+# Each patient profile whose records are hidden until a person answers whose it is: one a record's current version
+# names, other than the subject, that no counting About or NotAbout names; and one held back, a counting NotAbout and a
+# person's About standing against it, which it does unless a counting NotAbout of the same maker was made after it. Each
+# is listed once for each hospital whose records name it in their current version, with how many, and a held-back one
+# with the people whose About stands against a NotAbout and the people whose NotAbout counts, each list in IRI order and
+# separated by U+001F. A profile no record names is not listed.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?profile ?profileLabel ?needs ?hospital ?records ?saidAbout ?saidNotAbout
+WHERE {
+  { SELECT ?profile ?needs ?saidAbout ?saidNotAbout
+    WHERE {
+      { { SELECT DISTINCT ?profile WHERE { ?record pav:hasCurrentVersion/cascade:patient ?profile } }
+        MINUS { ?profile a cascade:Subject }
+        MINUS { ?claim cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile }
+        MINUS { ?denial cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile }
+        BIND ("no one has said whether it is the subject's" AS ?needs) }
+      UNION
+      { { SELECT ?profile
+                 (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?by), "\u001F"), ""); separator=""), "\u001F$", "")
+                  AS ?saidAbout)
+          WHERE {
+            { SELECT DISTINCT ?profile ?by
+              WHERE {
+                ?opposed cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile ;
+                         cascade:subject ?s .
+                ?against cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile ;
+                         cascade:subject ?s ; prov:wasAttributedTo ?by ; prov:generatedAtTime ?made .
+                ?by a prov:Person .
+                MINUS {
+                  ?outranking cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile ;
+                              cascade:subject ?s ; prov:wasAttributedTo ?by ; prov:generatedAtTime ?later .
+                  ?against cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?s ;
+                           prov:wasAttributedTo ?by ; prov:generatedAtTime ?made .
+                  FILTER (?later > ?made)
+                }
+              }
+              ORDER BY ?profile ?by }
+          }
+          GROUP BY ?profile
+          HAVING (BOUND(?profile)) }
+        { SELECT ?profile
+                 (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(STR(?by), "\u001F"), ""); separator=""), "\u001F$", "")
+                  AS ?saidNotAbout)
+          WHERE {
+            { SELECT DISTINCT ?profile ?by
+              WHERE { ?denial cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile ;
+                              prov:wasAttributedTo ?by . }
+              ORDER BY ?profile ?by }
+          }
+          GROUP BY ?profile
+          HAVING (BOUND(?profile)) }
+        BIND ("judged both about and not about the subject" AS ?needs) }
+    } }
+  { SELECT ?profile ?hospital (COUNT(DISTINCT ?record) AS ?records)
+    WHERE {
+      { { SELECT DISTINCT ?document ?hospital
+          WHERE { ?document prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital } }
+        ?revision prov:wasDerivedFrom ?document ; cascade:version ?version .
+        ?record pav:hasCurrentVersion ?version .
+        ?version cascade:patient ?profile . }
+      UNION
+      { ?record pav:hasCurrentVersion ?version .
+        ?version cascade:patient ?profile .
+        MINUS { ?revision cascade:version ?version ;
+                          prov:wasDerivedFrom/prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital } } }
+    GROUP BY ?profile ?hospital
+    HAVING (BOUND(?profile)) }
+  OPTIONAL { ?profile rdfs:label ?profileLabel }
+}
+ORDER BY ?needs ?profileLabel ?profile ?hospital

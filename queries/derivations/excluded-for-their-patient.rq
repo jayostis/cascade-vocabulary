@@ -1,15 +1,38 @@
-# A record about no one known to be the subject is left out of every view: its current version names a patient profile
-# no counting About ties to the subject, and the reason rests on that profile; or it names no patient, and a record with
-# no current version names none.
+# A record about no one known to be the subject is left out of every view, and the reason rests on the patient profile
+# its current version names: a person's About stands against a counting NotAbout over the profile, which holds it back
+# for review; or a counting NotAbout names the profile; or no counting About ties the profile to the subject. A person's
+# About stands against a NotAbout for its subject unless a counting NotAbout of the same maker was made after it. A
+# record whose current version names no patient, or that has no current version, is left out for that.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT { ?record cascade:leftOutFor ?leftOut . ?leftOut cascade:leftOutReason ?reason ; cascade:leftOutBecauseOf ?profile }
 WHERE {
-  ?record a cascade:Record .
-  FILTER NOT EXISTS { ?record cascade:subject [] }
-  OPTIONAL { ?record pav:hasCurrentVersion/cascade:patient ?profile }
-  BIND (IF(BOUND(?profile), cascade:PatientProfileNotClaimed, cascade:NoPatient) AS ?reason)
-  BIND (IRI(CONCAT("urn:cascade:left-out:",
-                   SHA256(CONCAT(STR(?record), " ", STR(?reason), COALESCE(CONCAT(" ", STR(?profile)), ""))))) AS ?leftOut)
+  { ?record a cascade:Record .
+    FILTER NOT EXISTS { ?record cascade:subject [] }
+    ?record pav:hasCurrentVersion/cascade:patient ?profile .
+    OPTIONAL { ?denial cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile }
+    OPTIONAL {
+      ?opposed cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile ; cascade:subject ?s .
+      ?against cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?s ;
+               prov:wasAttributedTo ?by ; prov:generatedAtTime ?made .
+      ?by a prov:Person .
+      MINUS {
+        ?outranking cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile ;
+                    cascade:subject ?s ; prov:wasAttributedTo ?by ; prov:generatedAtTime ?later .
+        ?against cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?s ; prov:wasAttributedTo ?by ;
+                 prov:generatedAtTime ?made .
+        FILTER (?later > ?made)
+      }
+    }
+    BIND (IF(BOUND(?against), cascade:PatientProfileJudgedBothAboutAndNotAbout,
+             IF(BOUND(?denial), cascade:PatientProfileJudgedNotAbout, cascade:PatientProfileNotClaimed)) AS ?reason)
+    BIND (IRI(CONCAT("urn:cascade:left-out:", SHA256(CONCAT(STR(?record), " ", STR(?reason), " ", STR(?profile))))) AS ?leftOut) }
+  UNION
+  { ?record a cascade:Record .
+    FILTER NOT EXISTS { ?record cascade:subject [] }
+    MINUS { ?record pav:hasCurrentVersion/cascade:patient ?named }
+    BIND (cascade:NoPatient AS ?reason)
+    BIND (IRI(CONCAT("urn:cascade:left-out:", SHA256(CONCAT(STR(?record), " ", STR(?reason))))) AS ?leftOut) }
 }

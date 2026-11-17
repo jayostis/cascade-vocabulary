@@ -113,6 +113,59 @@ Feature: The matcher's procedure
         | justification | members                                                         |
         | same code     | allergy RxNorm 8591 "Latex gloves", allergy RxNorm 8591 "Latex" |
 
+  Rule: M2a. A person's NotAbout over a patient profile hides its records from the subject until an act names it
+    decisions/judgments.md, rows "not about" and "verdict".
+    While a person's cascade:NotAbout over a profile counts for the subject, no record naming the profile is the
+    subject's (queries/derivations/subjects.rq), whatever About counts: the matcher takes none of them (M2), and each is in
+    no view, hidden, never deleted. It outranks a machine's About and its own maker's earlier About, and each record is
+    left out because its profile has a counting NotAbout. An About by a person that it does not outrank, filed by its own
+    maker after it or by another person at any time, stands against it: the records stay hidden, left out because the
+    profile has a counting NotAbout and a person's About that stands against it, and
+    queries/questions/profile/What needs review.rq lists the profile with the people on both sides. Only an act that names
+    the NotAbout, its retraction or a judgment replacing it, lifts it, so no later import or About gives the records back.
+
+    The examples have one person, the pod's owner; tests/fixtures/a-profile-judged-both-about-and-not-about-is-held-back
+    shows two people and three, and tests/fixtures/a-not-about-outranks-its-makers-earlier-about-and-a-machines a
+    machine's About.
+
+    Example: Cleo's NotAbout after her own About leaves the profile's record in no view, and the matcher takes it no more
+      Of the entry's two latex allergies, only "Latex gloves" names the profile; "Latex" names Cleo herself.
+
+      Given a new pod for Cleo on 2026-03-01 at 09:00
+      And Cleo files the judgment "about-r" on 2026-03-04 at 07:00
+      And Cleo enters "second-entry" on 2026-03-04 at 08:00
+      And Cleo files the judgment "not-about-r" on 2026-03-04 at 09:00
+      When the matcher runs on the records of that entry on 2026-03-04 at 09:01
+      Then the matcher has no judgment holding allergy RxNorm 8591 "Latex gloves" and allergy RxNorm 8591 "Latex"
+      And these records are in no view, for these reasons:
+        | record                             | reason                                      | because                                         |
+        | allergy RxNorm 8591 "Latex gloves" | its patient profile has a counting NotAbout | <urn:uuid:428ff610-55f5-8b55-8661-4540e8cb2517> |
+
+    Example: an About Cleo files after her NotAbout, as an import claiming the profile would, holds the profile back and lists it
+      Given a new pod for Cleo on 2026-03-01 at 09:00
+      And Cleo files the judgment "about-r" on 2026-03-04 at 07:00
+      And Cleo enters "second-entry" on 2026-03-04 at 08:00
+      And Cleo files the judgment "not-about-r" on 2026-03-04 at 09:00
+      When Cleo files the judgment "about-r-after-not-about-r" on 2026-03-04 at 10:00
+      And the query "questions/profile/What needs review.rq" is asked
+      Then it answers:
+        | profile                                         | profileLabel                                                   | needs                                         | hospital | records | saidAbout                                 | saidNotAbout                              |
+        | <urn:uuid:428ff610-55f5-8b55-8661-4540e8cb2517> | "Patient profile · unknown source · first received 2026-03-04" | "judged both about and not about the subject" |          | 1       | "https://pod.example/profile/card.ttl#me" | "https://pod.example/profile/card.ttl#me" |
+      And these records are in no view, for these reasons:
+        | record                             | reason                                                                                  | because                                         |
+        | allergy RxNorm 8591 "Latex gloves" | its patient profile has a counting NotAbout and a person's About that stands against it | <urn:uuid:428ff610-55f5-8b55-8661-4540e8cb2517> |
+
+    Example: retracting the NotAbout gives the records back to Cleo, by the About it no longer outranks
+      Given a new pod for Cleo on 2026-03-01 at 09:00
+      And Cleo files the judgment "about-r" on 2026-03-04 at 07:00
+      And Cleo enters "second-entry" on 2026-03-04 at 08:00
+      And Cleo files the judgment "not-about-r" on 2026-03-04 at 09:00
+      When Cleo files the judgment "retract-not-about-r" on 2026-03-04 at 11:00
+      Then the allergies view holds these entries:
+        | members                            |
+        | allergy RxNorm 8591 "Latex gloves" |
+        | allergy RxNorm 8591 "Latex"        |
+
   Rule: M3. It takes them in order of arrival, then by record name
     No note rules this.
     Arrival is the earliest first revision's prov:generatedAtTime (M1), compared as a time. All of one step's records arrive at the
