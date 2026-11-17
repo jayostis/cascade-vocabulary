@@ -57,8 +57,14 @@ cascade:entryMember a owl:ObjectProperty ;
 
 cascade:PodManifest a owl:Class ;
     rdfs:label "pod manifest"@en ;
-    rdfs:comment "The pod's description of itself, in manifest.ttl, written by the runtime that built it: its title, when it was created, and the activity and software that built it, with the snapshot that activity used."@en ;
+    rdfs:comment "The pod's description of itself, in manifest.ttl, written by the runtime that built it: its title, when it was created, and the activity and software that built it, with the snapshot that activity used and the hash of what it read."@en ;
     rdfs:subClassOf dcat:Dataset , prov:Entity .
+
+cascade:buildInputsHash a owl:DatatypeProperty ;
+    rdfs:label "build inputs hash"@en ;
+    rdfs:comment "Of the activity that built a pod's views, a hash of everything it read: the pod's files but those a build writes, the derivations, queries and layout it ran, the tables it was read with and the runtime that ran it. The runtime that ran it computes it as it chooses, so only a runtime that computes it the same way compares it, and one that computes the same hash for the pod as it stands may read the views, the labels and the type index back instead of building them."@en ;
+    rdfs:domain prov:Activity ;
+    rdfs:range xsd:string .
 
 foaf:givenName a owl:DatatypeProperty ;
     rdfs:isDefinedBy <http://xmlns.com/foaf/0.1/> ;
