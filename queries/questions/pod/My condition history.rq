@@ -1,6 +1,6 @@
 # Read from the view alone, as an app would: each condition entry whatever its status, with its codes, its status, when
 # it started and when it ended, each record's own status, each entry given for it as `pod/My active conditions` lists
-# them, how many records it joins, and each record with the document it
+# them (in its order, and with a medication entered in error left out), how many records it joins, and each record with the document it
 # was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. The status is "ruled out"
 # when the record the entry took its status from is refuted, whatever its clinical status, so a condition that was
 # considered and refuted is never read as one that resolved; otherwise it is that record's clinical status, or none when
@@ -29,12 +29,12 @@ WHERE {
                      ?forEntry cascade:memberCurrentValues ?forValues .
                      OPTIONAL { ?forEntry cascade:drugName ?drugName }
                      OPTIONAL { ?forEntry cascade:procedureName ?procedureName }
-                     OPTIONAL { ?forEntry cascade:vaccineName ?vaccineName } }
-          BIND (IF(BOUND(?forEntry),
-                   CONCAT(STR(?forEntry), COALESCE(CONCAT(" ", COALESCE(?drugName, ?procedureName, ?vaccineName)), ""), "\u001F"),
-                   "") AS ?forLine)
+                     OPTIONAL { ?forEntry cascade:vaccineName ?vaccineName }
+                     FILTER NOT EXISTS { ?forEntry cascade:lifecycle cascade:MedicationEnteredInError } }
+          BIND (COALESCE(?drugName, ?procedureName, ?vaccineName) AS ?forName)
+          BIND (IF(BOUND(?forEntry), CONCAT(STR(?forEntry), COALESCE(CONCAT(", ", ?forName), ""), "\u001F"), "") AS ?forLine)
         }
-        ORDER BY ?entry ?forLine }
+        ORDER BY ?entry ?forName ?forEntry }
     }
     GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "\u001F"); separator=""), "\u001F$", "") AS ?statuses)

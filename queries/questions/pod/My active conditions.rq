@@ -1,9 +1,10 @@
 # Read from the view alone, as an app would: each entry whose status is active and not ruled out, so not one whose
 # status was taken from a refuted record (`pod/My condition history` lists those), with its codes, its onset, each entry
-# of a medication, procedure or vaccination a record of which was given for one of its records, once, as "<entry>
-# <name>" (none when no record names one), how many records it joins, and each record with the document it was derived
-# from, when that was retrieved, and the hospitals that wrote it and that keep it. A list holds its values in order,
-# separated by U+001F, a value's own parts by ", ". Its code is the code IRI the entry states, in whichever listed system,
+# of a medication, procedure or vaccination a record of which was given for one of its records, once, as "<entry>, <name>"
+# (none when no record names one; not an entry of a medication its source marked entered in error), in order of name and
+# then entry, how many records it joins, and each record with the document it was derived from, when that was retrieved,
+# and the hospitals that wrote it and that keep it. A list holds its values in order, separated by U+001F, a value's own
+# parts by ", ". Its code is the code IRI the entry states, in whichever listed system,
 # the first in code point order when it states several, so that each entry is one row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -22,12 +23,12 @@ WHERE {
                      ?forEntry cascade:memberCurrentValues ?forValues .
                      OPTIONAL { ?forEntry cascade:drugName ?drugName }
                      OPTIONAL { ?forEntry cascade:procedureName ?procedureName }
-                     OPTIONAL { ?forEntry cascade:vaccineName ?vaccineName } }
-          BIND (IF(BOUND(?forEntry),
-                   CONCAT(STR(?forEntry), COALESCE(CONCAT(" ", COALESCE(?drugName, ?procedureName, ?vaccineName)), ""), "\u001F"),
-                   "") AS ?forLine)
+                     OPTIONAL { ?forEntry cascade:vaccineName ?vaccineName }
+                     FILTER NOT EXISTS { ?forEntry cascade:lifecycle cascade:MedicationEnteredInError } }
+          BIND (COALESCE(?drugName, ?procedureName, ?vaccineName) AS ?forName)
+          BIND (IF(BOUND(?forEntry), CONCAT(STR(?forEntry), COALESCE(CONCAT(", ", ?forName), ""), "\u001F"), "") AS ?forLine)
         }
-        ORDER BY ?entry ?forLine }
+        ORDER BY ?entry ?forName ?forEntry }
     }
     GROUP BY ?entry }
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?sources)

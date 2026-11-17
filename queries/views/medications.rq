@@ -4,7 +4,8 @@
 # both. It also says the lifecycle class of that status (cascade:lifecycle), so an app reads whether the medication is
 # still taken without reading the status. Each member's current values are a node of the view of their own, named after
 # the entry and the member, which says the member they came from, with the dosage text that member states and what it
-# was given for: each condition's record it names (cascade:reasonCondition) and each code of its reason. An entry whose
+# was given for: each condition's record it names (cascade:reasonCondition) and each code of its reason, whether in a
+# system the vocabulary lists (cascade:reasonCode) or in another (cascade:reasonCodeInOtherSystem). An entry whose
 # lead states no dosage text shows the one of the member the derivations chose (cascade:dosageFrom): none when no member
 # states one. It shows the narrative text of its lead (what the lead's source wrote for it, such as a stop reason), and
 # each member's node its own: an entry whose lead states none shows none, and the member that does shows it there. A time its source wrote short of the second keeps the node saying so (cascade:PaddedDateTime), named after
@@ -43,7 +44,8 @@ CONSTRUCT {
     cascade:medicationUseEndDate ?memberMedicationUseEndDate ;
     cascade:prescribedOrReported ?memberPrescribedOrReported ;
     cascade:reasonCondition ?memberReasonCondition ;
-    cascade:reasonCode ?memberReasonCode .
+    cascade:reasonCode ?memberReasonCode ;
+    cascade:reasonCodeInOtherSystem ?memberReasonCodeInOtherSystem .
   ?entry cascade:paddedDateTime ?startedPadded .
   ?startedPadded cascade:paddedDateTimeProperty cascade:medicationUseStartDate ; cascade:timeAsWritten ?startedWritten .
   ?entry cascade:paddedDateTime ?writtenPadded .
@@ -96,6 +98,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:prescribedOrReported ?memberPrescribedOrReported }
     OPTIONAL { ?memberVersion cascade:reasonCondition ?memberReasonCondition }
     OPTIONAL { ?memberVersion cascade:reasonCode ?memberReasonCode }
+    OPTIONAL { ?memberVersion cascade:reasonCodeInOtherSystem ?memberReasonCodeInOtherSystem }
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
                ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)

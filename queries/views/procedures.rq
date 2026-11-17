@@ -2,7 +2,8 @@
 # member chosen for the date. Each member's current values are a node of the view of their own, named after the entry
 # and the member, which says the member they came from, with the text that member's source wrote for it: an entry whose
 # lead states none shows none, and the member that does shows it there; and what it was done for: each condition's
-# record it names (cascade:reasonCondition) and each code of its reason.
+# record it names (cascade:reasonCondition) and each code of its reason, whether in a system the vocabulary lists
+# (cascade:reasonCode) or in another (cascade:reasonCodeInOtherSystem).
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 
@@ -24,7 +25,8 @@ CONSTRUCT {
     cascade:workflowStatus ?memberWorkflowStatus ;
     cascade:procedureDate ?memberProcedureDate ;
     cascade:reasonCondition ?memberReasonCondition ;
-    cascade:reasonCode ?memberReasonCode .
+    cascade:reasonCode ?memberReasonCode ;
+    cascade:reasonCodeInOtherSystem ?memberReasonCodeInOtherSystem .
 }
 WHERE {
   { ?record a cascade:MedicalProcedure ; cascade:inEntry ?entry .
@@ -44,5 +46,6 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:workflowStatus ?memberWorkflowStatus }
     OPTIONAL { ?memberVersion cascade:procedureDate ?memberProcedureDate }
     OPTIONAL { ?memberVersion cascade:reasonCondition ?memberReasonCondition }
-    OPTIONAL { ?memberVersion cascade:reasonCode ?memberReasonCode } }
+    OPTIONAL { ?memberVersion cascade:reasonCode ?memberReasonCode }
+    OPTIONAL { ?memberVersion cascade:reasonCodeInOtherSystem ?memberReasonCodeInOtherSystem } }
 }

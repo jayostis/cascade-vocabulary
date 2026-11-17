@@ -1,7 +1,8 @@
 # Each entry takes the vaccine and code of its lead, the status of the member chosen for status, and the date of the
 # member chosen for the date. Each member's current values are a node of the view of their own, named after the entry
 # and the member, which says the member they came from and what it was given for: each condition's record it names
-# (cascade:reasonCondition) and each code of its reason. A time its source wrote short of the second keeps the node
+# (cascade:reasonCondition) and each code of its reason, whether in a system the vocabulary lists (cascade:reasonCode)
+# or in another (cascade:reasonCodeInOtherSystem). A time its source wrote short of the second keeps the node
 # saying so (cascade:PaddedDateTime), named after the entry or the member's values and -padded-, so the view never shows
 # a padded time as exact.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
@@ -23,7 +24,8 @@ CONSTRUCT {
     cascade:workflowStatus ?memberWorkflowStatus ;
     cascade:vaccinationOccurrenceTime ?memberVaccinationOccurrenceTime ;
     cascade:reasonCondition ?memberReasonCondition ;
-    cascade:reasonCode ?memberReasonCode .
+    cascade:reasonCode ?memberReasonCode ;
+    cascade:reasonCodeInOtherSystem ?memberReasonCodeInOtherSystem .
   ?entry cascade:paddedDateTime ?datePadded .
   ?datePadded cascade:paddedDateTimeProperty cascade:vaccinationOccurrenceTime ; cascade:timeAsWritten ?dateWritten .
   ?memberValues cascade:paddedDateTime ?memberPadded .
@@ -49,6 +51,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:vaccinationOccurrenceTime ?memberVaccinationOccurrenceTime }
     OPTIONAL { ?memberVersion cascade:reasonCondition ?memberReasonCondition }
     OPTIONAL { ?memberVersion cascade:reasonCode ?memberReasonCode }
+    OPTIONAL { ?memberVersion cascade:reasonCodeInOtherSystem ?memberReasonCodeInOtherSystem }
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
                ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-", STRAFTER(STR(?memberPaddedProperty), "#"))), 1/0)
