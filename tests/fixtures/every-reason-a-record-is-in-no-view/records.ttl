@@ -69,6 +69,16 @@
 :unclaimedRevision a cascade:Revision ; cascade:revisionOf :unclaimed ; cascade:version :unclaimedVersion ;
     prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
 
+:denied a cascade:AllergyOrIntolerance .
+:deniedVersion prov:specializationOf :denied ; cascade:patient :deniedProfile ; cascade:allergenName "Milk" .
+:deniedRevision a cascade:Revision ; cascade:revisionOf :denied ; cascade:version :deniedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:heldBack a cascade:AllergyOrIntolerance .
+:heldBackVersion prov:specializationOf :heldBack ; cascade:patient :heldBackProfile ; cascade:allergenName "Shellfish" .
+:heldBackRevision a cascade:Revision ; cascade:revisionOf :heldBack ; cascade:version :heldBackVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
 :noPatient a cascade:AllergyOrIntolerance .
 :noPatientVersion prov:specializationOf :noPatient ; cascade:allergenName "Fish" .
 :noPatientRevision a cascade:Revision ; cascade:revisionOf :noPatient ; cascade:version :noPatientVersion ;

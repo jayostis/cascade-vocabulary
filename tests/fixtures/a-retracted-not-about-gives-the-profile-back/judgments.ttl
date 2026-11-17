@@ -1,0 +1,31 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:parent a prov:Person .
+
+:aboutRestored a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :restored ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:notAboutRetracted a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :restored ; cascade:subject :subject ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+:retraction a prov:Activity ; prov:invalidated :notAboutRetracted ;
+    prov:wasAssociatedWith :parent ; prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ;
+    prov:startedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+
+:aboutDeniedAgain a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :deniedAgain ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:firstNotAbout a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :deniedAgain ; cascade:subject :subject ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+:firstNotAboutRetraction a prov:Activity ; prov:invalidated :firstNotAbout ;
+    prov:wasAssociatedWith :parent ; prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ;
+    prov:startedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+:secondNotAbout a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :deniedAgain ; cascade:subject :subject ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-03-02T00:00:00Z"^^xsd:dateTime .

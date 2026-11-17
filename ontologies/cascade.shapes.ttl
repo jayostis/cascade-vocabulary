@@ -2440,9 +2440,9 @@ cascade:JudgmentShape a sh:NodeShape ;
         sh:path cascade:verdict ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About cascade:Before cascade:Acknowledged
-                cascade:ClockDiscounted ) ;
-        sh:message "A judgment gives one verdict: cascade:Same, cascade:Different, cascade:Erroneous, cascade:About, cascade:Before, cascade:Acknowledged or cascade:ClockDiscounted. A retraction is no judgment but an activity."@en ;
+        sh:in ( cascade:Same cascade:Different cascade:Erroneous cascade:About cascade:NotAbout cascade:Before
+                cascade:Acknowledged cascade:ClockDiscounted ) ;
+        sh:message "A judgment gives one verdict: cascade:Same, cascade:Different, cascade:Erroneous, cascade:About, cascade:NotAbout, cascade:Before, cascade:Acknowledged or cascade:ClockDiscounted. A retraction is no judgment but an activity."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:hadMember ;
@@ -2503,20 +2503,42 @@ cascade:AboutVerdictShape a sh:NodeShape ;
     sh:message "An About judgment names one member, a subject and a basis."@en ;
     sh:severity sh:Violation .
 
+cascade:NotAboutVerdictShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path cascade:verdict ; sh:hasValue cascade:NotAbout ] ]
+        [ sh:property [ sh:path cascade:subject ; sh:minCount 1 ] ,
+                      [ sh:path prov:hadMember ; sh:minCount 1 ; sh:maxCount 1 ] ,
+                      [ sh:path prov:wasAttributedTo ; sh:class prov:Person ] ]
+    ) ;
+    sh:message "A NotAbout is a person's: it names one member and a subject."@en ;
+    sh:severity sh:Violation .
+
+cascade:MachineBasisShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:property [ sh:path cascade:basis ; sh:minCount 1 ;
+                                 sh:in ( cascade:SameDemographics cascade:PortalAuthenticated cascade:RelatedPersonConnection ) ] ] ]
+        [ sh:property [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:SoftwareAgent ; sh:not [ sh:class prov:Person ] ] ]
+    ) ;
+    sh:message "A judgment whose basis is cascade:SameDemographics, cascade:PortalAuthenticated or cascade:RelatedPersonConnection is a software agent's: it is attributed to an agent typed prov:SoftwareAgent and never prov:Person, and a person's About has the basis cascade:OwnerStatement."@en ;
+    sh:severity sh:Violation .
+
 cascade:AboutShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
         [ sh:property [ sh:path cascade:verdict ; sh:hasValue cascade:About ] ]
+        [ sh:property [ sh:path cascade:verdict ; sh:hasValue cascade:NotAbout ] , [ sh:path cascade:basis ; sh:maxCount 0 ] ]
         [ sh:property [ sh:path cascade:subject ; sh:maxCount 0 ] , [ sh:path cascade:basis ; sh:maxCount 0 ] ]
     ) ;
-    sh:message "Only an About judgment names a subject or gives a basis."@en ;
+    sh:message "Only an About or a NotAbout judgment names a subject, and only an About gives a basis."@en ;
     sh:severity sh:Violation ;
     sh:property [
         sh:path cascade:subject ;
         sh:nodeKind sh:IRI ;
         sh:maxCount 1 ;
         sh:disjoint prov:wasAttributedTo ;
-        sh:message "An About judgment names exactly one subject, which is never its author."@en ;
+        sh:message "An About or a NotAbout judgment names exactly one subject, which is never its author."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path cascade:basis ;

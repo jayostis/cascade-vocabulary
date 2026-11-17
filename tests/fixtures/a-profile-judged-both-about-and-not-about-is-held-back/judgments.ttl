@@ -1,0 +1,36 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:parent a prov:Person .
+:otherParent a prov:Person .
+:grandparent a prov:Person .
+
+:notAboutFirst a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :claimedAgain ; cascade:subject :subject ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:aboutAsAnImportFilesIt a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :claimedAgain ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+
+:parentsAbout a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :twoParents ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:otherParentsNotAbout a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :twoParents ; cascade:subject :subject ;
+    prov:wasAttributedTo :otherParent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :otherParent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+
+:firstAbout a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :threePeople ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:secondNotAbout a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :threePeople ; cascade:subject :subject ;
+    prov:wasAttributedTo :otherParent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :otherParent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+:thirdAbout a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :threePeople ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ;
+    prov:wasAttributedTo :grandparent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :grandparent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-03T00:00:00Z"^^xsd:dateTime .

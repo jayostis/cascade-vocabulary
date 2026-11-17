@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-retracted-not-about-gives-the-profile-back" ;
+  rdfs:comment "A parent's About over a profile and their NotAbout after it, retracted; and over another, an About, a NotAbout retracted, and a NotAbout filed again." ;
+  mf:entries (
+    <#whose-records-are-the-subjects>
+    <#why-it-is-in-no-view>
+  ) .
+
+<#whose-records-are-the-subjects> a mf:QueryEvaluationTest ;
+  mf:name "whose-records-are-the-subjects" ;
+  rdfs:comment "The first profile's record is the subject's again, by the About the retraction leaves outranked by nothing; the second's is not, a NotAbout counting once more." ;
+  mf:action [ qt:query <whose-records-are-the-subjects.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <whose-records-are-the-subjects.srj> .
+
+<#why-it-is-in-no-view> a mf:QueryEvaluationTest ;
+  mf:name "why-it-is-in-no-view" ;
+  rdfs:comment "Only the second profile's record is left out, its profile judged not about the subject." ;
+  mf:action [ qt:query <../../../queries/questions/record/Why%20it%20is%20in%20no%20view.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <why-it-is-in-no-view.srj> .

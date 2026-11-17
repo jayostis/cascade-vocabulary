@@ -1275,6 +1275,14 @@ cascade:PatientProfileNotClaimed a skos:Concept ;
     skos:inScheme cascade:LeftOutReasons ;
     skos:prefLabel "its patient profile has no counting About"@en .
 
+cascade:PatientProfileJudgedNotAbout a skos:Concept ;
+    skos:inScheme cascade:LeftOutReasons ;
+    skos:prefLabel "its patient profile has a counting NotAbout"@en .
+
+cascade:PatientProfileJudgedBothAboutAndNotAbout a skos:Concept ;
+    skos:inScheme cascade:LeftOutReasons ;
+    skos:prefLabel "its patient profile has a counting NotAbout and a person's About that stands against it"@en .
+
 cascade:NoPatient a skos:Concept ;
     skos:inScheme cascade:LeftOutReasons ;
     skos:prefLabel "it names no patient"@en .
@@ -2626,7 +2634,7 @@ cascade:Judgment a owl:Class ;
 
 cascade:verdict a owl:ObjectProperty ;
     rdfs:label "verdict"@en ;
-    rdfs:comment "What a judgment concludes of its members, exactly one of cascade:Same, cascade:Different, cascade:Erroneous, cascade:About, cascade:Before, cascade:Acknowledged and cascade:ClockDiscounted. A retraction is an activity, not a judgment, and gives none."@en ;
+    rdfs:comment "What a judgment concludes of its members, exactly one of cascade:Same, cascade:Different, cascade:Erroneous, cascade:About, cascade:NotAbout, cascade:Before, cascade:Acknowledged and cascade:ClockDiscounted. A retraction is an activity, not a judgment, and gives none."@en ;
     rdfs:domain cascade:Judgment .
 
 cascade:Same a owl:NamedIndividual ;
@@ -2673,7 +2681,11 @@ cascade:observationTimeDiscountedBy a owl:ObjectProperty ;
 
 cascade:About a owl:NamedIndividual ;
     rdfs:label "about"@en ;
-    rdfs:comment "The member, a source's patient record, is about the cascade:subject: every record naming it is the subject's."@en .
+    rdfs:comment "The member, a source's patient record, is about the cascade:subject: every record naming it is the subject's, while no counting cascade:NotAbout over it for that subject outranks it."@en .
+
+cascade:NotAbout a owl:NamedIndividual ;
+    rdfs:label "not about"@en ;
+    rdfs:comment "A person's judgment that the member, a source's patient record, is not about the cascade:subject. While it counts, no record naming the member is the subject's, whatever About counts: they are hidden, never deleted. It outranks every About a machine made and its own maker's earlier About; an About a person makes after it, or another person's at any time, stands against it, and the profile is held back and listed for review. Only a retraction of it, or a judgment that replaces it, lifts it: an act that names it."@en .
 
 cascade:subject a owl:ObjectProperty ;
     rdfs:label "subject"@en ;

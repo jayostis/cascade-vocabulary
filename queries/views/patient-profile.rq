@@ -1,7 +1,8 @@
-# One entry for the person, joining every patient profile a counting About judgment ties to them, named as every entry
-# is, from its least member. Profiles are joined by About, not by Same, so the entry has no lead and states no value of
-# its own: each profile's current values are a node of the view of their own, named after the entry and the profile,
-# which says the profile they came from, so each source's date of birth, gender and death stand beside the others'.
+# One entry for the person, joining every patient profile a counting About judgment ties to them and no counting NotAbout
+# over it for them outranks, named as every entry is, from its least member. Profiles are joined by About, not by Same,
+# so the entry has no lead and states no value of its own: each profile's current values are a node of the view of their
+# own, named after the entry and the profile, which says the profile they came from, so each source's date of birth,
+# gender and death stand beside the others'.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -19,9 +20,13 @@ CONSTRUCT {
 WHERE {
   { SELECT ?s (IRI(CONCAT("urn:cascade:entry:", SHA256(MIN(STR(?member))))) AS ?entry)
     WHERE { ?about cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?member ;
-                   cascade:subject ?s . }
+                   cascade:subject ?s .
+            MINUS { ?denial cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?member ;
+                            cascade:subject ?s . } }
     GROUP BY ?s }
   ?j cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?s .
+  MINUS { ?notAbout cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile ;
+                    cascade:subject ?s . }
   OPTIONAL { ?profile pav:hasCurrentVersion ?memberVersion .
              OPTIONAL { ?memberVersion cascade:dateOfBirth ?memberDateOfBirth }
              OPTIONAL { ?memberVersion cascade:administrativeGender ?memberAdministrativeGender }

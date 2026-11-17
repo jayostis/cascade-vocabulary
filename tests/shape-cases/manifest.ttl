@@ -322,6 +322,50 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:AboutShape ; sh:resultPath cascade:subject ] ] .
 
+<#judgment-about/same-demographics-by-a-person> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/same-demographics-by-a-person.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MachineBasisShape ] ] .
+
+<#judgment-about/portal-authenticated-by-a-person> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/portal-authenticated-by-a-person.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MachineBasisShape ] ] .
+
+<#judgment-about/related-person-connection-by-a-person> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/related-person-connection-by-a-person.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MachineBasisShape ] ] .
+
+<#judgment-about/same-demographics-by-an-author-typed-person-and-software> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-about/same-demographics-by-an-author-typed-person-and-software.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:MachineBasisShape ] ] .
+
+<#judgment-not-about/valid> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-not-about/valid.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms true ] .
+
+<#judgment-not-about/with-a-basis> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-not-about/with-a-basis.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:AboutShape ] ] .
+
+<#judgment-not-about/no-subject> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-not-about/no-subject.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:NotAboutVerdictShape ] ] .
+
+<#judgment-not-about/two-members> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-not-about/two-members.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:NotAboutVerdictShape ] ] .
+
+<#judgment-not-about/by-a-machine> a sht:Validate ;
+  mf:action [ sht:dataGraph <judgment-not-about/by-a-machine.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:NotAboutVerdictShape ] ] .
+
 <#judgment-retraction/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <judgment-retraction/valid.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms true ] .

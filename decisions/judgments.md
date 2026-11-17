@@ -32,8 +32,8 @@ its confidence and its retraction, or does the pod define one?
 Sources: FHIR `Linkage` (https://hl7.org/fhir/R4/linkage.html), `Patient.link`
 (https://hl7.org/fhir/R4/patient.html#links); OWL 2 (https://www.w3.org/TR/owl2-syntax/#Individual_Equality); SSSOM
 (https://mapping-commons.github.io/sssom/1.0/spec-model/) and SEMAPV (https://w3id.org/semapv); nanopublication
-guidelines (https://nanopub.net/guidelines/working_draft/) and `npx:retracts`
-(http://purl.org/nanopub/x/retracts); PROV-O (https://www.w3.org/TR/prov-o/); SKOS (https://www.w3.org/TR/skos-reference/#mapping).
+guidelines (https://nanopub.net/guidelines/working_draft/), whose `npx:retracts` is
+`http://purl.org/nanopub/x/retracts`; PROV-O (https://www.w3.org/TR/prov-o/); SKOS (https://www.w3.org/TR/skos-reference/#mapping).
 
 ## Choice
 
@@ -44,7 +44,8 @@ who makes judgments.
 |---|---|---|---|
 | judgment | nanopub assertion; SSSOM row | `jdg:Judgment`, a `prov:Collection` whose `prov:hadMember` are the records; one verdict (`ontologies/cascade.ttl`) | borrowed from PROV; the verdict is ours |
 | maker | PROV agents | `prov:wasAttributedTo` a `prov:Person` or `prov:SoftwareAgent` (`runtime/matcher.feature`, M5; `ontologies/cascade.ttl`); a person's judgment also names the part they acted in, `cascade:PatientRole`, on one `prov:qualifiedAssociation` of the act that generated it, a blank node its `prov:wasGeneratedBy` names, whose agent is the person it is attributed to, and the act's one other association, if any, is the model's that proposed it, in `cascade:ModelProposerRole` (`runtime/naming.feature`, N10; `runtime/consent.feature`, Y3; `model-proposed-writes.md`; `cascade:PersonJudgmentShape`) | borrowed; the role sits where PROV-DM puts one, on an association |
-| verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`, and `cascade:Before`, of two revisions, naming the earlier as `cascade:earlierMember`, per `currency.md` (`ontologies/cascade.ttl`) | ours: a belief with a maker, not an axiom, and Different wins over Same |
+| verdict | `owl:sameAs`; `Linkage`; `Patient.link` | `jdg:Same`, `jdg:Different`, `jdg:Erroneous`, `jdg:About`, `cascade:NotAbout`, and `cascade:Before`, of two revisions, naming the earlier as `cascade:earlierMember`, per `currency.md` (`ontologies/cascade.ttl`) | ours: a belief with a maker, not an axiom, and Different wins over Same |
+| not about | FHIR `$match`'s `match-grade` `certainly-not`, an engine's grade on a search result | `cascade:NotAbout`, a person's verdict whose one member is a patient profile, naming the `cascade:subject` it is not about and no basis (`cascade:NotAboutVerdictShape`, `cascade:AboutShape`): while it counts, no record naming the profile is the subject's, whatever About counts, and each is left out for `cascade:PatientProfileJudgedNotAbout`, hidden, never deleted (`queries/derivations/subjects.rq`, `excluded-for-their-patient.rq`). It outranks every machine's About and its own maker's earlier About; a person's About it does not outrank stands against it, and the profile is held back: its records are left out for `cascade:PatientProfileJudgedBothAboutAndNotAbout`, and `profile/What needs review` lists it with the names on both sides, beside every profile no one has answered. Only an act that names it, a retraction or a judgment replacing it, lifts it (`runtime/matcher.feature`, M2a) | ours: a grade is a machine's answer to one search, where this is a person's, kept and retractable |
 | acknowledgement | FHIR `DetectedIssue.mitigation`; `Flag.status` | `cascade:Acknowledged`, a verdict naming a warning's kind, its `cascade:answersWarningOfKind`, a concept of `cascade:FindingForReviewKinds`, and, as its members, what the warning is about: the records, documents or acts the kind's definition says its targets resolve to, never the finding (`naming.md`, "Nothing kept cites anything derived"). A warning of that kind leaves the review page while an Acknowledged of its kind that stands names every one of those things, however the pod works it out again; the warning still stands, and nothing else changes. A judgment naming a finding is refused (`cascade:JudgmentNamesNoFindingShape`; `runtime/matcher.feature`, M19). A verdict, not a mark outside judgments, because a person's other answers to a warning, a Same, a Different or a Before, are judgments, so they all list, count, retract and sync alike, and writers that file them in any order hold one answer (looked at `DetectedIssue.mitigation`, an action taken on a clinical issue with a practitioner author, and `Flag.status`, which edits the flag in place, where a pod edits nothing) | ours |
 | a clock known wrong | | `cascade:ClockDiscounted`, a person's verdict whose one member is an act: every revision the act generated is ranked as carrying no observation time, per `currency.md` (`runtime/currency.feature`, C7). It discounts and carries no offset: the derivation `currency.md` describes needs only that the times are wrong, and an offset would be a guess at how wrong (#204) | ours |
 | judgment over a source-level thing | | a Same whose members are servers or organisations, with a derivation to records, per `republishing-sources.md`. A finding is not such a thing, since the pod derives it: a person answers each pair a finding of what a rule list version no longer reaches names with a Same or a Different over the pair's records, which an app may file for every pair of the line at once (`runtime/matcher.feature`, M19), and a Before answering a rollback finding, not yet built, will name what the finding is about, as `currency.md`'s row "Before over a finding" says | ours: test 3 of the rubric |
@@ -85,6 +86,39 @@ changed is listed for review until a person's Same over its records, naming the 
 **Why Different outranks Same among machines.** (row "verdict") Keeping two records apart is the mistake that can be undone: a later
 Same joins them and nothing was lost. A wrong merge hides one record behind the other, and the person may never see
 it. So where two makers disagree, the pod errs toward showing two things, and a person's Same settles it.
+
+**Why a person's NotAbout is needed, and outranks a machine's About and its maker's earlier one.** (row "not about")
+The import once filed an About for every profile no counting About claimed, signed by the owner in the patient's role,
+so a parent's only "these are not my child's" was to retract words they never said, and the next import said them again.
+The import now claims nothing by itself, and a person says no with a verdict of its own over the profile record, which
+keeps its name across pulls. It does not borrow Different's reason for winning: Different wins so the pod errs toward
+showing, and a NotAbout hides. It wins over a machine's About because a person outranks every machine, and over its own
+maker's earlier About because the later word of one person is that person's answer.
+
+**Why a person's About after a NotAbout holds the profile back, and does not lift it.** (row "not about") Hiding a real
+allergy is as dangerous as showing a sibling's, so where two people answer a profile differently, neither wins silently:
+the records stay hidden, nothing is removed, and the profile is listed with both names. It leaves the state three ways: a
+retraction of either side; the About's maker filing a later NotAbout of their own, which makes that About their earlier
+word; or a judgment that replaces either side (`dct:replaces`). The same holds when one person files an About after their
+own NotAbout: only an act that names a NotAbout, its retraction or a judgment that replaces it, lifts it, as anyone
+with standing in the pod may retract a statement (a retraction of someone else's is listed under
+`judgment/What needs review`), so a later About, from an import, a model the person said yes to, or the person
+themselves, is never the act that undoes a no. Read the other way, a later About would let the very import the NotAbout
+answers lift it again.
+
+**Why only an About with basis OwnerStatement stands against a NotAbout, and a machine basis needs a software agent.**
+(row "not about") A basis says who judged: `cascade:SameDemographics` is a matcher's, `cascade:PortalAuthenticated` a
+login's, `cascade:RelatedPersonConnection` a portal's word that a person is related (not a person's statement), and
+`cascade:OwnerStatement` the one a person states. The first three are machine bases, and only a `cascade:OwnerStatement`
+About by a person stands against a person's NotAbout; the shape (`cascade:MachineBasisShape`) refuses a judgment with
+a machine basis that is not attributed to a `prov:SoftwareAgent`, or whose author is also a `prov:Person`, so a person's name never carries a machine's word. Were
+it allowed, an import that files a portal or demographics About in the owner's name, which is the claim the import no
+longer makes, would put every profile the owner denied back on review after each import.
+
+**Why two people who sign with one author IRI are one maker.** (row "not about") The author IRI is the person: a pod
+cannot tell two people apart who file as the same `prov:Person`, so one's About and the other's later NotAbout are one
+maker's earlier and later word, and the NotAbout wins with no hold-back and no listing. A pod that wants two answers
+names two people.
 
 **Why every maker leaves a trail.** (row "maker") Where a maker went wrong, its trail is what finds the damage: a rule list version
 by the assertions under it, a runtime by the acts it performed, an app by its agent and version, and a person's
