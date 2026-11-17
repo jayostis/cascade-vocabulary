@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-medicine-given-for-a-coded-reason" ;
+  rdfs:comment "An active medicine whose version gives its reason as a SNOMED CT code and names no condition's record." ;
+  mf:entries (
+    <#my-active-medications>
+    <#my-medication-history>
+  ) .
+
+<#my-active-medications> a mf:QueryEvaluationTest ;
+  mf:name "my-active-medications" ;
+  rdfs:comment "The medicine's row says its record was given for the code." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-medications.srj> .
+
+<#my-medication-history> a mf:QueryEvaluationTest ;
+  mf:name "my-medication-history" ;
+  rdfs:comment "The medicine's row says its record was given for the code." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20medication%20history.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-medication-history.srj> .
