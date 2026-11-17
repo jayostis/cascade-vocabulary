@@ -2627,7 +2627,7 @@ cascade:Same a owl:NamedIndividual ;
 
 cascade:Different a owl:NamedIndividual ;
     rdfs:label "different"@en ;
-    rdfs:comment "The members are kept apart: a counting Different wins over any Same for that pair."@en .
+    rdfs:comment "The members are kept apart: a person's counting Same for that pair stands over a machine's Different; among the rest a counting Different wins over any Same."@en .
 
 cascade:Erroneous a owl:NamedIndividual ;
     rdfs:label "erroneous"@en ;
@@ -2811,7 +2811,7 @@ cascade:RuleListVersionMigration a owl:Class ;
 
 cascade:currentlySame a owl:ObjectProperty , owl:SymmetricProperty ;
     rdfs:label "currently same"@en ;
-    rdfs:comment "Derived: two records that a counting Same joins, or that are of one type and id under two servers a counting Same joins (queries/derivations/same-records-under-same-servers.rq), and that no counting Different separates."@en .
+    rdfs:comment "Derived: two records that a counting Same joins, or that are of one type and id under two servers a counting Same joins (queries/derivations/same-records-under-same-servers.rq), and that no counting Different separates, a machine's Different over a pair a person's counting Same names excepted."@en .
 
 cascade:currentlySameOrganization a owl:ObjectProperty , owl:SymmetricProperty ;
     rdfs:label "currently same organization"@en ;
@@ -2819,7 +2819,7 @@ cascade:currentlySameOrganization a owl:ObjectProperty , owl:SymmetricProperty ;
 
 cascade:currentlyDifferent a owl:ObjectProperty , owl:SymmetricProperty ;
     rdfs:label "currently different"@en ;
-    rdfs:comment "Derived: two records a counting Different separates."@en .
+    rdfs:comment "Derived: two records a counting Different separates, a machine's Different over a pair a person's counting Same names excepted (queries/derivations/different-pairs.rq)."@en .
 
 # Findings a runtime files for a person to review
 
