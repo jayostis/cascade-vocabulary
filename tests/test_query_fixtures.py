@@ -316,6 +316,29 @@ class TestWhatIsTrueOfAnyPod:
                 assert built_once(fixture, "oxigraph", lens).store.select(SHOWN_AND_LEFT_OUT_ALIKE) == [], lens
 
         @every_fixture
+        def test_reads_a_statements_member_not_in_the_pod_exactly_when_the_pod_states_nothing_of_it(self, fixture):
+            """reads a statement's member as not in the pod exactly when the pod states nothing of it
+
+            For each row of `record/Where each record a statement names is now`, under each lens that differs, the row
+            reads "not in the pod" when every triple with the member as subject is one a derivation added, and "in no
+            entry" when one is not, so a predicate a derivation comes to add about a member must join the query's list.
+            It finds only a predicate that some fixture's absent member receives.
+            """
+            text = query(questions()["record/Where each record a statement names is now"])
+            for lens in lenses_that_differ(fixture):
+                build = built_once(fixture, "oxigraph", lens)
+                added = {tuple(map(str, triple)) for triple in build.derived}
+                for found in build.store.select(text):
+                    outcome = str(found["outcome"])
+                    if outcome not in ("not in the pod", "in no entry"):
+                        continue
+                    member = str(found["record"])
+                    every = build.store.select(f"SELECT ?p ?o WHERE {{ {{ <{member}> ?p ?o }} "
+                                               f"UNION {{ GRAPH ?g {{ <{member}> ?p ?o }} }} }}")
+                    stated = {(member, str(each["p"]), str(each["o"])) for each in every} - added
+                    assert bool(stated) == (outcome == "in no entry"), (lens, member, outcome, stated)
+
+        @every_fixture
         def test_holds_no_qualified_attribution(self, fixture):
             """holds no `prov:qualifiedAttribution`
 

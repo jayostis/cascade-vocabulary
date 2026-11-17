@@ -1,0 +1,102 @@
+# A statement is a judgment a matcher did not make: a person's, or a model's. For each record one names, a row says where
+# that record is now, as Outcome: one when it is in an entry and every record the statement names that is in one is in
+# that entry, split when the statement's records are in more than one, hidden when no entry holds it and Why gives each
+# reason, in no entry when it is held, no entry has it and nothing left it out, not in the pod when it is not held. Held is
+# a triple with the member as subject whose predicate no derivation here builds about a member (the Record type, the
+# currentlySame family, entry and left-out links, revisions, lifecycles, exposure periods, current versions). What the pod
+# types a member as decides nothing: a member that is no record, a profile an About statement names, is listed as any
+# record is. A held member whose only stated triples use a derived predicate, a reference series with only its current
+# version, reads not in the pod. A statement a person retracted or replaced is listed, with Counts false. On the entry's
+# row, Other members are its other records, in order, and Grew by counts those the statement does not name; Other
+# statements are the other statements naming a record of the entry, in order, and Merged with counts those naming a
+# record this statement does not, a retracted or replaced one left out. An app sums Grew by and Merged with. A list holds
+# its values separated by U+001F, and a list with nothing in it is unbound.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?statement ?statementLabel ?counts ?record ?recordLabel ?outcome ?entry ?entryLabel ?why
+       ?otherMembers ?grewBy ?otherStatements ?mergedWith
+WHERE {
+  { SELECT DISTINCT ?statement ?statementLabel ?counts ?record ?recordLabel ?entry ?entryLabel
+    WHERE {
+      ?statement a cascade:Judgment ; prov:hadMember ?record .
+      OPTIONAL { ?statement cascade:matcherRule ?rule }
+      FILTER (!BOUND(?rule))
+      OPTIONAL { ?statement cascade:countsUnderLens ?counted }
+      BIND (COALESCE(?counted, false) AS ?counts)
+      OPTIONAL { ?statement rdfs:label ?statementLabel }
+      OPTIONAL { ?record rdfs:label ?recordLabel }
+      OPTIONAL { GRAPH ?view { ?entry cascade:entryMember ?record }
+                 OPTIONAL { ?entry rdfs:label ?entryLabel } }
+    } }
+  { SELECT ?statement (COUNT(DISTINCT ?reached) AS ?entriesReached)
+    WHERE {
+      ?statement prov:hadMember ?record .
+      OPTIONAL { ?statement prov:hadMember ?sibling .
+                 GRAPH ?siblingView { ?reached cascade:entryMember ?sibling } }
+    }
+    GROUP BY ?statement }
+  { SELECT ?statement ?record (GROUP_CONCAT(STR(?otherMember); separator="\u001F") AS ?others) (SUM(?grewFlag) AS ?grewCount)
+    WHERE {
+      { SELECT DISTINCT ?statement ?record ?otherMember ?grewFlag
+        WHERE {
+          ?statement prov:hadMember ?record .
+          OPTIONAL { GRAPH ?view { ?entry cascade:entryMember ?record , ?other }
+                     FILTER (?other != ?record) }
+          BIND (IF(BOUND(?other), ?other, ?none) AS ?otherMember)
+          BIND (IF(!BOUND(?other) || EXISTS { ?statement prov:hadMember ?other }, 0, 1) AS ?grewFlag)
+        }
+        ORDER BY ?statement ?record ?otherMember }
+    }
+    GROUP BY ?statement ?record }
+  { SELECT ?statement ?record (GROUP_CONCAT(STR(?otherStatement); separator="\u001F") AS ?statements) (SUM(?merges) AS ?mergedCount)
+    WHERE {
+      { SELECT ?statement ?record ?otherStatement (MAX(?unnamed) AS ?merges)
+        WHERE {
+          { SELECT DISTINCT ?statement ?record ?otherStatement ?unnamed
+            WHERE {
+              ?statement prov:hadMember ?record .
+              OPTIONAL { GRAPH ?view { ?entry cascade:entryMember ?record , ?member }
+                         ?otherStatement prov:hadMember ?member .
+                         ?otherStatement cascade:countsUnderLens true .
+                         FILTER (?otherStatement != ?statement)
+                         FILTER NOT EXISTS { ?otherStatement cascade:matcherRule ?otherRule } }
+              BIND (IF(!BOUND(?otherStatement) || EXISTS { ?statement prov:hadMember ?member }, 0, 1) AS ?unnamed)
+            } }
+        }
+        GROUP BY ?statement ?record ?otherStatement
+        ORDER BY ?statement ?record ?otherStatement }
+    }
+    GROUP BY ?statement ?record }
+  { SELECT ?record (COUNT(?reason) AS ?reasonCount) (GROUP_CONCAT(STR(?reason); separator="\u001F") AS ?reasons)
+    WHERE {
+      { SELECT DISTINCT ?record ?reason
+        WHERE {
+          ?statement prov:hadMember ?record .
+          OPTIONAL { ?record cascade:leftOutFor/cascade:leftOutReason ?reason }
+        }
+        ORDER BY ?record ?reason }
+    }
+    GROUP BY ?record }
+  BIND (IF(STRLEN(?reasons) > 0, ?reasons, ?none) AS ?why)
+  BIND (IF(STRLEN(?others) > 0, ?others, ?none) AS ?otherMembers)
+  BIND (IF(BOUND(?entry), ?grewCount, ?none) AS ?grewBy)
+  BIND (IF(STRLEN(?statements) > 0, ?statements, ?none) AS ?otherStatements)
+  BIND (IF(BOUND(?entry), ?mergedCount, ?none) AS ?mergedWith)
+  BIND (IF(BOUND(?entry), IF(?entriesReached > 1, "split", "one"),
+           IF(?reasonCount > 0, "hidden",
+             IF(EXISTS { ?record ?held ?value
+                         FILTER (?held NOT IN (cascade:currentlySame, cascade:currentlyDifferent, cascade:currentlySameOrganization,
+                                               cascade:inEntry, cascade:leftOutFor, cascade:subject, cascade:recordKind,
+                                               cascade:statusOnlyFromDocuments, cascade:currentRevision, cascade:currentRevisionCandidate,
+                                               cascade:laterInAncestryThan, cascade:judgedBefore, cascade:judgedBeforeRevisionOfSameRecord,
+                                               cascade:revisionJudgedErroneousBy, cascade:observationTimeDiscountedBy, cascade:lapsed,
+                                               cascade:currentVersionStatusLifecycle, cascade:currentVersionStatusLifecycleStep,
+                                               cascade:medicationExposureStart, cascade:medicationExposureEnd, cascade:medicationExposureOngoing,
+                                               pav:hasCurrentVersion)
+                                 && !sameTerm(?value, cascade:Record)) },
+                "in no entry", "not in the pod"))) AS ?outcome)
+}
+ORDER BY ?statement ?recordLabel ?record
