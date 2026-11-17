@@ -3,12 +3,13 @@
 # each record's own status and the day it ended, so a stop one record states is shown beside another's "active" whichever
 # the entry took, the dosage text each record states with the day its prescription was written where it states one, in
 # order of that day and the records stating none last, so a dose changed reads in the order it was written (none when
-# no record states one), the text each record's source
+# no record states one; a record that states a written day and no dosage text is not in it), the text each record's source
 # wrote for it, such as a stop reason (none when no record has one), how many records it joins, and each record with the
 # document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. A source that states no stop gives no end date: none is
 # inferred from a medication's last appearance. The code is the one `pod/My active medications` gives, and the entries
 # whose lifecycle is cascade:MedicationActive are the ones it lists. A list holds its values in order, each ended by "; "
-# but the last; a value's own parts are ended by ", ".
+# but the last, so a value ends at the "; " before the next record's IRI, as a dosage's own text can hold "; " and ", ";
+# a value's own parts are ended by ", ".
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX pav: <http://purl.org/pav/>
