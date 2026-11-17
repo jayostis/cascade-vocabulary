@@ -1,0 +1,21 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:fish a cascade:AllergyOrIntolerance .
+:fishVersion prov:specializationOf :fish ; cascade:allergenName "Fish" ; cascade:patient :claimedAgain .
+:fishRevision a cascade:Revision ; cascade:revisionOf :fish ; cascade:version :fishVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:egg a cascade:AllergyOrIntolerance .
+:eggVersion prov:specializationOf :egg ; cascade:allergenName "Egg" ; cascade:patient :twoParents .
+:eggRevision a cascade:Revision ; cascade:revisionOf :egg ; cascade:version :eggVersion ; prov:wasDerivedFrom :northDocument ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:soy a cascade:AllergyOrIntolerance .
+:soyVersion prov:specializationOf :soy ; cascade:allergenName "Soy" ; cascade:patient :threePeople .
+:soyRevision a cascade:Revision ; cascade:revisionOf :soy ; cascade:version :soyVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .

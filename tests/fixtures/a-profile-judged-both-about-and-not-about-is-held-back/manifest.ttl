@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-profile-judged-both-about-and-not-about-is-held-back" ;
+  rdfs:comment "A parent's NotAbout over a profile and an About they file after it, as an import files one; one parent's About over another profile and the other parent's NotAbout; and over a third, one parent's About, the other's NotAbout and a grandparent's About after both, Northgate's record naming the second." ;
+  mf:entries (
+    <#why-it-is-in-no-view>
+    <#what-needs-review>
+  ) .
+
+<#why-it-is-in-no-view> a mf:QueryEvaluationTest ;
+  mf:name "why-it-is-in-no-view" ;
+  rdfs:comment "Each profile's record is left out because its profile is judged both about and not about the subject: the later About lifts nothing." ;
+  mf:action [ qt:query <../../../queries/questions/record/Why%20it%20is%20in%20no%20view.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <why-it-is-in-no-view.srj> .
+
+<#what-needs-review> a mf:QueryEvaluationTest ;
+  mf:name "what-needs-review" ;
+  rdfs:comment "Each profile is listed once for each hospital whose records name it, with how many, the people whose About stands against a NotAbout and the people whose NotAbout counts." ;
+  mf:action [ qt:query <../../../queries/questions/profile/What%20needs%20review.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <what-needs-review.srj> .

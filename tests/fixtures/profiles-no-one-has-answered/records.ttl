@@ -1,0 +1,50 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:north a cascade:AllergyOrIntolerance .
+:northVersion prov:specializationOf :north ; cascade:allergenName "Peanut" ; cascade:patient :unanswered .
+:northRevision a cascade:Revision ; cascade:revisionOf :north ; cascade:version :northVersion ; prov:wasDerivedFrom :northDocument ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:south1 a cascade:AllergyOrIntolerance .
+:south1Version prov:specializationOf :south1 ; cascade:allergenName "Latex" ; cascade:patient :unanswered .
+:south1Revision a cascade:Revision ; cascade:revisionOf :south1 ; cascade:version :south1Version ; prov:wasDerivedFrom :southDocument ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:south2 a cascade:AllergyOrIntolerance .
+:south2Version prov:specializationOf :south2 ; cascade:allergenName "Penicillin" ; cascade:patient :unanswered .
+:south2Revision a cascade:Revision ; cascade:revisionOf :south2 ; cascade:version :south2Version ; prov:wasDerivedFrom :southDocument ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:settledRecord a cascade:AllergyOrIntolerance .
+:settledVersion prov:specializationOf :settledRecord ; cascade:allergenName "Egg" ; cascade:patient :settled .
+:settledRevision a cascade:Revision ; cascade:revisionOf :settledRecord ; cascade:version :settledVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:deniedRecord a cascade:AllergyOrIntolerance .
+:deniedVersion prov:specializationOf :deniedRecord ; cascade:allergenName "Soy" ; cascade:patient :denied .
+:deniedRevision a cascade:Revision ; cascade:revisionOf :deniedRecord ; cascade:version :deniedVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:unclaimedAgainRecord a cascade:AllergyOrIntolerance .
+:unclaimedAgainVersion prov:specializationOf :unclaimedAgainRecord ; cascade:allergenName "Fish" ; cascade:patient :unclaimedAgain .
+:unclaimedAgainRevision a cascade:Revision ; cascade:revisionOf :unclaimedAgainRecord ; cascade:version :unclaimedAgainVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:ownRecord a cascade:AllergyOrIntolerance .
+:ownVersion prov:specializationOf :ownRecord ; cascade:allergenName "Sesame" ; cascade:patient :subject .
+:ownRevision a cascade:Revision ; cascade:revisionOf :ownRecord ; cascade:version :ownVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:moved a cascade:AllergyOrIntolerance .
+:movedFirstVersion prov:specializationOf :moved ; cascade:allergenName "Wheat" ; cascade:patient :leftBehind .
+:movedFirstRevision a cascade:Revision ; cascade:revisionOf :moved ; cascade:version :movedFirstVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+:movedSecondVersion prov:specializationOf :moved ; cascade:allergenName "Wheat" ; cascade:patient :settled .
+:movedSecondRevision a cascade:Revision ; cascade:revisionOf :moved ; cascade:version :movedSecondVersion ;
+    prov:wasRevisionOf :movedFirstRevision ;
+    prov:generatedAtTime "2026-01-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-20T00:00:00Z"^^xsd:dateTime .

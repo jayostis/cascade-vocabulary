@@ -565,6 +565,8 @@ class TestKindsOfRecord:
                 "JudgedErroneous": ["derivations/excluded-by-judgment.rq"],
                 "ImportJudgedErroneous": ["derivations/excluded-with-their-activity.rq"],
                 "PatientProfileNotClaimed": ["derivations/excluded-for-their-patient.rq"],
+                "PatientProfileJudgedNotAbout": ["derivations/excluded-for-their-patient.rq"],
+                "PatientProfileJudgedBothAboutAndNotAbout": ["derivations/excluded-for-their-patient.rq"],
                 "NoPatient": ["derivations/excluded-for-their-patient.rq"],
             }
 

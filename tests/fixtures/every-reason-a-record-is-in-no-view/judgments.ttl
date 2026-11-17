@@ -18,3 +18,15 @@
 :retraction a prov:Activity ; prov:invalidated :about ;
     prov:wasAssociatedWith :person ; prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:startedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+:notAbout a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :deniedProfile ; cascade:subject :subject ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:otherPerson a prov:Person .
+:aboutHeldBack a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :heldBackProfile ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:notAboutHeldBack a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :heldBackProfile ; cascade:subject :subject ;
+    prov:wasAttributedTo :otherPerson ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :otherPerson ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .

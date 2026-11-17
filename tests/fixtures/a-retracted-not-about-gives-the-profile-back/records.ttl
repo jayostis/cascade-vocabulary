@@ -1,0 +1,16 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:peanut a cascade:AllergyOrIntolerance .
+:peanutVersion prov:specializationOf :peanut ; cascade:allergenName "Peanut" ; cascade:patient :restored .
+:peanutRevision a cascade:Revision ; cascade:revisionOf :peanut ; cascade:version :peanutVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+
+:latex a cascade:AllergyOrIntolerance .
+:latexVersion prov:specializationOf :latex ; cascade:allergenName "Latex" ; cascade:patient :deniedAgain .
+:latexRevision a cascade:Revision ; cascade:revisionOf :latex ; cascade:version :latexVersion ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
