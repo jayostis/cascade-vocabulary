@@ -8,6 +8,7 @@ from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SH, SKOS, VOID, XSD
 
+import contract
 from contract import LAYOUT, QUERIES, ROOT
 
 ONTOLOGIES = sorted(ROOT.glob("ontologies/**/*.ttl"))
@@ -188,7 +189,7 @@ def reaches_every_domain(graph, subject_class, predicate):
 
 
 def crate():
-    return {entity["@id"]: entity for entity in json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]}
+    return contract.crate_entities()
 
 
 def parts(entities, dataset):
@@ -633,6 +634,30 @@ class TestRootCrate:
                      + sorted(path for folder in ("runtime", "conformance", "people") for path in (ROOT / folder).rglob("*")
                               if path.is_file()))
             assert parts(crate(), "./") == {path.relative_to(ROOT).as_posix(): FORMATS[path.suffix] for path in files}
+
+        def test_names_every_file_by_an_id_a_json_ld_reader_keeps_with_its_table_schema(self):
+            """names every file by an id a JSON-LD reader keeps, and gives each question its table schema there
+
+            The crate is read as JSON-LD, each `@id` as written and none re-encoded. The files the crate lists as parts are
+            exactly the files that have an `encodingFormat` in what the reader gives, and each file whose entry has a
+            `csvw:tableSchema` has one there. An `@id` that is not an IRI, such as a path with a space, is dropped by the
+            reader and fails.
+            """
+            graph = contract.crate_graph()
+            read = {contract.crate_path(file) for file in graph.subjects(URIRef("https://schema.org/encodingFormat"))}
+            declared = {path for path, entity in crate().items() if "csvw:tableSchema" in entity}
+            schemas = {contract.crate_path(file) for file in graph.subjects(URIRef("http://www.w3.org/ns/csvw#tableSchema"))}
+            assert read == set(parts(crate(), "./"))
+            assert declared and schemas == declared
+
+        def test_decodes_only_the_ids_that_are_paths(self):
+            """decodes the `@id` of a path and keeps an absolute URL and a `#fragment` as written
+
+            `contract.decoded_ids` is given an `@id` with a percent escape that is a path, an absolute URL and a fragment;
+            only the path is decoded.
+            """
+            read = contract.decoded_ids([{"@id": "queries/a%20b.rq"}, {"@id": "https://x.org/a%2Fb"}, {"@id": "#frag%20x"}])
+            assert [item["@id"] for item in read] == ["queries/a b.rq", "https://x.org/a%2Fb", "#frag%20x"]
 
         def test_describes_with_is_based_on_or_citation_only_files_that_exist(self):
             """describes with `isBasedOn` or `citation` only files that exist
