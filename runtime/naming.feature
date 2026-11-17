@@ -504,6 +504,16 @@ Feature: Naming
       Then that step is refused
       And "sync" wrote no file
 
+    Example: a receive that holds a person's Same replacing the matcher's judgment is refused whole
+      Given a new pod for Gus on 2026-09-01 at 09:00
+      And a second writer of the pod
+      And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
+      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-09-02 at 09:05
+      When the second writer receives the files of the first writer and the file "same-instead-of-the-lisinopril-matcher-judgment" put in them on 2026-09-02 at 12:00
+      Then that step is refused
+      And "sync" wrote no file
+
     Example: a person's retraction of a model's judgment is kept, and "What needs review" does not list it
       Given a new pod for Cleo on 2026-03-01 at 09:00
       And Cleo files the judgment "model-about-r" on 2026-03-04 at 07:00
