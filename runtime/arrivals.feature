@@ -163,50 +163,44 @@ Feature: Arrivals
         | oa:hasSource         | the document of allergy "Peanut"     |
         | prov:wasDerivedFrom  | the document of allergy "Peanut"     |
 
-  Rule: A10. A document is kept when it wrote a revision, the Bridge raised findings on it, or it reported an older state
-    decisions/currency.md, row "a source that goes backwards".
-    Kept is its bytes under attachments/, and its description. Otherwise nothing of it is written. A document with an
-    arrival that a finding that its source reported older states names (A18) is kept, though it wrote no revision: a
-    finding is something kept.
+  Rule: A10. Every document an import brings is kept
+    decisions/currency.md, rows "what an arrival writes" and "a source that goes backwards".
+    Kept is its bytes under attachments/, and its description, whether it wrote a revision, repeated a state the pod
+    holds, reported an older state (A18) or raised findings. A document whose bytes the pod already keeps is not
+    brought again (A1).
 
-    Example: a document that wrote no revision is kept for the findings the Bridge raised on it
+    Example: a document that wrote no revision is kept, and the import that brought it is written
       Given a new pod for Ada on 2026-01-01 at 09:00
       And the export "first-export" is imported on 2026-01-02 at 10:00
-      When the export "current-version-again" is imported on 2026-01-05 at 10:00
+      And the export "no-source-version" is imported on 2026-01-07 at 10:00
+      When the export "no-source-version-again" is imported on 2026-01-07 at 12:00
       When the query is:
         """
         SELECT ?document (COUNT(DISTINCT ?attachment) AS ?storedFiles) ?usedByTheImport WHERE {
-          GRAPH <urn:cascade:steps> { <urn:cascade:step:current-version-again> prov:generated ?description }
+          GRAPH <urn:cascade:steps> { <urn:cascade:step:no-source-version-again> prov:generated ?description }
           GRAPH ?description { ?document a prov:Entity }
           OPTIONAL {
-            GRAPH <urn:cascade:steps> { <urn:cascade:step:current-version-again> prov:generated ?attachment }
+            GRAPH <urn:cascade:steps> { <urn:cascade:step:no-source-version-again> prov:generated ?attachment }
             FILTER NOT EXISTS { GRAPH ?attachment { ?s ?p ?o } }
           }
           BIND(EXISTS {
-            GRAPH <urn:cascade:steps> { <urn:cascade:step:current-version-again> prov:generated ?importFile }
+            GRAPH <urn:cascade:steps> { <urn:cascade:step:no-source-version-again> prov:generated ?importFile }
             GRAPH ?importFile { ?import a prov:Activity ; prov:used ?document }
           } AS ?usedByTheImport)
         }
         GROUP BY ?document ?usedByTheImport
         """
       Then it answers:
-        | document                                                                                                 | storedFiles | usedByTheImport |
-        | the document "current-version-again/apple_health_export/clinical-records/AllergyIntolerance-peanut.json" | 1           | true            |
-
-    Example: a document that wrote no revision and raised no findings is not kept
-      Given a new pod for Ada on 2026-01-01 at 09:00
-      And the export "first-export" is imported on 2026-01-02 at 10:00
-      And the export "no-source-version" is imported on 2026-01-07 at 10:00
-      When the export "no-source-version-again" is imported on 2026-01-07 at 12:00
-      Then that step wrote no file
-      And the pod neither names nor stores the document "no-source-version-again/apple_health_export/clinical-records/AllergyIntolerance-shellfish.json"
+        | document                                                                                                    | storedFiles | usedByTheImport |
+        | the document "no-source-version-again/apple_health_export/clinical-records/AllergyIntolerance-shellfish.json" | 1           | true            |
 
   Rule: A11. An import that kept any document writes its description once
     decisions/naming.md, row "act".
     That description is that it is a cascade:DocumentImport and a prov:Activity; the label, the start and the
     association the Bridge gave; the runtime that performed the import (N7); and prov:used for each kept document. The
     import's snapshot (N14) is in its file.
-    An import that kept nothing writes nothing, not even itself.
+    An import that kept nothing, every document it brought being one the pod already keeps (A1), writes nothing, not
+    even itself.
 
     Example: an import writes its label, its start, its association and each document it kept
       Given a new pod for Ada on 2026-01-01 at 09:00
@@ -237,13 +231,6 @@ Feature: Arrivals
         | prov:used                 | the document of allergy "Latex"      |
         | prov:used                 | the document of allergy "Shellfish"  |
         | prov:used                 | the document of allergy "Mango"      |
-
-    Example: an import that kept no document writes nothing, not even itself
-      Given a new pod for Ada on 2026-01-01 at 09:00
-      And the export "first-export" is imported on 2026-01-02 at 10:00
-      And the export "no-source-version" is imported on 2026-01-07 at 10:00
-      When the export "no-source-version-again" is imported on 2026-01-07 at 12:00
-      Then that step wrote no file
 
     Example: a download's import writes its label, its start, its association and the document it kept
       Given a new pod for Finn on 2026-06-01 at 09:00
