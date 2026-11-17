@@ -2681,6 +2681,34 @@ cascade:PersonJudgmentShape a sh:NodeShape ;
     sh:message "A person's judgment carries the time it was made and names the role its author acted in, in one association of the act that generated it, whose agent is the author; the act's only other association is the model's that proposed it."@en ;
     sh:severity sh:Violation .
 
+cascade:PersonJudgmentDerivedFromNoVersionShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:Person ] ]
+        [ sh:path prov:wasDerivedFrom ;
+          sh:not [ sh:or ( [ sh:path prov:specializationOf ; sh:minCount 1 ] [ sh:path cascade:revisionOf ; sh:minCount 1 ] ) ] ]
+    ) ;
+    sh:message "A person's judgment names the documents its members were shown from (prov:wasDerivedFrom), never a version or a revision, which the pod derives."@en ;
+    sh:severity sh:Violation .
+
+cascade:PersonJudgmentReplacesNoMatcherJudgmentShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:or (
+        [ sh:not [ sh:path prov:wasAttributedTo ; sh:minCount 1 ; sh:class prov:Person ] ]
+        [ sh:path dct:replaces ; sh:not [ sh:path cascade:matcherRule ; sh:minCount 1 ] ]
+    ) ;
+    sh:message "A person's judgment never replaces a matcher's, which carries cascade:matcherRule: a person states Same or Different over the records."@en ;
+    sh:severity sh:Violation .
+
+cascade:RetractionInvalidatesNoMatcherJudgmentShape a sh:NodeShape ;
+    sh:targetSubjectsOf prov:invalidated ;
+    sh:property [
+        sh:path prov:invalidated ;
+        sh:not [ sh:path cascade:matcherRule ; sh:minCount 1 ] ;
+        sh:message "A retraction never invalidates a matcher's judgment, which carries cascade:matcherRule: a person states Different over its records, and a release retracts an assertion."@en ;
+        sh:severity sh:Violation
+    ] .
+
 cascade:ModelProposedJudgmentShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (

@@ -13,14 +13,14 @@
 
 <#which-have-lapsed> a mf:QueryEvaluationTest ;
   mf:name "which-have-lapsed" ;
-  rdfs:comment "Under everyday, a matcher's Same lapses when a version it used has a newer current one, or the current rule list runs another query for its rule, and nothing counts, retracts or supersedes it: not one filed again, one a person retracted, nor one of a series with one version." ;
+  rdfs:comment "Under everyday, a matcher's Same lapses when a version it used has a newer current one, or the current rule list runs another query for its rule, and nothing counts, retracts or supersedes it: not one filed again, nor one of a series with one version." ;
   mf:action [ qt:query <which-have-lapsed.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <which-have-lapsed.srj> .
 
 <#lapsed-joins-for-review> a mf:QueryEvaluationTest ;
   mf:name "lapsed-joins-for-review" ;
-  rdfs:comment "Each pair of a lapsed Same's records that is now in two entries and not judged different is listed once, with the lapsed Same that has the smallest IRI: none for a pair filed again, joined by a person's Same, separated by a person's Different, or retracted." ;
+  rdfs:comment "Each pair of a lapsed Same's records that is now in two entries and not judged different is listed once, with the lapsed Same that has the smallest IRI: none for a pair filed again, joined by a person's Same, or separated by a person's Different." ;
   mf:action [ qt:query <../../../queries/questions/entry/What%20needs%20review.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <lapsed-joins-for-review.srj> .

@@ -37,13 +37,6 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :personDifferentE a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :e1 , :e2 ; prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-# f: a lapsed Same a person retracted
-:sameF a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :f1 , :f2 ;
-    prov:wasDerivedFrom :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
-
-:retractF a prov:Activity ; prov:invalidated :sameF ; prov:wasAssociatedWith :person ; prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
-    prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
-
 # g: a Same of three records that used version 1, two of which a Same that used version 2 joins
 :sameGOld a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :g1 , :g2 , :g3 ;
     prov:wasDerivedFrom :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
@@ -62,23 +55,16 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :sameIRules4 a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :i1 , :i2 ;
     prov:wasDerivedFrom :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-# j: a person's Same superseded the machine's, and was retracted
+# j: a person's Same over the pair, retracted
 :sameJ a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :j1 , :j2 ;
     prov:wasDerivedFrom :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:personSameJ a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :j1 , :j2 ; dct:replaces :sameJ ; prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+:personSameJ a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :j1 , :j2 ; prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
     prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :retractPersonSameJ a prov:Activity ; prov:invalidated :personSameJ ; prov:wasAssociatedWith :person ; prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ;
     prov:startedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
-
-# k: a lapsed Same a person's Different supersedes, the Different not retracted
-:sameK a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameMappedCode ; prov:hadMember :k1 , :k2 ;
-    prov:wasDerivedFrom :table1 ; cascade:matcherRule cascade:SameMappedCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
-
-:personDifferentK a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :k1 , :k2 ; dct:replaces :sameK ; prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
-    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
 
 :sameAUnderrules4 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameA ;
     cascade:assertedUnderRuleListVersion :rules4 .
@@ -98,9 +84,6 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 :sameEUnderrules4 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameE ;
     cascade:assertedUnderRuleListVersion :rules4 .
 
-:sameFUnderrules4 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameF ;
-    cascade:assertedUnderRuleListVersion :rules4 .
-
 :sameGOldUnderrules4 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameGOld ;
     cascade:assertedUnderRuleListVersion :rules4 .
 
@@ -117,7 +100,4 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     cascade:assertedUnderRuleListVersion :rules4 .
 
 :sameJUnderrules4 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameJ ;
-    cascade:assertedUnderRuleListVersion :rules4 .
-
-:sameKUnderrules4 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameK ;
     cascade:assertedUnderRuleListVersion :rules4 .

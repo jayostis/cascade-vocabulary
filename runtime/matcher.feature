@@ -4,8 +4,7 @@ Feature: The matcher's procedure
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Cleo
   claims her hospital profile with an About, imports five allergies, enters ten more by hand, and judges some herself.
   Dev enters pairs of allergies, procedures and flu shots for the matcher to compare, and later two more allergies.
-  Eve enters ten allergies whose codes the ingredient map pairs, and retracts or replaces some of the matcher's
-  Sames, and once retracts her own supersession. Finn brings exports and entries a runtime must refuse, and two
+  Eve enters ten allergies whose codes the ingredient map pairs. Finn brings exports and entries a runtime must refuse, and two
   allergies of one code, and, with the rule list of an app, connects to a hospital's server at its address and again at
   a new path or a new host.
   Gus enters medications and lab results, and three flu shots, under the rule list's version 2.
@@ -584,8 +583,7 @@ Feature: The matcher's procedure
 
   Rule: M7. A recheck re-runs the rule of each matcher Same that used a reference version the tables revise and whose current version does not join its members, or whose rule now runs another query, or whose star a Different has split
     decisions/performance.md, row "matcher judgments named once, asserted per query hash", decisions/variant-identity.md, row "used", and decisions/variant-classifications-table.md, row "versions an app keeps".
-    Unless the Same was retracted, or replaced by a judgment not itself retracted: a retracted judgment replaces
-    nothing. A Same's rule runs another query when the current rule list's row for it carries a cascade:queryHash
+    A Same's rule runs another query when the current rule list's row for it carries a cascade:queryHash
     that no row for the rule carries in a version the Same is asserted under by an assertion no retraction invalidates
     (M5, N15). A Different has split a Same's
     star when the Same's latest-arriving member matches by its rule a record it is not judged different from that
@@ -630,32 +628,6 @@ Feature: The matcher's procedure
         | justification    | members                                       | used                                                                                                                  | name                                          |
         | same mapped code | allergy SNOMED 373270004, allergy RxNorm 7980 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 373270004, version 1 of allergy RxNorm 7980 | urn:uuid:95e3d83c-1b6a-89a2-9178-c48ca77f23d5 |
       And the matcher's same mapped code of allergy SNOMED 373270004 and allergy RxNorm 7980 counts
-
-    Example: a Same a person retracted is not rechecked
-      Given Eve files the judgment "retract-b" on 2026-05-03 at 09:00
-      And version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
-      When the matcher rechecks on 2026-05-05 at 09:00
-      Then the matcher's judgments holding allergy SNOMED 91936005 and allergy RxNorm 733 are:
-        | justification    | members                                     |
-        | same mapped code | allergy SNOMED 91936005, allergy RxNorm 733 |
-
-    Example: a Same a person replaced is not rechecked
-      Given Eve files the judgment "supersede-c" on 2026-05-03 at 09:05
-      And version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
-      When the matcher rechecks on 2026-05-05 at 09:00
-      Then the matcher's judgments holding allergy SNOMED 294505008 and allergy RxNorm 2670 are:
-        | justification    | members                                       |
-        | same mapped code | allergy SNOMED 294505008, allergy RxNorm 2670 |
-
-    Example: a Same whose replacing judgment a person retracted counts on under the revised table that still joins it
-      Given Eve files the judgment "supersede-c" on 2026-05-03 at 09:05
-      And Eve files the judgment "retract-supersede-c" on 2026-05-03 at 09:15
-      And version "2" of "SNOMED CT to RxNorm ingredient map" arrives on 2026-05-04 at 09:00
-      When the matcher rechecks on 2026-05-05 at 09:00
-      Then the matcher's judgments holding allergy SNOMED 294505008 and allergy RxNorm 2670 are:
-        | justification    | members                                       | used                                                                                                                  |
-        | same mapped code | allergy SNOMED 294505008, allergy RxNorm 2670 | SNOMED CT to RxNorm ingredient map version 1, version 1 of allergy SNOMED 294505008, version 1 of allergy RxNorm 2670 |
-      And the matcher's same mapped code of allergy SNOMED 294505008 and allergy RxNorm 2670 counts
 
     Example: once the About naming their profile is retracted, fewer than two members are the subject's and nothing is written
       Given Eve files the judgment "retract-about-d" on 2026-05-03 at 09:10
@@ -725,8 +697,7 @@ Feature: The matcher's procedure
     whose row for the rule carries the hash this version's row carries, by an assertion no retraction invalidates (N15):
     at most one assertion per version per matcher judgment,
     and none under a version that runs the query the matcher judgment is asserted with, so a new version asserts only the matcher judgments
-    of the rules it changed. A matcher judgment that does not count because a person retracted or replaced it is neither
-    asserted again nor read as joining its members.
+    of the rules it changed.
     Only the reference descriptions it uses that the pod lacks are written (M8), so a run that stopped between its
     matcher judgments and its descriptions (W1) finishes when run again. So running again is always safe.
 
@@ -1075,7 +1046,7 @@ Feature: The matcher's procedure
 
     It carries no time and names no act, and is named by cascade:FindingNamingRule from its triples, so two writers
     whose first runs under one version find the same matcher judgments file one file; two writers whose pods differ when each
-    first runs under it, as when one has retracted a matcher judgment the other has not, may file two findings of one version. A matcher judgment whose every assertion a release
+    first runs under it, as when one holds matcher judgments the other has not yet received, may file two findings of one version. A matcher judgment whose every assertion a release
     retracted (N15) is asserted by none, and is named by no finding: a release declared its rule wrong, and the
     review page does not offer it back. What a matcher judgment's tables did is no part of it: a matcher judgment the version reaches, kept
     or lapsed by a table version (M7), is named by no finding, and lapses pair by pair (O1).
@@ -1095,18 +1066,27 @@ Feature: The matcher's procedure
         | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
         | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
 
-    Example: a run under a version whose finding the pod holds files no other, though it would name another matcher judgment
-      Gus's Same replaces the matcher's judgment of the Lisinopril pair, so the open's finding names the metformin matcher judgment
-      alone; once he retracts it, the Lisinopril matcher judgment is withdrawn by nothing and named by no finding, and the recheck
-      files no second finding of version 7.
+    Example: a person's Same over a matcher judgment's records leaves the matcher judgment for the finding to name
+      Gus's Same names the records of the Lisinopril pair and replaces nothing (N16), so the open's finding names the
+      matcher judgments of both pairs, as when he had said nothing.
 
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
       And Gus enters "version-six-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
-      And Gus files the judgment "same-instead-of-the-lisinopril-matcher-judgment" on 2026-09-02 at 12:00
+      And Gus files the judgment "same-over-the-lisinopril-records" on 2026-09-02 at 12:00
+      When the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
+      Then that step wrote these findings:
+        | kind                     | under                   | justification        | members                                                                                                    |
+        | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
+        | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
+
+    Example: a run under a version whose finding the pod holds files no other
+      Given a new pod for Gus on 2026-09-01 at 09:00
+      And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
+      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       And the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
-      And Gus files the judgment "retract-same-instead-of-the-lisinopril-matcher-judgment" on 2026-09-04 at 08:00
       When the matcher rechecks on 2026-09-04 at 09:00
       Then that step wrote no file
 

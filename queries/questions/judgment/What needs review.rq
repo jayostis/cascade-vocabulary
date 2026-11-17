@@ -1,5 +1,7 @@
-# A Same judgment was made from the versions it saw. When a member has a newer version since, the judgment may no longer hold,
-# so it is listed for a person to look at again.
+# Each judgment that may no longer hold, or that a person made and someone else took back. A person's Same is listed once
+# a member's current revision came from a document it does not name; a machine's Same once a member has a version it
+# was not made from, unless a person's Same that counts holds all its members and names the document that member's
+# current revision came from.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -7,10 +9,31 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT DISTINCT ?judgment ?judgmentLabel ?needs
 WHERE {
-  ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
-  ?record pav:hasCurrentVersion ?now .
-  FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?now }
-  BIND ("a member changed since it was judged" AS ?needs)
-  OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
+  { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:wasAttributedTo/a prov:Person ;
+              prov:hadMember ?record .
+    ?record cascade:currentRevision/prov:wasDerivedFrom ?document .
+    FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?document }
+    BIND ("a member changed since it was judged" AS ?needs)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
+  UNION
+  { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
+    FILTER NOT EXISTS { ?judgment prov:wasAttributedTo/a prov:Person }
+    ?record pav:hasCurrentVersion ?now .
+    FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?now }
+    FILTER NOT EXISTS {
+      ?answer cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:wasAttributedTo/a prov:Person ;
+              prov:hadMember ?record ; prov:wasDerivedFrom ?document .
+      ?record cascade:currentRevision/prov:wasDerivedFrom ?document .
+      FILTER NOT EXISTS { ?judgment prov:hadMember ?member FILTER NOT EXISTS { ?answer prov:hadMember ?member } }
+    }
+    BIND ("a member changed since it was judged" AS ?needs)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
+  UNION
+  { ?retraction prov:invalidated ?judgment ; prov:wasAssociatedWith ?retractor .
+    ?judgment a cascade:Judgment ; prov:wasAttributedTo ?maker .
+    ?maker a prov:Person .
+    FILTER (?retractor != ?maker)
+    BIND ("retracted by someone other than who made it" AS ?needs)
+    OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
 }
 ORDER BY ?judgmentLabel ?judgment

@@ -100,6 +100,17 @@ Each row below is the rubric's first test applied to one kind of thing: what its
 what is hashed. Whatever failed that test, the server's self-asserted base, a generator's `urn:uuid`, a version id,
 appears here only as evidence for a judgment.
 
+Nothing kept cites anything derived. Kept is what nothing else in the pod could make again: documents' bytes, acts,
+what was typed into an entry, every person's statement, a model's statement or answer (kept word for word,
+`judgments.md`), and the pod's own choices. Derived is what the pod works out from the kept: versions, revisions,
+matcher judgments, findings and entries. A statement about something derived names the kept things that define it, and
+its kind, never the derived thing's name: a person's judgment names records and the document each member was shown
+from, never a version, and replaces or retracts anyone's judgment but a matcher's (row "person's judgment",
+`runtime/naming.feature`, N16); a statement about an entry names the records the person was shown (row "view entry").
+The kept side holds still only as its names do. A change to a record-naming recipe ships a kept table of each old
+record name to its new one, and statements are read through it; and a statement moved between pods names the same
+records only under the same naming scheme and key (row "scheme").
+
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | derived name | RFC 9562 §5.8, §6.6 | UUIDv8 over a random v4 namespace, the rule's IRI, then the inputs, escaped and joined; lists carry their count (`runtime/naming.feature`, N11) | borrowed; the rule IRI as first input is ours |
@@ -114,13 +125,13 @@ appears here only as evidence for a judgment.
 | revision | git commit; trusty URIs | self-hashed over its own triples, carrying its act's id, `rec:asOf`, `prov:generatedAtTime`, and the record's heads it saw as `prov:wasRevisionOf` (`runtime/naming.feature`, N4; `runtime/arrivals.feature`, A9) | borrowed; `ni:` form rather than trusty URI syntax; `prov:wasRevisionOf` used for the pod's own observation DAG |
 | act | openEHR `CONTRIBUTION`; FHIR `urn:uuid` | six kinds, each a random v4 minted once: an import, an entry session, a connect (what a server reports), a release's migration (renames, retracts what a release declares wrong, rewrites what a release changes in form), a matcher run, a sync; every file an act writes is named by its snapshot, and a file a step that is no act writes (a new pod's files, a reference version's arrival, a person's judgment) is in the set hash but named by no snapshot; every act names the software and version that performed it; nothing else a runtime mints is random (the subject's `urn:uuid` and a person's judgment are minted once by their owners) (`runtime/naming.feature`, N7 and N15; `runtime/arrivals.feature`, A11 and A12) | the act is the contribution; the kinds are ours |
 | sync | git merge commit | an act a writer writes whenever it holds an act, other than a sync, whose snapshot is no ancestor of its last snapshot, naming each such act, so a receiving that stops partway and is retried writes the same sync; its file in the syncs' folder, `provenance/syncs/`, outside the set; the set excludes the files that change in place (the views under `clinical/`, `settings/`, `profile/card.ttl`, `manifest.ttl`), so it only grows; the order-free set hash of the snapshot row is what the snapshot carries, not what every check computes; a sync that brings nothing but another writer's syncs writes nothing, and the writer takes the one head it then holds as git fast-forwards (`runtime/sync.feature`, S1 to S5) | borrowed; written on arrival rather than by a merger, and never for a no-op; the class `cascade:SyncFromAnotherWriter` is ours: looked at PROV-O, PAV and ActivityStreams, failed because none has a sync or merge activity (PROV-O has only `prov:Activity`, PAV names authoring and curation, ActivityStreams `Create`, `Update` and `Add` of one object), and git's merge commit is the snapshot, which `cascade:Snapshot` already borrows, not the act that made it |
-| person's judgment | | keeps the IRI it arrived with, minted once by whoever made it (`runtime/naming.feature`, N10) | ours |
+| person's judgment | | keeps the IRI it arrived with, minted once by whoever made it (`runtime/naming.feature`, N10); names its records, and by `prov:wasDerivedFrom` the document each member's current revision came from, never a version; replaces and retracts only a person's judgment (`runtime/naming.feature`, N16) | ours |
 | matcher judgment | nanopub assertion | the matcher judgment named once, by the naming rule `MatcherJudgment`, then the maker, the matcher's rule, the justification, the member count, the members sorted and used sorted, where the members are the record and the least member of each entry it matched, a star that `same-pairs.rq` derives to its least member, and used is the version of each member and of each table the matcher's rule read, never the rule list's version (N6, M5, M13) | borrowed from nanopubs, which keep an assertion apart from the provenance and publication info that publish it: the judgment is named once, and each of its assertions names the rule list version it was published under |
 | assertion, retraction by a release | | deterministic, with no time and no run: an assertion from the rule list version and the matcher judgment, so at most one per version per matcher judgment however many runs reach it, and none under a version whose row for the matcher judgment's rule carries the `rec:queryHash` of a version the matcher judgment is already asserted under, so a new version asserts only the matcher judgments of the rules it changed; the run that wrote it is known from its snapshot; a release's retraction of an assertion from the release, the assertion and the rule it declares wrong; two writers on one release write one file with one content (N6, M5 and M9 for the assertion; N15 for the retraction) | ours |
 | maker | PROV agents | the Cascade matcher is `jdg:CascadeMatcher`, one `prov:SoftwareAgent`, unversioned, for any runtime that follows `runtime/matcher.feature`; a matcher of another procedure is its own agent term in its own namespace; the runtime that ran is on the act, not the matcher judgment (M5) | borrowed; one agent for one procedure is ours |
 | retraction | nanopub `npx:retracts` | a `prov:Activity` that `prov:invalidated`; replacement by `dcterms:replaces`; a person's keeps the IRI it arrived with (N10), a release's is named by its rule (N15) | diverges: `npx:retracts` has domain `foaf:Agent`, making the retractor an agent and the retracted a nanopublication, where ours is an activity over any entity |
 | document, finding | RFC 6920; Web Annotation; W3C DQV; FHIR `DetectedIssue`; SHACL results | bytes hashed; content hashed, a finding over its own triples with no act and no time, so two writers' first runs file one file; a finding is `cascade:FindingForReview`, a `oa:Annotation` whose `oa:hasBody` is its kind, `oa:motivatedBy` `oa:classifying`, and `oa:hasTarget` what it names, each kind saying whether its body applies to each target alone (`cascade:MatcherJudgmentsNoLongerReached`: each target is a matcher judgment no longer reached) or to its targets together (a later finding of two records' differing values) (looked at DQV's `dqv:QualityAnnotation`, feedback about a dataset or its distribution, its motivation fixed to quality assessment; FHIR's `DetectedIssue`, a clinical issue between a patient's actions; SHACL's `sh:ValidationResult`, which needs the shape and constraint that failed; none names a finding a pod files for its person about its own matcher judgments); the matcher judgments a rule list version no longer reaches are one finding of kind `cascade:MatcherJudgmentsNoLongerReached`, filed by that version's first run over the whole pod (`runtime/matcher.feature`, M18 and M19) (`runtime/naming.feature`, N5; `runtime/arrivals.feature`, A1) | borrowed from RFC 6920 and Web Annotation; the class is ours, named for what it is for, since a bare "finding" reads as a clinical one |
-| view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; named in the view that gives it members and rebuilt with it; another view in the same folder cites it by a relative reference, as the variant interpretations view cites a variant's entry `<variants.ttl#hex>`; carries every member's current state, with a lead per `currency.md`, each member's values a node `<view>#` + the entry's hash, `-`, and the hash of the member's IRI; a padded time it copies a node of its holder, the entry's or the member values' IRI, `-padded-` and the local name, since the holder's IRI has its fragment already; an app's statement about an entry names the entry's records, never the entry, and finds the entry by `record/Which entry shows it` (`runtime/naming.feature`, N13; `runtime/the-kit.feature`, Check 6) | ours |
+| view entry | | `<view>#` + hash of its least member, `prov:wasDerivedFrom` each judgment; named in the view that gives it members and rebuilt with it; another view in the same folder cites it by a relative reference, as the variant interpretations view cites a variant's entry `<variants.ttl#hex>`; carries every member's current state, with a lead per `currency.md`, each member's values a node `<view>#` + the entry's hash, `-`, and the hash of the member's IRI; a padded time it copies a node of its holder, the entry's or the member values' IRI, `-padded-` and the local name, since the holder's IRI has its fragment already; an app's statement about an entry names the records the person was shown, never the entry, never changes after, and finds the entry by `record/Which entry shows it` (`runtime/naming.feature`, N13; `runtime/the-kit.feature`, Check 6) | ours |
 | snapshot | git tree; git commit parents; Bitcoin Core's MuHash3072 | one node per act, in the act's file, a chain as git's commits are: its first parent, the writer's own previous snapshot, kept outside the pod as git keeps HEAD (a browser app beside the pod's name and key), none on a writer's first or when the head it was handed is no snapshot the pod holds; for a sync, every head it holds but the first parent as a merged parent, as git merges, and on a writer's first, every head it holds; the files of the set this act wrote, never a file a step that is no act wrote, and none for a sync; and an order-free hash of the set, every file N9 names in a folder the layout gives but the sync row's files that change in place, the syncs' act files, filed apart, and the act's own file: MuHash3072 exactly as Bitcoin Core computes it, over the path, a 0x00 byte and the SHA-256 of each file's bytes, so a changed byte changes it; the name binds the act's description, as a git commit binds its message outside its tree; two writers hold one set when the set hashes of what each holds agree; never a list of every file (`runtime/naming.feature`, N14; `runtime/sync.feature`, S3 and S5) | borrowed from git's chain of commits and from Bitcoin Core's UTXO set hash, with its vectors; diverged from git's tree, which with this layout rewrites a leaf folder per act |
 | pod identity | Solid WebID; DIDs | the subject's random `urn:uuid`; no name ever includes an address, a WebID or a DID; a judgment that leaves the pod carries it as the author, so a receiver can cite the person and reconcile their shares, and whether the author leaves at all is the share-time choice like every field; keying it hides nothing more, since it is random already, and a per-receiver id is open below (`runtime/arrivals.feature`, A13) | diverges from Solid, which names a pod by its URL |
 | scheme | | declared per pod at creation: source URL as IRI, opaque hash (default), or keyed hash; what has no URL (C-CDA, entries, judgments) is hashed under all three; a test key for kits | ours |
@@ -276,17 +287,32 @@ declaration says in plain words that only a key hides it from a determined one. 
 because a hostname in a name is a commitment nobody can undo. The vocabulary owns the rules because a pod reader has
 only the vocabulary; vectors are cross-checked because an implementation that minted its own vectors proves nothing.
 
+**Why nothing kept cites anything derived.** (rows "person's judgment", "retraction", "view entry") A derived name
+changes whenever a field is renamed, a converter reads more, the matcher is retuned or a pod is rebuilt in another
+order, which happens every few weeks; a kept thing that cited one would be stranded by the next release, with nothing
+in the pod to carry it over, since the kept side is what nothing else can make again. A person's judgment so names the
+document each member was shown from, which is named by its bytes and never changes, where a version's name hashes our
+field names. A person states Same or Different over records rather than replacing or retracting the matcher's
+judgment, whose name hashes the versions it used and is re-minted when they change; the Same or the Different says the
+same thing of names that hold, and a person outranks every machine (`judgments.md`). A record's name is a recipe, and has
+been re-minted once, so the recipe's change carries its table of old names to new.
+
 **Why an app's statement names records, never its entry.** (row "view entry") What an app keeps about an entry, an
-answer, a note, a link or a cached list, names the records the entry holds, by their IRIs, and never the entry's. An
+answer, a note, a link or a cached list, names the records the person was shown in it, by their IRIs, and never the
+entry's, and it never changes after. An
 entry is named from its least member, so a source that joins with a record that sorts lower renames it; an id minted
 once to avoid that is state no original holds, so a rebuild from the originals, in another order or by another runtime,
 could not give it back. A record's IRI comes from its source's own id (rows "record from a server", "record from
 C-CDA", "record from a document"), so it holds still when another source joins, provided the pod keeps its naming scheme
 (vocabulary issue #192) and is rebuilt from the same originals. The app finds the entry again with the named question
 `record/Which entry shows it`, which reads `cascade:entryMember`, again after every import or rebuild; it never reads
-`cascade:inEntry`, which is derived state. Each time it reads a statement it adds the found entry's current records to
-the statement's, and only ever adds: a statement made when the entry held one record would otherwise name only a gone
-record once that record's original is removed, though a record that joined since still holds the thing in the pod.
+`cascade:inEntry`, which is derived state. Where a statement reaches is worked out when it is read, through the entry
+its records are in, and a read never adds the entry's current records to it: that would rewrite what the person said,
+spread it across a wrong join, and leave two devices that read at different times holding two different statements.
+The one moment a statement can be stranded, a statement whose every record's original is removed while records that
+joined since still hold the thing, is handled once, at removal: the runtime carries the statement to the records the
+entry then holds, in a statement signed as the runtime and listed for review. No runtime removes an original yet; the carrying is built with removal, in the runtime's
+kept-and-built work (https://github.com/jayostis/cascade-runtime-js/issues/819).
 A record is in at most one entry, so it is in one of three states: in an entry, where the question returns a row; in no
 entry for a reason, where `record/Why it is in no view` returns a row and the app shows the reason; or in neither, which
 means the pod no longer holds it. A statement none of whose records is held is kept, not dropped, and shown apart with
@@ -387,11 +413,22 @@ the join and the removal.
   anything changed. Computed on every arrival check it sorts and hashes every name, about 24 MB and 0.3 to 1 s on
   Node plus a listing of about 1M files, 175k times in ten years, about two CPU-days, for 1,200 checks that write
   (assumed 48 checks a day, #206); and with views and settings in the set, the set is not grow-only.
+- **A statement that only ever adds the entry's current records on each read.** The strongest case: a statement made
+  of a one-record entry is not lost when that record's original is removed. It rewrites what a person said on a read,
+  spreads a statement across a wrong join, and gives two devices that read at different times two statements; the
+  removal it guards against is handled once, at removal.
+- **A person's judgment naming the versions its members had.** The strongest case: it says exactly what the person
+  saw, and "a member changed since" is one comparison. A version's name hashes our field names, so every rename or
+  better converter strands every judgment; the document a member was shown from says what was shown and keeps its name.
+- **A person's Same that replaces the matcher's judgment, to confirm a join.** The strongest case: it says "the matcher
+  was right" of the very join, and stops that judgment being listed for review. It names a matcher judgment, re-minted
+  whenever a version it used changes, and makes the matcher's opinion the person's for ever; a Same over the records
+  says the same and answers the matcher's judgment on the review page.
 
 ## Still open
 
-- Two writers whose pods differ when each first runs under a rule list version, one having retracted or replaced a
-  matcher judgment the other has not, file two findings of the matcher judgments it no longer reaches (M18): whether a sync merges them,
+- Two writers whose pods differ when each first runs under a rule list version, one holding matcher judgments the
+  other has not yet received, file two findings of the matcher judgments it no longer reaches (M18): whether a sync merges them,
   or the review page lists their matcher judgments as one line.
 - **Random record ids looked up in the pod, as a FHIR server's conditional create does.** Not yet weighed against the
   rubric. The strongest case: it is FHIR's settled answer to a repeated import, a create conditional on what

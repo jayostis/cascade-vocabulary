@@ -375,7 +375,7 @@ Feature: Alex Rivera's pod
 
   Rule: P15. A judgment made against versions that later change
     J3 used H1-ALG-SULFA's first version, and its second arrives at E6: J3 still counts and is listed for review, until
-    J9 supersedes it.
+    J9, Alex's Same over the same two records, naming the documents she was shown them from, answers it at E8.
 
     Example: J3 still counts once its member changed, and is listed for review
       When the pod is read as it stood after "M7"
@@ -391,16 +391,9 @@ Feature: Alex Rivera's pod
         | judgment                                                  |
         | the matcher's same code of H1-ALG-SULFA and H2O-ALG-SULFA |
 
-    Example: once J9 supersedes J3, no Same that counts used other than its members' current versions
+    Example: once J9 answers J3, no judgment is listed for review
       When the pod is read as it stood after "J10"
-      When the query is:
-        """
-        SELECT DISTINCT ?judgment WHERE {
-          ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
-          ?record pav:hasCurrentVersion ?now .
-          FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?now }
-        }
-        """
+      When the query "questions/judgment/What needs review.rq" is asked
       Then it answers nothing
 
   Rule: P16. An entry the patient adds, the owner's own act

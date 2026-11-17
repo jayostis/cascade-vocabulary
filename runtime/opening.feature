@@ -30,8 +30,7 @@ Feature: Opening a pod
        joins it at all. Each is judged over its own versions alone (M13): the rule list the pod names over the versions
        the pod names, the current one over the current versions, so neither reads the other's rows or descriptions. A
        rule list the pod names that M11 would refuse joins nothing. So a series the pod names no
-       version of, or a rule the pod's rule list lacks, judges every pair it joins, but a pair of which a person
-       retracted a matcher Same: the everyday lens lets a Same count however a retracted one was made;
+       version of, or a rule the pod's rule list lacks, judges every pair it joins;
     3. writes the reference descriptions last: those M8 writes, and each version on the line after the pod's up to the
        adopted one, oldest first.
 
@@ -70,16 +69,6 @@ Feature: Opening a pod
         | same mapped code and date | immunization CVX 140 "Afluria", immunization CVX 141 "Flublok" | CDC CVX vaccine groups version 3, version 1 of immunization CVX 140 "Afluria", version 1 of immunization CVX 141 "Flublok" |
       And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" counts
       And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" has lapsed
-
-    Example: a pair the replaced version joined is not judged again, so a Same a person retracted stays retracted
-      Version 3 changes 161's row, which does not make its pairs new.
-
-      Given Hana files the judgment "retract-fluad" on 2026-07-02 at 12:00
-      When the pod is opened with the tables "app-later" on 2026-07-03 at 09:00
-      Then the matcher's judgments holding immunization CVX 141 "Fluad" are:
-        | justification             | members                                                                   |
-        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" |
-      And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" has not lapsed
 
     Example: a rule list the pod names that M11 now refuses joins nothing, so the adopted rule list judges every pair, and finds each matcher judgment asserted with the query it runs
       Version 2 runs the vaccine group query the Sames were asserted with under version 1, so judging the pairs anew
@@ -238,13 +227,6 @@ Feature: Opening a pod
         | Matcher rules version 1          |
         | CDC CVX vaccine groups           |
         | CDC CVX vaccine groups version 1 |
-
-    Example: the app's tables do not judge a pair of which a person retracted the vector tables' Same
-      Given Hana files the judgment "retract-fluarix" on 2026-07-02 at 12:00
-      When the pod is opened with the tables "app" on 2026-07-03 at 09:00
-      Then that step wrote these matcher judgments:
-        | justification             | members                                                                   | used                                                                                                                                  |
-        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
 
     Example: the vector tables' Same still counts beside the app's
       When the pod is opened with the tables "app" on 2026-07-03 at 09:00

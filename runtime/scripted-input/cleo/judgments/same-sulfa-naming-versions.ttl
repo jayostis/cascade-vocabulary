@@ -1,0 +1,15 @@
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:uuid:7d3b1f90-2c64-4e8a-b5d1-9a0e6c4f2b87> a cascade:Judgment ;
+    cascade:verdict cascade:Same ;
+    prov:hadMember <urn:uuid:13d721fb-b987-8c99-8a35-996a41bb164e> , <urn:uuid:5b533baa-99c6-853a-b511-11f6d4ec33e8> ;
+    prov:wasDerivedFrom <ni:///sha-256;VYaHdvjLZQv45sdWhrjmlj0hYlRrV6kZFvZVpDYrvkk> , <ni:///sha-256;jB-_8ES4yABRLlvBScUJItZMNkkxFF4FY67j9Ifelsk> ;
+    prov:wasAttributedTo <https://pod.example/profile/card.ttl#me> ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [
+        prov:agent <https://pod.example/profile/card.ttl#me> ;
+        prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-01-03T09:00:00Z"^^xsd:dateTime .
+
+<https://pod.example/profile/card.ttl#me> a prov:Person .
