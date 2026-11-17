@@ -1,0 +1,21 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+:person a prov:Person .
+
+:sameFirst a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :a1 , :a2 ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:sameSecond a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :a3 , :a4 ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+
+# the matcher joins the two pairs by their second and third records
+:sameA2A3 a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :a2 , :a3 ;
+    prov:wasDerivedFrom :a2Version , :a3Version ; cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:sameA2A3UnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :sameA2A3 ;
+    cascade:assertedUnderRuleListVersion :rules1 .

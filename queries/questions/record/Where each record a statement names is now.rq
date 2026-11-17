@@ -1,0 +1,80 @@
+# A statement is a judgment a matcher did not make: a person's, or a model's. For each record one names, a row says where
+# that record is now, as Outcome: one when it is in an entry and every record the statement names that is in one is in
+# that entry, split when the statement's records are in more than one, hidden when no entry holds it and Why gives each
+# reason, not in the pod when the pod holds nothing of the kind the statement names. A statement a person retracted or
+# replaced is listed, with Counts false. On the entry's row, Other members are its other records, in order, and Grew by
+# counts those the statement does not name; Other statements are the other statements naming a record of the entry, in
+# order, and Merged with counts those naming a record this statement does not. An app sums Grew by and Merged with. A
+# list holds its values separated by U+001F, and a list with nothing in it is unbound.
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?statement ?statementLabel ?counts ?record ?recordLabel ?outcome ?entry ?entryLabel ?why
+                ?otherMembers ?grewBy ?otherStatements ?mergedWith
+WHERE {
+  ?statement a cascade:Judgment ; prov:hadMember ?record .
+  OPTIONAL { ?statement cascade:matcherRule ?rule }
+  FILTER (!BOUND(?rule))
+  OPTIONAL { ?record a ?type }
+  FILTER (!BOUND(?type) || ?type = cascade:Record)
+  OPTIONAL { ?statement cascade:countsUnderLens ?counted }
+  BIND (COALESCE(?counted, false) AS ?counts)
+  OPTIONAL { ?statement rdfs:label ?statementLabel }
+  OPTIONAL { ?record rdfs:label ?recordLabel }
+  OPTIONAL { GRAPH ?view { ?entry cascade:entryMember ?record }
+             OPTIONAL { ?entry rdfs:label ?entryLabel } }
+  OPTIONAL { SELECT ?statement ?record (COUNT(DISTINCT ?siblingEntry) AS ?otherEntries)
+             WHERE {
+               ?statement prov:hadMember ?record , ?sibling .
+               GRAPH ?view { ?entry cascade:entryMember ?record }
+               GRAPH ?siblingView { ?siblingEntry cascade:entryMember ?sibling }
+               FILTER (?siblingEntry != ?entry)
+             }
+             GROUP BY ?statement ?record }
+  OPTIONAL { SELECT ?statement ?record (GROUP_CONCAT(STR(?other); separator="\u001F") AS ?others) (COUNT(?grew) AS ?grewCount)
+             WHERE {
+               { SELECT DISTINCT ?statement ?record ?other ?grew
+                 WHERE {
+                   ?statement prov:hadMember ?record .
+                   GRAPH ?view { ?entry cascade:entryMember ?record }
+                   GRAPH ?otherView { ?entry cascade:entryMember ?other }
+                   FILTER (?other != ?record)
+                   OPTIONAL { ?statement prov:hadMember ?other . BIND (?other AS ?named) }
+                   BIND (IF(BOUND(?named), ?none, ?other) AS ?grew)
+                 }
+                 ORDER BY ?statement ?record ?other }
+             }
+             GROUP BY ?statement ?record }
+  OPTIONAL { SELECT ?statement ?record (GROUP_CONCAT(DISTINCT STR(?otherStatement); separator="\u001F") AS ?statements) (COUNT(DISTINCT ?merged) AS ?mergedCount)
+             WHERE {
+               { SELECT DISTINCT ?statement ?record ?otherStatement ?merged
+                 WHERE {
+                   ?statement prov:hadMember ?record .
+                   GRAPH ?view { ?entry cascade:entryMember ?record }
+                   GRAPH ?memberView { ?entry cascade:entryMember ?member }
+                   ?otherStatement a cascade:Judgment ; prov:hadMember ?member .
+                   FILTER (?otherStatement != ?statement)
+                   OPTIONAL { ?otherStatement cascade:matcherRule ?otherRule }
+                   FILTER (!BOUND(?otherRule))
+                   OPTIONAL { ?statement prov:hadMember ?member . BIND (?member AS ?alsoNamed) }
+                   BIND (IF(BOUND(?alsoNamed), ?none, ?otherStatement) AS ?merged)
+                 }
+                 ORDER BY ?statement ?record ?otherStatement }
+             }
+             GROUP BY ?statement ?record }
+  OPTIONAL { SELECT ?record (GROUP_CONCAT(STR(?reason); separator="\u001F") AS ?reasons)
+             WHERE {
+               { SELECT DISTINCT ?record ?reason
+                 WHERE { ?record cascade:leftOutFor/cascade:leftOutReason ?reason }
+                 ORDER BY ?record ?reason }
+             }
+             GROUP BY ?record }
+  BIND (IF(BOUND(?reasons), ?reasons, ?none) AS ?why)
+  BIND (IF(BOUND(?others), ?others, ?none) AS ?otherMembers)
+  BIND (IF(BOUND(?entry), COALESCE(?grewCount, 0), ?none) AS ?grewBy)
+  BIND (IF(BOUND(?statements), ?statements, ?none) AS ?otherStatements)
+  BIND (IF(BOUND(?entry), COALESCE(?mergedCount, 0), ?none) AS ?mergedWith)
+  BIND (IF(BOUND(?entry), IF(COALESCE(?otherEntries, 0) > 0, "split", "one"), IF(BOUND(?why), "hidden", "not in the pod")) AS ?outcome)
+}
+ORDER BY ?statement ?recordLabel ?record

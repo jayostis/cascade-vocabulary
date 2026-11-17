@@ -1,0 +1,16 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:a1 a cascade:AllergyOrIntolerance .
+:a1Version prov:specializationOf :a1 ; cascade:patient :subject ; cascade:allergenName "Allergen a1" .
+:a1Revision a cascade:Revision ; cascade:revisionOf :a1 ; cascade:version :a1Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:a2 a cascade:AllergyOrIntolerance .
+:a2Version prov:specializationOf :a2 ; cascade:patient :subject ; cascade:allergenName "Allergen a2" .
+:a2Revision a cascade:Revision ; cascade:revisionOf :a2 ; cascade:version :a2Version ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
