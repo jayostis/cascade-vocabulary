@@ -650,6 +650,15 @@ class TestRootCrate:
             assert read == set(parts(crate(), "./"))
             assert declared and schemas == declared
 
+        def test_decodes_only_the_ids_that_are_paths(self):
+            """decodes the `@id` of a path and keeps an absolute URL and a `#fragment` as written
+
+            `contract.decoded_ids` is given an `@id` with a percent escape that is a path, an absolute URL and a fragment;
+            only the path is decoded.
+            """
+            read = contract.decoded_ids([{"@id": "queries/a%20b.rq"}, {"@id": "https://x.org/a%2Fb"}, {"@id": "#frag%20x"}])
+            assert [item["@id"] for item in read] == ["queries/a b.rq", "https://x.org/a%2Fb", "#frag%20x"]
+
         def test_describes_with_is_based_on_or_citation_only_files_that_exist(self):
             """describes with `isBasedOn` or `citation` only files that exist
 

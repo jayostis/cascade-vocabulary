@@ -4,6 +4,7 @@ files pod-layout.ttl says a query writes."""
 import base64
 import itertools
 import json
+import re
 from functools import cache
 from pathlib import Path
 from urllib.parse import unquote
@@ -84,10 +85,15 @@ def crate_graph():
                          format="json-ld", publicID=CRATE_BASE)
 
 
+def is_path_id(id):
+    return isinstance(id, str) and not id.startswith("#") and not re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", id)
+
+
 def decoded_ids(value):
-    """The crate's JSON, each `@id` decoded: a file's `@id` is its path as a URI path, percent-encoded."""
+    """The crate's JSON, each path `@id` decoded: a file's `@id` is its path as a URI path, percent-encoded. An `@id` with
+    a URI scheme or starting `#` is not a path and is kept as written."""
     if isinstance(value, dict):
-        return {key: unquote(item) if key == "@id" else decoded_ids(item) for key, item in value.items()}
+        return {key: unquote(item) if key == "@id" and is_path_id(item) else decoded_ids(item) for key, item in value.items()}
     if isinstance(value, list):
         return [decoded_ids(item) for item in value]
     return value
