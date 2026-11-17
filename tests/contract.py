@@ -66,9 +66,8 @@ def questions():
 @cache
 def positions():
     """Each query the root crate gives a position, by its path under QUERIES."""
-    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]
-    return {(ROOT / entity["@id"]).relative_to(QUERIES).as_posix(): entity["position"]
-            for entity in crate if entity.get("@type") == "File" and "position" in entity}
+    return {(ROOT / path).relative_to(QUERIES).as_posix(): entity["position"]
+            for path, entity in crate_entities().items() if entity.get("@type") == "File" and "position" in entity}
 
 
 CRATE_BASE = "https://crate.example/"
@@ -83,6 +82,22 @@ def crate_graph():
     return Graph().parse(data=json.dumps({"@context": [{"@vocab": "https://schema.org/"}, *context],
                                           "@graph": crate["@graph"]}),
                          format="json-ld", publicID=CRATE_BASE)
+
+
+def decoded_ids(value):
+    """The crate's JSON, each `@id` decoded: a file's `@id` is its path as a URI path, percent-encoded."""
+    if isinstance(value, dict):
+        return {key: unquote(item) if key == "@id" else decoded_ids(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [decoded_ids(item) for item in value]
+    return value
+
+
+@cache
+def crate_entities():
+    """The root crate's entities, each by the path of the file it names as it is on disk, every reference decoded too."""
+    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
+    return {entity["@id"]: entity for entity in decoded_ids(crate["@graph"])}
 
 
 def crate_path(node):

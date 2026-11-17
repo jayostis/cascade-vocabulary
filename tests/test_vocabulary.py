@@ -189,7 +189,7 @@ def reaches_every_domain(graph, subject_class, predicate):
 
 
 def crate():
-    return {entity["@id"]: entity for entity in json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))["@graph"]}
+    return contract.crate_entities()
 
 
 def parts(entities, dataset):
