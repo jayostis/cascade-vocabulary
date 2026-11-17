@@ -23,7 +23,9 @@
 :peanutEnteredVersion prov:specializationOf :peanutEntered ; cascade:patient :subject ; cascade:allergenName "Peanut allergy" ;
     cascade:allergenCode <http://snomed.info/id/91935009> ; cascade:reactionManifestationText "Urticaria" , "Itching" ;
     cascade:reactionManifestationCode <http://snomed.info/id/126485001> ; cascade:allergySeverity "moderate" ;
-    cascade:allergyCategory "food" ; cascade:onsetDate "2019-03"^^xsd:gYearMonth .
+    cascade:allergyCategory "food" ; cascade:onsetDate "2019-03-04T09:00:00"^^xsd:dateTime ;
+    cascade:paddedDateTime <urn:x:peanutEnteredVersion#padded-onsetDate> .
+<urn:x:peanutEnteredVersion#padded-onsetDate> cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten "2019030409" .
 :peanutEnteredRevision a cascade:Revision ; cascade:revisionOf :peanutEntered ; cascade:version :peanutEnteredVersion ;
     prov:wasGeneratedBy :session ; prov:generatedAtTime "2026-02-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-02-01T00:00:05Z"^^xsd:dateTime .
 

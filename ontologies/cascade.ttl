@@ -1311,6 +1311,14 @@ cascade:dosageFrom a owl:ObjectProperty ;
     rdfs:label "dosage from"@en ;
     rdfs:comment "Derived: the member whose dosage text a medication entry shows when its lead states none."@en .
 
+cascade:onsetDateFrom a owl:ObjectProperty ;
+    rdfs:label "onset date from"@en ;
+    rdfs:comment "Derived: the member whose onset date an allergy entry shows, chosen among the members that state one."@en .
+
+cascade:allergyCategoryFrom a owl:ObjectProperty ;
+    rdfs:label "allergy category from"@en ;
+    rdfs:comment "Derived: the member whose category an allergy entry shows, chosen among the members that state one."@en .
+
 cascade:memberCurrentValues a owl:ObjectProperty ;
     rdfs:label "member current values"@en ;
     rdfs:comment "Derived: one member's current values as the entry's view holds them, a node of the view named after the entry and the member (N13): it names the member (cascade:valuesOfMember) and states what that member's current version states of the fields the view shows, so the view holds every member's values and the member each came from."@en .

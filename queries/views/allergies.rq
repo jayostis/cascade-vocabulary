@@ -1,4 +1,5 @@
-# Each entry takes the allergen, code, category, onset, reactions and severity of its lead, the status of the member
+# Each entry takes the allergen, code, reactions and severity of its lead, its category and onset from the members the
+# derivations chose for them (cascade:allergyCategoryFrom, cascade:onsetDateFrom), the status of the member
 # chosen for status, and the highest criticality any member states. Each member's current values are a node of the view
 # of their own, named after the entry and the member, which says the member they came from. An onset its source wrote
 # short of the second keeps the node saying so (cascade:PaddedDateTime), named after the entry or the member's values
@@ -41,9 +42,9 @@ WHERE {
     ?entry cascade:leadMember ?lead .
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenName ?allergenName }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergenCode ?code }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:allergyCategory ?category }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:onsetDate ?onset }
-    OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?onsetPaddedAt .
+    OPTIONAL { ?entry cascade:allergyCategoryFrom/pav:hasCurrentVersion/cascade:allergyCategory ?category }
+    OPTIONAL { ?entry cascade:onsetDateFrom/pav:hasCurrentVersion/cascade:onsetDate ?onset }
+    OPTIONAL { ?entry cascade:onsetDateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?onsetPaddedAt .
                ?onsetPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?onsetWritten }
     BIND (IF(BOUND(?onsetWritten), IRI(CONCAT(STR(?entry), "-padded-onsetDate")), 1/0) AS ?onsetPadded)
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reactionManifestationText ?reaction }
