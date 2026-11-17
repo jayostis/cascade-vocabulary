@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-persons-same-stands-over-a-machines-different" ;
+  rdfs:comment "Two pairs of the subject's allergies, each with a counting Same and a counting Different: for the first the Same is a person's and the Different the matcher's; for the second both are the matcher's." ;
+  mf:entries (
+    <#currently-the-same>
+    <#currently-different>
+  ) .
+
+<#currently-the-same> a mf:QueryEvaluationTest ;
+  mf:name "currently-the-same" ;
+  rdfs:comment "The pair a person judged Same is joined, a machine's Different notwithstanding; the pair only a machine judged Same is not." ;
+  mf:action [ qt:query <currently-the-same.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <currently-the-same.srj> .
+
+<#currently-different> a mf:QueryEvaluationTest ;
+  mf:name "currently-different" ;
+  rdfs:comment "Only the pair no person judged Same is currently different: among machines a Different outranks a Same." ;
+  mf:action [ qt:query <currently-different.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <currently-different.srj> .

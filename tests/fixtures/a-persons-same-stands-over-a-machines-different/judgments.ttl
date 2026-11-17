@@ -1,0 +1,37 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+:person a prov:Person .
+
+:personSameA a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :a1, :a2 ;
+    prov:wasAttributedTo :person ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :person ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:machineDifferentA a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :a1, :a2 ;
+    prov:wasDerivedFrom :a1Version , :a2Version ;
+    cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:machineSameB a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :b1, :b2 ;
+    prov:wasDerivedFrom :b1Version , :b2Version ;
+    cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:machineDifferentB a cascade:Judgment ; cascade:verdict cascade:Different ; prov:hadMember :b1, :b2 ;
+    prov:wasDerivedFrom :b1Version , :b2Version ;
+    cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+
+:machineDifferentAUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :machineDifferentA ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+:machineSameBUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :machineSameB ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+:machineDifferentBUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :machineDifferentB ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+
+:rules a cascade:ReferenceSeries ; rdfs:label "Rules" .
+:rules1 prov:specializationOf :rules ; pav:version "1" .
+:rules1SameCodeRule cascade:rowOfRuleListVersion :rules1 ; cascade:matcherRule cascade:SameCodeRule ;
+    cascade:queryHash :sameCodeQuery .
