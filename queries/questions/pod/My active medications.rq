@@ -8,11 +8,10 @@
 # each code of its reason, as "<record> for <entry>, <name>", "<record> for <code IRI>" and, for a code in a system the
 # vocabulary lists none of, "<record> for <system IRI> <code>" (none when no record gives a reason, and no condition
 # whose record is in no entry). Each item puts its IRIs first and its one free-text part last, so a reader takes its
-# kind from the token after "for ", never from the text: an entry IRI followed by ", " is a condition (then its name, which
-# may hold anything), a code IRI alone is a code in a listed system, a system IRI followed by one space is a code in
-# another system (then the code as written, which may hold spaces and commas). A condition entry with no name gives
-# "<record> for <entry>" alone, which a reader tells from a code IRI by the entry IRI being the pod's, under the pod's
-# address. Items are in code point order of the name or code (a condition with no name first), then the entry or
+# kind from the token after "for " up to the first space, never from the text: a token ending in "," is a condition entry
+# (then its name, which may hold anything); otherwise a pod IRI alone is a condition entry with no name, an IRI that is
+# not the pod's alone is a code in a listed system, and an IRI followed by a space and more text is a system IRI and its
+# code (as written, which may hold spaces and commas). Items are in code point order of the name or code (a condition with no name first), then the entry or
 # system, then the record, and each record
 # with the document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. An
 # entry whose status was
