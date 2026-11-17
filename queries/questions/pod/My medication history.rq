@@ -7,8 +7,7 @@
 # wrote for it, such as a stop reason (none when no record has one), how many records it joins, and each record with the
 # document it was derived from, when that was retrieved, and the hospitals that wrote it and that keep it. A source that states no stop gives no end date: none is
 # inferred from a medication's last appearance. The code is the one `pod/My active medications` gives, and the entries
-# whose lifecycle is cascade:MedicationActive are the ones it lists. A list holds its values in order, each ended by "; "
-# but the last, so a value ends at the "; " before the next record's IRI, as a dosage's own text can hold "; " and ", ";
+# whose lifecycle is cascade:MedicationActive are the ones it lists. A list holds its values in order, separated by U+001F, which no value holds;
 # a value's own parts are ended by ", ".
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -19,7 +18,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?medication ?code ?status ?lifecycle ?started ?written ?ended ?statuses ?dosages ?narrativeTexts
        (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "; "); separator=""), "; $", "") AS ?statuses)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "\u001F"); separator=""), "\u001F$", "") AS ?statuses)
     WHERE {
       { SELECT ?entry ?statusText
         WHERE {
@@ -33,7 +32,7 @@ WHERE {
         ORDER BY ?entry ?statusText }
     }
     GROUP BY ?entry }
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?dosageText; separator=""), "; $", "") AS ?stated)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?dosageText; separator=""), "\u001F$", "") AS ?stated)
     WHERE {
       { SELECT ?entry ?dosageText
         WHERE {
@@ -42,25 +41,25 @@ WHERE {
           OPTIONAL { ?values cascade:dosageInstructionText ?memberDosage }
           OPTIONAL { ?values cascade:prescriptionWrittenDate ?memberWritten }
           BIND (IF(BOUND(?memberDosage),
-                   CONCAT(STR(?member), " ", ?memberDosage, COALESCE(CONCAT(", written ", STR(?memberWritten)), ""), "; "), "") AS ?dosageText)
+                   CONCAT(STR(?member), " ", ?memberDosage, COALESCE(CONCAT(", written ", STR(?memberWritten)), ""), "\u001F"), "") AS ?dosageText)
           BIND (COALESCE(STR(?memberWritten), "~") AS ?writtenKey)
         }
         ORDER BY ?entry ?writtenKey ?dosageText }
     }
     GROUP BY ?entry }
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?narrativeLine; separator=""), "; $", "") AS ?said)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT ?narrativeLine; separator=""), "\u001F$", "") AS ?said)
     WHERE {
       { SELECT ?entry ?narrativeLine
         WHERE {
           ?entry a cascade:PrescribedOrReportedMedication ; cascade:memberCurrentValues ?values .
           ?values cascade:valuesOfMember ?member .
           OPTIONAL { ?values cascade:narrativeText ?memberNarrativeText }
-          BIND (IF(BOUND(?memberNarrativeText), CONCAT(STR(?member), " ", ?memberNarrativeText, "; "), "") AS ?narrativeLine)
+          BIND (IF(BOUND(?memberNarrativeText), CONCAT(STR(?member), " ", ?memberNarrativeText, "\u001F"), "") AS ?narrativeLine)
         }
         ORDER BY ?entry ?narrativeLine }
     }
     GROUP BY ?entry }
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?sources)
     WHERE {
       { SELECT ?entry ?sourceText
         WHERE {

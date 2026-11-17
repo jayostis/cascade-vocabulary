@@ -7,7 +7,7 @@
 # entries whose status is active and not ruled out are the ones `pod/My active conditions` lists. A record's own status
 # is its clinical status, "ruled out" alone when it is refuted; the day it abated follows a clinical status, never "ruled out". A list
 # holds its values in order,
-# each ended by "; " but the last; a value's own parts are ended by ", ". Its code is the code IRI the
+# separated by U+001F; a value's own parts are ended by ", ". Its code is the code IRI the
 # entry states, in whichever listed system, the first in code point order when it states several, so that each entry
 # is one row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
@@ -19,7 +19,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?condition ?conditionCode ?status ?verificationStatus ?onset ?abated ?statuses (COUNT(?record) AS ?records) ?entry
        ?entryLabel ?sources
 WHERE {
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "; "); separator=""), "; $", "") AS ?statuses)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?statusText, "\u001F"); separator=""), "\u001F$", "") AS ?statuses)
     WHERE {
       { SELECT ?entry ?statusText
         WHERE {
@@ -36,7 +36,7 @@ WHERE {
         ORDER BY ?entry ?statusText }
     }
     GROUP BY ?entry }
-  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "; "); separator=""), "; $", "") AS ?sources)
+  { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT CONCAT(?sourceText, "\u001F"); separator=""), "\u001F$", "") AS ?sources)
     WHERE {
       { SELECT ?entry ?sourceText
         WHERE {

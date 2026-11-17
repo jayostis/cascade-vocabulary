@@ -3,7 +3,7 @@
 # a counting About ties to the subject says of the person's date of birth, administrative gender, whether they have died
 # and when, each value after the profile that states it, so sources that disagree are told apart and none is chosen; and
 # each profile with the document it was derived from, when that was retrieved, and the hospitals that wrote it and that
-# keep it. A list holds its values in order, each ended by "; " but the last, and a list with nothing in it is unbound;
+# keep it. A list holds its values in order, separated by U+001F, and a list with nothing in it is unbound;
 # a value's own parts are ended by ", ".
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -14,10 +14,10 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?subject ?subjectLabel ?dateOfBirth ?administrativeGender ?deceased ?dateOfDeath ?sources
 WHERE {
   { SELECT ?subject
-           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?birthText, "; "), ""); separator=""), "; $", "") AS ?births)
-           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?genderText, "; "), ""); separator=""), "; $", "") AS ?genders)
-           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?deceasedText, "; "), ""); separator=""), "; $", "") AS ?deaths)
-           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?deathDateText, "; "), ""); separator=""), "; $", "") AS ?deathDates)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?birthText, "\u001F"), ""); separator=""), "\u001F$", "") AS ?births)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?genderText, "\u001F"), ""); separator=""), "\u001F$", "") AS ?genders)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?deceasedText, "\u001F"), ""); separator=""), "\u001F$", "") AS ?deaths)
+           (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?deathDateText, "\u001F"), ""); separator=""), "\u001F$", "") AS ?deathDates)
     WHERE {
       { SELECT ?subject ?birthText ?genderText ?deceasedText ?deathDateText
         WHERE {
@@ -40,7 +40,7 @@ WHERE {
         ORDER BY ?subject ?profile }
     }
     GROUP BY ?subject }
-  { SELECT ?subject (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?sourceText, "; "), ""); separator=""), "; $", "")
+  { SELECT ?subject (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?sourceText, "\u001F"), ""); separator=""), "\u001F$", "")
                      AS ?allSources)
     WHERE {
       { SELECT ?subject ?sourceText

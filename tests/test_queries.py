@@ -3,10 +3,11 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import unquote
 
 import pytest
 from pyparsing import ParseException, ParseResults
-from rdflib import RDF, Graph, Literal, URIRef, Variable
+from rdflib import RDF, Graph, Literal, Namespace, URIRef, Variable
 from rdflib.paths import Path as PropertyPath
 from rdflib.plugins.sparql.parser import parseQuery
 from rdflib.plugins.sparql.parserutils import CompValue
@@ -256,6 +257,68 @@ def restated_absences(text):
         if node.name == "LeftJoin" and DERIVED_ABSENCES & set(iris(node["p2"])) and bound & node["p2"]["_vars"]:
             found.append("optional-bound")
     return found
+
+
+def variables_in(expression):
+    if isinstance(expression, Variable):
+        return {str(expression)}
+    if isinstance(expression, CompValue):
+        return set().union(*(variables_in(value) for value in expression.values()))
+    if isinstance(expression, (list, tuple)):
+        return set().union(*(variables_in(value) for value in expression))
+    return set()
+
+
+def joined_columns(node):
+    """The variables a node's solutions give that hold text a GROUP_CONCAT joined, or that an expression or a sample of
+    such a variable gives."""
+    inner = set().union(*(joined_columns(node[key]) for key in ("p", "p1", "p2")
+                          if key in node and isinstance(node[key], CompValue)))
+    if node.name == "AggregateJoin":
+        return inner | {str(a["res"]) for a in node["A"] if a.name == "Aggregate_GroupConcat"
+                        or (a.name in ("Aggregate_Sample", "Aggregate_Min", "Aggregate_Max")
+                            and variables_in(a["vars"]) & inner)}
+    if node.name == "Extend":
+        return inner | ({str(node["var"])} if variables_in(node["expr"]) & inner else set())
+    if node.name == "Project":
+        return inner & {str(v) for v in node["PV"]}
+    return inner
+
+
+CSVW = Namespace("http://www.w3.org/ns/csvw#")
+CRATE_BASE = "https://crate.example/"
+UNIT_SEPARATOR = "\x1f"
+
+
+def with_ids_as_iris(value):
+    if isinstance(value, dict):
+        return {key: item.replace(" ", "%20") if key == "@id" else with_ids_as_iris(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [with_ids_as_iris(item) for item in value]
+    return value
+
+
+@lru_cache(maxsize=None)
+def declared_columns():
+    """Each question's columns the crate declares as CSVW says them once it is read as JSON-LD: the path under QUERIES
+    gives each column's name with its separator, or None.
+
+    The crate's own context is fetched from the web, so it is left out and a `@vocab` stands in; the crate's other
+    context terms are kept as they are. A file's `@id` is its path, spaces and all, which is not an IRI and which a
+    JSON-LD reader drops, so each space of an `@id` is written `%20` before the crate is read."""
+    crate = json.loads((ROOT / "ro-crate-metadata.json").read_text(encoding="utf-8"))
+    context = [part for part in crate["@context"] if isinstance(part, dict)]
+    graph = Graph().parse(data=json.dumps({"@context": [{"@vocab": "https://schema.org/"}, *context],
+                                           "@graph": with_ids_as_iris(crate["@graph"])}),
+                          format="json-ld", publicID=CRATE_BASE)
+    declared = {}
+    for file, schema in graph.subject_objects(CSVW.tableSchema):
+        relative = unquote(str(file)[len(CRATE_BASE):])
+        declared[Path(relative).relative_to("queries").as_posix()] = {
+            str(graph.value(column, CSVW["name"])):
+                None if (separator := graph.value(column, CSVW.separator)) is None else str(separator)
+            for column in graph.objects(schema, CSVW.column)}
+    return declared
 
 
 def words(text):
@@ -580,6 +643,40 @@ class TestNamedQuestions:
             """
             offenders = {relative: restated for relative in every_question()
                          if (restated := restated_absences(contract.query(relative)))}
+            assert offenders == {}
+
+        def test_declares_in_the_crate_each_column_it_joins_with_group_concat_by_the_unit_separator(self):
+            """declares in the crate each column it joins with `GROUP_CONCAT`, with the separator U+001F, and no other column with one
+
+            A column whose text a `GROUP_CONCAT` joins, or an expression or a sample of one, is a list. The question's
+            entry in `ro-crate-metadata.json`, read as JSON-LD, gives it a `csvw:separator` of U+001F, which XML 1.0 and
+            FHIR strings exclude, so a runtime splits it without guessing. A question fails if it has no table schema, if
+            a list column has another separator or none, or if a column that is not a list has one.
+            """
+            offenders = {}
+            for relative in every_question():
+                joined = joined_columns(prepared(contract.query(relative)).algebra["p"])
+                declared = declared_columns().get(relative, {})
+                separated = {name for name, separator in declared.items() if separator is not None}
+                wrong = {name for name in joined if declared.get(name) != UNIT_SEPARATOR} | (separated - joined)
+                if wrong:
+                    offenders[relative] = sorted(wrong)
+            assert offenders == {}
+
+        def test_declares_in_the_crate_every_column_it_gives_and_no_column_it_lacks(self):
+            """declares in the crate every column it gives, and no column it lacks
+
+            The names of the columns in a question's table schema in `ro-crate-metadata.json` are compared with the
+            variables of its `SELECT`. A column missing from the schema, or one that is not a variable of the `SELECT`,
+            fails; every question that joins a column has such a schema.
+            """
+            offenders = {}
+            for relative in every_question():
+                projected = {str(v) for v in prepared(contract.query(relative)).algebra["PV"]}
+                declared = set(declared_columns().get(relative, {}))
+                if (declared or joined_columns(prepared(contract.query(relative)).algebra["p"])) and declared != projected:
+                    offenders[relative] = {"given and not declared": sorted(projected - declared),
+                                           "declared and not given": sorted(declared - projected)}
             assert offenders == {}
 
     class TestGivenAQuestionFiledUnderAKind:
