@@ -1,0 +1,39 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:pulledFirst pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasAttributedTo _:northgate ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate ] ] .
+_:northgate rdfs:label "Northgate" .
+:pulledSecond pav:retrievedOn "2026-01-10T00:00:00Z"^^xsd:dateTime ;
+    prov:wasAttributedTo _:northgate2 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate2 ] ] .
+_:northgate2 rdfs:label "Northgate" .
+:pulledThird pav:retrievedOn "2026-01-20T00:00:00Z"^^xsd:dateTime ;
+    prov:wasAttributedTo _:northgate3 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate3 ] ] .
+_:northgate3 rdfs:label "Northgate" .
+:pulledFourth pav:retrievedOn "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasAttributedTo _:northgate4 ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent _:northgate4 ] ] .
+_:northgate4 rdfs:label "Northgate" .
+
+:psoriasis a cascade:ProblemOrDiagnosis .
+:psoriasisActive prov:specializationOf :psoriasis ; cascade:patient :subject ; cascade:conditionName "Psoriasis" ; cascade:clinicalStatus "active" .
+:psoriasisResolved prov:specializationOf :psoriasis ; cascade:patient :subject ; cascade:conditionName "Psoriasis" ; cascade:clinicalStatus "resolved" .
+:psoriasisInactive prov:specializationOf :psoriasis ; cascade:patient :subject ; cascade:conditionName "Psoriasis" ; cascade:clinicalStatus "inactive" .
+:psoriasisFirst a cascade:Revision ; cascade:revisionOf :psoriasis ; cascade:version :psoriasisActive ; pav:lastUpdateOn "2025-12-20T00:00:00Z"^^xsd:dateTime ;
+    prov:wasDerivedFrom :pulledFirst ; prov:wasGeneratedBy :firstPull ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:psoriasisSecond a cascade:Revision ; cascade:revisionOf :psoriasis ; cascade:version :psoriasisResolved ; prov:wasRevisionOf :psoriasisFirst ;
+    pav:lastUpdateOn "2025-12-01T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledSecond ; prov:wasGeneratedBy :secondPull ;
+    prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-10T00:00:00Z"^^xsd:dateTime .
+:psoriasisThird a cascade:Revision ; cascade:revisionOf :psoriasis ; cascade:version :psoriasisInactive ; prov:wasRevisionOf :psoriasisSecond ;
+    pav:lastUpdateOn "2026-01-15T00:00:00Z"^^xsd:dateTime ; prov:wasDerivedFrom :pulledThird ; prov:wasGeneratedBy :thirdPull ;
+    prov:generatedAtTime "2026-01-20T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-20T00:00:00Z"^^xsd:dateTime .

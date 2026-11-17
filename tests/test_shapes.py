@@ -18,6 +18,7 @@ SHT = Namespace("http://www.w3.org/ns/shacl-test#")
 CASES = ROOT / "tests" / "shape-cases"
 TARGETS = (SH.targetClass, SH.targetSubjectsOf, SH.targetObjectsOf, SH.targetNode)
 BROKEN_ELSEWHERE = {CASCADE.PlacementShape: "test_pod_layout.py breaks the layout's placements"}
+REFUSED_ON_PURPOSE = {"an-acknowledgement-of-two-pairs-at-once": "the query answers a pod whose acknowledgement of a pair kind names four records, which AcknowledgedShape refuses"}
 UNDECLARED_ON_PURPOSE = {CASCADE.NoSuchRecord: "Finn's type-filed-nowhere export files a record of a type no folder holds"}
 
 
@@ -283,10 +284,14 @@ class TestShapesThatFindAWrongPod:
             """conforms to the shapes
 
             Each fixture's files, as one graph, are validated against all the shapes, and the validation must report no
-            result.
+            result, but for a fixture that shows what the query does with a pod the shapes refuse, which reports the one
+            result of the shape it names.
             """
             conforms, _, text = validate(fixture_pod(fixture), shacl_graph=shapes())
-            assert conforms, text
+            if fixture.name in REFUSED_ON_PURPOSE:
+                assert not conforms and text.count("Source Shape:") == 1 and "#AcknowledgedShape" in text, text
+            else:
+                assert conforms, text
 
     class TestGivenAnyFixtureOrValidCase:
         def test_takes_every_subject_of_a_kind_the_shapes_cover_as_a_focus_node_of_its_shape(self):

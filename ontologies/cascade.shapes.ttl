@@ -2447,7 +2447,7 @@ cascade:JudgmentShape a sh:NodeShape ;
     ] , [
         sh:path prov:hadMember ;
         sh:nodeKind sh:IRI ;
-        sh:message "A judgment's members are records, revisions, activities or a finding for review, named by their IRIs."@en ;
+        sh:message "A judgment's members are records, documents, revisions or activities, named by their IRIs."@en ;
         sh:severity sh:Violation
     ] , [
         sh:path prov:generatedAtTime ;
@@ -2592,26 +2592,45 @@ cascade:VerdictMembersShape a sh:NodeShape ;
     sh:message "A judgment that gives a verdict judges at least one member."@en ;
     sh:severity sh:Violation .
 
-# A judgment and the finding it names are filed apart, so this shape's and the next one's sh:class holds over the pod's
-# union of files, never over a judgment's file alone.
 cascade:SetVerdictShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
         [ sh:not [ sh:path cascade:verdict ; sh:minCount 1 ; sh:in ( cascade:Same cascade:Different ) ] ]
         [ sh:path prov:hadMember ; sh:minCount 2 ]
-        [ sh:property [ sh:path cascade:verdict ; sh:hasValue cascade:Same ] ,
-                      [ sh:path prov:hadMember ; sh:minCount 1 ; sh:maxCount 1 ; sh:class cascade:FindingForReview ] ]
     ) ;
-    sh:message "A Same or a Different judges a set of at least two records, or a Same one finding for review."@en ;
+    sh:message "A Same or a Different judges a set of at least two records."@en ;
     sh:severity sh:Violation .
+
+# A judgment and what it names are filed apart, so the sh:class of this shape and the next holds over the pod's union of
+# files, never over a judgment's file alone.
+cascade:JudgmentNamesNoFindingShape a sh:NodeShape ;
+    sh:targetClass cascade:Judgment ;
+    sh:property [
+        sh:path prov:hadMember ;
+        sh:not [ sh:class cascade:FindingForReview ] ;
+        sh:message "A judgment never names a finding for review, whose name the pod derives: an answer to one names what it is about."@en ;
+        sh:severity sh:Violation
+    ] .
 
 cascade:AcknowledgedShape a sh:NodeShape ;
     sh:targetClass cascade:Judgment ;
     sh:or (
-        [ sh:not [ sh:path cascade:verdict ; sh:hasValue cascade:Acknowledged ] ]
-        [ sh:path prov:hadMember ; sh:minCount 1 ; sh:maxCount 1 ; sh:class cascade:FindingForReview ]
+        [ sh:and ( [ sh:not [ sh:path cascade:verdict ; sh:hasValue cascade:Acknowledged ] ]
+                   [ sh:path cascade:answersWarningOfKind ; sh:maxCount 0 ] ) ]
+        [ sh:property [ sh:path cascade:verdict ; sh:hasValue cascade:Acknowledged ] ,
+                      [ sh:path cascade:answersWarningOfKind ; sh:minCount 1 ; sh:maxCount 1 ;
+                        sh:in ( cascade:MatcherJudgmentsNoLongerReached cascade:SourceReportedOlderStates cascade:ClockBehind
+                                cascade:DifferentResultValuesAtOneInstant cascade:DifferentResultUnitsAtOneInstant ) ] ,
+                      [ sh:path prov:hadMember ;
+                        sh:not [ sh:or ( [ sh:class cascade:Revision ] [ sh:class cascade:Judgment ]
+                                         [ sh:class cascade:MatcherJudgmentAssertion ]
+                                         [ sh:path prov:specializationOf ; sh:minCount 1 ] ) ] ] ;
+                      sh:or ( [ sh:not [ sh:path cascade:answersWarningOfKind ; sh:minCount 1 ;
+                                         sh:in ( cascade:MatcherJudgmentsNoLongerReached cascade:DifferentResultValuesAtOneInstant
+                                                 cascade:DifferentResultUnitsAtOneInstant ) ] ]
+                              [ sh:path prov:hadMember ; sh:minCount 2 ; sh:maxCount 2 ] ) ]
     ) ;
-    sh:message "An Acknowledged judgment has one member, a finding for review."@en ;
+    sh:message "An Acknowledged names the kind of warning it answers and, as its members, what that warning is about: records, documents or acts, never a version, a revision, a judgment or a matcher judgment assertion; one of a pair kind names exactly the pair's two records. No other judgment names a kind of warning."@en ;
     sh:severity sh:Violation .
 
 cascade:ClockDiscountedShape a sh:NodeShape ;

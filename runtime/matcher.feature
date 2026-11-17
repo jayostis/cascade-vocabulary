@@ -1125,17 +1125,21 @@ Feature: The matcher's procedure
       Then that step wrote these findings:
         | kind | under | justification | members |
 
-  Rule: M19. A person answers a finding of matcher judgments no longer reached once, for every pair it names
-    decisions/naming.md, row "document, finding", and its Why, and decisions/judgments.md, rows "judgment over a source-level thing" and "acknowledgement". "What needs
+  Rule: M19. A person answers a finding of matcher judgments no longer reached over the records of its pairs, never by naming the finding
+    decisions/naming.md, row "document, finding", and its Why, and "Nothing kept cites anything derived"; decisions/judgments.md, rows "judgment over a source-level thing" and "acknowledgement". "What needs
     review" lists the finding as one line, its pairs: each pair of records of a matcher judgment it names that are now in two
     entries and not judged different, with the matcher judgment of least IRI that names it; a lapsed Same the finding names is
-    listed with it and never alone, and one no finding names is listed alone (O1). A person answers it with a judgment
-    whose one member is the finding: a Same over it joins the members of each matcher judgment it names as a Same of them would
-    (queries/derivations/same-pairs.rq), whether or not the matcher judgment counts, so every pair is joined at once, and
-    retracting it parts them at once; a person's Same already filed on a pair is untouched. An Acknowledged takes the
-    finding off the review page and changes nothing else: the finding still stands, and its pairs stay apart. Or the
-    person judges the pairs one by one. Each answer is a judgment the lens counts or not, so writers that file them in
-    any order hold one answer.
+    listed with it and never alone, and one no finding names is listed alone (O1). The finding is named by its triples
+    and a matcher judgment by the versions it used, so a field rename or a rebuild works both out again under other
+    names: an answer names what the finding is about, the records of each pair, never the finding. A person answers a
+    pair with a Same or a Different over its records, which joins or parts it as any Same or Different does; an app may
+    file one for each pair of the line at once. Or with a cascade:Acknowledged whose cascade:answersWarningOfKind is
+    cascade:MatcherJudgmentsNoLongerReached and whose members are exactly the pair's two records: it takes that pair
+    off the review page however the finding is worked out again, and changes nothing else, so the finding still stands
+    and the pair stays apart. One acknowledgement answers one pair: one naming the records of two pairs answers neither,
+    so a later pair of one record from each is listed, and an app that answers the whole line files one per pair. A judgment one of whose members is a
+    finding is refused. Each answer is a judgment the lens counts or not, so writers that file them in any order hold
+    one answer.
 
     Background:
       Given a new pod for Gus on 2026-09-01 at 09:00
@@ -1152,13 +1156,15 @@ Feature: The matcher's procedure
         | entry                                                | entryLabel                              | needs                                              | finding                                                     | judgment                                                                                                               | judgmentLabel                                    | record                                       | recordLabel                                   | otherRecord                          | otherRecordLabel                      |
         | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets" | "no longer joined under a newer rule list version" | <ni:///sha-256;r3A6LAf0rxE6bEDIhByAwDGK-E8snI4FU1-73maVfLA> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · eab831dd · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
 
-    Example: a Same over the finding joins the pairs of every matcher judgment it names
-      When Gus files the judgment "same-over-the-version-seven-finding" on 2026-09-04 at 09:00
-      Then the medications view holds these entries:
+    Example: a person's Same over a pair's records joins it and takes it off the review page
+      When Gus files the judgment "same-over-the-lisinopril-records-after-the-tables" on 2026-09-04 at 09:00
+      And the query "questions/entry/What needs review.rq" is asked
+      Then it answers nothing
+      And the medications view holds these entries:
         | members                                                                            |
         | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets" |
 
-    Example: an acknowledged finding leaves the review page, still stands, and leaves its pairs apart
+    Example: an acknowledgement of the kind naming a pair's records takes it off the review page and leaves it apart
       When Gus files the judgment "acknowledge-the-version-seven-finding" on 2026-09-04 at 09:00
       And the query "questions/entry/What needs review.rq" is asked
       Then it answers nothing
@@ -1166,6 +1172,10 @@ Feature: The matcher's procedure
         | members                                      |
         | medication RxNorm 29046 "Lisinopril"         |
         | medication RxNorm 29046 "Lisinopril tablets" |
+
+    Example: an acknowledgement naming the finding itself is refused
+      When Gus files the judgment "acknowledge-the-version-seven-finding-by-its-name" on 2026-09-04 at 09:00
+      Then that step is refused
 
   Rule: M20. Two servers that connects under one client id found reporting one self-asserted base URL and one authorization endpoint, at addresses on one host, are the same
     decisions/republishing-sources.md, rows "two servers are one" and "server".
@@ -1232,7 +1242,7 @@ Feature: The matcher's procedure
     M18's is: its type, its kind, its oa:motivatedBy oa:classifying, the two records as its oa:hasTarget and their
     current versions as its prov:wasDerivedFrom. A run files it for each pair the query gives that the pod holds no
     finding of, so a second run files none. "What needs review" lists it while both records are still at those versions, until a
-    person acknowledges it or judges the two the same or different, or while R18 joins them and one says it was
+    person acknowledges it, with an acknowledgement of its kind naming the two results and no other record, or judges the two the same or different, or while R18 joins them and one says it was
     corrected or amended (M22). The review page's
     lines for R15's joins and for the findings are shown by the vocabulary's fixtures.
 
