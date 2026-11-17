@@ -538,12 +538,25 @@
     { "@id": "queries/questions/judgment/Who judged what.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
     { "@id": "queries/questions/pod/How many judgments count.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
     { "@id": "queries/questions/pod/How many of each kind.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My active allergies.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My active conditions.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My condition history.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My immunizations.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My procedures.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/The person this pod is about.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
+    { "@id": "queries/questions/pod/My active allergies.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "reactionsByRecord", "separator": "; ", "followedBy": "urn:" },
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" }] },
+    { "@id": "queries/questions/pod/My active conditions.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" }] },
+    { "@id": "queries/questions/pod/My condition history.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" },
+      { "column": "statuses", "separator": "; ", "followedBy": "urn:" }] },
+    { "@id": "queries/questions/pod/My immunizations.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" }] },
+    { "@id": "queries/questions/pod/My procedures.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "narrativeTexts", "separator": "; ", "followedBy": "urn:" },
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" }] },
+    { "@id": "queries/questions/pod/The person this pod is about.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "administrativeGender", "separator": "; ", "followedBy": "urn:" },
+      { "column": "dateOfBirth", "separator": "; ", "followedBy": "urn:" },
+      { "column": "dateOfDeath", "separator": "; ", "followedBy": "urn:" },
+      { "column": "deceased", "separator": "; ", "followedBy": "urn:" },
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" }] },
     { "@id": "queries/questions/pod/What each folder holds.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
     { "@id": "queries/questions/pod/What each import brought in.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
     { "@id": "queries/questions/pod/What everything is called.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
@@ -1248,13 +1261,29 @@
     { "@id": "queries/views/reports.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
     { "@id": "queries/views/notes-and-documents.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
     { "@id": "queries/views/medication-dispenses.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My reports, notes and documents.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
+    { "@id": "queries/questions/pod/My reports, notes and documents.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "attachments", "separator": "; " },
+      { "column": "codes", "separator": "; " },
+      { "column": "results", "separator": "; ", "followedBy": "urn:" },
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" }] },
     { "@id": "queries/matcher/same-medication-code.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
     { "@id": "queries/matcher/same-result.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My active medications.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My lab results.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My medication history.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
-    { "@id": "queries/questions/pod/My genetic variants.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
+    { "@id": "queries/questions/pod/My active medications.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "dosages", "separator": "; ", "followedBy": "urn:" },
+      { "column": "narrativeTexts", "separator": "; ", "followedBy": "urn:" },
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" },
+      { "column": "statuses", "separator": "; ", "followedBy": "urn:" }] },
+    { "@id": "queries/questions/pod/My lab results.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "interpretations", "separator": "; " },
+      { "column": "narrativeTexts", "separator": "; ", "followedBy": "urn:" },
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" }] },
+    { "@id": "queries/questions/pod/My medication history.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "dosages", "separator": "; ", "followedBy": "urn:" },
+      { "column": "narrativeTexts", "separator": "; ", "followedBy": "urn:" },
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" },
+      { "column": "statuses", "separator": "; ", "followedBy": "urn:" }] },
+    { "@id": "queries/questions/pod/My genetic variants.rq", "@type": "File", "encodingFormat": "application/sparql-query", "listColumns": [
+      { "column": "sources", "separator": "; ", "followedBy": "urn:" }] },
     { "@id": "queries/questions/pod/What each report says of a variant.rq", "@type": "File", "encodingFormat": "application/sparql-query" },
     { "@id": "runtime/scripted-input/gus/entries/medicines-and-results.ttl", "@type": "File", "encodingFormat": "text/turtle" },
     { "@id": "runtime/scripted-input/gus/references/references.ttl", "@type": "File", "encodingFormat": "text/turtle" },
