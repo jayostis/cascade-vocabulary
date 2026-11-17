@@ -65,7 +65,7 @@ Every judgment names its maker, and nothing else about a judgment depends on the
 
 The pod's trusted makers are a list the person controls: installing an app adds its maker, removing it drops it, and
 a dropped maker's judgments stop counting by derivation with nothing retracted. Makers combine by who first, then
-by kind: a person outranks every machine, so a person's Same stands over a machine's Different; among machines a
+by kind: a person outranks every machine, so a person's Same stands over a machine's Different, but only for the pair it names (or, through a finding, the pair a judgment the finding names joins), so a pair joined only through a third record keeps its Different and "What needs review" lists it as judged different, still joined; among machines a
 Different outranks a Same from any maker; and a machine judgment on weaker grounds is surfaced by the rubric's fourth
 test, which for a model means its confidence. An app's rule may declare itself `skos:broadMatch` a vocabulary
 justification kind, as the vocabulary's own rules do SEMAPV, so a view can treat "the app's lot-number rule" as a

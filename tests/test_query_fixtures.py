@@ -2,9 +2,10 @@ import hashlib
 from collections import Counter
 from functools import cache
 from pathlib import Path
+from time import perf_counter
 
 import pytest
-from rdflib import OWL, RDF, RDFS, Graph, URIRef
+from rdflib import OWL, RDF, RDFS, Graph, Literal, URIRef
 
 from contract import CASCADE, PROV, QUERIES, ROOT, built, derivations, named, query, questions
 from engines import ENGINES, Oxigraph, bound_to_records, marked_groups
@@ -210,6 +211,34 @@ class TestWhatEachQueryGives:
                     if lens in lenses_that_differ(fixture):
                         quiet -= {ASKED[name] for name, rows in answers(fixture, lens).items() if rows}
             assert quiet == set()
+
+    class TestGivenThreeHundredMachineDifferents:
+        """given three hundred counting Differents of a machine, half of them over a pair a person judged Same, built in the test"""
+
+        def test_gives_the_pairs_no_person_judged_same_within_five_seconds(self):
+            """gives the pairs no person judged Same, as `derivations/different-pairs.rq`, within five seconds
+
+            A form of the query that tests, for each Different, a person's Same over its pair under a filter takes about
+            twenty seconds at this size on Oxigraph and grows with its cube; the query takes about a tenth of a second.
+            """
+            urn = lambda name: URIRef(f"urn:x:{name}")
+            triples = [(urn("matcher"), RDF.type, PROV.SoftwareAgent), (urn("person"), RDF.type, PROV.Person)]
+            for n in range(300):
+                pair = urn(f"r{n}a"), urn(f"r{n}b")
+                different = urn(f"different{n}")
+                triples += [(different, CASCADE.countsUnderLens, Literal(True)), (different, CASCADE.verdict, CASCADE.Different),
+                            (different, PROV.wasAttributedTo, urn("matcher")), *((different, PROV.hadMember, m) for m in pair)]
+                if n % 2:
+                    same = urn(f"same{n}")
+                    triples += [(same, CASCADE.countsUnderLens, Literal(True)), (same, CASCADE.verdict, CASCADE.Same),
+                                (same, PROV.wasAttributedTo, urn("person")), *((same, PROV.hadMember, m) for m in pair)]
+            store = Oxigraph()
+            store.add(triples)
+            started = perf_counter()
+            pairs = store.construct(query("derivations/different-pairs.rq"))
+            assert perf_counter() - started < 5
+            assert {(a, b) for a, _, b in pairs} == {(urn(f"r{n}{x}"), urn(f"r{n}{y}")) for n in range(0, 300, 2)
+                                                     for x, y in (("a", "b"), ("b", "a"))}
 
 
 class TestDerivedStateOnTwoEngines:
