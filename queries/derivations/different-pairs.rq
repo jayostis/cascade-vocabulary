@@ -1,4 +1,5 @@
-# Two records named together by a counting Different judgment are currently different.
+# Two records named together by a counting Different judgment are currently different, unless a machine made the
+# Different and a person's counting Same names both: a person outranks every machine, so the pair stays joined.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
@@ -6,4 +7,7 @@ CONSTRUCT { ?a cascade:currentlyDifferent ?b }
 WHERE {
   ?d cascade:countsUnderLens true ; cascade:verdict cascade:Different ; prov:hadMember ?a , ?b .
   FILTER (?a != ?b)
+  FILTER (EXISTS { ?d prov:wasAttributedTo/a prov:Person }
+    || NOT EXISTS { ?s cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:wasAttributedTo/a prov:Person ;
+                       prov:hadMember ?a , ?b })
 }

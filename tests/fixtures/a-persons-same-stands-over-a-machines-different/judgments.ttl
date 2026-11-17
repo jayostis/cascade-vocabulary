@@ -16,7 +16,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
     prov:wasDerivedFrom :a1Version , :a2Version ;
     cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
-:machineSameB a cascade:Judgment ; cascade:verdict cascade:Same ; prov:hadMember :b1, :b2 ;
+:machineSameB a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ; prov:hadMember :b1, :b2 ;
     prov:wasDerivedFrom :b1Version , :b2Version ;
     cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
 
