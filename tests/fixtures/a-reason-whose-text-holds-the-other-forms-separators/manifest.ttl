@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-reason-whose-text-holds-the-other-forms-separators" ;
+  rdfs:comment "An active medicine whose version names a condition called \"Asthma, severe in kids for you\" and gives a code \"A in B, C\" in the system urn:oid:1.2.3." ;
+  mf:entries (
+    <#my-active-medications>
+  ) .
+
+<#my-active-medications> a mf:QueryEvaluationTest ;
+  mf:name "my-active-medications" ;
+  rdfs:comment "Each item puts its IRIs first and its text last, so the condition's name, which holds \" for \" and \", \", and the code, which holds \" in \" and \", \", read as free text after the IRIs." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-medications.srj> .

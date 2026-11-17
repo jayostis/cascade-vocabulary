@@ -1,0 +1,8 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT ?member ?reasonCode ?reasonCodeInOtherSystem
+WHERE { GRAPH <https://pod.example/clinical/procedures.ttl> {
+  ?entry cascade:memberCurrentValues ?values .
+  ?values cascade:valuesOfMember ?member .
+  OPTIONAL { ?values cascade:reasonCode ?reasonCode }
+  OPTIONAL { ?values cascade:reasonCodeInOtherSystem ?reasonCodeInOtherSystem } } }

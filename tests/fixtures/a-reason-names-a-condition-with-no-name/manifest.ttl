@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-reason-names-a-condition-with-no-name" ;
+  rdfs:comment "An active condition whose version states no name, and an active medicine whose version names its record as its reason and gives a SNOMED CT code." ;
+  mf:entries (
+    <#my-active-medications>
+  ) .
+
+<#my-active-medications> a mf:QueryEvaluationTest ;
+  mf:name "my-active-medications" ;
+  rdfs:comment "The condition's item is the record and the condition's entry IRI alone, under the pod's address, and the code's item is the record and a code IRI." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20medications.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-medications.srj> .

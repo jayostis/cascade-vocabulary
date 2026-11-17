@@ -1,0 +1,13 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:flu a cascade:Vaccination .
+:fluVersion prov:specializationOf :flu ; cascade:patient :subject ; cascade:vaccineName "Influenza" ;
+    cascade:workflowStatus "completed" ; cascade:reasonCode <http://snomed.info/id/195967001> ;
+    cascade:reasonCodeInOtherSystem "A-4412"^^<urn:oid:2.16.840.1.113883.19.5.99999.8> .
+:fluRevision a cascade:Revision ; cascade:revisionOf :flu ; cascade:version :fluVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
