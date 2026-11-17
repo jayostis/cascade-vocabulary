@@ -167,8 +167,8 @@ Feature: Arrivals
     decisions/currency.md, rows "what an arrival writes" and "a source that goes backwards"; decisions/performance.md,
     row "content names and the held-state rule".
     Kept is its bytes under attachments/, and its description, whether it wrote a revision, repeated a state the pod
-    holds, reported an older state (A18) or raised findings. A document whose bytes the pod already keeps is not
-    brought again (A1).
+    holds, reported an older state (A18), raised findings or brought no record at all (a lone Patient). A document
+    whose bytes the pod already keeps is not brought again (A1).
 
     Example: a document that wrote no revision is kept, and the import that brought it is written
       Given a new pod for Ada on 2026-01-01 at 09:00

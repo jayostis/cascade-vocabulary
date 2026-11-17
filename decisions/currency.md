@@ -145,7 +145,7 @@ stands, where one per act is up to 365 a year (computed, #206).
 members' judgments, so an act changes current only for the records it wrote revisions for and those its judgments
 reach by derivation, and rebuilding those gives what the full rebuild gives; two writers still agree, since the result
 is a function of the set. A full rebuild per act is the ladder over 200k revisions, counting over 32k judgments, the
-pairs, the entries and nine views, 10 to 60 s on Node and too much for a browser, 14 to 80 hours over 5,000 acts
+pairs, the entries and nine views, 10 to 60 s on Node and too much for a browser, 34 to 205 hours over 12,300 acts
 (assumed, #206). What changes every record's inputs at once rebuilds everything: a migration, a change to the trusted
 makers, a change of rule list version.
 
@@ -180,7 +180,7 @@ by union; a maximum over the set needs no walk of the line.
   is new information. It wins only because a judgment removed the revision holding it, so the write undoes the
   judgment; everything else that wins has a new stamp.
 - **A view rebuilt whole with every act.** The strongest case: a view rebuilt with the act holds each entry's current
-  revision by construction, with nothing to prove. It is 10 to 60 s on Node per act, 14 to 80 hours over ten years,
+  revision by construction, with nothing to prove. It is 10 to 60 s on Node per act, 34 to 205 hours over ten years (12,300 acts at 10 to 60 s),
   and does not fit in a browser (assumed, #206).
 - **Every pick the source's change time did not decide on the review page.** The strongest case: the review page is
   the confession, and every pick no source time made is shown. A source with no change time puts about 8,000 lines on
