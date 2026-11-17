@@ -426,18 +426,15 @@ Feature: Alex Rivera's pod
         | status from |       |
 
   Rule: P17. A server version changes and the content does not
-    H1-CON-HTN, versionId 3 then 4, E6: nothing is written and the file is not stored.
+    H1-CON-HTN, versionId 3 then 4, E6: no record, version or revision is written, and the file is kept as a document (A10).
 
-    Example: E6 and E15 bring H1-CON-HTN under new server versions with its content unchanged, and write nothing of it
+    Example: E6 and E15 bring H1-CON-HTN under new server versions with its content unchanged, and write no record, version or revision of it
       Then no file that "E6" or "E15" wrote names H1-CON-HTN
 
     Example: H1-CON-HTN has one revision, of its one version
       Then H1-CON-HTN has these revisions:
         | arrived                | version | after |
         | 2026-09-01 at 10:00:04 | 1       |       |
-
-    Example: x-e6's file for H1-CON-HTN is neither described nor stored
-      Then the pod neither names nor stores the document "x-e6/apple_health_export/clinical-records/Condition-cond-htn-1.json"
 
   Rule: P18. A change undone reuses a version
     H1-CON-BACK: active (E2), resolved (E6), active (E15): two versions and three revisions, the third pointing at the
@@ -730,7 +727,7 @@ Feature: Alex Rivera's pod
         | <urn:cascade:step:E2>  | 9       | 9        | 9         | 9         | 1       | 0        |
         | <urn:cascade:step:E3>  | 1       | 1        | 1         | 0         | 0       | 1        |
         | <urn:cascade:step:E4>  | 6       | 6        | 6         | 6         | 1       | 0        |
-        | <urn:cascade:step:E6>  | 2       | 7        | 7         | 7         | 1       | 0        |
+        | <urn:cascade:step:E6>  | 2       | 7        | 7         | 8         | 1       | 0        |
         | <urn:cascade:step:E10> | 3       | 3        | 3         | 3         | 1       | 0        |
         | <urn:cascade:step:E12> | 6       | 6        | 6         | 6         | 1       | 0        |
         | <urn:cascade:step:E15> | 0       | 0        | 1         | 1         | 1       | 0        |
