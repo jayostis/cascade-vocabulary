@@ -1,13 +1,25 @@
-# Two records named together by a counting Different judgment are currently different, unless a machine made the
-# Different and a person's counting Same names both: a person outranks every machine, so the pair stays joined.
+# Two records named together by a counting Different judgment are currently different, unless no person made the Different
+# and a person's counting Same names both, or answers a finding of matcher judgments no longer reached that names a
+# judgment of both: a person outranks every machine, so the pair stays joined.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+PREFIX oa: <http://www.w3.org/ns/oa#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
 CONSTRUCT { ?a cascade:currentlyDifferent ?b }
 WHERE {
   ?d cascade:countsUnderLens true ; cascade:verdict cascade:Different ; prov:hadMember ?a , ?b .
   FILTER (?a != ?b)
-  FILTER (EXISTS { ?d prov:wasAttributedTo/a prov:Person }
-    || NOT EXISTS { ?s cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:wasAttributedTo/a prov:Person ;
-                       prov:hadMember ?a , ?b })
+  BIND (EXISTS { ?d prov:wasAttributedTo/a prov:Person } AS ?byAPerson)
+  MINUS {
+    VALUES ?byAPerson { false }
+    ?s cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:wasAttributedTo/a prov:Person ;
+       prov:hadMember ?a , ?b .
+  }
+  MINUS {
+    VALUES ?byAPerson { false }
+    ?answer cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:wasAttributedTo/a prov:Person ;
+            prov:hadMember ?finding .
+    ?finding oa:hasBody cascade:MatcherJudgmentsNoLongerReached ; oa:hasTarget ?j .
+    ?j prov:hadMember ?a , ?b .
+  }
 }
