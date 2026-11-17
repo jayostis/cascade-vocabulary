@@ -1,0 +1,21 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+:import a prov:Activity ; prov:startedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+:session a prov:Activity ; prov:startedAtTime "2026-01-15T00:00:00Z"^^xsd:dateTime .
+
+:fromDocument a cascade:AllergyOrIntolerance .
+:fromDocumentVersion prov:specializationOf :fromDocument ; cascade:patient :subject ; cascade:allergenName "Shellfish" ;
+    cascade:allergyCategory "food" ; cascade:onsetDate "2018-06"^^xsd:gYearMonth .
+:fromDocumentRevision a cascade:Revision ; cascade:revisionOf :fromDocument ; cascade:version :fromDocumentVersion ;
+    prov:wasDerivedFrom :summary ; prov:wasGeneratedBy :import ;
+    prov:generatedAtTime "2026-03-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:05Z"^^xsd:dateTime .
+
+:entered a cascade:AllergyOrIntolerance .
+:enteredVersion prov:specializationOf :entered ; cascade:patient :subject ; cascade:allergenName "Shellfish allergy" ;
+    cascade:allergyCategory "environment" ; cascade:onsetDate "2020"^^xsd:gYear .
+:enteredRevision a cascade:Revision ; cascade:revisionOf :entered ; cascade:version :enteredVersion ;
+    prov:wasGeneratedBy :session ; prov:generatedAtTime "2026-01-15T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-15T00:00:05Z"^^xsd:dateTime .

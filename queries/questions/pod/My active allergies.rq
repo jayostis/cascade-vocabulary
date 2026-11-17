@@ -1,6 +1,6 @@
 # Read from the view alone, as an app would: each entry whose status is active, or that no document gives a status
-# (its status then reads "not stated"), with its code, its criticality, how many records it joins, what each record
-# states of the reaction, and each record it joins, with the document it was derived from, when that was retrieved,
+# (its status then reads "not stated"), with its code, its criticality, its category and onset as its lead states them, else as the members chosen for them do,
+# how many records it joins, what each record states of the reaction, and each record it joins, with the document it was derived from, when that was retrieved,
 # and the hospitals that wrote it and that keep it. A record's reactions are its reaction texts, then its reaction
 # codes in parentheses, then its severity, each as the record's current values state them, so a record that is not
 # the entry's lead is read as much as the lead. A list holds its values in order, each ended by "; " but the last, a
@@ -12,7 +12,7 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?allergenName ?code ?criticality ?status ?reactionsByRecord (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
+SELECT ?allergenName ?code ?criticality ?status ?category ?onset ?reactionsByRecord (COUNT(?record) AS ?records) ?entry ?entryLabel ?sources
 WHERE {
   { SELECT ?entry (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?memberText, "; "), ""); separator=""), "; $", "") AS ?allReactions)
     WHERE {
@@ -91,9 +91,11 @@ WHERE {
   FILTER (!BOUND(?stated) || ?stated = "active")
   OPTIONAL { ?entry cascade:allergenCode ?code }
   OPTIONAL { ?entry cascade:allergyCriticality ?criticality }
+  OPTIONAL { ?entry cascade:allergyCategory ?category }
+  OPTIONAL { ?entry cascade:onsetDate ?onset }
   OPTIONAL { ?entry rdfs:label ?entryLabel }
   BIND (COALESCE(?stated, "not stated") AS ?status)
   BIND (IF(?allReactions = "", 1/0, ?allReactions) AS ?reactionsByRecord)
 }
-GROUP BY ?entry ?allergenName ?code ?criticality ?status ?reactionsByRecord ?entryLabel ?sources
+GROUP BY ?entry ?allergenName ?code ?criticality ?status ?category ?onset ?reactionsByRecord ?entryLabel ?sources
 ORDER BY ?allergenName ?entry

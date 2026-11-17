@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "an-allergy-lead-states-its-own-category-and-onset" ;
+  rdfs:comment "An allergy entry of two members, the person's own entry, the older, stating a category and an onset, and a later one derived from a document stating other ones." ;
+  mf:entries (
+    <#its-category-and-onset>
+  ) .
+
+<#its-category-and-onset> a mf:QueryEvaluationTest ;
+  mf:name "its-category-and-onset" ;
+  rdfs:comment "The entry shows the category and onset its lead states, not those of the later member." ;
+  mf:action [ qt:query <its-category-and-onset.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <its-category-and-onset.srj> .
