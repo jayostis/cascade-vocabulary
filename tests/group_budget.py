@@ -8,16 +8,28 @@ from collections import defaultdict
 CASES = []
 
 
+def group_of(nodeid):
+    return nodeid.rpartition("@")[2] if "@" in nodeid else None
+
+
 def over_budget(seconds_by_case, budget, groups=()):
     """Each group, of those listed or of all, whose cases' seconds add up to more than the budget, with its seconds,
     longest first. A group `name/part` is a part of `name`: listing `name` lists each of its parts, each by itself. A
     case id with no `@group` has no group and is not counted."""
     totals = defaultdict(float)
     for nodeid, seconds in seconds_by_case:
-        group = nodeid.rpartition("@")[2] if "@" in nodeid else None
+        group = group_of(nodeid)
         if group is not None and (not groups or group in groups or group.partition("/")[0] in groups):
             totals[group] += seconds
     return sorted(((group, seconds) for group, seconds in totals.items() if seconds > budget), key=lambda found: -found[1])
+
+
+def unseen(seconds_by_case, groups=()):
+    """What the budget could not check: each listed group no case ran in, or, with none listed and no case in any
+    group, `any group`; so a run with no `-n`, or a name misspelt, is not one that passed."""
+    seen = {group for nodeid, _ in seconds_by_case if (group := group_of(nodeid)) is not None}
+    seen |= {group.partition("/")[0] for group in seen}
+    return [group for group in groups if group not in seen] or ([] if seen or groups else ["any group"])
 
 
 def pytest_addoption(parser):
@@ -37,7 +49,8 @@ def pytest_sessionfinish(session):
         return
     groups = [name for name in session.config.getoption("--budget-groups").split(",") if name]
     session.config.over_budget = over_budget(CASES, budget, groups)
-    if session.config.over_budget:
+    session.config.unchecked = unseen(CASES, groups)
+    if session.config.over_budget or session.config.unchecked:
         session.exitstatus = 1
 
 
@@ -46,3 +59,6 @@ def pytest_terminal_summary(terminalreporter, config):
         terminalreporter.section("xdist groups over the budget")
         for group, seconds in config.over_budget:
             terminalreporter.write_line(f"{seconds:7.1f} s  {group}  (budget {config.getoption('--group-budget'):g} s)")
+    if getattr(config, "unchecked", None):
+        terminalreporter.section("xdist groups the budget could not check")
+        terminalreporter.write_line("no case ran in: " + ", ".join(config.unchecked))

@@ -9,7 +9,7 @@ from rdflib import OWL, RDF, RDFS, Graph, Literal, URIRef
 
 from contract import CASCADE, PROV, QUERIES, ROOT, built, derivations, named, query, questions
 from engines import ENGINES, Oxigraph, bound_to_records, marked_groups
-from group_budget import over_budget
+from group_budget import over_budget, unseen
 from manifests import Entry, entries, failure, lens_name, row
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
@@ -463,6 +463,15 @@ class TestChecksOfTheFixtureTools:
             """lists each part of a group the budget names by itself, not the group's parts added up"""
             parts = [("t.py::a@one/x", 12.0), ("t.py::b@one/y", 9.0), ("t.py::c@one", 3.0), ("t.py::d@two/z", 30.0)]
             assert over_budget(parts, 10, ["one"]) == [("one/x", 12.0)]
+
+        def test_names_a_group_no_case_ran_in_and_a_run_with_no_group_at_all(self):
+            """names a listed group no case ran in, and says so of a run with no group at all, which no budget checks"""
+            parts = [("t.py::a@one/x", 1.0), ("t.py::b@two", 1.0)]
+            assert unseen(parts, ["one", "two"]) == []
+            assert unseen(parts, ["one", "tow"]) == ["tow"]
+            assert unseen(parts) == []
+            assert unseen([("t.py::d", 99.0)]) == ["any group"]
+            assert unseen([("t.py::d", 99.0)], ["one"]) == ["one"]
 
     class TestGivesARow:
         """`Oxigraph.gives_a_row()`"""
