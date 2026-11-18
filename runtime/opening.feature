@@ -180,16 +180,17 @@ Feature: Opening a pod
       When the pod is opened with the tables "app-periods" on 2026-07-03 at 09:00
       And the query is:
         """
-        SELECT ?rules WHERE {
-          ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameMappedCodeAndDate .
-          ?assertion cascade:assertedJudgment ?judgment ; cascade:assertedUnderRuleListVersion ?rules .
+        SELECT ?table WHERE {
+          ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameMappedCodeAndDate ;
+            prov:wasDerivedFrom ?table .
+          ?table pav:version ?version .
         }
         """
       Then it answers:
-        | rules                    |
-        | Matcher rules version 19 |
-        | Matcher rules version 19 |
-        | Matcher rules version 19 |
+        | table                             |
+        | CVX vaccine group table version 1 |
+        | CDC CVX vaccine groups version 1  |
+        | CDC CVX vaccine groups version 1  |
 
     Example: a pod at a version the app does not hold is matched without that series
       When the pod is opened with the tables "app-periods" on 2026-07-03 at 09:00

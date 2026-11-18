@@ -4,9 +4,9 @@ Feature: The matcher's procedure
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Cleo
   claims her hospital profile with an About, imports five allergies, enters ten more by hand, and judges some herself.
   Dev enters pairs of allergies, procedures and flu shots for the matcher to compare, and later two more allergies.
-  Eve enters ten allergies whose codes the product ingredients table gives one ingredient. Finn brings exports and
-  entries a runtime must refuse, and two allergies of one code under a rule list of his own, and, with the rule list of
-  an app, connects to a hospital's server at its address and again at a new path or a new host.
+  Eve enters twelve allergies whose codes the product ingredients table gives one ingredient, and three shots of one
+  day. Finn brings exports and entries a runtime must refuse, and two allergies of one code under a rule list of his
+  own, and, with the rule list of an app, connects to a hospital's server at its address and again at a new path or a new host.
   Gus enters three flu shots. Hana enters
   nine conditions, whose codes recur. Gus, with the drug tables of an app, enters medications of RxNorm and NDC codes,
   and pairs of medications that share an NDC, a product code or only an ingredient, each pair in an entry of its own,
@@ -48,12 +48,12 @@ Feature: The matcher's procedure
       And Cleo enters "entry" on 2026-03-03 at 08:00
       When the matcher runs on the records of that entry on 2026-03-03 at 08:01
       Then that step wrote these matcher judgments:
-        | justification    | members                                                                                                         |
-        | same code        | allergy RxNorm 10180 from sulfa, allergy RxNorm 10180 "Gantanol"                                                |
-        | same code        | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin"                                              |
-        | same code        | allergy RxNorm 1191 "Bayer aspirin", allergy RxNorm 1191 "Ecotrin"                                              |
-        | same code        | allergy RxNorm 7980 "Penicillin G", allergy RxNorm 7980 "Bicillin"                                              |
-        | same code        | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" |
+        | justification | members                                                                                                         |
+        | same code     | allergy RxNorm 10180 from sulfa, allergy RxNorm 10180 "Gantanol"                                                |
+        | same code     | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin"                                              |
+        | same code     | allergy RxNorm 1191 "Bayer aspirin", allergy RxNorm 1191 "Ecotrin"                                              |
+        | same code     | allergy RxNorm 7980 "Penicillin G", allergy RxNorm 7980 "Bicillin"                                              |
+        | same code     | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" |
 
     Example: a sync's run takes the records the sync brought, so it joins a pair neither writer held together
       Dev's first writer enters Principen, and the second Ampicillin, both RxNorm 733; the second writer receives the
@@ -176,9 +176,9 @@ Feature: The matcher's procedure
       And Cleo enters "entry" on 2026-03-03 at 08:00
       When the matcher runs on the records of that entry on 2026-03-03 at 08:01
       Then the matcher's judgments holding allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin" and allergy RxNorm 1191 "Ecotrin" are:
-        | justification | members                                                                                           |
-        | same code     | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin"                                |
-        | same code     | allergy RxNorm 1191 "Bayer aspirin", allergy RxNorm 1191 "Ecotrin"                                |
+        | justification | members                                                            |
+        | same code     | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin" |
+        | same code     | allergy RxNorm 1191 "Bayer aspirin", allergy RxNorm 1191 "Ecotrin" |
 
   Rule: M4. Each row of the rule list runs its comparison query
     No note rules this.
@@ -399,7 +399,7 @@ Feature: The matcher's procedure
       And Dev enters "later" on 2026-04-04 at 09:00
       When the matcher runs on the records of that entry on 2026-04-04 at 09:05 (match-later)
       Then the matcher's judgments holding allergy RxNorm 7980 "Bicillin" are:
-        | justification    | members                                                        |
+        | justification    | members                                                            |
         | same code        | allergy RxNorm 7980 "Bicillin", allergy RxNorm 7980 "Penicillin G" |
         | same mapped code | allergy RxNorm 7980 "Bicillin", allergy RxNorm 204466              |
 
@@ -408,7 +408,7 @@ Feature: The matcher's procedure
       And Dev enters "pairs" on 2026-04-02 at 09:00
       When the matcher runs on the records of that entry on 2026-04-02 at 09:05
       Then the matcher's judgments holding allergy RxNorm 204466 are:
-        | justification    | members                                                   | asserted under           | used                                                                                                                     |
+        | justification    | members                                                   | asserted under           | used                                                                                                                      |
         | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy RxNorm 204466 | Matcher rules version 19 | RxNorm product ingredients version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy RxNorm 204466 |
 
     Example: a record matched with records already in one entry names the least of those it matched there
@@ -552,6 +552,9 @@ Feature: The matcher's procedure
     (W1) still rechecks. A Same whose rule now reads a table, and which used no version of that table's kind, is not
     filed again. A Same whose rule the current rule list lacks is not filed again.
 
+    Most of Eve's allergies were recorded against a product, as a source may code one, though cascade:allergenCode is
+    a code for the substance: the product ingredients table gives each product its ingredient, which R3 joins.
+
     Background:
       Given a new pod for Eve on 2026-05-01 at 09:00
       And Eve files the judgment "about-d" on 2026-05-01 at 09:05
@@ -559,15 +562,14 @@ Feature: The matcher's procedure
       And the matcher runs on the records of that entry on 2026-05-02 at 09:05
 
     Example: a Same whose members the revised table still joins is not filed again, and counts on
-      Version 2 drops only the rows of amoxicillin oral suspension and sulfisoxazole tablets, which penicillin's records
-      do not reach.
+      Version 2 drops only the row of amoxicillin oral suspension, which penicillin's records do not reach.
 
       Given version "2" of "RxNorm product ingredients" arrives on 2026-05-04 at 09:00
       When the matcher rechecks on 2026-05-05 at 09:00
       Then that step wrote no file
       And the matcher's judgments holding allergy RxNorm 204466 and allergy RxNorm 7980 are:
-        | justification    | members                                     | used                                                                                                       | name  |
-        | same mapped code | allergy RxNorm 204466, allergy RxNorm 7980 | RxNorm product ingredients version 1, version 1 of allergy RxNorm 204466, version 1 of allergy RxNorm 7980 | urn:uuid:45a3b5bd-3468-803d-9667-776702e11b83 |
+        | justification    | members                                    | used                                                                                                       | name                                          |
+        | same mapped code | allergy RxNorm 204466, allergy RxNorm 7980 | RxNorm product ingredients version 1, version 1 of allergy RxNorm 204466, version 1 of allergy RxNorm 7980 | urn:uuid:5c813aec-207a-8263-a682-d934f4522827 |
       And the matcher's same mapped code of allergy RxNorm 204466 and allergy RxNorm 7980 counts
 
     Example: once the About naming their profile is retracted, fewer than two members are the subject's and nothing is written
@@ -590,20 +592,23 @@ Feature: The matcher's procedure
       And the matcher's same mapped code of allergy RxNorm 105152 and allergy RxNorm 723 has lapsed
 
     Example: a Same of three whose current version joins only two of them is filed again for those two, and lapses
-      The erythromycin entry's record, coded by both erythromycin and sulfisoxazole, as a combination is, shares an
-      ingredient with erythromycin tablets and with sulfisoxazole tablets, which share none, so its Same has three members.
-      Version 2 drops the row of sulfisoxazole tablets and keeps that of erythromycin tablets: no member is joined to each
-      other one, so the Same is run again on version 2, which joins two.
+      Eve enters a hepatitis A shot and a polio shot of one day, which share no vaccine group, and later the same
+      hepatitis A shot as her card names it: Twinrix, the hepatitis A and B vaccine. Twinrix shares hepatitis A's group,
+      and version 1 of her vaccine group table also puts it, wrongly, in the polio group, as the DTaP, hepatitis B and
+      polio vaccine is, so its Same has three members. Version 2 drops that row: no member is joined to each other one,
+      so the Same is run again on version 2, which joins two.
 
-      Given Eve enters "erythromycin" on 2026-05-03 at 09:00
-      And the matcher runs on the records of that entry on 2026-05-03 at 09:05 (erythromycin-matched)
-      And version "2" of "RxNorm product ingredients" arrives on 2026-05-04 at 09:00
+      Given Eve enters "hepatitis-a-and-polio" on 2026-05-03 at 09:00
+      And the matcher runs on the records of that entry on 2026-05-03 at 09:05 (shots-matched)
+      And Eve enters "twinrix" on 2026-05-03 at 10:00
+      And the matcher runs on the records of that entry on 2026-05-03 at 10:05 (twinrix-matched)
+      And version "2" of "CVX vaccine group table" arrives on 2026-05-04 at 09:00
       When the matcher rechecks on 2026-05-05 at 09:00
       Then that step wrote these matcher judgments:
-        | justification    | members                                    | used                                                                                                    |
-        | same mapped code | allergy RxNorm 197650, allergy RxNorm 4053 | RxNorm product ingredients version 2, version 1 of allergy RxNorm 197650, version 1 of allergy RxNorm 4053 |
-      And the matcher's same mapped code of allergy RxNorm 197650, allergy RxNorm 198235 and allergy RxNorm 4053 has lapsed
-      And the matcher's same mapped code of allergy RxNorm 197650 and allergy RxNorm 4053 counts
+        | justification             | members                                                                   | used                                                                                                                                   |
+        | same mapped code and date | immunization CVX 104 "Twinrix", immunization CVX 85 "Hepatitis A vaccine" | CVX vaccine group table version 2, version 1 of immunization CVX 104 "Twinrix", version 1 of immunization CVX 85 "Hepatitis A vaccine" |
+      And the matcher's same mapped code and date of immunization CVX 104 "Twinrix", immunization CVX 85 "Hepatitis A vaccine" and immunization CVX 10 "IPOL" has lapsed
+      And the matcher's same mapped code and date of immunization CVX 104 "Twinrix" and immunization CVX 85 "Hepatitis A vaccine" counts
 
   Rule: M8. A reference version's description is written only if the pod lacks it
     No note rules this.
@@ -675,7 +680,7 @@ Feature: The matcher's procedure
       And Dev enters "later" on 2026-04-04 at 09:00
       When the matcher runs on the records of that entry on 2026-04-04 at 09:05 (match-later)
       Then the matcher's judgments holding allergy RxNorm 204466 and allergy RxNorm 1721474 are:
-        | justification    | members                                                   | used                                                                                                                     | name  |
+        | justification    | members                                                   | used                                                                                                                      | name                                          |
         | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy RxNorm 204466 | RxNorm product ingredients version 1, version 1 of allergy RxNorm 7980 "Penicillin G", version 1 of allergy RxNorm 204466 | urn:uuid:dc4f866e-dc87-8236-94f2-76097f2ad52d |
         | same mapped code | allergy RxNorm 733 "Principen", allergy RxNorm 1721474    | RxNorm product ingredients version 2, version 1 of allergy RxNorm 733 "Principen", version 1 of allergy RxNorm 1721474    | urn:uuid:f32a542b-11c0-8457-b3fa-878c2208dd61 |
 
@@ -799,8 +804,9 @@ Feature: The matcher's procedure
 
     Each example opens a new pod for Gus with the drug products table, one of them after the drug tables of an app at
     an earlier version "0" of the rule list, whose R5 runs R11's query, joining two medications of one product code
-    by the app's "Clinic drug products" table, which its later tables no longer hold, and which has no R11; and each
-    enters its own entry, so that no example's records join another's.
+    by the app's "Clinic drug products" table, which wrongly lists the ingredient lisinopril as a clinical drug, which
+    its later tables no longer hold, and which has no R11; and each enters its own entry, so that no example's records
+    join another's.
 
     Example: two records sharing a product code are the same product code, although one selected its NDC
       Given a new pod for Gus on 2026-09-01 at 09:00
@@ -867,7 +873,7 @@ Feature: The matcher's procedure
         | justification        | members                                                                                                    | used                                                                                                                                                                |
         | same medication code | medication NDC 00093111310 "Lisinopril 10 mg, March", medication NDC 00093111310 "Lisinopril 10 mg, April" | version 1 of medication NDC 00093111310 "Lisinopril 10 mg, March", version 1 of medication NDC 00093111310 "Lisinopril 10 mg, April"                                |
         | same product code    | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" | Drug products table version 1, version 1 of medication RxNorm 861007 "metformin 500 MG Oral Tablet", version 1 of medication RxNorm 861007 "Metformin 500 mg, list" |
-      And the matcher's same medication code of medication RxNorm 314077 "Lisinopril" and medication RxNorm 314077 "Lisinopril tablets" has lapsed
+      And the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" has lapsed
 
     Example: two courses of one product years apart are no Same, and a copy within the first course is the same product code
       Given a new pod for Gus on 2026-10-01 at 09:00
@@ -960,7 +966,7 @@ Feature: The matcher's procedure
       Version 19 changes R5's query, from one joining two medications of one product code to one joining two of one NDC,
       and adds R11. The finding names the two matcher judgments of product code pairs that version "0"'s R5 joined, of
       which version 19's R11 joins the metformin pair again by another matcher judgment, through the drug products
-      table; the clinic's table, which alone listed lisinopril 20 MG Oral Tablet, is not held.
+      table; the clinic's table, which alone listed the ingredient lisinopril, wrongly, as a clinical drug, is not held.
 
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
@@ -968,8 +974,8 @@ Feature: The matcher's procedure
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       When the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
       Then that step wrote these findings:
-        | kind                     | under                   | justification        | members                                                                                                    |
-        | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 314077 "Lisinopril", medication RxNorm 314077 "Lisinopril tablets"                       |
+        | kind                                | under                    | justification        | members                                                                                                    |
+        | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
         | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
 
     Example: a person's Same over a matcher judgment's records leaves the matcher judgment for the finding to name
@@ -983,8 +989,8 @@ Feature: The matcher's procedure
       And Gus files the judgment "same-over-the-lisinopril-records" on 2026-09-02 at 12:00
       When the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
       Then that step wrote these findings:
-        | kind                     | under                   | justification        | members                                                                                                    |
-        | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 314077 "Lisinopril", medication RxNorm 314077 "Lisinopril tablets"                       |
+        | kind                                | under                    | justification        | members                                                                                                    |
+        | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
         | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
 
     Example: a run under a version whose finding the pod holds files no other
@@ -1017,8 +1023,8 @@ Feature: The matcher's procedure
       And the matcher runs on the records of that entry on 2026-07-02 at 09:05
       When the pod is opened with the tables "app-fewer-rules" on 2026-07-03 at 09:00
       Then that step wrote these findings:
-        | kind | under | justification | members |
-        | matcher judgments no longer reached | Matcher rules version 0a | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" |
+        | kind                                | under                    | justification             | members                                                                   |
+        | matcher judgments no longer reached | Matcher rules version 0a | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           |
         | matcher judgments no longer reached | Matcher rules version 0a | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" |
 
     Example: a version that drops a rule and declares it wrong names none of its matcher judgments, since its release retracts their assertions
@@ -1060,8 +1066,8 @@ Feature: The matcher's procedure
 
       When the query "questions/entry/What needs review.rq" is asked
       Then it answers:
-        | entry                                                | entryLabel                              | needs                                              | finding                                                     | judgment                                                                                                               | judgmentLabel                                    | record                                       | recordLabel                                   | otherRecord                          | otherRecordLabel                      |
-        | the entry of medication RxNorm 314077 "Lisinopril tablets" | "Medication entry · Lisinopril tablets · 2024-06-01" | "no longer joined under a newer rule list version" | <ni:///sha-256;kBOfpkLVQmyogj9gHkgyt1fLloCrFLcRQuiIXITE2iY> | the matcher's same medication code of medication RxNorm 314077 "Lisinopril" and medication RxNorm 314077 "Lisinopril tablets" | "Same · Cascade matcher · bdf7035d · Lisinopril" | medication RxNorm 314077 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 314077 "Lisinopril" | "Medication · Lisinopril · own entry" |
+        | entry                                                     | entryLabel                                           | needs                                              | finding                                                     | judgment                                                                                                                    | judgmentLabel                                    | record                                       | recordLabel                                   | otherRecord                          | otherRecordLabel                      |
+        | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets · 2024-06-01" | "no longer joined under a newer rule list version" | <ni:///sha-256;XD97L8aa6qyALK1msjIjSSZ9tfgEQiDvuC7WLeiPYrE> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · 02a10a91 · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
 
     Example: a person's Same over a pair's records joins it and takes it off the review page
       When Gus files the judgment "same-over-the-lisinopril-records-after-the-tables" on 2026-09-04 at 09:00
@@ -1069,7 +1075,7 @@ Feature: The matcher's procedure
       Then it answers nothing
       And the medications view holds these entries:
         | members                                                                            |
-        | medication RxNorm 314077 "Lisinopril", medication RxNorm 314077 "Lisinopril tablets" |
+        | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets" |
 
     Example: an acknowledgement of the kind naming a pair's records takes it off the review page and leaves it apart
       When Gus files the judgment "acknowledge-the-finding" on 2026-09-04 at 09:00
@@ -1077,8 +1083,8 @@ Feature: The matcher's procedure
       Then it answers nothing
       And the medications view holds these entries:
         | members                                      |
-        | medication RxNorm 314077 "Lisinopril"         |
-        | medication RxNorm 314077 "Lisinopril tablets" |
+        | medication RxNorm 29046 "Lisinopril"         |
+        | medication RxNorm 29046 "Lisinopril tablets" |
 
     Example: an acknowledgement naming the finding itself is refused
       When Gus files the judgment "acknowledge-the-finding-by-its-name" on 2026-09-04 at 09:00
@@ -1103,7 +1109,7 @@ Feature: The matcher's procedure
       And the connect "hospital-at-a-new-path" is made on 2026-07-01 at 08:55
       When the matcher runs on the records of that step on 2026-07-01 at 08:56
       Then that step wrote these matcher judgments:
-        | justification                                                      | members                                                                                                   | used                                                                                                                              |
+        | justification                                                      | members                                                                                                   | used                                                                                                                                |
         | same self-asserted base URL and authorization endpoint on one host | server https://fhir.example-hospital.example/api/FHIR/R4, server https://fhir.example-hospital.example/r4 | version 1 of server https://fhir.example-hospital.example/api/FHIR/R4, version 1 of server https://fhir.example-hospital.example/r4 |
 
     Example: a reconnect to the hospital's first address under the client id the new path was connected with makes the matcher judge the two addresses one server
@@ -1114,7 +1120,7 @@ Feature: The matcher's procedure
       And the connect "hospital-with-another-client-id" is made on 2026-07-02 at 08:55
       When the matcher runs on the records of that step on 2026-07-02 at 08:56
       Then that step wrote these matcher judgments:
-        | justification                                                      | members                                                                                                   | used                                                                                                                              |
+        | justification                                                      | members                                                                                                   | used                                                                                                                                |
         | same self-asserted base URL and authorization endpoint on one host | server https://fhir.example-hospital.example/api/FHIR/R4, server https://fhir.example-hospital.example/r4 | version 1 of server https://fhir.example-hospital.example/api/FHIR/R4, version 2 of server https://fhir.example-hospital.example/r4 |
 
     Example: a connect at another host reporting the same self-asserted base URL and authorization endpoint is matched with no server
@@ -1171,11 +1177,11 @@ Feature: The matcher's procedure
 
     Example: a potassium of another value at the same instant and unit is a finding of different result values, and one in another unit a finding of different result units, never a Same
       Then that step wrote these findings:
-        | kind                                   | members                                                                                   |
-        | different result values at one instant | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Potassium repeat"           |
-        | different result values at one instant | lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium repeat"     |
-        | different result units at one instant  | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Potassium, other lab"       |
-        | different result units at one instant  | lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium, other lab" |
+        | kind                                   | members                                                                                    |
+        | different result values at one instant | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Potassium repeat"            |
+        | different result values at one instant | lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium repeat"      |
+        | different result units at one instant  | lab result LOINC 2823-3 "Potassium", lab result LOINC 2823-3 "Potassium, other lab"        |
+        | different result units at one instant  | lab result LOINC 2823-3 "Serum potassium", lab result LOINC 2823-3 "Potassium, other lab"  |
         | different result units at one instant  | lab result LOINC 2823-3 "Potassium repeat", lab result LOINC 2823-3 "Potassium, other lab" |
 
   Rule: M22. Two lab results of one business identifier and one code, from documents of one organization, are the same result for certain
@@ -1237,7 +1243,7 @@ Feature: The matcher's procedure
 
     Example: a condition begun in 2019 and over within it is the same by code and period as one of June 2019, and one begun in 2021 joins neither
       Then the matcher's judgments holding condition ICD-10-CM R10.9 "Abdominal pain, in 2019", condition ICD-10-CM R10.9 "Abdominal pain, June 2019" and condition ICD-10-CM R10.9 "Abdominal pain, in 2021" are:
-        | justification        | members                                                                                                  | used                                                                                                                               |
+        | justification        | members                                                                                                    | used                                                                                                                                 |
         | same code and period | condition ICD-10-CM R10.9 "Abdominal pain, in 2019", condition ICD-10-CM R10.9 "Abdominal pain, June 2019" | version 1 of condition ICD-10-CM R10.9 "Abdominal pain, in 2019", version 1 of condition ICD-10-CM R10.9 "Abdominal pain, June 2019" |
 
     Example: a flu shot dated to its month never joins one of a day in that month by code and date
@@ -1245,7 +1251,7 @@ Feature: The matcher's procedure
 
     Example: two potassiums at one padded hour, of one value in one unit, are the same result on one day, and one stamped with its year or with no value joins neither
       Then the matcher's judgments holding lab result LOINC 2823-3 "Potassium, at two", lab result LOINC 2823-3 "Potassium, other lab at two", lab result LOINC 2823-3 "Potassium, in 2025" and lab result LOINC 2823-3 "Potassium, not reported" are:
-        | justification          | members                                                                                          | used                                                                                                                       |
+        | justification          | members                                                                                            | used                                                                                                                         |
         | same result on one day | lab result LOINC 2823-3 "Potassium, at two", lab result LOINC 2823-3 "Potassium, other lab at two" | version 1 of lab result LOINC 2823-3 "Potassium, at two", version 1 of lab result LOINC 2823-3 "Potassium, other lab at two" |
 
   Rule: M24. A note its source sent again as it grew, and one note two sources sent, are one note
@@ -1290,8 +1296,8 @@ Feature: The matcher's procedure
       And the download "clinic-plan-august.xml" is imported on 2026-11-02 at 09:20
       When the matcher runs on the records of that import on 2026-11-02 at 09:25
       Then the matcher's judgments holding note "Plan of treatment, May 20", note "Plan of treatment, June 15" and note "Plan of treatment, August 12" are:
-        | justification                                          | members                                                         |
-        | same note type and text grown within one organization  | note "Plan of treatment, August 12", note "Plan of treatment, May 20" |
+        | justification                                         | members                                                               |
+        | same note type and text grown within one organization | note "Plan of treatment, August 12", note "Plan of treatment, May 20" |
       And the entry of note "Plan of treatment, May 20" shows:
         | field       | value                               |
         | lead member | note "Plan of treatment, August 12" |
@@ -1301,5 +1307,5 @@ Feature: The matcher's procedure
       And the download "clinic-hospital-course.xml" is imported on 2026-11-02 at 09:10
       When the matcher runs on the records of that import on 2026-11-02 at 09:15
       Then the matcher's judgments holding note "Hospital course" and note "Hospital course, as the clinic holds it" are:
-        | justification           | members                                                            |
+        | justification           | members                                                                |
         | same note type and text | note "Hospital course", note "Hospital course, as the clinic holds it" |
