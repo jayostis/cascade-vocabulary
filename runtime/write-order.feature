@@ -4,7 +4,8 @@ Feature: Write order
     No note rules this.
     A step that stops partway then leaves nothing that passes for finished: the act's file holds its snapshot (N14), so
     no snapshot names a set the step did not finish writing. The views, the type index and the manifest may be stale
-    after a crash, and are rebuilt. A matcher run writes its judgments before the reference descriptions it writes, and
+    after a crash, and are rebuilt: the manifest is written last of them, and a build is read back only where each file
+    it wrote still holds the bytes it wrote (C8). A matcher run writes its judgments before the reference descriptions it writes, and
     an open writes the versions it adopts oldest first: an open that stops partway leaves the pod naming a version on
     the line no later than the adopted one, and the next open adopts from there, M9 skipping the judgments written and
     writing the descriptions still lacking.
