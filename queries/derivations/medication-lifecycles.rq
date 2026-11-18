@@ -110,7 +110,7 @@ WHERE {
     (cascade:MedicationUnknown 3) (cascade:MedicationActive 4)
   }
   FILTER (?held = ?best - 10 * ?step)
-  OPTIONAL { ?shown cascade:statusFrom ?record }
+  OPTIONAL { ?record cascade:inEntry ?shown . ?shown cascade:statusFrom ?record }
   BIND (?class AS ?shownClass)
   BIND (?step AS ?shownStep) }
   UNION

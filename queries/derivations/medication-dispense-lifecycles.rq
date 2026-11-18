@@ -19,7 +19,7 @@ WHERE {
           IF(?key IN ("preparation", "inprogress", "onhold"), cascade:MedicationDispenseInProgress,
           IF(?key IN ("cancelled", "declined", "stopped"), cascade:MedicationDispenseNotCompleted,
           IF(?key = "enteredinerror", cascade:MedicationDispenseEnteredInError, cascade:MedicationDispenseUnknown)))) AS ?class)
-    OPTIONAL { ?shown cascade:statusFrom ?record }
+    OPTIONAL { ?record cascade:inEntry ?shown . ?shown cascade:statusFrom ?record }
     BIND (?class AS ?shownClass) }
   UNION
   { ?record a cascade:MedicationDispense ; cascade:inEntry ?shown .

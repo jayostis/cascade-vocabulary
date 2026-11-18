@@ -14,6 +14,7 @@ from manifests import Entry, entries, failure, lens_name, row
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
 LENSES = sorted(named("lenses"))
+READS_THE_VIEWS = {"derivations/records.rq"}  # types an entry a view shows as a record, as it types a record: not yet fixed
 JUDGMENT = "https://ns.cascadeprotocol.org/cascade#Judgment"
 ASKED = {**questions(), **{f"matcher/{name}": relative for name, relative in named("matcher").items()}}
 ORDERED = {(QUERIES / relative).resolve() for relative in ASKED.values() if "ORDER BY" in query(relative)}
@@ -379,6 +380,18 @@ class TestWhatIsTrueOfAnyPod:
                                                f"UNION {{ GRAPH ?g {{ <{member}> ?p ?o }} }} }}")
                     stated = {(member, str(each["p"]), str(each["o"])) for each in every} - added
                     assert bool(stated) == (outcome == "in no entry"), (lens, member, outcome, stated)
+
+        @every_fixture
+        def test_gives_each_derivation_the_same_answer_with_the_views_in_the_pod(self, fixture):
+            """gives each derivation the same answer with the views in the pod
+
+            The pod is built, which writes its views into it, and every derivation is run again over it: none adds a
+            triple the pod does not already hold, as none does when it reads only statements and other derivations.
+            """
+            store = built_once(fixture, "oxigraph", LENSES[0]).store
+            held = store.triples()
+            assert [relative for relative in named("derivations").values() if relative not in READS_THE_VIEWS
+                    and not store.construct(query(relative)) <= held] == []
 
         @every_fixture
         def test_holds_no_qualified_attribution(self, fixture):
