@@ -384,13 +384,14 @@ class TestWhatIsTrueOfAnyPod:
         def test_gives_each_derivation_the_same_answer_with_the_views_in_the_pod(self, fixture):
             """gives each derivation the same answer with the views in the pod
 
-            The pod is built, which writes its views into it, and every derivation is run again over it: none adds a
-            triple the pod does not already hold, as none does when it reads only statements and other derivations.
+            The pod is built, which writes its views into it, and under each lens every derivation and the lens's own
+            query is run again over it: each gives the answer it gave as it ran, as it does when it reads only
+            statements and other derivations.
             """
-            store = built_once(fixture, "oxigraph", LENSES[0]).store
-            held = store.triples()
-            assert [relative for relative in named("derivations").values()
-                    if not store.construct(query(relative)) <= held] == []
+            for lens in LENSES:
+                build = built_once(fixture, "oxigraph", lens)
+                assert [relative for relative, answer in build.answers.items()
+                        if build.store.construct(query(relative)) != answer] == [], lens
 
         @every_fixture
         def test_holds_no_qualified_attribution(self, fixture):
