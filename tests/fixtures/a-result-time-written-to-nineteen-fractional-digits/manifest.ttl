@@ -1,0 +1,49 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-result-time-written-to-nineteen-fractional-digits" ;
+  rdfs:comment "Potassium results at a time written to nineteen fractional digits, one more than Oxigraph works out: two of one value and unit, one of another value, one in another unit, and one at the same time but for its last digit." ;
+  mf:entries (
+    <#same-code-instant-to-the-second-value-and-unit-others-by-code-and-instant>
+    <#same-code-instant-to-the-second-different-values-others-by-code-and-instant>
+    <#same-code-instant-to-the-second-different-units-others-by-code-and-instant>
+  ) .
+
+<#same-code-instant-to-the-second-value-and-unit-others-by-code-and-instant> a mf:QueryEvaluationTest ;
+  mf:name "same-code-instant-to-the-second-value-and-unit-others-by-code-and-instant" ;
+  rdfs:comment "The two potassiums written to the same nineteen fractional digits match each other: an engine that cannot work such a time out to an instant still keeps it as written, so an exact copy is the same result. Not matched: the same time at another value or in another unit, and the time written to the same digits but the last." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-instant-to-the-second-value-and-unit-others-by-code-and-instant.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:potassiumFine> ,
+                                  <urn:x:potassiumFineCopy> ,
+                                  <urn:x:potassiumFineOtherTime> ,
+                                  <urn:x:potassiumFineOtherUnit> ,
+                                  <urn:x:potassiumFineOtherValue> ] ;
+  mf:result <same-code-instant-to-the-second-value-and-unit-others-by-code-and-instant.srj> .
+
+<#same-code-instant-to-the-second-different-values-others-by-code-and-instant> a mf:QueryEvaluationTest ;
+  mf:name "same-code-instant-to-the-second-different-values-others-by-code-and-instant" ;
+  rdfs:comment "The potassium of another value at the time written to nineteen fractional digits differs in value from each of the three others written to it, whatever their unit. The potassium whose time differs in its last digit is at another time, so it differs from none." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-instant-to-the-second-different-values-others-by-code-and-instant.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:potassiumFine> ,
+                                  <urn:x:potassiumFineCopy> ,
+                                  <urn:x:potassiumFineOtherTime> ,
+                                  <urn:x:potassiumFineOtherUnit> ,
+                                  <urn:x:potassiumFineOtherValue> ] ;
+  mf:result <same-code-instant-to-the-second-different-values-others-by-code-and-instant.srj> .
+
+<#same-code-instant-to-the-second-different-units-others-by-code-and-instant> a mf:QueryEvaluationTest ;
+  mf:name "same-code-instant-to-the-second-different-units-others-by-code-and-instant" ;
+  rdfs:comment "The potassium in another unit at the time written to nineteen fractional digits differs in unit from each of the three others written to it, whatever their value. The potassium whose time differs in its last digit is at another time, so it differs from none." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-instant-to-the-second-different-units-others-by-code-and-instant.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:potassiumFine> ,
+                                  <urn:x:potassiumFineCopy> ,
+                                  <urn:x:potassiumFineOtherTime> ,
+                                  <urn:x:potassiumFineOtherUnit> ,
+                                  <urn:x:potassiumFineOtherValue> ] ;
+  mf:result <same-code-instant-to-the-second-different-units-others-by-code-and-instant.srj> .
