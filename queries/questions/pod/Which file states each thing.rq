@@ -8,15 +8,21 @@ PREFIX pim: <http://www.w3.org/ns/pim/space#>
 
 SELECT DISTINCT ?thing ?file ?named ?rebuilt
 WHERE {
-  { GRAPH ?file { ?thing ?property ?value }
-    ?owner pim:storage ?root .
-    FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
+  { { SELECT DISTINCT ?file ?thing
+      WHERE {
+        ?owner pim:storage ?root .
+        GRAPH ?file { ?thing ?property ?value }
+        FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
+      } }
     BIND (false AS ?named)
     BIND (EXISTS { ?file a cascade:View } AS ?rebuilt) }
   UNION
-  { GRAPH ?file { ?subject ?property ?thing }
-    ?owner pim:storage ?root .
-    FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
+  { { SELECT DISTINCT ?file ?thing
+      WHERE {
+        ?owner pim:storage ?root .
+        GRAPH ?file { ?subject ?property ?thing }
+        FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
+      } }
     BIND (true AS ?named)
     BIND (EXISTS { ?file a cascade:View } AS ?rebuilt) }
 }

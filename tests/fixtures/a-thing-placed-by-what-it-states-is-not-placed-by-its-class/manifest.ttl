@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-thing-placed-by-what-it-states-is-not-placed-by-its-class" ;
+  rdfs:comment "A prov:Entity that is a version of an allergy record, filed in the allergies folder, and a prov:Activity that used a document, filed in the imports folder: the layout places prov:Entity in the documents folder and prov:Activity in the activities folder." ;
+  mf:entries (
+    <#which-files-are-out-of-place>
+  ) .
+
+<#which-files-are-out-of-place> a mf:QueryEvaluationTest ;
+  mf:name "which-files-are-out-of-place" ;
+  rdfs:comment "The version goes where the entry filing by prov:specializationOf puts it, and the import where the entry for an activity that states prov:used puts it, so neither is checked against its class's entry alone and no file is out of place." ;
+  mf:action [ qt:query <../../../queries/questions/pod/Which%20files%20are%20out%20of%20place.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <which-files-are-out-of-place.srj> .

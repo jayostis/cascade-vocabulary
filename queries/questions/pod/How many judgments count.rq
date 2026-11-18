@@ -7,7 +7,8 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 SELECT ?verdict ?justification ?madeBy (COUNT(DISTINCT ?judgment) AS ?judgments)
 WHERE {
   VALUES ?madeBy { prov:Person prov:SoftwareAgent }
-  ?judgment cascade:countsUnderLens true ; prov:wasAttributedTo/a ?madeBy .
+  ?judgment cascade:countsUnderLens true ; prov:wasAttributedTo ?agent .
+  FILTER EXISTS { ?agent a ?madeBy }
   OPTIONAL { ?judgment cascade:verdict ?verdict }
   OPTIONAL { ?judgment cascade:justification ?justification }
 }
