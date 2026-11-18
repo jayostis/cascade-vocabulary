@@ -88,10 +88,11 @@ saying why; a document an import must convert and has no saved output for is the
   `queries/` (`cascade:queryPath`), N5's name for that file's bytes (`cascade:queryHash`), and the kind of table the query
   reads, if any (`cascade:tableKind`). A matcher judgment cites its rule (`cascade:matcherRule`), and its assertion names the
   rule list's version, whose row for the rule says which query ran, by its bytes. A rule list version's description in
-  the pod also describes each of its rows, `<version>#<rule's local name>`, with its rule and query hash (M8). A person's
-  `references/` folder and a tables folder an `open` step names may list a version of the vocabulary's rule list
-  (`runtime/rule-list/`) without holding its file: the rows are those of the file of that name there, unless the folder
-  holds a file of its own. Every other file a folder lists, it holds.
+  the pod also describes each of its rows, `<version>#<rule's local name>`, with its rule and query hash (M8). Two kinds
+  of folder may list a version of the vocabulary's rule list without holding its file: a person's `references/`, and a
+  `tables/<name>/` folder an `open` step names. Its rows are then those of the file of that name in
+  `runtime/rule-list/`, unless the folder holds a file of that name, whose rows it reads instead. Every other file a
+  folder lists, it holds.
 
 The rows of each current version of a kind a rule reads are loaded into the graph named by the version's IRI, and the
 descriptions of those versions and their series into the default graph the matcher's queries read (M13). A query reads
