@@ -88,10 +88,10 @@ saying why; a document an import must convert and has no saved output for is the
   `queries/` (`cascade:queryPath`), N5's name for that file's bytes (`cascade:queryHash`), and the kind of table the query
   reads, if any (`cascade:tableKind`). A matcher judgment cites its rule (`cascade:matcherRule`), and its assertion names the
   rule list's version, whose row for the rule says which query ran, by its bytes. A rule list version's description in
-  the pod also describes each of its rows, `<version>#<rule's local name>`, with its rule and query hash (M8). A tables folder an `open` step
-  names may list a version of the vocabulary's rule list (`runtime/rule-list/`) without holding its file: the rows are
-  those of the file of that name there, unless the folder holds a file of its own. A person's `references/` folder holds
-  every file it lists.
+  the pod also describes each of its rows, `<version>#<rule's local name>`, with its rule and query hash (M8). A person's
+  `references/` folder and a tables folder an `open` step names may list a version of the vocabulary's rule list
+  (`runtime/rule-list/`) without holding its file: the rows are those of the file of that name there, unless the folder
+  holds a file of its own. Every other file a folder lists, it holds.
 
 The rows of each current version of a kind a rule reads are loaded into the graph named by the version's IRI, and the
 descriptions of those versions and their series into the default graph the matcher's queries read (M13). A query reads
@@ -160,7 +160,7 @@ judgment is named `the matcher's <justification> of <records>`, the justificatio
 `same business identifier and test code within one organization`,
 `same note type and text grown within one organization`, `same note type and text` or
 `same note or document master identifier`. A
-reference series is named by its `rdfs:label` in `references/` or any of the person's `tables/` folders, one series per label, and a version `<label> version <version>`, as `SNOMED CT to RxNorm ingredient map version 2`. A version of
+reference series is named by its `rdfs:label` in `references/` or any of the person's `tables/` folders, one series per label, and a version `<label> version <version>`, as `RxNorm product ingredients version 2`. A version of
 a record is `version N of <record>`, where the record's versions are numbered from 1 in the order its revisions first
 name them, and a document `the document of <record>`, the one its first revision is derived from, or `the document "<path>"`, the file at that path under the person's `downloads/`, named by N5. An entry of a view is
 `the entry of <record>`: the entry, in the views of the lens read at, that holds the record (`cascade:entryMember`).

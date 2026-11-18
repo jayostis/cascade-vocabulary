@@ -1721,12 +1721,6 @@ cascade:RetiredCodes a cascade:TableKind ;
     cascade:foundBy cascade:RowSubject ;
     cascade:readByAppPages true .
 
-cascade:SubstanceIngredients a cascade:TableKind ;
-    rdfs:label "substance ingredients"@en ;
-    rdfs:comment "An SSSOM mapping kind the stories use and no open source fills: a SNOMED CT substance and its RxNorm ingredient. Read either way round."@en ;
-    cascade:rowShape cascade:SubstanceIngredientRowShape ;
-    cascade:foundBy owl:annotatedSource , owl:annotatedTarget .
-
 cascade:ProductIngredients a cascade:TableKind ;
     rdfs:label "product ingredients"@en ;
     rdfs:comment "An SSSOM mapping kind: an RxNorm concept and its active ingredient (obo:RO_0002248), its one ingredient or, with several, the multiple ingredient concept of exactly those. An ingredient has itself as its ingredient. A concept also has a row to each distinct precise ingredient RxNorm ties to it (cascade:hasPreciseIngredient). A version holding any precise ingredient row holds one for each concept whose RxNorm relations reach a precise ingredient, a brand name, a drug, a component and a dose form or dose form group version of one alike, so a concept such a version gives none holds its ingredient itself."@en ;

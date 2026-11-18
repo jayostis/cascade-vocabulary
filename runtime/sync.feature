@@ -73,9 +73,7 @@ Feature: Syncs
         | same code        | allergy RxNorm 10180 from sulfa, allergy RxNorm 10180 "Gantanol"                                                |
         | same code        | allergy RxNorm 1191 "Aspirin", allergy RxNorm 1191 "Bayer aspirin"                                              |
         | same code        | allergy RxNorm 1191 "Bayer aspirin", allergy RxNorm 1191 "Ecotrin"                                              |
-        | same mapped code | allergy RxNorm 7980 "Penicillin G", allergy SNOMED 373270004                                                    |
         | same code        | allergy RxNorm 7980 "Penicillin G", allergy RxNorm 7980 "Bicillin"                                              |
-        | same mapped code | allergy RxNorm 7980 "Bicillin", allergy SNOMED 373270004                                                        |
         | same code        | allergy RxNorm 2670 from codeine-1, allergy RxNorm 2670 from codeine-2, allergy RxNorm 2670 "Codeine phosphate" |
 
   Rule: S3. A sync's snapshot merges every head the writer holds

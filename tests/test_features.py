@@ -240,7 +240,7 @@ class TestRuleLists:
                           for path, rows in lists.items() for row in rows.subjects(RDF.type, CASCADE.RuleListRow)
                           if ni_name((QUERIES / str(rows.value(row, CASCADE.queryPath))).read_bytes())
                           != str(rows.value(row, CASCADE.queryHash))}
-            assert mismatched == {("finn/references", "matcher/same-code.rq"),
+            assert mismatched == {("finn/references", "matcher/same-code-key-joined-first.rq"),
                                   ("tables/app-new-rules", "matcher/same-code-and-day-or-exact-time-key-joined-first.rq")}
 
         def test_reads_a_tables_rows_exactly_when_its_row_names_one_table_kind(self):
@@ -282,10 +282,10 @@ class TestChecksOfTheRuleListCheck:
         @pytest.mark.parametrize("kinds, query", [
             ({CASCADE.VaccineGroups}, "# ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups .\n"
                                       "SELECT * { GRAPH ?origin { ?s ?p ?o } }"),
-            ({CASCADE.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . "
+            ({CASCADE.ProductIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . "
                                              "GRAPH ?origin { ?s ?p ?o } }"),
             (set(), "SELECT * { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }"),
-            ({CASCADE.VaccineGroups, CASCADE.SubstanceIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind "
+            ({CASCADE.VaccineGroups, CASCADE.ProductIngredients}, "SELECT * { ?origin prov:specializationOf/cascade:tableKind "
                                                                     "cascade:VaccineGroups . GRAPH ?origin { ?s ?p ?o } }"),
             ({CASCADE.VaccineGroups}, "SELECT * { OPTIONAL { ?origin prov:specializationOf/cascade:tableKind cascade:VaccineGroups . } "
                                       "GRAPH ?origin { ?s ?p ?o } }"),
