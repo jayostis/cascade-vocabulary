@@ -75,7 +75,8 @@ WHERE {
     ?otherRecord ^cascade:entryMember ?entry .
     FILTER (STR(?record) < STR(?otherRecord))
     BIND ("judged different, still joined" AS ?needs)
-    OPTIONAL { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Different ; prov:hadMember ?record , ?otherRecord }
+    OPTIONAL { ?judgment cascade:countsUnderLens true ; cascade:verdict ?judgedVerdict ; prov:hadMember ?record , ?otherRecord
+               FILTER (?judgedVerdict = cascade:Different) }
     OPTIONAL { ?entry rdfs:label ?entryLabel }
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?record rdfs:label ?recordLabel }
