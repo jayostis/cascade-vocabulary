@@ -75,6 +75,9 @@ def without_filters(tree):
             yield from without_filters(value)
 
 
+LIST_PLUMBING = {RDF.nil, RDF.first, RDF.rest}
+
+
 def constant_objects_in_optionals(tree):
     """The IRIs that are the object of a triple pattern in an OPTIONAL that has a pattern before it in its group."""
     found = []
@@ -88,11 +91,11 @@ def constant_objects_in_optionals(tree):
                     if node.name == "TriplesBlock":
                         for triples in node["triples"]:
                             for obj in list(triples)[2::3]:
-                                if isinstance(obj, URIRef):
+                                if isinstance(obj, URIRef) and obj not in LIST_PLUMBING:
                                     found.append(f"<{obj}>")
                                 elif getattr(obj, "name", None) == "pname":
                                     found.append(f"{obj['prefix']}:{obj['localname']}")
-    return found
+    return sorted(set(found))
 
 
 QUERY_FORMS = ("SelectQuery", "ConstructQuery", "AskQuery", "DescribeQuery", "SubSelect")
@@ -872,13 +875,19 @@ class TestChecksOfTheQueryChecks:
             ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p ?x ; a c:K } }", ["c:K"]),
             ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p [ c:role c:R ] } }", ["c:R"]),
             ("PREFIX c: <urn:c#> SELECT * WHERE { OPTIONAL { ?a c:p c:O } ?a c:q ?z }", []),
-        ], ids=["an IRI", "a prefixed name after a type", "a blank node's property", "an OPTIONAL opening its group"])
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p ?x MINUS { ?x c:q c:M } } }", ["c:M"]),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { GRAPH ?g { ?a c:p c:G } } }", ["c:G"]),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p ?x OPTIONAL { ?x c:q c:N } } }", ["c:N"]),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p ( c:R ) } }", ["c:R"]),
+        ], ids=["an IRI", "a prefixed name after a type", "a blank node's property", "an OPTIONAL opening its group",
+                "a MINUS inside an OPTIONAL", "a GRAPH inside an OPTIONAL", "an OPTIONAL nested in an OPTIONAL",
+                "a collection"])
         def test_returns_the_constant_objects_of_the_optional_that_follows_a_pattern(self, text, found):
             """returns the constant IRI objects of an OPTIONAL that follows a pattern
 
-            For four queries, `constant_objects_in_optionals()` returns the IRI objects of the OPTIONAL that follows a
-            pattern, in a plain pattern, after `a`, in a blank node's property list, and none from an OPTIONAL that opens
-            its group.
+            Given each case, `constant_objects_in_optionals()` returns the IRI objects of the OPTIONAL that follows a
+            pattern, once each, and none from an OPTIONAL that opens its group. The cases are a plain pattern, after `a`, a
+            blank node's property list, a MINUS, a GRAPH, a nested OPTIONAL and a collection, whose `rdf:nil` is not one.
             """
             assert constant_objects_in_optionals(parseQuery(text)) == found
 
