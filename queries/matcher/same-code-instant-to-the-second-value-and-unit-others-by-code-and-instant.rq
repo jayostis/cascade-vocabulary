@@ -1,16 +1,16 @@
 # Two records of one kind match when their current versions give one test code, one instant, and one value of one kind
-# in one unit. Two times with zones are compared as instants, so one instant written in two time zones is one; two times
-# with no zone, as a C-CDA time may be written, are compared as written, and a time with a zone and one without never
-# match, since nothing says where the second was taken. A day with no time, and a time its source wrote to the hour or
-# the minute and the version holds padded (cascade:PaddedDateTime), which is its clinically relevant time, the one time
-# a lab result holds, is never an instant: it is same-code-day-or-padded-time-value-and-unit.rq's. A quantity's number
-# is compared by value, never as a term, so 6.8 and 6.80 are one number, with the same comparator or none on both. A
-# ratio compares its numerator and its denominator so, a range its low and its high bounds, each bound present on both
-# or on neither; a coded value shares a code; text is never compared. Units are compared as UCUM defines one unit: each
-# annotation in braces goes, a unit that was annotations alone is 1, the litre's two symbols, l and L, with any prefix,
-# are one, and every other difference of case is kept, so a count per minute annotated as beats is one per minute and
-# mmol/l is mmol/L, but Mmol/L is not. A UCUM unit is compared where a quantity has one, else its unit text. Each
-# ordered pair is a row.
+# in one unit. Two times with zones are compared as instants, so one instant written in two time zones is one; two
+# times with no zone, as a C-CDA time may be written, are compared as written, and a time with a zone and one without
+# never match, since nothing says where the second was taken. A day with no time, and a time its source wrote to the
+# hour or the minute and the version holds padded (cascade:PaddedDateTime), which is its clinically relevant time, the
+# one time a lab result holds, is never an instant: it is joined by its day, not here. A quantity's number is compared
+# by value, never as a term, so 6.8 and 6.80 are one number, with the same comparator or none on both. A ratio compares
+# its numerator and its denominator so, a range its low and its high bounds, each bound present on both or on neither;
+# a coded value shares a code; text is never compared. Units are compared as UCUM defines one unit: each annotation in
+# braces goes, a unit that was annotations alone is 1, the litre's two symbols, l and L, with any prefix, are one, and
+# every other difference of case is kept, so a count per minute annotated as beats is one per minute and mmol/l is
+# mmol/L, but Mmol/L is not. A UCUM unit is compared where a quantity has one, else its unit text. Each ordered pair is
+# a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>

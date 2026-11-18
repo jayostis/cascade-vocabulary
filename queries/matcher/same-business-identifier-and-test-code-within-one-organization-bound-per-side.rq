@@ -3,11 +3,11 @@
 # organization record, or two that are currently the same organization. An identifier is compared as the term it is,
 # its value with the system its datatype names, so one written by a FHIR source and one a C-CDA source mapped to FHIR's
 # form are one; an identifier with no system, a plain string, is never compared, since nothing says which of an
-# organization's systems issued it. Times are compared as same-code-instant-different-values.rq compares them: two with
-# a time zone when they name one moment, two with none when written alike, one of each never; a day alone only with
-# that day alone. So serial draws a source filed under one accession are not joined, and a correction, which keeps its
-# specimen's time, is. An agent that is no organization record, as Apple Health's author is, names no organization, and
-# a record whose documents name none, as a pull from a server does, matches nothing here. Each ordered pair is a row.
+# organization's systems issued it. Times are compared as moments: two with a time zone when they name one moment, two
+# with none when written alike, one of each never; a day alone only with that day alone. So serial draws a source filed
+# under one accession are not joined, and a correction, which keeps its specimen's time, is. An agent that is no
+# organization record, as Apple Health's author is, names no organization, and a record whose documents name none, as a
+# pull from a server does, matches nothing here. Each ordered pair is a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX pav: <http://purl.org/pav/>

@@ -1,9 +1,11 @@
 # Two records of one kind give a finding when their current versions give one test code, one instant, and values of one
 # kind other than text and coded, both holding a number in one place, the first (a quantity, a numerator, a low bound)
 # or the second (a denominator, a high bound), in units that differ: mmol/L and mg/dL may measure one draw, and no rule
-# converts one into the other. Times and units are read as same-code-instant-to-the-second-value-and-unit.rq reads them,
-# so units equal there are equal here, and a pair this query gives is joined by no rule and given by no other finding's
-# query. Each ordered pair is a row.
+# converts one into the other. Two times with zones are one instant when they name one moment, two with none are one
+# when written alike, and one of each never; a quantity's number is compared by value, so 6.8 and 6.80 are one; units
+# are compared with their UCUM annotations dropped, a unit of annotations alone being 1, the litre's l and L one, and
+# other case kept. A pair whose units are equal so is no pair here, and one this query gives is joined by no rule. Each
+# ordered pair is a row.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>

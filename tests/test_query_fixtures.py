@@ -37,7 +37,7 @@ def entry_id(fixture, entry):
     return f"{fixture.name}-{entry.name}"
 
 
-SLOW_ON_RDFLIB = ("matcher-same-variation-through-table", "matcher-same-result-by-value-and-unit",
+SLOW_ON_RDFLIB = ("matcher-same-variation-through-current-tables", "matcher-same-result-by-value-and-unit",
                   "matcher-same-product-code", "matcher-same-note-type-and-text")
 
 
