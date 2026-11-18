@@ -117,7 +117,8 @@ def used_by_no_activity(store):
 
 MARKED = {name: relative for name, relative in named("matcher").items() if marked_groups(query(relative))}
 MADE_FROM = {relative: named("matcher")[name.removesuffix(suffix)] for name, relative in named("matcher").items()
-             for suffix in ("-bound-per-side", "-key-joined-first") if name.endswith(suffix)}
+             for suffix in ("-bound-per-side", "-key-joined-first", "-others-by-code-and-instant", "-others-by-code-and-day")
+             if name.endswith(suffix)}
 CURRENT_VERSIONS = "SELECT DISTINCT ?record WHERE { ?record <http://purl.org/pav/hasCurrentVersion> [] }"
 
 
