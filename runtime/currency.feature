@@ -153,7 +153,7 @@ Feature: Currency
     built again, by a read as by a step. A read that built them writes again each file the build writes whose bytes
     the pod does not hold: all of them where the manifest names another hash, and where it names the same, those a
     crash or a sync left holding other bytes. The manifest written again is the one the pod held but for the hash, so
-    a read changes neither its dct:created nor its prov:used. A read writes nothing when the manifest or the pod's
+    a read changes neither the time it names nor its prov:used. A read writes nothing when the manifest or the pod's
     listing changed since it read them, as when another session's act landed meanwhile. Two runtimes reading one pod
     compute different hashes, so each rebuilds and rewrites on every read. The manifest is written after the files it
     describes.
