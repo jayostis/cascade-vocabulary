@@ -1,184 +1,123 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix fhirr4: <https://ns.cascadeprotocol.org/adapter/fhir-r4/v1-draft#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix oa: <http://www.w3.org/ns/oa#> .
-_:d108bef9a4e02b166b6c84fdff5dcbf2 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/2" .
-_:ca933b640d1956e688718e1d77e2c6da oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:d108bef9a4e02b166b6c84fdff5dcbf2 oa:refinedBy _:a17e7e990aab514e586851b13df2b617 .
-_:a17e7e990aab514e586851b13df2b617 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/3/code/coding/0/code" .
-_:ca933b640d1956e688718e1d77e2c6da oa:hasSelector _:d108bef9a4e02b166b6c84fdff5dcbf2 .
-_:a104817b1326840c2face40f807e21bc oa:hasTarget _:ca933b640d1956e688718e1d77e2c6da .
-_:c9e209ef260e426f802e267beb20b18 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/2" .
-_:ae0106ddf5f7731e51d59fa278516f8d oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:c9e209ef260e426f802e267beb20b18 oa:refinedBy _:d52940e11e50169ebc80186df118e2c9 .
-_:d52940e11e50169ebc80186df118e2c9 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/3/valueCodeableConcept/coding/0/code" .
-_:ae0106ddf5f7731e51d59fa278516f8d oa:hasSelector _:c9e209ef260e426f802e267beb20b18 .
-_:b68dec7c551bb7107add793ed16e17ff oa:hasTarget _:ae0106ddf5f7731e51d59fa278516f8d .
-_:db89cf5fe2b94ad49a525d2362ffe8f9 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/2" .
-_:d95abcc99cbb9a3c3ab287f996e2d358 oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:db89cf5fe2b94ad49a525d2362ffe8f9 oa:refinedBy _:d10793bd8185992717a752fc2dbc4e35 .
-_:d10793bd8185992717a752fc2dbc4e35 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/3/valueCodeableConcept/coding/0/display" .
-_:d95abcc99cbb9a3c3ab287f996e2d358 oa:hasSelector _:db89cf5fe2b94ad49a525d2362ffe8f9 .
-_:caff9e1dd2a8cd70bea2af960f02c7b0 oa:hasTarget _:d95abcc99cbb9a3c3ab287f996e2d358 .
-_:cae63e8f5d1877d15aa8a2dc07856c90 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/2" .
-_:f6a527bf9acbe1205ea1a3fdf78c65e4 oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:cae63e8f5d1877d15aa8a2dc07856c90 oa:refinedBy _:dd3719117de5480b6eea61c0d8e2854b .
-_:dd3719117de5480b6eea61c0d8e2854b a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/2/valueCodeableConcept/coding/0/code" .
-_:f6a527bf9acbe1205ea1a3fdf78c65e4 oa:hasSelector _:cae63e8f5d1877d15aa8a2dc07856c90 .
-_:bd59818be4ebe0e3a5a28ec3bbc8d07e oa:hasTarget _:f6a527bf9acbe1205ea1a3fdf78c65e4 .
-_:a104817b1326840c2face40f807e21bc sh:resultSeverity sh:Info .
-_:b68dec7c551bb7107add793ed16e17ff sh:resultSeverity sh:Info .
-_:caff9e1dd2a8cd70bea2af960f02c7b0 sh:resultSeverity sh:Info .
-_:bd59818be4ebe0e3a5a28ec3bbc8d07e sh:resultSeverity sh:Info .
-_:a104817b1326840c2face40f807e21bc a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "53034-5" .
-_:b68dec7c551bb7107add793ed16e17ff a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "LA6706-1" .
-_:caff9e1dd2a8cd70bea2af960f02c7b0 a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "Heterozygous" .
-_:bd59818be4ebe0e3a5a28ec3bbc8d07e a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "HGNC:7127" .
-_:a4faf5e4ddb5703401a88a4999d80b6 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/4" .
-_:e01f7af2732a0061ea294dec52d0b13f oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:a4faf5e4ddb5703401a88a4999d80b6 oa:refinedBy _:a8007c4d3d749c80b52d3cf12ddaabca .
-_:a8007c4d3d749c80b52d3cf12ddaabca a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/3/code/coding/0/code" .
-_:e01f7af2732a0061ea294dec52d0b13f oa:hasSelector _:a4faf5e4ddb5703401a88a4999d80b6 .
-_:c511affee7f59c98b9a1675264e7b6ac oa:hasTarget _:e01f7af2732a0061ea294dec52d0b13f .
-_:a19e38a7d800942e87f1b428fbd0c023 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/4" .
-_:ee88ec21b9f96bf6d3dce5039f4fa629 oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:a19e38a7d800942e87f1b428fbd0c023 oa:refinedBy _:df98520576a2a64421a0d11bf2626ae3 .
-_:df98520576a2a64421a0d11bf2626ae3 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/3/valueCodeableConcept/coding/0/code" .
-_:ee88ec21b9f96bf6d3dce5039f4fa629 oa:hasSelector _:a19e38a7d800942e87f1b428fbd0c023 .
-_:deab8f7e5daa88cb3fb41ae4eaed9add oa:hasTarget _:ee88ec21b9f96bf6d3dce5039f4fa629 .
-_:a548b684502666f6068697a05824147f a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/4" .
-_:d041c4b9e1caefc455c889f93ef6542f oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:a548b684502666f6068697a05824147f oa:refinedBy _:bb340c41430e1f48793d428794c42820 .
-_:bb340c41430e1f48793d428794c42820 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/3/valueCodeableConcept/coding/0/display" .
-_:d041c4b9e1caefc455c889f93ef6542f oa:hasSelector _:a548b684502666f6068697a05824147f .
-_:a362cf0e9d3dcc4c0710e7a85b67f738 oa:hasTarget _:d041c4b9e1caefc455c889f93ef6542f .
-_:e08adc1446f9b9befafe423beac6e15f a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/4" .
-_:f625809a3e44be0f96c33686cd95ef6e oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:e08adc1446f9b9befafe423beac6e15f oa:refinedBy _:e246eec1a5f541bda310b771b53bdd77 .
-_:e246eec1a5f541bda310b771b53bdd77 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/2/valueCodeableConcept/coding/0/code" .
-_:f625809a3e44be0f96c33686cd95ef6e oa:hasSelector _:e08adc1446f9b9befafe423beac6e15f .
-_:ae624ff68baed30b8083330ff00a149f oa:hasTarget _:f625809a3e44be0f96c33686cd95ef6e .
-_:c511affee7f59c98b9a1675264e7b6ac sh:resultSeverity sh:Info .
-_:deab8f7e5daa88cb3fb41ae4eaed9add sh:resultSeverity sh:Info .
-_:a362cf0e9d3dcc4c0710e7a85b67f738 sh:resultSeverity sh:Info .
-_:ae624ff68baed30b8083330ff00a149f sh:resultSeverity sh:Info .
-_:c511affee7f59c98b9a1675264e7b6ac a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "53034-5" .
-_:deab8f7e5daa88cb3fb41ae4eaed9add a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "LA6706-1" .
-_:a362cf0e9d3dcc4c0710e7a85b67f738 a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "Heterozygous" .
-_:ae624ff68baed30b8083330ff00a149f a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "HGNC:7329" .
-_:f113d907c8686c23d26b98865c1716af a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/6" .
-_:b08ef6e919ecbb5521b28d25343fa22f oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:f113d907c8686c23d26b98865c1716af oa:refinedBy _:eb10352d41ccf1400f232ed3ecd6fd3b .
-_:eb10352d41ccf1400f232ed3ecd6fd3b a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/2/code/coding/0/code" .
-_:b08ef6e919ecbb5521b28d25343fa22f oa:hasSelector _:f113d907c8686c23d26b98865c1716af .
-_:a57f3c38d6cb69901f5ea57172f4d04e oa:hasTarget _:b08ef6e919ecbb5521b28d25343fa22f .
-_:b18dbb5d4fac98a2cf5451637a52150b a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/6" .
-_:b008f57493f88bd11ad337968254119f oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:b18dbb5d4fac98a2cf5451637a52150b oa:refinedBy _:c7700af16702552c64826f06ec006a67 .
-_:c7700af16702552c64826f06ec006a67 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/2/valueCodeableConcept/coding/0/code" .
-_:b008f57493f88bd11ad337968254119f oa:hasSelector _:b18dbb5d4fac98a2cf5451637a52150b .
-_:d57a4905a994825bea565f03f3810180 oa:hasTarget _:b008f57493f88bd11ad337968254119f .
-_:be27a50258dff14944a2b53a30ebb004 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/6" .
-_:b7e2f403d05c00306e30df889618a501 oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:be27a50258dff14944a2b53a30ebb004 oa:refinedBy _:c99ae9c9537088863babee3ae29f895 .
-_:c99ae9c9537088863babee3ae29f895 a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/2/valueCodeableConcept/coding/0/display" .
-_:b7e2f403d05c00306e30df889618a501 oa:hasSelector _:be27a50258dff14944a2b53a30ebb004 .
-_:b095b1030cbfd3725a8109b95c3c5e26 oa:hasTarget _:b7e2f403d05c00306e30df889618a501 .
-_:c3805df116fe692ec8315162268bb37f a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/entry/6" .
-_:e10958522de5842e8d35112186153dba oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> .
-_:c3805df116fe692ec8315162268bb37f oa:refinedBy _:bda4d2e25546724baa6d52a7d14eed7c .
-_:bda4d2e25546724baa6d52a7d14eed7c a oa:FragmentSelector ;
-	<http://purl.org/dc/terms/conformsTo> <https://www.rfc-editor.org/rfc/rfc6901> ;
-	rdf:value "/resource/component/1/valueCodeableConcept/coding/0/code" .
-_:e10958522de5842e8d35112186153dba oa:hasSelector _:c3805df116fe692ec8315162268bb37f .
-_:f966421ca71775216c980fe50c08169b oa:hasTarget _:e10958522de5842e8d35112186153dba .
-_:a57f3c38d6cb69901f5ea57172f4d04e sh:resultSeverity sh:Info .
-_:d57a4905a994825bea565f03f3810180 sh:resultSeverity sh:Info .
-_:b095b1030cbfd3725a8109b95c3c5e26 sh:resultSeverity sh:Info .
-_:f966421ca71775216c980fe50c08169b sh:resultSeverity sh:Info .
-_:a57f3c38d6cb69901f5ea57172f4d04e a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "53034-5" .
-_:d57a4905a994825bea565f03f3810180 a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "LA6706-1" .
-_:b095b1030cbfd3725a8109b95c3c5e26 a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "Heterozygous" .
-_:f966421ca71775216c980fe50c08169b a oa:Annotation ;
-	oa:hasBody fhirr4:observationComponentDataNotCarried ;
-	oa:motivatedBy oa:classifying ;
-	sh:value "HGNC:1101" .
+
+[] a oa:Annotation ;
+    oa:hasBody fhirr4:observationComponentDataNotCarried ;
+    oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ;
+                    dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                    rdf:value "/entry/2" ;
+                    oa:refinedBy [ a oa:FragmentSelector ;
+                            dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                            rdf:value "/resource/component/3/valueCodeableConcept/coding/0/display" ] ] ;
+            oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ] ;
+    oa:motivatedBy oa:classifying ;
+    sh:resultSeverity sh:Info ;
+    sh:value "Heterozygous" .
+
+[] a oa:Annotation ;
+    oa:hasBody fhirr4:observationComponentDataNotCarried ;
+    oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ;
+                    dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                    rdf:value "/entry/2" ;
+                    oa:refinedBy [ a oa:FragmentSelector ;
+                            dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                            rdf:value "/resource/component/2/valueCodeableConcept/coding/0/code" ] ] ;
+            oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ] ;
+    oa:motivatedBy oa:classifying ;
+    sh:resultSeverity sh:Info ;
+    sh:value "HGNC:7127" .
+
+[] a oa:Annotation ;
+    oa:hasBody fhirr4:observationComponentDataNotCarried ;
+    oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ;
+                    dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                    rdf:value "/entry/4" ;
+                    oa:refinedBy [ a oa:FragmentSelector ;
+                            dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                            rdf:value "/resource/component/3/valueCodeableConcept/coding/0/code" ] ] ;
+            oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ] ;
+    oa:motivatedBy oa:classifying ;
+    sh:resultSeverity sh:Info ;
+    sh:value "LA6706-1" .
+
+[] a oa:Annotation ;
+    oa:hasBody fhirr4:observationComponentDataNotCarried ;
+    oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ;
+                    dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                    rdf:value "/entry/4" ;
+                    oa:refinedBy [ a oa:FragmentSelector ;
+                            dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                            rdf:value "/resource/component/3/valueCodeableConcept/coding/0/display" ] ] ;
+            oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ] ;
+    oa:motivatedBy oa:classifying ;
+    sh:resultSeverity sh:Info ;
+    sh:value "Heterozygous" .
+
+[] a oa:Annotation ;
+    oa:hasBody fhirr4:observationComponentDataNotCarried ;
+    oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ;
+                    dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                    rdf:value "/entry/4" ;
+                    oa:refinedBy [ a oa:FragmentSelector ;
+                            dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                            rdf:value "/resource/component/2/valueCodeableConcept/coding/0/code" ] ] ;
+            oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ] ;
+    oa:motivatedBy oa:classifying ;
+    sh:resultSeverity sh:Info ;
+    sh:value "HGNC:7329" .
+
+[] a oa:Annotation ;
+    oa:hasBody fhirr4:observationComponentDataNotCarried ;
+    oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ;
+                    dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                    rdf:value "/entry/6" ;
+                    oa:refinedBy [ a oa:FragmentSelector ;
+                            dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                            rdf:value "/resource/component/2/valueCodeableConcept/coding/0/code" ] ] ;
+            oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ] ;
+    oa:motivatedBy oa:classifying ;
+    sh:resultSeverity sh:Info ;
+    sh:value "LA6706-1" .
+
+[] a oa:Annotation ;
+    oa:hasBody fhirr4:observationComponentDataNotCarried ;
+    oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ;
+                    dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                    rdf:value "/entry/6" ;
+                    oa:refinedBy [ a oa:FragmentSelector ;
+                            dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                            rdf:value "/resource/component/2/valueCodeableConcept/coding/0/display" ] ] ;
+            oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ] ;
+    oa:motivatedBy oa:classifying ;
+    sh:resultSeverity sh:Info ;
+    sh:value "Heterozygous" .
+
+[] a oa:Annotation ;
+    oa:hasBody fhirr4:observationComponentDataNotCarried ;
+    oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ;
+                    dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                    rdf:value "/entry/6" ;
+                    oa:refinedBy [ a oa:FragmentSelector ;
+                            dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                            rdf:value "/resource/component/1/valueCodeableConcept/coding/0/code" ] ] ;
+            oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ] ;
+    oa:motivatedBy oa:classifying ;
+    sh:resultSeverity sh:Info ;
+    sh:value "HGNC:1101" .
+
+[] a oa:Annotation ;
+    oa:hasBody fhirr4:observationComponentDataNotCarried ;
+    oa:hasTarget [ oa:hasSelector [ a oa:FragmentSelector ;
+                    dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                    rdf:value "/entry/2" ;
+                    oa:refinedBy [ a oa:FragmentSelector ;
+                            dcterms:conformsTo <https://www.rfc-editor.org/rfc/rfc6901> ;
+                            rdf:value "/resource/component/3/valueCodeableConcept/coding/0/code" ] ] ;
+            oa:hasSource <ni:///sha-256;i9B4_qkGGaaTYo6lwKMFmDhd8VSHXjzmmjTdEKbbyD0> ] ;
+    oa:motivatedBy oa:classifying ;
+    sh:resultSeverity sh:Info ;
+    sh:value "LA6706-1" .
+
