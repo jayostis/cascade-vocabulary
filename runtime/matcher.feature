@@ -453,6 +453,23 @@ Feature: The matcher's procedure
       queries/matcher/same-product-code-in-current-tables-and-overlapping-exposure-periods.rq, with
       cascade:DrugProducts, for medications only.
 
+    Version 19 of the vocabulary's list changes the queries of R6, R15, R16 and R17, so that the other side of a pair is
+    read only for the test code and the instant, or for R15 the test code and the day, of the records bound (M4a), and
+    each side's instant or day is one both sides join on. Each gives the rows the query it replaces gives, so the
+    examples under M21, M22 and M23 hold for it; versions 1 to 18 pin the old files:
+
+    - R6, cascade:SameResultRule, justified cascade:SameResult:
+      queries/matcher/same-code-instant-to-the-second-value-and-unit-others-by-code-and-instant.rq, for lab results
+      only.
+    - R15, cascade:SameResultOnOneDayRule, justified cascade:SameResultOnOneDay:
+      queries/matcher/same-code-day-or-padded-time-value-and-unit-others-by-code-and-day.rq, for lab results only.
+    - R16, cascade:DifferentResultValuesRule, finding cascade:DifferentResultValuesAtOneInstant:
+      queries/matcher/same-code-instant-to-the-second-different-values-others-by-code-and-instant.rq, for lab results
+      only.
+    - R17, cascade:DifferentResultUnitsRule, finding cascade:DifferentResultUnitsAtOneInstant:
+      queries/matcher/same-code-instant-to-the-second-different-units-others-by-code-and-instant.rq, for lab results
+      only.
+
     The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
     R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
     version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
@@ -461,8 +478,9 @@ Feature: The matcher's procedure
     changed query, R15, R16 and R17 in its version 12, R18 as well in its version 13, and R2's, R4's, R6's, R8's,
     R15's, R16's and R17's changed queries in its version 14, R6's, R15's, R16's, R17's and R18's queries bound
     per side in its version 15, R1's, R2's, R3's, R4's, R5's, R7's, R10's, R11's, R12's and R13's queries joined
-    on the code first in its version 16, R19, R20 and R21 as well in its version 17, and R5's, R10's and R11's
-    queries with the period test in its version 18.
+    on the code first in its version 16, R19, R20 and R21 as well in its version 17, R5's, R10's and R11's
+    queries with the period test in its version 18, and R6's, R15's, R16's and R17's queries reading the other side by
+    the code and the instant or day in its version 19.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
