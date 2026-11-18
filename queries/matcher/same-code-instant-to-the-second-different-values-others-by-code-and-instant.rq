@@ -22,7 +22,7 @@ WHERE {
       FILTER (DATATYPE(?time) = xsd:dateTime)
       MINUS { ?version cascade:paddedDateTime ?padded }
       BIND (COALESCE(IF(TZ(?time) != "", STR(?time - "1970-01-01T00:00:00Z"^^xsd:dateTime),
-                        CONCAT("local ", STR(?time - "1970-01-01T00:00:00"^^xsd:dateTime))), "no instant") AS ?instant)
+                        CONCAT("local ", STR(?time - "1970-01-01T00:00:00"^^xsd:dateTime))), CONCAT("written ", STR(?time))) AS ?instant)
       OPTIONAL { ?version cascade:resultQuantity ?firstQuantity . ?firstQuantity cascade:decimalValue ?firstQuantityNumber .
                  OPTIONAL { ?firstQuantity cascade:quantityComparator ?firstQuantityComparator }
                  OPTIONAL { ?firstQuantity cascade:ucumUnit ?firstQuantityUcum }
@@ -70,7 +70,7 @@ WHERE {
                 ?version cascade:testCode ?code ; cascade:resultClinicallyRelevantTime ?time .
                 FILTER (DATATYPE(?time) = xsd:dateTime)
                 BIND (COALESCE(IF(TZ(?time) != "", STR(?time - "1970-01-01T00:00:00Z"^^xsd:dateTime),
-                              CONCAT("local ", STR(?time - "1970-01-01T00:00:00"^^xsd:dateTime))), "no instant") AS ?instant) } }
+                              CONCAT("local ", STR(?time - "1970-01-01T00:00:00"^^xsd:dateTime))), CONCAT("written ", STR(?time))) AS ?instant) } }
       { SELECT ?other ?otherVersion ?code ?instant ?otherTime ?otherValueKind
         WHERE {
           { SELECT DISTINCT ?code
@@ -82,7 +82,7 @@ WHERE {
           FILTER (DATATYPE(?otherTime) = xsd:dateTime)
           MINUS { ?otherVersion cascade:paddedDateTime ?otherPadded }
           BIND (COALESCE(IF(TZ(?otherTime) != "", STR(?otherTime - "1970-01-01T00:00:00Z"^^xsd:dateTime),
-                                CONCAT("local ", STR(?otherTime - "1970-01-01T00:00:00"^^xsd:dateTime))), "no other instant") AS ?instant) } }
+                                CONCAT("local ", STR(?otherTime - "1970-01-01T00:00:00"^^xsd:dateTime))), CONCAT("written ", STR(?otherTime))) AS ?instant) } }
       BIND (?instant AS ?otherInstant)
       OPTIONAL { ?otherVersion cascade:resultQuantity ?otherFirstQuantity . ?otherFirstQuantity cascade:decimalValue ?otherFirstQuantityNumber .
                  OPTIONAL { ?otherFirstQuantity cascade:quantityComparator ?otherFirstQuantityComparator }

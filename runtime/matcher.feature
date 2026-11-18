@@ -456,7 +456,10 @@ Feature: The matcher's procedure
     Version 19 of the vocabulary's list changes the queries of R6, R15, R16 and R17, so that the other side of a pair is
     read only for the test code and the instant, or for R15 the test code and the day, of the records bound (M4a), and
     each side's instant or day is one both sides join on. Each gives the rows the query it replaces gives, so the
-    examples under M21, M22 and M23 hold for it; versions 1 to 18 pin the old files:
+    examples under M21, M22 and M23 hold for it, but for one time: a time, with a zone or without, that an engine cannot
+    work out to an instant (Oxigraph cannot one written to more than 18 fractional digits, which a conforming pod may
+    hold) is read as written, so it is the instant of the records that write it alike and of no other, where the old files
+    left it unbound and a record with it was paired with any record of its test code. Versions 1 to 18 pin the old files:
 
     - R6, cascade:SameResultRule, justified cascade:SameResult:
       queries/matcher/same-code-instant-to-the-second-value-and-unit-others-by-code-and-instant.rq, for lab results
