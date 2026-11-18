@@ -48,11 +48,10 @@ WHERE {
         FILTER (isIRI(?thing) && BOUND(?place))
         FILTER (STRSTARTS(STR(?place), STR(?viewsFolder)) = EXISTS { ?file a cascade:View })
         FILTER NOT EXISTS { ?entry cascade:forSubjectsOf ?narrowing }
-        FILTER NOT EXISTS { ?filing a cascade:Placement ; cascade:filedWith ?with . ?thing ?with [] }
-        FILTER NOT EXISTS { ?narrowed a cascade:Placement ; solid:forClass ?class ; cascade:forSubjectsOf ?stated .
-                            ?thing ?stated [] }
-        FILTER NOT EXISTS { ?thing a ?subclass . ?subclass rdfs:subClassOf ?class .
-                            ?subclassEntry a cascade:Placement ; solid:forClass ?subclass } }
+        MINUS { ?filing a cascade:Placement ; cascade:filedWith ?with . ?thing ?with [] }
+        MINUS { ?narrowed a cascade:Placement ; solid:forClass ?class ; cascade:forSubjectsOf ?stated . ?thing ?stated [] }
+        MINUS { ?thing a ?subclass . ?subclass rdfs:subClassOf ?class .
+                ?subclassEntry a cascade:Placement ; solid:forClass ?subclass } }
     } }
   BIND (STRAFTER(STR(?file), STR(?place)) AS ?rest)
   BIND (STRBEFORE(?rest, "/") AS ?fan)
