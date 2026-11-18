@@ -333,7 +333,7 @@ cascade:procedureName a owl:DatatypeProperty ;
 
 cascade:procedureDate a owl:DatatypeProperty ;
     rdfs:label "procedure date"@en ;
-    rdfs:comment "Of a version of a procedure, when it was performed, as FHIR's Procedure.performedDateTime or a C-CDA procedure's effectiveTime, its value or else its low, typed by the precision the source wrote it to."@en ;
+    rdfs:comment "Of a version of a procedure, when it was performed, as FHIR's Procedure.performedDateTime or else the start of its performedPeriod, or a C-CDA procedure's effectiveTime, its value or else its low, typed by the precision the source wrote it to."@en ;
     rdfs:domain cascade:MedicalProcedure ;
     rdfs:range [ a rdfs:Datatype ; owl:unionOf ( xsd:gYear xsd:gYearMonth xsd:date xsd:dateTime ) ] ;
     rdfs:seeAlso <https://hl7.org/fhir/R4/procedure-definitions.html#Procedure.performed_x_> .
