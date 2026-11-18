@@ -240,7 +240,7 @@ RECORDS = "derivations/records.rq"
 def kinds_of_record():
     """Each row of the table in the derivation that says what a record is."""
     return [row for node in nodes(prepared(contract.query(RECORDS)).algebra) if node.name == "values"
-            for row in node["res"]]
+            for row in node["res"] if Variable("kind") in row]
 
 
 def record_types():
