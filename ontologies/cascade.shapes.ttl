@@ -1750,6 +1750,12 @@ cascade:RevisionShape a sh:NodeShape ;
         sh:message "A revision carries when its source was observed saying its state, one xsd:dateTime."@en ;
         sh:severity sh:Violation
     ] , [
+        sh:path pav:lastUpdateOn ;
+        sh:datatype xsd:dateTime ;
+        sh:pattern "(Z|[+-][0-9]{2}:[0-9]{2})$" ;
+        sh:message "A revision's source change time is an xsd:dateTime that states its time zone."@en ;
+        sh:severity sh:Violation
+    ] , [
         sh:path prov:wasRevisionOf ;
         sh:nodeKind sh:IRI ;
         sh:message "A revision names each earlier revision it follows, the record's heads it saw, by its IRI."@en ;
