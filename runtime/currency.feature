@@ -150,8 +150,13 @@ Feature: Currency
     labels and the type index from the pod instead of building them only when the manifest names the hash it computes
     for the pod as it stands, and only from a build it kept itself under that same hash: the derived state, and the
     bytes of each file the build wrote, which each of those files must still hold. Otherwise they are stale, and are
-    built again, by a read as by a step, and written again where the manifest names another hash. The manifest is
-    written after the files it describes.
+    built again, by a read as by a step. A read that built them writes again each file the build writes whose bytes
+    the pod does not hold: all of them where the manifest names another hash, and where it names the same, those a
+    crash or a sync left holding other bytes. The manifest written again is the one the pod held but for the hash, so
+    a read changes neither its dct:created nor its prov:used. A read writes nothing when the manifest or the pod's
+    listing changed since it read them, as when another session's act landed meanwhile. Two runtimes reading one pod
+    compute different hashes, so each rebuilds and rewrites on every read. The manifest is written after the files it
+    describes.
 
     No example shows this rule: an example reads a dataset built whole from the files its story wrote, so a build in
     part and a build whole give it the same rows. Each runtime tests it itself, replaying every kit and building the
