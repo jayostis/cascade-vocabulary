@@ -7,21 +7,18 @@ Feature: The matcher's procedure
   Eve enters ten allergies whose codes the ingredient map pairs. Finn brings exports and entries a runtime must refuse, and two
   allergies of one code, and, with the rule list of an app, connects to a hospital's server at its address and again at
   a new path or a new host.
-  Gus enters medications and lab results, and three flu shots, under the rule list's version 2.
-  Hana enters nine conditions, whose codes recur, under the rule list's version 4. Gus, with the drug tables of an
-  app, enters seven medications of RxNorm and NDC codes under the rule list's version 6. Gus, with the drug tables and
-  the drug products table of an app, enters pairs of medications that share an NDC, a product code or only an
-  ingredient, each pair in an entry of its own, under the rule list's version 7. Ivo, with the variant classifications
-  table of an app, enters pairs of variants that carry a ClinVar ID, an HGVS expression or both, each pair in an entry
-  of its own, under the rule list's version 8. Gus, with the vocabulary's rule list of an app, enters lab results whose values,
-  units and times differ by a little, under the rule list's version 12, and imports a hospital's summary, an exchange's
-  that names the hospital as its author, and a clinic's, each holding a potassium of one business identifier, under the
-  rule list's version 13. Hana, with the vocabulary's rule list of an app, enters conditions, flu
-  shots and lab results whose dates are a year, a month or a time to the hour, under the rule list's version 14. Gus,
-  with the vocabulary's rule list of an app, imports his clinic's summaries, whose plan of treatment grows, and the
-  hospital course his hospital and his clinic each send, under the rule list's version 17. Gus, with the drug products
-  table and the vocabulary's rule list of an app, enters two courses of metformin years apart and a copy within the
-  first, under the rule list's version 18.
+  Gus enters medications and lab results, and three flu shots, under the stories' rule list's version 2. Hana enters
+  nine conditions, whose codes recur. Gus, with the drug tables of an app, enters medications of RxNorm and NDC codes,
+  and pairs of medications that share an NDC, a product code or only an ingredient, each pair in an entry of its own,
+  some first under an app's earlier version "0" of the rule list. Ivo, with the variant classifications table of an
+  app, enters pairs of variants that carry a ClinVar ID, an HGVS expression or both, each pair in an entry of its own.
+  Gus, with the vocabulary's rule list of an app, enters lab results whose values, units and times differ by a little,
+  and imports a hospital's summary, an exchange's that names the hospital as its author, and a clinic's, each holding a
+  potassium of one business identifier. Hana, with the vocabulary's rule list of an app, enters conditions, flu shots
+  and lab results whose dates are a year, a month or a time to the hour. Gus, with the vocabulary's rule list of an app,
+  imports his clinic's summaries, whose plan of treatment grows, and the hospital course his hospital and his clinic
+  each send, and, with the drug products table, enters two courses of metformin years apart and a copy within the
+  first. Except where an example names another, an app's tables hold the vocabulary's rule list, version 19.
 
   Rule: M1. A step's records are those with at least one first revision from that step's import, entry session or connect, the servers its connect wrote any revision for, or all from acts its sync names
     decisions/republishing-sources.md, row "what a run compares"; decisions/performance.md, row "runs bound to arrivals, scoped within an organisation".
@@ -246,244 +243,95 @@ Feature: The matcher's procedure
   Rule: M4d. Each version of the rule list names, for each of its rules from R1 to R21, the query that rule's row runs
     No note rules this.
     Each row names its rule, the rule's class and justification (a finding, for a rule that files no judgment), and the
-    query it runs, with the table kind it reads, if any; the first four rows, whose examples close this rule, are:
+    query it runs, with the table kind it reads, if any. A matcher judgment cites its rule, and its assertion the list's
+    version and the hash of the query that version's row for the rule runs.
 
-    - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code.rq.
-      R1 reads a procedure's or a condition's code only where its IRI is in SNOMED CT's space, http://snomed.info/id/: two
-      procedures coded CPT 36415 a year apart are two entries, and a CPT or an ICD-10-CM code joins nothing under R1.
-    - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-date.rq.
-    - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode: in the stories' lists, queries/matcher/same-mapped-code.rq, with
-      cascade:SubstanceIngredients, a kind only the stories fill; in the vocabulary's list from its version 2,
-      queries/matcher/same-ingredient.rq, with cascade:ProductIngredients, for allergies only. A matcher judgment cites its
-      rule, and its assertion the list's version and the hash of the query that version's row for the rule runs.
-    - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate: queries/matcher/same-mapped-code-and-date.rq, with cascade:VaccineGroups.
+    The vocabulary's own rule list, runtime/rule-list/, is the one an app uses. Its rows are:
 
-    Version 2 of the rule list adds two rows, whose examples are under M12:
-
-    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode: queries/matcher/same-medication-code.rq.
-    - R6, cascade:SameResultRule, justified cascade:SameResult: queries/matcher/same-result.rq.
-
-    Version 3 of the vocabulary's list adds one row, whose examples are under O1:
-
-    - R7, cascade:SameConvertedCodeRule, justified cascade:SameConvertedCode: queries/matcher/same-converted-code.rq, with cascade:CodeConversions, for
-      conditions only. A record coded with a retired code is the same as one coded with the one code it converts to;
-      a code split into several has no row, since one judgment holds a record and all it matched.
-
-    Version 4 of the vocabulary's list adds one row, whose examples are under M14 and O1, and takes conditions out of R1:
-
-    - R8, cascade:SameCodeAndPeriodRule, justified cascade:SameCodeAndPeriod: queries/matcher/same-code-and-period.rq, for conditions only. Two conditions
-      of one condition code are the same when their periods overlap.
-
-    Version 5 of the vocabulary's list changes R7's query, whose example is under O1:
-
-    - R7, cascade:SameConvertedCodeRule, justified cascade:SameConvertedCode: queries/matcher/same-one-to-one-conversion.rq, with cascade:CodeConversions. A
-      retired code and its replacement are joined only by a dct:isReplacedBy row whose cardinality is 1:1. A split
-      (1:n), a merge (n:1) and an n:n row join nothing, and neither does a row of the earlier form, skos:exactMatch
-      with no cardinality, which same-converted-code.rq in versions 3 and 4 reads.
-
-    Version 6 of the vocabulary's list changes R5's query and adds a row, whose examples are under M15:
-
-    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode: queries/matcher/same-drug-code.rq. Two medications are the same when they
-      share an NDC code or the same chosen RxNorm code: the one their source selected (cascade:userSelectedCode), else their
-      only one. It reads no table, and does not check that a shared RxNorm code is a product: that is carried from
-      version 5 until jayostis/cascade-vocabulary#121.
-    - R10, cascade:SameBrandGenericRule, justified cascade:SameBrandGeneric: queries/matcher/same-brand-generic.rq, with cascade:BrandGenerics, for
-      medications only. A branded product and its generic, or two brands of one generic, when the records share no code.
-
-    Version 7 of the vocabulary's list changes R5's query and adds a row, whose examples are under M16:
-
-    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode: queries/matcher/same-ndc-code.rq. Two medications that share an NDC code.
-      It reads no table.
-    - R11, cascade:SameProductCodeRule, justified cascade:SameProductCode: queries/matcher/same-product-code.rq, with cascade:DrugProducts, for medications
-      only. Two medications that share an RxNorm code which the held version of a drug products table says names one
-      product. A pair that shares an NDC is left to R5.
-
-    Version 8 of the vocabulary's list adds two rows, whose examples are under M17:
-
-    - R12, cascade:SameVariationRule, justified cascade:SameVariation: queries/matcher/same-variation.rq, for variants only. Two variants whose
-      current versions carry one ClinVar VariationID.
-    - R13, cascade:SameVariationThroughTableRule, justified cascade:SameVariationThroughTable: queries/matcher/same-variation-through-table.rq, with
-      cascade:VariantClassifications, for variants only. Two variants whose current versions find one row of one version
-      of a variant classifications table.
-
-    Version 9 of the vocabulary's list changes R3's and R4's queries to read the rows of the product ingredients and
-    vaccine groups kinds under the relations their prior art uses, obo:RO_0002248 (has active ingredient) and
-    obo:RO_0002350 (member of), where they read skos:broadMatch. Versions 1 to 8 pin the old files, which still read
-    skos:broadMatch, and a rule list's version names the bytes it pinned, so those files are not edited; version 9 pins
-    two new ones, and no query of version 9 reads skos:broadMatch:
-
-    - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode: queries/matcher/same-active-ingredient.rq, with cascade:ProductIngredients, for
-      allergies only. As same-ingredient.rq, reading obo:RO_0002248 rows; a row written with skos:broadMatch joins
-      nothing.
-    - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate: queries/matcher/same-vaccine-group-and-date.rq, with cascade:VaccineGroups.
-      As same-mapped-code-and-date.rq, reading obo:RO_0002350 rows; a row written with skos:broadMatch joins nothing.
-
-    The tables that were read under skos:broadMatch are republished with the new relations.
-
-    Version 10 of the vocabulary's list changes R11's and R13's queries to count a table's rows over the current version
-    of each series of the kind alone, the one no version revises, where they counted every version held, so an app may
-    drop an old version's rows. Versions 7 to 9 pin the old files:
-
-    - R11, cascade:SameProductCodeRule, justified cascade:SameProductCode: queries/matcher/same-product-code-in-current-tables.rq, with
-      cascade:DrugProducts, for medications only. As same-product-code.rq, with a version's product codes counted over
-      current versions alone.
-    - R13, cascade:SameVariationThroughTableRule, justified cascade:SameVariationThroughTable: queries/matcher/same-variation-through-current-tables.rq,
-      with cascade:VariantClassifications, for variants only. As same-variation-through-table.rq, with the rows an
-      expression is on counted over current versions alone.
-
-    Version 11 of the vocabulary's list adds one row, whose examples are under M20:
-
+    - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code-key-joined-first.rq, for allergies
+      and procedures. R1 reads a procedure's or a condition's code only where its IRI is in SNOMED CT's space,
+      http://snomed.info/id/: two procedures coded CPT 36415 a year apart are two entries, and a CPT or an ICD-10-CM code
+      joins nothing under R1.
+    - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate:
+      queries/matcher/same-code-and-day-or-exact-time-key-joined-first.rq, for immunizations only. Two shots of one code
+      on one day or at one time its source wrote to the second (M23).
+    - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode:
+      queries/matcher/same-active-ingredient-key-joined-first.rq, with cascade:ProductIngredients, for allergies only. It
+      reads rows under obo:RO_0002248 (has active ingredient), the relation its prior art uses; its example is under O1.
+    - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate:
+      queries/matcher/same-vaccine-group-and-day-or-exact-time-key-joined-first.rq, with cascade:VaccineGroups, for
+      immunizations only. It reads rows under obo:RO_0002350 (member of), and a date as R2 does.
+    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode:
+      queries/matcher/same-ndc-code-and-overlapping-exposure-periods.rq, for medications only. Two medications that share
+      an NDC code and whose exposure periods share a day (M15, M16). It reads no table.
+    - R6, cascade:SameResultRule, justified cascade:SameResult:
+      queries/matcher/same-code-instant-to-the-second-value-and-unit-others-by-code-and-instant.rq, for lab results
+      only. Two results of one LOINC code at one instant whose values are of one kind and equal, in one unit (M21).
+    - R7, cascade:SameConvertedCodeRule, justified cascade:SameConvertedCode:
+      queries/matcher/same-one-to-one-conversion-key-joined-first.rq, with cascade:CodeConversions, for conditions only.
+      A retired code and its replacement are joined only by a dct:isReplacedBy row whose cardinality is 1:1; a split
+      (1:n), a merge (n:1) and an n:n row join nothing, since one judgment holds a record and all it matched. Its example
+      is under O1.
+    - R8, cascade:SameCodeAndPeriodRule, justified cascade:SameCodeAndPeriod:
+      queries/matcher/same-code-and-period-read-as-ranges.rq, for conditions only. Two conditions of one condition code
+      whose periods overlap, each onset and abatement read as the days its type covers (M14, M23).
+    - R10, cascade:SameBrandGenericRule, justified cascade:SameBrandGeneric:
+      queries/matcher/same-brand-generic-and-overlapping-exposure-periods.rq, with cascade:BrandGenerics, for medications
+      only. A branded product and its generic, or two brands of one generic, when the records share no code (M15).
+    - R11, cascade:SameProductCodeRule, justified cascade:SameProductCode:
+      queries/matcher/same-product-code-in-current-tables-and-overlapping-exposure-periods.rq, with cascade:DrugProducts,
+      for medications only. Two medications that share an RxNorm code which a current version of a drug products table
+      says names one product, a version's product codes counted over the current version of each series alone, so an
+      app may drop an old version's rows (M16). A pair that shares an NDC is left to R5.
+    - R12, cascade:SameVariationRule, justified cascade:SameVariation: queries/matcher/same-variation-key-joined-first.rq,
+      for variants only. Two variants whose current versions carry one ClinVar VariationID (M17).
+    - R13, cascade:SameVariationThroughTableRule, justified cascade:SameVariationThroughTable:
+      queries/matcher/same-variation-through-current-tables-key-joined-first.rq, with cascade:VariantClassifications,
+      for variants only. Two variants whose current versions find one row of one version of a variant classifications
+      table, the rows an expression is on counted over current versions alone (M17).
     - R14, cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHostRule, justified
       cascade:SameSelfAssertedBaseUrlAndAuthorizationEndpointOnOneHost:
-      queries/matcher/same-self-asserted-base-url-and-authorization-endpoint-on-one-host.rq, for servers only.
-
-    Version 12 of the vocabulary's list changes R6's query and adds three rows, whose examples are under M21; versions 2
-    to 11 pin same-result.rq:
-
-    - R6, cascade:SameResultRule, justified cascade:SameResult: queries/matcher/same-code-instant-value-and-unit.rq, for lab
-      results only. Two results of one LOINC code at one instant whose values are of one kind and equal, in one unit.
-    - R15, cascade:SameResultOnOneDayRule, justified cascade:SameResultOnOneDay: queries/matcher/same-code-day-value-and-unit.rq,
-      for lab results only. As R6, on one day, at least one of the two stamped with the day alone: a likely join.
-    - R16, cascade:DifferentResultValuesRule, finding cascade:DifferentResultValuesAtOneInstant:
-      queries/matcher/same-code-instant-different-values.rq, for lab results only. It files no judgment: each
-      pair its query gives, of the run's records with the subject's others, is a finding for review naming the two
-      records and their current versions. Its row gives cascade:findingKind where every other judging row gives
-      cascade:justifiedAs.
-    - R17, cascade:DifferentResultUnitsRule, finding cascade:DifferentResultUnitsAtOneInstant:
-      queries/matcher/same-code-instant-different-units.rq, for lab results only. As R16, a finding for review, of two
-      results of one code at one instant whose units differ.
-
-    Version 13 of the vocabulary's list adds one row, whose examples are under M22:
-
-    - R18, cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule, justified
-      cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization:
-      queries/matcher/same-business-identifier-and-test-code-within-one-organization.rq, for lab results only. Two
-      results whose current versions carry one business identifier of a named system, one LOINC code and one time, or
-      one no time, from documents naming one organization record, or two currently the same organization.
-
-    Version 14 of the vocabulary's list changes the queries of R2, R4, R6, R8, R15, R16 and R17, whose examples are under
-    M23, so that each reads a date at the precision its source wrote (decisions/partial-dates-and-absent-reasons.md);
-    versions 1 to 13 pin the old files:
-
-    - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate: queries/matcher/same-code-and-day-or-exact-time.rq,
-      for immunizations only. As same-code-and-date.rq, with the date a day or a time its source wrote to the second.
-    - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate:
-      queries/matcher/same-vaccine-group-and-day-or-exact-time.rq, for immunizations only, as R2 reads a date.
-
-    - R8, cascade:SameCodeAndPeriodRule, justified cascade:SameCodeAndPeriod: queries/matcher/same-code-and-period-read-as-ranges.rq, for
-      conditions only. As same-code-and-period.rq, with each onset and abatement read as the days its type covers.
-    - R6, cascade:SameResultRule, justified cascade:SameResult: queries/matcher/same-code-instant-to-the-second-value-and-unit.rq,
-      for lab results only. As same-code-instant-value-and-unit.rq, with a padded time never an instant.
+      queries/matcher/same-self-asserted-base-url-and-authorization-endpoint-on-one-host.rq, for servers only (M20).
     - R15, cascade:SameResultOnOneDayRule, justified cascade:SameResultOnOneDay:
-      queries/matcher/same-code-day-or-padded-time-value-and-unit.rq, for lab results only. As same-code-day-value-and-unit.rq,
-      with a padded time counted as a day alone.
+      queries/matcher/same-code-day-or-padded-time-value-and-unit-others-by-code-and-day.rq, for lab results only. As
+      R6, on one day, at least one of the two stamped with the day alone or a padded time: a likely join (M21, M23).
     - R16, cascade:DifferentResultValuesRule, finding cascade:DifferentResultValuesAtOneInstant:
-      queries/matcher/same-code-instant-to-the-second-different-values.rq, for lab results only, as R6 reads a time.
+      queries/matcher/same-code-instant-to-the-second-different-values-others-by-code-and-instant.rq, for lab results
+      only. It files no judgment: each pair its query gives, of the run's records with the subject's others, is a
+      finding for review naming the two records and their current versions. Its row gives cascade:findingKind where
+      every other judging row gives cascade:justifiedAs.
     - R17, cascade:DifferentResultUnitsRule, finding cascade:DifferentResultUnitsAtOneInstant:
-      queries/matcher/same-code-instant-to-the-second-different-units.rq, for lab results only, as R6 reads a time.
-
-    Version 15 of the vocabulary's list changes the queries of R6, R15, R16, R17 and R18, each of which works out each
-    side of a pair in a sub-select, so that a run binds ?record in the record's side and reads the other side only for
-    the keys its records carry: the test code, and for R18 the business identifier and the test code (M4a). Each gives
-    the rows the query it replaces gives, so the examples under M21, M22 and M23 hold for it; versions 1 to 14 pin the
-    old files:
-
-    - R6, cascade:SameResultRule, justified cascade:SameResult:
-      queries/matcher/same-code-instant-to-the-second-value-and-unit-bound-per-side.rq, for lab results only.
-    - R15, cascade:SameResultOnOneDayRule, justified cascade:SameResultOnOneDay:
-      queries/matcher/same-code-day-or-padded-time-value-and-unit-bound-per-side.rq, for lab results only.
-    - R16, cascade:DifferentResultValuesRule, finding cascade:DifferentResultValuesAtOneInstant:
-      queries/matcher/same-code-instant-to-the-second-different-values-bound-per-side.rq, for lab results only.
-    - R17, cascade:DifferentResultUnitsRule, finding cascade:DifferentResultUnitsAtOneInstant:
-      queries/matcher/same-code-instant-to-the-second-different-units-bound-per-side.rq, for lab results only.
+      queries/matcher/same-code-instant-to-the-second-different-units-others-by-code-and-instant.rq, for lab results
+      only. As R16, a finding for review, of two results of one code at one instant whose units differ.
     - R18, cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganizationRule, justified
       cascade:SameBusinessIdentifierAndTestCodeWithinOneOrganization:
       queries/matcher/same-business-identifier-and-test-code-within-one-organization-bound-per-side.rq, for lab results
-      only.
-
-    Version 16 of the vocabulary's list changes the queries of R1, R2, R3, R4, R5, R7, R10, R11, R12 and R13, each of
-    which paired every record of a kind with every other before it compared their codes, so that each reaches the other
-    record of a pair through the code, or the table row, the two share, and compares their kinds only then. Each gives
-    the rows the query it replaces gives on valid data; versions 1 to 15 pin the old files:
-
-    - R1, cascade:SameCodeRule, justified cascade:SameCode: queries/matcher/same-code-key-joined-first.rq.
-    - R2, cascade:SameCodeAndDateRule, justified cascade:SameCodeAndDate:
-      queries/matcher/same-code-and-day-or-exact-time-key-joined-first.rq, for immunizations only.
-    - R3, cascade:SameMappedCodeRule, justified cascade:SameMappedCode:
-      queries/matcher/same-active-ingredient-key-joined-first.rq, with cascade:ProductIngredients, for allergies only.
-    - R4, cascade:SameMappedCodeAndDateRule, justified cascade:SameMappedCodeAndDate:
-      queries/matcher/same-vaccine-group-and-day-or-exact-time-key-joined-first.rq, with cascade:VaccineGroups, for
-      immunizations only.
-    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode:
-      queries/matcher/same-ndc-code-key-joined-first.rq, for medications only.
-    - R7, cascade:SameConvertedCodeRule, justified cascade:SameConvertedCode:
-      queries/matcher/same-one-to-one-conversion-key-joined-first.rq, with cascade:CodeConversions, for conditions only.
-    - R10, cascade:SameBrandGenericRule, justified cascade:SameBrandGeneric:
-      queries/matcher/same-brand-generic-key-joined-first.rq, with cascade:BrandGenerics, for medications only.
-    - R11, cascade:SameProductCodeRule, justified cascade:SameProductCode:
-      queries/matcher/same-product-code-in-current-tables-key-joined-first.rq, with cascade:DrugProducts, for
-      medications only.
-    - R12, cascade:SameVariationRule, justified cascade:SameVariation: queries/matcher/same-variation-key-joined-first.rq,
-      for variants only.
-    - R13, cascade:SameVariationThroughTableRule, justified cascade:SameVariationThroughTable:
-      queries/matcher/same-variation-through-current-tables-key-joined-first.rq, with cascade:VariantClassifications,
-      for variants only.
-
-    Version 17 of the vocabulary's list adds three rows, whose examples are under M24:
-
+      only. Two results whose current versions carry one business identifier of a named system, one LOINC code and one
+      time, or one no time, from documents naming one organization record, or two currently the same organization (M22).
     - R19, cascade:SameNoteTypeAndTextGrownWithinOneOrganizationRule, justified
       cascade:SameNoteTypeAndTextGrownWithinOneOrganization:
-      queries/matcher/same-note-type-and-text-grown-within-one-organization.rq, for notes only. Two notes of one
-      type from documents of one organization, the shorter one's text beginning or ending the longer one's, as a chain.
+      queries/matcher/same-note-type-and-text-grown-within-one-organization.rq, for notes only. Two notes of one type
+      from documents of one organization, the shorter one's text beginning or ending the longer one's, as a chain (M24).
     - R20, cascade:SameNoteTypeAndTextRule, justified cascade:SameNoteTypeAndText: queries/matcher/same-note-type-and-text.rq,
       for notes only. Two notes of one type and one text, from any sources.
     - R21, cascade:SameNoteOrDocumentMasterIdentifierRule, justified cascade:SameNoteOrDocumentMasterIdentifier:
       queries/matcher/same-note-or-document-master-identifier.rq, for notes only. Two notes of one master identifier
       typed by its system, from any sources.
 
-    Version 18 of the vocabulary's list changes the queries of R5, R10 and R11 to join two medications only when their
-    exposure periods share a day as well, whose examples are under M16; versions 1 to 17 pin the old files:
+    A query whose name ends key-joined-first reaches the other record of a pair through the code, or the table row, the
+    two share, and compares their kinds only then, never pairing every record of a kind with every other first. One
+    that works each side of a pair out in a sub-select binds ?record in the record's side and reads the other side only
+    for the keys its records carry (M4a): the test code, with the instant or, for R15, the day, and for R18 the business
+    identifier and the test code. A time, with a zone or without, that an engine cannot work out to an instant (Oxigraph
+    cannot one written to more than 18 fractional digits, which a conforming pod may hold) is read as written, so it is
+    the instant of the records that write it alike and of no other.
 
-    - R5, cascade:SameMedicationCodeRule, justified cascade:SameMedicationCode:
-      queries/matcher/same-ndc-code-and-overlapping-exposure-periods.rq, for medications only.
-    - R10, cascade:SameBrandGenericRule, justified cascade:SameBrandGeneric:
-      queries/matcher/same-brand-generic-and-overlapping-exposure-periods.rq, with cascade:BrandGenerics, for
-      medications only.
-    - R11, cascade:SameProductCodeRule, justified cascade:SameProductCode:
-      queries/matcher/same-product-code-in-current-tables-and-overlapping-exposure-periods.rq, with
-      cascade:DrugProducts, for medications only.
-
-    Version 19 of the vocabulary's list changes the queries of R6, R15, R16 and R17, so that the other side of a pair is
-    read only for the test code and the instant, or for R15 the test code and the day, of the records bound (M4a), and
-    each side's instant or day is one both sides join on. Each gives the rows the query it replaces gives, so the
-    examples under M21, M22 and M23 hold for it, but for one time: a time, with a zone or without, that an engine cannot
-    work out to an instant (Oxigraph cannot one written to more than 18 fractional digits, which a conforming pod may
-    hold) is read as written, so it is the instant of the records that write it alike and of no other, where the old files
-    left it unbound and a record with it was paired with any record of its test code. Versions 1 to 18 pin the old files:
-
-    - R6, cascade:SameResultRule, justified cascade:SameResult:
-      queries/matcher/same-code-instant-to-the-second-value-and-unit-others-by-code-and-instant.rq, for lab results
-      only.
-    - R15, cascade:SameResultOnOneDayRule, justified cascade:SameResultOnOneDay:
-      queries/matcher/same-code-day-or-padded-time-value-and-unit-others-by-code-and-day.rq, for lab results only.
-    - R16, cascade:DifferentResultValuesRule, finding cascade:DifferentResultValuesAtOneInstant:
-      queries/matcher/same-code-instant-to-the-second-different-values-others-by-code-and-instant.rq, for lab results
-      only.
-    - R17, cascade:DifferentResultUnitsRule, finding cascade:DifferentResultUnitsAtOneInstant:
-      queries/matcher/same-code-instant-to-the-second-different-units-others-by-code-and-instant.rq, for lab results
-      only.
-
-    The vocabulary's own rule list, runtime/rule-list/, is the one an app uses: R1, R2, R4, R5 and R6 in its version 1,
-    R3 as well in its version 2, whose examples are under O1, R7 as well in its version 3, R8 as well in its
-    version 4, where R1 applies to allergies and procedures only, R7's new query in its version 5, R5's new query
-    and R10 in its version 6, R5's newer query and R11 in its version 7, R12 and R13 in its version 8, R3's and
-    R4's changed queries in its version 9, R11's and R13's in its version 10, R14 as well in its version 11, and R6's
-    changed query, R15, R16 and R17 in its version 12, R18 as well in its version 13, and R2's, R4's, R6's, R8's,
-    R15's, R16's and R17's changed queries in its version 14, R6's, R15's, R16's, R17's and R18's queries bound
-    per side in its version 15, R1's, R2's, R3's, R4's, R5's, R7's, R10's, R11's, R12's and R13's queries joined
-    on the code first in its version 16, R19, R20 and R21 as well in its version 17, R5's, R10's and R11's
-    queries with the period test in its version 18, and R6's, R15's, R16's and R17's queries reading the other side by
-    the code and the instant or day in its version 19.
+    The stories' rule list, "Cascade matcher rules" in each person's references/, is a fixture, not a version of the
+    vocabulary's: its version 1 holds R1, queries/matcher/same-code.rq, for allergies, conditions and procedures; R2,
+    queries/matcher/same-code-and-date.rq; R3, queries/matcher/same-mapped-code.rq, with cascade:SubstanceIngredients, a
+    kind only the stories fill; and R4, queries/matcher/same-vaccine-group-and-date.rq, with cascade:VaccineGroups,
+    whose examples close this rule. Its version 2 adds R5, queries/matcher/same-medication-code.rq, and R6,
+    queries/matcher/same-result.rq, whose examples are under M12.
 
     Background:
       Given a new pod for Dev on 2026-04-01 at 09:00
@@ -828,11 +676,11 @@ Feature: The matcher's procedure
 
   Rule: M12. A medication is compared by its RxNorm code, and a lab result by its LOINC code, its time and its value
     decisions/quantities.md, row "matcher", and decisions/one-meaning-per-term.md, row "8. a lab result's time".
-    R5 joins two medications of one RxNorm code, whether each came from a prescription or from a list of what the
+    In the stories' list, R5 joins two medications of one RxNorm code, whether each came from a prescription or from a list of what the
     person takes. R6 joins two lab results of one LOINC code, one time and one value: a time is compared as a time, so
     one instant written in two time zones is one time, and units are not compared, as sources spell them differently.
-    That is R6 in the rule list's versions 2 to 11, which these examples run under; M21 says how version 12 compares
-    a lab result.
+    That is R5 and R6 in the stories' list's version 2, which these examples run under; M15 and M16 say how the
+    vocabulary's list compares a medication, and M21 a lab result.
 
     Background:
       Given a new pod for Gus on 2025-05-01 at 09:00
@@ -881,8 +729,7 @@ Feature: The matcher's procedure
     and a dateTime compare, and a time zone never moves a day, unlike R6's instants. Both bounds count. A condition
     with no onset joins nothing. So a condition two sources both call active joins whatever onsets they give, and two
     episodes that are each over, and apart, do not.
-    That is R8 in the rule list's versions 4 to 13, which these examples run under; M23 says how version 14 reads a
-    date that is a year or a month.
+    M23 says how R8 reads a date that is a year or a month.
 
     Hana's "episodes" are conditions of J18.9 (three), E11.9 (two), R10.9 (two) and SNOMED CT 195662009 (two).
 
@@ -911,31 +758,25 @@ Feature: The matcher's procedure
   Rule: M15. A medication is compared by every RxNorm and NDC code it carries, through the brand generics table, and by its exposure period
     decisions/medication-matching.md, rows "same course", "a period", "an ongoing course", "no dates" and "a gap".
     A medication version may carry any number of RxNorm codes and NDC codes (cascade:ndcCode), and name the one its
-    source chose (cascade:userSelectedCode). R5 reads no table: it joins two medications that share an NDC, or whose chosen
-    RxNorm codes are the same. The chosen RxNorm code is the selected one when that is an RxNorm code, else the only
-    one, so a record that selected its NDC still joins another by its only RxNorm code; a record with several RxNorm
-    codes and none selected chooses none. R5 does not check that a shared RxNorm code is a product: that is carried
-    from version 5 until jayostis/cascade-vocabulary#121, when a shared code joins only if the held tables show it is a
-    product, and any other becomes a review item for a person to confirm. An NDC names a package within one listing;
-    one reused after a product was discontinued would join two products, a known limit while dates are ignored.
-    R10 joins a branded product and its generic, or two brands of one generic, by a version of the brand generics
-    table, only when the two records share no code, so R5 and R10 never judge one pair. No rule joins an NDC with the
-    drug it is, until jayostis/cascade-vocabulary#118.
+    source chose (cascade:userSelectedCode). R5 reads no table: it joins two medications that share an NDC. An NDC names
+    a package within one listing; one reused after a product was discontinued would join two products, a known limit the
+    period test narrows. R10 joins a branded product and its generic, or two brands of one generic, by a version of the
+    brand generics table, only when the two records share no code, so R5 and R10 never judge one pair. R11 joins two
+    that share a product code (M16). No rule joins an NDC with the drug it is, until jayostis/cascade-vocabulary#118.
 
-    From the rule list's version 18, R5, R10 and R11 join two medications only when their exposure periods share at
-    least one day as well, so two courses of one drug years apart are two medications. A period runs from the record's
+    R5, R10 and R11 join two medications only when their exposure periods share at least one day as well, so two
+    courses of one drug years apart are two medications. A period runs from the record's
     cascade:medicationExposureStart to its cascade:medicationExposureEnd, both days counting; with no end it runs on
     while cascade:medicationExposureOngoing holds, and is its start day alone otherwise. A record with no exposure start
     joins no other medication, and a break of one day keeps two apart. A start given to the year or month counts as its
     last day and an end as its first, unlike M14 and M23, which read a partial date as every day it covers, so two
-    records join only when the overlap is certain. The examples here and under M16 that give no
-    dates run under versions 6 and 7; M16 has one under version 18.
+    records join only when the overlap is certain.
 
     Gus's pharmacy entry holds medications whose codes pair in no more than twos, so no judgment depends on M3's order.
 
     Background:
       Given a new pod for Gus on 2026-08-01 at 09:00
-      And the pod is opened with the tables "app-drugs" on 2026-08-01 at 09:01
+      And the pod is opened with the tables "app-drug-products" on 2026-08-01 at 09:01
       And Gus enters "pharmacy" on 2026-08-02 at 09:00
       And the matcher runs on the records of that entry on 2026-08-02 at 09:05
 
@@ -943,16 +784,6 @@ Feature: The matcher's procedure
       Then the matcher's judgments holding medication RxNorm 212549 "Norvasc 5 MG Oral Tablet", medication RxNorm 197361 "amlodipine 5 MG Oral Tablet" and medication NDC 00378520905 "Amlodipine 5 mg tablet, pharmacy" are:
         | justification      | members                                                                                                     | used                                                                                                                                                                  |
         | same brand generic | medication RxNorm 212549 "Norvasc 5 MG Oral Tablet", medication RxNorm 197361 "amlodipine 5 MG Oral Tablet" | Brand generics table version 1, version 1 of medication RxNorm 212549 "Norvasc 5 MG Oral Tablet", version 1 of medication RxNorm 197361 "amlodipine 5 MG Oral Tablet" |
-
-    Example: two records sharing their only RxNorm code are the same medication code although one selected its NDC
-      Then the matcher's judgments holding medication RxNorm 861007 "metformin 500 MG Oral Tablet" and medication RxNorm 861007 "Metformin 500 mg, refill" are:
-        | justification        | members                                                                                                      | used                                                                                                                                   |
-        | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, refill" | version 1 of medication RxNorm 861007 "metformin 500 MG Oral Tablet", version 1 of medication RxNorm 861007 "Metformin 500 mg, refill" |
-
-    Example: two fills coded only by one NDC are the same medication code
-      Then the matcher's judgments holding medication NDC 00093111310 "Lisinopril 10 mg, March" and medication NDC 00093111310 "Lisinopril 10 mg, April" are:
-        | justification        | members                                                                                                    | used                                                                                                                                 |
-        | same medication code | medication NDC 00093111310 "Lisinopril 10 mg, March", medication NDC 00093111310 "Lisinopril 10 mg, April" | version 1 of medication NDC 00093111310 "Lisinopril 10 mg, March", version 1 of medication NDC 00093111310 "Lisinopril 10 mg, April" |
 
   Rule: M16. Medications are joined by a shared NDC, or by a shared RxNorm code that the drug products table says names one product, and by no other code they share
     decisions/medication-matching.md, row "what is kept apart".
@@ -965,11 +796,13 @@ Feature: The matcher's procedure
     records of one ingredient, one dose form, one brand name or a product the table does not list, is "possibly the same
     medication" on "What needs review", for a person to confirm. No step asks a question, so the vocabulary's fixtures
     show it. R10 joins only records that share no code, so a brand and its generic that also share a code that is not a
-    product are left to a person too. So are a pair of one product or one NDC that version 18's period test (M15) keeps
-    apart, as two courses or one course with a gap.
+    product are left to a person too. So are a pair of one product or one NDC that the period test (M15) keeps apart,
+    as two courses or one course with a gap.
 
-    Each example opens a new pod for Gus with the drug products table, the last after version 6's drugs table, and
-    enters its own entry, so that no example's records join another's.
+    Each example opens a new pod for Gus with the drug products table, one of them after the drug tables of an app at
+    an earlier version "0" of the rule list, whose R5 runs queries/matcher/same-medication-code.rq, joining two
+    medications of one RxNorm code, and which has no R11; and each enters its own entry, so that no example's records
+    join another's.
 
     Example: two records sharing a product code are the same product code, although one selected its NDC
       Given a new pod for Gus on 2026-09-01 at 09:00
@@ -1026,10 +859,10 @@ Feature: The matcher's procedure
       When the matcher runs on the records of that entry on 2026-09-02 at 09:05
       Then the matcher has no judgment holding medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets"
 
-    Example: opening a pod matched under version 6 files its NDC pair again, joins its product pair as a product code and lets its ingredient pair lapse
+    Example: opening a pod matched under version "0" with version 19 joins its NDC pair, joins its product pair as a product code and lets its ingredient pair lapse
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
-      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And Gus enters "earlier-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       When the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
       Then that step wrote these matcher judgments:
@@ -1040,7 +873,7 @@ Feature: The matcher's procedure
 
     Example: two courses of one product years apart are no Same, and a copy within the first course is the same product code
       Given a new pod for Gus on 2026-10-01 at 09:00
-      And the pod is opened with the tables "app-courses" on 2026-10-01 at 09:01
+      And the pod is opened with the tables "app-drug-products" on 2026-10-01 at 09:01
       And Gus enters "two-courses" on 2026-10-02 at 09:00
       When the matcher runs on the records of that entry on 2026-10-02 at 09:05
       Then the matcher's judgments holding medication RxNorm 861007 "metformin 500 MG, 2019 to 2021", medication RxNorm 861007 "metformin 500 MG, since 2026" and medication RxNorm 861007 "metformin 500 MG, spring 2020" are:
@@ -1125,20 +958,20 @@ Feature: The matcher's procedure
     review page does not offer it back. What a matcher judgment's tables did is no part of it: a matcher judgment the version reaches, kept
     or lapsed by a table version (M7), is named by no finding, and lapses pair by pair (O1).
 
-    Example: opening a pod matched under version 6 with version 7 files one finding naming the matcher judgments of the rule version 7 changed that it did not file again
-      Version 7 changes the query of R5 and R6. Its run asserts again the matcher judgment of the NDC pair, which R5 still joins,
-      and the finding names the two matcher judgments of RxNorm pairs that version 6's R6 joined, of which version 7's R11 joins
-      the product pair again by another matcher judgment.
+    Example: opening a pod matched under version "0" with version 19 files one finding naming the matcher judgments of the rule version 19 changed that it did not file again
+      Version 19 changes R5's query, from one joining two medications of one RxNorm code to one joining two of one NDC,
+      and adds R11. The finding names the two matcher judgments of RxNorm pairs that version "0"'s R5 joined, of which
+      version 19's R11 joins the product pair again by another matcher judgment.
 
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
-      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And Gus enters "earlier-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       When the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
       Then that step wrote these findings:
         | kind                     | under                   | justification        | members                                                                                                    |
-        | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
-        | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
+        | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
+        | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
 
     Example: a person's Same over a matcher judgment's records leaves the matcher judgment for the finding to name
       Gus's Same names the records of the Lisinopril pair and replaces nothing (N16), so the open's finding names the
@@ -1146,26 +979,27 @@ Feature: The matcher's procedure
 
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
-      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And Gus enters "earlier-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       And Gus files the judgment "same-over-the-lisinopril-records" on 2026-09-02 at 12:00
       When the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
       Then that step wrote these findings:
         | kind                     | under                   | justification        | members                                                                                                    |
-        | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
-        | matcher judgments no longer reached | Matcher rules version 7 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
+        | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets"                         |
+        | matcher judgments no longer reached | Matcher rules version 19 | same medication code | medication RxNorm 861007 "metformin 500 MG Oral Tablet", medication RxNorm 861007 "Metformin 500 mg, list" |
 
     Example: a run under a version whose finding the pod holds files no other
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
-      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And Gus enters "earlier-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       And the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
       When the matcher rechecks on 2026-09-04 at 09:00
       Then that step wrote no file
 
     Example: a version that changes no query a matcher judgment was asserted with files no finding
-      Version 2 adds R3 and runs version 1's vaccine group query, which the flu shots' matcher judgments were asserted with.
+      Version 19 adds R3 and R8 and runs version "0"'s vaccine group query, which the flu shots' matcher judgments were
+      asserted with.
 
       Given a new pod for Hana on 2026-07-01 at 09:00
       And the pod is opened with the tables "app" on 2026-07-01 at 09:01
@@ -1176,7 +1010,7 @@ Feature: The matcher's procedure
         | kind | under | justification | members |
 
     Example: a version that drops a rule names the matcher judgments of that rule
-      Version "1a" lacks R4.
+      Version "0a" lacks R4.
 
       Given a new pod for Hana on 2026-07-01 at 09:00
       And the pod is opened with the tables "app" on 2026-07-01 at 09:01
@@ -1185,11 +1019,11 @@ Feature: The matcher's procedure
       When the pod is opened with the tables "app-fewer-rules" on 2026-07-03 at 09:00
       Then that step wrote these findings:
         | kind | under | justification | members |
-        | matcher judgments no longer reached | Matcher rules version 1a | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" |
-        | matcher judgments no longer reached | Matcher rules version 1a | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" |
+        | matcher judgments no longer reached | Matcher rules version 0a | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval" |
+        | matcher judgments no longer reached | Matcher rules version 0a | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" |
 
     Example: a version that drops a rule and declares it wrong names none of its matcher judgments, since its release retracts their assertions
-      Version "1b" lacks R4 and declares it wrong.
+      Version "0b" lacks R4 and declares it wrong.
 
       Given a new pod for Hana on 2026-07-01 at 09:00
       And the pod is opened with the tables "app" on 2026-07-01 at 09:01
@@ -1218,7 +1052,7 @@ Feature: The matcher's procedure
     Background:
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
-      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And Gus enters "earlier-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       And the pod is opened with the tables "app-drug-products" on 2026-09-03 at 09:00
 
@@ -1228,7 +1062,7 @@ Feature: The matcher's procedure
       When the query "questions/entry/What needs review.rq" is asked
       Then it answers:
         | entry                                                | entryLabel                              | needs                                              | finding                                                     | judgment                                                                                                               | judgmentLabel                                    | record                                       | recordLabel                                   | otherRecord                          | otherRecordLabel                      |
-        | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets" | "no longer joined under a newer rule list version" | <ni:///sha-256;r3A6LAf0rxE6bEDIhByAwDGK-E8snI4FU1-73maVfLA> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · eab831dd · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
+        | the entry of medication RxNorm 29046 "Lisinopril tablets" | "Medication entry · Lisinopril tablets" | "no longer joined under a newer rule list version" | <ni:///sha-256;ZdwTt5SvKN1N2nyjW0h4mrTjZGhtjckmGNCpOMxHNfI> | the matcher's same medication code of medication RxNorm 29046 "Lisinopril" and medication RxNorm 29046 "Lisinopril tablets" | "Same · Cascade matcher · eab831dd · Lisinopril" | medication RxNorm 29046 "Lisinopril tablets" | "Medication · Lisinopril tablets · own entry" | medication RxNorm 29046 "Lisinopril" | "Medication · Lisinopril · own entry" |
 
     Example: a person's Same over a pair's records joins it and takes it off the review page
       When Gus files the judgment "same-over-the-lisinopril-records-after-the-tables" on 2026-09-04 at 09:00
@@ -1239,7 +1073,7 @@ Feature: The matcher's procedure
         | medication RxNorm 29046 "Lisinopril", medication RxNorm 29046 "Lisinopril tablets" |
 
     Example: an acknowledgement of the kind naming a pair's records takes it off the review page and leaves it apart
-      When Gus files the judgment "acknowledge-the-version-seven-finding" on 2026-09-04 at 09:00
+      When Gus files the judgment "acknowledge-the-finding" on 2026-09-04 at 09:00
       And the query "questions/entry/What needs review.rq" is asked
       Then it answers nothing
       And the medications view holds these entries:
@@ -1248,7 +1082,7 @@ Feature: The matcher's procedure
         | medication RxNorm 29046 "Lisinopril tablets" |
 
     Example: an acknowledgement naming the finding itself is refused
-      When Gus files the judgment "acknowledge-the-version-seven-finding-by-its-name" on 2026-09-04 at 09:00
+      When Gus files the judgment "acknowledge-the-finding-by-its-name" on 2026-09-04 at 09:00
       Then that step is refused
 
   Rule: M20. Two servers that connects under one client id found reporting one self-asserted base URL and one authorization endpoint, at addresses on one host, are the same
@@ -1294,7 +1128,7 @@ Feature: The matcher's procedure
 
   Rule: M21. A lab result is compared by its code, its instant, its value and its unit, and joined on a day alone only as likely
     decisions/quantities.md, rows "matcher" and "conversion"; decisions/judgments.md, row "what a judgment, a finding or a view came from".
-    From the rule list's version 12, R6 joins two lab results of one LOINC code
+    R6 joins two lab results of one LOINC code
     at one instant whose values are of one kind and equal: two quantities of one number, compared by value, so 4.10
     and 4.1 are one, with the same comparator or none on both; two ratios of equal parts; two ranges of equal bounds;
     two coded values sharing a code. Text is never compared. Two times with a time zone are one instant when they name
@@ -1347,7 +1181,7 @@ Feature: The matcher's procedure
 
   Rule: M22. Two lab results of one business identifier and one code, from documents of one organization, are the same result for certain
     decisions/quantities.md, row "matcher", tier (i); decisions/republishing-sources.md, rows "two organisations are one" and "within-organisation rules".
-    From the rule list's version 13, R18 joins two lab results whose
+    R18 joins two lab results whose
     current versions carry one dct:identifier, one LOINC code and one clinically relevant time, or of which one states
     no time, when the documents their revisions come from name, as custodian or author (cascade:CustodianRole,
     cascade:AuthorRole), one organization record, or two a person judged the same organization
@@ -1387,9 +1221,9 @@ Feature: The matcher's procedure
     A date is typed by what its source wrote: xsd:gYear for a year, xsd:gYearMonth for a month, xsd:date for a day, xsd:dateTime for a time, and nothing is padded but a time written to the hour or the
     minute, which is held padded to the second beside the characters its source sent (cascade:PaddedDateTime). XSD
     makes the four types incomparable, so "2019" never equals "2019-10-01", by term or by value: R2, which compares
-    dates by term, never joins a year or a month with a day. From the rule list's version 14, R2 and R4 join only a day
-    or a time its source wrote to the second: two shots dated to one year, or to one padded hour, may be two shots. From the
-    rule list's version 14, R8 reads each onset and abatement as the days it covers, as FHIR search reads a date, a
+    dates by term, never joins a year or a month with a day. R2 and R4 join only a day
+    or a time its source wrote to the second: two shots dated to one year, or to one padded hour, may be two shots. R8
+    reads each onset and abatement as the days it covers, as FHIR search reads a date, a
     year from 1 January to 31 December and a month from its first day to its last, so a condition begun in 2019 and
     over within it overlaps one of 1 June 2019. R6, R16 and R17 never read a padded time as an instant, since its source did not say the second; R15 counts it as a
     day alone, so two results at one padded hour are joined only as likely. A year or a month is no day, and a result
@@ -1420,7 +1254,7 @@ Feature: The matcher's procedure
     A C-CDA section is named by its code and its text, since it has no id (naming.feature), so a source that sends a
     section again as it was names the same record, and one that sends it grown, as a clinic's plan of treatment that
     keeps each visit's paragraph and adds the latest, names another; and two custodians' copies of one note are two
-    records in two scopes. From the rule list's version 17, R19 joins two notes whose current versions share a note
+    records in two scopes. R19 joins two notes whose current versions share a note
     type, a LOINC code (cascade:noteOrDocumentTypeCode), or a code of another system (cascade:noteOrDocumentTypeCodeInOtherSystem)
     when neither has a LOINC code, from documents naming one organization record, or two currently the same
     organization, as custodian or author, as R18 reads them, when the shorter one's text, read as lines with the white

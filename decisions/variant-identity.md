@@ -1,7 +1,7 @@
 # When two variant records are one variant
 
 Status: draft, 2026-10-13; revised 2026-10-22 against `README.md`, from the review on #202. Rules: R12, justified
-`jdg:SameVariation`, and R13, justified `jdg:SameVariationThroughTable`, in the rule list's version 8; rule M17 of
+`jdg:SameVariation`, and R13, justified `jdg:SameVariationThroughTable`, in the rule list; rule M17 of
 `runtime/matcher.feature`. Applies `naming.md`'s rubric: a variant record is named by its source (`variant-record.md`),
 and that two are one variant is a judgment (test 2), made by `jdg:CascadeMatcher` as `judgments.md` rules. Matcher judgments,
 assertions and used are `naming.md`; which revision is current is `currency.md`; the within-organisation rules these
@@ -67,7 +67,7 @@ SEMAPV (https://mapping-commons.github.io/semantic-mapping-vocabulary/, verified
 | justification kinds | SEMAPV | `jdg:SameVariation` `skos:broadMatch` `semapv:LexicalMatching` (`judgments.ttl:93`); `jdg:SameVariationThroughTable` `skos:broadMatch` `semapv:BackgroundKnowledgeBasedMatching` (`judgments.ttl:98`) (`ontologies/cascade.ttl`) | borrowed from SEMAPV at the kind level, as `judgments.md` rules |
 | maker | PROV agents; `judgments.md` | `jdg:CascadeMatcher`, one unversioned `prov:SoftwareAgent`; not yet in `judgments.ttl` (`ontologies/cascade.ttl`) | borrowed from `judgments.md` |
 | used | `naming.md`: each member's version and each table version the rule read | each member's version and `?origin`, the table version whose row joined them; a new table version re-mints only the matcher judgments whose joining rows changed in it (M7) | borrowed from `naming.md` where the kind has one series, since the count reads current versions only; with several, open |
-| scope | `republishing-sources.md`: within-organisation rules | across organisations: both are identity rules on global codes (`queries/matcher/same-variation.rq`, `queries/matcher/same-variation-through-current-tables.rq`) | ours: `republishing-sources.md` adds rules within one organisation, and these two are not among them (Why) |
+| scope | `republishing-sources.md`: within-organisation rules | across organisations: both are identity rules on global codes (`queries/matcher/same-variation-key-joined-first.rq`, `queries/matcher/same-variation-through-current-tables-key-joined-first.rq`) | ours: `republishing-sources.md` adds rules within one organisation, and these two are not among them (Why) |
 | rule IRI | `naming.md`: descriptive terms in the one unversioned namespace | short tags in a versioned namespace today | yields to `naming.md` under #191 and #193 |
 | computed identity | VRS digest; CA id | none (`runtime/matcher.feature`, M17) | diverged; `variant-record.md` says why |
 
@@ -88,7 +88,7 @@ same way, or a variant with ID 12345, on no row, and an expression on row 90011 
 
 **Why an expression on two rows joins nothing.** (row "left alone") 195 submitted expressions name two variations in ClinVar's file, 3
 within Lynch's genes (unverified and verified as above); one of them on a version would join two variations, and entries
-would then join through it. Counting distinct row subjects, as `same-product-code.rq` counts, keeps two series that both
+would then join through it. Counting distinct row subjects, as `same-product-code-in-current-tables-and-overlapping-exposure-periods.rq` counts, keeps two series that both
 hold a variation from leaving every pair alone. The count reads current versions only, because the question is what
 the table says today, and an app keeping every monthly version for the count holds 72 GB of ClinVar alone in ten
 years (computed, #206).
@@ -135,8 +135,6 @@ treat both by kind without knowing the rule (`judgments.md`).
   an organisation's. Whether every matcher rule on a global code (an RxNorm code, a LOINC code with a date) holds across
   organisations the same way, or only identity codes do, is open.
 - The maker is `jdg:CascadeMatcher`, which `judgments.md` adds and `judgments.ttl` does not yet hold.
-- The kit and M17 put "Matcher rules version 8" in a matcher judgment's used, where `naming.md` moves the rule list version to the
-  assertion, and the kit names its table version by a `urn:uuid`; both change under #191, not here.
 
 ## What would change our mind
 

@@ -241,7 +241,7 @@ class TestRuleLists:
                           if ni_name((QUERIES / str(rows.value(row, CASCADE.queryPath))).read_bytes())
                           != str(rows.value(row, CASCADE.queryHash))}
             assert mismatched == {("finn/references", "matcher/same-code.rq"),
-                                  ("tables/app-new-rules", "matcher/same-code-and-date.rq")}
+                                  ("tables/app-new-rules", "matcher/same-code-and-day-or-exact-time-key-joined-first.rq")}
 
         def test_reads_a_tables_rows_exactly_when_its_row_names_one_table_kind(self):
             """reads a table's rows exactly when its row names one table kind, joined on that kind

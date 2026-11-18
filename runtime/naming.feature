@@ -404,8 +404,8 @@ Feature: Naming
       When the pod is opened with the tables "app-wrong-rule" on 2026-07-03 at 09:00
       Then that step wrote these retractions:
         | justification             | members                                                                   | inputs                                                                                                                                                       | name                                          |
-        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | cascade:ReleaseRetractionNamingRule, urn:uuid:9d4fafb7-ec93-4481-9b31-6af8ae10febd, urn:uuid:a268f5e3-a2e6-85c6-a340-4736a756841b, cascade:SameMappedCodeAndDateRule | urn:uuid:ab740e2c-978e-8e47-8329-f17c8614528e |
-        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | cascade:ReleaseRetractionNamingRule, urn:uuid:9d4fafb7-ec93-4481-9b31-6af8ae10febd, urn:uuid:623fbf40-4ae6-8c3f-9a84-620d488bab0e, cascade:SameMappedCodeAndDateRule | urn:uuid:6eefb0e4-43e2-80d2-84ac-6386116a4cb4 |
+        | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | cascade:ReleaseRetractionNamingRule, urn:uuid:5b4d87d9-5a19-4bc9-8c26-22747b46e8d8, urn:uuid:594dc81f-d7bb-85e9-a1c1-6f49ede1b313, cascade:SameMappedCodeAndDateRule | urn:uuid:86de92fb-f9c0-85ae-9808-b7b7794735ae |
+        | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | cascade:ReleaseRetractionNamingRule, urn:uuid:5b4d87d9-5a19-4bc9-8c26-22747b46e8d8, urn:uuid:c01bb4af-045f-8594-8d6e-e93e0ae0dca4, cascade:SameMappedCodeAndDateRule | urn:uuid:a92a17c1-a553-8cf6-a17a-931697f6f5b9 |
       And that step wrote these matcher judgments:
         | justification | members | used |
       And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" does not count
@@ -481,7 +481,7 @@ Feature: Naming
     Example: a person's Same that replaces the matcher's judgment is refused
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
-      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And Gus enters "earlier-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       When Gus files the judgment "same-instead-of-the-lisinopril-matcher-judgment" on 2026-09-02 at 12:00
       Then that step is refused
@@ -489,7 +489,7 @@ Feature: Naming
     Example: a person's retraction of the matcher's judgment is refused
       Given a new pod for Gus on 2026-09-01 at 09:00
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
-      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And Gus enters "earlier-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       When Gus files the judgment "retract-the-lisinopril-matcher-judgment" on 2026-09-02 at 12:00
       Then that step is refused
@@ -498,7 +498,7 @@ Feature: Naming
       Given a new pod for Gus on 2026-09-01 at 09:00
       And a second writer of the pod
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
-      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And Gus enters "earlier-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       When the second writer receives the files of the first writer and the file "retract-the-lisinopril-matcher-judgment" put in them on 2026-09-02 at 12:00
       Then that step is refused
@@ -508,7 +508,7 @@ Feature: Naming
       Given a new pod for Gus on 2026-09-01 at 09:00
       And a second writer of the pod
       And the pod is opened with the tables "app-drugs" on 2026-09-01 at 09:01
-      And Gus enters "version-six-sames" on 2026-09-02 at 09:00
+      And Gus enters "earlier-sames" on 2026-09-02 at 09:00
       And the matcher runs on the records of that entry on 2026-09-02 at 09:05
       When the second writer receives the files of the first writer and the file "same-instead-of-the-lisinopril-matcher-judgment" put in them on 2026-09-02 at 12:00
       Then that step is refused

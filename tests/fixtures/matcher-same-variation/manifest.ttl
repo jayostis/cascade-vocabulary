@@ -13,7 +13,7 @@
 <#same-variation> a mf:QueryEvaluationTest ;
   mf:name "same-variation" ;
   rdfs:comment "Records whose current versions share a ClinVar VariationID match, whatever expression each holds. A shared expression with no ID on one side, another ID, and no code match nothing." ;
-  mf:action [ qt:query <../../../queries/matcher/same-variation.rq> ;
+  mf:action [ qt:query <../../../queries/matcher/same-variation-key-joined-first.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               ctm:boundRecord <urn:x:expressionOnly> ,
                                   <urn:x:noCode> ,

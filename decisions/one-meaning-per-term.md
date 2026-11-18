@@ -45,9 +45,9 @@ touches.
 |---|---|---|---|
 | `status` (health) | `ontologies/health/v1/health.ttl:79-83` | FHIR `Condition.clinicalStatus`, `Immunization.status` (`cascade-bridge-adapter-fhir-r4/in/sparql/condition.rq:81-85`, `immunization.rq:71-72`) | `views/conditions.rq:14,28`, `views/immunizations.rq:12,24`, `My active conditions.rq:12`, `My immunizations.rq:17`, `records.rq:17-18` |
 | `status` (clinical) | `ontologies/clinical/v1/clinical.ttl:29-32` | FHIR `AllergyIntolerance.clinicalStatus`, `Procedure.status`, `Observation.status` (lab results, variants, interpretations: `variant.rq:29`, `variant-interpretation.rq:31`), `MedicationRequest.status`, `MedicationStatement.status` | the allergy, procedure, lab, medication, variant and interpretation views; `My active allergies.rq:10`, `My lab results.rq:16`, `My procedures.rq:17`, `My medication history.rq:25`; `medication-lifecycles.rq:23` (L1); `records.rq:16,19-23` |
-| `rec:status`, the copy across kinds | `records.ttl:77-79`, written by `records.rq:12,15-28` | | `same-code-and-period.rq:20-30` (M14) and `What needs review.rq:86-104`, which test `active`, `recurrence`, `relapse` for any kind with a SNOMED or ICD-10 code; `status-sources.rq:13-19` with `rec:statusOnlyFromDocuments`, which choose `rec:statusFrom` for every view; `labels.rq:35`; `What each version says.rq:11` |
+| `rec:status`, the copy across kinds | `records.ttl:77-79`, written by `records.rq:12,15-28` | | `same-code-and-period-read-as-ranges.rq` (M14) and `What needs review.rq:86-104`, which test `active`, `recurrence`, `relapse` for any kind with a SNOMED or ICD-10 code; `status-sources.rq:13-19` with `rec:statusOnlyFromDocuments`, which choose `rec:statusFrom` for every view; `labels.rq:35`; `What each version says.rq:11` |
 | a status's values | `health.shapes.ttl:61-68` (allergy, Warning), `:127-134` (condition), `:199-206` (immunization), `:304-311` (lab, Warning); `clinical.shapes.ttl:28-33` (procedure) | | a medication's shape lists none (`clinical.shapes.ttl:110-114`); the genomics shapes have no status property at all (`genomics.shapes.ttl`) |
-| `vaccineCode` | `health.ttl:100-104`, `xsd:string`, `maxCount 1` (`health.shapes.ttl:208-213`) | the CVX coding only (`immunization.rq:56-60`; ccda `immunization.rq:88`) | `same-code-and-date.rq:11-12`, `same-mapped-code-and-date.rq:18-19` (bytes pinned by rule list versions 1 to 8), `same-vaccine-group-and-date.rq:18-19` (version 9), `views/immunizations.rq:11,22`, `My immunizations.rq:13-20`; joined as a CVX IRI by M4c |
+| `vaccineCode` | `health.ttl:100-104`, `xsd:string`, `maxCount 1` (`health.shapes.ttl:208-213`) | the CVX coding only (`immunization.rq:56-60`; ccda `immunization.rq:88`) | `same-code-and-date.rq:11-12`, `same-vaccine-group-and-date.rq:18-19`, `views/immunizations.rq:11,22`, `My immunizations.rq:13-20`; joined as a CVX IRI by M4c |
 | `reaction` | `health.ttl:32-36` | each `reaction.manifestation.text` (fhir-r4 `allergy-intolerance.rq:119-123`; ccda `allergy.rq:198`) | no query |
 | `performedDate` | `health.ttl:175-179` | `Observation.effective[x]` (`lab-result.rq:133-138`); C-CDA `effectiveTime` (`result.rq:276,284`) | `same-result.rq:12-13` (M12), `views/lab-results.rq:16,30`, `My lab results.rq:11`, `records.rq:21` |
 | `startDate` | `clinical.ttl:103-106` | `effectiveDateTime`, else `effectivePeriod.start`, else `authoredOn` (`medication.rq:154-157`); C-CDA `effectiveTime` (`medication.rq:119,125`) | `views/medications.rq:18,37`, `My active medications.rq:29`, `My medication history.rq:27`, `records.rq:20` |
@@ -157,7 +157,7 @@ and no `status`, and give the acts a `status` and no `clinicalStatus` (verified)
 ISM and no state on an observation or an evaluation. A condition "resolved" is a fact about the person; an immunization
 "completed" is a fact about an act. One term for both is what makes "active" ambiguous: M14 and `What needs
 review.rq` test `rec:status` for `active`, `recurrence` and `relapse` on any kind with the code (verified,
-`same-code-and-period.rq:14-30`); only the rule list row's kinds keep M14 to conditions (M4), and once #193 merges
+`same-code-and-period-read-as-ranges.rq`); only the rule list row's kinds keep M14 to conditions (M4), and once #193 merges
 `snomedCode` a procedure's code is the same term, so the query alone would read a procedure's workflow status as a
 clinical state (inferred). Reading `clinicalStatus` there makes the query say what it means. The cost is one term and
 the readers listed in row 1, which #193's removal of `rec:status` touches anyway.
@@ -194,10 +194,8 @@ list, with the step that chose it recorded.
 `vaccineCode "141"` into `<http://hl7.org/fhir/sid/cvx/141>` to join a table (`runtime/matcher.feature:89-91`). An IRI
 per coding makes `vaccineCode` mean what FHIR's does, flattened as every code term is, and lets an NDC or SNOMED coding
 join later without a new term; that is also why it becomes repeatable, and why the readers that assume one code, the
-immunization view and `My immunizations.rq`'s GROUP BY, pick the CVX one. The comparisons whose bytes old rule list
-versions pin (`same-mapped-code-and-date.rq`, versions 1 to 8; `same-vaccine-group-and-date.rq`, version 9) get a
-successor in a new version; whether the old versions survive #191's re-mint is #191's (lean: they go, since no pod
-holds a matcher judgment under them). `reactionManifestationText` takes FHIR's path, `reaction.manifestation.text`.
+immunization view and `My immunizations.rq`'s GROUP BY, pick the CVX one. The comparison whose bytes a story's
+rule list pins (`same-vaccine-group-and-date.rq`) gets a successor in a new version. `reactionManifestationText` takes FHIR's path, `reaction.manifestation.text`.
 `resultClinicallyRelevantTime` takes FHIR's name for FHIR's element, prefixed with what it is the time of, as
 `resultValueText` is; C-CDA calls the same time "clinically relevant" and gives the sample's draw as its example,
 so "performed" says something neither source says.
