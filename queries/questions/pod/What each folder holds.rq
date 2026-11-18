@@ -9,11 +9,15 @@ PREFIX pim: <http://www.w3.org/ns/pim/space#>
 
 SELECT ?folder ?type (COUNT(DISTINCT ?thing) AS ?things)
 WHERE {
-  GRAPH ?file { ?thing ?property ?value OPTIONAL { ?thing a ?stated } }
-  ?owner pim:storage ?root .
+  { SELECT DISTINCT ?file ?thing ?root
+    WHERE {
+      ?owner pim:storage ?root .
+      GRAPH ?file { ?thing ?property ?value }
+      FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
+    } }
+  OPTIONAL { GRAPH ?file { ?thing a ?stated } }
   BIND (CONCAT("/", REPLACE(STRAFTER(STR(?file), STR(?root)), "([0-9a-f]{2}/)?[^/]*$", "")) AS ?folder)
   BIND (COALESCE(?stated, "no type stated") AS ?type)
-  FILTER (isIRI(?thing) && STRSTARTS(STR(?file), STR(?root)))
   FILTER (BOUND(?stated) || NOT EXISTS { ?file a cascade:View })
   FILTER (!STRSTARTS(STR(?thing), STR(?root)) || STRSTARTS(STR(?thing), CONCAT(STR(?root), SUBSTR(?folder, 2))))
 }
