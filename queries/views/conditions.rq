@@ -43,10 +43,12 @@ WHERE {
     OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:abatementDate ?abatement }
     OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:onsetDate ?onset }
     OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?onsetPaddedAt .
-               ?onsetPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?onsetWritten }
+               ?onsetPaddedAt cascade:paddedDateTimeProperty ?onsetPaddedProperty ; cascade:timeAsWritten ?onsetWritten
+               FILTER (?onsetPaddedProperty = cascade:onsetDate) }
     BIND (IF(BOUND(?onsetWritten), IRI(CONCAT(STR(?entry), "-padded-onsetDate")), 1/0) AS ?onsetPadded)
     OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?abatementPaddedAt .
-               ?abatementPaddedAt cascade:paddedDateTimeProperty cascade:abatementDate ; cascade:timeAsWritten ?abatementWritten }
+               ?abatementPaddedAt cascade:paddedDateTimeProperty ?abatementPaddedProperty ; cascade:timeAsWritten ?abatementWritten
+               FILTER (?abatementPaddedProperty = cascade:abatementDate) }
     BIND (IF(BOUND(?abatementWritten), IRI(CONCAT(STR(?entry), "-padded-abatementDate")), 1/0) AS ?abatementPadded) }
   UNION
   { ?member a cascade:ProblemOrDiagnosis ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .

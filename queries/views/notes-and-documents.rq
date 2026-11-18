@@ -51,7 +51,8 @@ WHERE {
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
-               ?datePaddedAt cascade:paddedDateTimeProperty cascade:noteOrDocumentDate ; cascade:timeAsWritten ?dateWritten }
+               ?datePaddedAt cascade:paddedDateTimeProperty ?datePaddedProperty ; cascade:timeAsWritten ?dateWritten
+               FILTER (?datePaddedProperty = cascade:noteOrDocumentDate) }
     BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-noteOrDocumentDate")), 1/0) AS ?datePadded) }
   UNION
   { ?member a cascade:ClinicalNoteOrDocument ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .

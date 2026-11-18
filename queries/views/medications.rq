@@ -74,13 +74,16 @@ WHERE {
     OPTIONAL { ?entry cascade:medicationUseStartDateFrom/pav:hasCurrentVersion/cascade:medicationUseStartDate ?started }
     OPTIONAL { ?entry cascade:prescriptionWrittenDateFrom/pav:hasCurrentVersion/cascade:prescriptionWrittenDate ?written }
     OPTIONAL { ?entry cascade:medicationUseStartDateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?startedPaddedAt .
-               ?startedPaddedAt cascade:paddedDateTimeProperty cascade:medicationUseStartDate ; cascade:timeAsWritten ?startedWritten }
+               ?startedPaddedAt cascade:paddedDateTimeProperty ?startedPaddedProperty ; cascade:timeAsWritten ?startedWritten
+               FILTER (?startedPaddedProperty = cascade:medicationUseStartDate) }
     BIND (IF(BOUND(?startedWritten), IRI(CONCAT(STR(?entry), "-padded-medicationUseStartDate")), 1/0) AS ?startedPadded)
     OPTIONAL { ?entry cascade:prescriptionWrittenDateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?writtenPaddedAt .
-               ?writtenPaddedAt cascade:paddedDateTimeProperty cascade:prescriptionWrittenDate ; cascade:timeAsWritten ?writtenWritten }
+               ?writtenPaddedAt cascade:paddedDateTimeProperty ?writtenPaddedProperty ; cascade:timeAsWritten ?writtenWritten
+               FILTER (?writtenPaddedProperty = cascade:prescriptionWrittenDate) }
     BIND (IF(BOUND(?writtenWritten), IRI(CONCAT(STR(?entry), "-padded-prescriptionWrittenDate")), 1/0) AS ?writtenPadded)
     OPTIONAL { ?entry cascade:statusFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?endPaddedAt .
-               ?endPaddedAt cascade:paddedDateTimeProperty cascade:medicationUseEndDate ; cascade:timeAsWritten ?endWritten }
+               ?endPaddedAt cascade:paddedDateTimeProperty ?endPaddedProperty ; cascade:timeAsWritten ?endWritten
+               FILTER (?endPaddedProperty = cascade:medicationUseEndDate) }
     BIND (IF(BOUND(?endWritten), IRI(CONCAT(STR(?entry), "-padded-medicationUseEndDate")), 1/0) AS ?endPadded) }
   UNION
   { ?member a cascade:PrescribedOrReportedMedication ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .

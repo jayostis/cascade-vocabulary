@@ -63,7 +63,8 @@ WHERE {
     OPTIONAL { ?entry cascade:statusFrom ?statusFrom .
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
-               ?datePaddedAt cascade:paddedDateTimeProperty cascade:reportEffectiveTime ; cascade:timeAsWritten ?dateWritten }
+               ?datePaddedAt cascade:paddedDateTimeProperty ?datePaddedProperty ; cascade:timeAsWritten ?dateWritten
+               FILTER (?datePaddedProperty = cascade:reportEffectiveTime) }
     BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-reportEffectiveTime")), 1/0) AS ?datePadded) }
   UNION
   { ?member a cascade:DiagnosticReport ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .

@@ -25,9 +25,11 @@ WHERE {
               FILTER NOT EXISTS { ?laterDocument1 cascade:answeredAsOf ?laterAnswered1 }
             } }
           OPTIONAL { ?earlierDocument1 prov:wasGeneratedBy/prov:qualifiedAssociation ?earlierVia1 .
-                     ?earlierVia1 prov:hadRole cascade:TransmitterRole ; prov:agent ?earlierTransmitter1 }
+                     ?earlierVia1 prov:hadRole ?earlierRole1 ; prov:agent ?earlierTransmitter1
+                     FILTER (?earlierRole1 = cascade:TransmitterRole) }
           OPTIONAL { ?laterDocument1 prov:wasGeneratedBy/prov:qualifiedAssociation ?laterVia1 .
-                     ?laterVia1 prov:hadRole cascade:TransmitterRole ; prov:agent ?laterTransmitter1 }
+                     ?laterVia1 prov:hadRole ?laterRole1 ; prov:agent ?laterTransmitter1
+                     FILTER (?laterRole1 = cascade:TransmitterRole) }
           FILTER (COALESCE(?earlierTransmitter1 = ?laterTransmitter1,
                            !BOUND(?earlierTransmitter1) && !BOUND(?laterTransmitter1)))
         } }
@@ -49,9 +51,11 @@ WHERE {
           FILTER NOT EXISTS { ?laterDocument cascade:answeredAsOf ?laterAnswered0 }
         } }
       OPTIONAL { ?earlierDocument prov:wasGeneratedBy/prov:qualifiedAssociation ?earlierVia0 .
-                 ?earlierVia0 prov:hadRole cascade:TransmitterRole ; prov:agent ?earlierTransmitter0 }
+                 ?earlierVia0 prov:hadRole ?earlierRole0 ; prov:agent ?earlierTransmitter0
+                 FILTER (?earlierRole0 = cascade:TransmitterRole) }
       OPTIONAL { ?laterDocument prov:wasGeneratedBy/prov:qualifiedAssociation ?laterVia0 .
-                 ?laterVia0 prov:hadRole cascade:TransmitterRole ; prov:agent ?laterTransmitter0 }
+                 ?laterVia0 prov:hadRole ?laterRole0 ; prov:agent ?laterTransmitter0
+                 FILTER (?laterRole0 = cascade:TransmitterRole) }
       FILTER (COALESCE(?earlierTransmitter0 = ?laterTransmitter0,
                        !BOUND(?earlierTransmitter0) && !BOUND(?laterTransmitter0)))
     } }

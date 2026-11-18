@@ -49,9 +49,11 @@ WHERE {
     OPTIONAL { ?entry cascade:onsetDateFrom/pav:hasCurrentVersion/cascade:onsetDate ?fromOnset }
     BIND (COALESCE(?leadOnset, ?fromOnset) AS ?onset)
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?leadPaddedAt .
-               ?leadPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?leadWritten }
+               ?leadPaddedAt cascade:paddedDateTimeProperty ?leadPaddedProperty ; cascade:timeAsWritten ?leadWritten
+               FILTER (?leadPaddedProperty = cascade:onsetDate) }
     OPTIONAL { ?entry cascade:onsetDateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?fromPaddedAt .
-               ?fromPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?fromWritten }
+               ?fromPaddedAt cascade:paddedDateTimeProperty ?fromPaddedProperty ; cascade:timeAsWritten ?fromWritten
+               FILTER (?fromPaddedProperty = cascade:onsetDate) }
     BIND (IF(BOUND(?leadOnset), ?leadWritten, ?fromWritten) AS ?onsetWritten)
     BIND (IF(BOUND(?onsetWritten),IRI(CONCAT(STR(?entry), "-padded-onsetDate")), 1/0) AS ?onsetPadded)
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:reactionManifestationText ?reaction }
@@ -73,6 +75,7 @@ WHERE {
     OPTIONAL { ?memberVersion cascade:allergyCategory ?memberCategory }
     OPTIONAL { ?memberVersion cascade:onsetDate ?memberOnsetDate }
     OPTIONAL { ?memberVersion cascade:paddedDateTime ?memberPaddedAt .
-               ?memberPaddedAt cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten ?memberWritten }
+               ?memberPaddedAt cascade:paddedDateTimeProperty ?memberPaddedProperty ; cascade:timeAsWritten ?memberWritten
+               FILTER (?memberPaddedProperty = cascade:onsetDate) }
     BIND (IF(BOUND(?memberWritten), IRI(CONCAT(STR(?memberValues), "-padded-onsetDate")), 1/0) AS ?memberPadded) }
 }
