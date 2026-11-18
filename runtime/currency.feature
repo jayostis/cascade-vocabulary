@@ -144,12 +144,14 @@ Feature: Currency
     list versions (N15), an open, which gives the pod the tables it is read with, and a change to the trusted makers
     change what every record's judgments count, and are built whole; a runtime may build any step whole. The
     manifest's build activity used the writer's last snapshot (prov:used), and may name by cascade:buildInputsHash a
-    hash of everything the build read: the pod's files but those a build writes, the derivations, queries and layout
-    it ran, the tables it was read with and the runtime that ran it. A runtime that opens a pod again may read the
-    views, the labels and the type index from the pod instead of building them only when the manifest names the hash
-    it computes for the pod as it stands; otherwise they are stale, and are built again. The manifest is written after
-    the files it describes, so a step that stops before it leaves the hash of the build before, which the files that
-    step wrote no longer give.
+    hash of everything the build read: the pod's files it read, the derivations, queries and layout it ran, what the
+    tables it was read with hold of the versions the pod files, and the runtime that ran it, whose IRI (N7) every such
+    hash covers, so no other runtime computes the same one. A runtime that opens a pod again may take the views, the
+    labels and the type index from the pod instead of building them only when the manifest names the hash it computes
+    for the pod as it stands, and only from a build it kept itself under that same hash: the derived state, and the
+    bytes of each file the build wrote, which each of those files must still hold. Otherwise they are stale, and are
+    built again, by a read as by a step, and written again where the manifest names another hash. The manifest is
+    written after the files it describes.
 
     No example shows this rule: an example reads a dataset built whole from the files its story wrote, so a build in
     part and a build whole give it the same rows. Each runtime tests it itself, replaying every kit and building the
