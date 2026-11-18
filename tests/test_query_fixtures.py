@@ -14,7 +14,6 @@ from manifests import Entry, entries, failure, lens_name, row
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
 
 LENSES = sorted(named("lenses"))
-READS_THE_VIEWS = {"derivations/records.rq"}  # types an entry a view shows as a record, as it types a record: not yet fixed
 JUDGMENT = "https://ns.cascadeprotocol.org/cascade#Judgment"
 ASKED = {**questions(), **{f"matcher/{name}": relative for name, relative in named("matcher").items()}}
 ORDERED = {(QUERIES / relative).resolve() for relative in ASKED.values() if "ORDER BY" in query(relative)}
@@ -390,8 +389,8 @@ class TestWhatIsTrueOfAnyPod:
             """
             store = built_once(fixture, "oxigraph", LENSES[0]).store
             held = store.triples()
-            assert [relative for relative in named("derivations").values() if relative not in READS_THE_VIEWS
-                    and not store.construct(query(relative)) <= held] == []
+            assert [relative for relative in named("derivations").values()
+                    if not store.construct(query(relative)) <= held] == []
 
         @every_fixture
         def test_holds_no_qualified_attribution(self, fixture):
