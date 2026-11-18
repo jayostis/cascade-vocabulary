@@ -27,6 +27,7 @@ MF_MANIFEST = URIRef("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#M
 class Build:
     store: Store
     added_by_step: dict
+    answers: dict
     files: dict
 
     @cached_property
@@ -65,10 +66,10 @@ class Fixture:
                 store.load(self.folder / path, ADDRESS + path)
         for path in sorted(self.folder.glob("*.trig")):
             store.load_graphs(path, ADDRESS + path.name)
-        added = derive(store, lens)
+        added, answers = derive(store, lens)
         files = write(store)
         store.add(layout(), LAYOUT_GRAPH)
-        return Build(store, added, files)
+        return Build(store, added, answers, files)
 
 
 @cache
@@ -85,18 +86,19 @@ def layout():
 def derive(store, lens):
     """Runs each derivation and the lens in turn, the matcher judgments M7 keeps across table versions just before the
     lens, adding its triples to the store and then all of them as the lens's graph, and returns the triples each added
-    by its path."""
-    held, added = store.triples(), {}
+    by its path, and the whole answer each gave as it ran."""
+    held, added, answers = store.triples(), {}, {}
     for relative in derivations(lens):
         if relative == named("lenses")[lens]:
             added[KEPT] = kept(store) - held
             store.add(added[KEPT])
             held |= added[KEPT]
-        added[relative] = store.construct(query(relative)) - held
+        answers[relative] = store.construct(query(relative))
+        added[relative] = answers[relative] - held
         store.add(added[relative])
         held |= added[relative]
     store.add(set().union(*added.values()), DERIVED + lens)
-    return added
+    return added, answers
 
 
 STALE_MATCHER_JUDGMENTS = """
