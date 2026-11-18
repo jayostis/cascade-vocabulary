@@ -1,8 +1,9 @@
 # The first table is the one place that says which types are records and, for each kind, the word for it and whether
 # its status comes only from documents; the tables after it give, by kind, the properties that hold a version's name
-# and date. Every record becomes a cascade:Record, and every version of one gets cascade:displayName and
-# cascade:displayDate, so later steps read any record alike. A medication's date is its start of use, else the day its
-# prescription was written, and a dispense's the time it was handed over, else the time it was prepared.
+# and date. A thing of one of those types the pod holds a revision or a version of becomes a cascade:Record, and
+# every version of one gets cascade:displayName and cascade:displayDate, so later steps read any record alike. A
+# medication's date is its start of use, else the day its prescription was written, and a dispense's the time it was
+# handed over, else the time it was prepared.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
@@ -26,6 +27,7 @@ WHERE {
       (cascade:MedicationDispense             "Medication dispense"    false)
     }
     ?record a ?type .
+    FILTER (EXISTS { [] cascade:revisionOf ?record } || EXISTS { [] prov:specializationOf ?record })
   } UNION {
     VALUES (?type ?nameProperty) {
       (cascade:AllergyOrIntolerance           cascade:allergenName)

@@ -14,6 +14,7 @@ The contract a Cascade pod is built and read by; [`README.md`](README.md) names 
   subjects of the properties only that class's content carries; nothing about a version's
   content is required, because a source may omit any of it. The one exception: every version of a
   medication says whether it came from a prescription or from a list of what the person takes.
+- **A derivation reads only statements and other derivations, never a view:** its answer is the same with the views in the pod or not.
 - **Each question is asked once.** Before adding one, look under its kind for the question that
   already returns those rows.
 - **A kit's `expected/` and its examples come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,

@@ -381,6 +381,18 @@ class TestWhatIsTrueOfAnyPod:
                     assert bool(stated) == (outcome == "in no entry"), (lens, member, outcome, stated)
 
         @every_fixture
+        def test_gives_each_derivation_the_same_answer_with_the_views_in_the_pod(self, fixture):
+            """gives each derivation the same answer with the views in the pod
+
+            The pod is built, which writes its views into it, and every derivation is run again over it: none adds a
+            triple the pod does not already hold, as none does when it reads only statements and other derivations.
+            """
+            store = built_once(fixture, "oxigraph", LENSES[0]).store
+            held = store.triples()
+            assert [relative for relative in named("derivations").values()
+                    if not store.construct(query(relative)) <= held] == []
+
+        @every_fixture
         def test_holds_no_qualified_attribution(self, fixture):
             """holds no `prov:qualifiedAttribution`
 
