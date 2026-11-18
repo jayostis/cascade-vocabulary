@@ -97,7 +97,8 @@ WHERE {
                OPTIONAL { ?highAt cascade:unitText ?highUnitText } }
     BIND (IF(BOUND(?highAt), IRI(CONCAT(STR(?entry), "-reference-high")), 1/0) AS ?rangeHigh)
     OPTIONAL { ?lead pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
-               ?datePaddedAt cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ; cascade:timeAsWritten ?dateWritten }
+               ?datePaddedAt cascade:paddedDateTimeProperty ?datePaddedProperty ; cascade:timeAsWritten ?dateWritten
+               FILTER (?datePaddedProperty = cascade:resultClinicallyRelevantTime) }
     BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-resultClinicallyRelevantTime")), 1/0) AS ?datePadded) }
   UNION
   { ?member a cascade:LaboratoryTestResult ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
