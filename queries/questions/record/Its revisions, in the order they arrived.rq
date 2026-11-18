@@ -33,7 +33,8 @@ WHERE {
              OPTIONAL { ?document cascade:answeredAsOf ?answeredAsOf }
              OPTIONAL { ?document prov:wasAttributedTo/(rdfs:label|pav:hasCurrentVersion/foaf:name) ?hospital }
              OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?sender .
-                        ?sender prov:hadRole cascade:TransmitterRole ; prov:agent/rdfs:label ?transmitter } }
+                        ?sender prov:hadRole ?transmitterRole ; prov:agent/rdfs:label ?transmitter
+                        FILTER (?transmitterRole = cascade:TransmitterRole) } }
   OPTIONAL { ?revision prov:wasGeneratedBy ?import .
              OPTIONAL { ?import rdfs:label ?importLabel }
              OPTIONAL { ?import prov:startedAtTime ?started } }
