@@ -1,8 +1,9 @@
 # Two records of one kind match when their current versions give two different vaccine codes that one version of a
 # vaccine group table puts in one group, and one date, the same term, that is a day or a time its source wrote to the
-# second, as same-code-and-day-or-exact-time.rq reads a date. A record's vaccine code, a CVX code's IRI, joins a row
-# whose code is that IRI. Each ordered pair is a row, with the version whose rows joined it; a graph that is not a
-# version of a vaccine group table is never read for rows.
+# second: a year or a month is a span, and a time the version holds padded (cascade:PaddedDateTime) was written to the
+# hour or the minute, so two of either may be two events. A record's vaccine code, a CVX code's IRI, joins a row whose
+# code is that IRI. Each ordered pair is a row, with the version whose rows joined it; a graph that is not a version of
+# a vaccine group table is never read for rows.
 PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>

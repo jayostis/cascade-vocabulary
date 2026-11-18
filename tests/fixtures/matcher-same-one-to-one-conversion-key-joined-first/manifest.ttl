@@ -4,14 +4,14 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <> a mf:Manifest ;
-  rdfs:label "matcher-same-one-to-one-conversion" ;
+  rdfs:label "matcher-same-one-to-one-conversion-key-joined-first" ;
   rdfs:comment "A version of a code conversion table, its rows in its own graph: a retired code replaced by one code that replaces nothing else (1:1), two retired codes replaced by one (n:1), a split code and its parts (1:n), and a row of the earlier form, skos:exactMatch with no cardinality; conditions with those codes, two ICD-9-CM codes a 1:1 row pairs, and two that a 1:1 row of a version of another kind pairs." ;
   mf:entries (
     <#same-one-to-one-conversion>
   ) .
 
 <#same-one-to-one-conversion> a mf:QueryEvaluationTest ;
-  mf:name "same-one-to-one-conversion" ;
+  mf:name "same-one-to-one-conversion-key-joined-first" ;
   rdfs:comment "A retired code and its conversion match either way round on a 1:1 row, with the table's version; a merge, a split, a row of the earlier form, a row of two ICD-9-CM codes and a row of a version of another kind do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-one-to-one-conversion-key-joined-first.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
@@ -27,4 +27,4 @@
                                   <urn:x:split> ,
                                   <urn:x:strayA> ,
                                   <urn:x:strayB> ] ;
-  mf:result <same-one-to-one-conversion.srj> .
+  mf:result <same-one-to-one-conversion-key-joined-first.srj> .

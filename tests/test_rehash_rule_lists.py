@@ -13,7 +13,7 @@ from contract import ROOT
 def ni(octets):
     return base64.urlsafe_b64encode(hashlib.sha256(octets).digest()).decode("ascii").rstrip("=")
 
-LIST_A = "runtime/rule-list/0b5a5224-0a96-4f98-8557-5e575155836b.ttl"
+LIST_A = "runtime/rule-list/5d0e7c34-6b1a-4e2f-9a58-2c4f0d8e1b73.ttl"
 LIST_B = "runtime/rule-list/1cbf0000-0000-4000-8000-000000000000.ttl"
 QUERY_A = "queries/matcher/same-code.rq"
 QUERY_B = "queries/matcher/other.rq"

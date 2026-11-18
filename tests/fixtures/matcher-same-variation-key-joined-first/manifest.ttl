@@ -4,14 +4,14 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <> a mf:Manifest ;
-  rdfs:label "matcher-same-variation" ;
+  rdfs:label "matcher-same-variation-key-joined-first" ;
   rdfs:comment "Two variants of one ClinVar ID on two transcript versions; a variant of another ID; a variant with only an expression that one of the first two also holds; and a variant with no code. No table is held." ;
   mf:entries (
     <#same-variation>
   ) .
 
 <#same-variation> a mf:QueryEvaluationTest ;
-  mf:name "same-variation" ;
+  mf:name "same-variation-key-joined-first" ;
   rdfs:comment "Records whose current versions share a ClinVar VariationID match, whatever expression each holds. A shared expression with no ID on one side, another ID, and no code match nothing." ;
   mf:action [ qt:query <../../../queries/matcher/same-variation-key-joined-first.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
@@ -19,4 +19,4 @@
                                   <urn:x:noCode> ,
                                   <urn:x:older> ,
                                   <urn:x:other> ] ;
-  mf:result <same-variation.srj> .
+  mf:result <same-variation-key-joined-first.srj> .

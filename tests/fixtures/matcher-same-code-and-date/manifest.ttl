@@ -24,7 +24,7 @@
   mf:result <same-code-and-date.srj> .
 
 <#same-code-and-day-or-exact-time> a mf:QueryEvaluationTest ;
-  mf:name "same-code-and-day-or-exact-time" ;
+  mf:name "same-code-and-day-or-exact-time-key-joined-first" ;
   rdfs:comment "Only the pair giving one code on one day matches: two shots of one code dated to one year, or to one time padded from the hour, may be two shots, and do not." ;
   mf:action [ qt:query <../../../queries/matcher/same-code-and-day-or-exact-time-key-joined-first.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
@@ -35,4 +35,4 @@
                                   <urn:x:undatedB> ,
                                   <urn:x:sameYearB> ,
                                   <urn:x:paddedHourB> ] ;
-  mf:result <same-code-and-day-or-exact-time.srj> .
+  mf:result <same-code-and-day-or-exact-time-key-joined-first.srj> .
