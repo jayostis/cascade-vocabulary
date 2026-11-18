@@ -27,7 +27,7 @@ WHERE {
       (cascade:MedicationDispense             "Medication dispense"    false)
     }
     ?record a ?type .
-    FILTER EXISTS { { [] cascade:revisionOf ?record } UNION { [] prov:specializationOf ?record } }
+    FILTER (EXISTS { [] cascade:revisionOf ?record } || EXISTS { [] prov:specializationOf ?record })
   } UNION {
     VALUES (?type ?nameProperty) {
       (cascade:AllergyOrIntolerance           cascade:allergenName)
