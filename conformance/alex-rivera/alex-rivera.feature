@@ -43,9 +43,9 @@ Feature: Alex Rivera's pod
 
   Rule: P1. The same allergy at both hospitals, under different ids and code systems
     Penicillin is H1-ALG-PCN (RxNorm 7980) at Meridian, and H2O-ALG-PCN and H2F-ALG-PCN (SNOMED 373270004) at
-    Larkspur's old and new servers: three records. The scenario's J4 joins the first two through an ingredient map;
-    version 19 of the rule list joins no SNOMED CT code with an RxNorm code, so the matcher never joins H1-ALG-PCN, J14
-    joins the two Larkspur records by their one code, and Alex joins all three (J21).
+    Larkspur's old and new servers: three records. Version 19 of the rule list joins no SNOMED CT code with an RxNorm
+    code, so the matcher never joins H1-ALG-PCN, J14 joins the two Larkspur records by their one code, and Alex joins
+    all three (J21).
 
     Example: one allergy at two hospitals is three allergy records
       Then these records have:
@@ -344,20 +344,12 @@ Feature: Alex Rivera's pod
         | retracted | counts |
         | J10       | false  |
 
-  Rule: P14. A matcher judgment stops counting under everyday when its reference table is replaced
-    The scenario's J4 and E9: version 19 of the rule list reads no ingredient map, a table of SNOMED CT substances
-    and RxNorm ingredients the vocabulary no longer has, so the matcher never writes J4, E9 brings no table of Alex's,
-    and nothing stops counting; M2's recheck writes nothing, and the penicillin records stay apart, as after E5.
+  Rule: P14. A matcher recheck when no reference table has been replaced writes nothing
+    M2 rechecks every Same that used a reference version. No table of Alex's is replaced in her story, so it writes
+    nothing.
 
     Example: M2's recheck writes no file
       Then "M2" wrote no file
-
-    Example: H1-ALG-PCN and H2O-ALG-PCN are apart after M2
-      When the pod is read as it stood after "M2"
-      Then the allergies view holds these entries:
-        | members     |
-        | H1-ALG-PCN  |
-        | H2O-ALG-PCN |
 
   Rule: P15. A judgment made against versions that later change
     J3 used H1-ALG-SULFA's first version, and its second arrives at E6: J3 still counts and is listed for review, until
@@ -651,34 +643,34 @@ Feature: Alex Rivera's pod
 
   Rule: The scenario's other outcomes
 
-    Example: E5 writes J3 and J5 to J7, the scenario's judgments version 19 reaches, and the reference descriptions it was the first to use
+    Example: E5 writes J3 and J5 to J7 as the scenario gives them, and the reference descriptions it was the first to use
       Then "E5" wrote these matcher judgments:
-        | justification      | members                     | asserted under                       | used                                                                                                  | name                                          |
-        | same code          | H1-ALG-SULFA, H2O-ALG-SULFA | Matcher rules version 19             | version 1 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA                                                 | urn:uuid:761cfeb7-6da9-89ca-b552-4d9256e93019 |
-        | same code and period | H1-CON-HTN, H2O-CON-HTN     | Matcher rules version 19             | version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN                                                     | urn:uuid:cb7659bb-04c3-8e0e-a8c6-c90f48afb547 |
-        | same code and date | H1-IMM-FLU25, H2O-IMM-FLU25 | Matcher rules version 19             | version 1 of H1-IMM-FLU25, version 1 of H2O-IMM-FLU25                                                 | urn:uuid:30cdc218-6a03-8a37-b582-c67b80eac626 |
-        | same code          | H1-PROC-COLO, H2O-PROC-COLO | Matcher rules version 19             | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO                                                 | urn:uuid:b889c1e2-5260-8ceb-a27e-ccb207039868 |
+        | justification        | members                     | asserted under           | used                                                  | name                                          |
+        | same code            | H1-ALG-SULFA, H2O-ALG-SULFA | Matcher rules version 19 | version 1 of H1-ALG-SULFA, version 1 of H2O-ALG-SULFA | urn:uuid:761cfeb7-6da9-89ca-b552-4d9256e93019 |
+        | same code and period | H1-CON-HTN, H2O-CON-HTN     | Matcher rules version 19 | version 1 of H1-CON-HTN, version 1 of H2O-CON-HTN     | urn:uuid:cb7659bb-04c3-8e0e-a8c6-c90f48afb547 |
+        | same code and date   | H1-IMM-FLU25, H2O-IMM-FLU25 | Matcher rules version 19 | version 1 of H1-IMM-FLU25, version 1 of H2O-IMM-FLU25 | urn:uuid:30cdc218-6a03-8a37-b582-c67b80eac626 |
+        | same code            | H1-PROC-COLO, H2O-PROC-COLO | Matcher rules version 19 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO | urn:uuid:b889c1e2-5260-8ceb-a27e-ccb207039868 |
       And "E5" wrote these reference descriptions:
-        | reference                                          |
-        | Matcher rules                                      |
-        | Matcher rules version 19                           |
+        | reference                |
+        | Matcher rules            |
+        | Matcher rules version 19 |
 
-    Example: E13 writes J13 to J18, J15 and J16 by version 19's same code and period, and the reference descriptions it was the first to use
+    Example: E13 writes J13 to J18 as the scenario gives them, and the reference descriptions it was the first to use
       Then "E13" wrote these matcher judgments:
-        | justification             | members                                    | asserted under                       | used                                                                                           | name                                          |
-        | same code                 | H1-ALG-SULFA, H2F-ALG-SULFA                | Matcher rules version 19             | version 2 of H1-ALG-SULFA, version 1 of H2F-ALG-SULFA                                          | urn:uuid:ee6f88c0-7e89-8fd0-89b7-2624d2daff06 |
-        | same code                 | H2O-ALG-PCN, H2F-ALG-PCN                   | Matcher rules version 19             | version 1 of H2O-ALG-PCN, version 1 of H2F-ALG-PCN                                             | urn:uuid:5f006452-83ab-856c-a0d5-32ee8b182d40 |
-        | same code and period      | H1-CON-HTN, H2F-CON-HTN                    | Matcher rules version 19             | version 1 of H1-CON-HTN, version 1 of H2F-CON-HTN                                              | urn:uuid:b7866e26-26a3-84e7-be03-3414d2f61d86 |
-        | same code and period      | H2O-CON-ASTHMA, H2F-CON-ASTHMA             | Matcher rules version 19             | version 1 of H2O-CON-ASTHMA, version 1 of H2F-CON-ASTHMA                                       | urn:uuid:128da4fd-8ba4-82b2-9709-2e27adec459b |
-        | same mapped code and date | H1-IMM-FLU25, H2F-IMM-FLU25                | Matcher rules version 19             | CVX vaccine group table version 2026-08, version 1 of H1-IMM-FLU25, version 1 of H2F-IMM-FLU25 | urn:uuid:1fde2b84-7510-8f6d-939c-b904952d6072 |
-        | same code                 | H1-PROC-COLO, H2O-PROC-COLO, H2F-PROC-COLO | Matcher rules version 19             | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO, version 1 of H2F-PROC-COLO              | urn:uuid:441ab5d9-5359-80f1-9102-ea2b69e635f1 |
+        | justification             | members                                    | asserted under           | used                                                                                           | name                                          |
+        | same code                 | H1-ALG-SULFA, H2F-ALG-SULFA                | Matcher rules version 19 | version 2 of H1-ALG-SULFA, version 1 of H2F-ALG-SULFA                                          | urn:uuid:ee6f88c0-7e89-8fd0-89b7-2624d2daff06 |
+        | same code                 | H2O-ALG-PCN, H2F-ALG-PCN                   | Matcher rules version 19 | version 1 of H2O-ALG-PCN, version 1 of H2F-ALG-PCN                                             | urn:uuid:5f006452-83ab-856c-a0d5-32ee8b182d40 |
+        | same code and period      | H1-CON-HTN, H2F-CON-HTN                    | Matcher rules version 19 | version 1 of H1-CON-HTN, version 1 of H2F-CON-HTN                                              | urn:uuid:b7866e26-26a3-84e7-be03-3414d2f61d86 |
+        | same code and period      | H2O-CON-ASTHMA, H2F-CON-ASTHMA             | Matcher rules version 19 | version 1 of H2O-CON-ASTHMA, version 1 of H2F-CON-ASTHMA                                       | urn:uuid:128da4fd-8ba4-82b2-9709-2e27adec459b |
+        | same mapped code and date | H1-IMM-FLU25, H2F-IMM-FLU25                | Matcher rules version 19 | CVX vaccine group table version 2026-08, version 1 of H1-IMM-FLU25, version 1 of H2F-IMM-FLU25 | urn:uuid:1fde2b84-7510-8f6d-939c-b904952d6072 |
+        | same code                 | H1-PROC-COLO, H2O-PROC-COLO, H2F-PROC-COLO | Matcher rules version 19 | version 1 of H1-PROC-COLO, version 1 of H2O-PROC-COLO, version 1 of H2F-PROC-COLO              | urn:uuid:441ab5d9-5359-80f1-9102-ea2b69e635f1 |
       And "E13" wrote these reference descriptions:
         | reference                               |
         | CVX vaccine group table                 |
         | CVX vaccine group table version 2026-08 |
 
     Example: the other matcher runs write nothing
-      Then "M5", "M6", "M7", "M2", "M3" and "M8" wrote no file
+      Then "M5", "M6", "M7", "M3" and "M8" wrote no file
 
     Example: each import and entry writes the scenario's numbers of records, versions, revisions, documents and activities
       When the query is:
@@ -755,19 +747,19 @@ Feature: Alex Rivera's pod
         }
         """
       Then it answers:
-        | view                                                           | used                                               |
-        | <https://pod.alex-rivera.example/clinical/allergies.ttl>       | Matcher rules version 19                           |
-        | <https://pod.alex-rivera.example/clinical/allergies.ttl>       | CVX vaccine group table version 2026-08            |
-        | <https://pod.alex-rivera.example/clinical/conditions.ttl>      | Matcher rules version 19                           |
-        | <https://pod.alex-rivera.example/clinical/conditions.ttl>      | CVX vaccine group table version 2026-08            |
-        | <https://pod.alex-rivera.example/clinical/immunizations.ttl>   | Matcher rules version 19                           |
-        | <https://pod.alex-rivera.example/clinical/immunizations.ttl>   | CVX vaccine group table version 2026-08            |
-        | <https://pod.alex-rivera.example/clinical/procedures.ttl>      | Matcher rules version 19                           |
-        | <https://pod.alex-rivera.example/clinical/procedures.ttl>      | CVX vaccine group table version 2026-08            |
-        | <https://pod.alex-rivera.example/clinical/patient-profile.ttl> | Matcher rules version 19                           |
-        | <https://pod.alex-rivera.example/clinical/patient-profile.ttl> | CVX vaccine group table version 2026-08            |
-        | <https://pod.alex-rivera.example/clinical/labels.ttl>          | Matcher rules version 19                           |
-        | <https://pod.alex-rivera.example/clinical/labels.ttl>          | CVX vaccine group table version 2026-08            |
+        | view                                                           | used                                    |
+        | <https://pod.alex-rivera.example/clinical/allergies.ttl>       | Matcher rules version 19                |
+        | <https://pod.alex-rivera.example/clinical/allergies.ttl>       | CVX vaccine group table version 2026-08 |
+        | <https://pod.alex-rivera.example/clinical/conditions.ttl>      | Matcher rules version 19                |
+        | <https://pod.alex-rivera.example/clinical/conditions.ttl>      | CVX vaccine group table version 2026-08 |
+        | <https://pod.alex-rivera.example/clinical/immunizations.ttl>   | Matcher rules version 19                |
+        | <https://pod.alex-rivera.example/clinical/immunizations.ttl>   | CVX vaccine group table version 2026-08 |
+        | <https://pod.alex-rivera.example/clinical/procedures.ttl>      | Matcher rules version 19                |
+        | <https://pod.alex-rivera.example/clinical/procedures.ttl>      | CVX vaccine group table version 2026-08 |
+        | <https://pod.alex-rivera.example/clinical/patient-profile.ttl> | Matcher rules version 19                |
+        | <https://pod.alex-rivera.example/clinical/patient-profile.ttl> | CVX vaccine group table version 2026-08 |
+        | <https://pod.alex-rivera.example/clinical/labels.ttl>          | Matcher rules version 19                |
+        | <https://pod.alex-rivera.example/clinical/labels.ttl>          | CVX vaccine group table version 2026-08 |
 
     Example: the labels file gives each other thing one label, and states of itself only that it is a view and what it used
       When the query is:
