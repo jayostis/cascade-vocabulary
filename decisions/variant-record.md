@@ -155,7 +155,7 @@ expression as written, exact.
   id, and whose allele fraction over time is an observation the model lacks; two findings of one variant from one lab
   on two dates, right to join when germline and wrong when somatic.
 - Which revision of a variant is current follows `currency.md`'s ladder: the queries that read a variant
-  (`views/variants.rq`, `matcher/same-variation.rq`, `matcher/same-variation-through-table.rq`) read
+  (`views/variants.rq`, `matcher/same-variation-key-joined-first.rq`, `matcher/same-variation-through-current-tables-key-joined-first.rq`) read
   `pav:hasCurrentVersion`, which `derivations/current-revisions.rq` derives by it (`runtime/currency.feature`, C2).
 - The lab that reported a variant is an organisation record (`republishing-sources.md`); the variant does not say which
   lab reported it, and whether it should, or only its interpretation should (`variant-interpretation.md`), is open.

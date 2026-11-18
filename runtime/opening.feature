@@ -4,19 +4,15 @@ Feature: Opening a pod
 
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Hana
   enters six flu shots in three pairs by date, and later one more, four drug allergies, four conditions and nine whose codes recur. Her pod is made with the
-  vector tables, which are Priya's kit's series. The apps' product ingredient and vaccine group rows are as the live
-  feed published them before rule list version 9, with skos:broadMatch, which versions 1 to 8 read and the row shapes
-  now refuse. App's tables open it: "app", holding version 1 of the vocabulary's rule
-  list and version 1 of "CDC CVX vaccine groups", "app-later", holding versions 2 and 3 as well, "app-new-rules",
-  holding a version 2 of the rule list and version 1 of the rule list as an app holds it after a query changed, its
-  hash no longer the query's, and "app-rxnorm", holding "app"'s and the vocabulary's rule list's version 2, whose R3
-  reads version 1 of "NLM RxNorm Prescribable product ingredients", which it also holds, and "app-icd", holding
-  "app"'s, the rule list's versions 2 and 3, whose R7 reads version 1 of "CDC ICD-10-CM code conversions", which it
-  also holds, and "app-periods", holding "app"'s and the rule list's versions 2 to 4, and no conversions,
-  "app-conversions", holding "app-icd"'s and the rule list's versions 4 and 5, whose R7 reads version 2 of "CDC
-  ICD-10-CM code conversions", which revises version 1 and which it also holds, and "app-fewer-rules", holding
-  "app"'s version 1 of "CDC CVX vaccine groups" and a rule list version "1a" that revises version 1 and lacks R4, and
-  "app-wrong-rule", holding the same but a version "1b" in place of "1a" that also declares R4 wrong.
+  vector tables, which are Priya's kit's series. App's tables open it, each a folder of the rule list's versions and
+  the tables an app holds: "app", holding an earlier version "0" of the rule list, whose rows are R1, which also applies
+  to conditions there, R2, R4 and R7 as the vocabulary's version 19 has them, and version 1 of "CDC CVX vaccine groups";
+  "app-later", holding versions 2 and 3 of that table as well; "app-rxnorm", "app-icd" and "app-periods", holding
+  "app"'s and the vocabulary's version 19, which revises version "0", with version 1 of "NLM RxNorm Prescribable product
+  ingredients", of "CDC ICD-10-CM code conversions" and of no further table respectively; "app-new-rules", holding the
+  vocabulary's version 19 and version "0" as an app holds it after a query changed, R2's hash no longer the query's;
+  "app-fewer-rules", holding a version "0a" that revises version "0" and lacks R4; and "app-wrong-rule", holding the
+  same but a version "0b" in place of "0a" that also declares R4 wrong.
 
   Rule: O1. Opening a pod adopts each series' default version that descends from the version the pod names, and judges what the tables newly join
     No note rules this.
@@ -71,7 +67,7 @@ Feature: Opening a pod
       And the matcher's same mapped code and date of immunization CVX 141 "Fluarix" and immunization CVX 150 "FluLaval" has lapsed
 
     Example: a rule list the pod names that M11 now refuses joins nothing, so the adopted rule list judges every pair, and finds each matcher judgment asserted with the query it runs
-      Version 2 runs the vaccine group query the Sames were asserted with under version 1, so judging the pairs anew
+      Version 19 runs the vaccine group query the Sames were asserted with under version "0", so judging the pairs anew
       reaches the matcher judgments the pod holds, asserted already (M9): nothing is written of them, and they count on.
 
       When the pod is opened with the tables "app-new-rules" on 2026-07-03 at 09:00
@@ -85,19 +81,11 @@ Feature: Opening a pod
       And the pod is opened with the tables "app-later" on 2026-07-04 at 09:00 (again)
       Then that step wrote no file
 
-    Example: after the rule list's version 2 is adopted, R3 joins a brand allergy and its ingredient's, and not a two-ingredient product and one of its ingredients
-      Augmentin is amoxicillin and clavulanate, so its ingredient is the concept of both, not amoxicillin.
-
-      When the pod is opened with the tables "app-rxnorm" on 2026-07-03 at 09:00
-      And Hana enters "allergies" on 2026-07-04 at 09:00
-      And the matcher runs on the records of that entry on 2026-07-04 at 09:05 (match-allergies)
-      Then the matcher's judgments holding allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen", allergy RxNorm 151392 "Augmentin" and allergy RxNorm 723 "Amoxicillin" are:
-        | justification    | members                                                        | used                                                                                                                                            |
-        | same mapped code | allergy RxNorm 153010 "Advil", allergy RxNorm 5640 "Ibuprofen" | NLM RxNorm Prescribable product ingredients version 1, version 1 of allergy RxNorm 153010 "Advil", version 1 of allergy RxNorm 5640 "Ibuprofen" |
-
-    Example: adopting the rule list's version 2 judges the pairs its new R3 joins among records already matched, and asserts no matcher judgment of a rule it left unchanged
-      Version 2 runs version 1's vaccine group query, so the flu shots' matcher judgments, asserted with it under version 1, are
-      not asserted again, and count on.
+    Example: adopting a rule list version that adds R3 judges the pairs R3 joins among records already matched, and asserts no matcher judgment of a rule it left unchanged
+      R3 joins a brand allergy and its ingredient's, and not a two-ingredient product and one of its ingredients:
+      Augmentin is amoxicillin and clavulanate, so its ingredient is the concept of both, not amoxicillin. Version 19 runs
+      version "0"'s vaccine group query, so the flu shots' matcher judgments, asserted with it under version "0", are not
+      asserted again, and count on.
 
       Given Hana enters "allergies" on 2026-07-02 at 10:00
       And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-allergies)
@@ -111,21 +99,14 @@ Feature: Opening a pod
       And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" counts
       And that step wrote these reference descriptions:
         | reference                                             |
-        | Matcher rules version 2                               |
+        | Matcher rules version 19                              |
         | NLM RxNorm Prescribable product ingredients           |
         | NLM RxNorm Prescribable product ingredients version 1 |
 
-    Example: after the rule list's version 3 is adopted, R7 joins a condition on a retired code and one on its conversion, and not a split code and one of its parts
-      T84.040A converts to M97.01XA alone; D69.1 split into D69.11 and D69.19, so it has no row.
+    Example: adopting a table of a series the pod names no version of judges the pairs its rows join among records already matched
+      R7 joins a condition on a retired code and one on the one code it converts to: T84.040A converts to M97.01XA alone,
+      1:1, and D69.1 split into D69.11 and D69.19, 1:n, so it joins nothing.
 
-      When the pod is opened with the tables "app-icd" on 2026-07-03 at 09:00
-      And Hana enters "conditions" on 2026-07-04 at 09:00
-      And the matcher runs on the records of that entry on 2026-07-04 at 09:05 (match-conditions)
-      Then the matcher's judgments holding condition ICD-10-CM T84.040A, condition ICD-10-CM M97.01XA, condition ICD-10-CM D69.1 and condition ICD-10-CM D69.11 are:
-        | justification       | members                                                                                                                                                                                 | used                                                                                                                                                                                                                                                        |
-        | same converted code | condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" | CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", version 1 of condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" |
-
-    Example: adopting the rule list's version 3 judges the pairs its new R7 joins among records already matched
       Given Hana enters "conditions" on 2026-07-02 at 10:00
       And the matcher runs on the records of that entry on 2026-07-02 at 10:05 (match-conditions)
       When the pod is opened with the tables "app-icd" on 2026-07-03 at 09:00
@@ -134,13 +115,12 @@ Feature: Opening a pod
         | same converted code | condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" | CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", version 1 of condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" |
       And that step wrote these reference descriptions:
         | reference                                |
-        | Matcher rules version 2                  |
-        | Matcher rules version 3                  |
+        | Matcher rules version 19                 |
         | CDC ICD-10-CM code conversions           |
         | CDC ICD-10-CM code conversions version 1 |
 
-    Example: adopting the rule list's version 4 judges the pairs its new R8 joins among records already matched, and the earlier same code of two episodes apart still counts
-      R1 joined the two pharyngitis episodes under version 1. Version 4 takes conditions out of R1, so nothing is
+    Example: adopting a rule list version that adds R8 judges the pairs R8 joins among records already matched, and the earlier same code of two episodes apart still counts
+      R1 joined the two pharyngitis episodes under version "0". Version 19 takes conditions out of R1, so nothing is
       filed again for them, but its row for R1 carries the query hash the Same was asserted with: a matcher judgment counts while
       its rule runs the query it was asserted with (M5), so the Same counts on and the episodes stay one entry until a
       person judges them different. A version that must undo its rule's matcher judgments changes the rule's query.
@@ -155,42 +135,11 @@ Feature: Opening a pod
         | same code and period | condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"             | version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, clinic", version 1 of condition ICD-10-CM E11.9 "Type 2 diabetes, hospital"             |
       And the matcher's same code of condition SNOMED 195662009 "Acute viral pharyngitis, 2017" and condition SNOMED 195662009 "Acute viral pharyngitis, 2020" counts
       And that step wrote these reference descriptions:
-        | reference               |
-        | Matcher rules version 2 |
-        | Matcher rules version 3 |
-        | Matcher rules version 4 |
-
-    Example: adopting the rule list's version 5 and conversions version 2 joins a retired code and its conversion on a 1:1 row, and the version 3 Same of the earlier form no longer counts
-      Conversions version 2 gives T84.040A one replacement, M97.01XA, with cardinality 1:1, and D69.1 two, D69.11 and
-      D69.19, with 1:n. Version 1's row is of the earlier form, which R7's new query does not read.
-
-      Given the pod is opened with the tables "app-icd" on 2026-07-03 at 09:00
-      And Hana enters "conditions" on 2026-07-04 at 09:00
-      And the matcher runs on the records of that entry on 2026-07-04 at 09:05 (match-conditions)
-      When the pod is opened with the tables "app-conversions" on 2026-07-05 at 09:00
-      Then the matcher's judgments holding condition ICD-10-CM T84.040A, condition ICD-10-CM M97.01XA, condition ICD-10-CM D69.1 and condition ICD-10-CM D69.11 are:
-        | justification       | members                                                                                                                                                                                 | used                                                                                                                                                                                                                                                        |
-        | same converted code | condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" | CDC ICD-10-CM code conversions version 1, version 1 of condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", version 1 of condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" |
-        | same converted code | condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" | CDC ICD-10-CM code conversions version 2, version 1 of condition ICD-10-CM M97.01XA "Periprosthetic fracture around internal prosthetic right hip joint, initial encounter", version 1 of condition ICD-10-CM T84.040A "Periprosthetic fracture, right hip" |
-      And the query is:
-        """
-        PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
-        SELECT ?rules WHERE {
-          ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameConvertedCode .
-          ?assertion cascade:assertedJudgment ?judgment ; cascade:assertedUnderRuleListVersion ?rules .
-        }
-        """
-      And it answers:
-        | rules                   |
-        | Matcher rules version 5 |
-      And that step wrote these reference descriptions:
-        | reference                                |
-        | Matcher rules version 4                  |
-        | Matcher rules version 5                  |
-        | CDC ICD-10-CM code conversions version 2 |
+        | reference                |
+        | Matcher rules version 19 |
 
     Example: adopting a rule list that drops a rule files nothing again for that rule's Sames, and they lapse
-      Version "1a" revises version 1 and lacks R4, which filed the two Sames, so the recheck has no rule to run for
+      Version "0a" revises version "0" and lacks R4, which filed the two Sames, so the recheck has no rule to run for
       them: it goes on, and nothing is filed again. No current rule list version runs the query each was asserted with.
 
       When the pod is opened with the tables "app-fewer-rules" on 2026-07-03 at 09:00
@@ -200,7 +149,7 @@ Feature: Opening a pod
       And the matcher's same mapped code and date of immunization CVX 141 "Fluad" and immunization CVX 161 "Fluzone Quadrivalent" has lapsed
       And that step wrote these reference descriptions:
         | reference                |
-        | Matcher rules version 1a |
+        | Matcher rules version 0a |
 
   Rule: O2. A series the tables do not hold the pod's version of is left out, and nothing is written of it
     No note rules this.
@@ -224,7 +173,7 @@ Feature: Opening a pod
       And that step wrote these reference descriptions:
         | reference                        |
         | Matcher rules                    |
-        | Matcher rules version 1          |
+        | Matcher rules version 0          |
         | CDC CVX vaccine groups           |
         | CDC CVX vaccine groups version 1 |
 
@@ -240,8 +189,8 @@ Feature: Opening a pod
       Then it answers:
         | rules                           |
         | Cascade matcher rules version 1 |
-        | Matcher rules version 1         |
-        | Matcher rules version 1         |
+        | Matcher rules version 0         |
+        | Matcher rules version 0         |
 
     Example: a pod at a version the app does not hold is matched without that series
       When the pod is opened with the tables "app" on 2026-07-03 at 09:00

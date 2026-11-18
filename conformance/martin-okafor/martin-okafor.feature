@@ -144,7 +144,7 @@ Feature: Martin Okafor's pod
       And "E6" wrote these reference descriptions:
         | reference                                                                |
         | Matcher rules                                                            |
-        | Matcher rules version 8                                                  |
+        | Matcher rules version 19                                                 |
         | ClinVar variant classifications subset for Martin Okafor                 |
         | ClinVar variant classifications subset for Martin Okafor version 2026-10 |
 

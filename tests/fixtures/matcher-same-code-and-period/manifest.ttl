@@ -7,38 +7,12 @@
   rdfs:label "matcher-same-code-and-period" ;
   rdfs:comment "Pairs of conditions: periods that overlap, touch, or are apart; an open period and a later onset; a resolved condition with no abatement, or an abatement before the onset; a dateTime against a date; an abatement before the onset counts as none; two records carrying both codes; no onset; each code system; a procedure's code; and, for the query that reads dates as ranges, a year onset against a day in it and one after it, a month abatement, and a year abatement that ends after the onset or before it." ;
   mf:entries (
-    <#same-code-and-period>
     <#same-code-and-period-read-as-ranges>
   ) .
 
-<#same-code-and-period> a mf:QueryEvaluationTest ;
-  mf:name "same-code-and-period" ;
-  rdfs:comment "Only the pairs of one code whose periods overlap match, in either order." ;
-  mf:action [ qt:query <../../../queries/matcher/same-code-and-period.rq> ;
-              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
-              ctm:boundRecord <urn:x:apartA> ,
-                                  <urn:x:apartB> ,
-                                  <urn:x:backwardsB> ,
-                                  <urn:x:dualB> ,
-                                  <urn:x:noOnsetA> ,
-                                  <urn:x:noOnsetB> ,
-                                  <urn:x:onsetDayB> ,
-                                  <urn:x:onsetDayC> ,
-                                  <urn:x:openB> ,
-                                  <urn:x:otherCodeA> ,
-                                  <urn:x:otherCodeB> ,
-                                  <urn:x:overlapB> ,
-                                  <urn:x:procedureA> ,
-                                  <urn:x:procedureB> ,
-                                  <urn:x:snomedB> ,
-                                  <urn:x:snomedC> ,
-                                  <urn:x:touchingB> ,
-                                  <urn:x:zoneB> ] ;
-  mf:result <same-code-and-period.srj> .
-
 <#same-code-and-period-read-as-ranges> a mf:QueryEvaluationTest ;
   mf:name "same-code-and-period-read-as-ranges" ;
-  rdfs:comment "The pairs same-code-and-period.rq gives, and those whose periods overlap once each date is read as the days its precision covers: a year onset and a day within it, a month abatement reaching a day in that month, a year abatement ending after its onset. A day the year after a year onset, and a year abatement ending before its year onset, join nothing." ;
+  rdfs:comment "Pairs of one code whose periods overlap match, in either order, once each date is read as the days its precision covers: a year onset and a day within it, a month abatement reaching a day in that month, a year abatement ending after its onset. A day the year after a year onset, and a year abatement ending before its year onset, join nothing." ;
   mf:action [ qt:query <../../../queries/matcher/same-code-and-period-read-as-ranges.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
               ctm:boundRecord <urn:x:apartA> ,

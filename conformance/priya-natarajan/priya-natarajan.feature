@@ -9,7 +9,7 @@ Feature: Priya Natarajan's pod
   planted case P1 to P17 is a rule, and each example reads the pod at the smallest set of steps and lenses at which it
   can fail for its own reason. A record, a profile and a person's judgment are named by the handle expected/handles.json
   gives it: KHF is Kestrel Harbor's FHIR, KHC its C-CDA, FFC Fernhill's C-CDA and APP Priya's own entry. Her app opens
-  her pod as it creates it, with the vocabulary's rule list version 18 and the drug products table her medications are
+  her pod as it creates it, with the vocabulary's rule list version 19 and the drug products table her medications are
   in (app-drug-products), so every matcher run of her story is the app's.
 
   Background: Priya's story
@@ -202,7 +202,7 @@ Feature: Priya Natarajan's pod
     named by its download and its place, and the adapter says the source broke its own definition. Claritin in the
     second download, FFC-MED-CLARITIN-2, is a record of its own. Neither Claritin states a start (P13), and a record
     with no start joins no other medication (decisions/medication-matching.md, row "no dates"; M15), so under the rule
-    list's version 18 the matcher keeps the two apart, although they share a product code. "What needs review" lists
+    list's version 19 the matcher keeps the two apart, although they share a product code. "What needs review" lists
     the pair as possibly the same medication (M16), and Priya joins it with a Same, J5, which outranks the matcher
     (P15).
 
@@ -375,12 +375,12 @@ Feature: Priya Natarajan's pod
   Rule: The tables an app holds name her potassium and class her lisinopril
     An app opens her pod with tables of its own (app-names-classes): the published LOINC names, RxNorm product
     ingredients, MED-RT drug classes and MED-RT names, each only the rows her potassium and her lisinopril need, and the
-    vocabulary's rule list version 18. Which names an app shows is its own choice, so the example asks only that her
+    vocabulary's rule list version 19. Which names an app shows is its own choice, so the example asks only that her
     potassium's code, LOINC 2823-3, joins the held names version. Lisinopril 10 MG Oral Tablet (RxNorm 314076) bears no
     class row: it maps to lisinopril (29046), and FDA classes lisinopril anhydrous (1546022), which maps to lisinopril
     too, as an angiotensin converting enzyme inhibitor (N0000175562) acting by that mechanism (N0000000181).
 
-    Opening writes no file, by O1: her pod has named the vocabulary's rule list version 18 since her app opened it, and
+    Opening writes no file, by O1: her pod has named the vocabulary's rule list version 19 since her app opened it, and
     these tables join no pair that version had not joined, so there is nothing to file or to describe.
 
     Example: her potassium's code joins the names version the app holds
@@ -424,7 +424,7 @@ Feature: Priya Natarajan's pod
 
   Rule: Her lab results in a LOINC panel she names
     An app opens her pod with tables of its own (app-panels): the published LOINC panel members rows of the Electrolytes
-    1998 panel (24326-1), and the vocabulary's rule list version 18. LOINC lists sodium (2951-2), potassium (2823-3) and
+    1998 panel (24326-1), and the vocabulary's rule list version 19. LOINC lists sodium (2951-2), potassium (2823-3) and
     chloride (2075-0) in it, in that order and required (R), bicarbonate (1963-8) and carbon dioxide (2028-9) as
     alternatives (R-a), and the anion gap (33037-3) as optional. Her two potassium entries are in it, and she has no
     sodium and no chloride: the panel is hers to pick, and nothing says her potassium was drawn in it.
@@ -445,7 +445,7 @@ Feature: Priya Natarajan's pod
   Rule: An estradiol tablet is an estrogen, told from a product of fluoroestradiol F-18 by its precise ingredient
     Priya enters estradiol 1 MG Oral Tablet (RxNorm 197658) she takes. An app opens her pod with tables of its own
     (app-precise): RxNorm product ingredients that state precise ingredients, MED-RT drug classes and MED-RT names, each
-    only the rows her estradiol needs, and the vocabulary's rule list version 18. Estradiol (4083) and its precise
+    only the rows her estradiol needs, and the vocabulary's rule list version 19. Estradiol (4083) and its precise
     ingredient fluoroestradiol F-18 (2372221) are classed differently: FDA gives estradiol Estrogen [EPC] (N0000175825)
     and Estrogen Receptor Agonists [MoA] (N0000000100), and fluoroestradiol F-18 Radioactive Diagnostic Agent [EPC] and
     Positron Emitting Activity [MoA]. The version gives her tablet no precise ingredient, and it states precise
