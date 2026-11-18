@@ -40,7 +40,8 @@ WHERE {
                ?statusFrom pav:hasCurrentVersion/cascade:workflowStatus ?status }
     OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:vaccinationOccurrenceTime ?date }
     OPTIONAL { ?entry cascade:dateFrom/pav:hasCurrentVersion/cascade:paddedDateTime ?datePaddedAt .
-               ?datePaddedAt cascade:paddedDateTimeProperty cascade:vaccinationOccurrenceTime ; cascade:timeAsWritten ?dateWritten }
+               ?datePaddedAt cascade:paddedDateTimeProperty ?datePaddedProperty ; cascade:timeAsWritten ?dateWritten
+               FILTER (?datePaddedProperty = cascade:vaccinationOccurrenceTime) }
     BIND (IF(BOUND(?dateWritten), IRI(CONCAT(STR(?entry), "-padded-vaccinationOccurrenceTime")), 1/0) AS ?datePadded) }
   UNION
   { ?member a cascade:Vaccination ; cascade:inEntry ?entry ; pav:hasCurrentVersion ?memberVersion .
