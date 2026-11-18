@@ -13,18 +13,19 @@ WHERE {
       WHERE {
         ?denial cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile .
         OPTIONAL {
-          ?opposed cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile ;
+          ?opposed cascade:countsUnderLens true ; cascade:verdict ?opposedVerdict ; prov:hadMember ?profile ;
                    cascade:subject ?s .
-          ?against cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile ;
+          ?against cascade:countsUnderLens true ; cascade:verdict ?againstVerdict ; prov:hadMember ?profile ;
                    cascade:subject ?s ; prov:wasAttributedTo ?by ; prov:generatedAtTime ?made .
-          ?by a prov:Person .
+          ?by a ?byKind .
           MINUS {
-            ?outranking cascade:countsUnderLens true ; cascade:verdict cascade:NotAbout ; prov:hadMember ?profile ;
+            ?outranking cascade:countsUnderLens true ; cascade:verdict ?outrankingVerdict ; prov:hadMember ?profile ;
                         cascade:subject ?s ; prov:wasAttributedTo ?by ; prov:generatedAtTime ?later .
-            ?against cascade:verdict cascade:About ; prov:hadMember ?profile ; cascade:subject ?s ;
+            ?against cascade:verdict ?againstAgainVerdict ; prov:hadMember ?profile ; cascade:subject ?s ;
                      prov:wasAttributedTo ?by ; prov:generatedAtTime ?made .
-            FILTER (?later > ?made)
+            FILTER (?later > ?made && ?outrankingVerdict = cascade:NotAbout && ?againstAgainVerdict = cascade:About)
           }
+          FILTER (?opposedVerdict = cascade:NotAbout && ?againstVerdict = cascade:About && ?byKind = prov:Person)
         }
         BIND (IF(BOUND(?against), cascade:PatientProfileJudgedBothAboutAndNotAbout, cascade:PatientProfileJudgedNotAbout)
               AS ?reason)

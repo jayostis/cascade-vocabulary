@@ -63,6 +63,41 @@ def has_a_subselect_after_a_pattern(tree):
     return False
 
 
+def without_filters(tree):
+    if isinstance(tree, CompValue):
+        if tree.name == "Filter":
+            return
+        yield tree
+        for value in tree.values():
+            yield from without_filters(value)
+    elif isinstance(tree, (list, tuple, ParseResults)):
+        for value in tree:
+            yield from without_filters(value)
+
+
+LIST_PLUMBING = {RDF.nil, RDF.first, RDF.rest}
+
+
+def constant_objects_in_optionals(tree):
+    """The IRIs that are the object of a triple pattern in an OPTIONAL that has a pattern before it in its group."""
+    found = []
+    for group in nodes(tree):
+        if group.name != "GroupGraphPatternSub":
+            continue
+        parts = list(group.get("part") or [])
+        for index, part in enumerate(parts):
+            if part.name == "OptionalGraphPattern" and any(p.name != "Filter" for p in parts[:index]):
+                for node in without_filters(part["graph"]):
+                    if node.name == "TriplesBlock":
+                        for triples in node["triples"]:
+                            for obj in list(triples)[2::3]:
+                                if isinstance(obj, URIRef) and obj not in LIST_PLUMBING:
+                                    found.append(f"<{obj}>")
+                                elif getattr(obj, "name", None) == "pname":
+                                    found.append(f"{obj['prefix']}:{obj['localname']}")
+    return sorted(set(found))
+
+
 QUERY_FORMS = ("SelectQuery", "ConstructQuery", "AskQuery", "DescribeQuery", "SubSelect")
 NESTED = {
     "union-joined": "SELECT * WHERE { ?x ?y ?a { ?a ?b ?c } UNION { ?a ?d ?c } }",
@@ -361,6 +396,20 @@ class TestQueryForm:
             """
             offenders = sorted(relative for relative in every_query() if has_a_subselect_after_a_pattern(parsed(relative)))
             assert offenders == []
+
+        @PARSED_TREES
+        def test_holds_no_constant_iri_object_in_an_optional_that_follows_a_pattern(self):
+            """holds no constant IRI as the object of a pattern in an OPTIONAL that follows a pattern
+
+            Oxigraph plans a pattern whose object is a constant IRI first, so an OPTIONAL holding one is run again for
+            every row on its left and each row scans every triple of the pod with that object: rows times matches. The
+            constant is written as a variable and a FILTER inside the same OPTIONAL checks it (`?r cascade:p ?v
+            FILTER (?v = cascade:X)`). A constant inside a FILTER's EXISTS is checked against a bound row, and an
+            OPTIONAL that opens its group has no row on its left, so neither is refused.
+            """
+            offenders = {relative: found for relative in every_query()
+                         if (found := constant_objects_in_optionals(parsed(relative)))}
+            assert offenders == {}
 
         @PARSED_TREES
         def test_is_one_flat_pattern(self):
@@ -817,6 +866,40 @@ class TestChecksOfTheQueryChecks:
             """
             assert has_a_subselect_after_a_pattern(parseQuery(
                 "SELECT * WHERE { ?a ?b ?c GRAPH ?g { { SELECT ?z WHERE { ?z ?p ?v } } } }"))
+
+    class TestConstantObjectsInOptionals:
+        """`constant_objects_in_optionals()`"""
+
+        @pytest.mark.parametrize("text, found", [
+            ("SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a <urn:p> <urn:o> } }", ["<urn:o>"]),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p ?x ; a c:K } }", ["c:K"]),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p [ c:role c:R ] } }", ["c:R"]),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { OPTIONAL { ?a c:p c:O } ?a c:q ?z }", []),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p ?x MINUS { ?x c:q c:M } } }", ["c:M"]),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { GRAPH ?g { ?a c:p c:G } } }", ["c:G"]),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p ?x OPTIONAL { ?x c:q c:N } } }", ["c:N"]),
+            ("PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c OPTIONAL { ?a c:p ( c:R ) } }", ["c:R"]),
+        ], ids=["an IRI", "a prefixed name after a type", "a blank node's property", "an OPTIONAL opening its group",
+                "a MINUS inside an OPTIONAL", "a GRAPH inside an OPTIONAL", "an OPTIONAL nested in an OPTIONAL",
+                "a collection"])
+        def test_returns_the_constant_objects_of_the_optional_that_follows_a_pattern(self, text, found):
+            """returns the constant IRI objects of an OPTIONAL that follows a pattern
+
+            Given each case, `constant_objects_in_optionals()` returns the IRI objects of the OPTIONAL that follows a
+            pattern, once each, and none from an OPTIONAL that opens its group. The cases are a plain pattern, after `a`, a
+            blank node's property list, a MINUS, a GRAPH, a nested OPTIONAL and a collection, whose `rdf:nil` is not one.
+            """
+            assert constant_objects_in_optionals(parseQuery(text)) == found
+
+        def test_accepts_a_variable_checked_by_a_filter_and_a_constant_inside_exists(self):
+            """accepts a variable checked by a FILTER, and a constant inside a FILTER's EXISTS
+
+            Given an OPTIONAL whose object is a variable that a FILTER compares to an IRI, and one whose FILTER NOT
+            EXISTS holds a pattern with an IRI object, `constant_objects_in_optionals()` returns nothing.
+            """
+            assert constant_objects_in_optionals(parseQuery(
+                "PREFIX c: <urn:c#> SELECT * WHERE { ?a ?b ?c "
+                "OPTIONAL { ?a c:p ?v FILTER (?v = c:O) FILTER NOT EXISTS { ?a c:q c:O } } }")) == []
 
     class TestNestedForms:
         """`nested_forms()`"""

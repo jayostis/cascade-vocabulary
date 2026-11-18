@@ -54,7 +54,8 @@ WHERE {
         ?origin prov:specializationOf/cascade:tableKind cascade:DrugClasses .
         GRAPH ?product { ?member owl:annotatedSource ?code ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedTarget ?ingredient .
                          ?left owl:annotatedTarget ?ingredient ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedSource ?held
-                         OPTIONAL { ?precise owl:annotatedSource ?code ; owl:annotatedProperty cascade:hasPreciseIngredient ; owl:annotatedTarget ?held } }
+                         OPTIONAL { ?precise owl:annotatedSource ?code ; owl:annotatedProperty ?preciseProperty ; owl:annotatedTarget ?held
+                                    FILTER (?preciseProperty = cascade:hasPreciseIngredient) } }
         GRAPH ?origin { ?by owl:annotatedSource ?held ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?given }
       }
       GROUP BY ?product ?ingredient ?origin ?relation ?code }
@@ -79,7 +80,8 @@ WHERE {
         ?origin prov:specializationOf/cascade:tableKind cascade:DrugClasses .
         GRAPH ?product { ?member owl:annotatedSource ?code ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedTarget ?ingredient .
                          ?left owl:annotatedTarget ?ingredient ; owl:annotatedProperty obo:RO_0002248 ; owl:annotatedSource ?held
-                         OPTIONAL { ?precise owl:annotatedSource ?code ; owl:annotatedProperty cascade:hasPreciseIngredient ; owl:annotatedTarget ?held } }
+                         OPTIONAL { ?precise owl:annotatedSource ?code ; owl:annotatedProperty ?preciseProperty ; owl:annotatedTarget ?held
+                                    FILTER (?preciseProperty = cascade:hasPreciseIngredient) } }
         GRAPH ?origin { ?by owl:annotatedSource ?held ; owl:annotatedProperty ?relation ; owl:annotatedTarget ?given }
       }
       GROUP BY ?product ?ingredient ?origin ?relation ?code }
