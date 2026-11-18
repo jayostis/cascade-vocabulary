@@ -23,10 +23,11 @@ WHERE {
         WHERE {
           ?subject a cascade:Subject .
           OPTIONAL {
-            ?about cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?profile ;
+            ?about cascade:countsUnderLens true ; cascade:verdict ?aboutVerdict ; prov:hadMember ?profile ;
                    cascade:subject ?subject .
-            ?entry a cascade:PatientProfile ; cascade:memberCurrentValues ?values .
+            ?entry a ?entryKind ; cascade:memberCurrentValues ?values .
             ?values cascade:valuesOfMember ?profile .
+            FILTER (?aboutVerdict = cascade:About && ?entryKind = cascade:PatientProfile)
             OPTIONAL { ?values cascade:dateOfBirth ?birth }
             OPTIONAL { ?values cascade:administrativeGender ?gender }
             OPTIONAL { ?values cascade:deceased ?dead }
@@ -52,9 +53,10 @@ WHERE {
                 WHERE {
                   ?subject a cascade:Subject .
                   OPTIONAL {
-                    ?about cascade:countsUnderLens true ; cascade:verdict cascade:About ; prov:hadMember ?sourceRecord ;
+                    ?about cascade:countsUnderLens true ; cascade:verdict ?aboutVerdict ; prov:hadMember ?sourceRecord ;
                            cascade:subject ?subject .
-                    ?entry a cascade:PatientProfile ; cascade:entryMember ?sourceRecord .
+                    ?entry a ?entryKind ; cascade:entryMember ?sourceRecord .
+                    FILTER (?aboutVerdict = cascade:About && ?entryKind = cascade:PatientProfile)
                     OPTIONAL { ?sourceRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
                                OPTIONAL { ?document pav:retrievedOn ?retrievedOn }
                                OPTIONAL { ?document prov:wasGeneratedBy/prov:qualifiedAssociation ?association .
