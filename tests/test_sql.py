@@ -694,7 +694,8 @@ class TestSqlBesideEachQuery:
             wanted = {(table, index) for table, index in connection.execute(
                 "SELECT tbl_name, name FROM sqlite_schema WHERE type = 'index'")}
             wanted |= {(name, name if without_rowid else None) for name, without_rowid in connection.execute(
-                "SELECT name, wr FROM pragma_table_list WHERE schema = 'main' AND name NOT LIKE 'sqlite_%'")
+                "SELECT name, wr FROM pragma_table_list WHERE schema = 'main' AND type = 'table' "
+                "AND name NOT LIKE 'sqlite_%'")
                 if without_rowid or not any(table == name for table, _ in wanted)}
             assert set(connection.execute("SELECT tbl, idx FROM sqlite_stat1")) == wanted
 

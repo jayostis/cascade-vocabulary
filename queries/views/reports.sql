@@ -157,6 +157,26 @@ CREATE TABLE report_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('report', 'sqlite_autoindex_report_1', '150 1'),
+  ('report', 'sqlite_autoindex_report_2', '150 1'),
+  ('report_category', 'report_category', '112 1 1'),
+  ('report_code', 'report_code', '150 1 1'),
+  ('report_conclusion_code', 'report_conclusion_code', '112 1 1'),
+  ('report_member', 'report_member', '150 1 1'),
+  ('report_member', 'report_member_record', '150 1'),
+  ('report_member_values', 'report_member_values', '150 1 1'),
+  ('report_member_values_category', 'report_member_values_category', '112 1 1 1'),
+  ('report_member_values_code', 'report_member_values_code', '150 1 1 1'),
+  ('report_member_values_conclusion_code', 'report_member_values_conclusion_code', '112 1 1 1'),
+  ('report_member_values_other_code', 'report_member_values_other_code', '112 1 1 1'),
+  ('report_member_values_padded', 'report_member_values_padded', '112 1 1 1 1'),
+  ('report_member_values_result', 'report_member_values_result', '600 4 4 1'),
+  ('report_other_code', 'report_other_code', '112 1 1'),
+  ('report_result', 'report_result', '600 4 1'),
+  ('report_source', 'report_source', '150 1 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS report_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM report_filled;
@@ -390,7 +410,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH

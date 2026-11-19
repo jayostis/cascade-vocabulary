@@ -61,6 +61,13 @@ CREATE TABLE patient_profile_source (
   PRIMARY KEY (profile, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('patient_profile_member', 'patient_profile_member', '1 1 1 1'),
+  ('patient_profile_member', 'patient_profile_member_profile', '1 1'),
+  ('patient_profile_source', 'patient_profile_source', '1 1 1'),
+  ('patient_profile_values', 'patient_profile_values', '1 1 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 DELETE FROM patient_profile_member;
 DELETE FROM patient_profile_values;
@@ -150,7 +157,7 @@ SELECT records.record,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH

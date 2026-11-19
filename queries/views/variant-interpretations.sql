@@ -85,6 +85,17 @@ CREATE TABLE variant_interpretation_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('variant_interpretation', 'sqlite_autoindex_variant_interpretation_1', '112 1'),
+  ('variant_interpretation', 'sqlite_autoindex_variant_interpretation_2', '112 1'),
+  ('variant_interpretation_member', 'variant_interpretation_member', '112 1 1'),
+  ('variant_interpretation_member', 'variant_interpretation_member_record', '112 1'),
+  ('variant_interpretation_member_values', 'variant_interpretation_member_values', '112 1 1'),
+  ('variant_interpretation_source', 'variant_interpretation_source', '112 1 1'),
+  ('variant_interpretation_variant', 'sqlite_autoindex_variant_interpretation_variant_1', '112 1'),
+  ('variant_interpretation_variant', 'variant_interpretation_variant', '112 1 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS variant_interpretation_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM variant_interpretation_filled;
@@ -235,7 +246,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 INSERT INTO variant_interpretation_variant (entry, variant_entry, variant_iri, sort_key)
 WITH named (entry, variant_entry, variant_iri, date) AS (

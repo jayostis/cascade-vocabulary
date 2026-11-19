@@ -117,6 +117,21 @@ CREATE TABLE immunization_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('immunization', 'sqlite_autoindex_immunization_1', '1350 1'),
+  ('immunization', 'sqlite_autoindex_immunization_2', '1350 1'),
+  ('immunization_code', 'immunization_code', '1350 1 1'),
+  ('immunization_member', 'immunization_member', '1500 2 1'),
+  ('immunization_member', 'immunization_member_record', '1500 1'),
+  ('immunization_member_values', 'immunization_member_values', '1500 2 1'),
+  ('immunization_member_values_code', 'immunization_member_values_code', '1500 2 1 1'),
+  ('immunization_member_values_padded', 'immunization_member_values_padded', '112 1 1 1 1'),
+  ('immunization_member_values_reason_code', 'immunization_member_values_reason_code', '112 1 1 1'),
+  ('immunization_member_values_reason_condition', 'immunization_member_values_reason_condition', '112 1 1 1'),
+  ('immunization_member_values_reason_other_system', 'immunization_member_values_reason_other_system', '112 1 1 1'),
+  ('immunization_source', 'immunization_source', '1500 2 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS immunization_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM immunization_filled;
@@ -294,7 +309,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH

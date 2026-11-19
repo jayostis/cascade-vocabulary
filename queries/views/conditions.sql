@@ -123,6 +123,21 @@ CREATE TABLE condition_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('condition', 'sqlite_autoindex_condition_1', '1350 1'),
+  ('condition', 'sqlite_autoindex_condition_2', '1350 1'),
+  ('condition_code', 'condition_code', '1350 1 1'),
+  ('condition_for', 'condition_for', '112 1 1'),
+  ('condition_for_record', 'condition_for_record', '112 1 1'),
+  ('condition_for_record', 'condition_for_record_record', '112 1'),
+  ('condition_member', 'condition_member', '1500 2 1'),
+  ('condition_member', 'condition_member_record', '1500 1'),
+  ('condition_member_values', 'condition_member_values', '1500 2 1'),
+  ('condition_member_values_code', 'condition_member_values_code', '1500 2 1 1'),
+  ('condition_member_values_padded', 'condition_member_values_padded', '112 1 1 1 1'),
+  ('condition_source', 'condition_source', '1500 2 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS condition_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM condition_filled;
@@ -346,7 +361,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH

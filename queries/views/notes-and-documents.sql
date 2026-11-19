@@ -118,6 +118,20 @@ CREATE TABLE note_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('note', 'sqlite_autoindex_note_1', '150 1'),
+  ('note', 'sqlite_autoindex_note_2', '150 1'),
+  ('note_member', 'note_member', '150 1 1'),
+  ('note_member', 'note_member_record', '150 1'),
+  ('note_member_values', 'note_member_values', '150 1 1'),
+  ('note_member_values_padded', 'note_member_values_padded', '112 1 1 1 1'),
+  ('note_member_values_type_code', 'note_member_values_type_code', '150 1 1 1'),
+  ('note_member_values_type_other_code', 'note_member_values_type_other_code', '112 1 1 1'),
+  ('note_source', 'note_source', '150 1 1'),
+  ('note_type_code', 'note_type_code', '150 1 1'),
+  ('note_type_other_code', 'note_type_other_code', '112 1 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS note_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM note_filled;
@@ -310,7 +324,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH

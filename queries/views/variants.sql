@@ -100,6 +100,21 @@ CREATE TABLE variant_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('variant', 'sqlite_autoindex_variant_1', '112 1'),
+  ('variant', 'sqlite_autoindex_variant_2', '112 1'),
+  ('variant_gene', 'variant_gene', '112 1 1'),
+  ('variant_hgvs', 'variant_hgvs', '112 1 1'),
+  ('variant_member', 'variant_member', '112 1 1'),
+  ('variant_member', 'variant_member_record', '112 1'),
+  ('variant_member_values', 'variant_member_values', '112 1 1'),
+  ('variant_member_values_gene', 'variant_member_values_gene', '112 1 1 1'),
+  ('variant_member_values_hgvs', 'variant_member_values_hgvs', '112 1 1 1'),
+  ('variant_member_values_variation', 'variant_member_values_variation', '112 1 1 1'),
+  ('variant_source', 'variant_source', '112 1 1'),
+  ('variant_variation', 'variant_variation', '112 1 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS variant_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM variant_filled;
@@ -271,7 +286,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH

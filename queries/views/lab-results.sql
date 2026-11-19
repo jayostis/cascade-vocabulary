@@ -147,6 +147,20 @@ CREATE TABLE lab_result_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('lab_result', 'sqlite_autoindex_lab_result_1', '8100 1'),
+  ('lab_result', 'sqlite_autoindex_lab_result_2', '8100 1'),
+  ('lab_result_code', 'lab_result_code', '8100 1 1'),
+  ('lab_result_interpretation', 'lab_result_interpretation', '112 1 1'),
+  ('lab_result_member', 'lab_result_member', '9000 2 1'),
+  ('lab_result_member', 'lab_result_member_record', '9000 1'),
+  ('lab_result_member_values', 'lab_result_member_values', '9000 2 1'),
+  ('lab_result_member_values_code', 'lab_result_member_values_code', '9000 2 1 1'),
+  ('lab_result_member_values_interpretation', 'lab_result_member_values_interpretation', '112 1 1 1'),
+  ('lab_result_member_values_padded', 'lab_result_member_values_padded', '3000 2 1 1 1'),
+  ('lab_result_source', 'lab_result_source', '9000 2 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS lab_result_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM lab_result_filled;
@@ -422,7 +436,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH
@@ -514,5 +528,5 @@ WITH
     UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#referenceRangeHigh>', b.high
       FROM members mv JOIN bounds b ON b.entry = mv.entry AND b.member = mv.member
       JOIN lab_result_member_values v USING (entry, member) WHERE v.high_written IS NOT NULL)
-SELECT said.s AS s, said.p AS p, o.nt AS o FROM said JOIN term o ON o.id = said.o
+SELECT said.s AS s, said.p AS p, o.nt AS o FROM said CROSS JOIN term o ON o.id = said.o
 UNION ALL SELECT s, p, o FROM made

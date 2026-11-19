@@ -144,6 +144,24 @@ CREATE TABLE medication_dispense_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('medication_dispense', 'sqlite_autoindex_medication_dispense_1', '112 1'),
+  ('medication_dispense_code', 'medication_dispense_code', '112 1 1'),
+  ('medication_dispense_member', 'medication_dispense_member', '112 1 1'),
+  ('medication_dispense_member', 'medication_dispense_member_record', '112 1'),
+  ('medication_dispense_member_values', 'medication_dispense_member_values', '112 1 1'),
+  ('medication_dispense_member_values_code', 'medication_dispense_member_values_code', '112 1 1 1'),
+  ('medication_dispense_member_values_ndc', 'medication_dispense_member_values_ndc', '112 1 1 1'),
+  ('medication_dispense_member_values_other_system_code', 'medication_dispense_member_values_other_system_code', '112 1 1 1'),
+  ('medication_dispense_member_values_padded', 'medication_dispense_member_values_padded', '112 1 1 1 1'),
+  ('medication_dispense_member_values_prescription', 'medication_dispense_member_values_prescription', '112 1 1 1'),
+  ('medication_dispense_ndc', 'medication_dispense_ndc', '112 1 1'),
+  ('medication_dispense_other_system_code', 'medication_dispense_other_system_code', '112 1 1'),
+  ('medication_dispense_padded', 'medication_dispense_padded', '112 1 1 1'),
+  ('medication_dispense_prescription_entry', 'medication_dispense_prescription_entry', '112 1 1'),
+  ('medication_dispense_source', 'medication_dispense_source', '112 1 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS medication_dispense_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM medication_dispense_filled;
@@ -344,7 +362,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH

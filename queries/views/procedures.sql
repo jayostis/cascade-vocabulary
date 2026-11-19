@@ -111,6 +111,20 @@ CREATE TABLE procedure_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('procedure', 'sqlite_autoindex_procedure_1', '675 1'),
+  ('procedure', 'sqlite_autoindex_procedure_2', '675 1'),
+  ('procedure_code', 'procedure_code', '675 1 1'),
+  ('procedure_member', 'procedure_member', '750 2 1'),
+  ('procedure_member', 'procedure_member_record', '750 1'),
+  ('procedure_member_values', 'procedure_member_values', '750 2 1'),
+  ('procedure_member_values_code', 'procedure_member_values_code', '750 2 1 1'),
+  ('procedure_member_values_reason_code', 'procedure_member_values_reason_code', '112 1 1 1'),
+  ('procedure_member_values_reason_condition', 'procedure_member_values_reason_condition', '112 1 1 1'),
+  ('procedure_member_values_reason_other_system', 'procedure_member_values_reason_other_system', '112 1 1 1'),
+  ('procedure_source', 'procedure_source', '750 2 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS procedure_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM procedure_filled;
@@ -279,7 +293,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH
