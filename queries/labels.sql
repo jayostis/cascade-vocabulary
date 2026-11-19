@@ -398,6 +398,11 @@ SELECT thing, label FROM (
   SELECT st.nt AS thing, min(
       'Retraction · ' ||
       coalesce(nm.lex, CASE WHEN wa.o IS NULL THEN 'a release' WHEN ro.o = k.patient_role THEN 'the patient'
+                            WHEN ro.o IS NULL AND EXISTS (
+                              SELECT 1 FROM quad xa
+                              CROSS JOIN quad xg ON xg.s = xa.o AND xg.p = k.agent AND xg.o = wa.o
+                              CROSS JOIN quad xr ON xr.s = xa.o AND xr.p = k.had_role
+                              WHERE xa.s = iv.activity AND xa.p = k.association) THEN NULL
                             ELSE 'a person' END) || ' · ' ||
       CASE WHEN t.lex IS NOT NULL THEN substr(t.lex, 1, 10)
            ELSE substr(sparql_replace(st.lex, '^.*[:/#]', ''), 1, 8) END || ' · of ' ||
