@@ -68,10 +68,11 @@
 -- is asked after the last row's `page_key`. A page never splits an entry's rows.
 -- A question reads `asked`, never `scope`: `asked` holding records, a list question gives the rows of each entry
 -- with one of them, counting only those, as its `.rq` bound to them does; `asked` empty, it gives the whole list. So
--- a runtime asking a question of records none of which is a term of the pod gives no rows, as the `.rq` bound to
+-- a question that reads `asked` of records none of which is a term of the pod gives no rows, as the `.rq` bound to
 -- them does, without running the `.sql`, which would read the empty `asked` as the whole pod. A question whose `.rq`
--- names no ?record to bind, as the reports and notes, variants, variant interpretations and person questions, reads
--- no `asked`: bound to a record, the `.rq` gives the rows it gives unbound, and so does its `.sql`.
+-- binds no ?record in its outermost group, as the reports and notes, variants, variant interpretations and person
+-- questions, reads no `asked`: a runtime never binds it to a record nor short-circuits it, and always runs it whole,
+-- as the `.rq` bound to any record, one the pod lacks too, gives the rows it gives unbound.
 
 -- Each term the pod's statements use, once. `nt` is its N-Triples form as Oxigraph writes it, a literal in its
 -- canonical form, so two terms are one exactly when their `nt` is. `kind` ranks it as SPARQL's ORDER BY does, after

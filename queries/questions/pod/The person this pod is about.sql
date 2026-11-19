@@ -19,8 +19,9 @@ WITH
     LIMIT coalesce(:page_size, -1)),
   held (subject, profile) AS (
     SELECT DISTINCT page.subject, h.o
-    FROM page CROSS JOIN k JOIN quad su ON su.o = page.subject AND su.p = k.subject
-    JOIN quad c ON c.s = su.s AND c.p = k.counts AND c.o = k.yes
+    FROM k CROSS JOIN quad c ON c.p = k.counts AND c.o = k.yes
+    CROSS JOIN quad su ON su.s = c.s AND su.p = k.subject
+    CROSS JOIN page ON page.subject = su.o
     JOIN quad v ON v.s = su.s AND v.p = k.verdict AND v.o = k.about
     JOIN quad h ON h.s = su.s AND h.p = k.had_member),
   stated (subject, profile, birth, gender, deceased, death) AS (

@@ -81,7 +81,7 @@ WITH
         WHERE dc.p = k.counts AND dc.o = k.yes)),
   named (subject, entry) AS (
     SELECT counted.subject, '<urn:cascade:entry:' || sparql_sha256(min(t.lex)) || '>'
-    FROM counted JOIN term t ON t.id = counted.profile AND t.kind = 2
+    FROM counted CROSS JOIN term t ON t.id = counted.profile AND t.kind = 2
     GROUP BY counted.subject)
 SELECT named.entry, counted.subject, counted.profile
 FROM counted JOIN named ON named.subject = counted.subject;

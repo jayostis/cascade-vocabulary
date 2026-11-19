@@ -13,7 +13,7 @@ import pytest
 
 import sql
 from contract import QUERIES, ROOT, named, query
-from engines import Oxigraph, bound_to_records
+from engines import TOKEN, Oxigraph, bound_to_records, marked_groups
 from manifests import entries, expected, lens_name, row
 from pods import FIXTURES, built_once, every_fixture
 
@@ -243,12 +243,23 @@ NO_SUCH_RECORD = "urn:cascade:no-such-record"
 ASKED_MEMBERS = re.compile(r"\bFROM (\w+_member) \w+ JOIN asked\b")
 
 
+def binds_a_record(rq):
+    """Whether a runtime binds the `.rq` to a record: `?record` is in its outermost group outside any group nested in
+    it, or a `# bound: ?record` line marks a group. A `?record` only inside a sub-select is not bound."""
+    if marked_groups(rq):
+        return True
+    depth, outer = 0, []
+    for char in TOKEN.sub(lambda token: "{" if token.group() == "{" else " ", rq):
+        depth += (char == "{") - (char == "}")
+        if depth == 1:
+            outer.append(char)
+    return re.search(r"[?$]record\b", "".join(outer)) is not None
+
+
 def records_a_list_question_is_bound_to(connection, text):
     """Each record of the member table a list question matches `asked` against, as its IRI, and the first record the
-    pod puts in an entry that table does not hold, so the question is bound to a record of another kind too; none for a
-    list question whose `.rq` names no `?record` to bind, which reads no `asked`."""
-    if not re.search(r"\basked\b", text):
-        return []
+    pod puts in an entry that table does not hold, so the question is bound to a record of another kind too; a `.sql`
+    that matches `asked` against no member table is an error."""
     table = ASKED_MEMBERS.search(text)
     if table is None:
         raise ValueError("a list question that matches asked against no member table")
@@ -262,8 +273,8 @@ def failures(fixture, lens, relative, text):
     """Why the `.sql` text, over the fixture's pod under the lens, does not give the rows of the `.rq` at the path: in a
     whole run, in its order when it has one; for a question bound to a record, the `.rq` bound to it and the `.sql`
     with `asked` holding it alone, for each record a manifest entry of the fixture binds, for a list question each
-    record of its own screen's members and one record of another kind, and for a `.sql` reading `asked` a record the
-    pod lacks; and, through the `.sql`,
+    record of its own screen's members and one record of another kind, and a record the
+    pod lacks; for a SELECT the `.rq` does not bind, the `.rq` bound to a record the pod lacks and the `.sql` whole; and, through the `.sql`,
     the rows of each manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of
     triples."""
     rq = query(Path(relative).relative_to("queries").as_posix())
@@ -286,10 +297,13 @@ def failures(fixture, lens, relative, text):
 
     lines = against("against the .rq", wanted, found)
     bound = set() if construct else {record for entry in manifest_entries(fixture) for record in entry.records}
-    if ":page_size" in text:
-        bound |= set(records_a_list_question_is_bound_to(connection, text))
-    if re.search(r"\basked\b", text):
+    question = relative.startswith("queries/questions/")
+    if binds_a_record(rq) if question else re.search(r"\basked\b", text):
+        if ":page_size" in text:
+            bound |= set(records_a_list_question_is_bound_to(connection, text))
         bound.add(NO_SUCH_RECORD)
+    elif question and not construct:
+        lines += against(f"bound to {NO_SUCH_RECORD}, against the .rq", oxigraph_answer(store, rq, NO_SUCH_RECORD)[1], found)
     for record in sorted(bound):
         lines += against(f"keyed to {record}, against the .rq", oxigraph_answer(store, rq, record)[1],
                          asked_answer(connection, text, [record]))
