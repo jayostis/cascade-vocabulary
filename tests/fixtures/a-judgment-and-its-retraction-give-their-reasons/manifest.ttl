@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-judgment-and-its-retraction-give-their-reasons" ;
+  rdfs:comment "Ana's Erroneous judgment of a record, with the reason she gave, and her retraction of it, with the reason she gave for that." ;
+  mf:entries (
+    <#who-judged-what>
+  ) .
+
+<#who-judged-what> a mf:QueryEvaluationTest ;
+  mf:name "who-judged-what" ;
+  rdfs:comment "One row for the judgment with its reason and one for the retraction with its own, each beside its author, when, and role." ;
+  mf:action [ qt:query <../../../queries/questions/judgment/Who%20judged%20what.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <who-judged-what.srj> .

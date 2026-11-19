@@ -1,0 +1,18 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:parent a prov:Person .
+:otherParent a prov:Person .
+
+:parentsAbout a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :claimed ; cascade:subject :subject ;
+    cascade:basis cascade:OwnerStatement ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:otherParentsNotAbout a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :claimed ; cascade:subject :subject ;
+    prov:wasAttributedTo :otherParent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :otherParent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-02T00:00:00Z"^^xsd:dateTime .
+:parentsNotAboutForAnother a cascade:Judgment ; cascade:verdict cascade:NotAbout ; prov:hadMember :claimed ; cascade:subject :otherSubject ;
+    prov:wasAttributedTo :parent ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :parent ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-03T00:00:00Z"^^xsd:dateTime .

@@ -11,20 +11,20 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT DISTINCT ?judgment ?judgmentLabel ?needs
 WHERE {
   { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:wasAttributedTo/a prov:Person ;
-              prov:hadMember ?record .
-    ?record cascade:currentRevision/prov:wasDerivedFrom ?document .
+              prov:hadMember ?memberRecord .
+    ?memberRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
     FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?document }
     BIND ("a member changed since it was judged" AS ?needs)
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel } }
   UNION
-  { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?record .
+  { ?judgment cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:hadMember ?memberRecord .
     FILTER NOT EXISTS { ?judgment prov:wasAttributedTo/a prov:Person }
-    ?record pav:hasCurrentVersion ?now .
+    ?memberRecord pav:hasCurrentVersion ?now .
     FILTER NOT EXISTS { ?judgment prov:wasDerivedFrom ?now }
     FILTER NOT EXISTS {
       ?answer cascade:countsUnderLens true ; cascade:verdict cascade:Same ; prov:wasAttributedTo/a prov:Person ;
-              prov:hadMember ?record ; prov:wasDerivedFrom ?document .
-      ?record cascade:currentRevision/prov:wasDerivedFrom ?document .
+              prov:hadMember ?memberRecord ; prov:wasDerivedFrom ?document .
+      ?memberRecord cascade:currentRevision/prov:wasDerivedFrom ?document .
       FILTER NOT EXISTS { ?judgment prov:hadMember ?member FILTER NOT EXISTS { ?answer prov:hadMember ?member } }
     }
     BIND ("a member changed since it was judged" AS ?needs)
