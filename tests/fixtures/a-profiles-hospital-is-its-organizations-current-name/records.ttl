@@ -1,0 +1,35 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:firstDocument a prov:Entity ; pav:retrievedOn "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :clinic ] ] .
+:secondDocument a prov:Entity ; pav:retrievedOn "2026-01-02T00:00:00Z"^^xsd:dateTime ;
+    prov:wasAttributedTo :clinic ;
+    prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:hadRole cascade:AuthorRole ; prov:agent :clinic ] ] .
+
+:clinic a cascade:Organization .
+:clinicFirstVersion prov:specializationOf :clinic ; foaf:name "Fernhill Clinic" .
+:clinicFirstRevision a cascade:Revision ; cascade:revisionOf :clinic ; cascade:version :clinicFirstVersion ;
+    prov:wasDerivedFrom :firstDocument ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
+:clinicSecondVersion prov:specializationOf :clinic ; foaf:name "Fernhill Family Clinic" .
+:clinicSecondRevision a cascade:Revision ; cascade:revisionOf :clinic ; cascade:version :clinicSecondVersion ;
+    prov:wasRevisionOf :clinicFirstRevision ; prov:wasDerivedFrom :secondDocument ;
+    prov:generatedAtTime "2026-01-02T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-02T00:00:05Z"^^xsd:dateTime .
+
+:egg a cascade:AllergyOrIntolerance .
+:eggVersion prov:specializationOf :egg ; cascade:allergenName "Egg" ; cascade:patient :unjudged .
+:eggRevision a cascade:Revision ; cascade:revisionOf :egg ; cascade:version :eggVersion ; prov:wasDerivedFrom :firstDocument ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .
+
+:soy a cascade:AllergyOrIntolerance .
+:soyVersion prov:specializationOf :soy ; cascade:allergenName "Soy" ; cascade:patient :claimed .
+:soyRevision a cascade:Revision ; cascade:revisionOf :soy ; cascade:version :soyVersion ; prov:wasDerivedFrom :firstDocument ;
+    prov:generatedAtTime "2026-01-01T00:00:05Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:05Z"^^xsd:dateTime .

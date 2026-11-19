@@ -18,7 +18,7 @@ cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
 
 :machineAbout a cascade:Judgment ; cascade:verdict cascade:About ; prov:hadMember :machineClaimed ; cascade:subject :subject ;
     cascade:basis cascade:SameDemographics ; cascade:matcherRule cascade:SameCodeRule ;
-    prov:wasAttributedTo cascade:CascadeMatcher .
+    prov:wasAttributedTo cascade:CascadeMatcher ; prov:generatedAtTime "2026-01-10T00:00:00Z"^^xsd:dateTime .
 :machineAboutUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :machineAbout ;
     cascade:assertedUnderRuleListVersion :rules1 .
 :rules a cascade:ReferenceSeries ; rdfs:label "Rules" .

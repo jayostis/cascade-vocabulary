@@ -1,0 +1,99 @@
+{
+  "head": {
+    "vars": [
+      "judgment",
+      "judgmentLabel",
+      "made",
+      "verdict",
+      "author",
+      "authorLabel",
+      "role",
+      "member",
+      "memberLabel",
+      "reason",
+      "replaces",
+      "replacesLabel",
+      "retracts",
+      "retractsLabel",
+      "assertedUnder"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "judgment": {
+          "type": "uri",
+          "value": "urn:x:erroneousR"
+        },
+        "judgmentLabel": {
+          "type": "literal",
+          "value": "Erroneous · the patient · 2026-02-01 · Peanut"
+        },
+        "made": {
+          "type": "literal",
+          "value": "2026-02-01T00:00:00Z",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
+        },
+        "verdict": {
+          "type": "uri",
+          "value": "https://ns.cascadeprotocol.org/cascade#Erroneous"
+        },
+        "author": {
+          "type": "uri",
+          "value": "urn:x:ana"
+        },
+        "role": {
+          "type": "uri",
+          "value": "https://ns.cascadeprotocol.org/cascade#PatientRole"
+        },
+        "member": {
+          "type": "uri",
+          "value": "urn:x:r"
+        },
+        "memberLabel": {
+          "type": "literal",
+          "value": "Allergy · Peanut · unknown source"
+        },
+        "reason": {
+          "type": "literal",
+          "value": "Entered by mistake."
+        }
+      },
+      {
+        "judgment": {
+          "type": "uri",
+          "value": "urn:x:anaRetractsR"
+        },
+        "judgmentLabel": {
+          "type": "literal",
+          "value": "Retraction · the patient · 2026-03-01 · of Erroneous · Peanut"
+        },
+        "made": {
+          "type": "literal",
+          "value": "2026-03-01T00:00:00Z",
+          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
+        },
+        "author": {
+          "type": "uri",
+          "value": "urn:x:ana"
+        },
+        "role": {
+          "type": "uri",
+          "value": "https://ns.cascadeprotocol.org/cascade#PatientRole"
+        },
+        "reason": {
+          "type": "literal",
+          "value": "Taken back."
+        },
+        "retracts": {
+          "type": "uri",
+          "value": "urn:x:erroneousR"
+        },
+        "retractsLabel": {
+          "type": "literal",
+          "value": "Erroneous · the patient · 2026-02-01 · Peanut"
+        }
+      }
+    ]
+  }
+}
