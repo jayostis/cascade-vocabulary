@@ -13,7 +13,7 @@ from rdflib.plugins.sparql.parserutils import CompValue
 
 import contract
 from contract import ROOT
-from engines import TOKEN, marked_groups, opened, prepared
+from engines import TOKEN, marked_groups, opened, parse_once, prepared, warm
 from ontologies import terms
 
 CASCADE = "https://ns.cascadeprotocol.org/cascade#"
@@ -23,6 +23,11 @@ URI_SPACE = URIRef("http://rdfs.org/ns/void#uriSpace")
 
 def every_query():
     return sorted(p.relative_to(contract.QUERIES).as_posix() for p in contract.QUERIES.rglob("*.rq"))
+
+
+def parse_every_query():
+    texts = [contract.query(relative) for relative in every_query()]
+    warm(texts + [opened(text, marked_groups(text), [BOUND_RECORD]) for text in texts if marked_groups(text)])
 
 
 def nodes(tree):
@@ -163,7 +168,7 @@ def marked_groups_bind_record(text):
     if marks != len(marked_groups(text)):
         return False
     try:
-        tree = parseQuery(opened(text, marked_groups(text), [BOUND_RECORD]))
+        tree = parse_once(opened(text, marked_groups(text), [BOUND_RECORD]))
     except ParseException:
         return False
     groups = []
@@ -214,7 +219,7 @@ def writes(relative):
 
 @lru_cache(maxsize=None)
 def parsed(relative):
-    return parseQuery(contract.query(relative))
+    return parse_once(contract.query(relative))
 
 
 def declared(relative):
