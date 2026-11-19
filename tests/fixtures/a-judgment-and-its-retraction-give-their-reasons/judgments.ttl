@@ -1,0 +1,17 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:ana a prov:Person .
+
+:erroneousR a cascade:Judgment ; cascade:verdict cascade:Erroneous ; prov:hadMember :r ; prov:wasDerivedFrom :januaryDocument ;
+    dct:description "Entered by mistake." ;
+    prov:wasAttributedTo :ana ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :ana ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+
+:anaRetractsR a prov:Activity ; prov:invalidated :erroneousR ;
+    dct:description "Taken back." ;
+    prov:wasAssociatedWith :ana ; prov:qualifiedAssociation [ prov:agent :ana ; prov:hadRole cascade:PatientRole ] ;
+    prov:startedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
