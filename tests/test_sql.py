@@ -32,6 +32,20 @@ def ported():
     return [relative for relative in SCOPE if sql_beside(relative).is_file()]
 
 
+def sql_text(relative):
+    return sql_beside(relative).read_text(encoding="utf-8")
+
+
+def screens():
+    """The text of each view's `.sql`: the screens list questions read."""
+    return [sql_text(relative) for relative in ported() if relative.startswith("queries/views/")]
+
+
+def list_questions():
+    """Each ported question whose `.sql` takes a page size."""
+    return [relative for relative in ported() if ":page_size" in sql_text(relative)]
+
+
 def unported():
     return [line.strip() for line in UNPORTED.read_text(encoding="utf-8").splitlines() if line.strip()]
 
@@ -151,7 +165,8 @@ def manifest_entries(fixture):
 
 @cache
 def pod(fixture, lens):
-    return sql.loaded(built_once(fixture, "oxigraph", lens).store.store, f"{fixture.name} under {lens}")
+    return sql.screened(sql.loaded(built_once(fixture, "oxigraph", lens).store.store, f"{fixture.name} under {lens}"),
+                        screens())
 
 
 def as_rdflib(names, found):
@@ -220,7 +235,9 @@ class TestSqlBesideEachQuery:
     A runtime answers a query from SQLite through the `.sql` beside its `.rq`, over the tables queries/statements.sql
     makes, calling the six functions whose vectors are in queries/sql-functions.json. The `.rq` stays the definition: each
     `.sql` is held to its rows on every fixture, under each lens, and to the rows the fixtures' manifests pin for it. A
-    query outside queries/matcher/ with no `.sql` yet is named in tests/sql-unported.txt.
+    view's `.sql` makes and fills its screen, the tables a list question reads a page of, and is held to its CONSTRUCT's
+    triples; a list question is held to its whole list a page at a time. A query outside queries/matcher/ with no `.sql`
+    yet is named in tests/sql-unported.txt.
     """
 
     class TestGivenAnyFixture:
@@ -235,7 +252,41 @@ class TestSqlBesideEachQuery:
             rows through the `.sql` too.
             """
             found = [line for lens in LENSES for relative in ported()
-                     for line in failures(fixture, lens, relative, sql_beside(relative).read_text(encoding="utf-8"))]
+                     for line in failures(fixture, lens, relative, sql.statement(sql_text(relative)))]
+            assert not found, "\n".join(found)
+
+        @every_fixture
+        def test_gives_each_list_question_a_page_at_a_time_as_the_whole_list_under_each_lens(self, fixture):
+            """gives each list question's rows a page at a time, pages of one and of two entries joined in order, as its whole list
+
+            Each `.sql` that takes `:page_size` gives a `page_key` last, the key of the row's entry, and is asked a page
+            of one entry, then of two, at a time, each after the last row's key of the page before; the pages joined
+            give the rows and keys the whole list gives, in its order, under each lens. No page holds more entries
+            than its size, or splits an entry's rows.
+            """
+            found = []
+            for lens in LENSES:
+                connection = pod(fixture, lens)
+                for relative in list_questions():
+                    text = sql_text(relative)
+                    whole = sql.keyed(connection, text)[1]
+                    keys = [key for _, key in whole]
+                    if None in keys:
+                        found.append(f"{fixture.name}, under {lens}, {relative}: it gives no page_key")
+                        continue
+                    if keys != sorted(keys):
+                        found.append(f"{fixture.name}, under {lens}, {relative}: its page keys are not in order")
+                    for size in (1, 2):
+                        try:
+                            joined = sql.paged(connection, text, size)
+                        except ValueError as error:
+                            found.append(f"{fixture.name}, under {lens}, {relative}: {error}")
+                            continue
+                        if joined != whole:
+                            at = next((i for i, (a, b) in enumerate(zip(joined, whole)) if a != b),
+                                      min(len(joined), len(whole)))
+                            found.append(f"{fixture.name}, under {lens}, {relative}: pages of {size} give {len(joined)} "
+                                         f"rows, the whole list {len(whole)}, the first apart at row {at + 1}")
             assert not found, "\n".join(found)
 
     class TestGivenTheQueries:
@@ -483,3 +534,23 @@ class TestTheSqlCheck:
         digest = hashlib.sha256(changed).hexdigest()
         found = pin_failures(pins(), {self.JUDGMENTS: changed})
         assert len(found) == 1 and found[0].startswith(f"{self.JUDGMENTS}: ") and digest in found[0]
+
+    def test_refuses_pages_that_ignore_the_key_to_continue_after_or_the_page_size(self):
+        """refuses a list question whose pages ignore the key to continue after, or the page size
+
+        Over three keyed rows, a `.sql` that keeps to both parameters is asked in pages of two and gives the three in
+        order; one that ignores `:after` gives a second page that is not after the first, and one that ignores
+        `:page_size` a page of three; each is refused, naming the page.
+        """
+        connection = sqlite3.connect(":memory:")
+        connection.execute("CREATE TABLE listed (k TEXT)")
+        connection.executemany("INSERT INTO listed VALUES (?)", [("a",), ("b",), ("c",)])
+        rows = "SELECT '\"' || k || '\"' AS shown, k AS page_key FROM listed"
+        kept = f"{rows} WHERE k > coalesce(:after, '') ORDER BY k LIMIT coalesce(:page_size, -1)"
+        assert [key for _, key in sql.paged(connection, kept, 2)] == ["a", "b", "c"]
+        assert sql.answer(connection, kept, 2, "a") == (["shown"], [(sql.Term(sql.LITERAL, "b", XSD + "string"),),
+                                                                    (sql.Term(sql.LITERAL, "c", XSD + "string"),)])
+        for text in (f"{rows} ORDER BY k LIMIT coalesce(:page_size, -1)",
+                     f"{rows} WHERE k > coalesce(:after, '') ORDER BY k"):
+            with pytest.raises(ValueError, match="a page of 2 after"):
+                sql.paged(connection, text, 2)
