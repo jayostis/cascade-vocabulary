@@ -681,6 +681,23 @@ class TestSqlBesideEachQuery:
                 if without_rowid or not any(table == name for table, _ in wanted)}
             assert set(connection.execute("SELECT tbl, idx FROM sqlite_stat1")) == wanted
 
+        def test_ships_a_statistics_row_for_each_index_of_each_screen_and_for_each_of_its_tables_with_none(self):
+            """ships a statistics row for each index each screen's tables part makes, and for each table of it with none
+
+            Each screen's tables part ends with its rows and the statement that loads them, so a connection that has made
+            the schema and every part, and run no ANALYZE, holds a row for each index and each table with none, the
+            schema's too. An index, or a table with no index, a screen makes with no row fails, as does a row for neither.
+            """
+            connection = sql.connected()
+            for text in screens():
+                connection.executescript(sql.parts(text)["tables"])
+            wanted = {(table, index) for table, index in connection.execute(
+                "SELECT tbl_name, name FROM sqlite_schema WHERE type = 'index'")}
+            wanted |= {(name, name if without_rowid else None) for name, without_rowid in connection.execute(
+                "SELECT name, wr FROM pragma_table_list WHERE schema = 'main' AND name NOT LIKE 'sqlite_%'")
+                if without_rowid or not any(table == name for table, _ in wanted)}
+            assert set(connection.execute("SELECT tbl, idx FROM sqlite_stat1")) == wanted
+
         @pytest.mark.parametrize("view, fixture", [
             ("conditions", "conditions-view"), ("lab-results", "lab-results-view"), ("allergies", "allergies-view"),
             ("medications", "medications-view"), ("medication-dispenses", "medication-dispenses-view"),
