@@ -8,11 +8,12 @@ import hashlib
 import os
 import pickle
 import re
+import shutil
 import sys
 import time
 import warnings
 from collections import OrderedDict
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from functools import lru_cache
 from pathlib import Path
 from types import MethodType
@@ -70,30 +71,67 @@ def reduce_comp_value(self):
 CompValue.__reduce__ = reduce_comp_value
 
 PARSES = None
+FAILED_READS = 0
+WARN_AFTER_FAILED_READS = 3
+ABANDONED_AFTER = 7 * 86400
 
 
 def use_parse_store(folder):
     """Stores the parses under the folder, in one named by what a stored parse depends on: the versions of rdflib,
-    pyparsing and Python, and this file, which rebuilds a parse."""
+    pyparsing and Python, and this file, which rebuilds a parse. The folders of other keys are removed."""
     global PARSES
     key = hashlib.sha256(
         "\0".join([rdflib.__version__, pyparsing.__version__, sys.version]).encode() + Path(__file__).read_bytes()
     ).hexdigest()[:16]
     PARSES = Path(folder) / f"parses-{key}"
     PARSES.mkdir(parents=True, exist_ok=True)
+    cutoff = time.time() - ABANDONED_AFTER
+    for other in PARSES.parent.glob("parses-*"):
+        if other != PARSES and newest_change(other) < cutoff:
+            shutil.rmtree(other, ignore_errors=True)
+
+
+def newest_change(folder):
+    """When a file in the folder, or else the folder, last changed; a folder another run is writing is newer than a week."""
+    times = []
+    for file in folder.iterdir():
+        try:
+            times.append(file.stat().st_mtime)
+        except OSError:
+            pass
+    return max(times, default=folder.stat().st_mtime)
 
 
 def stored(query):
     return PARSES / (hashlib.sha256(query.encode()).hexdigest() + ".pickle")
 
 
+NOT_STORED = object()
+
+
+def load_stored(query):
+    """The stored parse, or NOT_STORED. A file that does not read, whatever the error, is removed; a few are a file being
+    replaced, and more are a store losing its speed-up, which is said once."""
+    global FAILED_READS
+    path = stored(query)
+    try:
+        return pickle.loads(path.read_bytes())
+    except OSError:  # a file being replaced, or not yet there
+        return NOT_STORED
+    except Exception:
+        with suppress(OSError):
+            path.unlink(missing_ok=True)
+        FAILED_READS += 1
+        if FAILED_READS == WARN_AFTER_FAILED_READS + 1:
+            warnings.warn(f"{FAILED_READS} stored parses in {PARSES} did not read; they are parsed again", stacklevel=2)
+        return NOT_STORED
+
+
 def read_stored(query):
     if PARSES is None:
         return None
-    try:
-        return pickle.loads(stored(query).read_bytes())
-    except OSError:  # a file another process is replacing is not yet stored
-        return None
+    tree = load_stored(query)
+    return None if tree is NOT_STORED else tree
 
 
 def parse(query):
@@ -109,10 +147,11 @@ def parse_and_store(query):
         tree = None
     path = stored(query)
     part = path.with_name(f"{path.name}.{os.getpid()}.part")
-    part.write_bytes(pickle.dumps(tree))
     try:
+        PARSES.mkdir(parents=True, exist_ok=True)
+        part.write_bytes(pickle.dumps(tree))
         os.replace(part, path)
-    except OSError:  # another process stored the query as this one did
+    except OSError:  # another process stored the query as this one did, or removed the folder: not stored
         part.unlink(missing_ok=True)
 
 
@@ -130,13 +169,13 @@ def warm(queries, wait=120):
     queries = sorted(set(queries))
     number, count = worker_place()
     for query in queries[number::count]:
-        if not stored(query).is_file():
+        if load_stored(query) is NOT_STORED:
             parse_and_store(query)
     deadline = time.monotonic() + wait
-    missing = [query for query in queries if not stored(query).is_file()]
+    missing = [query for query in queries if load_stored(query) is NOT_STORED]
     while missing and time.monotonic() < deadline:
         time.sleep(0.2)
-        missing = [query for query in missing if not stored(query).is_file()]
+        missing = [query for query in missing if load_stored(query) is NOT_STORED]
     for query in missing:
         parse_and_store(query)
 
