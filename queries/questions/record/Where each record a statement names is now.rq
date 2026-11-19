@@ -18,6 +18,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?statement ?statementLabel ?counts ?record ?recordLabel ?outcome ?entry ?entryLabel ?why
        ?otherMembers ?grewBy ?otherStatements ?mergedWith
+# bound: ?record
 WHERE {
   { SELECT DISTINCT ?statement ?statementLabel ?counts ?record ?recordLabel ?entry ?entryLabel
     WHERE {
