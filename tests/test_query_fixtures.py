@@ -1,10 +1,12 @@
 import hashlib
+import pickle
 from collections import Counter
 from functools import cache
 from pathlib import Path
 from time import perf_counter
 
 import pytest
+import rdflib
 from rdflib import OWL, RDF, RDFS, Graph, Literal, URIRef
 
 from contract import CASCADE, PROV, QUERIES, ROOT, built, derivations, named, query, questions
@@ -534,10 +536,60 @@ class TestChecksOfTheFixtureTools:
             assert engines.stored(text).is_file() and engines.read_stored(text) is None
 
         def test_reads_no_parse_from_a_file_it_cannot_read(self):
-            """reads no parse from a file it cannot read, as if none were stored"""
+            """reads no parse from a file it cannot read, or one a killed run left cut short, as if none were stored"""
             text = "SELECT ?s WHERE { ?s ?p ?o }"
             engines.stored(text).mkdir()
             assert engines.read_stored(text) is None
+            engines.stored(text).rmdir()
+            whole = pickle.dumps(engines.parse(text))
+            for cut in (b"", whole[: len(whole) // 2], whole[:-1]):
+                engines.stored(text).write_bytes(cut)
+                assert engines.read_stored(text) is None, len(cut)
+
+    class TestUseParseStore:
+        """`engines.use_parse_store()`"""
+
+        @pytest.fixture(autouse=True)
+        def the_store_put_back(self, monkeypatch):
+            monkeypatch.setattr(engines, "PARSES", engines.PARSES)
+
+        def test_puts_the_store_in_a_folder_of_the_one_it_is_given_named_by_what_a_parse_depends_on(self, tmp_path):
+            """puts the store in a folder of the one it is given, the same folder each time"""
+            engines.use_parse_store(tmp_path)
+            first = engines.PARSES
+            assert first.parent == tmp_path and first.is_dir() and first.name.startswith("parses-")
+            engines.use_parse_store(tmp_path)
+            assert engines.PARSES == first
+
+        def test_puts_the_store_in_another_folder_when_the_version_of_rdflib_changes(self, tmp_path, monkeypatch):
+            """puts the store in another folder when the version of rdflib changes"""
+            engines.use_parse_store(tmp_path)
+            first = engines.PARSES
+            monkeypatch.setattr(rdflib, "__version__", rdflib.__version__ + ".other")
+            engines.use_parse_store(tmp_path)
+            assert engines.PARSES != first and engines.PARSES.parent == tmp_path
+
+        def test_puts_the_store_in_another_folder_when_engines_py_changes(self, tmp_path, monkeypatch):
+            """puts the store in another folder when engines.py, which rebuilds a parse, changes"""
+            engines.use_parse_store(tmp_path)
+            first = engines.PARSES
+            changed = tmp_path / "engines.py"
+            changed.write_bytes(Path(engines.__file__).read_bytes() + b"\n# changed\n")
+            monkeypatch.setattr(engines, "__file__", str(changed))
+            engines.use_parse_store(tmp_path)
+            assert engines.PARSES != first and engines.PARSES.parent == tmp_path
+
+        def test_removes_the_stores_of_other_keys_and_keeps_its_own_and_what_is_no_store(self, tmp_path):
+            """removes the folders of other keys under the one it is given, with what they hold, and keeps its own with what it holds and whatever is no store"""
+            engines.use_parse_store(tmp_path)
+            kept = engines.PARSES / "a.pickle"
+            kept.write_bytes(b"kept")
+            (tmp_path / "parses-old").mkdir()
+            (tmp_path / "parses-old" / "b.pickle").write_bytes(b"old")
+            (tmp_path / "elsewhere").mkdir()
+            engines.use_parse_store(tmp_path)
+            assert sorted(path.name for path in tmp_path.iterdir()) == sorted(["elsewhere", engines.PARSES.name])
+            assert kept.read_bytes() == b"kept"
 
     class TestPrepared:
         """`engines.prepared()`"""
