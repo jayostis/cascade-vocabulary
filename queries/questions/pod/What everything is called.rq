@@ -2,7 +2,7 @@
 # so they can be told apart at a glance. Asked of the vocabulary instead of a pod, the same question names its terms.
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?thing ?label
+SELECT DISTINCT ?thing ?label
 WHERE {
   ?thing rdfs:label ?label .
   FILTER (isIRI(?thing))
