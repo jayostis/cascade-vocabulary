@@ -61,16 +61,44 @@ def whole_scans(run, text):
     return found
 
 
-def whole_searches(plan):
+LOOP_OVER = re.compile(r"^(?:SCAN|SEARCH|CO-ROUTINE|MATERIALIZE) (\w+)\b")
+STORAGE_ROOTS = re.compile(r"\bquad (\w+) ON \1\.p = k\.storage\s+CROSS JOIN term (\w+) ON \2\.id = \1\.o\b")
+
+
+def storage_roots(text):
+    """The aliases a statement's text gives the storage triples it loops over and the terms they name, the pod's few
+    roots, for whole_searches."""
+    return [alias for found in STORAGE_ROOTS.findall(text) for alias in found]
+
+
+def whole_searches(plan, per_root=()):
     """The steps, of one statement's EXPLAIN QUERY PLAN given as (id, parent, detail) rows, that search `quad` by its
     predicate alone or by it and a range of its object, in a loop another loop runs once for each row of: not the first
-    loop of its select, or inside a subquery run for each row of the statement's."""
+    loop of its select, or inside a subquery run for each row of the statement's. The SCAN of a CTE of one constant
+    row, or its CO-ROUTINE or MATERIALIZE, is no loop for this, nor is a `per_root` alias's loop, the pod's few
+    storage roots, once each and only among the first loops of its select, nor is the MATERIALIZE of a CTE a select
+    reads, which runs once before the select's first loop."""
+    one_row = {detail.split()[1] for step, _, detail in plan if detail.startswith(("CO-ROUTINE ", "MATERIALIZE "))
+               and any(parent == step and child == "SCAN CONSTANT ROW" for _, parent, child in plan)}
+    leading, rooted, kept = {}, {}, []
+    for row in plan:
+        named = LOOP_OVER.match(row[2])
+        if named and not row[2].startswith("SEARCH ") and named[1] in one_row:
+            continue
+        if (named and named[1] in per_root and leading.setdefault(row[1], True)
+                and named[1] not in rooted.setdefault(row[1], set())):
+            rooted[row[1]].add(named[1])
+            continue
+        leading[row[1]] = False
+        kept.append(row)
+    plan = kept
     firsts, by_id = {}, {step: (parent, detail) for step, parent, detail in plan}
-    for step, parent, _ in plan:
-        firsts.setdefault(parent, step)
+    for step, parent, detail in plan:
+        if not detail.startswith("MATERIALIZE "):
+            firsts.setdefault(parent, step)
     found = []
     for step, parent, detail in plan:
-        inside, above = firsts[parent] != step, parent
+        inside, above = firsts.get(parent) != step, parent
         while above in by_id:
             inside = inside or by_id[above][1].startswith("CORRELATED")
             above = by_id[above][0]
@@ -79,11 +107,9 @@ def whole_searches(plan):
     return found
 
 
-def screen_plans(engine):
-    """The plan of each statement of each screen's fill and finish, and of each screen's triples, by the screen, the
-    part and the statement's place in it, each as its EXPLAIN QUERY PLAN rows and the b-trees it scans, as whole_scans
-    gives them. The pod is empty, made by queries/statements.sql and each screen's tables part alone on the engine, each
-    statement planned just before it runs; its plans do not depend on what the pod holds."""
+def planning_pod(engine):
+    """An empty pod on the engine, made by queries/statements.sql and each screen's tables part alone, as the function
+    that runs a script, the one that runs a statement and each view's `.sql` by its parts."""
     if engine.startswith("apsw"):
         connection = apsw.Connection(":memory:")
         for name, function in sql.FUNCTIONS.items():
@@ -96,17 +122,57 @@ def screen_plans(engine):
     views = {relative: sql.parts(sql_text(relative)) for relative in ported() if relative.startswith("queries/views/")}
     for found in views.values():
         script(found["tables"])
+    return script, run, views
+
+
+def engine_ran(engine):
+    """The SQLite an engine of the plan checks runs on, as text, after checking it is the one the engine names: the
+    floor run is skipped where apsw is the strictest, the CI step that installs an older one runs it."""
+    if engine == "apsw":
+        assert apsw.sqlite_lib_version() == STRICTEST_SQLITE
+    if engine == "apsw-floor":
+        if apsw.sqlite_lib_version() == STRICTEST_SQLITE:
+            pytest.skip("the floor run is the CI step that installs an older apsw")
+        assert tuple(map(int, apsw.sqlite_lib_version().split("."))) >= sql.MINIMUM_VERSION
+    return sqlite3.sqlite_version if engine == "sqlite3" else f"apsw {apsw.sqlite_lib_version()}"
+
+
+def question_plans(engine):
+    """The plan of each ported question's `.sql`, by its path, as screen_plans gives a statement's: its EXPLAIN QUERY
+    PLAN rows and the b-trees it scans. It is planned on a pod as empty as theirs, asked for no page size after no key,
+    and its plans do not depend on what the pod holds."""
+    _, run, _ = planning_pod(engine)
+    asking = lambda text: run(text, {"page_size": None, "after": None})
+    return {relative: ([(row[0], row[1], row[3]) for row in asking("EXPLAIN QUERY PLAN " + sql_text(relative))],
+                       whole_scans(asking, sql_text(relative)))
+            for relative in ported() if relative.startswith("queries/questions/")}
+
+
+def screen_plans(engine):
+    """The plan of each statement of each screen's fill and finish, and of each screen's triples, by the screen, the
+    part and the statement's place in it, each as its EXPLAIN QUERY PLAN rows and the b-trees it scans, as whole_scans
+    gives them; those of queries/labels.sql too, its fill between the screens' fills and finishes. The pod is empty, made
+    by queries/statements.sql and each screen's tables part alone on the engine, each statement planned just before it
+    runs; its plans do not depend on what the pod holds."""
+    _, run, views = planning_pod(engine)
+
     def planned(text):
         return [(row[0], row[1], row[3]) for row in run("EXPLAIN QUERY PLAN " + text)], whole_scans(run, text)
 
+    labels = sql.parts(sql_text("queries/labels.rq"))
     plans = {}
     for part in ("fill", "finish"):
         for relative, found in views.items():
             for place, text in enumerate(sql.statements(found[part])):
                 plans[relative, part, place] = planned(text)
                 run(text)
+        if part == "fill":
+            for place, text in enumerate(sql.statements(labels["fill"])):
+                plans["queries/labels.sql", "fill", place] = planned(text)
+                run(text)
     for relative, found in views.items():
         plans[relative, "triples", 0] = planned(found["triples"])
+    plans["queries/labels.sql", "triples", 0] = planned(labels["triples"])
     return plans
 
 
@@ -275,6 +341,23 @@ def manifest_entries(fixture):
 
 
 @cache
+def before_labels(fixture, lens):
+    """A store of the fixture's pod as labels.rq reads it, before it is run: the statements of the pod without the
+    rdfs:label ones of the file labels.rq writes, in that file's graph and in the default graph."""
+    store = built_once(fixture, "oxigraph", lens).store.store
+    file = sql.labels_file(store)
+    named = [quad for quad in store.quads_for_pattern(None, None, None, None)
+             if not isinstance(quad.graph_name, pyoxigraph.DefaultGraph)]
+    kept = [quad for quad in named if not (quad.graph_name == file and quad.predicate == sql.LABEL)]
+    held = {quad.triple for quad in kept}
+    default = [pyoxigraph.Quad(*quad.triple, pyoxigraph.DefaultGraph())
+               for quad in store.quads_for_pattern(None, None, None, pyoxigraph.DefaultGraph()) if quad.triple in held]
+    without = pyoxigraph.Store()
+    without.extend(kept + default)
+    return without
+
+
+@cache
 def pod(fixture, lens):
     return sql.screened(sql.loaded(built_once(fixture, "oxigraph", lens).store.store, f"{fixture.name} under {lens}"),
                         screens())
@@ -351,9 +434,10 @@ def failures(fixture, lens, relative, text):
     pod lacks; for a SELECT the `.rq` does not bind and that gives no `?record` column, the `.rq` bound to a record the pod
     lacks and the `.sql` whole; and, through the `.sql`,
     the rows of each manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of
-    triples."""
+    triples. labels.rq is run on the pod before the labels are made, as it is written."""
     rq = query(Path(relative).relative_to("queries").as_posix())
-    store = built_once(fixture, "oxigraph", lens).store.store
+    store = (before_labels(fixture, lens) if relative == "queries/labels.rq"
+             else built_once(fixture, "oxigraph", lens).store.store)
     connection = pod(fixture, lens)
     names, wanted, construct = oxigraph_answer(store, rq)
     try:
@@ -666,20 +750,14 @@ class TestSqlBesideEachQuery:
             SQLite plans a statement from the statistics it holds, and with none it plans as if every table held a million
             rows: one fill ran 79 s at 15,000 records against 0.14 s analyzed, by searching `quad` by its predicate alone
             once for each row of another table, and a screen table with none drove a statement from `term`. The pod here is
-            empty and has had no ANALYZE; every statement of each screen's fill and finish, and its triples, is planned on
+            empty and has had no ANALYZE; every statement of each screen's fill and finish, and its triples, and of queries/labels.sql, is planned on
             SQLite as the check ships it and on 3.54.1 through apsw. None reads `quad` or `term` from end to end, under
             whatever alias it names the table, or searches `quad` by a predicate alone, or by it and a range of an object,
             in a loop a surrounding loop runs once for each row of, or in a subquery run for each row of its statement's.
             """
-            if engine == "apsw":
-                assert apsw.sqlite_lib_version() == STRICTEST_SQLITE
-            if engine == "apsw-floor":
-                if apsw.sqlite_lib_version() == STRICTEST_SQLITE:
-                    pytest.skip("the floor run is the CI step that installs an older apsw")
-                assert tuple(map(int, apsw.sqlite_lib_version().split("."))) >= sql.MINIMUM_VERSION
+            ran = engine_ran(engine)
             found = [f"{view} {part} #{place}: {detail}" for (view, part, place), (plan, scans) in screen_plans(engine).items()
                      for detail in [f"scans {name}" for name in scans] + whole_searches(plan)]
-            ran = sqlite3.sqlite_version if engine == "sqlite3" else f"apsw {apsw.sqlite_lib_version()}"
             assert found == [], f"on SQLite {ran}"
 
         def test_ships_a_statistics_row_for_each_index_of_the_schema_and_for_each_of_its_tables_with_none(self):
@@ -933,6 +1011,30 @@ def in_sparql(name, arguments):
     return None if found is None else found.value
 
 
+class TestPlansOfTheQuestions:
+    """Plans of each question's SQL · queries/questions/**/*.sql
+
+    A question's `.sql` is planned as a screen's statements are: from the statistics the schema and the screens ship,
+    on an empty pod, so that what holds at 15,000 records and not at three is found by its plan and not by a fixture.
+    """
+
+    @pytest.mark.parametrize("engine", ["sqlite3", "apsw", "apsw-floor"])
+    def test_plans_each_question_from_the_shipped_statistics_with_no_whole_predicate_searched_in_a_loop(self, engine):
+        """plans each question, on the statistics the schema and the screens ship and no ANALYZE, with no scan of `quad` or `term` and no search of a whole predicate inside a loop
+
+        Each ported question's `.sql`, asked for no page size after no key, is planned on SQLite as the check ships it
+        and on 3.54.1 and on the floor through apsw. None reads `quad` or `term` from end to end, or searches `quad` by a
+        predicate alone, or by it and a range of an object, in a loop a surrounding loop runs once for each row of, or in
+        a subquery run for each row of its statement's; a loop over the CTE `k` of one constant row, or over the storage
+        roots a statement reads before it reads the files under them, is no loop.
+        """
+        ran = engine_ran(engine)
+        found = [f"{relative}: {detail}" for relative, (plan, scans) in question_plans(engine).items()
+                 for detail in [f"scans {name}" for name in scans]
+                 + whole_searches(plan, storage_roots(sql_text(relative)))]
+        assert found == [], f"on SQLite {ran}"
+
+
 class TestTheSqlCheck:
     """Checks of the SQL check · tests/test_sql.py, tests/sql.py
 
@@ -1025,6 +1127,44 @@ class TestTheSqlCheck:
         assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o>? AND o<?)")]) \
             == ["SEARCH q USING COVERING INDEX quad_osp (o>? AND o<?)"]
 
+    def test_leaves_a_loop_over_a_cte_of_one_constant_row_or_over_the_storage_roots_out_of_the_loops_it_reports(self):
+        """leaves a loop over a CTE of one constant row, over the aliases given for the storage roots, and a CTE's MATERIALIZE out of the loops it reports
+
+        A search by a predicate alone after `SCAN k`, where `k` is a CTE made of one constant row, is the first loop of its
+        select, as it is after a loop over the roots a statement names, or after the MATERIALIZE of a CTE; after any
+        other loop, and after a `k` that is no constant row, it is reported as ever, and so is a second whole search
+        after the roots.
+        """
+        by_predicate = "SEARCH q USING COVERING INDEX quad_pos (p=?)"
+        constant = [(2, 0, "CO-ROUTINE k"), (3, 2, "SCAN CONSTANT ROW"), (9, 0, "SCAN k")]
+        assert whole_searches(constant + [(12, 0, by_predicate)]) == []
+        assert whole_searches([(2, 0, "MATERIALIZE k"), (3, 2, "SCAN CONSTANT ROW"), (9, 6, "SCAN k"),
+                               (12, 6, by_predicate)]) == []
+        assert whole_searches(constant + [(12, 0, "SEARCH a USING COVERING INDEX quad_pos (p=?)"), (15, 0, by_predicate)]) \
+            == [by_predicate]
+        assert whole_searches([(2, 0, "CO-ROUTINE k"), (3, 2, "SCAN a"), (9, 0, "SCAN k"), (12, 0, by_predicate)]) \
+            == [by_predicate]
+        roots = [(9, 0, "SEARCH s USING COVERING INDEX quad_pos (p=?)"),
+                 (10, 0, "SEARCH root USING INTEGER PRIMARY KEY (rowid=?)")]
+        assert whole_searches(constant + roots + [(12, 0, by_predicate)], per_root=["s", "root"]) == []
+        assert whole_searches(constant + roots + [(12, 0, by_predicate)]) == [by_predicate]
+        assert whole_searches(constant + roots + [(12, 0, by_predicate), (15, 0, by_predicate)], per_root=["s", "root"]) \
+            == [by_predicate]
+        assert whole_searches([(2, 0, "MATERIALIZE n"), (3, 2, "SCAN a"), (12, 0, by_predicate)]) == []
+        assert whole_searches([(2, 0, "MATERIALIZE n"), (3, 2, "SCAN a"), (9, 0, "SCAN n"), (12, 0, by_predicate)]) \
+            == [by_predicate]
+        typed = (8, 0, "SEARCH t USING COVERING INDEX quad_pos (p=?)")
+        again = (15, 0, "SEARCH s USING COVERING INDEX quad_pos (p=?)")
+        assert whole_searches(constant + [typed] + roots, per_root=["s", "root"]) == [roots[0][2]]
+        assert whole_searches(constant + [typed, (7, 0, "SEARCH file USING INTEGER PRIMARY KEY (rowid=?)")] + roots,
+                              per_root=["s", "root"]) == [roots[0][2]]
+        assert whole_searches(constant + roots + [(12, 0, by_predicate), again], per_root=["s", "root"]) == [again[2]]
+        assert whole_searches(constant + [(12, 0, "SEARCH a USING COVERING INDEX quad_pos (p=?)"),
+                                          (15, 0, "SEARCH k USING COVERING INDEX quad_pos (p=?)")])             == ["SEARCH k USING COVERING INDEX quad_pos (p=?)"]
+        assert storage_roots("FROM k CROSS JOIN quad s ON s.p = k.storage\n    CROSS JOIN term root ON root.id = s.o AND "
+                             "root.kind <> 1 CROSS JOIN quad t ON t.p = k.type") == ["s", "root"]
+        assert storage_roots("FROM k CROSS JOIN quad s ON s.p = k.storage CROSS JOIN quad t ON t.p = k.type") == []
+
     def test_reports_a_scan_of_quad_or_term_under_whatever_alias_the_statement_names_it_by(self):
         """reports a scan of `quad` or `term` under whatever alias the statement names it by, and no search of either
 
@@ -1094,6 +1234,40 @@ class TestTheSqlCheck:
         store.add(quad("urn:x:alone", pyoxigraph.DefaultGraph()))
         with pytest.raises(ValueError, match="in no named graph"):
             sql.loaded(store, "test")
+
+    def test_makes_the_labels_file_again_from_labels_sql_and_leaves_what_it_does_not_label(self):
+        """leaves the labels file's rdfs:label statements out of a loaded pod, and makes them again from labels.sql at each fill
+
+        A store whose layout places labels.rq's file holds a stale label there, a label of another thing in another
+        file, and the file's own view marking: the pod loaded from it has the marking and the other thing's label and
+        not the stale one. Filled, the file holds the one label labels.sql gives for the thing no other file labels; filled
+        again, the same.
+        """
+        def node(name):
+            return pyoxigraph.NamedNode(name)
+        file, other, layout = node("urn:x:labels"), node("urn:x:other"), node("urn:x:layout")
+        label, kind = node(sql.LABEL.value), node("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+        subject, labelled = node("urn:x:subject"), node("urn:x:labelled")
+        placement = pyoxigraph.BlankNode("placement")
+        store = pyoxigraph.Store()
+        triples = [(placement, node("https://ns.cascadeprotocol.org/cascade#writtenByQueryPath"),
+                    pyoxigraph.Literal("labels.rq"), layout),
+                   (placement, node("http://www.w3.org/ns/solid/terms#instance"), file, layout),
+                   (subject, kind, node("https://ns.cascadeprotocol.org/cascade#Subject"), other),
+                   (subject, label, pyoxigraph.Literal("stale"), file), (file, kind, node("urn:x:View"), file),
+                   (labelled, label, pyoxigraph.Literal("kept"), other)]
+        store.extend([pyoxigraph.Quad(*triple) for triple in triples]
+                     + [pyoxigraph.Quad(*triple[:3], pyoxigraph.DefaultGraph()) for triple in triples])
+        held = lambda connection: sorted(connection.execute(
+            "SELECT s.nt, o.nt FROM quad JOIN term s ON s.id = quad.s JOIN term o ON o.id = quad.o JOIN term g ON g.id = quad.g "
+            "WHERE g.nt = '<urn:x:labels>' ORDER BY 1, 2"))
+        connection = sql.loaded(store, "test")
+        assert held(connection) == [("<urn:x:labels>", "<urn:x:View>")]
+        assert connection.execute("SELECT count(*) FROM quad JOIN term o ON o.id = quad.o WHERE o.nt = '\"kept\"'").fetchone() == (1,)
+        for fill in (sql.screened, sql.refilled):
+            fill(connection, screens())
+            assert held(connection) == [("<urn:x:labels>", "<urn:x:View>"),
+                                        ("<urn:x:subject>", '"The person this pod is about"')]
 
     def test_reports_a_ported_rq_whose_bytes_changed_without_its_pin(self):
         """reports a ported `.rq` whose bytes changed since its pin, with the hash to pin once its `.sql` is checked

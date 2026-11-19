@@ -39,8 +39,6 @@ WITH
     CROSS JOIN quad qa ON qa.s = rt.s AND qa.p = k.qualified_association
     CROSS JOIN quad ag ON ag.s = qa.o AND ag.p = k.agent
     CROSS JOIN quad ro ON ro.s = qa.o AND ro.p = k.had_role),
-  -- A row for each solution of a branch of the .rq: the activity and association a judgment is generated through and
-  -- the assertion that names it are each a variable the .rq hides, and so, where two differ, two rows.
   said (judgment, label, made, verdict, author, author_label, generation, association, role, member, member_label,
         reason, replaces, replaces_label, assertion, asserted_under, retracts, retracts_label) AS (
     SELECT DISTINCT j.s, jl.o, ma.o, ve.o, au.o, al.label, g.generation, g.association, g.role, hm.o, ml.o, de.o, rp.o, rl.o, an.assertion, an.under,
@@ -70,7 +68,7 @@ WITH
     LEFT JOIN retracting r ON r.activity = j.s AND r.author = au.o
     LEFT JOIN quad de ON de.s = j.s AND de.p = k.description
     LEFT JOIN quad rtl ON rtl.s = rt.o AND rtl.p = k.label)
-SELECT judgment.nt AS judgment, label.nt AS judgmentLabel, made.nt AS made, verdict.nt AS verdict, author.nt AS author,
+SELECT DISTINCT judgment.nt AS judgment, label.nt AS judgmentLabel, made.nt AS made, verdict.nt AS verdict, author.nt AS author,
   author_label.nt AS authorLabel, role.nt AS role, member.nt AS member, member_label.nt AS memberLabel,
   reason.nt AS reason, replaces.nt AS replaces, replaces_label.nt AS replacesLabel, retracts.nt AS retracts,
   retracts_label.nt AS retractsLabel, asserted_under.nt AS assertedUnder
