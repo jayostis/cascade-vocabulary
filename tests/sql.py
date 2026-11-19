@@ -212,9 +212,16 @@ QUANTIFIER = re.compile(r"\{\d+(,\d*)?\}")
 CASE_APART = {"\u0130", "\u0131"}
 
 
-def refused(text):
-    """Why the text has a character that Python's Unicode does not assign and Oxigraph's newer one may, or None."""
-    found = next((c for c in text if unicodedata.category(c) == "Cn"), None)
+# What Unicode 16.0 case-maps that Python 3.12's Unicode 15.0 leaves unassigned, as Oxigraph's LCASE reads it
+NEWLY_CASED = ((0x1C89, 0x1C89), (0xA7CB, 0xA7CC), (0xA7CE, 0xA7CE), (0xA7D2, 0xA7D2), (0xA7D4, 0xA7D4),
+               (0xA7DA, 0xA7DA), (0xA7DC, 0xA7DC), (0x10D50, 0x10D65), (0x16EA0, 0x16EB8))
+
+
+def refused(text, only_cased=False):
+    """Why the text has a character that Python's Unicode does not assign and Oxigraph's newer one may, or None; given
+    only_cased, only a character that Oxigraph's newer Unicode lower-cases."""
+    found = next((c for c in text if (any(low <= ord(c) <= high for low, high in NEWLY_CASED) if only_cased
+                                      else unicodedata.category(c) == "Cn")), None)
     return None if found is None else f"U+{ord(found):04X}, which this Python's Unicode does not assign"
 
 
@@ -338,8 +345,8 @@ def sparql_encode_for_uri(text):
 
 def sparql_lcase(text):
     """SPARQL's LCASE: Unicode's full lower-case mapping, a final capital sigma to a final small one. A character Python's
-    Unicode does not assign, whose mapping Oxigraph's newer Unicode may know, raises ValueError."""
-    if text is not None and (why := refused(text)):
+    Unicode does not assign and Oxigraph's newer Unicode lower-cases raises ValueError; any other unassigned one is kept."""
+    if text is not None and (why := refused(text, only_cased=True)):
         raise ValueError(f"sparql_lcase meets {why}")
     return None if text is None else text.lower()
 

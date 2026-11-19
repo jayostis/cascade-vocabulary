@@ -2,6 +2,7 @@ import hashlib
 import json
 import re
 import sqlite3
+import unicodedata
 from collections import Counter
 from functools import cache
 from pathlib import Path
@@ -119,7 +120,7 @@ def compared(names, wanted, found, keys):
     for length in runs(wanted, keys):
         run = wanted[at:at + length]
         if Counter(run) != Counter(found[at:at + length]):
-            wrong = next(i for i in range(at, at + length) if found[i] not in run)
+            wrong = next((i for i in range(at, at + length) if found[i] not in run), at)
             return [f"the same rows in another order, from row {wrong + 1}: expected "
                     f"{' or '.join(shown(names, r) for r in run)}, found {shown(names, found[wrong])}"]
         at += length
@@ -127,9 +128,15 @@ def compared(names, wanted, found, keys):
 
 
 def oxigraph_answer(store, text, record=None):
-    """What the `.rq` gives, bound to the record if one is given as tests/engines.py binds it: its columns and rows, or
-    for a CONSTRUCT s, p and o and its triples, each term a sql.Term, and whether it is a CONSTRUCT."""
-    found = store.query(bound_to_records(text, [record]) if record else text)
+    """What the `.rq` gives, bound to the record if one is given, as tests/engines.py binds it for a question and by the engine's own
+    substitution for a CONSTRUCT, whose first group is its template: its columns and rows, or for a CONSTRUCT s, p and o
+    and its triples, each term a sql.Term, and whether it is a CONSTRUCT."""
+    if record is None:
+        found = store.query(text)
+    elif re.search(r"^\s*CONSTRUCT\b", re.sub(r"^\s*(#.*|PREFIX\s.*|BASE\s.*)$", "", text, flags=re.M), re.I):
+        found = store.query(text, substitutions={pyoxigraph.Variable("record"): pyoxigraph.NamedNode(record)})
+    else:
+        found = store.query(bound_to_records(text, [record]))
     if isinstance(found, pyoxigraph.QueryTriples):
         return ["s", "p", "o"], [tuple(map(sql.from_oxigraph, (t.subject, t.predicate, t.object))) for t in found], True
     names = [variable.value for variable in found.variables]
@@ -165,7 +172,7 @@ def scoped_answer(connection, text, records):
 
 def failures(fixture, lens, relative, text):
     """Why the `.sql` text, over the fixture's pod under the lens, does not give the rows of the `.rq` at the path: in a
-    whole run, in its order when it has one; in a keyed run of each record a manifest entry of the fixture binds, the
+    whole run, in its order when it has one; in a keyed run, for a question, of each record a manifest entry of the fixture binds, the
     `.rq` bound to it and the `.sql` with scope holding it alone; and, through the `.sql`, the rows of each
     manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of triples."""
     rq = query(Path(relative).relative_to("queries").as_posix())
@@ -187,7 +194,7 @@ def failures(fixture, lens, relative, text):
         return [f"{fixture.name}, under {lens}, {relative}, {where}: {line}" for line in compared(names, wanted, found, keys)]
 
     lines = against("against the .rq", wanted, found)
-    for record in sorted({record for entry in manifest_entries(fixture) for record in entry.records}):
+    for record in [] if construct else sorted({record for entry in manifest_entries(fixture) for record in entry.records}):
         lines += against(f"keyed to {record}, against the .rq", oxigraph_answer(store, rq, record)[1],
                          scoped_answer(connection, text, [record]))
     for entry in manifest_entries(fixture):
@@ -289,6 +296,36 @@ class TestSqlBesideEachQuery:
             found = [(vector["input"], vector.get("oxigraph", vector["output"]), in_sparql(name, vector["input"]))
                      for vector in vectors]
             assert [wrong for wrong in found if wrong[1] != wrong[2]] == []
+
+        def test_refuses_exactly_the_unassigned_characters_oxigraph_lower_cases(self):
+            """refuses exactly the characters Python's Unicode does not assign and Oxigraph's lower-cases
+
+            Every unassigned character of the first two planes is lower-cased by Oxigraph's LCASE and by tests/sql.py's
+            sparql_lcase; the characters on which Oxigraph's answer is another than the character's own are those
+            sparql_lcase refuses, and no other.
+            """
+            store = pyoxigraph.Store()
+            unassigned = [c for c in map(chr, range(0x20000)) if unicodedata.category(c) == "Cn"
+                          and not 0xFDD0 <= ord(c) <= 0xFDEF and ord(c) & 0xFFFE != 0xFFFE]
+            values = " ".join(f'"{c}"' for c in unassigned)
+            lowered = {solution["t"].value for solution in store.query(
+                f"SELECT ?t WHERE {{ VALUES ?t {{ {values} }} FILTER (LCASE(?t) != ?t) }}")}
+            refused = {c for c in unassigned if outcome(sql.sparql_lcase, {"input": [c]}) == "refused"}
+            assert refused == lowered
+            assert len(lowered) == 55
+
+        def test_binds_a_record_in_a_construct_through_the_engine(self):
+            """binds a record in a CONSTRUCT through the engine, not by a VALUES block opening the template
+
+            A CONSTRUCT's first group is its template, where a VALUES block is a syntax error: oxigraph_answer binds the
+            record as the engine does, so a CONSTRUCT gives the triples of that record alone.
+            """
+            store = pyoxigraph.Store()
+            for record, text in (("urn:a", "1"), ("urn:b", "2")):
+                store.add(pyoxigraph.Quad(pyoxigraph.NamedNode(record), pyoxigraph.NamedNode("urn:p"),
+                                          pyoxigraph.Literal(text)))
+            text = "CONSTRUCT { ?record <urn:q> ?o } WHERE { ?record <urn:p> ?o }"
+            assert [row[0].value for row in oxigraph_answer(store, text, "urn:a")[1]] == ["urn:a"]
 
 
 def outcome(function, vector):
