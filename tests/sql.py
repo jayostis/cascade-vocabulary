@@ -527,10 +527,26 @@ ENTRY_MEMBER = "https://ns.cascadeprotocol.org/cascade#entryMember"
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 
 
+LABEL = pyoxigraph.NamedNode("http://www.w3.org/2000/01/rdf-schema#label")
+LABELS = QUERIES / "labels.sql"
+
+
+def labels_file(store):
+    """The graph of the file the layout says labels.rq writes, or None where the store holds no layout of it."""
+    for placement in store.quads_for_pattern(None, pyoxigraph.NamedNode(
+            "https://ns.cascadeprotocol.org/cascade#writtenByQueryPath"), pyoxigraph.Literal("labels.rq"), None):
+        for instance in store.quads_for_pattern(placement.subject, pyoxigraph.NamedNode(
+                "http://www.w3.org/ns/solid/terms#instance"), None, None):
+            return instance.object
+    return None
+
+
 def loaded(store, fingerprint):
     """The pod of an Oxigraph store's named graphs in its default graph, every record and entry in scope, as a whole run
     fills it, and the ledger's one row naming what it was made from. A named graph with a statement outside the default
-    graph, as a table version's rows are, is left out, and the default graph must be the union of those kept."""
+    graph, as a table version's rows are, is left out, and the default graph must be the union of those kept. The
+    labels file's rdfs:label statements are left out too: a fill makes them from labels.sql, and the file's other
+    statements, which a runtime writes, are kept."""
     connection = connected()
     default = {quad.triple for quad in store.quads_for_pattern(None, None, None, pyoxigraph.DefaultGraph())}
     named = [quad for quad in store.quads_for_pattern(None, None, None, None)
@@ -540,6 +556,8 @@ def loaded(store, fingerprint):
     if missing := default - {quad.triple for quad in kept}:
         raise ValueError(f"{len(missing)} statements of the default graph are in no named graph it holds, such as "
                          f"{next(iter(missing))}")
+    file = labels_file(store)
+    kept = [quad for quad in kept if not (quad.graph_name == file and quad.predicate == LABEL)]
     ids, terms = {}, []
 
     def term_id(node):
@@ -647,6 +665,7 @@ def screen_tables(connection):
 
 PART = re.compile(r"^-- part: (\w+)[ \t]*$", re.MULTILINE)
 PARTS = ("tables", "fill", "finish", "triples")
+LABELS_PARTS = ("fill", "triples")
 
 
 def parts(text):
@@ -654,8 +673,8 @@ def parts(text):
     queries/statements.sql orders them; empty for a `.sql` in no parts."""
     found = PART.split(text)[1:]
     named = dict(zip(found[::2], found[1::2]))
-    if named and list(named) != list(PARTS):
-        raise ValueError(f"a view's .sql has the parts {list(named)}, not {list(PARTS)}")
+    if named and list(named) not in (list(PARTS), list(LABELS_PARTS)):
+        raise ValueError(f"a .sql has the parts {list(named)}, not {list(PARTS)} or {list(LABELS_PARTS)}")
     return named
 
 
@@ -687,14 +706,53 @@ def screened(connection, views):
 
 
 def refilled(connection, views):
-    """The connection with each view's screen filled again for the entries in scope, every view's fill before any
-    view's finish, each statement run alone, so the connection compiles each once."""
+    """The connection with each view's screen filled again for the entries in scope, every view's fill before the labels
+    are made and those before any view's finish, each statement run alone, so the connection compiles each once."""
     texts = [parts(text) for text in views]
     for name in PARTS[1:3]:
         for found in texts:
             for each in statements(found[name]):
                 connection.execute(each)
+        if name == "fill":
+            labelled(connection)
     settled(connection)
+    return connection
+
+
+LABELS_FILE = """
+SELECT g.id FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o JOIN term g ON g.nt = '<' || i.lex || '>'
+WHERE w.p = (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#writtenByQueryPath>')
+  AND w.o = (SELECT id FROM term WHERE nt = '"labels.rq"')
+  AND x.p = (SELECT id FROM term WHERE nt = '<http://www.w3.org/ns/solid/terms#instance>')"""
+
+
+def labelled(connection):
+    """The connection with the rdfs:label statements of the labels file, the graph the layout names for labels.rq, made
+    again from labels.sql, as a runtime writes the file; it is left as it is where the pod has no such graph."""
+    found = connection.execute(LABELS_FILE).fetchone()
+    if found is None:
+        return connection
+    made = parts(LABELS.read_text(encoding="utf-8"))
+    for each in statements(made["fill"]):
+        connection.execute(each)
+    rows = sorted(connection.execute(made["triples"]).fetchall())
+    label = f"<{LABEL.value}>"
+    connection.execute("DELETE FROM quad WHERE g = ? AND p = (SELECT id FROM term WHERE nt = ?)", (found[0], label))
+
+    def term_id(text):
+        term = parsed(text)
+        nt = str(term)
+        row = connection.execute("SELECT id FROM term WHERE nt = ?", (nt,)).fetchone()
+        if row is not None:
+            return row[0]
+        return connection.execute(
+            "INSERT INTO term (nt, kind, lex, datatype, lang, instant, day) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (nt, term.kind, None if term.kind == BLANK else term.value, term.datatype, term.lang, instant_key(term),
+             day_key(term))).lastrowid
+
+    for s, p, o in rows:
+        connection.execute("INSERT OR IGNORE INTO quad (s, p, o, g) VALUES (?, ?, ?, ?)",
+                           (term_id(s), term_id(p), term_id(o), found[0]))
     return connection
 
 

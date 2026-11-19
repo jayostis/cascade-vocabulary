@@ -9,6 +9,7 @@
   mf:entries (
     <#which-count>
     <#which-have-lapsed>
+    <#the-retractions-labelled>
   ) .
 
 <#which-count> a mf:QueryEvaluationTest ;
@@ -24,3 +25,10 @@
   mf:action [ qt:query <which-have-lapsed.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <which-have-lapsed.srj> .
+
+<#the-retractions-labelled> a mf:QueryEvaluationTest ;
+  mf:name "the-retractions-labelled" ;
+  rdfs:comment "A retraction no agent made is named a release, whatever else the pod labels: its name never comes from another thing's label." ;
+  mf:action [ qt:query <the-retractions-labelled.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-retractions-labelled.srj> .
