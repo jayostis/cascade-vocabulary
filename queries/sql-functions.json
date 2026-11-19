@@ -1,11 +1,11 @@
 {
-  "about": "The six functions a .sql may call where SQLite has no answer of its own, each registered under its name, and the vectors every implementation reproduces: for each input, the output SPARQL 1.1 gives, null where it gives an unbound value. Where Oxigraph gives another answer, the vector holds Oxigraph's under \"oxigraph\" and why under \"because\", and a query whose rows that could change is written so that both give the same rows. A vector with \"refused\" and no output is an input the vectors leave unpinned, which every implementation refuses with an error rather than answer. Strings are lexical forms; sparql_compare's inputs are terms in N-Triples form.",
+  "about": "The six functions a .sql may call where SQLite has no answer of its own, each registered under its name, and the vectors every implementation reproduces: for each input, the output SPARQL 1.1 gives, with a decimal at eighteen fractional digits and an error where more would be lost, as Oxigraph does (XPath leaves a decimal's precision to the implementation), null where it gives an unbound value. Where Oxigraph gives another answer, the vector holds Oxigraph's under \"oxigraph\" and why under \"because\", and a query whose rows that could change is written so that both give the same rows. A vector with \"refused\" and no output is an input the vectors leave unpinned, which every implementation refuses with an error rather than answer. Strings are lexical forms; sparql_compare's inputs are terms in N-Triples form.",
   "porting": [
     "A decimal is an exact count of 10^-18 within a signed 128-bit integer's range, and an instant has eighteen fractional digits: both need big integers, such as JavaScript's BigInt, not a double.",
     "A term's nt is Oxigraph's canonical form, as its store holds it: \"01\" is \"1\", \"+5\" is \"5\" and \"1.50\" is \"1.5\". A loader fed by a parser that keeps literals as written, such as N3.js, writes other nt; load from Oxigraph's quads, or make each literal canonical as Oxigraph does.",
-    "Strings compare by code point. JavaScript's < compares UTF-16 code units, which puts a character above U+FFFF before one from U+E000 to U+FFFF.",
+    "Strings compare by code point. JavaScript's < compares UTF-16 code units, which puts a character above U+FFFF, a surrogate pair from D800 to DBFF, before one from U+E000 to U+FFFF.",
     "A pattern's . and an empty match step over a character above U+FFFF whole, as a JavaScript RegExp does only with the u or v flag.",
-    "LCASE follows Unicode's full lower-case mapping with the final sigma; a character the implementation's Unicode does not assign is refused, since another Unicode may map it.",
+    "LCASE follows Unicode's full lower-case mapping with the final sigma; a character the implementation's Unicode does not case-map but a newer one does (U+1C89, U+A7CB, U+A7CC, U+A7CE, U+A7D2, U+A7D4, U+A7DA, U+A7DC, U+10D50 to U+10D65 and U+16EA0 to U+16EB8, which Unicode 16.0 adds) is refused; any other unassigned character is left as it is.",
     "No compare vector holds a blank node, as VALUES cannot: two blank nodes that are one term compare equal, and a blank node with any other term raises."
   ],
   "functions": {
@@ -95,7 +95,9 @@
         {"input": [""], "output": ""},
         {"input": ["ΣΑΣ"], "output": "σας"},
         {"input": ["Σ"], "output": "σ"},
-        {"input": ["\u0378"], "refused": "a character Python's Unicode does not assign, as U+1C89 is unassigned in Python 3.12's Unicode 15.0 and lower-cased by Oxigraph's 16.0"}
+        {"input": ["\uD83E\uDEE9"], "output": "\uD83E\uDEE9"},
+        {"input": ["\u0378"], "output": "\u0378"},
+        {"input": ["\u1C89"], "refused": "a character Python's Unicode 15.0 does not case-map and Oxigraph's 16.0 does: U+1C89 is unassigned in 15.0 and lower-cased by 16.0"}
       ]
     },
     "sparql_decimal": {
@@ -139,6 +141,7 @@
         {"input": ["*", "1.5", "0"], "output": "0", "oxigraph": null, "because": "Oxigraph's product needs the factors' trailing zeros to number eighteen, and counts none on a zero"},
         {"input": ["/", "0", "30.4375"], "output": "0", "oxigraph": null, "because": "Oxigraph's quotient counts no shift on a zero dividend, so it needs the divisor's trailing zeros to number eighteen"},
         {"input": ["*", "0.000000000005", "0.0000002"], "output": "0.000000000000000001", "oxigraph": null, "because": "Oxigraph's product needs the factors' trailing zeros to number eighteen, though the product here needs no more than eighteen fractional digits"},
+        {"input": ["*", "0.123456789012342", "30.4375"], "output": "3.757716015563159625", "oxigraph": null, "because": "Oxigraph's product needs the factors' trailing zeros to number eighteen, and these have fifteen and four fractional digits; the zero guard in medication-exposure-periods.rq does not reach this"},
         {"input": ["/", "8350012778.6", "40.3933289629225"], "output": "206717618.799494651976772277", "oxigraph": null, "because": "Oxigraph's quotient shifts by a power of ten outside a signed 128-bit integer's range"},
         {"input": ["+", "170141183460469231731.687303715884105727", "0"], "output": "170141183460469231731.687303715884105727"},
         {"input": ["+", "170141183460469231731.687303715884105728", "0"], "output": null},
@@ -192,8 +195,8 @@
         {"input": ["\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>", "\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>"], "output": 0},
         {"input": ["\"2025-02-30\"^^<http://www.w3.org/2001/XMLSchema#date>", "\"2025-02-30\"^^<http://www.w3.org/2001/XMLSchema#date>"], "output": 0},
         {"input": ["\"INF\"^^<http://www.w3.org/2001/XMLSchema#double>", "\"1e308\"^^<http://www.w3.org/2001/XMLSchema#double>"], "output": 1},
-        {"input": ["\"😀\"", "\"FFFD\""], "output": 1},
-        {"input": ["\"E000\"", "\"😀\""], "output": -1}
+        {"input": ["\"😀\"", "\"\uFFFD\""], "output": 1},
+        {"input": ["\"\uE000\"", "\"😀\""], "output": -1}
       ]
     }
   }
