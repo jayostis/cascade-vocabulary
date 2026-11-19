@@ -43,6 +43,54 @@ def screens():
     return [sql_text(relative) for relative in ported() if relative.startswith("queries/views/")]
 
 
+WHOLE = re.compile(r"^SCAN (?:quad|term)\b|^SEARCH \w+ USING (?:COVERING )?INDEX quad_\w+ \([pog]=\?\)$")
+
+
+def whole_searches(plan):
+    """The steps, of one statement's EXPLAIN QUERY PLAN given as (id, parent, detail) rows, that scan `quad` or `term`,
+    or search `quad` by only its predicate, object or graph, in a loop another loop runs once for each row of: not the
+    first loop of its select, or inside a subquery run for each row of the statement's."""
+    firsts, by_id = {}, {step: (parent, detail) for step, parent, detail in plan}
+    for step, parent, _ in plan:
+        firsts.setdefault(parent, step)
+    found = []
+    for step, parent, detail in plan:
+        inside, above = firsts[parent] != step, parent
+        while above in by_id:
+            inside = inside or by_id[above][1].startswith("CORRELATED")
+            above = by_id[above][0]
+        if WHOLE.match(detail) and (inside or detail.startswith("SCAN")):
+            found.append(detail)
+    return found
+
+
+def screen_plans(engine):
+    """The plan of each statement of each screen's fill and finish, and of each screen's triples, by the screen, the
+    part and the statement's place in it. The pod is empty, made by queries/statements.sql alone on the engine, each
+    statement planned just before it runs; its plans do not depend on what the pod holds."""
+    if engine == "apsw":
+        connection = apsw.Connection(":memory:")
+        for name, function in sql.FUNCTIONS.items():
+            connection.create_scalar_function(name, function, -1, deterministic=True)
+        connection.execute(sql.SCHEMA.read_text(encoding="utf-8"))
+        script = run = connection.execute
+    else:
+        connection = sql.connected()
+        script, run = connection.executescript, connection.execute
+    views = {relative: sql.parts(sql_text(relative)) for relative in ported() if relative.startswith("queries/views/")}
+    for found in views.values():
+        script(found["tables"])
+    plans = {}
+    for part in ("fill", "finish"):
+        for relative, found in views.items():
+            for place, text in enumerate(sql.statements(found[part])):
+                plans[relative, part, place] = [(row[0], row[1], row[3]) for row in run("EXPLAIN QUERY PLAN " + text)]
+                run(text)
+    for relative, found in views.items():
+        plans[relative, "triples", 0] = [(row[0], row[1], row[3]) for row in run("EXPLAIN QUERY PLAN " + found["triples"])]
+    return plans
+
+
 def list_questions():
     """Each ported question whose `.sql` takes a page size."""
     return [relative for relative in ported() if ":page_size" in sql_text(relative)]
@@ -581,6 +629,23 @@ class TestSqlBesideEachQuery:
             """runs on an SQLite no older than the version queries/statements.sql names, and records the one it ran on"""
             record_property("sqlite_version", sqlite3.sqlite_version)
             assert sqlite3.sqlite_version_info >= sql.MINIMUM_VERSION, sqlite3.sqlite_version
+
+        @pytest.mark.parametrize("engine", ["sqlite3", "apsw"])
+        def test_plans_each_screen_statement_from_the_shipped_statistics_with_no_whole_predicate_searched_in_a_loop(self, engine):
+            """plans each screen statement, on the statistics queries/statements.sql ships and no ANALYZE, with no scan of `quad` or `term` and no search of a whole predicate inside a loop
+
+            SQLite plans a statement from the statistics it holds, and with none it plans as if every table held a million
+            rows: one fill ran 79 s at 15,000 records against 0.14 s analyzed, by searching `quad` by its predicate alone
+            once for each row of another table. The pod here is empty and has had no ANALYZE; every statement of each
+            screen's fill and finish, and its triples, is planned on SQLite as the check ships it and on 3.54.1 through apsw.
+            None scans `quad` or `term`, or searches `quad` by only a predicate, an object or a graph in a loop a
+            surrounding loop runs once for each row of, or in a subquery run for each row of its statement's.
+            """
+            if engine == "apsw":
+                assert apsw.sqlite_lib_version() == STRICTEST_SQLITE
+            found = [f"{view} {part} #{place}: {detail}" for (view, part, place), plan in screen_plans(engine).items()
+                     for detail in whole_searches(plan)]
+            assert found == []
 
         @pytest.mark.parametrize("view, fixture", [
             ("conditions", "conditions-view"), ("lab-results", "lab-results-view"), ("allergies", "allergies-view"),
