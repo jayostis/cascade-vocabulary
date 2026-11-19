@@ -435,6 +435,77 @@ class TestSqlBesideEachQuery:
             record_property("sqlite_version", sqlite3.sqlite_version)
             assert sqlite3.sqlite_version_info >= sql.MINIMUM_VERSION, sqlite3.sqlite_version
 
+        @pytest.mark.parametrize("view, fixture", [("conditions", "conditions-view"), ("lab-results", "lab-results-view")])
+        def test_refuses_to_fill_a_screen_whose_view_the_layout_places_at_two_addresses(self, view, fixture):
+            """refuses to fill a screen whose view the pod's layout places at two addresses
+
+            The fixture's pod, its layout given a second address for the view, is filled whole from empty screen
+            tables; the fill fails rather than name the view's entries after either address.
+            """
+            connection = sql.copied(pod(next(f for f in FIXTURES if f.name == fixture), "everyday"))
+            registered = connection.execute(
+                "SELECT w.s, w.g FROM quad w JOIN term p ON p.id = w.p JOIN term o ON o.id = w.o "
+                "WHERE p.nt = ? AND o.nt = ?", (f"<{CASCADE}writtenByQueryPath>", f'"views/{view}.rq"')).fetchone()
+            elsewhere = made(connection, "<https://pod.example/elsewhere.ttl>", sql.IRI, "https://pod.example/elsewhere.ttl")
+            instance = made(connection, "<http://www.w3.org/ns/solid/terms#instance>", sql.IRI,
+                            "http://www.w3.org/ns/solid/terms#instance")
+            connection.execute("INSERT INTO quad (s, p, o, g) VALUES (?, ?, ?, ?)",
+                               (registered[0], instance, elsewhere, registered[1]))
+            for table in sql.screen_tables(connection):
+                connection.execute(f"DELETE FROM {table}")
+            with pytest.raises(sqlite3.IntegrityError):
+                sql.refilled(sql.whole(connection), screens())
+
+        def test_orders_strings_times_and_counts_by_their_paging_keys_as_oxigraph_orders_them(self):
+            """orders strings, times and counts by the keys queries/statements.sql's paging convention gives, as Oxigraph does
+
+            Strings, xsd:dateTime and xsd:date values with and without a zone, and integers of either sign, each given
+            the ascending and the descending key the convention writes, a time from its term's `instant` and a count
+            from the SQL integer, sort by those keys as Oxigraph's ORDER BY and ORDER BY DESC sort them.
+            """
+            connection = sqlite3.connect(":memory:")
+            turned = "hex(:text)"
+            for digit, letter in zip("0123456789ABCDEF", "ponmlkjihgfedcba"):
+                turned = f"replace({turned}, '{digit}', '{letter}')"
+            nines = ":digits"
+            for digit in "0123456789":
+                nines = f"replace({nines}, '{digit}', '{chr(ord('a') + int(digit))}')"
+            for digit in "0123456789":
+                nines = f"replace({nines}, '{chr(ord('a') + int(digit))}', '{9 - int(digit)}')"
+
+            def keys(text):
+                return connection.execute(f"SELECT '3' || hex(:text) || '.', {turned} || '~'", {"text": text}).fetchone()
+
+            def count_text(value):
+                digits = f"{abs(value):019d}"
+                if value >= 0:
+                    return "p" + digits
+                return "n" + connection.execute(f"SELECT {nines}", {"digits": digits}).fetchone()[0]
+
+            store = pyoxigraph.Store()
+            date_time, date, integer = (XSD + name for name in ("dateTime", "date", "integer"))
+            cases = [
+                [sql.Term(sql.LITERAL, value, XSD + "string") for value in ("", "a", "ab", "b", "B", "\u00e9", "Z", "a b")],
+                [sql.Term(sql.LITERAL, value, date_time) for value in (
+                    "2025-01-01T10:00:00+05:00", "2025-01-01T06:00:00Z", "2025-01-01T05:30:00Z", "2024-12-31T23:00:00-08:00",
+                    "2025-01-01T05:00:00.5Z")],
+                [sql.Term(sql.LITERAL, value, date) for value in ("2024-06-01", "2023-01-01Z", "2024-06-02+13:00")],
+                [sql.Term(sql.LITERAL, str(value), integer) for value in (0, 7, -7, 12, -12, 100, -100, 9, -1)],
+            ]
+            for values in cases:
+                def text(term):
+                    if term.datatype == integer:
+                        return count_text(int(term.value))
+                    if term.datatype in (date_time, date):
+                        return sql.instant_key(term)
+                    return term.value
+                listed = " ".join(str(term) for term in values)
+                for direction, at in (("", 0), ("DESC", 1)):
+                    oxigraph = [sql.from_oxigraph(solution["x"]) for solution in store.query(
+                        f"SELECT ?x WHERE {{ VALUES ?x {{ {listed} }} }} ORDER BY {direction}(?x)")]
+                    by_key = sorted(values, key=lambda term: keys(text(term))[at])
+                    assert by_key == oxigraph, (direction, [str(term) for term in by_key])
+
     class TestGivenEachFunction:
         @pytest.mark.parametrize("name", sorted(VECTORS["functions"]))
         def test_gives_each_vectors_output(self, name):
