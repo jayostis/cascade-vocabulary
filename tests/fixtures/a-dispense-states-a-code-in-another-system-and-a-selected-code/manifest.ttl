@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-dispense-states-a-code-in-another-system-and-a-selected-code" ;
+  rdfs:comment "A completed dispense that states a code in a system the vocabulary lists none of, an RxNorm code and the NDC its source chose." ;
+  mf:entries (
+    <#the-medication-dispenses-view>
+  ) .
+
+<#the-medication-dispenses-view> a mf:QueryEvaluationTest ;
+  mf:name "the-medication-dispenses-view" ;
+  rdfs:comment "The entry takes the code the source chose and the code in the other system, typed by the system, of its lead." ;
+  mf:action [ qt:query <the-medication-dispenses-view.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-medication-dispenses-view.srj> .

@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-medication-time-written-short-of-the-second" ;
+  rdfs:comment "A stopped medicine whose source wrote its start of use to the hour, 2025120108, the day its prescription was written to the hour, 2026020109, and its end of use to the hour, 2026030110." ;
+  mf:entries (
+    <#its-padded-times>
+    <#my-medication-history>
+  ) .
+
+<#its-padded-times> a mf:QueryEvaluationTest ;
+  mf:name "its-padded-times" ;
+  rdfs:comment "Each time its source wrote to the hour keeps, in the view, the node saying so and what was written, on the entry and on its member's values, each named after its holder, -padded- and the property." ;
+  mf:action [ qt:query <its-padded-times.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <its-padded-times.srj> .
+
+<#my-medication-history> a mf:QueryEvaluationTest ;
+  mf:name "my-medication-history" ;
+  rdfs:comment "The medicine is shown with its start, the day its prescription was written and its end as the record holds them, with no zone." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20medication%20history.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-medication-history.srj> .

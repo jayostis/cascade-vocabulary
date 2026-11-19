@@ -1,0 +1,18 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:amox a cascade:PrescribedOrReportedMedication .
+:amoxVersion prov:specializationOf :amox ; cascade:patient :subject ; cascade:drugName "Amoxicillin" ; cascade:prescribedOrReported "prescribed" ;
+    cascade:workflowStatus "completed" ;
+    cascade:medicationUseStartDate "2025-12-01T08:00:00"^^xsd:dateTime ; cascade:prescriptionWrittenDate "2026-02-01T09:00:00"^^xsd:dateTime ;
+    cascade:medicationUseEndDate "2026-03-01T10:00:00"^^xsd:dateTime ;
+    cascade:paddedDateTime <urn:x:amoxVersion#padded-medicationUseStartDate> , <urn:x:amoxVersion#padded-prescriptionWrittenDate> , <urn:x:amoxVersion#padded-medicationUseEndDate> .
+:amoxRevision a cascade:Revision ; cascade:revisionOf :amox ; cascade:version :amoxVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+<urn:x:amoxVersion#padded-medicationUseStartDate> cascade:paddedDateTimeProperty cascade:medicationUseStartDate ; cascade:timeAsWritten "2025120108" .
+<urn:x:amoxVersion#padded-prescriptionWrittenDate> cascade:paddedDateTimeProperty cascade:prescriptionWrittenDate ; cascade:timeAsWritten "2026020109" .
+<urn:x:amoxVersion#padded-medicationUseEndDate> cascade:paddedDateTimeProperty cascade:medicationUseEndDate ; cascade:timeAsWritten "2026030110" .

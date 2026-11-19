@@ -1,9 +1,9 @@
 -- The conditions screen: the view as tables, in the parts queries/statements.sql names. `condition` has a row for
 -- each entry with a lead, holding what the view states of it; `condition_member` its records; `condition_code` its
 -- codes; `condition_member_values` each member's current values, with their codes and padded times. The columns that
--- read the labels output or another view, filled by finish, are `condition.label`, `condition_for` and
--- `condition_source`. The medicines, procedures and vaccinations given for a condition are read from their views'
--- statements in `quad` until those views have screens of their own.
+-- read the labels output or another screen, filled by finish, are `condition.label`, `condition_for` and
+-- `condition_source`. The medicines, procedures and vaccinations given for a condition are read from the screens of
+-- those views, which every view's fill has made by then.
 
 -- part: tables
 CREATE VIEW condition_terms AS SELECT
@@ -25,12 +25,6 @@ CREATE VIEW condition_terms AS SELECT
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>') AS time_as_written,
   (SELECT id FROM term WHERE nt = '<http://www.w3.org/2000/01/rdf-schema#label>') AS label,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#reasonCondition>') AS reason_condition,
-  (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>') AS member_values,
-  (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>') AS values_of_member,
-  (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#drugName>') AS drug_name,
-  (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#procedureName>') AS procedure_name,
-  (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#vaccineName>') AS vaccine_name,
-  (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#lifecycle>') AS lifecycle,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#MedicationEnteredInError>') AS entered_in_error,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#currentRevision>') AS current_revision,
   (SELECT id FROM term WHERE nt = '<http://www.w3.org/ns/prov#wasDerivedFrom>') AS derived_from,
@@ -113,7 +107,8 @@ CREATE TABLE condition_for (
   for_entry TEXT NOT NULL,
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
--- Each record of each entry given for one of the entry's records, so a run keyed to it fills the entry again.
+-- Each record of each entry given for one of the entry's records, so a run keyed to it fills the entry again; a run keyed
+-- to a record whose current version gives one of the entry's records as a reason fills it through that version.
 CREATE TABLE condition_for_record (
   entry INTEGER NOT NULL,
   record INTEGER NOT NULL,
@@ -137,11 +132,21 @@ INSERT INTO condition_filled (entry)
   UNION SELECT entry FROM condition_member WHERE record IN (SELECT term FROM scope)
   UNION SELECT entry FROM condition_for_record WHERE record IN (SELECT term FROM scope)
   UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
-    CROSS JOIN quad v ON v.o = scope.term AND v.p = k.values_of_member
-    CROSS JOIN quad given ON given.o = v.s AND given.p = k.member_values
-    CROSS JOIN quad w ON w.s = given.s AND w.p = k.member_values
-    CROSS JOIN quad rc ON rc.s = w.o AND rc.p = k.reason_condition
+    CROSS JOIN quad v ON v.s = scope.term AND v.p = k.current_version
+    CROSS JOIN quad rc ON rc.s = v.o AND rc.p = k.reason_condition
     CROSS JOIN quad e ON e.s = rc.o AND e.p = k.in_entry
+  UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
+    LEFT JOIN quad ie ON ie.s = scope.term AND ie.p = k.in_entry
+    CROSS JOIN medication_member_values_reason_condition r ON r.entry IN (scope.term, ie.o)
+    CROSS JOIN quad e ON e.s = r.record AND e.p = k.in_entry
+  UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
+    LEFT JOIN quad ie ON ie.s = scope.term AND ie.p = k.in_entry
+    CROSS JOIN procedure_member_values_reason_condition r ON r.entry IN (scope.term, ie.o)
+    CROSS JOIN quad e ON e.s = r.record AND e.p = k.in_entry
+  UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
+    LEFT JOIN quad ie ON ie.s = scope.term AND ie.p = k.in_entry
+    CROSS JOIN immunization_member_values_reason_condition r ON r.entry IN (scope.term, ie.o)
+    CROSS JOIN quad e ON e.s = r.record AND e.p = k.in_entry
   UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
     CROSS JOIN quad ag ON ag.o = scope.term AND ag.p = k.agent
     CROSS JOIN quad a ON a.o = ag.s AND a.p = k.association
@@ -251,21 +256,23 @@ WHERE entry IN (SELECT entry FROM condition_filled);
 
 DELETE FROM condition_for WHERE entry IN (SELECT entry FROM condition_filled);
 INSERT OR IGNORE INTO condition_for (entry, line, shown, name_key, for_entry)
-WITH given (entry, for_entry, name) AS (
-  SELECT DISTINCT c.entry, mv.s,
-    coalesce((SELECT min(x.o) FROM quad x WHERE x.s = mv.s AND x.p = k.drug_name),
-             (SELECT min(x.o) FROM quad x WHERE x.s = mv.s AND x.p = k.procedure_name),
-             (SELECT min(x.o) FROM quad x WHERE x.s = mv.s AND x.p = k.vaccine_name))
-  FROM condition_terms k CROSS JOIN condition c JOIN condition_member m ON m.entry = c.entry
-  JOIN quad rc ON rc.o = m.record AND rc.p = k.reason_condition
-  JOIN quad mv ON mv.o = rc.s AND mv.p = k.member_values
-  WHERE c.entry IN (SELECT entry FROM condition_filled)
-    AND NOT EXISTS (SELECT 1 FROM quad x WHERE x.s = mv.s AND x.p = k.lifecycle AND x.o = k.entered_in_error)),
+WITH
+  given (entry, for_entry, name) AS (
+    SELECT DISTINCT c.entry, substr(f.iri, 2, length(f.iri) - 2), f.name
+    FROM condition_terms k CROSS JOIN condition c JOIN condition_member m ON m.entry = c.entry
+    JOIN (SELECT r.record, e.iri, e.name FROM medication_member_values_reason_condition r
+          JOIN medication e ON e.entry = r.entry
+          WHERE NOT coalesce(e.lifecycle = (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#MedicationEnteredInError>'), 0)
+          UNION ALL SELECT r.record, e.iri, e.name FROM procedure_member_values_reason_condition r
+          JOIN procedure e ON e.entry = r.entry
+          UNION ALL SELECT r.record, e.iri, e.name FROM immunization_member_values_reason_condition r
+          JOIN immunization e ON e.entry = r.entry) f ON f.record = m.record
+    WHERE c.entry IN (SELECT entry FROM condition_filled)),
   spoken (entry, for_entry, name, said) AS (
-    SELECT given.entry, f.lex, n.id,
+    SELECT given.entry, given.for_entry, n.id,
       CASE WHEN n.datatype IN ('http://www.w3.org/2001/XMLSchema#string', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString')
            THEN substr(n.nt, 2, length(n.nt) - 2 - coalesce(length(n.lang) + 1, 0)) END
-    FROM given JOIN term f ON f.id = given.for_entry LEFT JOIN term n ON n.id = given.name)
+    FROM given LEFT JOIN term n ON n.id = given.name)
 SELECT spoken.entry,
   spoken.for_entry || CASE WHEN spoken.said IS NULL THEN '' ELSE ', ' || n.lex END,
   spoken.for_entry || coalesce(', ' || spoken.said, ''),
@@ -275,11 +282,17 @@ FROM spoken LEFT JOIN term n ON n.id = spoken.name;
 
 DELETE FROM condition_for_record WHERE entry IN (SELECT entry FROM condition_filled);
 INSERT OR IGNORE INTO condition_for_record (entry, record)
-SELECT m.entry, member.o FROM condition_terms k CROSS JOIN condition_member m
-JOIN quad rc ON rc.o = m.record AND rc.p = k.reason_condition
-JOIN quad mv ON mv.o = rc.s AND mv.p = k.member_values
-JOIN quad w ON w.s = mv.s AND w.p = k.member_values
-JOIN quad member ON member.s = w.o AND member.p = k.values_of_member
+SELECT m.entry, member.record FROM condition_member m
+JOIN medication_member_values_reason_condition r ON r.record = m.record
+JOIN medication e ON e.entry = r.entry JOIN medication_member member ON member.entry = e.entry
+WHERE m.entry IN (SELECT entry FROM condition_filled)
+UNION SELECT m.entry, member.record FROM condition_member m
+JOIN procedure_member_values_reason_condition r ON r.record = m.record
+JOIN procedure e ON e.entry = r.entry JOIN procedure_member member ON member.entry = e.entry
+WHERE m.entry IN (SELECT entry FROM condition_filled)
+UNION SELECT m.entry, member.record FROM condition_member m
+JOIN immunization_member_values_reason_condition r ON r.record = m.record
+JOIN immunization e ON e.entry = r.entry JOIN immunization_member member ON member.entry = e.entry
 WHERE m.entry IN (SELECT entry FROM condition_filled);
 
 DELETE FROM condition_source WHERE entry IN (SELECT entry FROM condition_filled);

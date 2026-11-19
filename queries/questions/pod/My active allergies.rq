@@ -98,4 +98,4 @@ WHERE {
   BIND (IF(?allReactions = "", 1/0, ?allReactions) AS ?reactionsByRecord)
 }
 GROUP BY ?entry ?allergenName ?code ?criticality ?status ?category ?onset ?reactionsByRecord ?entryLabel ?sources
-ORDER BY ?allergenName ?entry
+ORDER BY ?allergenName ?entry ?code

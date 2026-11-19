@@ -49,4 +49,4 @@ WHERE {
   OPTIONAL { ?entry rdfs:label ?entryLabel }
 }
 GROUP BY ?entry ?given ?vaccine ?code ?status ?entryLabel ?sources
-ORDER BY DESC(COALESCE(STR(?given), "")) ?vaccine ?entry
+ORDER BY DESC(COALESCE(STR(?given), "")) ?vaccine ?entry ?code

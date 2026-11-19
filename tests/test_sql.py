@@ -320,13 +320,12 @@ def renamed(connection, subjects, predicates):
 def keyed_changes(connection):
     """Each change a keyed run may be given over the pod, named, as a function that makes it on a copy of the pod and
     gives the terms the run puts in scope."""
-    (in_entry, lead, member, agent, label, foaf_name, current, reason, values_of, member_values, rdf_type,
-     condition_kind, *names) = term_ids(
+    (in_entry, lead, member, agent, label, foaf_name, current, reason, rdf_type, condition_kind, *names) = term_ids(
         connection, CASCADE + "inEntry", CASCADE + "leadMember", CASCADE + "entryMember",
         "http://www.w3.org/ns/prov#agent", "http://www.w3.org/2000/01/rdf-schema#label", "http://xmlns.com/foaf/0.1/name",
-        "http://purl.org/pav/hasCurrentVersion", CASCADE + "reasonCondition", CASCADE + "valuesOfMember",
-        CASCADE + "memberCurrentValues", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-        CASCADE + "ProblemOrDiagnosis", CASCADE + "drugName", CASCADE + "procedureName", CASCADE + "vaccineName")
+        "http://purl.org/pav/hasCurrentVersion", CASCADE + "reasonCondition",
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", CASCADE + "ProblemOrDiagnosis", CASCADE + "drugName",
+        CASCADE + "procedureName", CASCADE + "vaccineName")
     if in_entry is None:
         return []
     changes, entries = [], {}
@@ -352,52 +351,56 @@ def keyed_changes(connection):
             return [named]
         changes.append((f"agent {named} renamed", agent_renamed))
     given = connection.execute(
-        "SELECT DISTINCT v.o, e.s, v.s FROM quad r JOIN quad v ON v.s = r.s AND v.p = ? "
-        "JOIN quad e ON e.o = r.s AND e.p = ? WHERE r.p = ?", (values_of, member_values, reason)).fetchall() \
-        if None not in (reason, values_of, member_values) else []
-    for record, entry, values in given:
-        def reasons_dropped(c, record=record, values=values):
-            c.execute("DELETE FROM quad WHERE s = ? AND p = ?", (values, reason))
+        "SELECT DISTINCT r.s, e.o, v.o FROM quad r JOIN quad v ON v.s = r.s AND v.p = ? JOIN quad x ON x.s = v.o AND x.p = ? "
+        "JOIN quad e ON e.s = r.s AND e.p = ? ORDER BY r.s, e.o, v.o", (current, reason, in_entry)).fetchall()         if None not in (reason, current, in_entry) else []
+
+    def lead_versions(c, entry):
+        """The current versions of the lead of an entry."""
+        return [row[0] for row in c.execute(
+            "SELECT v.o FROM quad l JOIN quad v ON v.s = l.o AND v.p = ? WHERE l.s = ? AND l.p = ?", (current, entry, lead))]
+
+    for record, entry, version in given:
+        def reasons_dropped(c, record=record, version=version):
+            c.execute("DELETE FROM quad WHERE s = ? AND p = ?", (version, reason))
             return [record]
 
         def entry_renamed(c, record=record, entry=entry):
-            renamed(c, [entry], [name for name in names if name is not None])
+            renamed(c, lead_versions(c, entry), [name for name in names if name is not None])
             return [record]
         changes.append((f"record {record}'s reasons dropped", reasons_dropped))
-        changes.append((f"entry {entry} its values give reasons for renamed, {record} in scope", entry_renamed))
+        changes.append((f"entry {entry} its records give reasons for renamed, {record} in scope", entry_renamed))
         for (condition,) in connection.execute(
                 "SELECT DISTINCT q.s FROM quad q JOIN quad t ON t.s = q.s AND t.p = ? AND t.o = ? WHERE q.p = ? "
                 "AND q.s NOT IN (SELECT o FROM quad WHERE s = ? AND p = ?)",
-                (rdf_type, condition_kind, in_entry, values, reason)).fetchall():
-            def reason_gained(c, record=record, values=values, condition=condition):
+                (rdf_type, condition_kind, in_entry, version, reason)).fetchall():
+            def reason_gained(c, record=record, version=version, condition=condition):
                 c.execute("INSERT INTO quad (s, p, o, g) SELECT s, p, ?, g FROM quad WHERE s = ? AND p = ? LIMIT 1",
-                          (condition, values, reason))
+                          (condition, version, reason))
                 return [record]
             changes.append((f"record {record} given condition {condition} as a reason", reason_gained))
 
-    def joined(c, entry):
-        """A new record, its values giving no reason, put in the entry; its id."""
+    def joined(c, entry, like):
+        """A new record of the kind of another, its current version giving no reason, put in the entry; its id."""
         record = made(c, f"<urn:cascade:joined-{entry}>", sql.IRI, f"urn:cascade:joined-{entry}")
-        values = made(c, f"<urn:cascade:joined-{entry}-values>", sql.IRI, f"urn:cascade:joined-{entry}-values")
-        graph = c.execute("SELECT g FROM quad WHERE s = ? AND p = ? LIMIT 1", (entry, member_values)).fetchone()[0]
+        version = made(c, f"<urn:cascade:joined-{entry}-version>", sql.IRI, f"urn:cascade:joined-{entry}-version")
+        graph = c.execute("SELECT g FROM quad WHERE s = ? AND p = ? LIMIT 1", (like, in_entry)).fetchone()[0]
         c.executemany("INSERT OR IGNORE INTO quad (s, p, o, g) VALUES (?, ?, ?, ?)",
-                      [(record, in_entry, entry, graph), (entry, member, record, graph),
-                       (entry, member_values, values, graph), (values, values_of, record, graph)])
+                      [(record, in_entry, entry, graph), (entry, member, record, graph), (record, current, version, graph)])
+        c.execute("INSERT OR IGNORE INTO quad (s, p, o, g) SELECT ?, p, o, g FROM quad WHERE s = ? AND p = ?",
+                  (record, like, rdf_type))
         return record
 
-    for entry in sorted({entry for _, entry, _ in given}):
-        def joined_renamed(c, entry=entry):
-            record = joined(c, entry)
-            renamed(c, [entry], [name for name in names if name is not None])
+    for entry, like in sorted({entry: record for record, entry, _ in given}.items()):
+        def joined_renamed(c, entry=entry, like=like):
+            record = joined(c, entry, like)
+            renamed(c, lead_versions(c, entry), [name for name in names if name is not None])
             return [record]
 
-        def left_renamed(c, entry=entry):
-            record = joined(c, entry)
+        def left_renamed(c, entry=entry, like=like):
+            record = joined(c, entry, like)
             sql.refilled(sql.whole(c), screens())
-            c.execute("DELETE FROM quad WHERE ? IN (s, o) AND p IN (?, ?, ?)", (record, in_entry, member, values_of))
-            c.execute("DELETE FROM quad WHERE s = ? AND p = ? AND o NOT IN (SELECT s FROM quad WHERE p = ?)",
-                      (entry, member_values, values_of))
-            renamed(c, [entry], [name for name in names if name is not None])
+            c.execute("DELETE FROM quad WHERE ? IN (s, o) AND p IN (?, ?, ?)", (record, in_entry, member, current))
+            renamed(c, lead_versions(c, entry), [name for name in names if name is not None])
             return [record]
         changes.append((f"a record with no reason put in entry {entry}, which is renamed, it alone in scope",
                         joined_renamed))
@@ -487,10 +490,10 @@ class TestSqlBesideEachQuery:
             Over each fixture's screens, filled whole, each change a keyed run may be given is made to the pod's
             statements and the screens filled again with scope holding what it touched: each record in an entry,
             unchanged; each record but the lead of an entry of two or more, moved to an entry of its own; each agent,
-            renamed; each record whose values give a reason condition, its reasons dropped, and given each other
-            condition's record as a reason; each entry those values are of, renamed, the record in scope, and renamed
-            as a new record whose values give no reason is put in it, or, after a whole fill, taken out of it again,
-            that record alone in scope; and each document a record's current revision derives from, retrieved again.
+            renamed; each record whose current version gives a reason condition, its reasons dropped, and given each
+            other condition's record as a reason; each entry such a record is in, its lead's name changed, the record in
+            scope, and changed as a new record whose version gives no reason is put in it, or, after a whole fill, taken
+            out of it again, that record alone in scope; and each document a record's current revision derives from, retrieved again.
             Every screen table then holds the rows a whole fill of the changed pod gives from empty tables.
             """
             found = []
@@ -547,7 +550,10 @@ class TestSqlBesideEachQuery:
             record_property("sqlite_version", sqlite3.sqlite_version)
             assert sqlite3.sqlite_version_info >= sql.MINIMUM_VERSION, sqlite3.sqlite_version
 
-        @pytest.mark.parametrize("view, fixture", [("conditions", "conditions-view"), ("lab-results", "lab-results-view")])
+        @pytest.mark.parametrize("view, fixture", [
+            ("conditions", "conditions-view"), ("lab-results", "lab-results-view"), ("allergies", "allergies-view"),
+            ("medications", "medications-view"), ("medication-dispenses", "medication-dispenses-view"),
+            ("immunizations", "immunizations-view"), ("procedures", "procedures-view")])
         def test_refuses_to_fill_a_screen_whose_view_the_layout_places_at_two_addresses(self, view, fixture):
             """refuses to fill a screen whose view the pod's layout places at two addresses
 
@@ -568,7 +574,9 @@ class TestSqlBesideEachQuery:
             with pytest.raises(sqlite3.IntegrityError):
                 sql.refilled(sql.whole(connection), screens())
 
-        @pytest.mark.parametrize("fixture", ["conditions-view", "lab-results-view"])
+        @pytest.mark.parametrize("fixture", [
+            "conditions-view", "lab-results-view", "allergies-view", "medications-view", "medication-dispenses-view",
+            "immunizations-view", "procedures-view", "a-medicine-and-a-procedure-given-for-a-condition"])
         def test_fills_each_screen_and_asks_each_list_question_on_the_strictest_sqlite_a_runtime_ships(self, fixture):
             """fills each screen, whole and keyed, and asks each list question, on the strictest SQLite a runtime ships
 

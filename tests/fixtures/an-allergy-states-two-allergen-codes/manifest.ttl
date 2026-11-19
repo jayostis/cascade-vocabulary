@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "an-allergy-states-two-allergen-codes" ;
+  rdfs:comment "An allergy whose source coded the allergen twice, in SNOMED CT and in RxNorm." ;
+  mf:entries (
+    <#my-active-allergies>
+  ) .
+
+<#my-active-allergies> a mf:QueryEvaluationTest ;
+  mf:name "my-active-allergies" ;
+  rdfs:comment "An entry with two allergen codes is two rows, one for each, alike but for the code." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20active%20allergies.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-active-allergies.srj> .

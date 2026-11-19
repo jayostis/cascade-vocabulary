@@ -1,0 +1,14 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:filled a cascade:MedicationDispense .
+:filledVersion prov:specializationOf :filled ; cascade:patient :subject ; cascade:drugName "Example tablet" ; cascade:rxNormCode <https://ns.cascadeprotocol.org/codes/rxnorm/861007> ;
+    cascade:userSelectedCode <https://ns.cascadeprotocol.org/codes/ndc11/00093104801> ;
+    cascade:medicationCodeInOtherSystem "A-4412"^^<https://example.org/codes/local> ;
+    cascade:workflowStatus "completed" ; cascade:dispensePreparedTime "2026-01-11"^^xsd:date .
+:filledRevision a cascade:Revision ; cascade:revisionOf :filled ; cascade:version :filledVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
