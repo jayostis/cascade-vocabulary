@@ -240,13 +240,27 @@ def records_in_entries(connection):
 
 
 NO_SUCH_RECORD = "urn:cascade:no-such-record"
+ASKED_MEMBERS = re.compile(r"\bFROM (\w+_member) \w+ JOIN asked\b")
+
+
+def records_a_list_question_is_bound_to(connection, text):
+    """Each record of the member table a list question matches `asked` against, as its IRI, and the first record the
+    pod puts in an entry that table does not hold, so the question is bound to a record of another kind too."""
+    table = ASKED_MEMBERS.search(text)
+    if table is None:
+        raise ValueError("a list question that matches asked against no member table")
+    own = [lex for (lex,) in connection.execute(
+        f"SELECT DISTINCT t.lex FROM {table[1]} m JOIN term t ON t.id = m.record WHERE t.kind = 2 ORDER BY t.lex")]
+    other = next((record for record in records_in_entries(connection) if record not in set(own)), None)
+    return own + ([] if other is None else [other])
 
 
 def failures(fixture, lens, relative, text):
     """Why the `.sql` text, over the fixture's pod under the lens, does not give the rows of the `.rq` at the path: in a
     whole run, in its order when it has one; for a question bound to a record, the `.rq` bound to it and the `.sql`
     with `asked` holding it alone, for each record a manifest entry of the fixture binds, for a list question each
-    record the pod puts in an entry, and for a `.sql` reading `asked` a record the pod lacks; and, through the `.sql`,
+    record of its own screen's members and one record of another kind, and for a `.sql` reading `asked` a record the
+    pod lacks; and, through the `.sql`,
     the rows of each manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of
     triples."""
     rq = query(Path(relative).relative_to("queries").as_posix())
@@ -270,7 +284,7 @@ def failures(fixture, lens, relative, text):
     lines = against("against the .rq", wanted, found)
     bound = set() if construct else {record for entry in manifest_entries(fixture) for record in entry.records}
     if ":page_size" in text:
-        bound |= set(records_in_entries(connection))
+        bound |= set(records_a_list_question_is_bound_to(connection, text))
     if re.search(r"\basked\b", text):
         bound.add(NO_SUCH_RECORD)
     for record in sorted(bound):
@@ -318,8 +332,8 @@ def renamed(connection, subjects, predicates):
 
 
 def keyed_changes(connection):
-    """Each change a keyed run may be given over the pod, named, as a function that makes it on a copy of the pod and
-    gives the terms the run puts in scope."""
+    """Each change a keyed run may be given over the pod, named, as a function that makes it on the pod and gives the
+    terms the run puts in scope."""
     (in_entry, lead, member, agent, label, foaf_name, current, reason, rdf_type, condition_kind, *names) = term_ids(
         connection, CASCADE + "inEntry", CASCADE + "leadMember", CASCADE + "entryMember",
         "http://www.w3.org/ns/prov#agent", "http://www.w3.org/2000/01/rdf-schema#label", "http://xmlns.com/foaf/0.1/name",
@@ -331,9 +345,10 @@ def keyed_changes(connection):
     changes, entries = [], {}
     for record, entry in connection.execute("SELECT DISTINCT s, o FROM quad WHERE p = ? ORDER BY s, o", (in_entry,)):
         entries.setdefault(entry, []).append(record)
-        changes.append((f"record {record} unchanged", lambda c, record=record: [record]))
     for entry, records in entries.items():
         leads = {row[0] for row in connection.execute("SELECT o FROM quad WHERE s = ? AND p = ?", (entry, lead))}
+        kept = next((record for record in records if record not in leads), records[0])
+        changes.append((f"record {kept} unchanged", lambda c, record=kept: [record]))
         for record in sorted(set(records) - leads) if len(records) > 1 else []:
             def moved(c, record=record, entry=entry):
                 apart = made(c, f"<urn:cascade:entry:moved-{record}>", sql.IRI, f"urn:cascade:entry:moved-{record}")
@@ -352,7 +367,8 @@ def keyed_changes(connection):
         changes.append((f"agent {named} renamed", agent_renamed))
     given = connection.execute(
         "SELECT DISTINCT r.s, e.o, v.o FROM quad r JOIN quad v ON v.s = r.s AND v.p = ? JOIN quad x ON x.s = v.o AND x.p = ? "
-        "JOIN quad e ON e.s = r.s AND e.p = ? ORDER BY r.s, e.o, v.o", (current, reason, in_entry)).fetchall()         if None not in (reason, current, in_entry) else []
+        "JOIN quad e ON e.s = r.s AND e.p = ? ORDER BY r.s, e.o, v.o", (current, reason, in_entry)).fetchall() \
+        if None not in (reason, current, in_entry) else []
 
     def lead_versions(c, entry):
         """The current versions of the lead of an entry."""
@@ -488,33 +504,32 @@ class TestSqlBesideEachQuery:
             """fills each screen, keyed to what a change touched, as a whole fill of the changed pod does, under each lens
 
             Over each fixture's screens, filled whole, each change a keyed run may be given is made to the pod's
-            statements and the screens filled again with scope holding what it touched: each record in an entry,
-            unchanged; each record but the lead of an entry of two or more, moved to an entry of its own; each agent,
-            renamed; each record whose current version gives a reason condition, its reasons dropped, and given each
-            other condition's record as a reason; each entry such a record is in, its lead's name changed, the record in
-            scope, and changed as a new record whose version gives no reason is put in it, or, after a whole fill, taken
-            out of it again, that record alone in scope; and each document a record's current revision derives from, retrieved again.
-            Every screen table then holds the rows a whole fill of the changed pod gives from empty tables.
+            statements and the screens filled again with scope holding what it touched: one record of each entry, a
+            member but the lead where there is one, unchanged; each record but the lead of an entry of two or more,
+            moved to an entry of its own; each agent, renamed; each record whose current version gives a reason
+            condition, its reasons dropped, and given each other condition's record as a reason; each entry such a
+            record is in, its lead's name changed, the record in scope, and changed as a new record whose version gives
+            no reason is put in it, or, after a whole fill, taken out of it again, that record alone in scope; and each
+            document a record's current revision derives from, retrieved again. Every screen table then holds the rows
+            a whole fill of the changed pod gives from empty tables.
             """
             found = []
             for lens in LENSES:
                 connection = pod(fixture, lens)
                 views, filled = screens(), sql.screen_tables(connection)
                 for name, change in keyed_changes(connection):
-                    changed = sql.copied(connection)
-                    touched = change(changed)
-                    keyed = sql.copied(changed)
-                    keyed.execute("DELETE FROM scope")
-                    keyed.executemany("INSERT INTO scope (term) VALUES (?)", [(term,) for term in touched])
-                    sql.refilled(keyed, views)
-                    if name.endswith(" unchanged"):
-                        wanted = filled
-                    else:
-                        whole = changed
-                        for table in filled:
-                            whole.execute(f"DELETE FROM {table}")
-                        wanted = sql.screen_tables(sql.refilled(sql.whole(whole), views))
-                    kept = sql.screen_tables(keyed)
+                    with sql.undone(connection):
+                        touched = change(connection)
+                        with sql.undone(connection):
+                            connection.execute("DELETE FROM scope")
+                            connection.executemany("INSERT INTO scope (term) VALUES (?)", [(term,) for term in touched])
+                            kept = sql.screen_tables(sql.refilled(connection, views))
+                        if name.endswith(" unchanged"):
+                            wanted = filled
+                        else:
+                            for table in filled:
+                                connection.execute(f"DELETE FROM {table}")
+                            wanted = sql.screen_tables(sql.refilled(sql.whole(connection), views))
                     found += [f"{fixture.name}, under {lens}, {name}: {table} holds {sorted(set(kept[table]) - set(rows))} "
                               f"a whole fill does not, and lacks {sorted(set(rows) - set(kept[table]))}"
                               for table, rows in wanted.items() if kept[table] != rows]
