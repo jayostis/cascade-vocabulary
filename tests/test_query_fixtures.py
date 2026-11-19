@@ -8,7 +8,8 @@ import pytest
 from rdflib import OWL, RDF, RDFS, Graph, Literal, URIRef
 
 from contract import CASCADE, PROV, QUERIES, ROOT, built, derivations, named, query, questions
-from engines import ENGINES, Oxigraph, bound_to_records, marked_groups
+import engines
+from engines import ENGINES, Oxigraph, Rdflib, bound_to_records, marked_groups
 from group_budget import group_of, over_budget, unseen
 from manifests import Entry, entries, failure, lens_name, row
 from pods import ADDRESS, FIXTURES, built_once, every_fixture, on_its_worker
@@ -492,6 +493,60 @@ class TestChecksOfTheFixtureTools:
             assert unseen(parts) == []
             assert unseen([("t.py::d", 99.0)]) == ["any group"]
             assert unseen([("t.py::d", 99.0)], ["one"]) == ["one"]
+
+    class TestWarm:
+        """`engines.warm()`"""
+
+        @pytest.fixture(autouse=True)
+        def a_store_of_its_own_and_a_run_outside_xdist(self, tmp_path, monkeypatch):
+            monkeypatch.setattr(engines, "PARSES", tmp_path)
+            monkeypatch.delenv("PYTEST_XDIST_WORKER", raising=False)
+            monkeypatch.delenv("PYTEST_XDIST_WORKER_COUNT", raising=False)
+
+        def test_is_not_delayed_by_a_file_a_killed_run_left_beside_a_parse(self):
+            """is not delayed by a file a killed run left beside a query's parse"""
+            text = "SELECT ?s WHERE { ?s ?p ?o }"
+            stem = engines.stored(text).stem
+            for leftover in (".lock", ".4242.part"):
+                engines.stored(text).with_name(stem + leftover).write_bytes(b"")
+            start = perf_counter()
+            engines.warm([text], wait=5)
+            assert engines.stored(text).is_file() and perf_counter() - start < 2
+
+        def test_parses_the_queries_at_its_own_place_in_the_list_first_and_then_any_that_are_missing(self, monkeypatch):
+            """parses first the queries at its own place in the list, as many places as there are workers, and then any no one has stored"""
+            texts = sorted(f"SELECT ?s{n} WHERE {{ ?s ?p ?o }}" for n in range(6))
+            parsed = []
+            monkeypatch.setattr(engines, "parse", lambda text: parsed.append(text) or "tree")
+            monkeypatch.setenv("PYTEST_XDIST_WORKER", "gw1")
+            monkeypatch.setenv("PYTEST_XDIST_WORKER_COUNT", "3")
+            engines.warm(texts, wait=0)
+            assert parsed == [*texts[1::3], *(text for text in texts if text not in texts[1::3])]
+
+        def test_stores_a_query_whose_parse_raises_as_none_whatever_the_error(self, monkeypatch):
+            """stores a query whose parse raises as none, whatever the error, and raises none itself"""
+            def fails(text):
+                raise RuntimeError(text)
+
+            monkeypatch.setattr(engines, "parse", fails)
+            text = "SELECT ?s WHERE { ?s ?p ?o }"
+            engines.warm([text], wait=0)
+            assert engines.stored(text).is_file() and engines.read_stored(text) is None
+
+        def test_reads_no_parse_from_a_file_it_cannot_read(self):
+            """reads no parse from a file it cannot read, as if none were stored"""
+            text = "SELECT ?s WHERE { ?s ?p ?o }"
+            engines.stored(text).mkdir()
+            assert engines.read_stored(text) is None
+
+    class TestPrepared:
+        """`engines.prepared()`"""
+
+        def test_keeps_a_literal_as_written_when_the_text_was_parsed_first_by_parse_once(self):
+            """keeps a literal as written when the query's text was parsed first through `parse_once()`"""
+            text = "SELECT ?x { BIND(01 AS ?x) }"
+            engines.parse_once(text)
+            assert str(Rdflib().select(text)[0]["x"]) == "01"
 
     class TestGivesARow:
         """`Oxigraph.gives_a_row()`"""
