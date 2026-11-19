@@ -544,7 +544,9 @@ def loaded(store, fingerprint):
 
 
 def whole(connection):
-    """The connection with every record and entry in scope, as a whole run fills it."""
+    """The connection with every record and entry in scope, as a whole run fills it, and a question asked of the whole
+    pod."""
+    connection.execute("DELETE FROM asked")
     connection.execute("DELETE FROM scope")
     connection.execute("INSERT INTO scope (term) SELECT s FROM quad WHERE p = (SELECT id FROM term WHERE nt = ?) "
                        "AND o = (SELECT id FROM term WHERE nt = ?) "
@@ -561,6 +563,35 @@ def scoped(connection, records):
                            [(str(Term(IRI, record)),) for record in records])
     connection.commit()
     return connection
+
+
+def asked(connection, records):
+    """The connection with a question asked of the records alone, as a runtime asks it bound to them."""
+    connection.execute("DELETE FROM asked")
+    connection.executemany("INSERT INTO asked (term) SELECT id FROM term WHERE nt = ?",
+                           [(str(Term(IRI, record)),) for record in records])
+    connection.commit()
+    return connection
+
+
+def copied(connection):
+    """A copy of the pod in memory, its tables and the six functions registered."""
+    connection.commit()
+    copy = sqlite3.connect(":memory:")
+    connection.backup(copy)
+    for name, function in FUNCTIONS.items():
+        copy.create_function(name, -1, function, deterministic=True)
+    return copy
+
+
+SCHEMA_TABLES = {"term", "quad", "scope", "asked", "ledger"}
+
+
+def screen_tables(connection):
+    """The rows of each table a screen made, by table, each table's rows sorted."""
+    names = [name for (name,) in connection.execute("SELECT name FROM sqlite_schema WHERE type = 'table' ORDER BY name")
+             if name not in SCHEMA_TABLES]
+    return {name: sorted(connection.execute(f"SELECT * FROM {name}").fetchall(), key=repr) for name in names}
 
 
 PART = re.compile(r"^-- part: (\w+)[ \t]*$", re.MULTILINE)
@@ -585,8 +616,16 @@ def statement(text):
 def screened(connection, views):
     """The connection with the screen of each view's `.sql` text made and filled for the entries in scope, every
     view's fill before any view's finish."""
+    for found in views:
+        connection.executescript(parts(found)["tables"])
+    return refilled(connection, views)
+
+
+def refilled(connection, views):
+    """The connection with each view's screen filled again for the entries in scope, every view's fill before any
+    view's finish."""
     texts = [parts(text) for text in views]
-    for name in PARTS[:3]:
+    for name in PARTS[1:3]:
         for found in texts:
             connection.executescript(found[name])
     connection.commit()

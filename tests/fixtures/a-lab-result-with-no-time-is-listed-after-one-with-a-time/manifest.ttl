@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-lab-result-with-no-time-is-listed-after-one-with-a-time" ;
+  rdfs:comment "A sodium its source gave no time for, and a calcium drawn on 2 May 2025." ;
+  mf:entries (
+    <#my-lab-results>
+  ) .
+
+<#my-lab-results> a mf:QueryEvaluationTest ;
+  mf:name "my-lab-results" ;
+  rdfs:comment "Newest first, and a result with no time after every result with one, so the calcium comes before the sodium, which is shown with no time." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20lab%20results.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-lab-results.srj> .

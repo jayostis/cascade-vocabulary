@@ -77,6 +77,12 @@ CREATE TABLE scope (
   term INTEGER PRIMARY KEY
 ) STRICT;
 
+-- The records a question is asked of, as its `.rq` bound to them is: empty, it is asked of the whole pod. A runtime
+-- fills it for a bound question and empties it after; a question reads it, never `scope`, which is the build's.
+CREATE TABLE asked (
+  term INTEGER PRIMARY KEY
+) STRICT;
+
 -- What the tables were built from: one row, `built` 'pod', with the fingerprint of the files the whole was built from.
 -- A row for each table built apart may take its place.
 CREATE TABLE ledger (

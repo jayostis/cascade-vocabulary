@@ -1,0 +1,14 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:troponin a cascade:LaboratoryTestResult .
+:troponinVersion prov:specializationOf :troponin ; cascade:patient :subject ; cascade:testName "Troponin I" ;
+    cascade:testCode <http://loinc.org/rdf/10839-9> ; cascade:resultValueKind cascade:TextResultValue ;
+    cascade:resultValueText "0.01" ; cascade:verificationStatus "refuted" ;
+    cascade:resultClinicallyRelevantTime "2025-05-02T09:00:00Z"^^xsd:dateTime .
+:troponinRevision a cascade:Revision ; cascade:revisionOf :troponin ; cascade:version :troponinVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

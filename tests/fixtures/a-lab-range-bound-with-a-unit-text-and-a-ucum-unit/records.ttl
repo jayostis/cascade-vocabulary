@@ -1,0 +1,20 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:ferritin a cascade:LaboratoryTestResult .
+:ferritinVersion prov:specializationOf :ferritin ; cascade:patient :subject ; cascade:testName "Ferritin" ;
+    cascade:testCode <http://loinc.org/rdf/2276-4> ; cascade:resultValueKind cascade:TextResultValue ;
+    cascade:resultValueText "45" ; cascade:workflowStatus "final" ;
+    cascade:resultClinicallyRelevantTime "2025-05-02T09:00:00Z"^^xsd:dateTime ;
+    cascade:referenceRangeLow <urn:x:ferritinVersion#reference-low> ;
+    cascade:referenceRangeHigh <urn:x:ferritinVersion#reference-high> .
+<urn:x:ferritinVersion#reference-low> cascade:decimalValue "30"^^xsd:decimal ; cascade:writtenValue "30" ;
+    cascade:ucumUnit "ng/mL" ; cascade:unitText "nanograms per millilitre" .
+<urn:x:ferritinVersion#reference-high> cascade:decimalValue "400"^^xsd:decimal ; cascade:writtenValue "400" ;
+    cascade:ucumUnit "ng/mL" ; cascade:unitText "nanograms per millilitre" .
+:ferritinRevision a cascade:Revision ; cascade:revisionOf :ferritin ; cascade:version :ferritinVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

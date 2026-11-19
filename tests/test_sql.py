@@ -173,23 +173,32 @@ def as_rdflib(names, found):
     return row({name: Oxigraph._term(sql.to_oxigraph(value)) for name, value in zip(names, found) if value is not None})
 
 
-def scoped_answer(connection, text, records):
-    """The `.sql`'s rows over each record in turn, scope holding it alone, as a keyed run gives them; the whole scope is
-    restored after."""
+def asked_answer(connection, text, records):
+    """The `.sql`'s rows asked of each record in turn, `asked` holding it alone, as a runtime asks a question bound to
+    it; the question is asked of the whole pod again after."""
     found = []
     try:
         for record in records:
-            found += sql.answer(sql.scoped(connection, [record]), text)[1]
+            found += sql.answer(sql.asked(connection, [record]), text)[1]
     finally:
         sql.whole(connection)
     return found
 
 
+def records_in_entries(connection):
+    """Each record the pod puts in an entry, as its IRI."""
+    return [lex for (lex,) in connection.execute(
+        "SELECT DISTINCT t.lex FROM quad q JOIN term t ON t.id = q.s "
+        "WHERE q.p = (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#inEntry>') "
+        "AND t.kind = 2 ORDER BY t.lex")]
+
+
 def failures(fixture, lens, relative, text):
     """Why the `.sql` text, over the fixture's pod under the lens, does not give the rows of the `.rq` at the path: in a
-    whole run, in its order when it has one; in a keyed run, for a question, of each record a manifest entry of the fixture binds, the
-    `.rq` bound to it and the `.sql` with scope holding it alone; and, through the `.sql`, the rows of each
-    manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of triples."""
+    whole run, in its order when it has one; for a question bound to a record, the `.rq` bound to it and the `.sql`
+    with `asked` holding it alone, for each record a manifest entry of the fixture binds and, for a list question, each
+    record the pod puts in an entry; and, through the `.sql`, the rows of each manifest entry under that lens that runs
+    it. A CONSTRUCT's rows are compared as a set of triples."""
     rq = query(Path(relative).relative_to("queries").as_posix())
     store = built_once(fixture, "oxigraph", lens).store.store
     connection = pod(fixture, lens)
@@ -209,14 +218,17 @@ def failures(fixture, lens, relative, text):
         return [f"{fixture.name}, under {lens}, {relative}, {where}: {line}" for line in compared(names, wanted, found, keys)]
 
     lines = against("against the .rq", wanted, found)
-    for record in [] if construct else sorted({record for entry in manifest_entries(fixture) for record in entry.records}):
+    bound = set() if construct else {record for entry in manifest_entries(fixture) for record in entry.records}
+    if ":page_size" in text:
+        bound |= set(records_in_entries(connection))
+    for record in sorted(bound):
         lines += against(f"keyed to {record}, against the .rq", oxigraph_answer(store, rq, record)[1],
-                         scoped_answer(connection, text, [record]))
+                         asked_answer(connection, text, [record]))
     for entry in manifest_entries(fixture):
         if entry.query is None or Path(entry.query).resolve() != (ROOT / relative).resolve() or lens_name(entry.lens) != lens:
             continue
         pinned = expected(entry.result)
-        given = scoped_answer(connection, text, entry.records) if entry.records else found
+        given = asked_answer(connection, text, entry.records) if entry.records else found
         if isinstance(pinned, bool):
             got = bool(given)
             lines += [] if got == pinned else [f"{fixture.name}, {entry.name}: expected {pinned}, found {got}"]
@@ -227,6 +239,79 @@ def failures(fixture, lens, relative, text):
                   for kind, side in (("missing", pinned[1] - rows), ("unexpected", rows - pinned[1]))
                   for r in sorted(side.elements(), key=sorted)]
     return lines
+
+
+CASCADE = "https://ns.cascadeprotocol.org/cascade#"
+
+
+def term_ids(connection, *iris):
+    """Each IRI's term id, or None where the pod has no such term."""
+    return [(connection.execute("SELECT id FROM term WHERE nt = ?", (f"<{iri}>",)).fetchone() or (None,))[0]
+            for iri in iris]
+
+
+def made(connection, nt, kind, lex, datatype=None):
+    """The id of the term written nt, made if the pod has none."""
+    connection.execute("INSERT OR IGNORE INTO term (nt, kind, lex, datatype) VALUES (?, ?, ?, ?)",
+                       (nt, kind, lex, datatype))
+    return connection.execute("SELECT id FROM term WHERE nt = ?", (nt,)).fetchone()[0]
+
+
+def renamed(connection, subjects, predicates):
+    """Each statement of the subjects by the predicates given one new name as its object."""
+    name = made(connection, '"renamed"', sql.LITERAL, "renamed", sql.XSD + "string")
+    for subject in subjects:
+        for predicate in predicates:
+            connection.execute("UPDATE OR IGNORE quad SET o = ? WHERE s = ? AND p = ?", (name, subject, predicate))
+
+
+def keyed_changes(connection):
+    """Each change a keyed run may be given over the pod, named, as a function that makes it on a copy of the pod and
+    gives the terms the run puts in scope."""
+    (in_entry, lead, member, agent, label, foaf_name, current, reason, values_of, member_values, *names) = term_ids(
+        connection, CASCADE + "inEntry", CASCADE + "leadMember", CASCADE + "entryMember",
+        "http://www.w3.org/ns/prov#agent", "http://www.w3.org/2000/01/rdf-schema#label", "http://xmlns.com/foaf/0.1/name",
+        "http://purl.org/pav/hasCurrentVersion", CASCADE + "reasonCondition", CASCADE + "valuesOfMember",
+        CASCADE + "memberCurrentValues", CASCADE + "drugName", CASCADE + "procedureName", CASCADE + "vaccineName")
+    if in_entry is None:
+        return []
+    changes, entries = [], {}
+    for record, entry in connection.execute("SELECT DISTINCT s, o FROM quad WHERE p = ? ORDER BY s, o", (in_entry,)):
+        entries.setdefault(entry, []).append(record)
+        changes.append((f"record {record} unchanged", lambda c, record=record: [record]))
+    for entry, records in entries.items():
+        leads = {row[0] for row in connection.execute("SELECT o FROM quad WHERE s = ? AND p = ?", (entry, lead))}
+        for record in sorted(set(records) - leads) if len(records) > 1 else []:
+            def moved(c, record=record, entry=entry):
+                apart = made(c, f"<urn:cascade:entry:moved-{record}>", sql.IRI, f"urn:cascade:entry:moved-{record}")
+                c.execute("UPDATE quad SET o = ? WHERE s = ? AND p = ? AND o = ?", (apart, record, in_entry, entry))
+                c.execute("UPDATE quad SET s = ? WHERE s = ? AND p = ? AND o = ?", (apart, entry, member, record))
+                c.execute("INSERT OR IGNORE INTO quad (s, p, o, g) SELECT ?, ?, ?, g FROM quad WHERE s = ? AND p = ?",
+                          (apart, lead, record, entry, lead))
+                return [record]
+            changes.append((f"record {record} moved out of entry {entry}", moved))
+    for (named,) in connection.execute("SELECT DISTINCT o FROM quad WHERE p = ?", (agent,)).fetchall() if agent else []:
+        def agent_renamed(c, named=named):
+            versions = [row[0] for row in c.execute("SELECT o FROM quad WHERE s = ? AND p = ?", (named, current))]
+            renamed(c, [named], [label])
+            renamed(c, versions, [foaf_name])
+            return [named]
+        changes.append((f"agent {named} renamed", agent_renamed))
+    given = connection.execute(
+        "SELECT DISTINCT v.o, e.s, v.s FROM quad r JOIN quad v ON v.s = r.s AND v.p = ? "
+        "JOIN quad e ON e.o = r.s AND e.p = ? WHERE r.p = ?", (values_of, member_values, reason)).fetchall() \
+        if None not in (reason, values_of, member_values) else []
+    for record, entry, values in given:
+        def reasons_dropped(c, record=record, values=values):
+            c.execute("DELETE FROM quad WHERE s = ? AND p = ?", (values, reason))
+            return [record]
+
+        def entry_renamed(c, record=record, entry=entry):
+            renamed(c, [entry], [name for name in names if name is not None])
+            return [record]
+        changes.append((f"record {record}'s reasons dropped", reasons_dropped))
+        changes.append((f"entry {entry} its values give reasons for renamed, {record} in scope", entry_renamed))
+    return changes
 
 
 class TestSqlBesideEachQuery:
@@ -287,6 +372,37 @@ class TestSqlBesideEachQuery:
                                       min(len(joined), len(whole)))
                             found.append(f"{fixture.name}, under {lens}, {relative}: pages of {size} give {len(joined)} "
                                          f"rows, the whole list {len(whole)}, the first apart at row {at + 1}")
+            assert not found, "\n".join(found)
+
+        @every_fixture
+        def test_fills_each_screen_keyed_to_what_changed_as_a_whole_fill_does_under_each_lens(self, fixture):
+            """fills each screen, keyed to what a change touched, as a whole fill of the changed pod does, under each lens
+
+            Over each fixture's screens, filled whole, each change a keyed run may be given is made to the pod's
+            statements and the screens filled again with scope holding what it touched: each record in an entry,
+            unchanged; each record but the lead of an entry of two or more, moved to an entry of its own; each agent,
+            renamed; each record whose values give a reason condition, its reasons dropped; and each entry those values
+            are of, renamed, the record in scope. Every screen table then holds the rows a whole fill of the changed
+            pod gives from empty tables.
+            """
+            found = []
+            for lens in LENSES:
+                connection = pod(fixture, lens)
+                for name, change in keyed_changes(connection):
+                    changed = sql.copied(connection)
+                    touched = change(changed)
+                    keyed = sql.copied(changed)
+                    keyed.execute("DELETE FROM scope")
+                    keyed.executemany("INSERT INTO scope (term) VALUES (?)", [(term,) for term in touched])
+                    sql.refilled(keyed, screens())
+                    whole = sql.copied(changed)
+                    for table in sql.screen_tables(whole):
+                        whole.execute(f"DELETE FROM {table}")
+                    sql.refilled(sql.whole(whole), screens())
+                    kept, wanted = sql.screen_tables(keyed), sql.screen_tables(whole)
+                    found += [f"{fixture.name}, under {lens}, {name}: {table} holds {sorted(set(kept[table]) - set(rows))} "
+                              f"a whole fill does not, and lacks {sorted(set(rows) - set(kept[table]))}"
+                              for table, rows in wanted.items() if kept[table] != rows]
             assert not found, "\n".join(found)
 
     class TestGivenTheQueries:
@@ -455,15 +571,15 @@ class TestTheSqlCheck:
 
     @pytest.mark.xdist_group(KEYED.name)
     def test_reports_a_sql_whose_keyed_run_gives_other_rows_than_the_rq_bound_to_the_record(self):
-        """reports a `.sql` that gives its `.rq`'s rows in a whole run but not in the keyed run of a record an entry binds
+        """reports a `.sql` that gives its `.rq`'s rows asked of the whole pod but not asked of a record an entry binds
 
-        `How many judgments count.sql`, wrapped to give no row unless scope holds more than one term, is checked over a
-        fixture whose manifest's entries bind records; the check names each of those records with the `.rq`'s row the
-        keyed `.sql` misses, and finds nothing wrong with the whole run.
+        `How many judgments count.sql`, wrapped to give no row when `asked` holds one record, is checked over a fixture
+        whose manifest's entries bind records; the check names each of those records with the `.rq`'s row the bound
+        `.sql` misses, and finds nothing wrong with the whole run.
         """
         text = sql_beside(self.JUDGMENTS).read_text(encoding="utf-8")
         found = failures(self.KEYED, "everyday", self.JUDGMENTS,
-                         f"SELECT * FROM ({text}) WHERE (SELECT count(*) FROM scope) > 1")
+                         f"SELECT * FROM ({text}) WHERE (SELECT count(*) FROM asked) != 1")
         records = {record for entry in manifest_entries(self.KEYED) for record in entry.records}
         assert records and not [line for line in found if f"{self.JUDGMENTS}, against the .rq: " in line]
         assert {record for record in records
