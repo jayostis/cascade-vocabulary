@@ -1,11 +1,13 @@
--- A pod's statements as SQLite holds them, for the `.sql` beside each `.rq` to read. It needs SQLite 3.37.0 or later.
+-- A pod's statements as SQLite holds them, for the `.sql` beside each `.rq` to read. It needs SQLite 3.44.0 or later.
 --
 -- A `.sql` gives its `.rq`'s columns, in its order and by its variables' names, each value a term's `nt` or NULL where
 -- the variable is unbound; a `.sql` beside a CONSTRUCT gives the columns s, p and o, one row for each triple. It may
 -- call the six functions queries/sql-functions.json gives the vectors of, registered under those names.
 --
--- A query's default graph is the union of the named graphs, a set: a statement in two graphs is in it once, so a
--- `.sql` reads it through EXISTS, or DISTINCT, and never counts a statement once for each graph holding it.
+-- `quad` holds the named graphs of a query's default graph, and a query's default graph is their union, a set: a
+-- statement in two graphs is in it once, so a `.sql` reads it through EXISTS, or DISTINCT, and never counts a
+-- statement once for each graph holding it. A graph outside the default graph, as a table version's rows are, is not
+-- held here.
 
 -- Each term the pod's statements use, once. `nt` is its N-Triples form as Oxigraph writes it, a literal in its
 -- canonical form, so two terms are one exactly when their `nt` is. `kind` ranks it as SPARQL's ORDER BY does, after
@@ -13,8 +15,10 @@
 -- lexical form, unescaped; a blank node has none. A literal has a `datatype`, rdf:langString when it has a `lang`.
 -- `instant` and `day` are kept for a valid xsd:dateTime or xsd:date. `instant` is its start in UTC, written
 -- YYYY-MM-DDThh:mm:ss and eighteen fractional digits, so text order is time order; a value with no zone is read as if
--- in UTC, which is SPARQL's order wherever SPARQL gives one, and none is kept for a year outside 1 to 9999. `day` is
--- the calendar day its lexical form writes, YYYY-MM-DD, whatever its zone.
+-- in UTC, so the order agrees with SPARQL's `<` wherever `<` gives one, and none is kept for a year outside 1 to
+-- 9999. Where `<` gives none, between a value with no zone and one with a zone within fourteen hours of it, the order
+-- is this key's, which need not be any engine's ORDER BY. `day` is the calendar day its lexical form writes,
+-- YYYY-MM-DD, whatever its zone.
 CREATE TABLE term (
   id INTEGER PRIMARY KEY,
   nt TEXT NOT NULL UNIQUE,

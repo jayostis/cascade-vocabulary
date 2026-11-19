@@ -11,7 +11,7 @@ import pytest
 
 import sql
 from contract import QUERIES, ROOT, named, query
-from engines import Oxigraph
+from engines import Oxigraph, bound_to_records
 from manifests import entries, expected, lens_name, row
 from pods import FIXTURES, built_once, every_fixture
 
@@ -48,9 +48,54 @@ def pin_failures(pinned, texts):
     return found + [f"{relative}: pinned, but it has no .sql" for relative in sorted(set(pinned) - set(texts))]
 
 
-def final_order(text):
-    """Whether the query's rows are ordered: an ORDER BY after its last brace."""
-    return "ORDER BY" in text[text.rfind("}"):]
+def final_order(text, names):
+    """The indexes of the columns the query's rows are ordered by, after its last brace: its ORDER BY's leading
+    conditions that are a projected variable, alone or in ASC() or DESC(); the conditions after them order only rows
+    these tie. None when the query has no ORDER BY there."""
+    tail = text[text.rfind("}"):]
+    clause = re.search(r"ORDER\s+BY\s", tail)
+    if not clause:
+        return None
+    rest, keys = tail[clause.end():], []
+    while condition := ORDER_CONDITION.match(rest):
+        variable = condition.group(1) or condition.group(2)
+        if variable not in names:
+            break
+        keys.append(names.index(variable))
+        rest = rest[condition.end():]
+    return keys
+
+
+ORDER_CONDITION = re.compile(r"\s*(?:(?:ASC|DESC)\s*\(\s*\?(\w+)\s*\)|\?(\w+))(?![\w(])", re.IGNORECASE)
+
+
+def tied(left, right):
+    """Whether an ORDER BY may put two terms either way round: one term, two blank nodes, or two literals SPARQL's `<`
+    does not order, such as a value with no zone and one with a zone within fourteen hours of it, whose order is the
+    engine's own."""
+    if left == right:
+        return True
+    if left is None or right is None or left.kind != right.kind or left.kind == sql.IRI:
+        return False
+    if left.kind == sql.BLANK:
+        return True
+    try:
+        return sql.sparql_compare(str(left), str(right)) in (None, 0)
+    except ValueError:
+        return True
+
+
+def runs(found, keys):
+    """The lengths of the rows' runs, in their order: a run ends where the first key column whose term differs from the
+    next row's holds two terms an ORDER BY cannot put either way round."""
+    lengths = [1] if found else []
+    for one, other in zip(found, found[1:]):
+        differing = next(((one[k], other[k]) for k in keys if one[k] != other[k]), None)
+        if differing is None or tied(*differing):
+            lengths[-1] += 1
+        else:
+            lengths.append(1)
+    return lengths
 
 
 def shown(names, found):
@@ -61,23 +106,30 @@ def written(found):
     return [str(value) if value is not None else "" for value in found]
 
 
-def compared(names, wanted, found, ordered):
-    """Why rows found are not the rows wanted, as lines, or none when they are: as multisets, and as lists when
-    ordered."""
+def compared(names, wanted, found, keys):
+    """Why rows found are not the rows wanted, as lines, or none when they are: as multisets, and, given the key columns
+    of an ORDER BY, as the same runs of rows those keys order, in the same order, the rows of a run being a multiset;
+    so where SPARQL leaves two rows' order to the engine, as it does for rows the keys tie, either order passes."""
     lacking, extra = Counter(wanted) - Counter(found), Counter(found) - Counter(wanted)
     lines = [*(f"missing: {shown(names, r)}" for r in sorted(lacking.elements(), key=written)),
              *(f"unexpected: {shown(names, r)}" for r in sorted(extra.elements(), key=written))]
-    if not lines and ordered and wanted != found:
-        at = next(i for i, (one, other) in enumerate(zip(wanted, found)) if one != other)
-        lines = [f"the same rows in another order, from row {at + 1}: expected {shown(names, wanted[at])}, "
-                 f"found {shown(names, found[at])}"]
+    if lines or keys is None:
+        return lines
+    at = 0
+    for length in runs(wanted, keys):
+        run = wanted[at:at + length]
+        if Counter(run) != Counter(found[at:at + length]):
+            wrong = next(i for i in range(at, at + length) if found[i] not in run)
+            return [f"the same rows in another order, from row {wrong + 1}: expected "
+                    f"{' or '.join(shown(names, r) for r in run)}, found {shown(names, found[wrong])}"]
+        at += length
     return lines
 
 
-def oxigraph_answer(store, text):
-    """What the `.rq` gives: its columns and rows, or for a CONSTRUCT s, p and o and its triples, each term a sql.Term,
-    and whether it is a CONSTRUCT."""
-    found = store.query(text)
+def oxigraph_answer(store, text, record=None):
+    """What the `.rq` gives, bound to the record if one is given as tests/engines.py binds it: its columns and rows, or
+    for a CONSTRUCT s, p and o and its triples, each term a sql.Term, and whether it is a CONSTRUCT."""
+    found = store.query(bound_to_records(text, [record]) if record else text)
     if isinstance(found, pyoxigraph.QueryTriples):
         return ["s", "p", "o"], [tuple(map(sql.from_oxigraph, (t.subject, t.predicate, t.object))) for t in found], True
     names = [variable.value for variable in found.variables]
@@ -92,20 +144,30 @@ def manifest_entries(fixture):
 
 @cache
 def pod(fixture, lens):
-    store = built_once(fixture, "oxigraph", lens).store.store
-    quads = sorted(str(q) for q in store.quads_for_pattern(None, None, None, None)
-                   if not isinstance(q.graph_name, pyoxigraph.DefaultGraph))
-    return sql.loaded(store, hashlib.sha256("\n".join(quads).encode("utf-8")).hexdigest())
+    return sql.loaded(built_once(fixture, "oxigraph", lens).store.store, f"{fixture.name} under {lens}")
 
 
 def as_rdflib(names, found):
     return row({name: Oxigraph._term(sql.to_oxigraph(value)) for name, value in zip(names, found) if value is not None})
 
 
+def scoped_answer(connection, text, records):
+    """The `.sql`'s rows over each record in turn, scope holding it alone, as a keyed run gives them; the whole scope is
+    restored after."""
+    found = []
+    try:
+        for record in records:
+            found += sql.answer(sql.scoped(connection, [record]), text)[1]
+    finally:
+        sql.whole(connection)
+    return found
+
+
 def failures(fixture, lens, relative, text):
-    """Why the `.sql` text, over the fixture's pod under the lens, does not give the rows of the `.rq` at the path, in
-    its order when it has one, and of each manifest entry under that lens that runs it; a CONSTRUCT's as a set of
-    triples."""
+    """Why the `.sql` text, over the fixture's pod under the lens, does not give the rows of the `.rq` at the path: in a
+    whole run, in its order when it has one; in a keyed run of each record a manifest entry of the fixture binds, the
+    `.rq` bound to it and the `.sql` with scope holding it alone; and, through the `.sql`, the rows of each
+    manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of triples."""
     rq = query(Path(relative).relative_to("queries").as_posix())
     store = built_once(fixture, "oxigraph", lens).store.store
     connection = pod(fixture, lens)
@@ -116,25 +178,28 @@ def failures(fixture, lens, relative, text):
         return [f"{fixture.name}, under {lens}, {relative}: the .sql fails: {error}"]
     if columns != names:
         return [f"{fixture.name}, under {lens}, {relative}: the .sql gives the columns {columns}, the .rq {names}"]
-    lines = [f"{fixture.name}, under {lens}, {relative}, against the .rq: {line}"
-             for line in compared(names, sorted(set(wanted), key=written) if construct else wanted,
-                                  sorted(set(found), key=written) if construct else found,
-                                  not construct and final_order(rq))]
+
+    def against(where, wanted, found):
+        if construct:
+            wanted, found, keys = sorted(set(wanted), key=written), sorted(set(found), key=written), None
+        else:
+            keys = final_order(rq, names)
+        return [f"{fixture.name}, under {lens}, {relative}, {where}: {line}" for line in compared(names, wanted, found, keys)]
+
+    lines = against("against the .rq", wanted, found)
+    for record in sorted({record for entry in manifest_entries(fixture) for record in entry.records}):
+        lines += against(f"keyed to {record}, against the .rq", oxigraph_answer(store, rq, record)[1],
+                         scoped_answer(connection, text, [record]))
     for entry in manifest_entries(fixture):
         if entry.query is None or Path(entry.query).resolve() != (ROOT / relative).resolve() or lens_name(entry.lens) != lens:
             continue
         pinned = expected(entry.result)
+        given = scoped_answer(connection, text, entry.records) if entry.records else found
         if isinstance(pinned, bool):
-            got = bool(found)
+            got = bool(given)
             lines += [] if got == pinned else [f"{fixture.name}, {entry.name}: expected {pinned}, found {got}"]
             continue
-        rows = Counter()
-        for record in entry.records or [None]:
-            if record is not None:
-                sql.scoped(connection, [record])
-            rows += Counter(as_rdflib(columns, value) for value in sql.answer(connection, text)[1])
-        if entry.records:
-            sql.whole(connection)
+        rows = Counter(as_rdflib(columns, value) for value in given)
         lines += [f"{fixture.name}, {entry.name}, under {lens}, {relative}: {kind}: "
                   + " ".join(f"?{name}={term}" for name, term in sorted(r))
                   for kind, side in (("missing", pinned[1] - rows), ("unexpected", rows - pinned[1]))
@@ -199,28 +264,40 @@ class TestSqlBesideEachQuery:
     class TestGivenEachFunction:
         @pytest.mark.parametrize("name", sorted(VECTORS["functions"]))
         def test_gives_each_vectors_output(self, name):
-            """gives each vector's output from its input, in Python
+            """gives each vector's output from its input, in Python, and refuses each input a vector marks refused
 
             Each vector of the function in queries/sql-functions.json is given to tests/sql.py's function of that name;
-            each whose output differs fails.
+            each whose output differs fails, and so does each marked refused that the function does not refuse with
+            ValueError.
             """
             function = sql.FUNCTIONS.get(name)
             vectors = VECTORS["functions"][name]["vectors"]
-            found = [(vector["input"], vector["output"], function(*vector["input"]) if function else "no such function")
+            found = [(vector["input"], "refused" if "refused" in vector else vector["output"], outcome(function, vector))
                      for vector in vectors]
             assert [wrong for wrong in found if wrong[1] != wrong[2]] == []
 
         @pytest.mark.parametrize("name", sorted(VECTORS["functions"]))
-        def test_has_vectors_whose_outputs_oxigraph_gives(self, name):
-            """has vectors whose outputs Oxigraph's SPARQL gives
+        def test_has_vectors_whose_outputs_oxigraph_gives_but_where_they_mark_its_own(self, name):
+            """has vectors whose outputs Oxigraph's SPARQL gives, but where a vector marks Oxigraph's own answer
 
-            Each vector's input is given to the SPARQL the function stands for, on Oxigraph, as literals; each vector
-            whose output is not Oxigraph's, an unbound answer as null, fails. So the vectors are SPARQL's answers, not
-            the Python function's.
+            Each vector's input, but one marked refused, is given to the SPARQL the function stands for, on Oxigraph,
+            as literals; each whose output is not Oxigraph's, an unbound answer as null, fails. A vector whose output is
+            SPARQL 1.1's where Oxigraph gives another marks Oxigraph's answer and why, and fails if Oxigraph gives any
+            other. So the vectors are SPARQL's answers, not the Python function's.
             """
-            vectors = VECTORS["functions"][name]["vectors"]
-            found = [(vector["input"], vector["output"], in_sparql(name, vector["input"])) for vector in vectors]
+            vectors = [vector for vector in VECTORS["functions"][name]["vectors"] if "refused" not in vector]
+            found = [(vector["input"], vector.get("oxigraph", vector["output"]), in_sparql(name, vector["input"]))
+                     for vector in vectors]
             assert [wrong for wrong in found if wrong[1] != wrong[2]] == []
+
+
+def outcome(function, vector):
+    if function is None:
+        return "no such function"
+    try:
+        return function(*vector["input"])
+    except ValueError:
+        return "refused"
 
 
 XSD = "http://www.w3.org/2001/XMLSchema#"
@@ -262,6 +339,10 @@ class TestTheSqlCheck:
 
     JUDGMENTS = "queries/questions/pod/How many judgments count.rq"
     PINNED = next(fixture for fixture in FIXTURES if fixture.name == "which-judgments-count")
+    KEYED = next(fixture for fixture in FIXTURES
+                 if fixture.name == "matcher-same-business-identifier-and-test-code-within-one-organization-bound-per-side")
+    EXPOSURE = "queries/derivations/medication-exposure-periods.rq"
+    ZERO_SUPPLY = next(fixture for fixture in FIXTURES if fixture.name == "exposure-from-a-supply-of-zero")
 
     @pytest.mark.xdist_group(PINNED.name)
     def test_reports_the_fixture_query_and_row_of_a_sql_that_drops_a_value_from_a_row(self):
@@ -283,6 +364,77 @@ class TestTheSqlCheck:
                          rf"{re.escape(row_shown)}", found)
         assert re.search(r"unexpected: \?verdict=<https://ns.cascadeprotocol.org/cascade#Same> "
                          r"\?madeBy=<http://www.w3.org/ns/prov#SoftwareAgent> \?judgments=\"1\"", found)
+
+    @pytest.mark.xdist_group(KEYED.name)
+    def test_reports_a_sql_whose_keyed_run_gives_other_rows_than_the_rq_bound_to_the_record(self):
+        """reports a `.sql` that gives its `.rq`'s rows in a whole run but not in the keyed run of a record an entry binds
+
+        `How many judgments count.sql`, wrapped to give no row unless scope holds more than one term, is checked over a
+        fixture whose manifest's entries bind records; the check names each of those records with the `.rq`'s row the
+        keyed `.sql` misses, and finds nothing wrong with the whole run.
+        """
+        text = sql_beside(self.JUDGMENTS).read_text(encoding="utf-8")
+        found = failures(self.KEYED, "everyday", self.JUDGMENTS,
+                         f"SELECT * FROM ({text}) WHERE (SELECT count(*) FROM scope) > 1")
+        records = {record for entry in manifest_entries(self.KEYED) for record in entry.records}
+        assert records and not [line for line in found if f"{self.JUDGMENTS}, against the .rq: " in line]
+        assert {record for record in records
+                if any(f"keyed to {record}, against the .rq: missing: " in line for line in found)} == records
+
+    @pytest.mark.xdist_group(ZERO_SUPPLY.name)
+    def test_reports_each_triple_a_construct_sql_misses_and_each_it_adds_once_however_often_it_gives_it(self):
+        """reports each triple a CONSTRUCT's `.sql` misses, and each it gives that the `.rq` does not, once however often
+
+        A `.sql` beside medication-exposure-periods.rq that gives one stray triple twice, over
+        exposure-from-a-supply-of-zero under everyday, is reported missing the exposure start the `.rq` makes for each
+        record, and giving the stray triple, once.
+        """
+        stray = "SELECT '<urn:x:a>' AS s, '<urn:x:b>' AS p, '<urn:x:c>' AS o"
+        found = failures(self.ZERO_SUPPLY, "everyday", self.EXPOSURE, f"{stray} UNION ALL {stray}")
+        start = "<https://ns.cascadeprotocol.org/cascade#medicationExposureStart>"
+        assert [line for line in found if "unexpected" in line] == [
+            f"exposure-from-a-supply-of-zero, under everyday, {self.EXPOSURE}, against the .rq: "
+            "unexpected: ?s=<urn:x:a> ?p=<urn:x:b> ?o=<urn:x:c>"]
+        assert [record for record in ("months", "years")
+                if sum(f"missing: ?s=<urn:x:{record}> ?p={start}" in line for line in found) == 1] == ["months", "years"]
+
+    def test_compares_rows_an_order_by_ties_as_a_multiset_and_the_runs_it_orders_in_order(self):
+        """compares rows an ORDER BY ties as a multiset, and the runs of rows it orders in their order
+
+        Rows ordered by a dateTime pass in either order where SPARQL's `<` does not order them, a value with no zone
+        and one with a zone within fourteen hours of it, and where they hold one term; rows it does order fail turned
+        round, naming the row. The key columns are the ORDER BY's leading projected variables.
+        """
+        def at(value):
+            return (sql.Term(sql.LITERAL, value, XSD + "dateTime"),)
+        unzoned, zoned, later = at("2024-01-01T10:00:00"), at("2024-01-01T05:00:00-08:00"), at("2024-01-03T00:00:00Z")
+        assert compared(["t"], [unzoned, zoned, later], [zoned, unzoned, later], [0]) == []
+        assert compared(["t"], [later, later], [later, later], [0]) == []
+        assert compared(["t"], [unzoned, later], [unzoned, later], [0]) == []
+        assert compared(["t"], [unzoned, later], [later, unzoned], [0]) == [
+            f"the same rows in another order, from row 1: expected ?t={unzoned[0]}, found ?t={later[0]}"]
+        assert final_order("SELECT ?a ?b ?c WHERE { } ORDER BY DESC(?b) ?a STR(?c) ?c", ["a", "b", "c"]) == [1, 0]
+        assert final_order("SELECT ?a WHERE { } ORDER BY ?z ?a", ["a"]) == []
+        assert final_order("SELECT ?a WHERE { } GROUP BY ?a", ["a"]) is None
+
+    def test_loads_only_the_named_graphs_of_the_default_graph_and_refuses_a_default_graph_they_do_not_make(self):
+        """loads only the named graphs a store's default graph holds, and refuses a store whose default graph they do not make
+
+        A named graph with a statement outside the default graph, as a table version's rows are, is left out of the
+        pod; a store whose default graph has a statement no named graph it holds has is refused.
+        """
+        def quad(subject, graph):
+            return pyoxigraph.Quad(pyoxigraph.NamedNode(subject), pyoxigraph.NamedNode("urn:x:p"),
+                                   pyoxigraph.NamedNode("urn:x:o"), graph)
+        store = pyoxigraph.Store()
+        store.extend([quad("urn:x:kept", pyoxigraph.NamedNode("urn:x:file")), quad("urn:x:kept", pyoxigraph.DefaultGraph()),
+                      quad("urn:x:row", pyoxigraph.NamedNode("urn:x:rows"))])
+        held = sorted(sql.loaded(store, "test").execute(
+            "SELECT s.nt, g.nt FROM quad JOIN term s ON s.id = quad.s JOIN term g ON g.id = quad.g"))
+        assert held == [("<urn:x:kept>", "<urn:x:file>")]
+        store.add(quad("urn:x:alone", pyoxigraph.DefaultGraph()))
+        with pytest.raises(ValueError, match="in no named graph"):
+            sql.loaded(store, "test")
 
     def test_reports_a_ported_rq_whose_bytes_changed_without_its_pin(self):
         """reports a ported `.rq` whose bytes changed since its pin, with the hash to pin once its `.sql` is checked

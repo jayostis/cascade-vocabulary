@@ -5,6 +5,7 @@ a `.sql` calls where SQLite has no answer of its own, as queries/sql-functions.j
 import hashlib
 import re
 import sqlite3
+import unicodedata
 from dataclasses import dataclass
 from urllib.parse import quote
 
@@ -206,38 +207,73 @@ def day_key(term):
 
 # The six functions
 
-UNSUPPORTED_ESCAPES = re.compile(r"\\[sSwWbBdD]|\\[1-9]")
+ESCAPED_ALIKE = set(r"\|.-^?*+{}()[]$nrt")
+QUANTIFIER = re.compile(r"\{\d+(,\d*)?\}")
+CASE_APART = {"\u0130", "\u0131"}
 
 
-def python_pattern(pattern, flags):
+def refused(text):
+    """Why the text has a character that Python's Unicode does not assign and Oxigraph's newer one may, or None."""
+    found = next((c for c in text if unicodedata.category(c) == "Cn"), None)
+    return None if found is None else f"U+{ord(found):04X}, which this Python's Unicode does not assign"
+
+
+def python_pattern(pattern, flags, text=""):
     """A pattern Oxigraph's regular expressions read, as Python's `re` reads it: outside a class, `$` is the end of the
-    text alone, as it is in Rust's regex unless the m flag is given. A class shorthand or a back-reference, where the two
-    read a character or a pattern apart, is refused."""
+    text alone, as it is in Rust's regex unless the m flag is given. Whatever the vectors leave out, where the two may
+    read a pattern apart, is refused with ValueError: an escape but of a metacharacter, n, r or t; a group opened with
+    `(?` but `(?:`; a quantifier after a quantifier, so a lazy or possessive one; a `{` or `}` that is no quantifier; a
+    `[` inside a class, as a POSIX class has, or `&&`, `--` or `~~` there; under the x flag a `#`, or white space in a
+    class; and, under the i flag, a dotted or dotless I, which Python's case-insensitive match equates with i and Rust's
+    does not, or a character Python's Unicode does not assign."""
+    if "i" in flags:
+        if CASE_APART & set(pattern + text):
+            raise ValueError(f"{pattern!r} under the i flag meets a dotted or dotless I, which no vector covers")
+        if why := refused(pattern + text):
+            raise ValueError(f"{pattern!r} under the i flag meets {why}")
     if "q" in flags:
         return re.escape(pattern)
-    if UNSUPPORTED_ESCAPES.search(re.sub(r"\\\\", "", pattern)):
-        raise ValueError(f"{pattern!r} uses an escape no vector covers")
-    if "m" in flags:
-        return pattern
-    out, in_class, i = [], False, 0
+    if "x" in flags and "#" in pattern:
+        raise ValueError(f"{pattern!r} has a # under the x flag, which no vector covers")
+    out, in_class, quantified, i = [], False, False, 0
     while i < len(pattern):
-        c = pattern[i]
+        c, after = pattern[i], pattern[i + 1:i + 2]
         if c == "\\":
+            if after not in ESCAPED_ALIKE or not after:
+                raise ValueError(f"{pattern!r} uses an escape no vector covers")
             out.append(pattern[i:i + 2])
-            i += 2
+            i, quantified = i + 2, False
             continue
-        i += 1
-        if not in_class and c == "[":
-            in_class = True
-            opening = re.match(r"\^?\]?", pattern[i:]).group()
+        if in_class:
+            if c == "[" or pattern[i:i + 2] in ("&&", "--", "~~") or ("x" in flags and c.isspace()):
+                raise ValueError(f"{pattern!r} has a class no vector covers")
+            in_class = c != "]"
+            out.append(c)
+            i += 1
+            continue
+        if c == "[":
+            opening = re.match(r"\^?\]?", pattern[i + 1:]).group()
             out.append(c + opening)
-            i += len(opening)
+            i, in_class, quantified = i + 1 + len(opening), True, False
             continue
-        if in_class and c == "]":
-            in_class = False
-        elif not in_class and c == "$":
-            c = r"\Z"
-        out.append(c)
+        if c == "(" and after == "?":
+            if pattern[i + 2:i + 3] != ":":
+                raise ValueError(f"{pattern!r} opens a group with (? but (?:, which no vector covers")
+            out.append("(?:")
+            i, quantified = i + 3, False
+            continue
+        quantifier = QUANTIFIER.match(pattern, i) if c == "{" else None
+        if c in "{}" and not quantifier:
+            raise ValueError(f"{pattern!r} has a {c} that is no quantifier, which no vector covers")
+        if c in "*+?" or quantifier:
+            if quantified:
+                raise ValueError(f"{pattern!r} has a quantifier after a quantifier, which no vector covers")
+            token = quantifier.group() if quantifier else c
+            out.append(token)
+            i, quantified = i + len(token), True
+            continue
+        out.append(r"\Z" if c == "$" and "m" not in flags else c)
+        i, quantified = i + 1, False
     return "".join(out)
 
 
@@ -265,14 +301,15 @@ def expanded(replacement, match):
 def sparql_replace(text, pattern, replacement, flags=""):
     """SPARQL's REPLACE as Oxigraph gives it, over strings: every match of the pattern, read with the flags (s, m, i, x,
     q, which makes the pattern literal and leaves the replacement's references), replaced, an empty match just after a
-    match left alone; None for None, or for flags or a pattern SPARQL refuses."""
+    match left alone; None for None, or for flags or a pattern SPARQL refuses. A pattern python_pattern refuses raises
+    ValueError."""
     if text is None or pattern is None or replacement is None:
         return None
     flags = flags or ""
     if set(flags) - set("smixq"):
         return None
     try:
-        compiled = re.compile(python_pattern(pattern, flags),
+        compiled = re.compile(python_pattern(pattern, flags, text),
                               sum(f for name, f in (("s", re.S), ("m", re.M), ("i", re.I), ("x", re.X)) if name in flags))
     except re.error:
         return None
@@ -300,7 +337,10 @@ def sparql_encode_for_uri(text):
 
 
 def sparql_lcase(text):
-    """SPARQL's LCASE: Unicode's full lower-case mapping, a final capital sigma to a final small one."""
+    """SPARQL's LCASE: Unicode's full lower-case mapping, a final capital sigma to a final small one. A character Python's
+    Unicode does not assign, whose mapping Oxigraph's newer Unicode may know, raises ValueError."""
+    if text is not None and (why := refused(text)):
+        raise ValueError(f"sparql_lcase meets {why}")
     return None if text is None else text.lower()
 
 
@@ -309,7 +349,8 @@ INTEGER_LIMIT = 2 ** 127
 
 
 def scaled(lexical):
-    """An xsd:decimal or xsd:integer lexical form as a count of 10^-18, or None when Oxigraph would hold it ill-typed."""
+    """An xsd:decimal or xsd:integer lexical form as a count of 10^-18, or None when Oxigraph would hold it ill-typed:
+    more than eighteen fractional digits but zeros, or a count outside a signed 128-bit integer's range."""
     match = DECIMAL.fullmatch(lexical or "")
     if not match or not (match.group(2) or match.group(3)):
         return None
@@ -317,7 +358,8 @@ def scaled(lexical):
     if len(fraction) > 18:
         return None
     value = int(whole) * SCALE + int(fraction.ljust(18, "0") or "0")
-    return -value if sign == "-" else value
+    value = -value if sign == "-" else value
+    return value if -INTEGER_LIMIT <= value < INTEGER_LIMIT else None
 
 
 def decimal_text(value):
@@ -334,10 +376,10 @@ def towards_zero(numerator, denominator):
 
 
 def sparql_decimal(operator, left, right=None):
-    """Exact xsd:decimal arithmetic as Oxigraph does it, on lexical forms, with eighteen fractional digits: `+`, `-`,
-    `*` and `/`, a quotient's further digits cut off towards zero, and `floor` of the left alone. None where SPARQL raises
-    an error: division by zero, a product that needs more digits, an ill-typed operand, or a value outside Oxigraph's
-    range."""
+    """Exact xsd:decimal arithmetic as SPARQL 1.1 gives it, on lexical forms, with eighteen fractional digits: `+`, `-`,
+    `*` and `/`, a quotient's further digits cut off towards zero, and `floor` of the left alone. None where it raises an
+    error: division by zero, a product that needs more digits, an ill-typed operand, or a value outside a signed 128-bit
+    count of 10^-18. Where Oxigraph's own answer is another, queries/sql-functions.json marks the vector."""
     a = scaled(left)
     b = None if operator == "floor" else scaled(right)
     if a is None or (operator != "floor" and b is None):
@@ -383,16 +425,20 @@ def number(term):
     return scaled(term.value)
 
 
+BOOLEAN = {"false": 0, "0": 0, "true": 1, "1": 1}
+
+
 def order(a, b):
     return (a > b) - (a < b)
 
 
 def sparql_compare(left, right):
-    """-1, 0 or 1 as Oxigraph's <, = and > order two terms given as N-Triples, so IF(?a < ?b, -1, IF(?a = ?b, 0,
-    IF(?a > ?b, 1, error))); None where that raises an error. Two numbers compare by value, a NaN with nothing; any other
-    two terms that are one term are equal, whatever their kind; else None for a term that is no literal, two literals of
-    datatypes < does not compare, an ill-typed one, and a value with no zone within fourteen hours of one with a zone. A
-    datatype SPARQL compares but this does not, such as xsd:time or a duration, raises."""
+    """-1, 0 or 1 as SPARQL 1.1's <, = and > order two terms given as N-Triples, so IF(?a < ?b, -1, IF(?a = ?b, 0,
+    IF(?a > ?b, 1, error))); None where that raises an error. Two numbers compare by value, a NaN with nothing, and two
+    booleans false before true; any other two terms that are one term are equal, whatever their kind; else None for a
+    term that is no literal, two literals of datatypes < does not compare, an ill-typed one, and a value with no zone
+    within fourteen hours of one with a zone. A datatype SPARQL compares but this does not, such as xsd:time or a
+    duration, raises."""
     a, b = parsed(left), parsed(right)
     if a is None or b is None:
         return None
@@ -417,6 +463,9 @@ def sparql_compare(left, right):
         return None
     if a.datatype == XSD + "string":
         return order(a.value, b.value)
+    if a.datatype == XSD + "boolean":
+        x, y = BOOLEAN.get(a.value), BOOLEAN.get(b.value)
+        return None if x is None or y is None else order(x, y)
     if a.datatype == LANG_STRING:
         return order(a.value, b.value) if a.lang.lower() == b.lang.lower() else None
     if a.datatype in CALENDAR:
@@ -454,27 +503,35 @@ RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 
 
 def loaded(store, fingerprint):
-    """The pod of an Oxigraph store's named graphs, every record and entry in scope, as a whole run fills it, and the
-    ledger's one row naming what it was made from."""
+    """The pod of an Oxigraph store's named graphs in its default graph, every record and entry in scope, as a whole run
+    fills it, and the ledger's one row naming what it was made from. A named graph with a statement outside the default
+    graph, as a table version's rows are, is left out, and the default graph must be the union of those kept."""
     connection = connected()
-    ids = {}
+    default = {quad.triple for quad in store.quads_for_pattern(None, None, None, pyoxigraph.DefaultGraph())}
+    named = [quad for quad in store.quads_for_pattern(None, None, None, None)
+             if not isinstance(quad.graph_name, pyoxigraph.DefaultGraph)]
+    outside = {quad.graph_name for quad in named if quad.triple not in default}
+    kept = [quad for quad in named if quad.graph_name not in outside]
+    if missing := default - {quad.triple for quad in kept}:
+        raise ValueError(f"{len(missing)} statements of the default graph are in no named graph it holds, such as "
+                         f"{next(iter(missing))}")
+    ids, terms = {}, []
 
     def term_id(node):
-        term = from_oxigraph(node)
-        if str(term) != str(node):
-            raise ValueError(f"{node} is written {term} here, not as Oxigraph writes it")
-        if term not in ids:
-            ids[term] = len(ids) + 1
-            connection.execute("INSERT INTO term (id, nt, kind, lex, datatype, lang, instant, day) "
-                               "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                               (ids[term], str(term), term.kind, None if term.kind == BLANK else term.value,
-                                term.datatype, term.lang, instant_key(term), day_key(term)))
-        return ids[term]
+        found = ids.get(node)
+        if found is None:
+            term = from_oxigraph(node)
+            if str(term) != str(node):
+                raise ValueError(f"{node} is written {term} here, not as Oxigraph writes it")
+            found = ids[node] = len(ids) + 1
+            terms.append((found, str(term), term.kind, None if term.kind == BLANK else term.value, term.datatype,
+                          term.lang, instant_key(term), day_key(term)))
+        return found
 
-    quads = [(term_id(q.subject), term_id(q.predicate), term_id(q.object), term_id(q.graph_name))
-             for q in store.quads_for_pattern(None, None, None, None)
-             if not isinstance(q.graph_name, pyoxigraph.DefaultGraph)]
-    connection.executemany("INSERT OR IGNORE INTO quad (s, p, o, g) VALUES (?, ?, ?, ?)", quads)
+    quads = [(term_id(q.subject), term_id(q.predicate), term_id(q.object), term_id(q.graph_name)) for q in kept]
+    connection.executemany("INSERT INTO term (id, nt, kind, lex, datatype, lang, instant, day) "
+                           "VALUES (?, ?, ?, ?, ?, ?, ?, ?)", terms)
+    connection.executemany("INSERT INTO quad (s, p, o, g) VALUES (?, ?, ?, ?)", quads)
     connection.execute("INSERT INTO ledger (built, fingerprint) VALUES ('pod', ?)", (fingerprint,))
     return whole(connection)
 

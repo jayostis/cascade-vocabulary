@@ -11,7 +11,7 @@ PREFIX pav: <http://purl.org/pav/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?subject ?subjectLabel ?dateOfBirth ?administrativeGender ?deceased ?dateOfDeath ?sources
+SELECT DISTINCT ?subject ?subjectLabel ?dateOfBirth ?administrativeGender ?deceased ?dateOfDeath ?sources
 WHERE {
   { SELECT ?subject
            (REPLACE(GROUP_CONCAT(DISTINCT COALESCE(CONCAT(?birthText, "\u001F"), ""); separator=""), "\u001F$", "") AS ?births)

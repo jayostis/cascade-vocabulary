@@ -1,0 +1,24 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:months a cascade:PrescribedOrReportedMedication .
+:monthsVersion prov:specializationOf :months ; cascade:patient :subject ; cascade:drugName "supply: 0 months" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-01-15"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:monthsVersion#expected-supply-duration> .
+<urn:x:monthsVersion#expected-supply-duration> cascade:decimalValue "0"^^xsd:decimal ; cascade:writtenValue "0" ; cascade:ucumUnit "mo" .
+:monthsRevision a cascade:Revision ; cascade:revisionOf :months ; cascade:version :monthsVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:years a cascade:PrescribedOrReportedMedication .
+:yearsVersion prov:specializationOf :years ; cascade:patient :subject ; cascade:drugName "supply: 0 years" ;
+    cascade:prescribedOrReported "prescribed" ; cascade:workflowStatus "active" ;
+    cascade:prescriptionWrittenDate "2025-02-01"^^xsd:date ;
+    cascade:expectedSupplyDuration <urn:x:yearsVersion#expected-supply-duration> .
+<urn:x:yearsVersion#expected-supply-duration> cascade:decimalValue "0"^^xsd:decimal ; cascade:writtenValue "0.0" ; cascade:ucumUnit "a" .
+:yearsRevision a cascade:Revision ; cascade:revisionOf :years ; cascade:version :yearsVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,5 +1,13 @@
 {
-  "about": "The six functions a .sql may call where SQLite has no answer of its own, each registered under its name, and the vectors every implementation reproduces: for each input, the output Oxigraph's SPARQL gives, null where it gives an unbound value. Strings are lexical forms; sparql_compare's inputs are terms in N-Triples form.",
+  "about": "The six functions a .sql may call where SQLite has no answer of its own, each registered under its name, and the vectors every implementation reproduces: for each input, the output SPARQL 1.1 gives, null where it gives an unbound value. Where Oxigraph gives another answer, the vector holds Oxigraph's under \"oxigraph\" and why under \"because\", and a query whose rows that could change is written so that both give the same rows. A vector with \"refused\" and no output is an input the vectors leave unpinned, which every implementation refuses with an error rather than answer. Strings are lexical forms; sparql_compare's inputs are terms in N-Triples form.",
+  "porting": [
+    "A decimal is an exact count of 10^-18 within a signed 128-bit integer's range, and an instant has eighteen fractional digits: both need big integers, such as JavaScript's BigInt, not a double.",
+    "A term's nt is Oxigraph's canonical form, as its store holds it: \"01\" is \"1\", \"+5\" is \"5\" and \"1.50\" is \"1.5\". A loader fed by a parser that keeps literals as written, such as N3.js, writes other nt; load from Oxigraph's quads, or make each literal canonical as Oxigraph does.",
+    "Strings compare by code point. JavaScript's < compares UTF-16 code units, which puts a character above U+FFFF before one from U+E000 to U+FFFF.",
+    "A pattern's . and an empty match step over a character above U+FFFF whole, as a JavaScript RegExp does only with the u or v flag.",
+    "LCASE follows Unicode's full lower-case mapping with the final sigma; a character the implementation's Unicode does not assign is refused, since another Unicode may map it.",
+    "No compare vector holds a blank node, as VALUES cannot: two blank nodes that are one term compare equal, and a blank node with any other term raises."
+  ],
   "functions": {
     "sparql_replace": {
       "sparql": "REPLACE(?text, ?pattern, ?replacement) or REPLACE(?text, ?pattern, ?replacement, ?flags), over strings",
@@ -34,7 +42,20 @@
         {"input": ["abc", "b", "X", "k"], "output": null},
         {"input": ["aaa", "a*", "X"], "output": "X"},
         {"input": ["baaac", "a*", "X"], "output": "XbXcX"},
-        {"input": ["Éclair", "é", "e", "i"], "output": "eclair"}
+        {"input": ["Éclair", "é", "e", "i"], "output": "eclair"},
+        {"input": ["😀", ".", "X"], "output": "X"},
+        {"input": ["😀a", "", "-"], "output": "-😀-a-"},
+        {"input": ["abab", "(?:ab)+", "X"], "output": "X"},
+        {"input": ["a{b}c", "\\{[^{}]*\\}", ""], "output": "ac"},
+        {"input": ["aaa", "a*?", "X"], "refused": "a lazy quantifier"},
+        {"input": ["aaa", "a*+", "X"], "refused": "a possessive quantifier"},
+        {"input": ["abc", "(?=b)", "X"], "refused": "a look-ahead"},
+        {"input": ["abc", "(?<n>b)", "[$n]"], "refused": "a named group"},
+        {"input": ["a{b", "{", "x"], "refused": "a { that is no quantifier"},
+        {"input": ["abc", "[[:alpha:]]", "x"], "refused": "a POSIX class"},
+        {"input": ["abc", "\\w", "x"], "refused": "a class shorthand"},
+        {"input": ["İ", "i", "x", "i"], "refused": "a dotted I under the i flag, which Python's case-insensitive match equates with i and Rust's does not"},
+        {"input": ["a#b", "a#b", "x", "x"], "refused": "a # under the x flag, a comment in Rust's regex and Python's and no comment in SPARQL's"}
       ]
     },
     "sparql_sha256": {
@@ -73,7 +94,8 @@
         {"input": ["mixed Case 123"], "output": "mixed case 123"},
         {"input": [""], "output": ""},
         {"input": ["ΣΑΣ"], "output": "σας"},
-        {"input": ["Σ"], "output": "σ"}
+        {"input": ["Σ"], "output": "σ"},
+        {"input": ["\u0378"], "refused": "a character Python's Unicode does not assign, as U+1C89 is unassigned in Python 3.12's Unicode 15.0 and lower-cased by Oxigraph's 16.0"}
       ]
     },
     "sparql_decimal": {
@@ -109,7 +131,20 @@
         {"input": ["*", "100000000000000000000", "1"], "output": "100000000000000000000"},
         {"input": ["*", "100000000000000000000", "2"], "output": null},
         {"input": ["+", "-0.0", "0"], "output": "0"},
-        {"input": ["/", "100", "86400"], "output": "0.001157407407407407"}
+        {"input": ["/", "100", "86400"], "output": "0.001157407407407407"},
+        {"input": ["*", "0", "2"], "output": "0"},
+        {"input": ["*", "0", "30.4375"], "output": "0", "oxigraph": null, "because": "Oxigraph's product needs the factors' trailing zeros to number eighteen, and counts none on a zero"},
+        {"input": ["*", "0", "365.25"], "output": "0", "oxigraph": null, "because": "Oxigraph's product needs the factors' trailing zeros to number eighteen, and counts none on a zero"},
+        {"input": ["*", "0.0", "0.25"], "output": "0", "oxigraph": null, "because": "Oxigraph's product needs the factors' trailing zeros to number eighteen, and counts none on a zero"},
+        {"input": ["*", "1.5", "0"], "output": "0", "oxigraph": null, "because": "Oxigraph's product needs the factors' trailing zeros to number eighteen, and counts none on a zero"},
+        {"input": ["/", "0", "30.4375"], "output": "0", "oxigraph": null, "because": "Oxigraph's quotient counts no shift on a zero dividend, so it needs the divisor's trailing zeros to number eighteen"},
+        {"input": ["*", "0.000000000005", "0.0000002"], "output": "0.000000000000000001", "oxigraph": null, "because": "Oxigraph's product needs the factors' trailing zeros to number eighteen, though the product here needs no more than eighteen fractional digits"},
+        {"input": ["/", "8350012778.6", "40.3933289629225"], "output": "206717618.799494651976772277", "oxigraph": null, "because": "Oxigraph's quotient shifts by a power of ten outside a signed 128-bit integer's range"},
+        {"input": ["+", "170141183460469231731.687303715884105727", "0"], "output": "170141183460469231731.687303715884105727"},
+        {"input": ["+", "170141183460469231731.687303715884105728", "0"], "output": null},
+        {"input": ["-", "-170141183460469231731.687303715884105728", "0"], "output": "-170141183460469231731.687303715884105728"},
+        {"input": ["+", "170141183460469231731.687303715884105727", "0.000000000000000001"], "output": null},
+        {"input": ["floor", "170141183460469231732"], "output": null}
       ]
     },
     "sparql_compare": {
@@ -130,7 +165,7 @@
         {"input": ["\"a\"@en", "\"b\"@en"], "output": -1},
         {"input": ["\"a\"@en", "\"a\"@fr"], "output": null},
         {"input": ["\"a\"@en", "\"a\""], "output": null},
-        {"input": ["\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>", "\"false\"^^<http://www.w3.org/2001/XMLSchema#boolean>"], "output": null},
+        {"input": ["\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>", "\"false\"^^<http://www.w3.org/2001/XMLSchema#boolean>"], "output": 1, "oxigraph": null, "because": "Oxigraph's < does not compare booleans, where SPARQL 1.1's op:boolean-less-than does"},
         {"input": ["\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>", "\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>"], "output": 0},
         {"input": ["<urn:a>", "<urn:b>"], "output": null},
         {"input": ["<urn:a>", "<urn:a>"], "output": 0},
@@ -156,7 +191,9 @@
         {"input": ["\"NaN\"^^<http://www.w3.org/2001/XMLSchema#double>", "\"1\"^^<http://www.w3.org/2001/XMLSchema#double>"], "output": null},
         {"input": ["\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>", "\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>"], "output": 0},
         {"input": ["\"2025-02-30\"^^<http://www.w3.org/2001/XMLSchema#date>", "\"2025-02-30\"^^<http://www.w3.org/2001/XMLSchema#date>"], "output": 0},
-        {"input": ["\"INF\"^^<http://www.w3.org/2001/XMLSchema#double>", "\"1e308\"^^<http://www.w3.org/2001/XMLSchema#double>"], "output": 1}
+        {"input": ["\"INF\"^^<http://www.w3.org/2001/XMLSchema#double>", "\"1e308\"^^<http://www.w3.org/2001/XMLSchema#double>"], "output": 1},
+        {"input": ["\"😀\"", "\"FFFD\""], "output": 1},
+        {"input": ["\"E000\"", "\"😀\""], "output": -1}
       ]
     }
   }
