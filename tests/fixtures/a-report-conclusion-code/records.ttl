@@ -1,0 +1,14 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:cobalamin a cascade:DiagnosticReport .
+:cobalaminVersion prov:specializationOf :cobalamin ; cascade:patient :subject ; cascade:reportName "Cobalamin" ;
+    cascade:reportCode <http://loinc.org/rdf/2132-9> ; cascade:reportEffectiveTime "2025-03-01"^^xsd:date ;
+    cascade:reportConclusion "Low." ; cascade:reportConclusionCode <http://snomed.info/id/190634004> ;
+    cascade:workflowStatus "final" .
+:cobalaminRevision a cascade:Revision ; cascade:revisionOf :cobalamin ; cascade:version :cobalaminVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
