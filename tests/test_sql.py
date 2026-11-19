@@ -82,8 +82,9 @@ def whole_searches(plan):
 def screen_plans(engine):
     """The plan of each statement of each screen's fill and finish, and of each screen's triples, by the screen, the
     part and the statement's place in it, each as its EXPLAIN QUERY PLAN rows and the b-trees it scans, as whole_scans
-    gives them. The pod is empty, made by queries/statements.sql and each screen's tables part alone on the engine, each
-    statement planned just before it runs; its plans do not depend on what the pod holds."""
+    gives them; those of queries/labels.sql too, its fill between the screens' fills and finishes. The pod is empty, made
+    by queries/statements.sql and each screen's tables part alone on the engine, each statement planned just before it
+    runs; its plans do not depend on what the pod holds."""
     if engine.startswith("apsw"):
         connection = apsw.Connection(":memory:")
         for name, function in sql.FUNCTIONS.items():
@@ -99,14 +100,20 @@ def screen_plans(engine):
     def planned(text):
         return [(row[0], row[1], row[3]) for row in run("EXPLAIN QUERY PLAN " + text)], whole_scans(run, text)
 
+    labels = sql.parts(sql_text("queries/labels.rq"))
     plans = {}
     for part in ("fill", "finish"):
         for relative, found in views.items():
             for place, text in enumerate(sql.statements(found[part])):
                 plans[relative, part, place] = planned(text)
                 run(text)
+        if part == "fill":
+            for place, text in enumerate(sql.statements(labels["fill"])):
+                plans["queries/labels.sql", "fill", place] = planned(text)
+                run(text)
     for relative, found in views.items():
         plans[relative, "triples", 0] = planned(found["triples"])
+    plans["queries/labels.sql", "triples", 0] = planned(labels["triples"])
     return plans
 
 
@@ -275,6 +282,23 @@ def manifest_entries(fixture):
 
 
 @cache
+def before_labels(fixture, lens):
+    """A store of the fixture's pod as labels.rq reads it, before it is run: the statements of the pod without the
+    rdfs:label ones of the file labels.rq writes, in that file's graph and in the default graph."""
+    store = built_once(fixture, "oxigraph", lens).store.store
+    file = sql.labels_file(store)
+    named = [quad for quad in store.quads_for_pattern(None, None, None, None)
+             if not isinstance(quad.graph_name, pyoxigraph.DefaultGraph)]
+    kept = [quad for quad in named if not (quad.graph_name == file and quad.predicate == sql.LABEL)]
+    held = {quad.triple for quad in kept}
+    default = [pyoxigraph.Quad(*quad.triple, pyoxigraph.DefaultGraph())
+               for quad in store.quads_for_pattern(None, None, None, pyoxigraph.DefaultGraph()) if quad.triple in held]
+    without = pyoxigraph.Store()
+    without.extend(kept + default)
+    return without
+
+
+@cache
 def pod(fixture, lens):
     return sql.screened(sql.loaded(built_once(fixture, "oxigraph", lens).store.store, f"{fixture.name} under {lens}"),
                         screens())
@@ -343,9 +367,10 @@ def failures(fixture, lens, relative, text):
     record of its own screen's members and one record of another kind, and a record the
     pod lacks; for a SELECT the `.rq` does not bind, the `.rq` bound to a record the pod lacks and the `.sql` whole; and, through the `.sql`,
     the rows of each manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of
-    triples."""
+    triples. labels.rq is run on the pod before the labels are made, as it is written."""
     rq = query(Path(relative).relative_to("queries").as_posix())
-    store = built_once(fixture, "oxigraph", lens).store.store
+    store = (before_labels(fixture, lens) if relative == "queries/labels.rq"
+             else built_once(fixture, "oxigraph", lens).store.store)
     connection = pod(fixture, lens)
     names, wanted, construct = oxigraph_answer(store, rq)
     try:
@@ -656,7 +681,7 @@ class TestSqlBesideEachQuery:
             SQLite plans a statement from the statistics it holds, and with none it plans as if every table held a million
             rows: one fill ran 79 s at 15,000 records against 0.14 s analyzed, by searching `quad` by its predicate alone
             once for each row of another table, and a screen table with none drove a statement from `term`. The pod here is
-            empty and has had no ANALYZE; every statement of each screen's fill and finish, and its triples, is planned on
+            empty and has had no ANALYZE; every statement of each screen's fill and finish, and its triples, and of queries/labels.sql, is planned on
             SQLite as the check ships it and on 3.54.1 through apsw. None reads `quad` or `term` from end to end, under
             whatever alias it names the table, or searches `quad` by a predicate alone, or by it and a range of an object,
             in a loop a surrounding loop runs once for each row of, or in a subquery run for each row of its statement's.
@@ -1084,6 +1109,40 @@ class TestTheSqlCheck:
         store.add(quad("urn:x:alone", pyoxigraph.DefaultGraph()))
         with pytest.raises(ValueError, match="in no named graph"):
             sql.loaded(store, "test")
+
+    def test_makes_the_labels_file_again_from_labels_sql_and_leaves_what_it_does_not_label(self):
+        """leaves the labels file's rdfs:label statements out of a loaded pod, and makes them again from labels.sql at each fill
+
+        A store whose layout places labels.rq's file holds a stale label there, a label of another thing in another
+        file, and the file's own view marking: the pod loaded from it has the marking and the other thing's label and
+        not the stale one. Filled, the file holds the one label labels.sql gives for the thing no other file labels; filled
+        again, the same.
+        """
+        def node(name):
+            return pyoxigraph.NamedNode(name)
+        file, other, layout = node("urn:x:labels"), node("urn:x:other"), node("urn:x:layout")
+        label, kind = node(sql.LABEL.value), node("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+        subject, labelled = node("urn:x:subject"), node("urn:x:labelled")
+        placement = pyoxigraph.BlankNode("placement")
+        store = pyoxigraph.Store()
+        triples = [(placement, node("https://ns.cascadeprotocol.org/cascade#writtenByQueryPath"),
+                    pyoxigraph.Literal("labels.rq"), layout),
+                   (placement, node("http://www.w3.org/ns/solid/terms#instance"), file, layout),
+                   (subject, kind, node("https://ns.cascadeprotocol.org/cascade#Subject"), other),
+                   (subject, label, pyoxigraph.Literal("stale"), file), (file, kind, node("urn:x:View"), file),
+                   (labelled, label, pyoxigraph.Literal("kept"), other)]
+        store.extend([pyoxigraph.Quad(*triple) for triple in triples]
+                     + [pyoxigraph.Quad(*triple[:3], pyoxigraph.DefaultGraph()) for triple in triples])
+        held = lambda connection: sorted(connection.execute(
+            "SELECT s.nt, o.nt FROM quad JOIN term s ON s.id = quad.s JOIN term o ON o.id = quad.o JOIN term g ON g.id = quad.g "
+            "WHERE g.nt = '<urn:x:labels>' ORDER BY 1, 2"))
+        connection = sql.loaded(store, "test")
+        assert held(connection) == [("<urn:x:labels>", "<urn:x:View>")]
+        assert connection.execute("SELECT count(*) FROM quad JOIN term o ON o.id = quad.o WHERE o.nt = '\"kept\"'").fetchone() == (1,)
+        for fill in (sql.screened, sql.refilled):
+            fill(connection, screens())
+            assert held(connection) == [("<urn:x:labels>", "<urn:x:View>"),
+                                        ("<urn:x:subject>", '"The person this pod is about"')]
 
     def test_reports_a_ported_rq_whose_bytes_changed_without_its_pin(self):
         """reports a ported `.rq` whose bytes changed since its pin, with the hash to pin once its `.sql` is checked

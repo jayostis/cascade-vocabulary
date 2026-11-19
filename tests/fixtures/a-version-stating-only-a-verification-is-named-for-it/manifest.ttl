@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-version-stating-only-a-verification-is-named-for-it" ;
+  rdfs:comment "A condition version that states a verification status other than refuted and no clinical status." ;
+  mf:entries (
+    <#the-version-labelled>
+  ) .
+
+<#the-version-labelled> a mf:QueryEvaluationTest ;
+  mf:name "the-version-labelled" ;
+  rdfs:comment "The version is named for its verification status, where it states no other status." ;
+  mf:action [ qt:query <the-version-labelled.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <the-version-labelled.srj> .

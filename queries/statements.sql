@@ -35,8 +35,11 @@
 --            scope as a result, and the variant interpretations screen those naming one as the variant they interpret,
 --            since each is shown as the entry that record is in.
 --   finish   gives, for the same entries, the columns that read the labels output or another screen, once the labels
---            are made. Until labels.rq has a `.sql`, the labels output is the rdfs:label statements in `quad`, which
---            labels.rq makes from the view graphs.
+--            are made. The labels output is the rows of queries/labels.sql, which reads the screens' tables as the
+--            fills leave them: a runtime runs it once, after every view's fill and before any view's finish, and
+--            keeps its rows as rdfs:label statements of the labels file's graph in `quad`, in place of those of its
+--            last run, which a finish reads from there. The labels are of the whole pod, never of the entries a run
+--            fills alone.
 --   triples  one statement giving the triples the view's CONSTRUCT gives, as s, p and o, from the screen's tables
 --            alone. An entry is named as the derived state names it; a runtime writing the view's file names it as
 --            N13 says.
