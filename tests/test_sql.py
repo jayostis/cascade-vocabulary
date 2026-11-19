@@ -323,6 +323,13 @@ def binds_a_record(rq):
     return re.search(r"[?$]record\b", "".join(outer)) is not None
 
 
+def answers_with_a_record(rq):
+    """Whether the `.rq` gives a `?record` column, which a binding would not choose: an entry's review names the records
+    a finding is about, and a `?record` bound to one adds it to each row that names none."""
+    stripped = TOKEN.sub(lambda token: "{" if token.group() == "{" else " ", rq)
+    return re.search(r"[?$]record\b", stripped[:stripped.index("{")]) is not None
+
+
 def records_a_list_question_is_bound_to(connection, text):
     """Each record of the member table a list question matches `asked` against, as its IRI, and the first record the
     pod puts in an entry that table does not hold, so the question is bound to a record of another kind too; a `.sql`
@@ -341,7 +348,8 @@ def failures(fixture, lens, relative, text):
     whole run, in its order when it has one; for a question bound to a record, the `.rq` bound to it and the `.sql`
     with `asked` holding it alone, for each record a manifest entry of the fixture binds, for a list question each
     record of its own screen's members and one record of another kind, and a record the
-    pod lacks; for a SELECT the `.rq` does not bind, the `.rq` bound to a record the pod lacks and the `.sql` whole; and, through the `.sql`,
+    pod lacks; for a SELECT the `.rq` does not bind and that gives no `?record` column, the `.rq` bound to a record the pod
+    lacks and the `.sql` whole; and, through the `.sql`,
     the rows of each manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of
     triples."""
     rq = query(Path(relative).relative_to("queries").as_posix())
@@ -369,6 +377,8 @@ def failures(fixture, lens, relative, text):
         if ":page_size" in text:
             bound |= set(records_a_list_question_is_bound_to(connection, text))
         bound.add(NO_SUCH_RECORD)
+    elif question and not construct and answers_with_a_record(rq):
+        bound = set()
     elif question and not construct:
         lines += against(f"bound to {NO_SUCH_RECORD}, against the .rq", oxigraph_answer(store, rq, NO_SUCH_RECORD)[1], found)
     for record in sorted(bound):
@@ -709,7 +719,7 @@ class TestSqlBesideEachQuery:
             ("medications", "medications-view"), ("medication-dispenses", "medication-dispenses-view"),
             ("immunizations", "immunizations-view"), ("procedures", "procedures-view"), ("reports", "reports-view"),
             ("notes-and-documents", "notes-and-documents-view"), ("variants", "variants-view"),
-            ("variant-interpretations", "variant-interpretations-view")])
+            ("variant-interpretations", "variant-interpretations-view"), ("patient-profile", "patient-profile-view")])
         def test_refuses_to_fill_a_screen_whose_view_the_layout_places_at_two_addresses(self, view, fixture):
             """refuses to fill a screen whose view the pod's layout places at two addresses
 

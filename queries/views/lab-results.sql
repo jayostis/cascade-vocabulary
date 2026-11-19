@@ -147,6 +147,106 @@ CREATE TABLE lab_result_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+-- The statements the view makes, as s, p and o in N-Triples, the entries and the nodes named after them as the
+-- derived state names them.
+CREATE VIEW lab_result_triples (s, p, o) AS
+WITH
+  entries (s, entry) AS (SELECT e.nt, c.entry FROM lab_result c JOIN term e ON e.id = c.entry),
+  members (node, entry, member) AS (SELECT node, entry, member FROM lab_result_member_values),
+  bounds (low, high, entry, member) AS (
+    SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-reference-low>', '<' || substr(e.s, 2, length(e.s) - 2)
+           || '-reference-high>', e.entry, NULL FROM entries e
+    UNION ALL
+    SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-reference-low>', '<' || substr(mv.node, 2,
+           length(mv.node) - 2) || '-reference-high>', mv.entry, mv.member FROM members mv),
+  ranges (low, high, decimal_low, written_low, ucum_low, unit_text_low, decimal_high, written_high, ucum_high,
+          unit_text_high) AS (
+    SELECT b.low, b.high, c.low_decimal, c.low_written, c.low_ucum, c.low_unit_text, c.high_decimal, c.high_written,
+           c.high_ucum, c.high_unit_text
+    FROM bounds b JOIN lab_result c ON c.entry = b.entry WHERE b.member IS NULL
+    UNION ALL
+    SELECT b.low, b.high, v.low_decimal, v.low_written, v.low_ucum, v.low_unit_text, v.high_decimal, v.high_written,
+           v.high_ucum, v.high_unit_text
+    FROM bounds b JOIN lab_result_member_values v ON v.entry = b.entry AND v.member = b.member),
+  said (s, p, o) AS (
+    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#testName>', c.test FROM entries e JOIN lab_result c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#testCode>', x.code FROM entries e JOIN lab_result_code x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#resultUnitText>', c.unit FROM entries e JOIN lab_result c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', c.narrative FROM entries e JOIN lab_result c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', c.status FROM entries e JOIN lab_result c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime>', c.performed FROM entries e JOIN lab_result c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#resultInterpretationCode>', x.code FROM entries e JOIN lab_result_interpretation x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#referenceRangeText>', c.range_text FROM entries e JOIN lab_result c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN lab_result c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN lab_result c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN lab_result_member m ON m.entry = e.entry
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-resultClinicallyRelevantTime>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.performed_written
+      FROM entries e JOIN lab_result c ON c.entry = e.entry
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#testName>', v.test FROM members mv JOIN lab_result_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#testCode>', x.code FROM members mv JOIN lab_result_member_values_code x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#resultValueText>', v.value_text FROM members mv JOIN lab_result_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#resultUnitText>', v.unit_text FROM members mv JOIN lab_result_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', v.narrative FROM members mv JOIN lab_result_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', v.status FROM members mv JOIN lab_result_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime>', v.performed FROM members mv JOIN lab_result_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#resultInterpretationCode>', x.code FROM members mv JOIN lab_result_member_values_interpretation x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#referenceRangeText>', v.range_text FROM members mv JOIN lab_result_member_values v USING (entry, member)
+    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', x.property
+      FROM members mv JOIN lab_result_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', x.written
+      FROM members mv JOIN lab_result_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT low, '<https://ns.cascadeprotocol.org/cascade#decimalValue>', decimal_low FROM ranges WHERE written_low IS NOT NULL
+    UNION ALL SELECT low, '<https://ns.cascadeprotocol.org/cascade#writtenValue>', written_low FROM ranges
+    UNION ALL SELECT low, '<https://ns.cascadeprotocol.org/cascade#ucumUnit>', ucum_low FROM ranges WHERE written_low IS NOT NULL
+    UNION ALL SELECT low, '<https://ns.cascadeprotocol.org/cascade#unitText>', unit_text_low FROM ranges WHERE written_low IS NOT NULL
+    UNION ALL SELECT high, '<https://ns.cascadeprotocol.org/cascade#decimalValue>', decimal_high FROM ranges WHERE written_high IS NOT NULL
+    UNION ALL SELECT high, '<https://ns.cascadeprotocol.org/cascade#writtenValue>', written_high FROM ranges
+    UNION ALL SELECT high, '<https://ns.cascadeprotocol.org/cascade#ucumUnit>', ucum_high FROM ranges WHERE written_high IS NOT NULL
+    UNION ALL SELECT high, '<https://ns.cascadeprotocol.org/cascade#unitText>', unit_text_high FROM ranges WHERE written_high IS NOT NULL),
+  made (s, p, o) AS (
+    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult>'
+    FROM entries
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#resultValueText>', c.value
+      FROM entries e JOIN lab_result c ON c.entry = e.entry WHERE c.value IS NOT NULL
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
+      FROM members mv JOIN entries e ON e.entry = mv.entry
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
+                     '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>'
+      FROM members mv JOIN lab_result_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
+                     '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-resultClinicallyRelevantTime>'
+      FROM entries e JOIN lab_result c ON c.entry = e.entry WHERE c.performed_written IS NOT NULL
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-resultClinicallyRelevantTime>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>',
+                     '<https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime>'
+      FROM entries e JOIN lab_result c ON c.entry = e.entry WHERE c.performed_written IS NOT NULL
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#referenceRangeLow>', b.low
+      FROM entries e JOIN bounds b ON b.entry = e.entry AND b.member IS NULL JOIN lab_result c ON c.entry = e.entry
+      WHERE c.low_written IS NOT NULL
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#referenceRangeHigh>', b.high
+      FROM entries e JOIN bounds b ON b.entry = e.entry AND b.member IS NULL JOIN lab_result c ON c.entry = e.entry
+      WHERE c.high_written IS NOT NULL
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#referenceRangeLow>', b.low
+      FROM members mv JOIN bounds b ON b.entry = mv.entry AND b.member = mv.member
+      JOIN lab_result_member_values v USING (entry, member) WHERE v.low_written IS NOT NULL
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#referenceRangeHigh>', b.high
+      FROM members mv JOIN bounds b ON b.entry = mv.entry AND b.member = mv.member
+      JOIN lab_result_member_values v USING (entry, member) WHERE v.high_written IS NOT NULL)
+SELECT said.s AS s, said.p AS p, o.nt AS o FROM said CROSS JOIN term o ON o.id = said.o
+UNION ALL SELECT s, p, o FROM made;
+-- Each record the view shows in an entry, `file` the view's address, `entry` as the view names it, `label` the
+-- entry's label's term id.
+CREATE VIEW lab_result_shown (file, type, entry, label, record) AS
+SELECT '<' || k.address || '>', '<https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult>', e.iri, e.label, m.record
+FROM lab_result_terms k CROSS JOIN lab_result e CROSS JOIN lab_result_member m ON m.entry = e.entry;
+
 INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
   ('lab_result', 'sqlite_autoindex_lab_result_1', '8100 1'),
   ('lab_result', 'sqlite_autoindex_lab_result_2', '8100 1'),
@@ -439,94 +539,4 @@ SELECT records.entry,
 FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
-WITH
-  entries (s, entry) AS (SELECT e.nt, c.entry FROM lab_result c JOIN term e ON e.id = c.entry),
-  members (node, entry, member) AS (SELECT node, entry, member FROM lab_result_member_values),
-  bounds (low, high, entry, member) AS (
-    SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-reference-low>', '<' || substr(e.s, 2, length(e.s) - 2)
-           || '-reference-high>', e.entry, NULL FROM entries e
-    UNION ALL
-    SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-reference-low>', '<' || substr(mv.node, 2,
-           length(mv.node) - 2) || '-reference-high>', mv.entry, mv.member FROM members mv),
-  ranges (low, high, decimal_low, written_low, ucum_low, unit_text_low, decimal_high, written_high, ucum_high,
-          unit_text_high) AS (
-    SELECT b.low, b.high, c.low_decimal, c.low_written, c.low_ucum, c.low_unit_text, c.high_decimal, c.high_written,
-           c.high_ucum, c.high_unit_text
-    FROM bounds b JOIN lab_result c ON c.entry = b.entry WHERE b.member IS NULL
-    UNION ALL
-    SELECT b.low, b.high, v.low_decimal, v.low_written, v.low_ucum, v.low_unit_text, v.high_decimal, v.high_written,
-           v.high_ucum, v.high_unit_text
-    FROM bounds b JOIN lab_result_member_values v ON v.entry = b.entry AND v.member = b.member),
-  said (s, p, o) AS (
-    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#testName>', c.test FROM entries e JOIN lab_result c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#testCode>', x.code FROM entries e JOIN lab_result_code x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#resultUnitText>', c.unit FROM entries e JOIN lab_result c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', c.narrative FROM entries e JOIN lab_result c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', c.status FROM entries e JOIN lab_result c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime>', c.performed FROM entries e JOIN lab_result c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#resultInterpretationCode>', x.code FROM entries e JOIN lab_result_interpretation x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#referenceRangeText>', c.range_text FROM entries e JOIN lab_result c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN lab_result c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN lab_result c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN lab_result_member m ON m.entry = e.entry
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-resultClinicallyRelevantTime>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.performed_written
-      FROM entries e JOIN lab_result c ON c.entry = e.entry
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#testName>', v.test FROM members mv JOIN lab_result_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#testCode>', x.code FROM members mv JOIN lab_result_member_values_code x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#resultValueText>', v.value_text FROM members mv JOIN lab_result_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#resultUnitText>', v.unit_text FROM members mv JOIN lab_result_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', v.narrative FROM members mv JOIN lab_result_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', v.status FROM members mv JOIN lab_result_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime>', v.performed FROM members mv JOIN lab_result_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#resultInterpretationCode>', x.code FROM members mv JOIN lab_result_member_values_interpretation x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#referenceRangeText>', v.range_text FROM members mv JOIN lab_result_member_values v USING (entry, member)
-    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', x.property
-      FROM members mv JOIN lab_result_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', x.written
-      FROM members mv JOIN lab_result_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT low, '<https://ns.cascadeprotocol.org/cascade#decimalValue>', decimal_low FROM ranges WHERE written_low IS NOT NULL
-    UNION ALL SELECT low, '<https://ns.cascadeprotocol.org/cascade#writtenValue>', written_low FROM ranges
-    UNION ALL SELECT low, '<https://ns.cascadeprotocol.org/cascade#ucumUnit>', ucum_low FROM ranges WHERE written_low IS NOT NULL
-    UNION ALL SELECT low, '<https://ns.cascadeprotocol.org/cascade#unitText>', unit_text_low FROM ranges WHERE written_low IS NOT NULL
-    UNION ALL SELECT high, '<https://ns.cascadeprotocol.org/cascade#decimalValue>', decimal_high FROM ranges WHERE written_high IS NOT NULL
-    UNION ALL SELECT high, '<https://ns.cascadeprotocol.org/cascade#writtenValue>', written_high FROM ranges
-    UNION ALL SELECT high, '<https://ns.cascadeprotocol.org/cascade#ucumUnit>', ucum_high FROM ranges WHERE written_high IS NOT NULL
-    UNION ALL SELECT high, '<https://ns.cascadeprotocol.org/cascade#unitText>', unit_text_high FROM ranges WHERE written_high IS NOT NULL),
-  made (s, p, o) AS (
-    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#LaboratoryTestResult>'
-    FROM entries
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#resultValueText>', c.value
-      FROM entries e JOIN lab_result c ON c.entry = e.entry WHERE c.value IS NOT NULL
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
-      FROM members mv JOIN entries e ON e.entry = mv.entry
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
-                     '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>'
-      FROM members mv JOIN lab_result_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
-                     '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-resultClinicallyRelevantTime>'
-      FROM entries e JOIN lab_result c ON c.entry = e.entry WHERE c.performed_written IS NOT NULL
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-resultClinicallyRelevantTime>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>',
-                     '<https://ns.cascadeprotocol.org/cascade#resultClinicallyRelevantTime>'
-      FROM entries e JOIN lab_result c ON c.entry = e.entry WHERE c.performed_written IS NOT NULL
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#referenceRangeLow>', b.low
-      FROM entries e JOIN bounds b ON b.entry = e.entry AND b.member IS NULL JOIN lab_result c ON c.entry = e.entry
-      WHERE c.low_written IS NOT NULL
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#referenceRangeHigh>', b.high
-      FROM entries e JOIN bounds b ON b.entry = e.entry AND b.member IS NULL JOIN lab_result c ON c.entry = e.entry
-      WHERE c.high_written IS NOT NULL
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#referenceRangeLow>', b.low
-      FROM members mv JOIN bounds b ON b.entry = mv.entry AND b.member = mv.member
-      JOIN lab_result_member_values v USING (entry, member) WHERE v.low_written IS NOT NULL
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#referenceRangeHigh>', b.high
-      FROM members mv JOIN bounds b ON b.entry = mv.entry AND b.member = mv.member
-      JOIN lab_result_member_values v USING (entry, member) WHERE v.high_written IS NOT NULL)
-SELECT said.s AS s, said.p AS p, o.nt AS o FROM said CROSS JOIN term o ON o.id = said.o
-UNION ALL SELECT s, p, o FROM made
+SELECT s, p, o FROM lab_result_triples

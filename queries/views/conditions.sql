@@ -123,6 +123,72 @@ CREATE TABLE condition_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+-- The statements the view makes, as s, p and o in N-Triples, the entries and the nodes named after them as the
+-- derived state names them.
+CREATE VIEW condition_triples (s, p, o) AS
+WITH
+  entries (s, entry) AS (SELECT e.nt, c.entry FROM condition c JOIN term e ON e.id = c.entry),
+  members (s, node, entry, member) AS (SELECT mv.node, mv.node, mv.entry, mv.member FROM condition_member_values mv),
+  said (s, p, o) AS (
+    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#conditionName>', c.name FROM entries e JOIN condition c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#conditionCode>', x.code FROM entries e JOIN condition_code x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#clinicalStatus>', c.status FROM entries e JOIN condition c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#verificationStatus>', c.verification FROM entries e JOIN condition c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#abatementDate>', c.abatement FROM entries e JOIN condition c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#onsetDate>', c.onset FROM entries e JOIN condition c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN condition c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN condition c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN condition_member m ON m.entry = e.entry
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#conditionName>', v.name FROM members mv JOIN condition_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#conditionCode>', x.code FROM members mv JOIN condition_member_values_code x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#clinicalStatus>', v.status FROM members mv JOIN condition_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#verificationStatus>', v.verification FROM members mv JOIN condition_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#abatementDate>', v.abatement FROM members mv JOIN condition_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#onsetDate>', v.onset FROM members mv JOIN condition_member_values v USING (entry, member)
+    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', x.property
+      FROM members mv JOIN condition_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', x.written
+      FROM members mv JOIN condition_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-onsetDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.onset_written
+      FROM entries e JOIN condition c ON c.entry = e.entry
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-abatementDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.abatement_written
+      FROM entries e JOIN condition c ON c.entry = e.entry),
+  made (s, p, o) AS (
+    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#ProblemOrDiagnosis>'
+    FROM entries
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
+      FROM members mv JOIN entries e ON e.entry = mv.entry
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
+                     '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>'
+      FROM members mv JOIN condition_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
+                     '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-onsetDate>'
+      FROM entries e JOIN condition c ON c.entry = e.entry WHERE c.onset_written IS NOT NULL
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-onsetDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#onsetDate>'
+      FROM entries e JOIN condition c ON c.entry = e.entry WHERE c.onset_written IS NOT NULL
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
+                     '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-abatementDate>'
+      FROM entries e JOIN condition c ON c.entry = e.entry WHERE c.abatement_written IS NOT NULL
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-abatementDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#abatementDate>'
+      FROM entries e JOIN condition c ON c.entry = e.entry WHERE c.abatement_written IS NOT NULL)
+SELECT said.s AS s, said.p AS p, o.nt AS o FROM said JOIN term o ON o.id = said.o
+UNION ALL SELECT s, p, o FROM made;
+-- Each record the view shows in an entry, `file` the view's address, `entry` as the view names it, `label` the
+-- entry's label's term id.
+CREATE VIEW condition_shown (file, type, entry, label, record) AS
+SELECT '<' || k.address || '>', '<https://ns.cascadeprotocol.org/cascade#ProblemOrDiagnosis>', e.iri, e.label, m.record
+FROM condition_terms k CROSS JOIN condition e CROSS JOIN condition_member m ON m.entry = e.entry;
+
 INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
   ('condition', 'sqlite_autoindex_condition_1', '1350 1'),
   ('condition', 'sqlite_autoindex_condition_2', '1350 1'),
@@ -364,60 +430,4 @@ SELECT records.entry,
 FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
-WITH
-  entries (s, entry) AS (SELECT e.nt, c.entry FROM condition c JOIN term e ON e.id = c.entry),
-  members (s, node, entry, member) AS (SELECT mv.node, mv.node, mv.entry, mv.member FROM condition_member_values mv),
-  said (s, p, o) AS (
-    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#conditionName>', c.name FROM entries e JOIN condition c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#conditionCode>', x.code FROM entries e JOIN condition_code x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#clinicalStatus>', c.status FROM entries e JOIN condition c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#verificationStatus>', c.verification FROM entries e JOIN condition c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#abatementDate>', c.abatement FROM entries e JOIN condition c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#onsetDate>', c.onset FROM entries e JOIN condition c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN condition c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN condition c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN condition_member m ON m.entry = e.entry
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#conditionName>', v.name FROM members mv JOIN condition_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#conditionCode>', x.code FROM members mv JOIN condition_member_values_code x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#clinicalStatus>', v.status FROM members mv JOIN condition_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#verificationStatus>', v.verification FROM members mv JOIN condition_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#abatementDate>', v.abatement FROM members mv JOIN condition_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#onsetDate>', v.onset FROM members mv JOIN condition_member_values v USING (entry, member)
-    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', x.property
-      FROM members mv JOIN condition_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', x.written
-      FROM members mv JOIN condition_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-onsetDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.onset_written
-      FROM entries e JOIN condition c ON c.entry = e.entry
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-abatementDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.abatement_written
-      FROM entries e JOIN condition c ON c.entry = e.entry),
-  made (s, p, o) AS (
-    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#ProblemOrDiagnosis>'
-    FROM entries
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
-      FROM members mv JOIN entries e ON e.entry = mv.entry
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
-                     '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>'
-      FROM members mv JOIN condition_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
-                     '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-onsetDate>'
-      FROM entries e JOIN condition c ON c.entry = e.entry WHERE c.onset_written IS NOT NULL
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-onsetDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#onsetDate>'
-      FROM entries e JOIN condition c ON c.entry = e.entry WHERE c.onset_written IS NOT NULL
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
-                     '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-abatementDate>'
-      FROM entries e JOIN condition c ON c.entry = e.entry WHERE c.abatement_written IS NOT NULL
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-abatementDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#abatementDate>'
-      FROM entries e JOIN condition c ON c.entry = e.entry WHERE c.abatement_written IS NOT NULL)
-SELECT said.s AS s, said.p AS p, o.nt AS o FROM said JOIN term o ON o.id = said.o
-UNION ALL SELECT s, p, o FROM made
+SELECT s, p, o FROM condition_triples

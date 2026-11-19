@@ -14,7 +14,10 @@
 --
 -- Screens. A view's `.sql` holds its screen: the view as tables a list question reads a page of. It is in four parts,
 -- each opened by a line `-- part: NAME`, and each but triples run as a script:
---   tables   makes the screen's tables, once, after this file.
+--   tables   makes the screen's tables, once, after this file, and two views of them that questions read in place of
+--            the view's file: `<name>_triples`, the statements the view makes, as s, p and o, and `<name>_shown`,
+--            a row for each record the view shows in an entry, with `file` the view's address, `type` the entry's
+--            class, `entry` as the view's file names it and `label` its label's term id.
 --   fill     works out the entries the run fills, once, into a temporary table of its own, then deletes their rows
 --            and gives them again from the kept and derived statements alone. The entries a run fills are each in
 --            scope; each a record in scope is in now; each one was in when the screen was last filled, which the
@@ -37,9 +40,10 @@
 --   finish   gives, for the same entries, the columns that read the labels output or another screen, once the labels
 --            are made. Until labels.rq has a `.sql`, the labels output is the rdfs:label statements in `quad`, which
 --            labels.rq makes from the view graphs.
---   triples  one statement giving the triples the view's CONSTRUCT gives, as s, p and o, from the screen's tables
---            alone. An entry is named as the derived state names it; a runtime writing the view's file names it as
---            N13 says.
+--   triples  one statement giving the triples the view's CONSTRUCT gives, as s, p and o: a read of `<name>_triples`,
+--            from the screen's tables alone. An entry is named as the derived state names it; a runtime writing the
+--            view's file names it as N13 says, and a question that reads the view's statements, as What it shows does,
+--            names an entry and the nodes after it under the address of the view that gives the entry its members.
 -- A screen table has one row per entry. A column holds a term's id, or the N-Triples text of a value the view makes,
 -- such as the entry as its view names it, from the layout's address for the view; a fill fails, by that column's NOT
 -- NULL, where the layout gives the view no address or two. A column takes min() of a property only where the shapes
@@ -72,7 +76,9 @@
 -- them does, without running the `.sql`, which would read the empty `asked` as the whole pod. A question whose `.rq`
 -- binds no ?record in its outermost group, as the reports and notes, variants, variant interpretations and person
 -- questions, reads no `asked`: a runtime never binds it to a record nor short-circuits it, and always runs it whole,
--- as the `.rq` bound to any record, one the pod lacks too, gives the rows it gives unbound.
+-- as the `.rq` bound to any record, one the pod lacks too, gives the rows it gives unbound, unless the `.rq` gives a
+-- ?record column, as an entry's review does for the records a finding names: a binding would add the record to each row
+-- that names none, so a runtime never binds it either.
 
 -- Each term the pod's statements use, once. `nt` is its N-Triples form as Oxigraph writes it, a literal in its
 -- canonical form, so two terms are one exactly when their `nt` is. `kind` ranks it as SPARQL's ORDER BY does, after

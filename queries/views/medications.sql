@@ -158,6 +158,92 @@ CREATE TABLE medication_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+-- The statements the view makes, as s, p and o in N-Triples, the entries and the nodes named after them as the
+-- derived state names them.
+CREATE VIEW medication_triples (s, p, o) AS
+WITH
+  entries (s, entry) AS (SELECT e.nt, c.entry FROM medication c JOIN term e ON e.id = c.entry),
+  members (s, node, entry, member) AS (SELECT mv.node, mv.node, mv.entry, mv.member FROM medication_member_values mv),
+  said (s, p, o) AS (
+    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#drugName>', c.name FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#userSelectedCode>', c.selected FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#dosageInstructionText>', c.dosage FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', c.narrative FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', c.status FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#lifecycle>', c.lifecycle FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#medicationUseEndDate>', c.ended FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#medicationUseStartDate>', c.started FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#prescriptionWrittenDate>', c.written FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#rxNormCode>', x.code FROM entries e JOIN medication_code x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#ndcCode>', x.code FROM entries e JOIN medication_ndc x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#prescribedOrReported>', x.code FROM entries e JOIN medication_intent x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN medication_member m ON m.entry = e.entry
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#drugName>', v.name FROM members mv JOIN medication_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#userSelectedCode>', v.selected FROM members mv JOIN medication_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', v.status FROM members mv JOIN medication_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#dosageInstructionText>', v.dosage FROM members mv JOIN medication_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', v.narrative FROM members mv JOIN medication_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#medicationUseStartDate>', v.started FROM members mv JOIN medication_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#prescriptionWrittenDate>', v.written FROM members mv JOIN medication_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#medicationUseEndDate>', v.ended FROM members mv JOIN medication_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#prescribedOrReported>', v.intent FROM members mv JOIN medication_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#rxNormCode>', x.code FROM members mv JOIN medication_member_values_code x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#ndcCode>', x.code FROM members mv JOIN medication_member_values_ndc x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reasonCondition>', x.record FROM members mv JOIN medication_member_values_reason_condition x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reasonCode>', x.code FROM members mv JOIN medication_member_values_reason_code x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reasonCodeInOtherSystem>', x.code FROM members mv JOIN medication_member_values_reason_other_system x USING (entry, member)
+    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', x.property
+      FROM members mv JOIN medication_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', x.written
+      FROM members mv JOIN medication_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseStartDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.started_written
+      FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-prescriptionWrittenDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.written_written
+      FROM entries e JOIN medication c ON c.entry = e.entry
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseEndDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.ended_written
+      FROM entries e JOIN medication c ON c.entry = e.entry),
+  made (s, p, o) AS (
+    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication>'
+    FROM entries
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
+      FROM members mv JOIN entries e ON e.entry = mv.entry
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
+                     '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>'
+      FROM members mv JOIN medication_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>', '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseStartDate>'
+      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.started_written IS NOT NULL
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseStartDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#medicationUseStartDate>'
+      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.started_written IS NOT NULL
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>', '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-prescriptionWrittenDate>'
+      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.written_written IS NOT NULL
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-prescriptionWrittenDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#prescriptionWrittenDate>'
+      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.written_written IS NOT NULL
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>', '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseEndDate>'
+      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.ended_written IS NOT NULL
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseEndDate>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#medicationUseEndDate>'
+      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.ended_written IS NOT NULL)
+SELECT said.s AS s, said.p AS p, o.nt AS o FROM said JOIN term o ON o.id = said.o
+UNION ALL SELECT s, p, o FROM made;
+-- Each record the view shows in an entry, `file` the view's address, `entry` as the view names it, `label` the
+-- entry's label's term id.
+CREATE VIEW medication_shown (file, type, entry, label, record) AS
+SELECT '<' || k.address || '>', '<https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication>', e.iri, e.label, m.record
+FROM medication_terms k CROSS JOIN medication e CROSS JOIN medication_member m ON m.entry = e.entry;
+
 INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
   ('medication', 'sqlite_autoindex_medication_1', '1500 1'),
   ('medication', 'sqlite_autoindex_medication_2', '1500 1'),
@@ -397,80 +483,4 @@ SELECT records.entry,
 FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
-WITH
-  entries (s, entry) AS (SELECT e.nt, c.entry FROM medication c JOIN term e ON e.id = c.entry),
-  members (s, node, entry, member) AS (SELECT mv.node, mv.node, mv.entry, mv.member FROM medication_member_values mv),
-  said (s, p, o) AS (
-    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#drugName>', c.name FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#userSelectedCode>', c.selected FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#dosageInstructionText>', c.dosage FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', c.narrative FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', c.status FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#lifecycle>', c.lifecycle FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#medicationUseEndDate>', c.ended FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#medicationUseStartDate>', c.started FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#prescriptionWrittenDate>', c.written FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#rxNormCode>', x.code FROM entries e JOIN medication_code x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#ndcCode>', x.code FROM entries e JOIN medication_ndc x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#prescribedOrReported>', x.code FROM entries e JOIN medication_intent x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN medication_member m ON m.entry = e.entry
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#drugName>', v.name FROM members mv JOIN medication_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#userSelectedCode>', v.selected FROM members mv JOIN medication_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', v.status FROM members mv JOIN medication_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#dosageInstructionText>', v.dosage FROM members mv JOIN medication_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', v.narrative FROM members mv JOIN medication_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#medicationUseStartDate>', v.started FROM members mv JOIN medication_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#prescriptionWrittenDate>', v.written FROM members mv JOIN medication_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#medicationUseEndDate>', v.ended FROM members mv JOIN medication_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#prescribedOrReported>', v.intent FROM members mv JOIN medication_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#rxNormCode>', x.code FROM members mv JOIN medication_member_values_code x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#ndcCode>', x.code FROM members mv JOIN medication_member_values_ndc x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reasonCondition>', x.record FROM members mv JOIN medication_member_values_reason_condition x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reasonCode>', x.code FROM members mv JOIN medication_member_values_reason_code x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reasonCodeInOtherSystem>', x.code FROM members mv JOIN medication_member_values_reason_other_system x USING (entry, member)
-    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', x.property
-      FROM members mv JOIN medication_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', x.written
-      FROM members mv JOIN medication_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseStartDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.started_written
-      FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-prescriptionWrittenDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.written_written
-      FROM entries e JOIN medication c ON c.entry = e.entry
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseEndDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.ended_written
-      FROM entries e JOIN medication c ON c.entry = e.entry),
-  made (s, p, o) AS (
-    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#PrescribedOrReportedMedication>'
-    FROM entries
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
-      FROM members mv JOIN entries e ON e.entry = mv.entry
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
-                     '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>'
-      FROM members mv JOIN medication_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>', '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseStartDate>'
-      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.started_written IS NOT NULL
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseStartDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#medicationUseStartDate>'
-      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.started_written IS NOT NULL
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>', '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-prescriptionWrittenDate>'
-      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.written_written IS NOT NULL
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-prescriptionWrittenDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#prescriptionWrittenDate>'
-      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.written_written IS NOT NULL
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>', '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseEndDate>'
-      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.ended_written IS NOT NULL
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-medicationUseEndDate>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', '<https://ns.cascadeprotocol.org/cascade#medicationUseEndDate>'
-      FROM entries e JOIN medication c ON c.entry = e.entry WHERE c.ended_written IS NOT NULL)
-SELECT said.s AS s, said.p AS p, o.nt AS o FROM said JOIN term o ON o.id = said.o
-UNION ALL SELECT s, p, o FROM made
+SELECT s, p, o FROM medication_triples

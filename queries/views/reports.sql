@@ -157,6 +157,76 @@ CREATE TABLE report_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+-- The statements the view makes, as s, p and o in N-Triples, the entries and the nodes named after them as the
+-- derived state names them.
+CREATE VIEW report_triples (s, p, o) AS
+WITH
+  entries (s, entry) AS (SELECT e.nt, c.entry FROM report c JOIN term e ON e.id = c.entry),
+  members (s, node, entry, member) AS (SELECT mv.node, mv.node, mv.entry, mv.member FROM report_member_values mv),
+  said (s, p, o) AS (
+    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportName>', c.name FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportEffectiveTime>', c.date FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportIssuedTime>', c.issued FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportConclusion>', c.conclusion FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', c.narrative FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<http://www.w3.org/ns/prov#wasAttributedTo>', c.organization FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportCode>', x.code FROM entries e JOIN report_code x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportCodeInOtherSystem>', x.code FROM entries e JOIN report_other_code x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportCategory>', x.category FROM entries e JOIN report_category x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportConclusionCode>', x.code FROM entries e JOIN report_conclusion_code x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<http://purl.obolibrary.org/obo/RO_0002351>', x.result_entry FROM entries e JOIN report_result x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', c.status FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN report_member m ON m.entry = e.entry
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-reportEffectiveTime>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.date_written
+      FROM entries e JOIN report c ON c.entry = e.entry
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportName>', v.name FROM members mv JOIN report_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportEffectiveTime>', v.date FROM members mv JOIN report_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportIssuedTime>', v.issued FROM members mv JOIN report_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportConclusion>', v.conclusion FROM members mv JOIN report_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', v.narrative FROM members mv JOIN report_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<http://www.w3.org/ns/prov#wasAttributedTo>', v.organization FROM members mv JOIN report_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', v.status FROM members mv JOIN report_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportCode>', x.value FROM members mv JOIN report_member_values_code x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportCodeInOtherSystem>', x.value FROM members mv JOIN report_member_values_other_code x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportCategory>', x.value FROM members mv JOIN report_member_values_category x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportConclusionCode>', x.value FROM members mv JOIN report_member_values_conclusion_code x USING (entry, member)
+    UNION ALL SELECT mv.node, '<http://purl.obolibrary.org/obo/RO_0002351>', x.value FROM members mv JOIN report_member_values_result x USING (entry, member)
+    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', x.property
+      FROM members mv JOIN report_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
+                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', x.written
+      FROM members mv JOIN report_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property),
+  made (s, p, o) AS (
+    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#DiagnosticReport>'
+    FROM entries
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
+      FROM members mv JOIN entries e ON e.entry = mv.entry
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
+                     '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
+                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>'
+      FROM members mv JOIN report_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
+                     '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-reportEffectiveTime>'
+      FROM entries e JOIN report c ON c.entry = e.entry WHERE c.date_written IS NOT NULL
+    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-reportEffectiveTime>',
+                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>',
+                     '<https://ns.cascadeprotocol.org/cascade#reportEffectiveTime>'
+      FROM entries e JOIN report c ON c.entry = e.entry WHERE c.date_written IS NOT NULL)
+SELECT said.s AS s, said.p AS p, o.nt AS o FROM said JOIN term o ON o.id = said.o
+UNION ALL SELECT s, p, o FROM made;
+-- Each record the view shows in an entry, `file` the view's address, `entry` as the view names it, `label` the
+-- entry's label's term id.
+CREATE VIEW report_shown (file, type, entry, label, record) AS
+SELECT '<' || k.address || '>', '<https://ns.cascadeprotocol.org/cascade#DiagnosticReport>', e.iri, e.label, m.record
+FROM report_terms k CROSS JOIN report e CROSS JOIN report_member m ON m.entry = e.entry;
+
 INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
   ('report', 'sqlite_autoindex_report_1', '150 1'),
   ('report', 'sqlite_autoindex_report_2', '150 1'),
@@ -413,64 +483,4 @@ SELECT records.entry,
 FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
-WITH
-  entries (s, entry) AS (SELECT e.nt, c.entry FROM report c JOIN term e ON e.id = c.entry),
-  members (s, node, entry, member) AS (SELECT mv.node, mv.node, mv.entry, mv.member FROM report_member_values mv),
-  said (s, p, o) AS (
-    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportName>', c.name FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportEffectiveTime>', c.date FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportIssuedTime>', c.issued FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportConclusion>', c.conclusion FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', c.narrative FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<http://www.w3.org/ns/prov#wasAttributedTo>', c.organization FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportCode>', x.code FROM entries e JOIN report_code x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportCodeInOtherSystem>', x.code FROM entries e JOIN report_other_code x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportCategory>', x.category FROM entries e JOIN report_category x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#reportConclusionCode>', x.code FROM entries e JOIN report_conclusion_code x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<http://purl.obolibrary.org/obo/RO_0002351>', x.result_entry FROM entries e JOIN report_result x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', c.status FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN report_member m ON m.entry = e.entry
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-reportEffectiveTime>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', c.date_written
-      FROM entries e JOIN report c ON c.entry = e.entry
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportName>', v.name FROM members mv JOIN report_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportEffectiveTime>', v.date FROM members mv JOIN report_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportIssuedTime>', v.issued FROM members mv JOIN report_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportConclusion>', v.conclusion FROM members mv JOIN report_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#narrativeText>', v.narrative FROM members mv JOIN report_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<http://www.w3.org/ns/prov#wasAttributedTo>', v.organization FROM members mv JOIN report_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', v.status FROM members mv JOIN report_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportCode>', x.value FROM members mv JOIN report_member_values_code x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportCodeInOtherSystem>', x.value FROM members mv JOIN report_member_values_other_code x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportCategory>', x.value FROM members mv JOIN report_member_values_category x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#reportConclusionCode>', x.value FROM members mv JOIN report_member_values_conclusion_code x USING (entry, member)
-    UNION ALL SELECT mv.node, '<http://purl.obolibrary.org/obo/RO_0002351>', x.value FROM members mv JOIN report_member_values_result x USING (entry, member)
-    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>', x.property
-      FROM members mv JOIN report_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>',
-                     '<https://ns.cascadeprotocol.org/cascade#timeAsWritten>', x.written
-      FROM members mv JOIN report_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property),
-  made (s, p, o) AS (
-    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#DiagnosticReport>'
-    FROM entries
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
-      FROM members mv JOIN entries e ON e.entry = mv.entry
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
-                     '<' || substr(mv.node, 2, length(mv.node) - 2) || '-padded-' || CASE WHEN instr(p.lex, '#') > 0
-                       THEN substr(p.lex, instr(p.lex, '#') + 1) ELSE '' END || '>'
-      FROM members mv JOIN report_member_values_padded x USING (entry, member) JOIN term p ON p.id = x.property
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#paddedDateTime>',
-                     '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-reportEffectiveTime>'
-      FROM entries e JOIN report c ON c.entry = e.entry WHERE c.date_written IS NOT NULL
-    UNION ALL SELECT '<' || substr(e.s, 2, length(e.s) - 2) || '-padded-reportEffectiveTime>',
-                     '<https://ns.cascadeprotocol.org/cascade#paddedDateTimeProperty>',
-                     '<https://ns.cascadeprotocol.org/cascade#reportEffectiveTime>'
-      FROM entries e JOIN report c ON c.entry = e.entry WHERE c.date_written IS NOT NULL)
-SELECT said.s AS s, said.p AS p, o.nt AS o FROM said JOIN term o ON o.id = said.o
-UNION ALL SELECT s, p, o FROM made
+SELECT s, p, o FROM report_triples
