@@ -131,6 +131,22 @@ CREATE TABLE allergy_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('allergy', 'sqlite_autoindex_allergy_1', '675 1'),
+  ('allergy', 'sqlite_autoindex_allergy_2', '675 1'),
+  ('allergy_code', 'allergy_code', '675 1 1'),
+  ('allergy_member', 'allergy_member', '750 2 1'),
+  ('allergy_member', 'allergy_member_record', '750 1'),
+  ('allergy_member_values', 'allergy_member_values', '750 2 1'),
+  ('allergy_member_values_code', 'allergy_member_values_code', '750 2 1 1'),
+  ('allergy_member_values_padded', 'allergy_member_values_padded', '112 1 1 1'),
+  ('allergy_member_values_reaction_code', 'allergy_member_values_reaction_code', '112 1 1 1'),
+  ('allergy_member_values_reaction_text', 'allergy_member_values_reaction_text', '112 1 1 1'),
+  ('allergy_reaction_code', 'allergy_reaction_code', '112 1 1'),
+  ('allergy_reaction_text', 'allergy_reaction_text', '112 1 1'),
+  ('allergy_source', 'allergy_source', '750 2 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS allergy_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM allergy_filled;
@@ -203,7 +219,7 @@ WITH
   named (entry, iri) AS (
     SELECT stated.entry, CASE WHEN substr(e.lex, 1, 18) = 'urn:cascade:entry:'
                               THEN k.address || '#' || substr(e.lex, 19) ELSE e.lex END
-    FROM allergy_terms k CROSS JOIN allergy_stated stated JOIN term e ON e.id = stated.entry)
+    FROM allergy_terms k CROSS JOIN allergy_stated stated CROSS JOIN term e ON e.id = stated.entry)
 SELECT stated.entry, '<' || named.iri || '>',
   CASE WHEN t_name.id IS NULL THEN '0' ELSE t_name.kind || hex(coalesce(t_name.lex, '')) END || '.' || '2' || hex(named.iri) || '.',
   stated.lead, stated.status_from, stated.name, stated.category, stated.onset, stated.severity, stated.status, stated.criticality, stated.onset_written
@@ -325,7 +341,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH

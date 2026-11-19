@@ -639,7 +639,8 @@ SCHEMA_TABLES = {"term", "quad", "scope", "asked", "ledger"}
 
 def screen_tables(connection):
     """The rows of each table a screen made, by table, each table's rows sorted."""
-    names = [name for (name,) in connection.execute("SELECT name FROM sqlite_schema WHERE type = 'table' ORDER BY name")
+    names = [name for (name,) in connection.execute(
+        r"SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite\_%' ESCAPE '\' ORDER BY name")
              if name not in SCHEMA_TABLES]
     return {name: sorted(connection.execute(f"SELECT * FROM {name}").fetchall(), key=repr) for name in names}
 

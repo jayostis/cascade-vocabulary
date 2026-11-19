@@ -43,6 +43,73 @@ def screens():
     return [sql_text(relative) for relative in ported() if relative.startswith("queries/views/")]
 
 
+WHOLE = re.compile(r"^SEARCH \w+ USING (?:COVERING )?INDEX (?:quad_pos \(p=\?|quad_osp \(o[<>]=?\?)(?: AND o[<>]=?\?)*\)$")
+
+
+def whole_scans(run, text):
+    """The b-trees of `term` and `quad`, each by its name, that a statement's bytecode reads from its first row or its
+    last, in the order it opens them. EXPLAIN QUERY PLAN names a scan by the alias the statement gives the table, so
+    `SCAN e` is no scan of `term` to a pattern over its detail; the cursor's root page is."""
+    roots = dict(run("SELECT rootpage, name FROM sqlite_schema WHERE tbl_name IN ('term', 'quad') AND rootpage > 0"))
+    reading, found = {}, []
+    for row in run("EXPLAIN " + text):
+        _, opcode, cursor, root, database = row[:5]
+        if opcode in ("OpenRead", "ReopenIdx"):
+            reading[cursor] = roots.get(root) if database == 0 else None
+        elif opcode in ("Rewind", "Last") and reading.get(cursor):
+            found.append(reading[cursor])
+    return found
+
+
+def whole_searches(plan):
+    """The steps, of one statement's EXPLAIN QUERY PLAN given as (id, parent, detail) rows, that search `quad` by its
+    predicate alone or by it and a range of its object, in a loop another loop runs once for each row of: not the first
+    loop of its select, or inside a subquery run for each row of the statement's."""
+    firsts, by_id = {}, {step: (parent, detail) for step, parent, detail in plan}
+    for step, parent, _ in plan:
+        firsts.setdefault(parent, step)
+    found = []
+    for step, parent, detail in plan:
+        inside, above = firsts[parent] != step, parent
+        while above in by_id:
+            inside = inside or by_id[above][1].startswith("CORRELATED")
+            above = by_id[above][0]
+        if WHOLE.match(detail) and inside:
+            found.append(detail)
+    return found
+
+
+def screen_plans(engine):
+    """The plan of each statement of each screen's fill and finish, and of each screen's triples, by the screen, the
+    part and the statement's place in it, each as its EXPLAIN QUERY PLAN rows and the b-trees it scans, as whole_scans
+    gives them. The pod is empty, made by queries/statements.sql and each screen's tables part alone on the engine, each
+    statement planned just before it runs; its plans do not depend on what the pod holds."""
+    if engine.startswith("apsw"):
+        connection = apsw.Connection(":memory:")
+        for name, function in sql.FUNCTIONS.items():
+            connection.create_scalar_function(name, function, -1, deterministic=True)
+        connection.execute(sql.SCHEMA.read_text(encoding="utf-8"))
+        script = run = connection.execute
+    else:
+        connection = sql.connected()
+        script, run = connection.executescript, connection.execute
+    views = {relative: sql.parts(sql_text(relative)) for relative in ported() if relative.startswith("queries/views/")}
+    for found in views.values():
+        script(found["tables"])
+    def planned(text):
+        return [(row[0], row[1], row[3]) for row in run("EXPLAIN QUERY PLAN " + text)], whole_scans(run, text)
+
+    plans = {}
+    for part in ("fill", "finish"):
+        for relative, found in views.items():
+            for place, text in enumerate(sql.statements(found[part])):
+                plans[relative, part, place] = planned(text)
+                run(text)
+    for relative, found in views.items():
+        plans[relative, "triples", 0] = planned(found["triples"])
+    return plans
+
+
 def list_questions():
     """Each ported question whose `.sql` takes a page size."""
     return [relative for relative in ported() if ":page_size" in sql_text(relative)]
@@ -582,6 +649,61 @@ class TestSqlBesideEachQuery:
             record_property("sqlite_version", sqlite3.sqlite_version)
             assert sqlite3.sqlite_version_info >= sql.MINIMUM_VERSION, sqlite3.sqlite_version
 
+        @pytest.mark.parametrize("engine", ["sqlite3", "apsw", "apsw-floor"])
+        def test_plans_each_screen_statement_from_the_shipped_statistics_with_no_whole_predicate_searched_in_a_loop(self, engine):
+            """plans each screen statement, on the statistics the schema and the screens ship and no ANALYZE, with no scan of `quad` or `term` and no search of a whole predicate inside a loop
+
+            SQLite plans a statement from the statistics it holds, and with none it plans as if every table held a million
+            rows: one fill ran 79 s at 15,000 records against 0.14 s analyzed, by searching `quad` by its predicate alone
+            once for each row of another table, and a screen table with none drove a statement from `term`. The pod here is
+            empty and has had no ANALYZE; every statement of each screen's fill and finish, and its triples, is planned on
+            SQLite as the check ships it and on 3.54.1 through apsw. None reads `quad` or `term` from end to end, under
+            whatever alias it names the table, or searches `quad` by a predicate alone, or by it and a range of an object,
+            in a loop a surrounding loop runs once for each row of, or in a subquery run for each row of its statement's.
+            """
+            if engine == "apsw":
+                assert apsw.sqlite_lib_version() == STRICTEST_SQLITE
+            if engine == "apsw-floor":
+                if apsw.sqlite_lib_version() == STRICTEST_SQLITE:
+                    pytest.skip("the floor run is the CI step that installs an older apsw")
+                assert tuple(map(int, apsw.sqlite_lib_version().split("."))) >= sql.MINIMUM_VERSION
+            found = [f"{view} {part} #{place}: {detail}" for (view, part, place), (plan, scans) in screen_plans(engine).items()
+                     for detail in [f"scans {name}" for name in scans] + whole_searches(plan)]
+            ran = sqlite3.sqlite_version if engine == "sqlite3" else f"apsw {apsw.sqlite_lib_version()}"
+            assert found == [], f"on SQLite {ran}"
+
+        def test_ships_a_statistics_row_for_each_index_of_the_schema_and_for_each_of_its_tables_with_none(self):
+            """ships a statistics row for each index queries/statements.sql makes, and for each table of it with none
+
+            The rows are loaded by the schema's last statement, so a connection that has made it and run no ANALYZE holds
+            them. An index, or a table with no index, the schema makes with no row fails, as does a row for neither.
+            """
+            connection = sql.connected()
+            wanted = {(table, index) for table, index in connection.execute(
+                "SELECT tbl_name, name FROM sqlite_schema WHERE type = 'index'")}
+            wanted |= {(name, name if without_rowid else None) for name, without_rowid in connection.execute(
+                "SELECT name, wr FROM pragma_table_list WHERE schema = 'main' AND name NOT LIKE 'sqlite_%'")
+                if without_rowid or not any(table == name for table, _ in wanted)}
+            assert set(connection.execute("SELECT tbl, idx FROM sqlite_stat1")) == wanted
+
+        def test_ships_a_statistics_row_for_each_index_of_each_screen_and_for_each_of_its_tables_with_none(self):
+            """ships a statistics row for each index each screen's tables part makes, and for each table of it with none
+
+            Each screen's tables part ends with its rows and the statement that loads them, so a connection that has made
+            the schema and every part, and run no ANALYZE, holds a row for each index and each table with none, the
+            schema's too. An index, or a table with no index, a screen makes with no row fails, as does a row for neither.
+            """
+            connection = sql.connected()
+            for text in screens():
+                connection.executescript(sql.parts(text)["tables"])
+            wanted = {(table, index) for table, index in connection.execute(
+                "SELECT tbl_name, name FROM sqlite_schema WHERE type = 'index'")}
+            wanted |= {(name, name if without_rowid else None) for name, without_rowid in connection.execute(
+                "SELECT name, wr FROM pragma_table_list WHERE schema = 'main' AND type = 'table' "
+                "AND name NOT LIKE 'sqlite_%'")
+                if without_rowid or not any(table == name for table, _ in wanted)}
+            assert set(connection.execute("SELECT tbl, idx FROM sqlite_stat1")) == wanted
+
         @pytest.mark.parametrize("view, fixture", [
             ("conditions", "conditions-view"), ("lab-results", "lab-results-view"), ("allergies", "allergies-view"),
             ("medications", "medications-view"), ("medication-dispenses", "medication-dispenses-view"),
@@ -868,6 +990,47 @@ class TestTheSqlCheck:
             "unexpected: ?s=<urn:x:a> ?p=<urn:x:b> ?o=<urn:x:c>"]
         assert [record for record in ("months", "years")
                 if sum(f"missing: ?s=<urn:x:{record}> ?p={start}" in line for line in found) == 1] == ["months", "years"]
+
+    def test_reports_a_search_of_quad_by_a_predicate_alone_or_a_range_of_its_object_in_a_loop_and_no_other(self):
+        """reports a search of `quad` by a predicate alone, or by it and a range of an object, in a loop, and no other
+
+        A search of `quad` by its predicate alone, or by it and a range of its object, is reported as the second loop of
+        a select, and in a subquery run for each row of its statement's, but not as the first loop, nor in a subquery
+        run once; a search by an object alone or a graph alone, which the statistics give a handful of rows a value, or
+        by a predicate, an object and a subject, is reported nowhere.
+        """
+        by_predicate = "SEARCH q USING COVERING INDEX quad_pos (p=?)"
+        ranged = "SEARCH q USING COVERING INDEX quad_pos (p=? AND o>? AND o<?)"
+        assert whole_searches([(2, 0, by_predicate), (6, 0, "SEARCH s USING INTEGER PRIMARY KEY (rowid=?)")]) == []
+        assert whole_searches([(2, 0, "SCAN k"), (6, 0, by_predicate)]) == [by_predicate]
+        assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_pos (p=? AND o>?)")]) \
+            == ["SEARCH q USING COVERING INDEX quad_pos (p=? AND o>?)"]
+        assert whole_searches([(2, 0, "SCAN k"), (6, 0, ranged)]) == [ranged]
+        assert whole_searches([(2, 0, "SCAN scope"), (5, 0, "CORRELATED SCALAR SUBQUERY 3"), (8, 5, by_predicate)]) \
+            == [by_predicate]
+        assert whole_searches([(2, 0, "SCAN scope"), (5, 0, "SCALAR SUBQUERY 3"), (8, 5, by_predicate)]) == []
+        assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o=?)"),
+                               (9, 0, "SEARCH q USING COVERING INDEX quad_g (g=?)")]) == []
+        assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o=? AND s=? AND p=?)")]) == []
+        assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o>? AND o<?)")]) \
+            == ["SEARCH q USING COVERING INDEX quad_osp (o>? AND o<?)"]
+
+    def test_reports_a_scan_of_quad_or_term_under_whatever_alias_the_statement_names_it_by(self):
+        """reports a scan of `quad` or `term` under whatever alias the statement names it by, and no search of either
+
+        The plan of `SELECT e.nt FROM term e` names its scan `SCAN e`, so a pattern over the plan's detail takes it for a
+        scan of no table of the pod's; the bytecode's cursor on the table's root page, rewound, is a scan under any name.
+        A search by the table's key, and a scan of a table that is neither, are not reported.
+        """
+        connection = sql.connected()
+        connection.execute("CREATE TABLE other (x INTEGER)")
+        for text, alias in (("SELECT e.nt FROM term e", "e"), ("SELECT p.s FROM quad p", "p"),
+                            ("SELECT k.x FROM other k CROSS JOIN term t", "t")):
+            assert any(row[3].startswith(f"SCAN {alias}") for row in connection.execute("EXPLAIN QUERY PLAN " + text))
+            assert whole_scans(connection.execute, text) != [], text
+        for text in ("SELECT t.id FROM term t WHERE t.nt = 'x'", "SELECT q.o FROM quad q WHERE q.s = 1 AND q.p = 2",
+                     "SELECT x FROM other"):
+            assert whole_scans(connection.execute, text) == [], text
 
     def test_compares_rows_an_order_by_ties_as_a_multiset_and_the_runs_it_orders_in_order(self):
         """compares rows an ORDER BY ties as a multiset, and the runs of rows it orders in their order

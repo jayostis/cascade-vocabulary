@@ -118,6 +118,20 @@ CREATE TABLE note_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('note', 'sqlite_autoindex_note_1', '150 1'),
+  ('note', 'sqlite_autoindex_note_2', '150 1'),
+  ('note_member', 'note_member', '150 1 1'),
+  ('note_member', 'note_member_record', '150 1'),
+  ('note_member_values', 'note_member_values', '150 1 1'),
+  ('note_member_values_padded', 'note_member_values_padded', '112 1 1 1 1'),
+  ('note_member_values_type_code', 'note_member_values_type_code', '150 1 1 1'),
+  ('note_member_values_type_other_code', 'note_member_values_type_other_code', '112 1 1 1'),
+  ('note_source', 'note_source', '150 1 1'),
+  ('note_type_code', 'note_type_code', '150 1 1'),
+  ('note_type_other_code', 'note_type_other_code', '112 1 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS note_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM note_filled;
@@ -183,7 +197,7 @@ WITH
   named (entry, iri) AS (
     SELECT stated.entry, CASE WHEN substr(e.lex, 1, 18) = 'urn:cascade:entry:'
                               THEN k.address || '#' || substr(e.lex, 19) ELSE e.lex END
-    FROM note_terms k CROSS JOIN note_stated stated JOIN term e ON e.id = stated.entry)
+    FROM note_terms k CROSS JOIN note_stated stated CROSS JOIN term e ON e.id = stated.entry)
 SELECT stated.entry, '<' || named.iri || '>',
   replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(hex(timed.day), '0', 'p'), '1', 'o'), '2', 'n'), '3', 'm'), '4', 'l'), '5', 'k'), '6', 'j'), '7', 'i'), '8', 'h'), '9', 'g'), 'A', 'f'), 'B', 'e'), 'C', 'd'), 'D', 'c'), 'E', 'b'), 'F', 'a') || '~'
   || replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(hex(timed.time), '0', 'p'), '1', 'o'), '2', 'n'), '3', 'm'), '4', 'l'), '5', 'k'), '6', 'j'), '7', 'i'), '8', 'h'), '9', 'g'), 'A', 'f'), 'B', 'e'), 'C', 'd'), 'D', 'c'), 'E', 'b'), 'F', 'a') || '~'
@@ -310,7 +324,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH

@@ -126,3 +126,32 @@ CREATE TABLE ledger (
   built TEXT PRIMARY KEY,
   fingerprint TEXT NOT NULL
 ) STRICT;
+
+-- Planner statistics: the rows ANALYZE wrote for the tables above on a pod of 15,000 records, 986,560 statements, so
+-- every plan is the same in every runtime and at every size of pod. `scope` and `asked` have the one row a keyed run
+-- gives them, not the pod's: a screen's statements join what they read to `scope`, and a `scope` of the pod's size lets
+-- the plan read a predicate's whole range of `quad` and look `scope` up for each of them, a cost that grows with the
+-- pod on every keyed run. A table or index added above gets its row here.
+--
+-- A runtime loads the rows with `ANALYZE sqlite_schema` after it makes the indexes: a row for an index that does not
+-- exist is ignored, so a runtime that makes them after it loads the statements, as one that builds the pod in bulk
+-- does, plans on none of the `quad` rows. It never runs a full ANALYZE: written after a whole fill, a `scope` of the
+-- pod's size makes a keyed refill 21% slower, and on an empty pod it deletes every shipped row.
+--
+-- A screen's tables do not exist when this file is loaded, so each screen ships the rows for its own at the end of its
+-- `tables` part, followed by the same `ANALYZE sqlite_schema`. A table with none is planned as if it held a million
+-- rows and drives its statement from `term`: 175 whole scans of it in the screens' triples and the patient profile's
+-- fill. The counts are what ANALYZE wrote on the same pod after a whole fill. A table that pod leaves empty takes
+-- 112 rows, a tenth of the median of the eight `_member` tables it holds, and no more than its own screen's `_member`
+-- table holds: the kinds it leaves empty are rare, and any small count is what lets the planner start from them.
+ANALYZE sqlite_schema;
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('asked', NULL, '1'),
+  ('ledger', 'sqlite_autoindex_ledger_1', '1 1'),
+  ('quad', 'quad', '986560 8 1 1 1'),
+  ('quad', 'quad_g', '986560 21 5 1 1'),
+  ('quad', 'quad_osp', '986560 5 2 1 1'),
+  ('quad', 'quad_pos', '986560 7769 3 1 1'),
+  ('scope', NULL, '1'),
+  ('term', 'sqlite_autoindex_term_1', '306736 1');
+ANALYZE sqlite_schema;

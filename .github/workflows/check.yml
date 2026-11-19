@@ -27,6 +27,9 @@ jobs:
           python-version: '3.12'
       - run: python3 -m pip install -r requirements.txt
       - run: python3 -m pytest -n auto --dist loadgroup --durations=10 --junitxml=pytest-junit.xml
+      - name: plans on the SQLite floor
+        if: ${{ !cancelled() }}
+        run: python3 -m pip install apsw==3.44.0.0 && python3 -m pytest -n 0 -p no:randomly -k "plans_each_screen and floor"
       - uses: actions/checkout@v7
         if: ${{ !cancelled() }}
         with:

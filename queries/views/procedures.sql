@@ -111,6 +111,20 @@ CREATE TABLE procedure_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('procedure', 'sqlite_autoindex_procedure_1', '675 1'),
+  ('procedure', 'sqlite_autoindex_procedure_2', '675 1'),
+  ('procedure_code', 'procedure_code', '675 1 1'),
+  ('procedure_member', 'procedure_member', '750 2 1'),
+  ('procedure_member', 'procedure_member_record', '750 1'),
+  ('procedure_member_values', 'procedure_member_values', '750 2 1'),
+  ('procedure_member_values_code', 'procedure_member_values_code', '750 2 1 1'),
+  ('procedure_member_values_reason_code', 'procedure_member_values_reason_code', '112 1 1 1'),
+  ('procedure_member_values_reason_condition', 'procedure_member_values_reason_condition', '112 1 1 1'),
+  ('procedure_member_values_reason_other_system', 'procedure_member_values_reason_other_system', '112 1 1 1'),
+  ('procedure_source', 'procedure_source', '750 2 1');
+ANALYZE sqlite_schema;
+
 -- part: fill
 CREATE TEMP TABLE IF NOT EXISTS procedure_filled (entry INTEGER PRIMARY KEY) STRICT;
 DELETE FROM procedure_filled;
@@ -170,7 +184,7 @@ WITH
   named (entry, iri) AS (
     SELECT stated.entry, CASE WHEN substr(e.lex, 1, 18) = 'urn:cascade:entry:'
                               THEN k.address || '#' || substr(e.lex, 19) ELSE e.lex END
-    FROM procedure_terms k CROSS JOIN procedure_stated stated JOIN term e ON e.id = stated.entry)
+    FROM procedure_terms k CROSS JOIN procedure_stated stated CROSS JOIN term e ON e.id = stated.entry)
 SELECT stated.entry, '<' || named.iri || '>',
   replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(hex(coalesce(t_date.lex, '')), '0', 'p'), '1', 'o'), '2', 'n'), '3', 'm'), '4', 'l'), '5', 'k'), '6', 'j'), '7', 'i'), '8', 'h'), '9', 'g'), 'A', 'f'), 'B', 'e'), 'C', 'd'), 'D', 'c'), 'E', 'b'), 'F', 'a') || '~' || CASE WHEN t_name.id IS NULL THEN '0' ELSE t_name.kind || hex(coalesce(t_name.lex, '')) END || '.' || '2' || hex(named.iri) || '.',
   stated.lead, stated.status_from, stated.name, stated.narrative, stated.status, stated.date
@@ -279,7 +293,7 @@ SELECT records.entry,
     || coalesce(', ' || stated.hospitals, ''),
   r.lex || coalesce(' from ' || stated.document_shown, '') || coalesce(', retrieved ' || stated.retrieved_shown, '')
     || coalesce(', ' || stated.hospitals_shown, '')
-FROM records JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
+FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
 WITH
