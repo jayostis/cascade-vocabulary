@@ -1,10 +1,16 @@
 import hashlib
+import os
+import pickle
+import re
+import shutil
+import time
 from collections import Counter
 from functools import cache
 from pathlib import Path
 from time import perf_counter
 
 import pytest
+import rdflib
 from rdflib import OWL, RDF, RDFS, Graph, Literal, URIRef
 
 from contract import CASCADE, PROV, QUERIES, ROOT, built, derivations, named, query, questions
@@ -500,6 +506,7 @@ class TestChecksOfTheFixtureTools:
         @pytest.fixture(autouse=True)
         def a_store_of_its_own_and_a_run_outside_xdist(self, tmp_path, monkeypatch):
             monkeypatch.setattr(engines, "PARSES", tmp_path)
+            monkeypatch.setattr(engines, "FAILED_READS", 0)
             monkeypatch.delenv("PYTEST_XDIST_WORKER", raising=False)
             monkeypatch.delenv("PYTEST_XDIST_WORKER_COUNT", raising=False)
 
@@ -534,10 +541,102 @@ class TestChecksOfTheFixtureTools:
             assert engines.stored(text).is_file() and engines.read_stored(text) is None
 
         def test_reads_no_parse_from_a_file_it_cannot_read(self):
-            """reads no parse from a file it cannot read, as if none were stored"""
+            """reads no parse from a file it cannot read, or one a killed run left cut short, as if none were stored"""
             text = "SELECT ?s WHERE { ?s ?p ?o }"
             engines.stored(text).mkdir()
             assert engines.read_stored(text) is None
+            engines.stored(text).rmdir()
+            whole = pickle.dumps(engines.parse(text))
+            for cut in (b"", whole[: len(whole) // 2], whole[:-1]):
+                engines.stored(text).write_bytes(cut)
+                assert engines.read_stored(text) is None, len(cut)
+
+        def test_is_not_stopped_by_a_store_folder_removed_while_it_runs(self, monkeypatch):
+            """is not stopped by a store folder another run removed while it ran, and stores the parse again"""
+            texts = [f"SELECT ?s{n} WHERE {{ ?s ?p ?o }}" for n in range(2)]
+            real = engines.parse
+
+            def parse_after_the_folder_goes(text):
+                shutil.rmtree(engines.PARSES, ignore_errors=True)
+                return real(text)
+
+            monkeypatch.setattr(engines, "parse", parse_after_the_folder_goes)
+            engines.warm(texts, wait=0)
+            monkeypatch.setattr(engines, "parse", real)
+            engines.warm(texts, wait=0)
+            assert all(engines.stored(text).is_file() for text in texts)
+
+        @pytest.mark.parametrize("bad", [b"not a pickle", b"cnosuchmodule\nthing\n.", b"\x80\x04K"])
+        def test_replaces_a_stored_file_that_does_not_read_with_a_good_one(self, bad):
+            """replaces a stored file that does not read, whatever the error reading it raises, with a good one"""
+            text = "SELECT ?s WHERE { ?s ?p ?o }"
+            engines.stored(text).write_bytes(bad)
+            engines.warm([text], wait=0)
+            assert engines.stored(text).is_file() and engines.read_stored(text) is not None
+
+        def test_warns_once_naming_the_store_when_more_than_a_few_stored_reads_fail(self):
+            """warns once, naming the store, when more than a few stored reads fail in one process"""
+            texts = [f"SELECT ?s{n} WHERE {{ ?s ?p ?o }}" for n in range(8)]
+            for text in texts:
+                engines.stored(text).write_bytes(b"cut")
+            with pytest.warns(UserWarning, match=re.escape(str(engines.PARSES))) as warned:
+                for text in texts:
+                    assert engines.read_stored(text) is None
+            assert len(warned) == 1
+
+    class TestUseParseStore:
+        """`engines.use_parse_store()`"""
+
+        @pytest.fixture(autouse=True)
+        def the_store_put_back(self, monkeypatch):
+            monkeypatch.setattr(engines, "PARSES", engines.PARSES)
+
+        def test_puts_the_store_in_a_folder_of_the_one_it_is_given_the_same_folder_each_time(self, tmp_path):
+            """puts the store in a folder of the one it is given, the same folder each time"""
+            engines.use_parse_store(tmp_path)
+            first = engines.PARSES
+            assert first.parent == tmp_path and first.is_dir() and first.name.startswith("parses-")
+            engines.use_parse_store(tmp_path)
+            assert engines.PARSES == first
+
+        def test_puts_the_store_in_another_folder_when_the_version_of_rdflib_changes(self, tmp_path, monkeypatch):
+            """puts the store in another folder when the version of rdflib changes"""
+            engines.use_parse_store(tmp_path)
+            first = engines.PARSES
+            monkeypatch.setattr(rdflib, "__version__", rdflib.__version__ + ".other")
+            engines.use_parse_store(tmp_path)
+            assert engines.PARSES != first and engines.PARSES.parent == tmp_path
+
+        def test_puts_the_store_in_another_folder_when_engines_py_changes(self, tmp_path, monkeypatch):
+            """puts the store in another folder when engines.py, which rebuilds a parse, changes"""
+            engines.use_parse_store(tmp_path)
+            first = engines.PARSES
+            changed = tmp_path / "engines.py"
+            changed.write_bytes(Path(engines.__file__).read_bytes() + b"\n# changed\n")
+            monkeypatch.setattr(engines, "__file__", str(changed))
+            engines.use_parse_store(tmp_path)
+            assert engines.PARSES != first and engines.PARSES.parent == tmp_path
+
+        def test_removes_the_stores_of_other_keys_untouched_for_a_week_and_keeps_the_rest(self, tmp_path):
+            """removes the folders of other keys under the one it is given whose newest file is over seven days old, and keeps its own, the newer ones and whatever is no store"""
+            engines.use_parse_store(tmp_path)
+            kept = engines.PARSES / "a.pickle"
+            kept.write_bytes(b"kept")
+            for name, days in (("parses-old", 8), ("parses-live", 1)):
+                (tmp_path / name).mkdir()
+                file = tmp_path / name / "b.pickle"
+                file.write_bytes(b"other")
+                when = time.time() - days * 86400
+                os.utime(file, (when, when))
+            (tmp_path / "parses-mixed").mkdir()
+            (tmp_path / "parses-mixed" / "old.pickle").write_bytes(b"x")
+            os.utime(tmp_path / "parses-mixed" / "old.pickle", (1, 1))
+            (tmp_path / "parses-mixed" / "new.pickle").write_bytes(b"x")
+            (tmp_path / "elsewhere").mkdir()
+            engines.use_parse_store(tmp_path)
+            assert sorted(path.name for path in tmp_path.iterdir()) == sorted(
+                ["elsewhere", engines.PARSES.name, "parses-live", "parses-mixed"])
+            assert kept.read_bytes() == b"kept"
 
     class TestPrepared:
         """`engines.prepared()`"""
