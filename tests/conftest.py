@@ -1,6 +1,6 @@
 import pytest
 
-from engines import parse_each_query_once
+from engines import parse_each_query_once, use_parse_store
 from page import page_properties
 
 pytest_plugins = ["group_budget"]
@@ -18,10 +18,17 @@ def pytest_collection_modifyitems(items):
         item.user_properties.extend(page_properties(item))
 
 
+@pytest.hookimpl(trylast=True)
+def pytest_configure(config):
+    """Keeps the parses of the queries under this checkout's pytest cache, where a run finds those an earlier run made."""
+    if getattr(config, "cache", None) is not None:
+        use_parse_store(config.cache.mkdir("sparql_parses"))
+
+
 def pytest_collection_finish(session):
-    """Every worker that holds a test_queries case, before any case runs, takes its share of the parses the module's
-    cases read, so the parsing is spread over the workers instead of done by the one that draws the first case."""
-    if any(item.module.__name__ == "test_queries" for item in session.items):
+    """Every worker collects every case, so each takes its share of the parses the test_queries cases read before any
+    case runs, and the parsing is spread over the workers instead of done by the one that draws the first case."""
+    if not session.config.option.collectonly and any(item.module.__name__ == "test_queries" for item in session.items):
         import test_queries
 
         test_queries.parse_every_query()

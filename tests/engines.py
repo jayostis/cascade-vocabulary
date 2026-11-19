@@ -8,7 +8,7 @@ import hashlib
 import os
 import pickle
 import re
-import tempfile
+import sys
 import time
 import warnings
 from collections import OrderedDict
@@ -18,8 +18,8 @@ from pathlib import Path
 from types import MethodType
 
 import pyoxigraph
+import pyparsing
 import rdflib
-from pyparsing import ParseException
 from rdflib.namespace import XSD
 from rdflib.plugins.sparql.algebra import translateQuery
 from rdflib.plugins.sparql.parser import parseQuery
@@ -69,8 +69,18 @@ def reduce_comp_value(self):
 
 CompValue.__reduce__ = reduce_comp_value
 
-STALE_LOCK = 600
-PARSES = Path(tempfile.gettempdir()) / f"cascade-vocabulary-parses-rdflib-{rdflib.__version__}"
+PARSES = None
+
+
+def use_parse_store(folder):
+    """Stores the parses under the folder, in one named by what a stored parse depends on: the versions of rdflib,
+    pyparsing and Python, and this file, which rebuilds a parse."""
+    global PARSES
+    key = hashlib.sha256(
+        "\0".join([rdflib.__version__, pyparsing.__version__, sys.version]).encode() + Path(__file__).read_bytes()
+    ).hexdigest()[:16]
+    PARSES = Path(folder) / f"parses-{key}"
+    PARSES.mkdir(parents=True, exist_ok=True)
 
 
 def stored(query):
@@ -78,60 +88,65 @@ def stored(query):
 
 
 def read_stored(query):
+    if PARSES is None:
+        return None
     try:
         return pickle.loads(stored(query).read_bytes())
-    except FileNotFoundError:
+    except OSError:  # a file another process is replacing is not yet stored
         return None
 
 
-def claim_and_parse(query):
-    """Parses the query and stores the parse, unless another process holds the query's lock; whether it did."""
+def parse(query):
+    with literals_as_written():
+        return parseQuery(query)
+
+
+def parse_and_store(query):
+    """A query whose parse raises is stored as None, so the test that reads it raises the error, not the collection."""
+    try:
+        tree = parse(query)
+    except Exception:
+        tree = None
     path = stored(query)
-    held = path.with_suffix(".lock")
+    part = path.with_name(f"{path.name}.{os.getpid()}.part")
+    part.write_bytes(pickle.dumps(tree))
     try:
-        if time.time() - held.stat().st_mtime > STALE_LOCK:
-            held.unlink(missing_ok=True)
-    except FileNotFoundError:
-        pass
-    try:
-        lock = os.open(held, os.O_CREAT | os.O_EXCL)
-    except FileExistsError:
-        return False
-    os.close(lock)
-    try:
-        part = path.with_suffix(f".{os.getpid()}")
-        try:
-            tree = parseQuery(query)
-        except ParseException:
-            tree = None
-        part.write_bytes(pickle.dumps(tree))
         os.replace(part, path)
-    finally:
-        os.remove(path.with_suffix(".lock"))
-    return True
+    except OSError:  # another process stored the query as this one did
+        part.unlink(missing_ok=True)
 
 
-def warm(queries, wait=300):
-    """Has every query's parse stored, each worker starting at its own place in the list and taking what no other worker
-    has taken, so the parses are shared between the workers (and between runs, which find them stored) not repeated."""
-    PARSES.mkdir(exist_ok=True)
+def worker_place():
+    """This worker's number and the number of workers; outside xdist, the only one of one."""
+    number = os.environ.get("PYTEST_XDIST_WORKER", "").removeprefix("gw")
+    return (int(number), int(os.environ.get("PYTEST_XDIST_WORKER_COUNT", 1))) if number.isdigit() else (0, 1)
+
+
+def warm(queries, wait=120):
+    """Has every query's parse stored: each worker parses the queries at its own place in the list, waits once for the
+    others' to appear, and parses any still missing itself. A run finds what an earlier one stored."""
+    if PARSES is None:
+        return
     queries = sorted(set(queries))
-    start = os.getpid() % len(queries)
-    waiting = []
-    for query in queries[start:] + queries[:start]:
-        if not stored(query).exists() and not claim_and_parse(query):
-            waiting.append(query)
+    number, count = worker_place()
+    for query in queries[number::count]:
+        if not stored(query).is_file():
+            parse_and_store(query)
     deadline = time.monotonic() + wait
-    for query in waiting:
-        while not stored(query).exists() and time.monotonic() < deadline:
-            time.sleep(0.2)
+    missing = [query for query in queries if not stored(query).is_file()]
+    while missing and time.monotonic() < deadline:
+        time.sleep(0.2)
+        missing = [query for query in missing if not stored(query).is_file()]
+    for query in missing:
+        parse_and_store(query)
 
 
 @lru_cache(maxsize=None)
 def parse_once(query):
     """The one parse of a query text in this process, from the store when a worker has stored it; translating mutates
     a tree, so a caller that translates copies it."""
-    return read_stored(query) or parseQuery(query)  # a text that does not parse is stored as None, and raises here
+    tree = read_stored(query)
+    return parse(query) if tree is None else tree  # a text that does not parse is stored as None, and raises here
 
 
 @lru_cache(maxsize=None)
