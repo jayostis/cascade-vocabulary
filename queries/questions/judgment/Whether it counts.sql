@@ -21,21 +21,20 @@ WITH
       (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#queryHash>'),
       (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#rowOfRuleListVersion>')),
   -- A row for each solution of a branch of the .rq: a column holds each variable it hides, so that two solutions
-  -- that differ only there are two rows, as they are two solutions.
+  -- that differ only there are two rows, as they are two solutions. The retracted branch hides none: its path's two
+  -- alternatives are one set of rows however many routes reach a judgment.
   said (judgment, happened, actor, hidden, hidden_too) AS (
     SELECT DISTINCT t.s, NULL, NULL, NULL, NULL
     FROM k CROSS JOIN quad t ON t.p = k.type AND t.o = k.judgment_class
     UNION ALL
     SELECT DISTINCT r.o, 'replaced', r.s, NULL, NULL FROM k CROSS JOIN quad r ON r.p = k.replaces
     UNION ALL
-    SELECT DISTINCT i.o, 'retracted', i.s, NULL, NULL
-    FROM k CROSS JOIN quad i ON i.p = k.invalidated
-    CROSS JOIN quad t ON t.s = i.o AND t.p = k.type AND t.o = k.judgment_class
-    UNION ALL
-    SELECT DISTINCT a.o, 'retracted', i.s, i.o, NULL
-    FROM k CROSS JOIN quad i ON i.p = k.invalidated
-    CROSS JOIN quad a ON a.s = i.o AND a.p = k.asserted_judgment
-    CROSS JOIN quad t ON t.s = a.o AND t.p = k.type AND t.o = k.judgment_class
+    SELECT DISTINCT reached.judgment, 'retracted', reached.retraction, NULL, NULL
+    FROM (SELECT i.o AS judgment, i.s AS retraction FROM k CROSS JOIN quad i ON i.p = k.invalidated
+          UNION ALL
+          SELECT a.o, i.s FROM k CROSS JOIN quad i ON i.p = k.invalidated
+          CROSS JOIN quad a ON a.s = i.o AND a.p = k.asserted_judgment) reached
+    CROSS JOIN k CROSS JOIN quad t ON t.s = reached.judgment AND t.p = k.type AND t.o = k.judgment_class
     UNION ALL
     SELECT DISTINCT j.s, 'made under a reference version since replaced', b.s, j.o, d.o
     FROM k CROSS JOIN quad t ON t.p = k.type AND t.o = k.judgment_class
