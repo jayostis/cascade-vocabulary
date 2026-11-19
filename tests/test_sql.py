@@ -61,16 +61,32 @@ def whole_scans(run, text):
     return found
 
 
-def whole_searches(plan):
+LOOP_OVER = re.compile(r"^(?:SCAN|SEARCH|CO-ROUTINE|MATERIALIZE) (\w+)\b")
+STORAGE_ROOTS = re.compile(r"\bquad (\w+) ON \1\.p = k\.storage\s+CROSS JOIN term (\w+) ON \2\.id = \1\.o\b")
+
+
+def storage_roots(text):
+    """The aliases a statement's text gives the storage triples it loops over and the terms they name, the pod's few
+    roots, for whole_searches."""
+    return [alias for found in STORAGE_ROOTS.findall(text) for alias in found]
+
+
+def whole_searches(plan, per_root=()):
     """The steps, of one statement's EXPLAIN QUERY PLAN given as (id, parent, detail) rows, that search `quad` by its
     predicate alone or by it and a range of its object, in a loop another loop runs once for each row of: not the first
-    loop of its select, or inside a subquery run for each row of the statement's."""
+    loop of its select, or inside a subquery run for each row of the statement's. A loop over a CTE of one constant
+    row, or over a table a `per_root` alias names, the pod's few storage roots, is no loop for this, nor is the
+    MATERIALIZE of a CTE a select reads, which runs once before the select's first loop."""
+    one_row = {detail.split()[1] for step, _, detail in plan if detail.startswith(("CO-ROUTINE ", "MATERIALIZE "))
+               and any(parent == step and child == "SCAN CONSTANT ROW" for _, parent, child in plan)}
+    plan = [row for row in plan if not (named := LOOP_OVER.match(row[2])) or named[1] not in one_row | set(per_root)]
     firsts, by_id = {}, {step: (parent, detail) for step, parent, detail in plan}
-    for step, parent, _ in plan:
-        firsts.setdefault(parent, step)
+    for step, parent, detail in plan:
+        if not detail.startswith("MATERIALIZE "):
+            firsts.setdefault(parent, step)
     found = []
     for step, parent, detail in plan:
-        inside, above = firsts[parent] != step, parent
+        inside, above = firsts.get(parent) != step, parent
         while above in by_id:
             inside = inside or by_id[above][1].startswith("CORRELATED")
             above = by_id[above][0]
@@ -79,12 +95,9 @@ def whole_searches(plan):
     return found
 
 
-def screen_plans(engine):
-    """The plan of each statement of each screen's fill and finish, and of each screen's triples, by the screen, the
-    part and the statement's place in it, each as its EXPLAIN QUERY PLAN rows and the b-trees it scans, as whole_scans
-    gives them; those of queries/labels.sql too, its fill between the screens' fills and finishes. The pod is empty, made
-    by queries/statements.sql and each screen's tables part alone on the engine, each statement planned just before it
-    runs; its plans do not depend on what the pod holds."""
+def planning_pod(engine):
+    """An empty pod on the engine, made by queries/statements.sql and each screen's tables part alone, as the function
+    that runs a script, the one that runs a statement and each view's `.sql` by its parts."""
     if engine.startswith("apsw"):
         connection = apsw.Connection(":memory:")
         for name, function in sql.FUNCTIONS.items():
@@ -97,6 +110,40 @@ def screen_plans(engine):
     views = {relative: sql.parts(sql_text(relative)) for relative in ported() if relative.startswith("queries/views/")}
     for found in views.values():
         script(found["tables"])
+    return script, run, views
+
+
+def engine_ran(engine):
+    """The SQLite an engine of the plan checks runs on, as text, after checking it is the one the engine names: the
+    floor run is skipped where apsw is the strictest, the CI step that installs an older one runs it."""
+    if engine == "apsw":
+        assert apsw.sqlite_lib_version() == STRICTEST_SQLITE
+    if engine == "apsw-floor":
+        if apsw.sqlite_lib_version() == STRICTEST_SQLITE:
+            pytest.skip("the floor run is the CI step that installs an older apsw")
+        assert tuple(map(int, apsw.sqlite_lib_version().split("."))) >= sql.MINIMUM_VERSION
+    return sqlite3.sqlite_version if engine == "sqlite3" else f"apsw {apsw.sqlite_lib_version()}"
+
+
+def question_plans(engine):
+    """The plan of each ported question's `.sql`, by its path, as screen_plans gives a statement's: its EXPLAIN QUERY
+    PLAN rows and the b-trees it scans. It is planned on a pod as empty as theirs, asked for no page size after no key,
+    and its plans do not depend on what the pod holds."""
+    _, run, _ = planning_pod(engine)
+    asking = lambda text: run(text, {"page_size": None, "after": None})
+    return {relative: ([(row[0], row[1], row[3]) for row in asking("EXPLAIN QUERY PLAN " + sql_text(relative))],
+                       whole_scans(asking, sql_text(relative)))
+            for relative in ported() if relative.startswith("queries/questions/")}
+
+
+def screen_plans(engine):
+    """The plan of each statement of each screen's fill and finish, and of each screen's triples, by the screen, the
+    part and the statement's place in it, each as its EXPLAIN QUERY PLAN rows and the b-trees it scans, as whole_scans
+    gives them; those of queries/labels.sql too, its fill between the screens' fills and finishes. The pod is empty, made
+    by queries/statements.sql and each screen's tables part alone on the engine, each statement planned just before it
+    runs; its plans do not depend on what the pod holds."""
+    _, run, views = planning_pod(engine)
+
     def planned(text):
         return [(row[0], row[1], row[3]) for row in run("EXPLAIN QUERY PLAN " + text)], whole_scans(run, text)
 
@@ -686,15 +733,9 @@ class TestSqlBesideEachQuery:
             whatever alias it names the table, or searches `quad` by a predicate alone, or by it and a range of an object,
             in a loop a surrounding loop runs once for each row of, or in a subquery run for each row of its statement's.
             """
-            if engine == "apsw":
-                assert apsw.sqlite_lib_version() == STRICTEST_SQLITE
-            if engine == "apsw-floor":
-                if apsw.sqlite_lib_version() == STRICTEST_SQLITE:
-                    pytest.skip("the floor run is the CI step that installs an older apsw")
-                assert tuple(map(int, apsw.sqlite_lib_version().split("."))) >= sql.MINIMUM_VERSION
+            ran = engine_ran(engine)
             found = [f"{view} {part} #{place}: {detail}" for (view, part, place), (plan, scans) in screen_plans(engine).items()
                      for detail in [f"scans {name}" for name in scans] + whole_searches(plan)]
-            ran = sqlite3.sqlite_version if engine == "sqlite3" else f"apsw {apsw.sqlite_lib_version()}"
             assert found == [], f"on SQLite {ran}"
 
         def test_ships_a_statistics_row_for_each_index_of_the_schema_and_for_each_of_its_tables_with_none(self):
@@ -948,6 +989,30 @@ def in_sparql(name, arguments):
     return None if found is None else found.value
 
 
+class TestPlansOfTheQuestions:
+    """Plans of each question's SQL · queries/questions/**/*.sql
+
+    A question's `.sql` is planned as a screen's statements are: from the statistics the schema and the screens ship,
+    on an empty pod, so that what holds at 15,000 records and not at three is found by its plan and not by a fixture.
+    """
+
+    @pytest.mark.parametrize("engine", ["sqlite3", "apsw", "apsw-floor"])
+    def test_plans_each_question_from_the_shipped_statistics_with_no_whole_predicate_searched_in_a_loop(self, engine):
+        """plans each question, on the statistics the schema and the screens ship and no ANALYZE, with no scan of `quad` or `term` and no search of a whole predicate inside a loop
+
+        Each ported question's `.sql`, asked for no page size after no key, is planned on SQLite as the check ships it
+        and on 3.54.1 and on the floor through apsw. None reads `quad` or `term` from end to end, or searches `quad` by a
+        predicate alone, or by it and a range of an object, in a loop a surrounding loop runs once for each row of, or in
+        a subquery run for each row of its statement's; a loop over the CTE `k` of one constant row, or over the storage
+        roots a statement reads before it reads the files under them, is no loop.
+        """
+        ran = engine_ran(engine)
+        found = [f"{relative}: {detail}" for relative, (plan, scans) in question_plans(engine).items()
+                 for detail in [f"scans {name}" for name in scans]
+                 + whole_searches(plan, storage_roots(sql_text(relative)))]
+        assert found == [], f"on SQLite {ran}"
+
+
 class TestTheSqlCheck:
     """Checks of the SQL check · tests/test_sql.py, tests/sql.py
 
@@ -1039,6 +1104,36 @@ class TestTheSqlCheck:
         assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o=? AND s=? AND p=?)")]) == []
         assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o>? AND o<?)")]) \
             == ["SEARCH q USING COVERING INDEX quad_osp (o>? AND o<?)"]
+
+    def test_leaves_a_loop_over_a_cte_of_one_constant_row_or_over_the_storage_roots_out_of_the_loops_it_reports(self):
+        """leaves a loop over a CTE of one constant row, over the aliases given for the storage roots, and a CTE's MATERIALIZE out of the loops it reports
+
+        A search by a predicate alone after `SCAN k`, where `k` is a CTE made of one constant row, is the first loop of its
+        select, as it is after a loop over the roots a statement names, or after the MATERIALIZE of a CTE; after any
+        other loop, and after a `k` that is no constant row, it is reported as ever, and so is a second whole search
+        after the roots.
+        """
+        by_predicate = "SEARCH q USING COVERING INDEX quad_pos (p=?)"
+        constant = [(2, 0, "CO-ROUTINE k"), (3, 2, "SCAN CONSTANT ROW"), (9, 0, "SCAN k")]
+        assert whole_searches(constant + [(12, 0, by_predicate)]) == []
+        assert whole_searches([(2, 0, "MATERIALIZE k"), (3, 2, "SCAN CONSTANT ROW"), (9, 6, "SCAN k"),
+                               (12, 6, by_predicate)]) == []
+        assert whole_searches(constant + [(12, 0, "SEARCH a USING COVERING INDEX quad_pos (p=?)"), (15, 0, by_predicate)]) \
+            == [by_predicate]
+        assert whole_searches([(2, 0, "CO-ROUTINE k"), (3, 2, "SCAN a"), (9, 0, "SCAN k"), (12, 0, by_predicate)]) \
+            == [by_predicate]
+        roots = [(9, 0, "SEARCH s USING COVERING INDEX quad_pos (p=?)"),
+                 (10, 0, "SEARCH root USING INTEGER PRIMARY KEY (rowid=?)")]
+        assert whole_searches(constant + roots + [(12, 0, by_predicate)], per_root=["s", "root"]) == []
+        assert whole_searches(constant + roots + [(12, 0, by_predicate)]) == [by_predicate]
+        assert whole_searches(constant + roots + [(12, 0, by_predicate), (15, 0, by_predicate)], per_root=["s", "root"]) \
+            == [by_predicate]
+        assert whole_searches([(2, 0, "MATERIALIZE n"), (3, 2, "SCAN a"), (12, 0, by_predicate)]) == []
+        assert whole_searches([(2, 0, "MATERIALIZE n"), (3, 2, "SCAN a"), (9, 0, "SCAN n"), (12, 0, by_predicate)]) \
+            == [by_predicate]
+        assert storage_roots("FROM k CROSS JOIN quad s ON s.p = k.storage\n    CROSS JOIN term root ON root.id = s.o AND "
+                             "root.kind <> 1 CROSS JOIN quad t ON t.p = k.type") == ["s", "root"]
+        assert storage_roots("FROM k CROSS JOIN quad s ON s.p = k.storage CROSS JOIN quad t ON t.p = k.type") == []
 
     def test_reports_a_scan_of_quad_or_term_under_whatever_alias_the_statement_names_it_by(self):
         """reports a scan of `quad` or `term` under whatever alias the statement names it by, and no search of either

@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-retraction-reaching-a-judgment-by-two-routes" ;
+  rdfs:comment "Two judgments each retracted by one retraction that reaches it twice: a matcher judgment whose two assertions it invalidates, and a judgment of Ana's that it invalidates with its assertion." ;
+  mf:entries (
+    <#whether-it-counts>
+  ) .
+
+<#whether-it-counts> a mf:QueryEvaluationTest ;
+  mf:name "whether-it-counts" ;
+  rdfs:comment "Each judgment has its one row and one row saying the retraction retracted it, however many routes the retraction reaches it by." ;
+  mf:action [ qt:query <../../../queries/questions/judgment/Whether%20it%20counts.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <whether-it-counts.srj> .

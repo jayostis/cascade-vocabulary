@@ -23,7 +23,8 @@ WHERE {
     OPTIONAL { ?judgment rdfs:label ?judgmentLabel }
     OPTIONAL { ?by rdfs:label ?byLabel } }
   UNION
-  { ?by prov:invalidated|prov:invalidated/cascade:assertedJudgment ?judgment .
+  { { SELECT DISTINCT ?by ?judgment
+      WHERE { ?by prov:invalidated|prov:invalidated/cascade:assertedJudgment ?judgment } }
     ?judgment a cascade:Judgment .
     BIND ("retracted" AS ?happened)
     OPTIONAL { ?judgment cascade:countsUnderLens ?counted }
