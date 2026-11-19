@@ -4,6 +4,7 @@
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix org: <http://www.w3.org/ns/org#> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix pav: <http://purl.org/pav/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
@@ -142,6 +143,21 @@
   mf:action [ sht:dataGraph <revision/no-observation-time.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath cascade:observedAsOf ] ] .
+
+<#revision/change-time-with-no-zone> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/change-time-with-no-zone.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath pav:lastUpdateOn ] ] .
+
+<#revision/change-time-offset-past-fourteen-hours> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/change-time-offset-past-fourteen-hours.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath pav:lastUpdateOn ] ] .
+
+<#revision/change-time-a-date> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/change-time-a-date.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath pav:lastUpdateOn ] ] .
 
 <#derived-current-revision/valid> a sht:Validate ;
   mf:action [ sht:dataGraph <derived-current-revision/valid.ttl> ] ;
