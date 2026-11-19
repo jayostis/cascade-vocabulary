@@ -160,6 +160,10 @@ INSERT INTO lab_result_filled (entry)
     CROSS JOIN quad g ON g.o = a.s AND g.p = k.generated_by
     CROSS JOIN quad d ON d.o = g.s AND d.p = k.derived_from
     CROSS JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision
+    CROSS JOIN quad e ON e.s = cr.s AND e.p = k.in_entry
+  UNION SELECT e.o FROM lab_result_terms k CROSS JOIN scope
+    CROSS JOIN quad d ON d.o = scope.term AND d.p = k.derived_from
+    CROSS JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision
     CROSS JOIN quad e ON e.s = cr.s AND e.p = k.in_entry;
 
 DELETE FROM lab_result WHERE entry IN (SELECT entry FROM lab_result_filled);

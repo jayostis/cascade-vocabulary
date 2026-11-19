@@ -19,9 +19,11 @@
 --            and gives them again from the kept and derived statements alone. The entries a run fills are each in
 --            scope; each a record in scope is in now; each one was in when the screen was last filled, which the
 --            screen's own member table remembers; and each the view's `.sql` names as showing what a term in scope
---            states: an agent's name, in a source line, and, for the conditions screen, the entries given for a
---            condition, through the values of a record in scope and through the records of those entries the screen
---            remembers. Every view's fill runs before any view's finish, on one connection.
+--            states: a document's statements, in the source line of each record whose current revision derives
+--            from it, and an agent's name, in those of each document it made; and, for the conditions screen, the
+--            entries given for a condition, through the values of a record in scope and through the records of
+--            those entries the screen remembers. Every view's fill runs before any view's finish, on one connection.
+--            A lens is read by every entry, so a change of lens is a whole run, never a keyed one.
 --   finish   gives, for the same entries, the columns that read the labels output or another view, once the labels
 --            are made. Until labels.rq has a `.sql`, the labels output is the rdfs:label statements in `quad`, which
 --            labels.rq makes from the view graphs; until a view has a screen, another view reads its statements there.
@@ -43,14 +45,21 @@
 --   ascending   the value's kind (0 unbound, 1 a blank node, 2 an IRI, 3 a literal), hex() of its text, then '.';
 --   descending  hex() of its text, each hex digit turned around (0 to p, 1 to o, and so on to F to a), then '~'.
 -- '.' sorts before every hex digit and '~' after every letter, so a shorter text sorts first ascending and last
--- descending. A key is ASCII. A condition whose values are not all strings, all times with an `instant`, or all
--- counts, a decimal or a mix of kinds, needs an encoding of its own, written here before a screen orders by it.
+-- descending. A key is ASCII. xsd:date and xsd:dateTime values may be one condition's, ordered by `instant`, a date
+-- by its start, as a time with and one with no zone are: where SPARQL's `<` orders neither way, the order is the
+-- key's. A time whose term has no `instant`, being ill-formed or of a year outside 1 to 9999, keys as a NULL text,
+-- which hex() writes as an empty one: first among the times ascending and last descending, an order `<` allows for
+-- an ill-formed time, which it orders against none, but not for a well-formed one of such a year, which needs an
+-- encoding of its own before a screen orders by it. A condition whose values are not all strings, all times, or
+-- all counts, a decimal or a mix of kinds, needs one too, written here before a screen orders by it.
 -- A list question's `.sql` takes `:page_size`, a number of entries, and `:after`, a sort key, and gives the rows of the
 -- first `:page_size` entries in order whose key is after `:after`; both null give the whole list. After its `.rq`'s
 -- columns it gives one more, `page_key`, the key of the row's entry, which a runtime and the check drop. The next page
 -- is asked after the last row's `page_key`. A page never splits an entry's rows.
 -- A question reads `asked`, never `scope`: `asked` holding records, a list question gives the rows of each entry
--- with one of them, counting only those, as its `.rq` bound to them does; `asked` empty, it gives the whole list.
+-- with one of them, counting only those, as its `.rq` bound to them does; `asked` empty, it gives the whole list. So
+-- a runtime asking a question of records none of which is a term of the pod gives no rows, as the `.rq` bound to
+-- them does, without running the `.sql`, which would read the empty `asked` as the whole pod.
 
 -- Each term the pod's statements use, once. `nt` is its N-Triples form as Oxigraph writes it, a literal in its
 -- canonical form, so two terms are one exactly when their `nt` is. `kind` ranks it as SPARQL's ORDER BY does, after
@@ -85,13 +94,15 @@ CREATE INDEX quad_pos ON quad (p, o, s, g);
 CREATE INDEX quad_osp ON quad (o, s, p, g);
 CREATE INDEX quad_g ON quad (g, s, p, o);
 
--- The records and entries a run covers: those a keyed run is given, or every one for a whole run.
+-- The terms a run covers: for a keyed run, those it is given, each a record, an entry, an agent or a document whose
+-- statements changed; for a whole run, every record and entry.
 CREATE TABLE scope (
   term INTEGER PRIMARY KEY
 ) STRICT;
 
 -- The records a question is asked of, as its `.rq` bound to them is: empty, it is asked of the whole pod. A runtime
--- fills it for a bound question and empties it after; a question reads it, never `scope`, which is the build's.
+-- fills it for a bound question and empties it after, and asks no question of records the pod has no term for; a
+-- question reads it, never `scope`, which is the build's.
 CREATE TABLE asked (
   term INTEGER PRIMARY KEY
 ) STRICT;

@@ -578,12 +578,14 @@ def scoped(connection, records):
 
 
 def asked(connection, records):
-    """The connection with a question asked of the records alone, as a runtime asks it bound to them."""
+    """The connection with a question asked of the records alone, as a runtime asks it bound to them; None, the
+    question left unasked, where the pod has a term for none of them, as a runtime gives no rows for them without
+    running the `.sql`, which would read the empty `asked` as the whole pod."""
     connection.execute("DELETE FROM asked")
     connection.executemany("INSERT INTO asked (term) SELECT id FROM term WHERE nt = ?",
                            [(str(Term(IRI, record)),) for record in records])
     connection.commit()
-    return connection
+    return connection if connection.execute("SELECT 1 FROM asked").fetchone() else None
 
 
 def copied(connection):

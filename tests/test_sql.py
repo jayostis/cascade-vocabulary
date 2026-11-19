@@ -246,8 +246,9 @@ def failures(fixture, lens, relative, text):
     """Why the `.sql` text, over the fixture's pod under the lens, does not give the rows of the `.rq` at the path: in a
     whole run, in its order when it has one; for a question bound to a record, the `.rq` bound to it and the `.sql`
     with `asked` holding it alone, for each record a manifest entry of the fixture binds, for a list question each
-    record the pod puts in an entry, and for a `.sql` reading `asked` a record the pod lacks; and, through the `.sql`, the rows of each manifest entry under that lens that runs
-    it. A CONSTRUCT's rows are compared as a set of triples."""
+    record the pod puts in an entry, and for a `.sql` reading `asked` a record the pod lacks; and, through the `.sql`,
+    the rows of each manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of
+    triples."""
     rq = query(Path(relative).relative_to("queries").as_posix())
     store = built_once(fixture, "oxigraph", lens).store.store
     connection = pod(fixture, lens)
