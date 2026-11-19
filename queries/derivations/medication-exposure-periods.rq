@@ -53,7 +53,8 @@ WHERE {
            1/0) AS ?firstDayFrom)
   BIND (IF(BOUND(?supplyValue),
            IF(?supplyUnit = "d", ?supplyValue, IF(?supplyUnit = "wk", ?supplyValue * 7,
-           IF(?supplyUnit = "mo", ?supplyValue * 30.4375, IF(?supplyUnit = "a", ?supplyValue * 365.25,
+           IF(?supplyUnit = "mo", IF(?supplyValue = 0, 0.0, ?supplyValue * 30.4375),
+           IF(?supplyUnit = "a", IF(?supplyValue = 0, 0.0, ?supplyValue * 365.25),
            IF(?supplyUnit = "h", ?supplyValue / 24, IF(?supplyUnit = "min", ?supplyValue / 1440,
            IF(?supplyUnit = "s", ?supplyValue / 86400, 1/0))))))),
            1/0) AS ?supplyDays)

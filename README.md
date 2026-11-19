@@ -12,7 +12,10 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
 - [`decisions/`](decisions): why a term or a rule is as it is, one note for each, with what others do, the alternatives
   that lost and what would change our mind.
 - [`queries/`](queries): the standard queries over a pod: the derivations and lenses, the views and
-  labels, the matcher's comparisons, and the questions.
+  labels, the matcher's comparisons, and the questions. Beside a query a runtime answers from SQLite is a `.sql` that
+  gives its rows, over the tables [`statements.sql`](queries/statements.sql) makes, calling the functions
+  [`sql-functions.json`](queries/sql-functions.json) gives the vectors of; the queries outside `matcher/` with no `.sql`
+  yet are named in [`tests/sql-unported.txt`](tests/sql-unported.txt).
 - [`runtime/`](runtime): what a runtime does when something arrives, as numbered rules in Gherkin feature files, each
   with the examples that show it; [`runtime/steps.md`](runtime/steps.md) lists the steps they are written in, and
   [`runtime/rules.md`](runtime/rules.md) says how a runtime runs them.
@@ -105,7 +108,9 @@ python3 -m pytest -n auto --dist loadgroup
 
 They check the ontologies, the shapes and the crate; the naming and snapshot vectors and the reference tables; the people
 the kits are about; that every feature file uses only the steps `runtime/steps.md` lists; and each query, over the
-fixtures, on two SPARQL engines. The tests are classes named for what the files are held to, and they run in random
+fixtures, on two SPARQL engines, and through its `.sql` in SQLite. [`tests/sql-pins.json`](tests/sql-pins.json) holds the
+hash of the `.rq` each `.sql` was last checked against: a port, or a `.rq` changed and its `.sql` checked again, updates
+it. The tests are classes named for what the files are held to, and they run in random
 order; `tests/spec.json` lists the headings of the tests page, each one a top-level class.
 
 A run prints its seed. To repeat a red run's order, pass it back with `-p randomly --randomly-seed=N`; `-p no:randomly`
