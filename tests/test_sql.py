@@ -388,18 +388,22 @@ class TestSqlBesideEachQuery:
             found = []
             for lens in LENSES:
                 connection = pod(fixture, lens)
+                views, filled = screens(), sql.screen_tables(connection)
                 for name, change in keyed_changes(connection):
                     changed = sql.copied(connection)
                     touched = change(changed)
                     keyed = sql.copied(changed)
                     keyed.execute("DELETE FROM scope")
                     keyed.executemany("INSERT INTO scope (term) VALUES (?)", [(term,) for term in touched])
-                    sql.refilled(keyed, screens())
-                    whole = sql.copied(changed)
-                    for table in sql.screen_tables(whole):
-                        whole.execute(f"DELETE FROM {table}")
-                    sql.refilled(sql.whole(whole), screens())
-                    kept, wanted = sql.screen_tables(keyed), sql.screen_tables(whole)
+                    sql.refilled(keyed, views)
+                    if name.endswith(" unchanged"):
+                        wanted = filled
+                    else:
+                        whole = changed
+                        for table in filled:
+                            whole.execute(f"DELETE FROM {table}")
+                        wanted = sql.screen_tables(sql.refilled(sql.whole(whole), views))
+                    kept = sql.screen_tables(keyed)
                     found += [f"{fixture.name}, under {lens}, {name}: {table} holds {sorted(set(kept[table]) - set(rows))} "
                               f"a whole fill does not, and lacks {sorted(set(rows) - set(kept[table]))}"
                               for table, rows in wanted.items() if kept[table] != rows]

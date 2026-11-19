@@ -26,6 +26,7 @@ CREATE VIEW condition_terms AS SELECT
   (SELECT id FROM term WHERE nt = '<http://www.w3.org/2000/01/rdf-schema#label>') AS label,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#reasonCondition>') AS reason_condition,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>') AS member_values,
+  (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>') AS values_of_member,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#drugName>') AS drug_name,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#procedureName>') AS procedure_name,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#vaccineName>') AS vaccine_name,
@@ -41,15 +42,10 @@ CREATE VIEW condition_terms AS SELECT
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#AuthorRole>') AS author_role,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#CustodianRole>') AS custodian_role,
   (SELECT id FROM term WHERE nt = '<http://xmlns.com/foaf/0.1/name>') AS foaf_name,
-  (SELECT i.lex FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o
+  (SELECT CASE WHEN count(DISTINCT i.lex) = 1 THEN min(i.lex) END FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o
    WHERE w.p = (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#writtenByQueryPath>')
      AND w.o = (SELECT id FROM term WHERE nt = '"views/conditions.rq"')
      AND x.p = (SELECT id FROM term WHERE nt = '<http://www.w3.org/ns/solid/terms#instance>')) AS address;
-
--- The entries a run fills: each in scope, and each a record in scope is in.
-CREATE VIEW condition_scope AS
-  SELECT term AS entry FROM scope
-  UNION SELECT q.o FROM condition_terms k CROSS JOIN scope JOIN quad q ON q.s = scope.term AND q.p = k.in_entry;
 
 -- `entry` is the entry as the derived state names it, `iri` as the view names it. `sort_key` orders the entries by
 -- name, then entry, as My active conditions and My condition history do. Each other column is a term's id: the lead
@@ -75,6 +71,7 @@ CREATE TABLE condition_member (
   record INTEGER NOT NULL,
   PRIMARY KEY (entry, record)
 ) STRICT, WITHOUT ROWID;
+CREATE INDEX condition_member_record ON condition_member (record);
 CREATE TABLE condition_code (
   entry INTEGER NOT NULL,
   code INTEGER NOT NULL,
@@ -115,6 +112,13 @@ CREATE TABLE condition_for (
   for_entry TEXT NOT NULL,
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
+-- Each record of each entry given for one of the entry's records, so a run keyed to it fills the entry again.
+CREATE TABLE condition_for_record (
+  entry INTEGER NOT NULL,
+  record INTEGER NOT NULL,
+  PRIMARY KEY (entry, record)
+) STRICT, WITHOUT ROWID;
+CREATE INDEX condition_for_record_record ON condition_for_record (record);
 -- Where each of the entry's records came from, `line` as the list questions show it, `shown` the same in N-Triples.
 CREATE TABLE condition_source (
   entry INTEGER NOT NULL,
@@ -124,12 +128,28 @@ CREATE TABLE condition_source (
 ) STRICT, WITHOUT ROWID;
 
 -- part: fill
-DELETE FROM condition WHERE entry IN (SELECT entry FROM condition_scope);
-DELETE FROM condition_member WHERE entry IN (SELECT entry FROM condition_scope);
-DELETE FROM condition_code WHERE entry IN (SELECT entry FROM condition_scope);
-DELETE FROM condition_member_values WHERE entry IN (SELECT entry FROM condition_scope);
-DELETE FROM condition_member_values_code WHERE entry IN (SELECT entry FROM condition_scope);
-DELETE FROM condition_member_values_padded WHERE entry IN (SELECT entry FROM condition_scope);
+CREATE TEMP TABLE IF NOT EXISTS condition_filled (entry INTEGER PRIMARY KEY) STRICT;
+DELETE FROM condition_filled;
+INSERT INTO condition_filled (entry)
+  SELECT term FROM scope
+  UNION SELECT q.o FROM condition_terms k CROSS JOIN scope JOIN quad q ON q.s = scope.term AND q.p = k.in_entry
+  UNION SELECT entry FROM condition_member WHERE record IN (SELECT term FROM scope)
+  UNION SELECT entry FROM condition_for_record WHERE record IN (SELECT term FROM scope)
+  UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
+    JOIN quad v ON v.o = scope.term AND v.p = k.values_of_member JOIN quad given ON given.o = v.s AND given.p = k.member_values
+    JOIN quad w ON w.s = given.s AND w.p = k.member_values JOIN quad rc ON rc.s = w.o AND rc.p = k.reason_condition
+    JOIN quad e ON e.s = rc.o AND e.p = k.in_entry
+  UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
+    JOIN quad ag ON ag.o = scope.term AND ag.p = k.agent JOIN quad a ON a.o = ag.s AND a.p = k.association
+    JOIN quad g ON g.o = a.s AND g.p = k.generated_by JOIN quad d ON d.o = g.s AND d.p = k.derived_from
+    JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision JOIN quad e ON e.s = cr.s AND e.p = k.in_entry;
+
+DELETE FROM condition WHERE entry IN (SELECT entry FROM condition_filled);
+DELETE FROM condition_member WHERE entry IN (SELECT entry FROM condition_filled);
+DELETE FROM condition_code WHERE entry IN (SELECT entry FROM condition_filled);
+DELETE FROM condition_member_values WHERE entry IN (SELECT entry FROM condition_filled);
+DELETE FROM condition_member_values_code WHERE entry IN (SELECT entry FROM condition_filled);
+DELETE FROM condition_member_values_padded WHERE entry IN (SELECT entry FROM condition_filled);
 
 INSERT INTO condition (entry, iri, sort_key, lead, status_from, name, status, verification, abatement,
                        abatement_written, onset, onset_written)
@@ -137,7 +157,7 @@ WITH
   entries (entry, lead) AS (
     SELECT DISTINCT r.o, (SELECT min(l.o) FROM quad l WHERE l.s = r.o AND l.p = k.lead_member)
     FROM condition_terms k CROSS JOIN quad r
-    WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM condition_scope)
+    WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM condition_filled)
       AND EXISTS (SELECT 1 FROM quad t WHERE t.s = r.s AND t.p = k.type AND t.o = k.kind)),
   led (entry, lead, version) AS (
     SELECT entries.entry, entries.lead,
@@ -179,19 +199,19 @@ FROM stated JOIN named ON named.entry = stated.entry LEFT JOIN term n ON n.id = 
 
 INSERT INTO condition_member (entry, record)
 SELECT DISTINCT r.o, r.s FROM condition_terms k CROSS JOIN quad r
-WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM condition_scope) AND r.o IN (SELECT entry FROM condition)
+WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM condition_filled) AND r.o IN (SELECT entry FROM condition)
   AND EXISTS (SELECT 1 FROM quad t WHERE t.s = r.s AND t.p = k.type AND t.o = k.kind);
 
 INSERT INTO condition_code (entry, code)
 SELECT DISTINCT c.entry, x.o FROM condition_terms k CROSS JOIN condition c
 JOIN quad v ON v.s = c.lead AND v.p = k.current_version JOIN quad x ON x.s = v.o AND x.p = k.condition_code
-WHERE c.entry IN (SELECT entry FROM condition_scope);
+WHERE c.entry IN (SELECT entry FROM condition_filled);
 
 INSERT INTO condition_member_values (entry, member, node, name, status, verification, abatement, onset)
 WITH members (entry, member, version) AS (
   SELECT DISTINCT r.o, r.s, (SELECT min(v.o) FROM quad v WHERE v.s = r.s AND v.p = k.current_version)
   FROM condition_terms k CROSS JOIN quad r
-  WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM condition_scope)
+  WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM condition_filled)
     AND EXISTS (SELECT 1 FROM quad t WHERE t.s = r.s AND t.p = k.type AND t.o = k.kind)
     AND EXISTS (SELECT 1 FROM quad v WHERE v.s = r.s AND v.p = k.current_version))
 SELECT members.entry, members.member, '<' || e.lex || '-' || sparql_sha256(m.lex) || '>',
@@ -205,21 +225,21 @@ FROM condition_terms k CROSS JOIN members JOIN term e ON e.id = members.entry JO
 INSERT INTO condition_member_values_code (entry, member, code)
 SELECT DISTINCT mv.entry, mv.member, x.o FROM condition_terms k CROSS JOIN condition_member_values mv
 JOIN quad v ON v.s = mv.member AND v.p = k.current_version JOIN quad x ON x.s = v.o AND x.p = k.condition_code
-WHERE mv.entry IN (SELECT entry FROM condition_scope);
+WHERE mv.entry IN (SELECT entry FROM condition_filled);
 
 INSERT INTO condition_member_values_padded (entry, member, property, written)
 SELECT DISTINCT mv.entry, mv.member, dp.o, w.o FROM condition_terms k CROSS JOIN condition_member_values mv
 JOIN quad v ON v.s = mv.member AND v.p = k.current_version JOIN quad d ON d.s = v.o AND d.p = k.padded
 JOIN quad dp ON dp.s = d.o AND dp.p = k.padded_property JOIN quad w ON w.s = d.o AND w.p = k.time_as_written
-WHERE mv.entry IN (SELECT entry FROM condition_scope);
+WHERE mv.entry IN (SELECT entry FROM condition_filled);
 
 -- part: finish
 UPDATE condition SET label = (
   SELECT min(l.o) FROM condition_terms k CROSS JOIN quad l
   WHERE l.s = (SELECT id FROM term WHERE nt = condition.iri) AND l.p = k.label)
-WHERE entry IN (SELECT entry FROM condition_scope);
+WHERE entry IN (SELECT entry FROM condition_filled);
 
-DELETE FROM condition_for WHERE entry IN (SELECT entry FROM condition_scope);
+DELETE FROM condition_for WHERE entry IN (SELECT entry FROM condition_filled);
 INSERT OR IGNORE INTO condition_for (entry, line, shown, name_key, for_entry)
 WITH given (entry, for_entry, name) AS (
   SELECT DISTINCT c.entry, mv.s,
@@ -229,7 +249,7 @@ WITH given (entry, for_entry, name) AS (
   FROM condition_terms k CROSS JOIN condition c JOIN condition_member m ON m.entry = c.entry
   JOIN quad rc ON rc.o = m.record AND rc.p = k.reason_condition
   JOIN quad mv ON mv.o = rc.s AND mv.p = k.member_values
-  WHERE c.entry IN (SELECT entry FROM condition_scope)
+  WHERE c.entry IN (SELECT entry FROM condition_filled)
     AND NOT EXISTS (SELECT 1 FROM quad x WHERE x.s = mv.s AND x.p = k.lifecycle AND x.o = k.entered_in_error)),
   spoken (entry, for_entry, name, said) AS (
     SELECT given.entry, f.lex, n.id,
@@ -243,11 +263,20 @@ SELECT spoken.entry,
   spoken.for_entry
 FROM spoken LEFT JOIN term n ON n.id = spoken.name;
 
-DELETE FROM condition_source WHERE entry IN (SELECT entry FROM condition_scope);
+DELETE FROM condition_for_record WHERE entry IN (SELECT entry FROM condition_filled);
+INSERT OR IGNORE INTO condition_for_record (entry, record)
+SELECT m.entry, member.o FROM condition_terms k CROSS JOIN condition_member m
+JOIN quad rc ON rc.o = m.record AND rc.p = k.reason_condition
+JOIN quad mv ON mv.o = rc.s AND mv.p = k.member_values
+JOIN quad w ON w.s = mv.s AND w.p = k.member_values
+JOIN quad member ON member.s = w.o AND member.p = k.values_of_member
+WHERE m.entry IN (SELECT entry FROM condition_filled);
+
+DELETE FROM condition_source WHERE entry IN (SELECT entry FROM condition_filled);
 INSERT OR IGNORE INTO condition_source (entry, line, shown)
 WITH
   records (entry, record) AS (
-    SELECT entry, record FROM condition_member WHERE entry IN (SELECT entry FROM condition_scope)),
+    SELECT entry, record FROM condition_member WHERE entry IN (SELECT entry FROM condition_filled)),
   documents (record, document, retrieved) AS (
     SELECT DISTINCT cr.s, d.o, rt.o FROM condition_terms k CROSS JOIN quad cr
     JOIN quad d ON d.s = cr.o AND d.p = k.derived_from

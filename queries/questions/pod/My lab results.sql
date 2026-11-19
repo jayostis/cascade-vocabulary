@@ -7,7 +7,8 @@ WITH
     FROM lab_result r
     WHERE r.sort_key > coalesce(:after, '')
       AND EXISTS (SELECT 1 FROM lab_result_member_values v WHERE v.entry = r.entry)
-      AND EXISTS (SELECT 1 FROM lab_result_member m JOIN scope ON scope.term = m.record WHERE m.entry = r.entry)
+      AND (NOT EXISTS (SELECT 1 FROM asked)
+           OR EXISTS (SELECT 1 FROM lab_result_member m JOIN asked ON asked.term = m.record WHERE m.entry = r.entry))
     ORDER BY r.sort_key
     LIMIT coalesce(:page_size, -1)),
   strings (id, said) AS NOT MATERIALIZED (
@@ -16,20 +17,20 @@ WITH
 SELECT performed.nt AS performed, test.nt AS test, code.nt AS code, page.value AS value, unit.nt AS unit,
   status.nt AS status,
   (SELECT '"' || nullif(group_concat(flag, '\u001F' ORDER BY flag), '') || '"' FROM (
-     SELECT DISTINCT sparql_replace(CASE WHEN t.kind = 3 THEN s.said ELSE t.lex END, '^.*/', '') AS flag
-     FROM lab_result_interpretation i JOIN term t ON t.id = i.code LEFT JOIN strings s ON s.id = t.id
-     WHERE i.entry = page.entry)) AS interpretations,
+     SELECT DISTINCT sparql_replace(t.lex, '^.*/', '') AS flag
+     FROM lab_result_interpretation i JOIN term t ON t.id = i.code WHERE i.entry = page.entry)) AS interpretations,
   range_text.nt AS referenceRangeText,
   CASE WHEN low.id IS NOT NULL THEN '"' || low.said || coalesce(' ' || CASE WHEN page.low_unit_text IS NOT NULL
     THEN low_unit_text.said ELSE low_ucum.said END, '') || '"' END AS referenceRangeLow,
   CASE WHEN high.id IS NOT NULL THEN '"' || high.said || coalesce(' ' || CASE WHEN page.high_unit_text IS NOT NULL
     THEN high_unit_text.said ELSE high_ucum.said END, '') || '"' END AS referenceRangeHigh,
   (SELECT '"' || group_concat(shown, '\u001F' ORDER BY line) || '"' FROM (
-     SELECT DISTINCT m.lex || ' ' || n.lex || char(31) AS line, m.lex || ' ' || s.said AS shown
+     SELECT m.lex || ' ' || n.lex || char(31) AS line, m.lex || ' ' || s.said AS shown
      FROM lab_result_member_values v JOIN term m ON m.id = v.member JOIN term n ON n.id = v.narrative
      JOIN strings s ON s.id = v.narrative
      WHERE v.entry = page.entry)) AS narrativeTexts,
-  '"' || (SELECT count(*) FROM lab_result_member m JOIN scope ON scope.term = m.record WHERE m.entry = page.entry)
+  '"' || (SELECT count(*) FROM lab_result_member m WHERE m.entry = page.entry
+          AND (NOT EXISTS (SELECT 1 FROM asked) OR m.record IN (SELECT term FROM asked)))
     || '"^^<http://www.w3.org/2001/XMLSchema#integer>' AS records,
   page.iri AS entry, label.nt AS entryLabel,
   (SELECT '"' || group_concat(s.shown, '\u001F' ORDER BY s.line) || '"'
@@ -50,4 +51,4 @@ LEFT JOIN strings high_ucum ON high_ucum.id = page.high_ucum
 LEFT JOIN term label ON label.id = page.label
 LEFT JOIN lab_result_code c ON c.entry = page.entry
 LEFT JOIN term code ON code.id = c.code
-ORDER BY page.sort_key, code.lex
+ORDER BY page.sort_key, code.kind, code.lex

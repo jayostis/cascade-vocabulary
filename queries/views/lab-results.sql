@@ -47,15 +47,10 @@ CREATE VIEW lab_result_terms AS SELECT
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#AuthorRole>') AS author_role,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#CustodianRole>') AS custodian_role,
   (SELECT id FROM term WHERE nt = '<http://xmlns.com/foaf/0.1/name>') AS foaf_name,
-  (SELECT i.lex FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o
+  (SELECT CASE WHEN count(DISTINCT i.lex) = 1 THEN min(i.lex) END FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o
    WHERE w.p = (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#writtenByQueryPath>')
      AND w.o = (SELECT id FROM term WHERE nt = '"views/lab-results.rq"')
      AND x.p = (SELECT id FROM term WHERE nt = '<http://www.w3.org/ns/solid/terms#instance>')) AS address;
-
--- The entries a run fills: each in scope, and each a record in scope is in.
-CREATE VIEW lab_result_scope AS
-  SELECT term AS entry FROM scope
-  UNION SELECT q.o FROM lab_result_terms k CROSS JOIN scope JOIN quad q ON q.s = scope.term AND q.p = k.in_entry;
 
 -- `entry` is the entry as the derived state names it, `iri` as the view names it. `sort_key` orders the entries by
 -- the day they were performed, newest first, then the time as written, newest first, then test and entry, as My lab
@@ -91,6 +86,7 @@ CREATE TABLE lab_result_member (
   record INTEGER NOT NULL,
   PRIMARY KEY (entry, record)
 ) STRICT, WITHOUT ROWID;
+CREATE INDEX lab_result_member_record ON lab_result_member (record);
 CREATE TABLE lab_result_code (
   entry INTEGER NOT NULL,
   code INTEGER NOT NULL,
@@ -151,30 +147,43 @@ CREATE TABLE lab_result_source (
 ) STRICT, WITHOUT ROWID;
 
 -- part: fill
-DELETE FROM lab_result WHERE entry IN (SELECT entry FROM lab_result_scope);
-DELETE FROM lab_result_member WHERE entry IN (SELECT entry FROM lab_result_scope);
-DELETE FROM lab_result_code WHERE entry IN (SELECT entry FROM lab_result_scope);
-DELETE FROM lab_result_interpretation WHERE entry IN (SELECT entry FROM lab_result_scope);
-DELETE FROM lab_result_member_values WHERE entry IN (SELECT entry FROM lab_result_scope);
-DELETE FROM lab_result_member_values_code WHERE entry IN (SELECT entry FROM lab_result_scope);
-DELETE FROM lab_result_member_values_interpretation WHERE entry IN (SELECT entry FROM lab_result_scope);
-DELETE FROM lab_result_member_values_padded WHERE entry IN (SELECT entry FROM lab_result_scope);
+CREATE TEMP TABLE IF NOT EXISTS lab_result_filled (entry INTEGER PRIMARY KEY) STRICT;
+DELETE FROM lab_result_filled;
+INSERT INTO lab_result_filled (entry)
+  SELECT term FROM scope
+  UNION SELECT q.o FROM lab_result_terms k CROSS JOIN scope JOIN quad q ON q.s = scope.term AND q.p = k.in_entry
+  UNION SELECT entry FROM lab_result_member WHERE record IN (SELECT term FROM scope)
+  UNION SELECT e.o FROM lab_result_terms k CROSS JOIN scope
+    JOIN quad ag ON ag.o = scope.term AND ag.p = k.agent JOIN quad a ON a.o = ag.s AND a.p = k.association
+    JOIN quad g ON g.o = a.s AND g.p = k.generated_by JOIN quad d ON d.o = g.s AND d.p = k.derived_from
+    JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision JOIN quad e ON e.s = cr.s AND e.p = k.in_entry;
 
-INSERT INTO lab_result (entry, iri, sort_key, lead, status_from, test, value, unit, narrative, status, performed,
-                        performed_written, range_text, low_decimal, low_written, low_ucum, low_unit_text, high_decimal,
-                        high_written, high_ucum, high_unit_text)
+DELETE FROM lab_result WHERE entry IN (SELECT entry FROM lab_result_filled);
+DELETE FROM lab_result_member WHERE entry IN (SELECT entry FROM lab_result_filled);
+DELETE FROM lab_result_code WHERE entry IN (SELECT entry FROM lab_result_filled);
+DELETE FROM lab_result_interpretation WHERE entry IN (SELECT entry FROM lab_result_filled);
+DELETE FROM lab_result_member_values WHERE entry IN (SELECT entry FROM lab_result_filled);
+DELETE FROM lab_result_member_values_code WHERE entry IN (SELECT entry FROM lab_result_filled);
+DELETE FROM lab_result_member_values_interpretation WHERE entry IN (SELECT entry FROM lab_result_filled);
+DELETE FROM lab_result_member_values_padded WHERE entry IN (SELECT entry FROM lab_result_filled);
+
+CREATE TEMP TABLE IF NOT EXISTS lab_result_stated (
+  entry INTEGER PRIMARY KEY, lead INTEGER, status_from INTEGER, test INTEGER, text INTEGER, text_unit INTEGER,
+  narrative INTEGER, quantity INTEGER, numerator INTEGER, denominator INTEGER, low INTEGER, high INTEGER,
+  performed INTEGER, performed_written INTEGER, range_text INTEGER, low_at INTEGER, high_at INTEGER) STRICT;
+DELETE FROM lab_result_stated;
+INSERT INTO lab_result_stated (entry, lead, status_from, test, text, text_unit, narrative, quantity, numerator,
+                               denominator, low, high, performed, performed_written, range_text, low_at, high_at)
 WITH
   entries (entry, lead) AS (
     SELECT DISTINCT r.o, (SELECT min(l.o) FROM quad l WHERE l.s = r.o AND l.p = k.lead_member)
     FROM lab_result_terms k CROSS JOIN quad r
-    WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM lab_result_scope)
+    WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM lab_result_filled)
       AND EXISTS (SELECT 1 FROM quad t WHERE t.s = r.s AND t.p = k.type AND t.o = k.kind)),
   led (entry, lead, version) AS (
     SELECT entries.entry, entries.lead,
       (SELECT min(v.o) FROM quad v WHERE v.s = entries.lead AND v.p = k.current_version)
-    FROM lab_result_terms k CROSS JOIN entries WHERE entries.lead IS NOT NULL),
-  stated (entry, lead, status_from, test, text, text_unit, narrative, quantity, numerator, denominator, low, high,
-          performed, performed_written, range_text, low_at, high_at) AS MATERIALIZED (
+    FROM lab_result_terms k CROSS JOIN entries WHERE entries.lead IS NOT NULL)
     SELECT led.entry, led.lead,
       (SELECT min(f.o) FROM quad f WHERE f.s = led.entry AND f.p = k.status_from
          AND EXISTS (SELECT 1 FROM quad v JOIN quad x ON x.s = v.o AND x.p = k.workflow_status
@@ -212,7 +221,13 @@ WITH
        WHERE b.s = led.version AND b.p = k.range_high
          AND EXISTS (SELECT 1 FROM quad x WHERE x.s = b.o AND x.p = k.decimal_value)
          AND EXISTS (SELECT 1 FROM quad x WHERE x.s = b.o AND x.p = k.written_value))
-    FROM lab_result_terms k CROSS JOIN led),
+    FROM lab_result_terms k CROSS JOIN led;
+
+INSERT INTO lab_result (entry, iri, sort_key, lead, status_from, test, value, unit, narrative, status, performed,
+                        performed_written, range_text, low_decimal, low_written, low_ucum, low_unit_text, high_decimal,
+                        high_written, high_ucum, high_unit_text)
+WITH
+  stated AS (SELECT * FROM lab_result_stated),
   measured (entry, written, comparator, quantity_unit_text, quantity_ucum) AS (
     SELECT stated.entry,
       (SELECT min(x.o) FROM quad x WHERE x.s = stated.quantity AND x.p = k.written_value),
@@ -228,7 +243,6 @@ WITH
       CASE
         WHEN w.id IS NOT NULL AND (measured.comparator IS NULL OR c.id IS NOT NULL)
           THEN '"' || coalesce(c.said, '') || w.said || '"'
-               || CASE WHEN c.lang IS NOT NULL AND c.lang = w.lang THEN '@' || w.lang ELSE '' END
         WHEN n.id IS NOT NULL AND d.id IS NOT NULL THEN '"' || n.said || ':' || d.said || '"'
         WHEN stated.low IS NOT NULL AND stated.high IS NOT NULL AND lo.id IS NOT NULL AND hi.id IS NOT NULL
           THEN '"' || lo.said || '-' || hi.said || '"'
@@ -275,18 +289,18 @@ JOIN timed ON timed.entry = stated.entry LEFT JOIN term test ON test.id = stated
 
 INSERT INTO lab_result_member (entry, record)
 SELECT DISTINCT r.o, r.s FROM lab_result_terms k CROSS JOIN quad r
-WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM lab_result_scope) AND r.o IN (SELECT entry FROM lab_result)
+WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM lab_result_filled) AND r.o IN (SELECT entry FROM lab_result)
   AND EXISTS (SELECT 1 FROM quad t WHERE t.s = r.s AND t.p = k.type AND t.o = k.kind);
 
 INSERT INTO lab_result_code (entry, code)
 SELECT DISTINCT c.entry, x.o FROM lab_result_terms k CROSS JOIN lab_result c
 JOIN quad v ON v.s = c.lead AND v.p = k.current_version JOIN quad x ON x.s = v.o AND x.p = k.test_code
-WHERE c.entry IN (SELECT entry FROM lab_result_scope);
+WHERE c.entry IN (SELECT entry FROM lab_result_filled);
 
 INSERT INTO lab_result_interpretation (entry, code)
 SELECT DISTINCT c.entry, x.o FROM lab_result_terms k CROSS JOIN lab_result c
 JOIN quad v ON v.s = c.lead AND v.p = k.current_version JOIN quad x ON x.s = v.o AND x.p = k.interpretation
-WHERE c.entry IN (SELECT entry FROM lab_result_scope);
+WHERE c.entry IN (SELECT entry FROM lab_result_filled);
 
 INSERT INTO lab_result_member_values (entry, member, node, test, value_text, unit_text, narrative, status, performed,
                                       range_text, low_decimal, low_written, low_ucum, low_unit_text, high_decimal,
@@ -295,7 +309,7 @@ WITH
   members (entry, member, version) AS (
     SELECT DISTINCT r.o, r.s, (SELECT min(v.o) FROM quad v WHERE v.s = r.s AND v.p = k.current_version)
     FROM lab_result_terms k CROSS JOIN quad r
-    WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM lab_result_scope)
+    WHERE r.p = k.in_entry AND r.o IN (SELECT entry FROM lab_result_filled)
       AND EXISTS (SELECT 1 FROM quad t WHERE t.s = r.s AND t.p = k.type AND t.o = k.kind)
       AND EXISTS (SELECT 1 FROM quad v WHERE v.s = r.s AND v.p = k.current_version)),
   bounded (entry, member, version, low_at, high_at) AS MATERIALIZED (
@@ -330,30 +344,30 @@ FROM lab_result_terms k CROSS JOIN bounded JOIN term e ON e.id = bounded.entry J
 INSERT INTO lab_result_member_values_code (entry, member, code)
 SELECT DISTINCT mv.entry, mv.member, x.o FROM lab_result_terms k CROSS JOIN lab_result_member_values mv
 JOIN quad v ON v.s = mv.member AND v.p = k.current_version JOIN quad x ON x.s = v.o AND x.p = k.test_code
-WHERE mv.entry IN (SELECT entry FROM lab_result_scope);
+WHERE mv.entry IN (SELECT entry FROM lab_result_filled);
 
 INSERT INTO lab_result_member_values_interpretation (entry, member, code)
 SELECT DISTINCT mv.entry, mv.member, x.o FROM lab_result_terms k CROSS JOIN lab_result_member_values mv
 JOIN quad v ON v.s = mv.member AND v.p = k.current_version JOIN quad x ON x.s = v.o AND x.p = k.interpretation
-WHERE mv.entry IN (SELECT entry FROM lab_result_scope);
+WHERE mv.entry IN (SELECT entry FROM lab_result_filled);
 
 INSERT INTO lab_result_member_values_padded (entry, member, property, written)
 SELECT DISTINCT mv.entry, mv.member, dp.o, w.o FROM lab_result_terms k CROSS JOIN lab_result_member_values mv
 JOIN quad v ON v.s = mv.member AND v.p = k.current_version JOIN quad d ON d.s = v.o AND d.p = k.padded
 JOIN quad dp ON dp.s = d.o AND dp.p = k.padded_property JOIN quad w ON w.s = d.o AND w.p = k.time_as_written
-WHERE mv.entry IN (SELECT entry FROM lab_result_scope);
+WHERE mv.entry IN (SELECT entry FROM lab_result_filled);
 
 -- part: finish
 UPDATE lab_result SET label = (
   SELECT min(l.o) FROM lab_result_terms k CROSS JOIN quad l
   WHERE l.s = (SELECT id FROM term WHERE nt = lab_result.iri) AND l.p = k.label)
-WHERE entry IN (SELECT entry FROM lab_result_scope);
+WHERE entry IN (SELECT entry FROM lab_result_filled);
 
-DELETE FROM lab_result_source WHERE entry IN (SELECT entry FROM lab_result_scope);
+DELETE FROM lab_result_source WHERE entry IN (SELECT entry FROM lab_result_filled);
 INSERT OR IGNORE INTO lab_result_source (entry, line, shown)
 WITH
   records (entry, record) AS (
-    SELECT entry, record FROM lab_result_member WHERE entry IN (SELECT entry FROM lab_result_scope)),
+    SELECT entry, record FROM lab_result_member WHERE entry IN (SELECT entry FROM lab_result_filled)),
   documents (record, document, retrieved) AS (
     SELECT DISTINCT cr.s, d.o, rt.o FROM lab_result_terms k CROSS JOIN quad cr
     JOIN quad d ON d.s = cr.o AND d.p = k.derived_from
