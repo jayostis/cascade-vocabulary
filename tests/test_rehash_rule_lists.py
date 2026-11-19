@@ -15,7 +15,7 @@ def ni(octets):
 
 LIST_A = "runtime/rule-list/5d0e7c34-6b1a-4e2f-9a58-2c4f0d8e1b73.ttl"
 LIST_B = "runtime/rule-list/1cbf0000-0000-4000-8000-000000000000.ttl"
-QUERY_A = "queries/matcher/same-code.rq"
+QUERY_A = "queries/matcher/one.rq"
 QUERY_B = "queries/matcher/other.rq"
 QUERY_A_BEFORE = b"SELECT ?record ?other WHERE { ?record ?p ?other }\n"
 QUERY_A_AFTER = b"SELECT ?record ?other WHERE { ?record ?p ?other FILTER (?record != ?other) }\n"
@@ -41,7 +41,7 @@ def clone(tmp_path):
     files = {
         QUERY_A: QUERY_A_BEFORE,
         QUERY_B: b"SELECT ?record ?other WHERE { ?other ?p ?record }\n",
-        LIST_A: rule_list("same-code.rq", QUERY_A_BEFORE),
+        LIST_A: rule_list("one.rq", QUERY_A_BEFORE),
         LIST_B: rule_list("other.rq", b"SELECT ?record ?other WHERE { ?other ?p ?record }\n"),
     }
     for name, octets in files.items():
@@ -78,7 +78,7 @@ class TestChecksOfTheReHashScript:
             """
             (clone / QUERY_A).write_bytes(QUERY_A_AFTER)
             pins = rehash(clone)
-            assert (clone / LIST_A).read_bytes() == rule_list("same-code.rq", QUERY_A_AFTER)
+            assert (clone / LIST_A).read_bytes() == rule_list("one.rq", QUERY_A_AFTER)
             assert pins[QUERY_A] == sha(QUERY_A_AFTER)
             assert pins[LIST_A] == sha((clone / LIST_A).read_bytes())
 

@@ -1,0 +1,25 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "matcher-same-code-and-day-or-exact-time" ;
+  rdfs:comment "Pairs of immunizations: one code on one date; one code on two dates; one code where one states no date; one code in one year; and one code at one time padded from the hour." ;
+  mf:entries (
+    <#same-code-and-day-or-exact-time>
+  ) .
+
+<#same-code-and-day-or-exact-time> a mf:QueryEvaluationTest ;
+  mf:name "same-code-and-day-or-exact-time-key-joined-first" ;
+  rdfs:comment "Only the pair giving one code on one day matches: two shots of one code dated to one year, or to one time padded from the hour, may be two shots, and do not." ;
+  mf:action [ qt:query <../../../queries/matcher/same-code-and-day-or-exact-time-key-joined-first.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:sameDayB> ,
+                                  <urn:x:twoDaysA> ,
+                                  <urn:x:twoDaysB> ,
+                                  <urn:x:undatedA> ,
+                                  <urn:x:undatedB> ,
+                                  <urn:x:sameYearB> ,
+                                  <urn:x:paddedHourB> ] ;
+  mf:result <same-code-and-day-or-exact-time-key-joined-first.srj> .

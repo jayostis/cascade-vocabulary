@@ -451,16 +451,16 @@ class TestReferenceTables:
             assert marked == {CASCADE.CodeNames, CASCADE.RetiredCodes, CASCADE.VariantClassifications, CASCADE.PanelMembers,
                               CASCADE.DrugClasses}
 
-        def test_leaves_two_that_no_rule_list_names_and_no_page_reads(self):
-            """leaves two, substance ingredients and value-set expansions, that no rule list names and no page reads
+        def test_leaves_one_that_no_rule_list_names_and_no_page_reads(self):
+            """leaves one, value-set expansions, that no rule list names and no page reads
 
             Of the declared kinds, those that no file under `runtime/rule-list/` names and that are not marked as read by an
-            app's pages are compared with substance ingredients and value-set expansions; they must be those two.
+            app's pages are compared with value-set expansions; they must be that one.
             """
             marked = {kind for kind in table_kinds() if (kind, CASCADE.readByAppPages, Literal(True)) in terms()}
             named = {kind for path in SHARED.glob("*.ttl") if path.name != "references.ttl"
                      for kind in parsed(path).objects(None, CASCADE.tableKind)}
-            assert table_kinds() - named - marked == {CASCADE.SubstanceIngredients, CASCADE.ValueSetExpansions}
+            assert table_kinds() - named - marked == {CASCADE.ValueSetExpansions}
 
     class TestGivenARowOfAKind:
         @pytest.mark.parametrize("kind, rows", PASSING)
@@ -536,11 +536,13 @@ class TestReferenceTables:
             """holds a file for every version it lists, or leaves a rule list to `runtime/rule-list/`
 
             Each version the folder's `references.ttl` lists has a file in the folder. The one exception is a rule list,
-            a version of no table kind, listed by a scripted input's `tables` folder and held in `runtime/rule-list/`.
+            a version of no table kind, listed by a person's `references` folder or a scripted input's `tables` folder
+            and held in `runtime/rule-list/`.
             """
             missing = [own.relative_to(ROOT).as_posix() for folder, own, shared, kind in listed_versions()
                        if not own.is_file()
-                       and not (folder.parent.name == "tables" and kind is None and shared.is_file())]
+                       and not ((folder.parent.name == "tables" or folder.name == "references") and kind is None
+                                and shared.is_file())]
             assert missing == []
 
     class TestGivenThePanelMembersVector:

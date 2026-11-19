@@ -9,7 +9,8 @@ Feature: Opening a pod
   to conditions there, R2, R4 and R7 as the vocabulary's version 19 has them, and version 1 of "CDC CVX vaccine groups";
   "app-later", holding versions 2 and 3 of that table as well; "app-rxnorm", "app-icd" and "app-periods", holding
   "app"'s and the vocabulary's version 19, which revises version "0", with version 1 of "NLM RxNorm Prescribable product
-  ingredients", of "CDC ICD-10-CM code conversions" and of no further table respectively; "app-new-rules", holding the
+  ingredients", of "CDC ICD-10-CM code conversions" and of no further table respectively; "app-later-on-19", holding
+  "app-later"'s tables with version 19, which revises version "0"; "app-new-rules", holding the
   vocabulary's version 19 and version "0" as an app holds it after a query changed, R2's hash no longer the query's;
   "app-fewer-rules", holding a version "0a" that revises version "0" and lacks R4; and "app-wrong-rule", holding the
   same but a version "0b" in place of "0a" that also declares R4 wrong.
@@ -165,37 +166,36 @@ Feature: Opening a pod
       And the matcher runs on the records of that entry on 2026-07-02 at 09:05 (match-kit)
 
     Example: a pod made on the vector tables, opened with an app's, is judged by the app's tables and writes nothing of the vector tables
-      When the pod is opened with the tables "app" on 2026-07-03 at 09:00
+      When the pod is opened with the tables "app-periods" on 2026-07-03 at 09:00
       Then that step wrote these matcher judgments:
         | justification             | members                                                                   | used                                                                                                                                  |
         | same mapped code and date | immunization CVX 141 "Fluarix", immunization CVX 150 "FluLaval"           | CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluarix", version 1 of immunization CVX 150 "FluLaval"           |
         | same mapped code and date | immunization CVX 141 "Fluad", immunization CVX 161 "Fluzone Quadrivalent" | CDC CVX vaccine groups version 1, version 1 of immunization CVX 141 "Fluad", version 1 of immunization CVX 161 "Fluzone Quadrivalent" |
       And that step wrote these reference descriptions:
         | reference                        |
-        | Matcher rules                    |
-        | Matcher rules version 0          |
         | CDC CVX vaccine groups           |
         | CDC CVX vaccine groups version 1 |
 
     Example: the vector tables' Same still counts beside the app's
-      When the pod is opened with the tables "app" on 2026-07-03 at 09:00
+      When the pod is opened with the tables "app-periods" on 2026-07-03 at 09:00
       And the query is:
         """
-        SELECT ?rules WHERE {
-          ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameMappedCodeAndDate .
-          ?assertion cascade:assertedJudgment ?judgment ; cascade:assertedUnderRuleListVersion ?rules .
+        SELECT ?table WHERE {
+          ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameMappedCodeAndDate ;
+            prov:wasDerivedFrom ?table .
+          ?table pav:version ?version .
         }
         """
       Then it answers:
-        | rules                           |
-        | Cascade matcher rules version 1 |
-        | Matcher rules version 0         |
-        | Matcher rules version 0         |
+        | table                             |
+        | CVX vaccine group table version 1 |
+        | CDC CVX vaccine groups version 1  |
+        | CDC CVX vaccine groups version 1  |
 
     Example: a pod at a version the app does not hold is matched without that series
-      When the pod is opened with the tables "app" on 2026-07-03 at 09:00
-      And the pod is opened with the tables "app-later" on 2026-07-04 at 09:00
-      And the pod is opened with the tables "app" on 2026-07-05 at 09:00 (older)
+      When the pod is opened with the tables "app-periods" on 2026-07-03 at 09:00
+      And the pod is opened with the tables "app-later-on-19" on 2026-07-04 at 09:00
+      And the pod is opened with the tables "app-periods" on 2026-07-05 at 09:00 (older)
       And Hana enters "fluarix-again" on 2026-07-06 at 09:00
       And the matcher runs on the records of that entry on 2026-07-06 at 09:05
       Then "older" wrote no file

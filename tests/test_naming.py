@@ -78,7 +78,8 @@ def resolver(kit):
 
     def matcher_rule(rule_list, justified_as):
         rows = Graph()
-        for file in kit.glob(f"scripted-input/*/references/{rule_list.removeprefix('urn:uuid:')}.ttl"):
+        stem = rule_list.removeprefix("urn:uuid:")
+        for file in [*kit.glob(f"scripted-input/*/references/{stem}.ttl")] or [*(ROOT / "runtime" / "rule-list").glob(f"{stem}.ttl")]:
             rows.parse(file, format="turtle")
         term = lambda local: URIRef(CASCADE + local)
         return next((str(rows.value(row, term("matcherRule"))) for row in rows.subjects(RDF.type, term("RuleListRow"))
@@ -129,13 +130,13 @@ class TestNamesAFeatureWrites:
             """holds no name that N6's rule does not give from the members, the justification and what the row says it
             used
 
-            Each kit's table of matcher judgments, at least eleven, is read with its justification, its members and
+            Each kit's table of matcher judgments, at least ten, is read with its justification, its members and
             the reference versions it says it used; the records and versions are looked up from the kit's own files, and
             the name N6's rule gives from them is compared with the name the row writes. It takes longer than any other case
             of this module, as each kit's references are read once for each row.
             """
             judgments = list(matcher_judgments_written_with_what_they_used())
-            assert len(judgments) >= 11
+            assert len(judgments) >= 10
             assert [(kit.name, justified, members, name, computed)
                     for kit, justified, members, name, computed in kit_judgment_names(judgments)
                     if computed != name] == []

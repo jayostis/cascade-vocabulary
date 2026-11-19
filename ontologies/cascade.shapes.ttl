@@ -1811,7 +1811,7 @@ cascade:ReferenceSeriesShape a sh:NodeShape ;
         sh:severity sh:Violation
     ], [
         sh:path cascade:tableKind ;
-        sh:in ( cascade:VaccineGroups cascade:CodeNames cascade:RetiredCodes cascade:SubstanceIngredients cascade:ProductIngredients cascade:BrandGenerics cascade:DrugProducts cascade:CodeConversions cascade:VariantClassifications cascade:PanelMembers cascade:DrugClasses cascade:ValueSetExpansions ) ;
+        sh:in ( cascade:VaccineGroups cascade:CodeNames cascade:RetiredCodes cascade:ProductIngredients cascade:BrandGenerics cascade:DrugProducts cascade:CodeConversions cascade:VariantClassifications cascade:PanelMembers cascade:DrugClasses cascade:ValueSetExpansions ) ;
         sh:maxCount 1 ;
         sh:message "A reference series is of at most one table kind, one the vocabulary declares."@en ;
         sh:severity sh:Violation
@@ -1895,25 +1895,6 @@ cascade:VaccineGroupRowShape a sh:NodeShape ;
         sh:path owl:annotatedTarget ;
         sh:node cascade:CvxCodeShape ;
         sh:message "A vaccine group is named by its own CVX code."@en ;
-        sh:severity sh:Violation
-    ] .
-
-cascade:SubstanceIngredientRowShape a sh:NodeShape ;
-    sh:node cascade:MappingRowShape ;
-    sh:property [
-        sh:path owl:annotatedSource ;
-        sh:node cascade:SnomedCtCodeShape ;
-        sh:message "A substance ingredient row maps a SNOMED CT code."@en ;
-        sh:severity sh:Violation
-    ] , [
-        sh:path owl:annotatedProperty ;
-        sh:hasValue skos:exactMatch ;
-        sh:message "A substance ingredient row pairs its codes with skos:exactMatch."@en ;
-        sh:severity sh:Violation
-    ] , [
-        sh:path owl:annotatedTarget ;
-        sh:node cascade:RxNormCodeShape ;
-        sh:message "A substance ingredient row maps to an RxNorm code."@en ;
         sh:severity sh:Violation
     ] .
 

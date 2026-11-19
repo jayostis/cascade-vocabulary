@@ -3,33 +3,38 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<urn:uuid:4b7e2c91-8d35-4f6a-a1c0-7e9d3b5f2a68> a cascade:ReferenceSeries ;
-    rdfs:label "Cascade matcher rules" ;
-    cascade:defaultTableVersion <urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24> .
+<urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> a cascade:ReferenceSeries ;
+    rdfs:label "Matcher rules" ;
+    cascade:defaultTableVersion <urn:uuid:ae65e38f-9301-4831-b0b2-f54005d465e1> .
 
-<urn:uuid:9c1f5a73-2e48-4d6b-b8a0-3f7c1e9d5b24> a prov:Entity ;
-    prov:specializationOf <urn:uuid:4b7e2c91-8d35-4f6a-a1c0-7e9d3b5f2a68> ;
+<urn:uuid:ae65e38f-9301-4831-b0b2-f54005d465e1> a prov:Entity ;
+    prov:specializationOf <urn:uuid:f4e24578-cf10-48f7-b62b-6732550927a4> ;
+    pav:version "19" .
+
+<urn:uuid:48f08f00-9028-4f9b-88ed-cc4ec2a7ab38> a cascade:ReferenceSeries ;
+    rdfs:label "RxNorm product ingredients" ;
+    cascade:tableKind cascade:ProductIngredients ;
+    cascade:defaultTableVersion <ni:///sha-256;HWFkCq6WdHYaGltq-5U6q5HzkhzPPGt0CiSwxUbxrQI> .
+
+<ni:///sha-256;HWFkCq6WdHYaGltq-5U6q5HzkhzPPGt0CiSwxUbxrQI> a prov:Entity ;
+    prov:specializationOf <urn:uuid:48f08f00-9028-4f9b-88ed-cc4ec2a7ab38> ;
     pav:version "1" .
 
-<urn:uuid:2e8a6d14-7b9c-4f3e-9a52-6c1d8f4b7e30> a cascade:ReferenceSeries ;
-    rdfs:label "SNOMED CT to RxNorm ingredient map" ;
-    cascade:tableKind cascade:SubstanceIngredients ;
-    cascade:defaultTableVersion <ni:///sha-256;so3QFOxc4yx8UelmqUYZ_zykonP6D505PxLDqsq1m5A> .
-
-<ni:///sha-256;so3QFOxc4yx8UelmqUYZ_zykonP6D505PxLDqsq1m5A> a prov:Entity ;
-    prov:specializationOf <urn:uuid:2e8a6d14-7b9c-4f3e-9a52-6c1d8f4b7e30> ;
-    pav:version "1" .
-
-<ni:///sha-256;H1kZR1EnYoyKNBu-8Jvf1hugF1RYEMXWKBMHXrfs9qY> a prov:Entity ;
-    prov:specializationOf <urn:uuid:2e8a6d14-7b9c-4f3e-9a52-6c1d8f4b7e30> ;
+<ni:///sha-256;lY85SDMzURR1w9lFtz3_Znc6XeZL9vt4O8TQGti_wnE> a prov:Entity ;
+    prov:specializationOf <urn:uuid:48f08f00-9028-4f9b-88ed-cc4ec2a7ab38> ;
     pav:version "2" ;
-    prov:wasRevisionOf <ni:///sha-256;so3QFOxc4yx8UelmqUYZ_zykonP6D505PxLDqsq1m5A> .
+    prov:wasRevisionOf <ni:///sha-256;HWFkCq6WdHYaGltq-5U6q5HzkhzPPGt0CiSwxUbxrQI> .
 
-<urn:uuid:6a1d4e83-9f2b-4c7a-8d36-5e8b2f1c9a47> a cascade:ReferenceSeries ;
+<urn:uuid:0c53ef74-b3a8-414e-9037-25f9c2257b29> a cascade:ReferenceSeries ;
     rdfs:label "CVX vaccine group table" ;
     cascade:tableKind cascade:VaccineGroups ;
-    cascade:defaultTableVersion <ni:///sha-256;QB2fkudO_blj2MpVxMnWi-kAWCzxRbG1odWEGTSZL2I> .
+    cascade:defaultTableVersion <ni:///sha-256;zN9AlduvVgdCOBcHEdimnzc8xzaFC-wrjR2thhQjitQ> .
 
-<ni:///sha-256;QB2fkudO_blj2MpVxMnWi-kAWCzxRbG1odWEGTSZL2I> a prov:Entity ;
-    prov:specializationOf <urn:uuid:6a1d4e83-9f2b-4c7a-8d36-5e8b2f1c9a47> ;
+<ni:///sha-256;zN9AlduvVgdCOBcHEdimnzc8xzaFC-wrjR2thhQjitQ> a prov:Entity ;
+    prov:specializationOf <urn:uuid:0c53ef74-b3a8-414e-9037-25f9c2257b29> ;
     pav:version "1" .
+
+<ni:///sha-256;3PfmBS1X23R37m6u9hN3ToWlniQtmwOhcD9z5DsoYbM> a prov:Entity ;
+    prov:specializationOf <urn:uuid:0c53ef74-b3a8-414e-9037-25f9c2257b29> ;
+    pav:version "2" ;
+    prov:wasRevisionOf <ni:///sha-256;zN9AlduvVgdCOBcHEdimnzc8xzaFC-wrjR2thhQjitQ> .

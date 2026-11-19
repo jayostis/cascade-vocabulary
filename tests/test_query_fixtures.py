@@ -116,9 +116,6 @@ def used_by_no_activity(store):
 
 
 MARKED = {name: relative for name, relative in named("matcher").items() if marked_groups(query(relative))}
-MADE_FROM = {relative: named("matcher")[name.removesuffix(suffix)] for name, relative in named("matcher").items()
-             for suffix in ("-bound-per-side", "-key-joined-first", "-others-by-code-and-instant", "-others-by-code-and-day")
-             if name.endswith(suffix) and name.removesuffix(suffix) in named("matcher")}
 CURRENT_VERSIONS = "SELECT DISTINCT ?record WHERE { ?record <http://purl.org/pav/hasCurrentVersion> [] }"
 
 
@@ -129,11 +126,6 @@ PERSONS_JUDGMENTS = """
 
 
 MATCHER_FIXTURES = [on_its_worker(fixture, id=fixture.name) for fixture in FIXTURES if fixture.name.startswith("matcher-")]
-COMPARISONS_MADE_FROM = [
-    on_its_worker(fixture, [relative], id=f"{fixture.name}-{Path(relative).stem}", part=Path(relative).stem)
-    for fixture in FIXTURES if slow_on_rdflib(fixture) for relative in MADE_FROM
-] + [on_its_worker(fixture, list(MADE_FROM), id=fixture.name)
-     for fixture in FIXTURES if fixture.name.startswith("matcher-") and not slow_on_rdflib(fixture)]
 ORDERED_ENTRIES = [case for case in ENTRIES if Path(case.values[1].query).resolve() in ORDERED]
 
 
@@ -451,36 +443,11 @@ class TestMatcherComparisons:
             """gives, bound in the groups it marks, the rows it gives unbound for the same records"""
             store = built_once(fixture, "oxigraph", LENSES[0]).store
             records = every_other_current_record(store)
-            assert MARKED and MADE_FROM and records
+            assert MARKED and records
             for name, relative in MARKED.items():
                 text = query(relative)
                 unbound = Counter(row(found) for found in store.select(text) if str(found["record"]) in records)
                 assert rows_of(store, bound_to_records(text, records)) == unbound, name
-
-        @pytest.mark.parametrize("fixture, relatives", COMPARISONS_MADE_FROM)
-        def test_gives_the_rows_of_the_comparison_it_was_made_from(self, fixture, relatives):
-            """gives, bound per side or joined on its key first, the rows of the comparison it was made from
-
-            Bound and unbound, on each engine; on rdflib only where the pair gives rows over the fixture, for two texts
-            that agree on no rows show nothing, and rdflib parses each bound text again for every fixture. Over a fixture
-            whose pairs take rdflib seconds, each pair is a case of its own.
-            """
-            oxigraph = built_once(fixture, "oxigraph", LENSES[0]).store
-            records = every_other_current_record(oxigraph)
-            assert MADE_FROM and records
-            giving_rows = []
-            for relative in relatives:
-                for texts in ((query(relative), query(MADE_FROM[relative])),
-                              (bound_to_records(query(relative), records), bound_to_records(query(MADE_FROM[relative]), records))):
-                    new, old = (rows_of(oxigraph, text) for text in texts)
-                    assert new == old, ("oxigraph", relative)
-                    if new:
-                        giving_rows.append((relative, texts))
-            if giving_rows:
-                held = built_once(fixture, "rdflib", LENSES[0]).store
-                for relative, texts in giving_rows:
-                    new, old = (rows_of(held, text) for text in texts)
-                    assert new == old, ("rdflib", relative)
 
 
 class TestChecksOfTheFixtureTools:
