@@ -74,12 +74,24 @@ def storage_roots(text):
 def whole_searches(plan, per_root=()):
     """The steps, of one statement's EXPLAIN QUERY PLAN given as (id, parent, detail) rows, that search `quad` by its
     predicate alone or by it and a range of its object, in a loop another loop runs once for each row of: not the first
-    loop of its select, or inside a subquery run for each row of the statement's. A loop over a CTE of one constant
-    row, or over a table a `per_root` alias names, the pod's few storage roots, is no loop for this, nor is the
-    MATERIALIZE of a CTE a select reads, which runs once before the select's first loop."""
+    loop of its select, or inside a subquery run for each row of the statement's. The SCAN of a CTE of one constant
+    row, or its CO-ROUTINE or MATERIALIZE, is no loop for this, nor is a `per_root` alias's loop, the pod's few
+    storage roots, once each and only among the first loops of its select, nor is the MATERIALIZE of a CTE a select
+    reads, which runs once before the select's first loop."""
     one_row = {detail.split()[1] for step, _, detail in plan if detail.startswith(("CO-ROUTINE ", "MATERIALIZE "))
                and any(parent == step and child == "SCAN CONSTANT ROW" for _, parent, child in plan)}
-    plan = [row for row in plan if not (named := LOOP_OVER.match(row[2])) or named[1] not in one_row | set(per_root)]
+    leading, rooted, kept = {}, {}, []
+    for row in plan:
+        named = LOOP_OVER.match(row[2])
+        if named and not row[2].startswith("SEARCH ") and named[1] in one_row:
+            continue
+        if (named and named[1] in per_root and leading.setdefault(row[1], True)
+                and named[1] not in rooted.setdefault(row[1], set())):
+            rooted[row[1]].add(named[1])
+            continue
+        leading[row[1]] = False
+        kept.append(row)
+    plan = kept
     firsts, by_id = {}, {step: (parent, detail) for step, parent, detail in plan}
     for step, parent, detail in plan:
         if not detail.startswith("MATERIALIZE "):
@@ -1106,6 +1118,14 @@ class TestTheSqlCheck:
         assert whole_searches([(2, 0, "MATERIALIZE n"), (3, 2, "SCAN a"), (12, 0, by_predicate)]) == []
         assert whole_searches([(2, 0, "MATERIALIZE n"), (3, 2, "SCAN a"), (9, 0, "SCAN n"), (12, 0, by_predicate)]) \
             == [by_predicate]
+        typed = (8, 0, "SEARCH t USING COVERING INDEX quad_pos (p=?)")
+        again = (15, 0, "SEARCH s USING COVERING INDEX quad_pos (p=?)")
+        assert whole_searches(constant + [typed] + roots, per_root=["s", "root"]) == [roots[0][2]]
+        assert whole_searches(constant + [typed, (7, 0, "SEARCH file USING INTEGER PRIMARY KEY (rowid=?)")] + roots,
+                              per_root=["s", "root"]) == [roots[0][2]]
+        assert whole_searches(constant + roots + [(12, 0, by_predicate), again], per_root=["s", "root"]) == [again[2]]
+        assert whole_searches(constant + [(12, 0, "SEARCH a USING COVERING INDEX quad_pos (p=?)"),
+                                          (15, 0, "SEARCH k USING COVERING INDEX quad_pos (p=?)")])             == ["SEARCH k USING COVERING INDEX quad_pos (p=?)"]
         assert storage_roots("FROM k CROSS JOIN quad s ON s.p = k.storage\n    CROSS JOIN term root ON root.id = s.o AND "
                              "root.kind <> 1 CROSS JOIN quad t ON t.p = k.type") == ["s", "root"]
         assert storage_roots("FROM k CROSS JOIN quad s ON s.p = k.storage CROSS JOIN quad t ON t.p = k.type") == []
