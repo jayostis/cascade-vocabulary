@@ -634,7 +634,7 @@ def undone(connection):
             connection.commit()
 
 
-SCHEMA_TABLES = {"term", "quad", "scope", "asked", "ledger"}
+SCHEMA_TABLES = {"term", "quad", "scope", "asked", "ledger", "sqlite_stat1", "sqlite_stat4"}
 
 
 def screen_tables(connection):
