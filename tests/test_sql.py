@@ -62,7 +62,13 @@ def whole_scans(run, text):
 
 
 LOOP_OVER = re.compile(r"^(?:SCAN|SEARCH|CO-ROUTINE|MATERIALIZE) (\w+)\b")
-STORAGE_ROOTS = re.compile(r"\bquad (\w+) ON \1\.p = k\.storage\b")
+STORAGE_ROOTS = re.compile(r"\bquad (\w+) ON \1\.p = k\.storage\s+CROSS JOIN term (\w+) ON \2\.id = \1\.o\b")
+
+
+def storage_roots(text):
+    """The aliases a statement's text gives the storage triples it loops over and the terms they name, the pod's few
+    roots, for whole_searches."""
+    return [alias for found in STORAGE_ROOTS.findall(text) for alias in found]
 
 
 def whole_searches(plan, per_root=()):
@@ -978,7 +984,7 @@ class TestPlansOfTheQuestions:
         ran = engine_ran(engine)
         found = [f"{relative}: {detail}" for relative, (plan, scans) in question_plans(engine).items()
                  for detail in [f"scans {name}" for name in scans]
-                 + whole_searches(plan, STORAGE_ROOTS.findall(sql_text(relative)))]
+                 + whole_searches(plan, storage_roots(sql_text(relative)))]
         assert found == [], f"on SQLite {ran}"
 
 
@@ -1091,15 +1097,18 @@ class TestTheSqlCheck:
             == [by_predicate]
         assert whole_searches([(2, 0, "CO-ROUTINE k"), (3, 2, "SCAN a"), (9, 0, "SCAN k"), (12, 0, by_predicate)]) \
             == [by_predicate]
-        roots = (9, 0, "SEARCH s USING COVERING INDEX quad_pos (p=?)")
-        assert whole_searches(constant + [roots, (12, 0, by_predicate)], per_root=["s"]) == []
-        assert whole_searches(constant + [roots, (12, 0, by_predicate)]) == [by_predicate]
-        assert whole_searches(constant + [roots, (12, 0, by_predicate), (15, 0, by_predicate)], per_root=["s"]) \
+        roots = [(9, 0, "SEARCH s USING COVERING INDEX quad_pos (p=?)"),
+                 (10, 0, "SEARCH root USING INTEGER PRIMARY KEY (rowid=?)")]
+        assert whole_searches(constant + roots + [(12, 0, by_predicate)], per_root=["s", "root"]) == []
+        assert whole_searches(constant + roots + [(12, 0, by_predicate)]) == [by_predicate]
+        assert whole_searches(constant + roots + [(12, 0, by_predicate), (15, 0, by_predicate)], per_root=["s", "root"]) \
             == [by_predicate]
         assert whole_searches([(2, 0, "MATERIALIZE n"), (3, 2, "SCAN a"), (12, 0, by_predicate)]) == []
         assert whole_searches([(2, 0, "MATERIALIZE n"), (3, 2, "SCAN a"), (9, 0, "SCAN n"), (12, 0, by_predicate)]) \
             == [by_predicate]
-        assert STORAGE_ROOTS.findall("FROM k CROSS JOIN quad s ON s.p = k.storage CROSS JOIN quad t ON t.p = k.type") == ["s"]
+        assert storage_roots("FROM k CROSS JOIN quad s ON s.p = k.storage\n    CROSS JOIN term root ON root.id = s.o AND "
+                             "root.kind <> 1 CROSS JOIN quad t ON t.p = k.type") == ["s", "root"]
+        assert storage_roots("FROM k CROSS JOIN quad s ON s.p = k.storage CROSS JOIN quad t ON t.p = k.type") == []
 
     def test_reports_a_scan_of_quad_or_term_under_whatever_alias_the_statement_names_it_by(self):
         """reports a scan of `quad` or `term` under whatever alias the statement names it by, and no search of either
