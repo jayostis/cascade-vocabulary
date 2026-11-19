@@ -65,23 +65,34 @@ def pin_failures(pinned, texts):
 
 def final_order(text, names):
     """The indexes of the columns the query's rows are ordered by, after its last brace: its ORDER BY's leading
-    conditions that are a projected variable, alone or in ASC() or DESC(); the conditions after them order only rows
-    these tie. None when the query has no ORDER BY there."""
+    conditions that are a projected variable, alone or in an expression of it and of no other variable, such as
+    DESC(COALESCE(STR(?a), "")); the conditions after them order only rows these tie. None when the query has no ORDER
+    BY there."""
     tail = text[text.rfind("}"):]
     clause = re.search(r"ORDER\s+BY\s", tail)
     if not clause:
         return None
-    rest, keys = tail[clause.end():], []
-    while condition := ORDER_CONDITION.match(rest):
-        variable = condition.group(1) or condition.group(2)
-        if variable not in names:
+    rest, keys = tail[clause.end():].strip(), []
+    while rest:
+        variable = re.match(r"\?(\w+)", rest)
+        if variable:
+            condition = variable.group(0)
+        else:
+            call = re.match(r"\w+\s*\(", rest)
+            if not call:
+                break
+            depth, at = 0, call.end() - 1
+            for at in range(call.end() - 1, len(rest)):
+                depth += {"(": 1, ")": -1}.get(rest[at], 0)
+                if depth == 0:
+                    break
+            condition = rest[:at + 1]
+        mentioned = set(re.findall(r"\?(\w+)", re.sub(r'"[^"]*"', "", condition)))
+        if len(mentioned) != 1 or (found := mentioned.pop()) not in names:
             break
-        keys.append(names.index(variable))
-        rest = rest[condition.end():]
+        keys.append(names.index(found))
+        rest = rest[len(condition):].strip()
     return keys
-
-
-ORDER_CONDITION = re.compile(r"\s*(?:(?:ASC|DESC)\s*\(\s*\?(\w+)\s*\)|\?(\w+))(?![\w(])", re.IGNORECASE)
 
 
 def tied(left, right):
@@ -268,11 +279,13 @@ def renamed(connection, subjects, predicates):
 def keyed_changes(connection):
     """Each change a keyed run may be given over the pod, named, as a function that makes it on a copy of the pod and
     gives the terms the run puts in scope."""
-    (in_entry, lead, member, agent, label, foaf_name, current, reason, values_of, member_values, *names) = term_ids(
+    (in_entry, lead, member, agent, label, foaf_name, current, reason, values_of, member_values, rdf_type,
+     condition_kind, *names) = term_ids(
         connection, CASCADE + "inEntry", CASCADE + "leadMember", CASCADE + "entryMember",
         "http://www.w3.org/ns/prov#agent", "http://www.w3.org/2000/01/rdf-schema#label", "http://xmlns.com/foaf/0.1/name",
         "http://purl.org/pav/hasCurrentVersion", CASCADE + "reasonCondition", CASCADE + "valuesOfMember",
-        CASCADE + "memberCurrentValues", CASCADE + "drugName", CASCADE + "procedureName", CASCADE + "vaccineName")
+        CASCADE + "memberCurrentValues", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        CASCADE + "ProblemOrDiagnosis", CASCADE + "drugName", CASCADE + "procedureName", CASCADE + "vaccineName")
     if in_entry is None:
         return []
     changes, entries = [], {}
@@ -311,6 +324,15 @@ def keyed_changes(connection):
             return [record]
         changes.append((f"record {record}'s reasons dropped", reasons_dropped))
         changes.append((f"entry {entry} its values give reasons for renamed, {record} in scope", entry_renamed))
+        for (condition,) in connection.execute(
+                "SELECT DISTINCT q.s FROM quad q JOIN quad t ON t.s = q.s AND t.p = ? AND t.o = ? WHERE q.p = ? "
+                "AND q.s NOT IN (SELECT o FROM quad WHERE s = ? AND p = ?)",
+                (rdf_type, condition_kind, in_entry, values, reason)).fetchall():
+            def reason_gained(c, record=record, values=values, condition=condition):
+                c.execute("INSERT INTO quad (s, p, o, g) SELECT s, p, ?, g FROM quad WHERE s = ? AND p = ? LIMIT 1",
+                          (condition, values, reason))
+                return [record]
+            changes.append((f"record {record} given condition {condition} as a reason", reason_gained))
     return changes
 
 
@@ -381,9 +403,9 @@ class TestSqlBesideEachQuery:
             Over each fixture's screens, filled whole, each change a keyed run may be given is made to the pod's
             statements and the screens filled again with scope holding what it touched: each record in an entry,
             unchanged; each record but the lead of an entry of two or more, moved to an entry of its own; each agent,
-            renamed; each record whose values give a reason condition, its reasons dropped; and each entry those values
-            are of, renamed, the record in scope. Every screen table then holds the rows a whole fill of the changed
-            pod gives from empty tables.
+            renamed; each record whose values give a reason condition, its reasons dropped, and given each other
+            condition's record as a reason; and each entry those values are of, renamed, the record in scope. Every
+            screen table then holds the rows a whole fill of the changed pod gives from empty tables.
             """
             found = []
             for lens in LENSES:
@@ -682,7 +704,8 @@ class TestTheSqlCheck:
 
         Rows ordered by a dateTime pass in either order where SPARQL's `<` does not order them, a value with no zone
         and one with a zone within fourteen hours of it, and where they hold one term; rows it does order fail turned
-        round, naming the row. The key columns are the ORDER BY's leading projected variables.
+        round, naming the row. The key columns are those of the ORDER BY's leading conditions that each read one
+        projected variable, alone or in an expression.
         """
         def at(value):
             return (sql.Term(sql.LITERAL, value, XSD + "dateTime"),)
@@ -692,7 +715,9 @@ class TestTheSqlCheck:
         assert compared(["t"], [unzoned, later], [unzoned, later], [0]) == []
         assert compared(["t"], [unzoned, later], [later, unzoned], [0]) == [
             f"the same rows in another order, from row 1: expected ?t={unzoned[0]}, found ?t={later[0]}"]
-        assert final_order("SELECT ?a ?b ?c WHERE { } ORDER BY DESC(?b) ?a STR(?c) ?c", ["a", "b", "c"]) == [1, 0]
+        assert final_order("SELECT ?a ?b ?c WHERE { } ORDER BY DESC(?b) ?a STR(?c) ?c", ["a", "b", "c"]) == [1, 0, 2, 2]
+        assert final_order('SELECT ?a ?b WHERE { } ORDER BY DESC(COALESCE(SUBSTR(STR(?a), 1, 10), "")) ?b', ["a", "b"]) == [0, 1]
+        assert final_order("SELECT ?a ?b WHERE { } ORDER BY CONCAT(?a, ?b) ?a", ["a", "b"]) == []
         assert final_order("SELECT ?a WHERE { } ORDER BY ?z ?a", ["a"]) == []
         assert final_order("SELECT ?a WHERE { } GROUP BY ?a", ["a"]) is None
 

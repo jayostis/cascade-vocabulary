@@ -6,7 +6,6 @@ WITH
            r.low_ucum, r.low_unit_text, r.high_written, r.high_ucum, r.high_unit_text, r.label
     FROM lab_result r
     WHERE r.sort_key > coalesce(:after, '')
-      AND EXISTS (SELECT 1 FROM lab_result_member_values v WHERE v.entry = r.entry)
       AND (NOT EXISTS (SELECT 1 FROM asked)
            OR EXISTS (SELECT 1 FROM lab_result_member m JOIN asked ON asked.term = m.record WHERE m.entry = r.entry))
     ORDER BY r.sort_key
