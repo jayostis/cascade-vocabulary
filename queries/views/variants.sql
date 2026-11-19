@@ -100,6 +100,38 @@ CREATE TABLE variant_source (
   PRIMARY KEY (entry, line)
 ) STRICT, WITHOUT ROWID;
 
+-- The statements the view makes, as s, p and o in N-Triples, the entries and the nodes named after them as the
+-- derived state names them.
+CREATE VIEW variant_triples (s, p, o) AS
+WITH
+  entries (s, entry) AS (SELECT e.nt, c.entry FROM variant c JOIN term e ON e.id = c.entry),
+  members (s, node, entry, member) AS (SELECT mv.node, mv.node, mv.entry, mv.member FROM variant_member_values mv),
+  said (s, p, o) AS (
+    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#geneSymbol>', x.gene FROM entries e JOIN variant_gene x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#hgvsCodingDnaExpression>', x.hgvs FROM entries e JOIN variant_hgvs x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#clinvarVariationId>', x.variation FROM entries e JOIN variant_variation x ON x.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', c.status FROM entries e JOIN variant c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN variant c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN variant c ON c.entry = e.entry
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN variant_member m ON m.entry = e.entry
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', v.status FROM members mv JOIN variant_member_values v USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#geneSymbol>', x.value FROM members mv JOIN variant_member_values_gene x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#hgvsCodingDnaExpression>', x.value FROM members mv JOIN variant_member_values_hgvs x USING (entry, member)
+    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#clinvarVariationId>', x.value FROM members mv JOIN variant_member_values_variation x USING (entry, member)),
+  made (s, p, o) AS (
+    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#GeneticVariantFinding>'
+    FROM entries
+    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
+      FROM members mv JOIN entries e ON e.entry = mv.entry)
+SELECT said.s AS s, said.p AS p, o.nt AS o FROM said JOIN term o ON o.id = said.o
+UNION ALL SELECT s, p, o FROM made;
+-- Each record the view shows in an entry, `file` the view's address, `entry` as the view names it, `label` the
+-- entry's label's term id.
+CREATE VIEW variant_shown (file, type, entry, label, record) AS
+SELECT '<' || k.address || '>', '<https://ns.cascadeprotocol.org/cascade#GeneticVariantFinding>', e.iri, e.label, m.record
+FROM variant_terms k CROSS JOIN variant e CROSS JOIN variant_member m ON m.entry = e.entry;
+
 INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
   ('variant', 'sqlite_autoindex_variant_1', '112 1'),
   ('variant', 'sqlite_autoindex_variant_2', '112 1'),
@@ -289,26 +321,4 @@ SELECT records.entry,
 FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
-WITH
-  entries (s, entry) AS (SELECT e.nt, c.entry FROM variant c JOIN term e ON e.id = c.entry),
-  members (s, node, entry, member) AS (SELECT mv.node, mv.node, mv.entry, mv.member FROM variant_member_values mv),
-  said (s, p, o) AS (
-    SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#geneSymbol>', x.gene FROM entries e JOIN variant_gene x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#hgvsCodingDnaExpression>', x.hgvs FROM entries e JOIN variant_hgvs x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#clinvarVariationId>', x.variation FROM entries e JOIN variant_variation x ON x.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', c.status FROM entries e JOIN variant c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#leadMember>', c.lead FROM entries e JOIN variant c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#statusFrom>', c.status_from FROM entries e JOIN variant c ON c.entry = e.entry
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#entryMember>', m.record FROM entries e JOIN variant_member m ON m.entry = e.entry
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', mv.member FROM members mv
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#workflowStatus>', v.status FROM members mv JOIN variant_member_values v USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#geneSymbol>', x.value FROM members mv JOIN variant_member_values_gene x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#hgvsCodingDnaExpression>', x.value FROM members mv JOIN variant_member_values_hgvs x USING (entry, member)
-    UNION ALL SELECT mv.node, '<https://ns.cascadeprotocol.org/cascade#clinvarVariationId>', x.value FROM members mv JOIN variant_member_values_variation x USING (entry, member)),
-  made (s, p, o) AS (
-    SELECT s, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', '<https://ns.cascadeprotocol.org/cascade#GeneticVariantFinding>'
-    FROM entries
-    UNION ALL SELECT e.s, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', mv.node
-      FROM members mv JOIN entries e ON e.entry = mv.entry)
-SELECT said.s AS s, said.p AS p, o.nt AS o FROM said JOIN term o ON o.id = said.o
-UNION ALL SELECT s, p, o FROM made
+SELECT s, p, o FROM variant_triples

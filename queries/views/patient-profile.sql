@@ -4,7 +4,7 @@
 -- profile's current values, a node of the view named after the entry and the profile; `patient_profile_source` where
 -- each profile came from. The view's entries are not those the derived state holds, and a profile is no record, so no run
 -- is keyed to one: each run fills the screen whole, as it reads the judgments of the lens, which every run reads.
--- The columns that read the labels output are none.
+-- The column that reads the labels output, filled by finish, is `patient_profile_member.label`.
 
 -- part: tables
 CREATE VIEW patient_profile_terms AS SELECT
@@ -30,14 +30,23 @@ CREATE VIEW patient_profile_terms AS SELECT
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#AuthorRole>') AS author_role,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#CustodianRole>') AS custodian_role,
   (SELECT id FROM term WHERE nt = '<http://xmlns.com/foaf/0.1/name>') AS foaf_name,
-  (SELECT id FROM term WHERE nt = '<http://www.w3.org/2000/01/rdf-schema#label>') AS label;
+  (SELECT id FROM term WHERE nt = '<http://www.w3.org/2000/01/rdf-schema#label>') AS label,
+  (SELECT CASE WHEN count(DISTINCT i.lex) = 1 THEN min(i.lex) END
+   FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o
+   WHERE w.p = (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#writtenByQueryPath>')
+     AND w.o = (SELECT id FROM term WHERE nt = '"views/patient-profile.rq"')
+     AND x.p = (SELECT id FROM term WHERE nt = '<http://www.w3.org/ns/solid/terms#instance>')) AS address;
 
 -- `entry` is the entry as the view names it, N-Triples text: urn:cascade:entry: and the SHA-256 of the subject's least
--- profile. `subject` and `profile` are terms' ids. An entry holds the profiles of each subject it is named for.
+-- profile. `iri` is the entry as the view's file names it, from the layout's address for the view. `subject` and `profile`
+-- are terms' ids. `label` is the entry's label's term id, which finish fills from the labels output. An entry holds the
+-- profiles of each subject it is named for.
 CREATE TABLE patient_profile_member (
   entry TEXT NOT NULL,
+  iri TEXT NOT NULL,
   subject INTEGER NOT NULL,
   profile INTEGER NOT NULL,
+  label INTEGER,
   PRIMARY KEY (entry, subject, profile)
 ) STRICT, WITHOUT ROWID;
 CREATE INDEX patient_profile_member_profile ON patient_profile_member (profile);
@@ -61,6 +70,35 @@ CREATE TABLE patient_profile_source (
   PRIMARY KEY (profile, line)
 ) STRICT, WITHOUT ROWID;
 
+-- The statements the view makes, as s, p and o in N-Triples, the entries and the nodes named after them as the
+-- derived state names them.
+CREATE VIEW patient_profile_triples (s, p, o) AS
+WITH
+  said (s, p, o) AS (
+    SELECT m.entry, '<https://ns.cascadeprotocol.org/cascade#entryMember>', t.nt
+    FROM patient_profile_member m JOIN term t ON t.id = m.profile
+    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', t.nt
+      FROM patient_profile_values v JOIN term t ON t.id = v.profile
+    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#dateOfBirth>', t.nt
+      FROM patient_profile_values v JOIN term t ON t.id = v.date_of_birth
+    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#administrativeGender>', t.nt
+      FROM patient_profile_values v JOIN term t ON t.id = v.administrative_gender
+    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#deceased>', t.nt
+      FROM patient_profile_values v JOIN term t ON t.id = v.deceased
+    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#dateOfDeath>', t.nt
+      FROM patient_profile_values v JOIN term t ON t.id = v.date_of_death
+    UNION ALL SELECT v.entry, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', v.node
+      FROM patient_profile_values v),
+  entries (entry) AS (SELECT DISTINCT entry FROM patient_profile_member)
+SELECT s, p, o FROM said
+UNION ALL SELECT entry, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>',
+  '<https://ns.cascadeprotocol.org/cascade#PatientProfile>' FROM entries;
+-- Each record the view shows in an entry, `file` the view's address, `entry` as the view names it, `label` the
+-- entry's label's term id.
+CREATE VIEW patient_profile_shown (file, type, entry, label, record) AS
+SELECT '<' || k.address || '>', '<https://ns.cascadeprotocol.org/cascade#PatientProfile>', m.iri, m.label, m.profile
+FROM patient_profile_terms k CROSS JOIN patient_profile_member m;
+
 INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
   ('patient_profile_member', 'patient_profile_member', '1 1 1 1'),
   ('patient_profile_member', 'patient_profile_member_profile', '1 1'),
@@ -71,7 +109,7 @@ ANALYZE sqlite_schema;
 -- part: fill
 DELETE FROM patient_profile_member;
 DELETE FROM patient_profile_values;
-INSERT INTO patient_profile_member (entry, subject, profile)
+INSERT INTO patient_profile_member (entry, iri, subject, profile)
 WITH
   counted (subject, profile) AS (
     SELECT DISTINCT su.o, h.o
@@ -86,11 +124,12 @@ WITH
         JOIN quad dh ON dh.s = dc.s AND dh.p = k.had_member AND dh.o = h.o
         JOIN quad ds ON ds.s = dc.s AND ds.p = k.subject AND ds.o = su.o
         WHERE dc.p = k.counts AND dc.o = k.yes)),
-  named (subject, entry) AS (
-    SELECT counted.subject, '<urn:cascade:entry:' || sparql_sha256(min(t.lex)) || '>'
-    FROM counted CROSS JOIN term t ON t.id = counted.profile AND t.kind = 2
+  named (subject, entry, iri) AS (
+    SELECT counted.subject, '<urn:cascade:entry:' || sparql_sha256(min(t.lex)) || '>',
+      '<' || k.address || '#' || sparql_sha256(min(t.lex)) || '>'
+    FROM patient_profile_terms k CROSS JOIN counted CROSS JOIN term t ON t.id = counted.profile AND t.kind = 2
     GROUP BY counted.subject)
-SELECT named.entry, counted.subject, counted.profile
+SELECT named.entry, named.iri, counted.subject, counted.profile
 FROM counted JOIN named ON named.subject = counted.subject;
 
 INSERT INTO patient_profile_values (entry, profile, node, date_of_birth, administrative_gender, deceased, date_of_death)
@@ -107,6 +146,10 @@ FROM patient_profile_terms k CROSS JOIN held JOIN term p ON p.id = held.profile
 WHERE held.version IS NOT NULL;
 
 -- part: finish
+UPDATE patient_profile_member SET label = (
+  SELECT min(l.o) FROM patient_profile_terms k CROSS JOIN quad l
+  WHERE l.s = (SELECT id FROM term WHERE nt = patient_profile_member.iri) AND l.p = k.label);
+
 DELETE FROM patient_profile_source;
 INSERT OR IGNORE INTO patient_profile_source (profile, line, shown)
 WITH
@@ -160,23 +203,4 @@ SELECT records.record,
 FROM records CROSS JOIN stated ON stated.record = records.record JOIN term r ON r.id = records.record;
 
 -- part: triples
-WITH
-  said (s, p, o) AS (
-    SELECT m.entry, '<https://ns.cascadeprotocol.org/cascade#entryMember>', t.nt
-    FROM patient_profile_member m JOIN term t ON t.id = m.profile
-    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#valuesOfMember>', t.nt
-      FROM patient_profile_values v JOIN term t ON t.id = v.profile
-    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#dateOfBirth>', t.nt
-      FROM patient_profile_values v JOIN term t ON t.id = v.date_of_birth
-    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#administrativeGender>', t.nt
-      FROM patient_profile_values v JOIN term t ON t.id = v.administrative_gender
-    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#deceased>', t.nt
-      FROM patient_profile_values v JOIN term t ON t.id = v.deceased
-    UNION ALL SELECT v.node, '<https://ns.cascadeprotocol.org/cascade#dateOfDeath>', t.nt
-      FROM patient_profile_values v JOIN term t ON t.id = v.date_of_death
-    UNION ALL SELECT v.entry, '<https://ns.cascadeprotocol.org/cascade#memberCurrentValues>', v.node
-      FROM patient_profile_values v),
-  entries (entry) AS (SELECT DISTINCT entry FROM patient_profile_member)
-SELECT s, p, o FROM said
-UNION ALL SELECT entry, '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>',
-  '<https://ns.cascadeprotocol.org/cascade#PatientProfile>' FROM entries
+SELECT s, p, o FROM patient_profile_triples
