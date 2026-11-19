@@ -126,3 +126,22 @@ CREATE TABLE ledger (
   built TEXT PRIMARY KEY,
   fingerprint TEXT NOT NULL
 ) STRICT;
+
+-- Planner statistics: the rows ANALYZE wrote for the tables above on a pod of 15,000 records, 986,560 statements, so
+-- every plan is the same in every runtime and at every size of pod, and a runtime runs no ANALYZE. `scope` and `asked`
+-- have the one row a keyed run gives them, not the pod's: a screen's statements join what they read to `scope`, and a
+-- `scope` of the pod's size lets the plan read a predicate's whole range of `quad` and look `scope` up for each of
+-- them, a cost that grows with the pod on every keyed run. The last statement loads the rows; a table or index added
+-- above gets its row here. A screen's tables have none: its fills are as fast with them unanalyzed, as ANALYZE left
+-- them before they were filled.
+ANALYZE sqlite_schema;
+INSERT INTO sqlite_stat1 (tbl, idx, stat) VALUES
+  ('asked', NULL, '1'),
+  ('ledger', 'sqlite_autoindex_ledger_1', '1 1'),
+  ('quad', 'quad', '986560 8 1 1 1'),
+  ('quad', 'quad_g', '986560 21 5 1 1'),
+  ('quad', 'quad_osp', '986560 5 2 1 1'),
+  ('quad', 'quad_pos', '986560 7769 3 1 1'),
+  ('scope', NULL, '1'),
+  ('term', 'sqlite_autoindex_term_1', '306736 1');
+ANALYZE sqlite_schema;

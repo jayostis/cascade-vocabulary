@@ -647,6 +647,20 @@ class TestSqlBesideEachQuery:
                      for detail in whole_searches(plan)]
             assert found == []
 
+        def test_ships_a_statistics_row_for_each_index_of_the_schema_and_for_each_of_its_tables_with_none(self):
+            """ships a statistics row for each index queries/statements.sql makes, and for each table of it with none
+
+            The rows are loaded by the schema's last statement, so a connection that has made it and run no ANALYZE holds
+            them. An index, or a table with no index, the schema makes with no row fails, as does a row for neither.
+            """
+            connection = sql.connected()
+            wanted = {(table, index) for table, index in connection.execute(
+                "SELECT tbl_name, name FROM sqlite_schema WHERE type = 'index'")}
+            wanted |= {(name, name if without_rowid else None) for name, without_rowid in connection.execute(
+                "SELECT name, wr FROM pragma_table_list WHERE schema = 'main' AND name NOT LIKE 'sqlite_%'")
+                if without_rowid or not any(table == name for table, _ in wanted)}
+            assert set(connection.execute("SELECT tbl, idx FROM sqlite_stat1")) == wanted
+
         @pytest.mark.parametrize("view, fixture", [
             ("conditions", "conditions-view"), ("lab-results", "lab-results-view"), ("allergies", "allergies-view"),
             ("medications", "medications-view"), ("medication-dispenses", "medication-dispenses-view"),
@@ -933,6 +947,23 @@ class TestTheSqlCheck:
             "unexpected: ?s=<urn:x:a> ?p=<urn:x:b> ?o=<urn:x:c>"]
         assert [record for record in ("months", "years")
                 if sum(f"missing: ?s=<urn:x:{record}> ?p={start}" in line for line in found) == 1] == ["months", "years"]
+
+    def test_reports_a_plan_that_scans_quad_or_term_or_searches_quad_by_a_predicate_alone_in_a_loop(self):
+        """reports a plan that scans `quad` or `term`, or searches `quad` by a predicate alone in a loop, and no other
+
+        A search of `quad` by its predicate alone is reported as the second loop of a select, and in a subquery run for
+        each row of its statement's, but not as the first loop, nor in a subquery run once; a scan of `quad` or `term`
+        is reported wherever it is; a search by a predicate, an object and a subject is reported nowhere.
+        """
+        by_predicate = "SEARCH q USING COVERING INDEX quad_pos (p=?)"
+        assert whole_searches([(2, 0, by_predicate), (6, 0, "SEARCH s USING INTEGER PRIMARY KEY (rowid=?)")]) == []
+        assert whole_searches([(2, 0, "SCAN k"), (6, 0, by_predicate)]) == [by_predicate]
+        assert whole_searches([(2, 0, "SCAN scope"), (5, 0, "CORRELATED SCALAR SUBQUERY 3"), (8, 5, by_predicate)]) \
+            == [by_predicate]
+        assert whole_searches([(2, 0, "SCAN scope"), (5, 0, "SCALAR SUBQUERY 3"), (8, 5, by_predicate)]) == []
+        assert whole_searches([(2, 0, "SCAN term"), (6, 0, "SCAN quad USING COVERING INDEX quad_pos")]) \
+            == ["SCAN term", "SCAN quad USING COVERING INDEX quad_pos"]
+        assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o=? AND s=? AND p=?)")]) == []
 
     def test_compares_rows_an_order_by_ties_as_a_multiset_and_the_runs_it_orders_in_order(self):
         """compares rows an ORDER BY ties as a multiset, and the runs of rows it orders in their order
