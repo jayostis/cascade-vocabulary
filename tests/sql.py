@@ -6,7 +6,9 @@ import hashlib
 import re
 import sqlite3
 import unicodedata
+from contextlib import contextmanager
 from dataclasses import dataclass
+from functools import cache
 from urllib.parse import quote
 
 import pyoxigraph
@@ -507,9 +509,13 @@ FUNCTIONS = {"sparql_replace": sparql_replace, "sparql_sha256": sparql_sha256,
 MINIMUM_VERSION = tuple(map(int, re.search(r"SQLite (\d+)\.(\d+)\.(\d+)", SCHEMA.read_text(encoding="utf-8")).groups()))
 
 
+COMPILED = 1024
+
+
 def connected():
-    """An empty pod in memory, the schema made and the six functions registered."""
-    connection = sqlite3.connect(":memory:")
+    """An empty pod in memory, the schema made and the six functions registered, keeping enough statements compiled
+    that a refill of every screen compiles none again."""
+    connection = sqlite3.connect(":memory:", cached_statements=COMPILED)
     connection.executescript(SCHEMA.read_text(encoding="utf-8"))
     for name, function in FUNCTIONS.items():
         connection.create_function(name, -1, function, deterministic=True)
@@ -564,7 +570,7 @@ def whole(connection):
                        "AND o = (SELECT id FROM term WHERE nt = ?) "
                        "UNION SELECT s FROM quad WHERE p = (SELECT id FROM term WHERE nt = ?)",
                        (f"<{RDF_TYPE}>", f"<{RECORD}>", f"<{ENTRY_MEMBER}>"))
-    connection.commit()
+    settled(connection)
     return connection
 
 
@@ -573,7 +579,7 @@ def scoped(connection, records):
     connection.execute("DELETE FROM scope")
     connection.executemany("INSERT INTO scope (term) SELECT id FROM term WHERE nt = ?",
                            [(str(Term(IRI, record)),) for record in records])
-    connection.commit()
+    settled(connection)
     return connection
 
 
@@ -584,18 +590,48 @@ def asked(connection, records):
     connection.execute("DELETE FROM asked")
     connection.executemany("INSERT INTO asked (term) SELECT id FROM term WHERE nt = ?",
                            [(str(Term(IRI, record)),) for record in records])
-    connection.commit()
+    settled(connection)
     return connection if connection.execute("SELECT 1 FROM asked").fetchone() else None
 
 
 def copied(connection):
     """A copy of the pod in memory, its tables and the six functions registered."""
     connection.commit()
-    copy = sqlite3.connect(":memory:")
+    copy = sqlite3.connect(":memory:", cached_statements=COMPILED)
     connection.backup(copy)
     for name, function in FUNCTIONS.items():
         copy.create_function(name, -1, function, deterministic=True)
     return copy
+
+
+HELD = {}
+
+
+def settled(connection):
+    """Commits the connection's work, unless it is held by undone."""
+    if not HELD.get(id(connection)):
+        connection.commit()
+
+
+@contextmanager
+def undone(connection):
+    """Holds the connection's work in a savepoint, nested in any it is already held by, and rolls it back after, so a
+    change to a pod costs no copy of it."""
+    depth = HELD.get(id(connection), 0)
+    if not depth:
+        connection.commit()
+    name = f"undone_{depth}"
+    connection.execute(f"SAVEPOINT {name}")
+    HELD[id(connection)] = depth + 1
+    try:
+        yield connection
+    finally:
+        connection.execute(f"ROLLBACK TO {name}")
+        connection.execute(f"RELEASE {name}")
+        HELD[id(connection)] = depth
+        if not depth:
+            del HELD[id(connection)]
+            connection.commit()
 
 
 SCHEMA_TABLES = {"term", "quad", "scope", "asked", "ledger"}
@@ -622,6 +658,20 @@ def parts(text):
     return named
 
 
+@cache
+def statements(script):
+    """A script's statements, in order, each as SQLite reads one."""
+    found, pending = [], ""
+    for line in script.splitlines(keepends=True):
+        pending += line
+        if sqlite3.complete_statement(pending):
+            found.append(pending)
+            pending = ""
+    if pending.strip() and not all(line.lstrip().startswith("--") or not line.strip() for line in pending.splitlines()):
+        raise ValueError(f"a script ends in an unfinished statement: {pending[:200]!r}")
+    return found
+
+
 def statement(text):
     """What a `.sql` gives its `.rq`'s rows by: a view's triples part, or the whole text of any other."""
     return parts(text).get("triples", text)
@@ -637,12 +687,13 @@ def screened(connection, views):
 
 def refilled(connection, views):
     """The connection with each view's screen filled again for the entries in scope, every view's fill before any
-    view's finish."""
+    view's finish, each statement run alone, so the connection compiles each once."""
     texts = [parts(text) for text in views]
     for name in PARTS[1:3]:
         for found in texts:
-            connection.executescript(found[name])
-    connection.commit()
+            for each in statements(found[name]):
+                connection.execute(each)
+    settled(connection)
     return connection
 
 

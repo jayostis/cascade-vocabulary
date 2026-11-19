@@ -21,12 +21,18 @@
 --            screen's own member table remembers; and each the view's `.sql` names as showing what a term in scope
 --            states: a document's statements, in the source line of each record whose current revision derives
 --            from it, and an agent's name, in those of each document it made; and, for the conditions screen, the
---            entries given for a condition, through the values of a record in scope and through the records of
---            those entries the screen remembers. Every view's fill runs before any view's finish, on one connection.
+--            entries given for a condition, through the reason a record in scope's current version names, through the
+--            reasons the medications, procedures and immunizations screens hold of the entry a record in scope is in,
+--            and through the records of those entries the screen remembers. Those screens' fills may run before the
+--            conditions fill or after it, and give the same entries: a reason one of them no longer holds was dropped
+--            from a record in scope, whose conditions the screen remembers. Every view's fill runs before any view's
+--            finish, on one connection, so a screen reads another's tables in finish. A runtime that fills keyed runs
+--            often splits each part into its statements once and keeps each compiled on the connection, rather than
+--            running the part as a script, which compiles every statement again on each run.
 --            A lens is read by every entry, so a change of lens is a whole run, never a keyed one.
---   finish   gives, for the same entries, the columns that read the labels output or another view, once the labels
+--   finish   gives, for the same entries, the columns that read the labels output or another screen, once the labels
 --            are made. Until labels.rq has a `.sql`, the labels output is the rdfs:label statements in `quad`, which
---            labels.rq makes from the view graphs; until a view has a screen, another view reads its statements there.
+--            labels.rq makes from the view graphs.
 --   triples  one statement giving the triples the view's CONSTRUCT gives, as s, p and o, from the screen's tables
 --            alone. An entry is named as the derived state names it; a runtime writing the view's file names it as
 --            N13 says.

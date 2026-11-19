@@ -1,0 +1,19 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:fluTwice a cascade:Vaccination .
+:fluTwiceVersion prov:specializationOf :fluTwice ; cascade:patient :subject ; cascade:vaccineName "Influenza" ; cascade:workflowStatus "completed" ;
+    cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/150> , <https://ns.cascadeprotocol.org/codes/cvx/140> ;
+    cascade:vaccinationOccurrenceTime "2025-10-01"^^xsd:date .
+:fluTwiceRevision a cascade:Revision ; cascade:revisionOf :fluTwice ; cascade:version :fluTwiceVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:unnamed a cascade:Vaccination .
+:unnamedVersion prov:specializationOf :unnamed ; cascade:patient :subject ; cascade:workflowStatus "completed" ; cascade:vaccineCode <https://ns.cascadeprotocol.org/codes/cvx/115> ;
+    cascade:vaccinationOccurrenceTime "2025-10-01"^^xsd:date .
+:unnamedRevision a cascade:Revision ; cascade:revisionOf :unnamed ; cascade:version :unnamedVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

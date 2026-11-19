@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-procedure-states-two-codes" ;
+  rdfs:comment "A procedure whose source coded it twice, in SNOMED CT." ;
+  mf:entries (
+    <#my-procedures>
+  ) .
+
+<#my-procedures> a mf:QueryEvaluationTest ;
+  mf:name "my-procedures" ;
+  rdfs:comment "An entry with two codes is one row, with the first in code point order." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20procedures.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-procedures.srj> .
