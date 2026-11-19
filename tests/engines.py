@@ -8,6 +8,7 @@ import hashlib
 import os
 import pickle
 import re
+import shutil
 import sys
 import time
 import warnings
@@ -74,12 +75,15 @@ PARSES = None
 
 def use_parse_store(folder):
     """Stores the parses under the folder, in one named by what a stored parse depends on: the versions of rdflib,
-    pyparsing and Python, and this file, which rebuilds a parse."""
+    pyparsing and Python, and this file, which rebuilds a parse. The folders of other keys are removed."""
     global PARSES
     key = hashlib.sha256(
         "\0".join([rdflib.__version__, pyparsing.__version__, sys.version]).encode() + Path(__file__).read_bytes()
     ).hexdigest()[:16]
     PARSES = Path(folder) / f"parses-{key}"
+    for other in PARSES.parent.glob("parses-*"):
+        if other != PARSES:
+            shutil.rmtree(other, ignore_errors=True)
     PARSES.mkdir(parents=True, exist_ok=True)
 
 
@@ -92,7 +96,7 @@ def read_stored(query):
         return None
     try:
         return pickle.loads(stored(query).read_bytes())
-    except OSError:  # a file another process is replacing is not yet stored
+    except (OSError, pickle.UnpicklingError, EOFError):  # a file being replaced or cut short is not yet stored
         return None
 
 
