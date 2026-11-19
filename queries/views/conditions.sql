@@ -148,6 +148,10 @@ INSERT INTO condition_filled (entry)
     CROSS JOIN quad g ON g.o = a.s AND g.p = k.generated_by
     CROSS JOIN quad d ON d.o = g.s AND d.p = k.derived_from
     CROSS JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision
+    CROSS JOIN quad e ON e.s = cr.s AND e.p = k.in_entry
+  UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
+    CROSS JOIN quad d ON d.o = scope.term AND d.p = k.derived_from
+    CROSS JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision
     CROSS JOIN quad e ON e.s = cr.s AND e.p = k.in_entry;
 
 DELETE FROM condition WHERE entry IN (SELECT entry FROM condition_filled);

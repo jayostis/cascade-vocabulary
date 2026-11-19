@@ -7,6 +7,7 @@ from collections import Counter
 from functools import cache
 from pathlib import Path
 
+import apsw
 import pyoxigraph
 import pytest
 
@@ -20,6 +21,7 @@ LENSES = sorted(named("lenses"))
 UNPORTED = ROOT / "tests" / "sql-unported.txt"
 PINS = ROOT / "tests" / "sql-pins.json"
 VECTORS = json.loads((QUERIES / "sql-functions.json").read_text(encoding="utf-8"))
+STRICTEST_SQLITE = "3.54.1"
 SCOPE = [path.relative_to(ROOT).as_posix() for path in sorted(QUERIES.rglob("*.rq"))
          if not path.relative_to(QUERIES).as_posix().startswith("matcher/")]
 
@@ -63,11 +65,31 @@ def pin_failures(pinned, texts):
     return found + [f"{relative}: pinned, but it has no .sql" for relative in sorted(set(pinned) - set(texts))]
 
 
+def read_as_text(condition):
+    """How an ORDER BY condition reads its variable where it orders by its STR: the position its text is taken from,
+    the length taken, None for the rest, and whether an unbound value reads as "", as in
+    DESC(COALESCE(SUBSTR(STR(?a), 1, 10), "")); None where it orders the term itself."""
+    if not re.search(r"\bSTR\s*\(\s*\?\w+\s*\)", condition):
+        return None
+    cut = re.search(r"SUBSTR\s*\(\s*STR\s*\(\s*\?\w+\s*\)\s*,\s*(\d+)(?:\s*,\s*(\d+))?\s*\)", condition)
+    return (int(cut[1]) if cut else 1, int(cut[2]) if cut and cut[2] else None,
+            re.search(r',\s*""\s*\)', condition) is not None)
+
+
+def as_text(term, read):
+    """The value a condition reading its variable as text, as read_as_text gives it, orders the term by."""
+    start, length, unbound_empty = read
+    text = None if term is None or term.kind == sql.BLANK else term.value
+    if text is not None:
+        text = text[start - 1:None if length is None else start - 1 + length]
+    return "" if text is None and unbound_empty else text
+
+
 def final_order(text, names):
-    """The indexes of the columns the query's rows are ordered by, after its last brace: its ORDER BY's leading
-    conditions that are a projected variable, alone or in an expression of it and of no other variable, such as
-    DESC(COALESCE(STR(?a), "")); the conditions after them order only rows these tie. None when the query has no ORDER
-    BY there."""
+    """The keys the query's rows are ordered by, after its last brace, each a column's index and how its condition
+    reads it, as read_as_text gives: its ORDER BY's leading conditions that are a projected variable, alone or in an
+    expression of it and of no other variable, such as DESC(COALESCE(STR(?a), "")); the conditions after them order
+    only rows these tie. None when the query has no ORDER BY there."""
     tail = text[text.rfind("}"):]
     clause = re.search(r"ORDER\s+BY\s", tail)
     if not clause:
@@ -90,7 +112,7 @@ def final_order(text, names):
         mentioned = set(re.findall(r"\?(\w+)", re.sub(r'"[^"]*"', "", condition)))
         if len(mentioned) != 1 or (found := mentioned.pop()) not in names:
             break
-        keys.append(names.index(found))
+        keys.append((names.index(found), read_as_text(condition)))
         rest = rest[len(condition):].strip()
     return keys
 
@@ -111,16 +133,27 @@ def tied(left, right):
         return True
 
 
+def ordered(one, other, keys):
+    """Whether an ORDER BY of the keys puts the two rows one way round: the first key whose value differs, a text a
+    condition reads or else the term, holds two texts, or two terms SPARQL's `<` orders."""
+    for column, read in keys:
+        if read is not None:
+            if as_text(one[column], read) != as_text(other[column], read):
+                return True
+        elif one[column] != other[column]:
+            return not tied(one[column], other[column])
+    return False
+
+
 def runs(found, keys):
-    """The lengths of the rows' runs, in their order: a run ends where the first key column whose term differs from the
-    next row's holds two terms an ORDER BY cannot put either way round."""
+    """The lengths of the rows' runs, in their order: a run ends where the ORDER BY's keys put a row and the next one
+    way round."""
     lengths = [1] if found else []
     for one, other in zip(found, found[1:]):
-        differing = next(((one[k], other[k]) for k in keys if one[k] != other[k]), None)
-        if differing is None or tied(*differing):
-            lengths[-1] += 1
-        else:
+        if ordered(one, other, keys):
             lengths.append(1)
+        else:
+            lengths[-1] += 1
     return lengths
 
 
@@ -186,11 +219,13 @@ def as_rdflib(names, found):
 
 def asked_answer(connection, text, records):
     """The `.sql`'s rows asked of each record in turn, `asked` holding it alone, as a runtime asks a question bound to
-    it; the question is asked of the whole pod again after."""
+    it, and none, without running it, for a record the pod has no term for; the question is asked of the whole pod
+    again after."""
     found = []
     try:
         for record in records:
-            found += sql.answer(sql.asked(connection, [record]), text)[1]
+            if (bound := sql.asked(connection, [record])) is not None:
+                found += sql.answer(bound, text)[1]
     finally:
         sql.whole(connection)
     return found
@@ -204,12 +239,16 @@ def records_in_entries(connection):
         "AND t.kind = 2 ORDER BY t.lex")]
 
 
+NO_SUCH_RECORD = "urn:cascade:no-such-record"
+
+
 def failures(fixture, lens, relative, text):
     """Why the `.sql` text, over the fixture's pod under the lens, does not give the rows of the `.rq` at the path: in a
     whole run, in its order when it has one; for a question bound to a record, the `.rq` bound to it and the `.sql`
-    with `asked` holding it alone, for each record a manifest entry of the fixture binds and, for a list question, each
-    record the pod puts in an entry; and, through the `.sql`, the rows of each manifest entry under that lens that runs
-    it. A CONSTRUCT's rows are compared as a set of triples."""
+    with `asked` holding it alone, for each record a manifest entry of the fixture binds, for a list question each
+    record the pod puts in an entry, and for a `.sql` reading `asked` a record the pod lacks; and, through the `.sql`,
+    the rows of each manifest entry under that lens that runs it. A CONSTRUCT's rows are compared as a set of
+    triples."""
     rq = query(Path(relative).relative_to("queries").as_posix())
     store = built_once(fixture, "oxigraph", lens).store.store
     connection = pod(fixture, lens)
@@ -232,6 +271,8 @@ def failures(fixture, lens, relative, text):
     bound = set() if construct else {record for entry in manifest_entries(fixture) for record in entry.records}
     if ":page_size" in text:
         bound |= set(records_in_entries(connection))
+    if re.search(r"\basked\b", text):
+        bound.add(NO_SUCH_RECORD)
     for record in sorted(bound):
         lines += against(f"keyed to {record}, against the .rq", oxigraph_answer(store, rq, record)[1],
                          asked_answer(connection, text, [record]))
@@ -333,6 +374,49 @@ def keyed_changes(connection):
                           (condition, values, reason))
                 return [record]
             changes.append((f"record {record} given condition {condition} as a reason", reason_gained))
+
+    def joined(c, entry):
+        """A new record, its values giving no reason, put in the entry; its id."""
+        record = made(c, f"<urn:cascade:joined-{entry}>", sql.IRI, f"urn:cascade:joined-{entry}")
+        values = made(c, f"<urn:cascade:joined-{entry}-values>", sql.IRI, f"urn:cascade:joined-{entry}-values")
+        graph = c.execute("SELECT g FROM quad WHERE s = ? AND p = ? LIMIT 1", (entry, member_values)).fetchone()[0]
+        c.executemany("INSERT OR IGNORE INTO quad (s, p, o, g) VALUES (?, ?, ?, ?)",
+                      [(record, in_entry, entry, graph), (entry, member, record, graph),
+                       (entry, member_values, values, graph), (values, values_of, record, graph)])
+        return record
+
+    for entry in sorted({entry for _, entry, _ in given}):
+        def joined_renamed(c, entry=entry):
+            record = joined(c, entry)
+            renamed(c, [entry], [name for name in names if name is not None])
+            return [record]
+
+        def left_renamed(c, entry=entry):
+            record = joined(c, entry)
+            sql.refilled(sql.whole(c), screens())
+            c.execute("DELETE FROM quad WHERE ? IN (s, o) AND p IN (?, ?, ?)", (record, in_entry, member, values_of))
+            c.execute("DELETE FROM quad WHERE s = ? AND p = ? AND o NOT IN (SELECT s FROM quad WHERE p = ?)",
+                      (entry, member_values, values_of))
+            renamed(c, [entry], [name for name in names if name is not None])
+            return [record]
+        changes.append((f"a record with no reason put in entry {entry}, which is renamed, it alone in scope",
+                        joined_renamed))
+        changes.append((f"a record with no reason taken out of entry {entry}, which is renamed, it alone in scope",
+                        left_renamed))
+    derived_from, current_revision = term_ids(connection, "http://www.w3.org/ns/prov#wasDerivedFrom",
+                                              CASCADE + "currentRevision")
+    documents = connection.execute(
+        "SELECT DISTINCT d.o FROM quad r JOIN quad d ON d.s = r.o AND d.p = ? WHERE r.p = ? ORDER BY d.o",
+        (derived_from, current_revision)).fetchall() if None not in (derived_from, current_revision) else []
+    for (document,) in documents:
+        def retrieved_again(c, document=document):
+            retrieved = made(c, "<http://purl.org/pav/retrievedOn>", sql.IRI, "http://purl.org/pav/retrievedOn")
+            when = made(c, f'"2030-01-01T00:00:00Z"^^<{sql.XSD}dateTime>', sql.LITERAL, "2030-01-01T00:00:00Z",
+                        sql.XSD + "dateTime")
+            c.execute("INSERT OR IGNORE INTO quad (s, p, o, g) SELECT ?, ?, ?, g FROM quad WHERE o = ? AND p = ? LIMIT 1",
+                      (document, retrieved, when, document, derived_from))
+            return [document]
+        changes.append((f"document {document} retrieved again", retrieved_again))
     return changes
 
 
@@ -404,8 +488,10 @@ class TestSqlBesideEachQuery:
             statements and the screens filled again with scope holding what it touched: each record in an entry,
             unchanged; each record but the lead of an entry of two or more, moved to an entry of its own; each agent,
             renamed; each record whose values give a reason condition, its reasons dropped, and given each other
-            condition's record as a reason; and each entry those values are of, renamed, the record in scope. Every
-            screen table then holds the rows a whole fill of the changed pod gives from empty tables.
+            condition's record as a reason; each entry those values are of, renamed, the record in scope, and renamed
+            as a new record whose values give no reason is put in it, or, after a whole fill, taken out of it again,
+            that record alone in scope; and each document a record's current revision derives from, retrieved again.
+            Every screen table then holds the rows a whole fill of the changed pod gives from empty tables.
             """
             found = []
             for lens in LENSES:
@@ -481,6 +567,47 @@ class TestSqlBesideEachQuery:
                 connection.execute(f"DELETE FROM {table}")
             with pytest.raises(sqlite3.IntegrityError):
                 sql.refilled(sql.whole(connection), screens())
+
+        @pytest.mark.parametrize("fixture", ["conditions-view", "lab-results-view"])
+        def test_fills_each_screen_and_asks_each_list_question_on_the_strictest_sqlite_a_runtime_ships(self, fixture):
+            """fills each screen, whole and keyed, and asks each list question, on the strictest SQLite a runtime ships
+
+            A runtime's SQLite may count how deep a statement nests more strictly than the check's. The fixture's pod,
+            its screens dropped, is given to SQLite 3.54.1 through apsw, the six functions registered; each view's
+            tables, fill and finish run there whole, giving the screen tables the check's SQLite gives, then fill and
+            finish again keyed to one record, and each list question is asked a page of two entries, giving the rows the
+            check's SQLite gives. None fails.
+            """
+            built = pod(next(f for f in FIXTURES if f.name == fixture), "everyday")
+            connection = sql.copied(built)
+            filled = sql.screen_tables(connection)
+            for table in filled:
+                connection.execute(f"DROP TABLE {table}")
+            for (view,) in connection.execute("SELECT name FROM sqlite_schema WHERE type = 'view'").fetchall():
+                connection.execute(f"DROP VIEW {view}")
+            connection.commit()
+            strict = apsw.Connection(":memory:")
+            strict.deserialize("main", connection.serialize())
+            assert apsw.sqlite_lib_version() == STRICTEST_SQLITE
+            for name, function in sql.FUNCTIONS.items():
+                strict.create_scalar_function(name, function, -1, deterministic=True)
+            texts = [sql.parts(text) for text in screens()]
+            for found in texts:
+                strict.execute(found["tables"])
+            for name in ("fill", "finish"):
+                for found in texts:
+                    strict.execute(found[name])
+            assert {table: sorted(strict.execute(f"SELECT * FROM {table}").fetchall(), key=repr)
+                    for table in filled} == {table: [tuple(row) for row in rows] for table, rows in filled.items()}
+            strict.execute("DELETE FROM scope; INSERT INTO scope SELECT s FROM quad WHERE p = (SELECT id FROM term "
+                           f"WHERE nt = '<{CASCADE}inEntry>') ORDER BY s LIMIT 1")
+            for name in ("fill", "finish"):
+                for found in texts:
+                    strict.execute(found[name])
+            page = {"page_size": 2, "after": None}
+            for relative in list_questions():
+                assert ([tuple(row) for row in strict.execute(sql_text(relative), page)]
+                        == built.execute(sql_text(relative), page).fetchall()), relative
 
         def test_orders_strings_times_and_counts_by_their_paging_keys_as_oxigraph_orders_them(self):
             """orders strings, times and counts by the keys queries/statements.sql's paging convention gives, as Oxigraph does
@@ -704,19 +831,31 @@ class TestTheSqlCheck:
 
         Rows ordered by a dateTime pass in either order where SPARQL's `<` does not order them, a value with no zone
         and one with a zone within fourteen hours of it, and where they hold one term; rows it does order fail turned
-        round, naming the row. The key columns are those of the ORDER BY's leading conditions that each read one
-        projected variable, alone or in an expression.
+        round, naming the row. A condition ordering by the value's STR, or a SUBSTR of it, orders by that text, so
+        rows whose texts differ are ordered, and rows whose texts are one are ordered by the next condition. The key
+        columns are those of the ORDER BY's leading conditions that each read one projected variable, alone or in an
+        expression.
         """
         def at(value):
             return (sql.Term(sql.LITERAL, value, XSD + "dateTime"),)
         unzoned, zoned, later = at("2024-01-01T10:00:00"), at("2024-01-01T05:00:00-08:00"), at("2024-01-03T00:00:00Z")
-        assert compared(["t"], [unzoned, zoned, later], [zoned, unzoned, later], [0]) == []
-        assert compared(["t"], [later, later], [later, later], [0]) == []
-        assert compared(["t"], [unzoned, later], [unzoned, later], [0]) == []
-        assert compared(["t"], [unzoned, later], [later, unzoned], [0]) == [
+        term = [(0, None)]
+        assert compared(["t"], [unzoned, zoned, later], [zoned, unzoned, later], term) == []
+        assert compared(["t"], [later, later], [later, later], term) == []
+        assert compared(["t"], [unzoned, later], [unzoned, later], term) == []
+        assert compared(["t"], [unzoned, later], [later, unzoned], term) == [
             f"the same rows in another order, from row 1: expected ?t={unzoned[0]}, found ?t={later[0]}"]
-        assert final_order("SELECT ?a ?b ?c WHERE { } ORDER BY DESC(?b) ?a STR(?c) ?c", ["a", "b", "c"]) == [1, 0, 2, 2]
-        assert final_order('SELECT ?a ?b WHERE { } ORDER BY DESC(COALESCE(SUBSTR(STR(?a), 1, 10), "")) ?b', ["a", "b"]) == [0, 1]
+        assert compared(["t"], [zoned, unzoned], [unzoned, zoned], [(0, (1, None, False))]) == [
+            f"the same rows in another order, from row 1: expected ?t={zoned[0]}, found ?t={unzoned[0]}"]
+        day = (1, 10, True)
+        assert compared(["t", "u"], [(unzoned[0], zoned[0]), (zoned[0], unzoned[0])],
+                        [(zoned[0], unzoned[0]), (unzoned[0], zoned[0])], [(0, day)]) == []
+        assert compared(["t", "u"], [(unzoned[0], unzoned[0]), (zoned[0], zoned[0])],
+                        [(zoned[0], zoned[0]), (unzoned[0], unzoned[0])], [(0, day), (1, (1, None, False))]) != []
+        assert final_order("SELECT ?a ?b ?c WHERE { } ORDER BY DESC(?b) ?a STR(?c) ?c", ["a", "b", "c"]) == [
+            (1, None), (0, None), (2, (1, None, False)), (2, None)]
+        assert final_order('SELECT ?a ?b WHERE { } ORDER BY DESC(COALESCE(SUBSTR(STR(?a), 1, 10), "")) ?b',
+                           ["a", "b"]) == [(0, (1, 10, True)), (1, None)]
         assert final_order("SELECT ?a ?b WHERE { } ORDER BY CONCAT(?a, ?b) ?a", ["a", "b"]) == []
         assert final_order("SELECT ?a WHERE { } ORDER BY ?z ?a", ["a"]) == []
         assert final_order("SELECT ?a WHERE { } GROUP BY ?a", ["a"]) is None
