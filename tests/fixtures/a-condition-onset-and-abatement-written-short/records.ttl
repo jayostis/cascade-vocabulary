@@ -1,0 +1,23 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:migraine a cascade:ProblemOrDiagnosis .
+:migraineVersion prov:specializationOf :migraine ; cascade:patient :subject ; cascade:conditionName "Migraine" ;
+    cascade:clinicalStatus "active" ; cascade:onsetDate "2020-02-14T09:00:00"^^xsd:dateTime ;
+    cascade:paddedDateTime <urn:x:migraineVersion#padded-onsetDate> .
+<urn:x:migraineVersion#padded-onsetDate> cascade:paddedDateTimeProperty cascade:onsetDate ; cascade:timeAsWritten "2020021409" .
+:migraineRevision a cascade:Revision ; cascade:revisionOf :migraine ; cascade:version :migraineVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:sprain a cascade:ProblemOrDiagnosis .
+:sprainVersion prov:specializationOf :sprain ; cascade:patient :subject ; cascade:conditionName "Ankle sprain" ;
+    cascade:clinicalStatus "resolved" ; cascade:onsetDate "2021-03-01"^^xsd:date ;
+    cascade:abatementDate "2021-03-20T10:00:00"^^xsd:dateTime ;
+    cascade:paddedDateTime <urn:x:sprainVersion#padded-abatementDate> .
+<urn:x:sprainVersion#padded-abatementDate> cascade:paddedDateTimeProperty cascade:abatementDate ; cascade:timeAsWritten "2021032010" .
+:sprainRevision a cascade:Revision ; cascade:revisionOf :sprain ; cascade:version :sprainVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

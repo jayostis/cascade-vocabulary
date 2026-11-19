@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-lab-range-of-one-bound" ;
+  rdfs:comment "A urine protein its source gave as a range with only a low bound, 30 or more, and an LDL cholesterol as a range with only a high bound, 100 or less, each in mg/dL." ;
+  mf:entries (
+    <#my-lab-results>
+  ) .
+
+<#my-lab-results> a mf:QueryEvaluationTest ;
+  mf:name "my-lab-results" ;
+  rdfs:comment "A range with one bound is shown as the bound it has, after >= or <=, so the protein reads >=30 and the LDL <=100; neither has a unit, which is a quantity's, not a range's." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20lab%20results.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-lab-results.srj> .

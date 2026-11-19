@@ -532,7 +532,7 @@ class TestTheSqlCheck:
         """
         changed = (ROOT / self.JUDGMENTS).read_bytes() + b"# changed\n"
         digest = hashlib.sha256(changed).hexdigest()
-        found = pin_failures(pins(), {self.JUDGMENTS: changed})
+        found = pin_failures({self.JUDGMENTS: pins()[self.JUDGMENTS]}, {self.JUDGMENTS: changed})
         assert len(found) == 1 and found[0].startswith(f"{self.JUDGMENTS}: ") and digest in found[0]
 
     def test_refuses_pages_that_ignore_the_key_to_continue_after_or_the_page_size(self):

@@ -1,0 +1,18 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:potassium a cascade:LaboratoryTestResult .
+:potassiumVersion prov:specializationOf :potassium ; cascade:patient :subject ; cascade:testName "Potassium" ;
+    cascade:testCode <http://loinc.org/rdf/2823-3> ; cascade:resultValueKind cascade:QuantityResultValue ;
+    cascade:resultQuantity <urn:x:potassiumVersion#value> ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-06-01T09:00:00"^^xsd:dateTime ;
+    cascade:paddedDateTime <urn:x:potassiumVersion#padded-resultClinicallyRelevantTime> .
+<urn:x:potassiumVersion#value> cascade:decimalValue "4.2"^^xsd:decimal ; cascade:writtenValue "4.2" ; cascade:ucumUnit "mmol/L" .
+<urn:x:potassiumVersion#padded-resultClinicallyRelevantTime> cascade:paddedDateTimeProperty cascade:resultClinicallyRelevantTime ;
+    cascade:timeAsWritten "2025060109" .
+:potassiumRevision a cascade:Revision ; cascade:revisionOf :potassium ; cascade:version :potassiumVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
