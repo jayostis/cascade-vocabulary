@@ -1,0 +1,30 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:ana a prov:Person .
+cascade:CascadeMatcher a prov:SoftwareAgent ; rdfs:label "Cascade matcher" .
+
+# twoAssertions: asserted twice, and one retraction invalidates both assertions
+:twoAssertions a cascade:Judgment ; cascade:verdict cascade:Same ; cascade:justification cascade:SameCode ;
+    prov:hadMember :r , :s ; prov:wasDerivedFrom :rFirst , :sFirst ;
+    cascade:matcherRule cascade:SameCodeRule ; prov:wasAttributedTo cascade:CascadeMatcher .
+:twoAssertionsUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :twoAssertions ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+:twoAssertionsUnderRules2 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :twoAssertions ;
+    cascade:assertedUnderRuleListVersion :rules2 .
+:anaRetractsBothAssertions a prov:Activity ; prov:invalidated :twoAssertionsUnderRules1 , :twoAssertionsUnderRules2 ;
+    prov:wasAssociatedWith :ana ; prov:qualifiedAssociation [ prov:agent :ana ; prov:hadRole cascade:PatientRole ] ;
+    prov:startedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .
+
+# judgmentAndAssertion: one retraction invalidates the judgment and its assertion
+:judgmentAndAssertion a cascade:Judgment ; cascade:verdict cascade:Erroneous ; prov:hadMember :r ; prov:wasDerivedFrom :januaryDocument ;
+    prov:wasAttributedTo :ana ; prov:wasGeneratedBy [ prov:qualifiedAssociation [ prov:agent :ana ; prov:hadRole cascade:PatientRole ] ] ;
+    prov:generatedAtTime "2026-02-01T00:00:00Z"^^xsd:dateTime .
+:judgmentAndAssertionUnderRules1 a cascade:MatcherJudgmentAssertion ; cascade:assertedJudgment :judgmentAndAssertion ;
+    cascade:assertedUnderRuleListVersion :rules1 .
+:anaRetractsBoth a prov:Activity ; prov:invalidated :judgmentAndAssertion , :judgmentAndAssertionUnderRules1 ;
+    prov:wasAssociatedWith :ana ; prov:qualifiedAssociation [ prov:agent :ana ; prov:hadRole cascade:PatientRole ] ;
+    prov:startedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime .

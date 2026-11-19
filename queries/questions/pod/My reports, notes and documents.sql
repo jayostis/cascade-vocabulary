@@ -96,7 +96,7 @@ SELECT date.nt AS date, issued.nt AS issued, kind.nt AS kind,
      UNION ALL SELECT line, shown FROM note_source WHERE page.src = 1 AND entry = page.entry) s) AS sources,
   page.sort_key AS page_key
 FROM page CROSS JOIN k
-JOIN quad kd ON kd.s = page.lead AND kd.p = k.record_kind JOIN term kind ON kind.id = kd.o
+CROSS JOIN quad kd ON kd.s = page.lead AND kd.p = k.record_kind CROSS JOIN term kind ON kind.id = kd.o
 LEFT JOIN term date ON date.id = page.date
 LEFT JOIN term issued ON issued.id = page.issued
 LEFT JOIN term name ON name.id = page.name
