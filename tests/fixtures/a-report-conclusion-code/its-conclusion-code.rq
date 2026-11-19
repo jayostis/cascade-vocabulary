@@ -1,0 +1,9 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT ?holds ?code
+WHERE {
+  GRAPH <https://pod.example/clinical/reports.ttl> {
+    ?holder cascade:reportConclusionCode ?code .
+    BIND (IF(EXISTS { ?holder cascade:entryMember [] }, "entry", "member's values") AS ?holds)
+  }
+}

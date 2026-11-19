@@ -29,7 +29,11 @@
 --            finish, on one connection, so a screen reads another's tables in finish. A runtime that fills keyed runs
 --            often splits each part into its statements once and keeps each compiled on the connection, rather than
 --            running the part as a script, which compiles every statement again on each run.
---            A lens is read by every entry, so a change of lens is a whole run, never a keyed one.
+--            A lens is read by every entry, so a change of lens is a whole run, never a keyed one. The patient profile
+--            screen is filled whole by every run: a profile is no record, so no run is keyed to one, and its entries
+--            come from the judgments alone. The reports screen fills again the entries of the reports naming a record in
+--            scope as a result, and the variant interpretations screen those naming one as the variant they interpret,
+--            since each is shown as the entry that record is in.
 --   finish   gives, for the same entries, the columns that read the labels output or another screen, once the labels
 --            are made. Until labels.rq has a `.sql`, the labels output is the rdfs:label statements in `quad`, which
 --            labels.rq makes from the view graphs.
@@ -65,7 +69,9 @@
 -- A question reads `asked`, never `scope`: `asked` holding records, a list question gives the rows of each entry
 -- with one of them, counting only those, as its `.rq` bound to them does; `asked` empty, it gives the whole list. So
 -- a runtime asking a question of records none of which is a term of the pod gives no rows, as the `.rq` bound to
--- them does, without running the `.sql`, which would read the empty `asked` as the whole pod.
+-- them does, without running the `.sql`, which would read the empty `asked` as the whole pod. A question whose `.rq`
+-- names no ?record to bind, as the reports and notes, variants, variant interpretations and person questions, reads
+-- no `asked`: bound to a record, the `.rq` gives the rows it gives unbound, and so does its `.sql`.
 
 -- Each term the pod's statements use, once. `nt` is its N-Triples form as Oxigraph writes it, a literal in its
 -- canonical form, so two terms are one exactly when their `nt` is. `kind` ranks it as SPARQL's ORDER BY does, after

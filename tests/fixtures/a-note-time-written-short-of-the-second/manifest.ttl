@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-note-time-written-short-of-the-second" ;
+  rdfs:comment "A progress note its source dated to the hour, 2025060109, which the record holds padded to 09:00:00 with the node saying so." ;
+  mf:entries (
+    <#its-padded-time>
+    <#my-reports-notes-and-documents>
+  ) .
+
+<#its-padded-time> a mf:QueryEvaluationTest ;
+  mf:name "its-padded-time" ;
+  rdfs:comment "A date its source wrote to the hour keeps, in the view, the node saying so and what was written, on the entry and on its member's values, each named after its holder and -padded-noteOrDocumentDate." ;
+  mf:action [ qt:query <its-padded-time.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <its-padded-time.srj> .
+
+<#my-reports-notes-and-documents> a mf:QueryEvaluationTest ;
+  mf:name "my-reports-notes-and-documents" ;
+  rdfs:comment "The note is shown at the date as the record holds it, padded, with no zone." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20reports,%20notes%20and%20documents.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-reports-notes-and-documents.srj> .

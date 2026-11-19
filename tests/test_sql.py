@@ -245,7 +245,10 @@ ASKED_MEMBERS = re.compile(r"\bFROM (\w+_member) \w+ JOIN asked\b")
 
 def records_a_list_question_is_bound_to(connection, text):
     """Each record of the member table a list question matches `asked` against, as its IRI, and the first record the
-    pod puts in an entry that table does not hold, so the question is bound to a record of another kind too."""
+    pod puts in an entry that table does not hold, so the question is bound to a record of another kind too; none for a
+    list question whose `.rq` names no `?record` to bind, which reads no `asked`."""
+    if not re.search(r"\basked\b", text):
+        return []
     table = ASKED_MEMBERS.search(text)
     if table is None:
         raise ValueError("a list question that matches asked against no member table")
@@ -568,7 +571,9 @@ class TestSqlBesideEachQuery:
         @pytest.mark.parametrize("view, fixture", [
             ("conditions", "conditions-view"), ("lab-results", "lab-results-view"), ("allergies", "allergies-view"),
             ("medications", "medications-view"), ("medication-dispenses", "medication-dispenses-view"),
-            ("immunizations", "immunizations-view"), ("procedures", "procedures-view")])
+            ("immunizations", "immunizations-view"), ("procedures", "procedures-view"), ("reports", "reports-view"),
+            ("notes-and-documents", "notes-and-documents-view"), ("variants", "variants-view"),
+            ("variant-interpretations", "variant-interpretations-view")])
         def test_refuses_to_fill_a_screen_whose_view_the_layout_places_at_two_addresses(self, view, fixture):
             """refuses to fill a screen whose view the pod's layout places at two addresses
 
@@ -591,7 +596,8 @@ class TestSqlBesideEachQuery:
 
         @pytest.mark.parametrize("fixture", [
             "conditions-view", "lab-results-view", "allergies-view", "medications-view", "medication-dispenses-view",
-            "immunizations-view", "procedures-view", "a-medicine-and-a-procedure-given-for-a-condition"])
+            "immunizations-view", "procedures-view", "a-medicine-and-a-procedure-given-for-a-condition", "reports-view",
+            "my-reports-notes-and-documents", "variants-view", "variant-interpretations-view", "the-person-from-two-profiles"])
         def test_fills_each_screen_and_asks_each_list_question_on_the_strictest_sqlite_a_runtime_ships(self, fixture):
             """fills each screen, whole and keyed, and asks each list question, on the strictest SQLite a runtime ships
 

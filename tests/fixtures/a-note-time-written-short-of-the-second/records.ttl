@@ -1,0 +1,15 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:visitNote a cascade:ClinicalNoteOrDocument .
+:visitNoteVersion prov:specializationOf :visitNote ; cascade:patient :subject ; cascade:noteOrDocumentTypeName "Progress note" ;
+    cascade:noteOrDocumentDate "2025-06-01T09:00:00"^^xsd:dateTime ; cascade:workflowStatus "current" ;
+    cascade:paddedDateTime <urn:x:visitNoteVersion#padded-noteOrDocumentDate> .
+<urn:x:visitNoteVersion#padded-noteOrDocumentDate> cascade:paddedDateTimeProperty cascade:noteOrDocumentDate ;
+    cascade:timeAsWritten "2025060109" .
+:visitNoteRevision a cascade:Revision ; cascade:revisionOf :visitNote ; cascade:version :visitNoteVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
