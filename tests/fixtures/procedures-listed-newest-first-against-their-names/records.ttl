@@ -1,0 +1,18 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:appendectomy a cascade:MedicalProcedure .
+:appendectomyVersion prov:specializationOf :appendectomy ; cascade:patient :subject ; cascade:procedureName "Appendectomy" ; cascade:workflowStatus "completed" ;
+    cascade:procedureDate "2020-05-01"^^xsd:date .
+:appendectomyRevision a cascade:Revision ; cascade:revisionOf :appendectomy ; cascade:version :appendectomyVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:colonoscopy a cascade:MedicalProcedure .
+:colonoscopyVersion prov:specializationOf :colonoscopy ; cascade:patient :subject ; cascade:procedureName "Colonoscopy" ; cascade:workflowStatus "completed" ;
+    cascade:procedureDate "2024-03-01"^^xsd:date .
+:colonoscopyRevision a cascade:Revision ; cascade:revisionOf :colonoscopy ; cascade:version :colonoscopyVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

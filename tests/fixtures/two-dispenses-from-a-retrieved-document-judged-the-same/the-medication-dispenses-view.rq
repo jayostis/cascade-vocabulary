@@ -1,0 +1,4 @@
+PREFIX cascade: <https://ns.cascadeprotocol.org/cascade#>
+
+SELECT ?entry ?member
+WHERE { GRAPH <https://pod.example/clinical/medication-dispenses.ttl> { ?entry cascade:entryMember ?member } }
