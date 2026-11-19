@@ -1,0 +1,21 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:sodium a cascade:LaboratoryTestResult .
+:sodiumVersion prov:specializationOf :sodium ; cascade:patient :subject ; cascade:testName "Sodium" ;
+    cascade:testCode <http://loinc.org/rdf/2951-2> ; cascade:resultValueKind cascade:TextResultValue ;
+    cascade:resultValueText "140" ; cascade:workflowStatus "final" .
+:sodiumRevision a cascade:Revision ; cascade:revisionOf :sodium ; cascade:version :sodiumVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:calcium a cascade:LaboratoryTestResult .
+:calciumVersion prov:specializationOf :calcium ; cascade:patient :subject ; cascade:testName "Calcium" ;
+    cascade:testCode <http://loinc.org/rdf/17861-6> ; cascade:resultValueKind cascade:TextResultValue ;
+    cascade:resultValueText "9.4" ; cascade:workflowStatus "final" ;
+    cascade:resultClinicallyRelevantTime "2025-05-02T09:00:00Z"^^xsd:dateTime .
+:calciumRevision a cascade:Revision ; cascade:revisionOf :calcium ; cascade:version :calciumVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

@@ -1,0 +1,24 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:protein a cascade:LaboratoryTestResult .
+:proteinVersion prov:specializationOf :protein ; cascade:patient :subject ; cascade:testName "Protein, urine" ;
+    cascade:testCode <http://loinc.org/rdf/2888-6> ; cascade:resultValueKind cascade:RangeResultValue ;
+    cascade:resultValueRangeLow <urn:x:proteinVersion#range-low> ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-05-02T09:00:00Z"^^xsd:dateTime .
+<urn:x:proteinVersion#range-low> cascade:decimalValue "30"^^xsd:decimal ; cascade:writtenValue "30" ; cascade:ucumUnit "mg/dL" .
+:proteinRevision a cascade:Revision ; cascade:revisionOf :protein ; cascade:version :proteinVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+
+:ldl a cascade:LaboratoryTestResult .
+:ldlVersion prov:specializationOf :ldl ; cascade:patient :subject ; cascade:testName "LDL cholesterol" ;
+    cascade:testCode <http://loinc.org/rdf/13457-7> ; cascade:resultValueKind cascade:RangeResultValue ;
+    cascade:resultValueRangeHigh <urn:x:ldlVersion#range-high> ;
+    cascade:workflowStatus "final" ; cascade:resultClinicallyRelevantTime "2025-05-01T09:00:00Z"^^xsd:dateTime .
+<urn:x:ldlVersion#range-high> cascade:decimalValue "100"^^xsd:decimal ; cascade:writtenValue "100" ; cascade:ucumUnit "mg/dL" .
+:ldlRevision a cascade:Revision ; cascade:revisionOf :ldl ; cascade:version :ldlVersion ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

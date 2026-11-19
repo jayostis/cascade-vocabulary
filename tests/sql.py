@@ -556,7 +556,9 @@ def loaded(store, fingerprint):
 
 
 def whole(connection):
-    """The connection with every record and entry in scope, as a whole run fills it."""
+    """The connection with every record and entry in scope, as a whole run fills it, and a question asked of the whole
+    pod."""
+    connection.execute("DELETE FROM asked")
     connection.execute("DELETE FROM scope")
     connection.execute("INSERT INTO scope (term) SELECT s FROM quad WHERE p = (SELECT id FROM term WHERE nt = ?) "
                        "AND o = (SELECT id FROM term WHERE nt = ?) "
@@ -575,8 +577,103 @@ def scoped(connection, records):
     return connection
 
 
-def answer(connection, text):
-    """A `.sql`'s columns and its rows, each value the term its N-Triples text writes, or None where it is unbound."""
-    cursor = connection.execute(text)
+def asked(connection, records):
+    """The connection with a question asked of the records alone, as a runtime asks it bound to them."""
+    connection.execute("DELETE FROM asked")
+    connection.executemany("INSERT INTO asked (term) SELECT id FROM term WHERE nt = ?",
+                           [(str(Term(IRI, record)),) for record in records])
+    connection.commit()
+    return connection
+
+
+def copied(connection):
+    """A copy of the pod in memory, its tables and the six functions registered."""
+    connection.commit()
+    copy = sqlite3.connect(":memory:")
+    connection.backup(copy)
+    for name, function in FUNCTIONS.items():
+        copy.create_function(name, -1, function, deterministic=True)
+    return copy
+
+
+SCHEMA_TABLES = {"term", "quad", "scope", "asked", "ledger"}
+
+
+def screen_tables(connection):
+    """The rows of each table a screen made, by table, each table's rows sorted."""
+    names = [name for (name,) in connection.execute("SELECT name FROM sqlite_schema WHERE type = 'table' ORDER BY name")
+             if name not in SCHEMA_TABLES]
+    return {name: sorted(connection.execute(f"SELECT * FROM {name}").fetchall(), key=repr) for name in names}
+
+
+PART = re.compile(r"^-- part: (\w+)[ \t]*$", re.MULTILINE)
+PARTS = ("tables", "fill", "finish", "triples")
+
+
+def parts(text):
+    """A view's `.sql` by its parts, each the text after its `-- part: NAME` line up to the next, as
+    queries/statements.sql orders them; empty for a `.sql` in no parts."""
+    found = PART.split(text)[1:]
+    named = dict(zip(found[::2], found[1::2]))
+    if named and list(named) != list(PARTS):
+        raise ValueError(f"a view's .sql has the parts {list(named)}, not {list(PARTS)}")
+    return named
+
+
+def statement(text):
+    """What a `.sql` gives its `.rq`'s rows by: a view's triples part, or the whole text of any other."""
+    return parts(text).get("triples", text)
+
+
+def screened(connection, views):
+    """The connection with the screen of each view's `.sql` text made and filled for the entries in scope, every
+    view's fill before any view's finish."""
+    for found in views:
+        connection.executescript(parts(found)["tables"])
+    return refilled(connection, views)
+
+
+def refilled(connection, views):
+    """The connection with each view's screen filled again for the entries in scope, every view's fill before any
+    view's finish."""
+    texts = [parts(text) for text in views]
+    for name in PARTS[1:3]:
+        for found in texts:
+            connection.executescript(found[name])
+    connection.commit()
+    return connection
+
+
+PAGE_KEY = "page_key"
+
+
+def keyed(connection, text, page_size=None, after=None):
+    """A `.sql`'s columns and its rows, each value the term its N-Triples text writes, or None where it is unbound, and
+    each row's page key: a list question's last column, dropped from its columns, or None for any other `.sql`. A
+    list question is given the page size and the key to continue after; any other `.sql` names neither."""
+    cursor = connection.execute(text, {"page_size": page_size, "after": after})
     names = [column[0] for column in cursor.description]
-    return names, [tuple(parsed(value) for value in found) for found in cursor.fetchall()]
+    rows = cursor.fetchall()
+    if names[-1:] == [PAGE_KEY]:
+        return names[:-1], [(tuple(parsed(value) for value in found[:-1]), found[-1]) for found in rows]
+    return names, [(tuple(parsed(value) for value in found), None) for found in rows]
+
+
+def answer(connection, text, page_size=None, after=None):
+    """A `.sql`'s columns and its rows, each value the term its N-Triples text writes, or None where it is unbound; a
+    list question's rows of the page given, its page key dropped."""
+    names, rows = keyed(connection, text, page_size, after)
+    return names, [found for found, _ in rows]
+
+
+def paged(connection, text, size):
+    """A list question's rows and their keys, asked a page of the size at a time, each page after the last row of the
+    one before, until a page gives none. A page of more entries than the size, or one not after the key it was
+    given, raises ValueError."""
+    found, after = [], None
+    while page := keyed(connection, text, size, after)[1]:
+        if len({key for _, key in page}) > size or (after is not None and page[0][1] <= after):
+            raise ValueError(f"a page of {size} after {after!r} gives the keys {[key for _, key in page]}")
+        found += page
+        after = page[-1][1]
+    return found

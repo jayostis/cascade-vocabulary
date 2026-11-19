@@ -1,0 +1,26 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-lab-time-written-short-of-the-second" ;
+  rdfs:comment "A potassium its source timed to the hour, 2025060109, which the record holds padded to 09:00:00 with the node saying so." ;
+  mf:entries (
+    <#its-padded-time>
+    <#my-lab-results>
+  ) .
+
+<#its-padded-time> a mf:QueryEvaluationTest ;
+  mf:name "its-padded-time" ;
+  rdfs:comment "A time its source wrote to the hour keeps, in the view, the node saying so and what was written, on the entry and on its member's values, each named after its holder and -padded-resultClinicallyRelevantTime." ;
+  mf:action [ qt:query <its-padded-time.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <its-padded-time.srj> .
+
+<#my-lab-results> a mf:QueryEvaluationTest ;
+  mf:name "my-lab-results" ;
+  rdfs:comment "The potassium is shown at the time as the record holds it, padded, with no zone." ;
+  mf:action [ qt:query <../../../queries/questions/pod/My%20lab%20results.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <my-lab-results.srj> .
