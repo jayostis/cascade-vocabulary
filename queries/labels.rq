@@ -152,7 +152,7 @@ WHERE {
       OPTIONAL { ?retracted cascade:assertedJudgment?/cascade:verdict ?retractedVerdict }
       OPTIONAL { ?retracted cascade:assertedJudgment?/prov:hadMember/^prov:specializationOf/cascade:displayName ?retractedAbout }
       BIND (CONCAT("Retraction · ",
-                   COALESCE(?named, IF(BOUND(?who), IF(?role = cascade:PatientRole, "the patient", "a person"), "a release")), " · ",
+                   COALESCE(?named, IF(BOUND(?who), IF(BOUND(?role) && ?role = cascade:PatientRole, "the patient", "a person"), "a release")), " · ",
                    IF(BOUND(?t), SUBSTR(STR(?t), 1, 10), SUBSTR(REPLACE(STR(?thing), "^.*[:/#]", ""), 1, 8)), " · of ",
                    COALESCE(REPLACE(STR(?retractedVerdict), "^.*#", ""), "a judgment"), " · ",
                    COALESCE(?retractedAbout, "a patient profile")) AS ?l)

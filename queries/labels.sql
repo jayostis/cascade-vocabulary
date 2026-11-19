@@ -105,7 +105,7 @@ FROM label_terms k CROSS JOIN label_generations g
 CROSS JOIN quad a ON a.s = g.activity AND a.p = k.association
 CROSS JOIN quad r ON r.s = a.o AND r.p = k.had_role AND r.o IN (k.author_role, k.custodian_role)
 CROSS JOIN quad ag ON ag.s = a.o AND ag.p = k.agent
-CROSS JOIN quad l ON l.s = ag.o AND l.p = k.label
+CROSS JOIN quad l ON l.s = ag.o AND l.p = k.label AND l.g IS NOT k.file
 CROSS JOIN term n ON n.id = l.o
 WHERE n.lex IS NOT NULL;
 INSERT OR IGNORE INTO label_doc_party
@@ -397,8 +397,8 @@ INSERT OR IGNORE INTO label_named
 SELECT thing, label FROM (
   SELECT st.nt AS thing, min(
       'Retraction · ' ||
-      coalesce(nm.lex, CASE WHEN wa.o IS NULL THEN 'a release' WHEN ro.o IS NULL THEN NULL
-                            WHEN ro.o = k.patient_role THEN 'the patient' ELSE 'a person' END) || ' · ' ||
+      coalesce(nm.lex, CASE WHEN wa.o IS NULL THEN 'a release' WHEN ro.o = k.patient_role THEN 'the patient'
+                            ELSE 'a person' END) || ' · ' ||
       CASE WHEN t.lex IS NOT NULL THEN substr(t.lex, 1, 10)
            ELSE substr(sparql_replace(st.lex, '^.*[:/#]', ''), 1, 8) END || ' · of ' ||
       coalesce(rv.verdict, 'a judgment') || ' · ' || coalesce(ra.about, 'a patient profile')) AS label
@@ -425,7 +425,7 @@ SELECT thing, label FROM (
   FROM label_terms k CROSS JOIN label_specializations sp
   CROSS JOIN term st ON st.id = sp.version
   CROSS JOIN quad ty ON ty.s = sp.record AND ty.p = k.type AND ty.o = k.reference_series
-  CROSS JOIN quad sl ON sl.s = sp.record AND sl.p = k.label
+  CROSS JOIN quad sl ON sl.s = sp.record AND sl.p = k.label AND sl.g IS NOT k.file
   CROSS JOIN term nm ON nm.id = sl.o
   CROSS JOIN quad pv ON pv.s = sp.version AND pv.p = k.pav_version
   CROSS JOIN term vn ON vn.id = pv.o
