@@ -602,11 +602,11 @@ Feature: The matcher's procedure
       And the matcher runs on the records of that entry on 2026-05-03 at 09:05 (shots-matched)
       And Eve enters "twinrix" on 2026-05-03 at 10:00
       And the matcher runs on the records of that entry on 2026-05-03 at 10:05 (twinrix-matched)
-      And version "2" of "CVX vaccine group table" arrives on 2026-05-04 at 09:00
+      And version "2" of "Eve's CVX vaccine group table" arrives on 2026-05-04 at 09:00
       When the matcher rechecks on 2026-05-05 at 09:00
       Then that step wrote these matcher judgments:
         | justification             | members                                                                   | used                                                                                                                                   |
-        | same mapped code and date | immunization CVX 104 "Twinrix", immunization CVX 85 "Hepatitis A vaccine" | CVX vaccine group table version 2, version 1 of immunization CVX 104 "Twinrix", version 1 of immunization CVX 85 "Hepatitis A vaccine" |
+        | same mapped code and date | immunization CVX 104 "Twinrix", immunization CVX 85 "Hepatitis A vaccine" | Eve's CVX vaccine group table version 2, version 1 of immunization CVX 104 "Twinrix", version 1 of immunization CVX 85 "Hepatitis A vaccine" |
       And the matcher's same mapped code and date of immunization CVX 104 "Twinrix", immunization CVX 85 "Hepatitis A vaccine" and immunization CVX 10 "IPOL" has lapsed
       And the matcher's same mapped code and date of immunization CVX 104 "Twinrix" and immunization CVX 85 "Hepatitis A vaccine" counts
 
@@ -804,8 +804,8 @@ Feature: The matcher's procedure
 
     Each example opens a new pod for Gus with the drug products table, one of them after the drug tables of an app at
     an earlier version "0" of the rule list, whose R5 runs R11's query, joining two medications of one product code
-    by the app's "Clinic drug products" table, which wrongly lists the ingredient lisinopril as a clinical drug, which
-    its later tables no longer hold, and which has no R11; and each enters its own entry, so that no example's records
+    by the app's "Clinic drug products" table (that table wrongly lists the ingredient lisinopril as a clinical drug, which
+    its later tables no longer hold, and version "0" has no R11); and each enters its own entry, so that no example's records
     join another's.
 
     Example: two records sharing a product code are the same product code, although one selected its NDC

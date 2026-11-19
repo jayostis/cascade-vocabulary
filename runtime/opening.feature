@@ -183,7 +183,7 @@ Feature: Opening a pod
         SELECT ?table WHERE {
           ?judgment cascade:countsUnderLens true ; cascade:justification cascade:SameMappedCodeAndDate ;
             prov:wasDerivedFrom ?table .
-          ?table pav:version ?version .
+          ?table pav:version [] .
         }
         """
       Then it answers:

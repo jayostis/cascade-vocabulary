@@ -2,7 +2,7 @@
 
 Status: ruled, 2026-10-22, from the research on #131 and the owner's rulings of that day; applied by #131, which writes
 the terms, shapes, queries and feature rules. It adds typed terms beside `health:resultValue`, `health:resultUnit` and
-`health:referenceRange`, which stay, and replaces `same-result.rq`'s (removed 2026-11-18) value rule in a new rule list version. Names,
+`health:referenceRange`, which stay, and replaces the value rule of `same-result.rq` (removed 2026-11-18) in a new rule list version. Names,
 nested nodes and a version's hash are `naming.md` and `currency.md`; a value absent for a reason is
 `partial-dates-and-absent-reasons.md`'s (#133). Terms are local names in the one unversioned Cascade namespace (#193).
 
@@ -10,7 +10,7 @@ nested nodes and a version's hash are `naming.md` and `currency.md`; a value abs
 
 A lab result's value, unit and reference range are strings (`ontologies/health/v1/health.ttl:151-167`), so nothing can
 compare, sort or check them. The matcher joins two results only when their value strings are identical and ignores
-units (`same-result.rq:12-13` (removed 2026-11-18)), so `6.80` and `6.8` differ and `95 mg/dL` equals `95 mmol/L`. The FHIR adapter glues a
+units (`same-result.rq:12-13`, removed 2026-11-18), so `6.80` and `6.8` differ and `95 mg/dL` equals `95 mmol/L`. The FHIR adapter glues a
 comparator to the number (`"<5.7"`). A pod has no server to ask what a number meant: the typed form must hash alike on
 every runtime, since a version is named by its content, and must say no more than the source did.
 
