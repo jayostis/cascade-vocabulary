@@ -1,0 +1,18 @@
+@prefix : <urn:x:> .
+@prefix cascade: <https://ns.cascadeprotocol.org/cascade#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:subject a cascade:Subject .
+
+:x a cascade:AllergyOrIntolerance .
+:xFirst prov:specializationOf :x ; cascade:patient :subject ; cascade:allergenName "Oak" .
+:xSecond prov:specializationOf :x ; cascade:patient :subject ; cascade:allergenName "Oak pollen" .
+:xR1 a cascade:Revision ; cascade:revisionOf :x ; cascade:version :xFirst ; prov:wasDerivedFrom :januaryDocument ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .
+:xR2 a cascade:Revision ; cascade:revisionOf :x ; cascade:version :xSecond ; prov:wasRevisionOf :xR1 ; prov:wasDerivedFrom :marchDocument ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-03-01T00:00:00Z"^^xsd:dateTime .
+:y a cascade:AllergyOrIntolerance .
+:yFirst prov:specializationOf :y ; cascade:patient :subject ; cascade:allergenName "Oak" .
+:yR1 a cascade:Revision ; cascade:revisionOf :y ; cascade:version :yFirst ; prov:wasDerivedFrom :januaryDocument ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ; cascade:observedAsOf "2026-01-01T00:00:00Z"^^xsd:dateTime .

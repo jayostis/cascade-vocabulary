@@ -8,6 +8,7 @@
   rdfs:comment "Two imports: the first brings one record's first revision, the second revises it and brings another record; then a matcher run, an act that brings no revision." ;
   mf:entries (
     <#what-each-import-brought-in>
+    <#what-an-import-brought-in-of-one-record>
   ) .
 
 <#what-each-import-brought-in> a mf:QueryEvaluationTest ;
@@ -16,3 +17,11 @@
   mf:action [ qt:query <../../../queries/questions/pod/What%20each%20import%20brought%20in.rq> ;
               ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
   mf:result <what-each-import-brought-in.srj> .
+
+<#what-an-import-brought-in-of-one-record> a mf:QueryEvaluationTest ;
+  mf:name "what-an-import-brought-in-of-one-record" ;
+  rdfs:comment "Asked of the first record alone, both imports' revisions of it and none of the other record's." ;
+  mf:action [ qt:query <../../../queries/questions/pod/What%20each%20import%20brought%20in.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ;
+              ctm:boundRecord <urn:x:a> ] ;
+  mf:result <what-an-import-brought-in-of-one-record.srj> .

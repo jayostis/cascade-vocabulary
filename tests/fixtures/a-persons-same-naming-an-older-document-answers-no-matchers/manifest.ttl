@@ -1,0 +1,18 @@
+@prefix ctm: <https://ns.cascadeprotocol.org/test-manifest#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix qt: <http://www.w3.org/2001/sw/DataAccess/tests/test-query#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<> a mf:Manifest ;
+  rdfs:label "a-persons-same-naming-an-older-document-answers-no-matchers" ;
+  rdfs:comment "The matcher's Same of two records made from their first versions, one record with a second revision since from a March document; a person's Same over both that names only the January document." ;
+  mf:entries (
+    <#a-matchers-member-changed>
+  ) .
+
+<#a-matchers-member-changed> a mf:QueryEvaluationTest ;
+  mf:name "a-matchers-member-changed" ;
+  rdfs:comment "Both Sames are listed: the person's names a document the changed member's current revision did not come from, so it is not an answer to the matcher's, and the matcher's changed member is the one that needs it." ;
+  mf:action [ qt:query <../../../queries/questions/judgment/What%20needs%20review.rq> ;
+              ctm:lensQueryPath <../../../queries/lenses/everyday.rq> ] ;
+  mf:result <a-matchers-member-changed.srj> .
