@@ -195,7 +195,7 @@ WITH
   named (entry, iri) AS (
     SELECT stated.entry, CASE WHEN substr(e.lex, 1, 18) = 'urn:cascade:entry:'
                               THEN k.address || '#' || substr(e.lex, 19) ELSE e.lex END
-    FROM immunization_terms k CROSS JOIN immunization_stated stated JOIN term e ON e.id = stated.entry)
+    FROM immunization_terms k CROSS JOIN immunization_stated stated CROSS JOIN term e ON e.id = stated.entry)
 SELECT stated.entry, '<' || named.iri || '>',
   replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(hex(coalesce(t_date.lex, '')), '0', 'p'), '1', 'o'), '2', 'n'), '3', 'm'), '4', 'l'), '5', 'k'), '6', 'j'), '7', 'i'), '8', 'h'), '9', 'g'), 'A', 'f'), 'B', 'e'), 'C', 'd'), 'D', 'c'), 'E', 'b'), 'F', 'a') || '~' || CASE WHEN t_name.id IS NULL THEN '0' ELSE t_name.kind || hex(coalesce(t_name.lex, '')) END || '.' || '2' || hex(named.iri) || '.',
   stated.lead, stated.status_from, stated.name, stated.status, stated.date, stated.date_written

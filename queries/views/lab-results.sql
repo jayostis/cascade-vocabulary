@@ -280,7 +280,7 @@ WITH
   named (entry, iri) AS (
     SELECT stated.entry, CASE WHEN substr(e.lex, 1, 18) = 'urn:cascade:entry:'
                               THEN k.address || '#' || substr(e.lex, 19) ELSE e.lex END
-    FROM lab_result_terms k CROSS JOIN stated JOIN term e ON e.id = stated.entry),
+    FROM lab_result_terms k CROSS JOIN stated CROSS JOIN term e ON e.id = stated.entry),
   timed (entry, day, time) AS (
     SELECT stated.entry, CASE WHEN p.kind IN (2, 3) THEN substr(p.lex, 1, 10) ELSE '' END,
       CASE WHEN p.kind IN (2, 3) THEN p.lex ELSE '' END

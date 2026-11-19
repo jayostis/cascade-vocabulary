@@ -43,7 +43,7 @@ def screens():
     return [sql_text(relative) for relative in ported() if relative.startswith("queries/views/")]
 
 
-WHOLE = re.compile(r"^SEARCH \w+ USING (?:COVERING )?INDEX quad_pos \(p=\?(?: AND o[<>]=?\?)*\)$")
+WHOLE = re.compile(r"^SEARCH \w+ USING (?:COVERING )?INDEX (?:quad_pos \(p=\?|quad_osp \(o[<>]=?\?)(?: AND o[<>]=?\?)*\)$")
 
 
 def whole_scans(run, text):
@@ -54,7 +54,7 @@ def whole_scans(run, text):
     reading, found = {}, []
     for row in run("EXPLAIN " + text):
         _, opcode, cursor, root, database = row[:5]
-        if opcode == "OpenRead":
+        if opcode in ("OpenRead", "ReopenIdx"):
             reading[cursor] = roots.get(root) if database == 0 else None
         elif opcode in ("Rewind", "Last") and reading.get(cursor):
             found.append(reading[cursor])
@@ -84,7 +84,7 @@ def screen_plans(engine):
     part and the statement's place in it, each as its EXPLAIN QUERY PLAN rows and the b-trees it scans, as whole_scans
     gives them. The pod is empty, made by queries/statements.sql and each screen's tables part alone on the engine, each
     statement planned just before it runs; its plans do not depend on what the pod holds."""
-    if engine == "apsw":
+    if engine.startswith("apsw"):
         connection = apsw.Connection(":memory:")
         for name, function in sql.FUNCTIONS.items():
             connection.create_scalar_function(name, function, -1, deterministic=True)
@@ -649,7 +649,7 @@ class TestSqlBesideEachQuery:
             record_property("sqlite_version", sqlite3.sqlite_version)
             assert sqlite3.sqlite_version_info >= sql.MINIMUM_VERSION, sqlite3.sqlite_version
 
-        @pytest.mark.parametrize("engine", ["sqlite3", "apsw"])
+        @pytest.mark.parametrize("engine", ["sqlite3", "apsw", "apsw-floor"])
         def test_plans_each_screen_statement_from_the_shipped_statistics_with_no_whole_predicate_searched_in_a_loop(self, engine):
             """plans each screen statement, on the statistics the schema and the screens ship and no ANALYZE, with no scan of `quad` or `term` and no search of a whole predicate inside a loop
 
@@ -663,9 +663,14 @@ class TestSqlBesideEachQuery:
             """
             if engine == "apsw":
                 assert apsw.sqlite_lib_version() == STRICTEST_SQLITE
+            if engine == "apsw-floor":
+                if apsw.sqlite_lib_version() == STRICTEST_SQLITE:
+                    pytest.skip("the floor run is the CI step that installs an older apsw")
+                assert tuple(map(int, apsw.sqlite_lib_version().split("."))) >= sql.MINIMUM_VERSION
             found = [f"{view} {part} #{place}: {detail}" for (view, part, place), (plan, scans) in screen_plans(engine).items()
                      for detail in [f"scans {name}" for name in scans] + whole_searches(plan)]
-            assert found == []
+            ran = sqlite3.sqlite_version if engine == "sqlite3" else f"apsw {apsw.sqlite_lib_version()}"
+            assert found == [], f"on SQLite {ran}"
 
         def test_ships_a_statistics_row_for_each_index_of_the_schema_and_for_each_of_its_tables_with_none(self):
             """ships a statistics row for each index queries/statements.sql makes, and for each table of it with none
@@ -1007,6 +1012,8 @@ class TestTheSqlCheck:
         assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o=?)"),
                                (9, 0, "SEARCH q USING COVERING INDEX quad_g (g=?)")]) == []
         assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o=? AND s=? AND p=?)")]) == []
+        assert whole_searches([(2, 0, "SCAN k"), (6, 0, "SEARCH q USING COVERING INDEX quad_osp (o>? AND o<?)")]) \
+            == ["SEARCH q USING COVERING INDEX quad_osp (o>? AND o<?)"]
 
     def test_reports_a_scan_of_quad_or_term_under_whatever_alias_the_statement_names_it_by(self):
         """reports a scan of `quad` or `term` under whatever alias the statement names it by, and no search of either

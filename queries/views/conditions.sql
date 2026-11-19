@@ -220,7 +220,7 @@ WITH
   named (entry, iri) AS (
     SELECT stated.entry, CASE WHEN substr(e.lex, 1, 18) = 'urn:cascade:entry:'
                               THEN k.address || '#' || substr(e.lex, 19) ELSE e.lex END
-    FROM condition_terms k CROSS JOIN stated JOIN term e ON e.id = stated.entry)
+    FROM condition_terms k CROSS JOIN stated CROSS JOIN term e ON e.id = stated.entry)
 SELECT stated.entry, '<' || named.iri || '>',
   CASE WHEN n.id IS NULL THEN '0' ELSE n.kind || hex(coalesce(n.lex, '')) END || '.' || '2' || hex(named.iri) || '.',
   stated.lead, stated.status_from, stated.name, stated.status, stated.verification, stated.abatement,

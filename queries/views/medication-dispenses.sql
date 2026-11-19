@@ -227,7 +227,7 @@ WITH
   named (entry, iri) AS (
     SELECT stated.entry, CASE WHEN substr(e.lex, 1, 18) = 'urn:cascade:entry:'
                               THEN k.address || '#' || substr(e.lex, 19) ELSE e.lex END
-    FROM medication_dispense_terms k CROSS JOIN medication_dispense_stated stated JOIN term e ON e.id = stated.entry)
+    FROM medication_dispense_terms k CROSS JOIN medication_dispense_stated stated CROSS JOIN term e ON e.id = stated.entry)
 SELECT stated.entry, '<' || named.iri || '>',
   stated.lead, stated.status_from, stated.name, stated.selected, stated.prepared, stated.handed_over, stated.status, stated.lifecycle
 FROM medication_dispense_stated stated JOIN named ON named.entry = stated.entry;

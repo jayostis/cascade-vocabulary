@@ -172,7 +172,7 @@ WITH
   named (entry, iri) AS (
     SELECT stated.entry, CASE WHEN substr(e.lex, 1, 18) = 'urn:cascade:entry:'
                               THEN k.address || '#' || substr(e.lex, 19) ELSE e.lex END
-    FROM variant_terms k CROSS JOIN variant_stated stated JOIN term e ON e.id = stated.entry)
+    FROM variant_terms k CROSS JOIN variant_stated stated CROSS JOIN term e ON e.id = stated.entry)
 SELECT stated.entry, '<' || named.iri || '>',
   '2' || hex(named.iri) || '.',
   stated.lead,
