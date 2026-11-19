@@ -47,7 +47,8 @@ CREATE VIEW lab_result_terms AS SELECT
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#AuthorRole>') AS author_role,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#CustodianRole>') AS custodian_role,
   (SELECT id FROM term WHERE nt = '<http://xmlns.com/foaf/0.1/name>') AS foaf_name,
-  (SELECT CASE WHEN count(DISTINCT i.lex) = 1 THEN min(i.lex) END FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o
+  (SELECT CASE WHEN count(DISTINCT i.lex) = 1 THEN min(i.lex) END
+   FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o
    WHERE w.p = (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#writtenByQueryPath>')
      AND w.o = (SELECT id FROM term WHERE nt = '"views/lab-results.rq"')
      AND x.p = (SELECT id FROM term WHERE nt = '<http://www.w3.org/ns/solid/terms#instance>')) AS address;
@@ -154,9 +155,12 @@ INSERT INTO lab_result_filled (entry)
   UNION SELECT q.o FROM lab_result_terms k CROSS JOIN scope JOIN quad q ON q.s = scope.term AND q.p = k.in_entry
   UNION SELECT entry FROM lab_result_member WHERE record IN (SELECT term FROM scope)
   UNION SELECT e.o FROM lab_result_terms k CROSS JOIN scope
-    JOIN quad ag ON ag.o = scope.term AND ag.p = k.agent JOIN quad a ON a.o = ag.s AND a.p = k.association
-    JOIN quad g ON g.o = a.s AND g.p = k.generated_by JOIN quad d ON d.o = g.s AND d.p = k.derived_from
-    JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision JOIN quad e ON e.s = cr.s AND e.p = k.in_entry;
+    CROSS JOIN quad ag ON ag.o = scope.term AND ag.p = k.agent
+    CROSS JOIN quad a ON a.o = ag.s AND a.p = k.association
+    CROSS JOIN quad g ON g.o = a.s AND g.p = k.generated_by
+    CROSS JOIN quad d ON d.o = g.s AND d.p = k.derived_from
+    CROSS JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision
+    CROSS JOIN quad e ON e.s = cr.s AND e.p = k.in_entry;
 
 DELETE FROM lab_result WHERE entry IN (SELECT entry FROM lab_result_filled);
 DELETE FROM lab_result_member WHERE entry IN (SELECT entry FROM lab_result_filled);

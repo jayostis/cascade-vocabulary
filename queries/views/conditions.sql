@@ -42,7 +42,8 @@ CREATE VIEW condition_terms AS SELECT
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#AuthorRole>') AS author_role,
   (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#CustodianRole>') AS custodian_role,
   (SELECT id FROM term WHERE nt = '<http://xmlns.com/foaf/0.1/name>') AS foaf_name,
-  (SELECT CASE WHEN count(DISTINCT i.lex) = 1 THEN min(i.lex) END FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o
+  (SELECT CASE WHEN count(DISTINCT i.lex) = 1 THEN min(i.lex) END
+   FROM quad w JOIN quad x ON x.s = w.s JOIN term i ON i.id = x.o
    WHERE w.p = (SELECT id FROM term WHERE nt = '<https://ns.cascadeprotocol.org/cascade#writtenByQueryPath>')
      AND w.o = (SELECT id FROM term WHERE nt = '"views/conditions.rq"')
      AND x.p = (SELECT id FROM term WHERE nt = '<http://www.w3.org/ns/solid/terms#instance>')) AS address;
@@ -136,13 +137,18 @@ INSERT INTO condition_filled (entry)
   UNION SELECT entry FROM condition_member WHERE record IN (SELECT term FROM scope)
   UNION SELECT entry FROM condition_for_record WHERE record IN (SELECT term FROM scope)
   UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
-    JOIN quad v ON v.o = scope.term AND v.p = k.values_of_member JOIN quad given ON given.o = v.s AND given.p = k.member_values
-    JOIN quad w ON w.s = given.s AND w.p = k.member_values JOIN quad rc ON rc.s = w.o AND rc.p = k.reason_condition
-    JOIN quad e ON e.s = rc.o AND e.p = k.in_entry
+    CROSS JOIN quad v ON v.o = scope.term AND v.p = k.values_of_member
+    CROSS JOIN quad given ON given.o = v.s AND given.p = k.member_values
+    CROSS JOIN quad w ON w.s = given.s AND w.p = k.member_values
+    CROSS JOIN quad rc ON rc.s = w.o AND rc.p = k.reason_condition
+    CROSS JOIN quad e ON e.s = rc.o AND e.p = k.in_entry
   UNION SELECT e.o FROM condition_terms k CROSS JOIN scope
-    JOIN quad ag ON ag.o = scope.term AND ag.p = k.agent JOIN quad a ON a.o = ag.s AND a.p = k.association
-    JOIN quad g ON g.o = a.s AND g.p = k.generated_by JOIN quad d ON d.o = g.s AND d.p = k.derived_from
-    JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision JOIN quad e ON e.s = cr.s AND e.p = k.in_entry;
+    CROSS JOIN quad ag ON ag.o = scope.term AND ag.p = k.agent
+    CROSS JOIN quad a ON a.o = ag.s AND a.p = k.association
+    CROSS JOIN quad g ON g.o = a.s AND g.p = k.generated_by
+    CROSS JOIN quad d ON d.o = g.s AND d.p = k.derived_from
+    CROSS JOIN quad cr ON cr.o = d.s AND cr.p = k.current_revision
+    CROSS JOIN quad e ON e.s = cr.s AND e.p = k.in_entry;
 
 DELETE FROM condition WHERE entry IN (SELECT entry FROM condition_filled);
 DELETE FROM condition_member WHERE entry IN (SELECT entry FROM condition_filled);
