@@ -6,7 +6,6 @@ WITH
     WHERE m.sort_key > coalesce(:after, '')
       AND m.name IS NOT NULL
       AND EXISTS (SELECT 1 FROM medication_member r WHERE r.entry = m.entry)
-      AND EXISTS (SELECT 1 FROM medication_member_values v WHERE v.entry = m.entry)
       AND (NOT EXISTS (SELECT 1 FROM asked)
            OR EXISTS (SELECT 1 FROM medication_member r JOIN asked ON asked.term = r.record WHERE r.entry = m.entry))
     ORDER BY m.sort_key
@@ -35,22 +34,28 @@ WITH
   reasons (entry, k1, k2, member, line, shown) AS (
     SELECT DISTINCT v.entry, coalesce(cn.lex, ''), substr(c.iri, 2, length(c.iri) - 2), m.lex,
       m.lex || ' for ' || substr(c.iri, 2, length(c.iri) - 2) || coalesce(', ' || cn.lex, '') || char(31),
-      m.lex || ' for ' || substr(c.iri, 2, length(c.iri) - 2) || coalesce(', ' || cn_said.said, '')
-    FROM medication_member_values_reason_condition v JOIN page ON page.entry = v.entry JOIN term m ON m.id = v.member
+      m.lex || ' for ' || substr(c.iri, 2, length(c.iri) - 2) || coalesce(', ' || CASE cn.kind WHEN 2 THEN cn.lex WHEN 3 THEN substr(cn.nt, 2, length(cn.nt) - 2 - CASE WHEN cn.lang IS NOT NULL
+        THEN length(cn.lang) + 1 WHEN cn.datatype = 'http://www.w3.org/2001/XMLSchema#string' THEN 0
+        ELSE length(cn.datatype) + 4 END) END, '')
+    FROM page CROSS JOIN medication_member_values_reason_condition v ON v.entry = page.entry JOIN term m ON m.id = v.member
     JOIN condition_member cm ON cm.record = v.record JOIN condition c ON c.entry = cm.entry
-    LEFT JOIN term cn ON cn.id = c.name LEFT JOIN strings cn_said ON cn_said.id = c.name
-    UNION SELECT v.entry, code.lex, '', m.lex, m.lex || ' for ' || code.lex || char(31), m.lex || ' for ' || code_said.said
-    FROM medication_member_values_reason_code v JOIN page ON page.entry = v.entry JOIN term m ON m.id = v.member
-    JOIN term code ON code.id = v.code JOIN strings code_said ON code_said.id = v.code
+    LEFT JOIN term cn ON cn.id = c.name
+    UNION SELECT v.entry, code.lex, '', m.lex, m.lex || ' for ' || code.lex || char(31), m.lex || ' for ' || CASE code.kind WHEN 2 THEN code.lex WHEN 3 THEN substr(code.nt, 2, length(code.nt) - 2 - CASE WHEN code.lang IS NOT NULL
+        THEN length(code.lang) + 1 WHEN code.datatype = 'http://www.w3.org/2001/XMLSchema#string' THEN 0
+        ELSE length(code.datatype) + 4 END) END
+    FROM page CROSS JOIN medication_member_values_reason_code v ON v.entry = page.entry JOIN term m ON m.id = v.member
+    JOIN term code ON code.id = v.code
     UNION SELECT v.entry, code.lex, code.datatype, m.lex,
       m.lex || ' for ' || code.datatype || ' ' || code.lex || char(31),
-      m.lex || ' for ' || code.datatype || ' ' || code_said.said
-    FROM medication_member_values_reason_other_system v JOIN page ON page.entry = v.entry
-    JOIN term m ON m.id = v.member JOIN term code ON code.id = v.code JOIN strings code_said ON code_said.id = v.code),
+      m.lex || ' for ' || code.datatype || ' ' || CASE code.kind WHEN 2 THEN code.lex WHEN 3 THEN substr(code.nt, 2, length(code.nt) - 2 - CASE WHEN code.lang IS NOT NULL
+        THEN length(code.lang) + 1 WHEN code.datatype = 'http://www.w3.org/2001/XMLSchema#string' THEN 0
+        ELSE length(code.datatype) + 4 END) END
+    FROM page CROSS JOIN medication_member_values_reason_other_system v ON v.entry = page.entry
+    JOIN term m ON m.id = v.member JOIN term code ON code.id = v.code),
   candidates (entry, n, only) AS (
     SELECT entry, count(DISTINCT nt), min(nt) FROM (
       SELECT c.entry, CASE t.kind WHEN 2 THEN t.nt ELSE '<https://ns.cascadeprotocol.org/codes/rxnorm/' || sparql_encode_for_uri(t.lex) || '>' END AS nt
-      FROM medication_code c JOIN page ON page.entry = c.entry JOIN term t ON t.id = c.code WHERE t.kind IN (2, 3))
+      FROM page CROSS JOIN medication_code c ON c.entry = page.entry JOIN term t ON t.id = c.code WHERE t.kind IN (2, 3))
     GROUP BY entry)
 SELECT name.nt AS medication,
   coalesce(CASE WHEN instr(chosen.lex, 'https://ns.cascadeprotocol.org/codes/rxnorm/') = 1 THEN chosen.nt END,

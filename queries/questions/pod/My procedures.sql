@@ -4,7 +4,6 @@ WITH
     SELECT p.entry, p.iri, p.sort_key, p.name, p.status, p.date, p.label FROM procedure p
     WHERE p.sort_key > coalesce(:after, '')
       AND EXISTS (SELECT 1 FROM procedure_member m WHERE m.entry = p.entry)
-      AND EXISTS (SELECT 1 FROM procedure_member_values v WHERE v.entry = p.entry)
       AND (NOT EXISTS (SELECT 1 FROM asked)
            OR EXISTS (SELECT 1 FROM procedure_member m JOIN asked ON asked.term = m.record WHERE m.entry = p.entry))
     ORDER BY p.sort_key

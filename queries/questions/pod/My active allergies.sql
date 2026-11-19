@@ -6,7 +6,6 @@ WITH
       AND a.name IS NOT NULL
       AND (a.status IS NULL OR a.status = (SELECT id FROM term WHERE nt = '"active"'))
       AND EXISTS (SELECT 1 FROM allergy_member m WHERE m.entry = a.entry)
-      AND EXISTS (SELECT 1 FROM allergy_member_values v WHERE v.entry = a.entry)
       AND (NOT EXISTS (SELECT 1 FROM asked)
            OR EXISTS (SELECT 1 FROM allergy_member m JOIN asked ON asked.term = m.record WHERE m.entry = a.entry))
     ORDER BY a.sort_key
@@ -18,13 +17,13 @@ WITH
   texts (entry, member, plain, shown) AS (
     SELECT entry, member, group_concat(plain, ', ' ORDER BY plain), group_concat(shown, ', ' ORDER BY plain) FROM (
       SELECT DISTINCT x.entry, x.member, t.lex AS plain, s.said AS shown
-      FROM allergy_member_values_reaction_text x JOIN page ON page.entry = x.entry
+      FROM page CROSS JOIN allergy_member_values_reaction_text x ON x.entry = page.entry
       JOIN term t ON t.id = x.code JOIN strings s ON s.id = x.code)
     GROUP BY entry, member),
   codes (entry, member, plain, shown) AS (
     SELECT entry, member, group_concat(plain, ', ' ORDER BY plain), group_concat(shown, ', ' ORDER BY plain) FROM (
       SELECT DISTINCT x.entry, x.member, t.lex AS plain, s.said AS shown
-      FROM allergy_member_values_reaction_code x JOIN page ON page.entry = x.entry
+      FROM page CROSS JOIN allergy_member_values_reaction_code x ON x.entry = page.entry
       JOIN term t ON t.id = x.code JOIN strings s ON s.id = x.code)
     GROUP BY entry, member),
   lines (entry, line, shown) AS (

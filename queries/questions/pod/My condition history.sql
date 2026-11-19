@@ -7,7 +7,6 @@ WITH
     WHERE c.sort_key > coalesce(:after, '')
       AND c.name IS NOT NULL
       AND EXISTS (SELECT 1 FROM condition_member r WHERE r.entry = c.entry)
-      AND EXISTS (SELECT 1 FROM condition_member_values v WHERE v.entry = c.entry)
       AND (NOT EXISTS (SELECT 1 FROM asked)
            OR EXISTS (SELECT 1 FROM condition_member r JOIN asked ON asked.term = r.record WHERE r.entry = c.entry))
     ORDER BY c.sort_key
