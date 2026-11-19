@@ -5,6 +5,9 @@
     "A term's nt is Oxigraph's canonical form, as its store holds it: \"01\" is \"1\", \"+5\" is \"5\" and \"1.50\" is \"1.5\". A loader fed by a parser that keeps literals as written, such as N3.js, writes other nt; load from Oxigraph's quads, or make each literal canonical as Oxigraph does.",
     "Strings compare by code point. JavaScript's < compares UTF-16 code units, which puts a character above U+FFFF, a surrogate pair from D800 to DBFF, before one from U+E000 to U+FFFF.",
     "A pattern's . and an empty match step over a character above U+FFFF whole, as a JavaScript RegExp does only with the u or v flag.",
+    "REPLACE walks the matches as Rust's regex does: search from a position; an empty match is made, and the next search starts one character after it, so a character an empty match stepped over is never the start of a match (REPLACE(\"b\", \"x*|b\", \"-\") is \"-b-\", not \"--\"); an empty match at the end of the match before it is dropped, its search then starting one character on. Do not take JavaScript's matchAll or replace as given, nor Python's finditer, which retries a non-empty match at the position of an empty one.",
+    "Every digit in a lexical form is 0 to 9: a decimal, integer, float or double, and a date, dateTime, gYear or gYearMonth, with a digit of another script (U+0661, U+FF11) ill-typed, so its function gives null. Match with [0-9], not \\d (Python's \\d takes Unicode digits, and int() reads them).",
+    "Under the x flag, Rust's regex ignores each character of Unicode's White_Space property outside a class and refuses one in a class: exactly U+0009 to U+000D, U+0020, U+0085, U+00A0, U+1680, U+2000 to U+200A, U+2028, U+2029, U+202F, U+205F and U+3000, and no other (not U+001C to U+001F, not U+FEFF, not U+200B, U+200E, U+200F or U+180E, which are literal characters in and out of a class). Refuse a member of that set in a class; outside one, ASCII white space (U+0009 to U+000D, U+0020) is ignored (Python's x flag does so too), and does not end a quantifier, so a quantifier then another (`a+ ?`) is refused as one directly after it is; any other member is refused, as a pattern that reads a pair apart. Take neither Python's str.isspace nor JavaScript's \\s for the set: Python's isspace also holds U+001C to U+001F, and JavaScript's \\s lacks U+0085 and holds U+FEFF.",
     "LCASE follows Unicode's full lower-case mapping with the final sigma; a character the implementation's Unicode does not case-map but a newer one does (U+1C89, U+A7CB, U+A7CC, U+A7CE, U+A7D2, U+A7D4, U+A7DA, U+A7DC, U+10D50 to U+10D65 and U+16EA0 to U+16EB8, which Unicode 16.0 adds) is refused; any other unassigned character is left as it is.",
     "No compare vector holds a blank node, as VALUES cannot: two blank nodes that are one term compare equal, and a blank node with any other term raises."
   ],
@@ -42,6 +45,13 @@
         {"input": ["abc", "b", "X", "k"], "output": null},
         {"input": ["aaa", "a*", "X"], "output": "X"},
         {"input": ["baaac", "a*", "X"], "output": "XbXcX"},
+        {"input": ["b", "x*|b", "-"], "output": "-b-"},
+        {"input": ["ab", "x*|b", "-"], "output": "-a-b-"},
+        {"input": ["bb", "|b", "-"], "output": "-b-b-"},
+        {"input": ["abc", "(?:)|b", "-"], "output": "-a-b-c-"},
+        {"input": ["a\ufeffb", "[\ufeff]", "-", "x"], "output": "a-b"},
+        {"input": ["a\u001cb", "[\u001c]", "-", "x"], "output": "a-b"},
+        {"input": ["ab", "a\u000bb", "-", "x"], "output": "-"},
         {"input": ["Éclair", "é", "e", "i"], "output": "eclair"},
         {"input": ["😀", ".", "X"], "output": "X"},
         {"input": ["😀a", "", "-"], "output": "-😀-a-"},
@@ -55,7 +65,12 @@
         {"input": ["abc", "[[:alpha:]]", "x"], "refused": "a POSIX class"},
         {"input": ["abc", "\\w", "x"], "refused": "a class shorthand"},
         {"input": ["İ", "i", "x", "i"], "refused": "a dotted I under the i flag, which Python's case-insensitive match equates with i and Rust's does not"},
-        {"input": ["a#b", "a#b", "x", "x"], "refused": "a # under the x flag, a comment in Rust's regex and Python's and no comment in SPARQL's"}
+        {"input": ["a#b", "a#b", "x", "x"], "refused": "a # under the x flag, a comment in Rust's regex and Python's and no comment in SPARQL's"},
+        {"input": ["ab", "a+ ?", "-", "x"], "refused": "a quantifier after a quantifier with a space between, which the x flag ignores"},
+        {"input": ["a b", "[ ]", "-", "x"], "refused": "white space in a class under the x flag"},
+        {"input": ["a\u0085b", "[\u0085]", "-", "x"], "refused": "white space in a class under the x flag, which Unicode's White_Space property decides and Python's isspace does not"},
+        {"input": ["a\u00a0b", "a\u00a0b", "-", "x"], "refused": "non-ASCII white space outside a class under the x flag, which Rust's regex ignores and Python's keeps"},
+        {"input": ["a\u3000b", "a\u3000b", "-", "x"], "refused": "non-ASCII white space outside a class under the x flag, which Rust's regex ignores and Python's keeps"}
       ]
     },
     "sparql_sha256": {
@@ -104,6 +119,9 @@
       "sparql": "?left + ?right, ?left - ?right, ?left * ?right or ?left / ?right, the operator first, or FLOOR(?left) as \"floor\" and the left alone, over xsd:decimal values",
       "vectors": [
         {"input": ["+", "0.1", "0.2"], "output": "0.3"},
+        {"input": ["+", "\u0661", "1"], "output": null},
+        {"input": ["*", "1", "\uff11"], "output": null},
+        {"input": ["floor", "\u0661"], "output": null},
         {"input": ["-", "1", "1.5"], "output": "-0.5"},
         {"input": ["*", "2", "30.4375"], "output": "60.875"},
         {"input": ["*", "7.5", "2"], "output": "15"},
@@ -154,6 +172,11 @@
       "sparql": "IF(?left < ?right, -1, IF(?left = ?right, 0, IF(?left > ?right, 1, 1/0)))",
       "vectors": [
         {"input": ["\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>", "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"], "output": -1},
+        {"input": ["\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>", "\"\u0661\"^^<http://www.w3.org/2001/XMLSchema#integer>"], "output": null},
+        {"input": ["\"\u0661\"^^<http://www.w3.org/2001/XMLSchema#integer>", "\"\u0661.\u0665\"^^<http://www.w3.org/2001/XMLSchema#decimal>"], "output": null},
+        {"input": ["\"1\"^^<http://www.w3.org/2001/XMLSchema#decimal>", "\"\uff11.5\"^^<http://www.w3.org/2001/XMLSchema#decimal>"], "output": null},
+        {"input": ["\"1\"^^<http://www.w3.org/2001/XMLSchema#double>", "\"\u0661\"^^<http://www.w3.org/2001/XMLSchema#double>"], "output": null},
+        {"input": ["\"2024-01-01\"^^<http://www.w3.org/2001/XMLSchema#date>", "\"\u0662024-01-01\"^^<http://www.w3.org/2001/XMLSchema#date>"], "output": null},
         {"input": ["\"4\"^^<http://www.w3.org/2001/XMLSchema#decimal>", "\"4\"^^<http://www.w3.org/2001/XMLSchema#integer>"], "output": 0},
         {"input": ["\"30\"^^<http://www.w3.org/2001/XMLSchema#decimal>", "\"5\"^^<http://www.w3.org/2001/XMLSchema#integer>"], "output": 1},
         {"input": ["\"1\"^^<http://www.w3.org/2001/XMLSchema#int>", "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"], "output": -1},

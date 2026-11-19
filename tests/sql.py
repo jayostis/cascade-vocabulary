@@ -94,10 +94,10 @@ def to_oxigraph(term):
 
 # The calendar keys
 
-DATE_TIME = re.compile(r"(-?\d{4,})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(?:\.(\d+))?(Z|[+-]\d\d:\d\d)?")
-DATE = re.compile(r"(-?\d{4,})-(\d\d)-(\d\d)(Z|[+-]\d\d:\d\d)?")
-GYEAR = re.compile(r"(-?\d{4,})(Z|[+-]\d\d:\d\d)?")
-GYEAR_MONTH = re.compile(r"(-?\d{4,})-(\d\d)(Z|[+-]\d\d:\d\d)?")
+DATE_TIME = re.compile(r"(-?[0-9]{4,})-([0-9][0-9])-([0-9][0-9])T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(?:\.([0-9]+))?(Z|[+-][0-9][0-9]:[0-9][0-9])?")
+DATE = re.compile(r"(-?[0-9]{4,})-([0-9][0-9])-([0-9][0-9])(Z|[+-][0-9][0-9]:[0-9][0-9])?")
+GYEAR = re.compile(r"(-?[0-9]{4,})(Z|[+-][0-9][0-9]:[0-9][0-9])?")
+GYEAR_MONTH = re.compile(r"(-?[0-9]{4,})-([0-9][0-9])(Z|[+-][0-9][0-9]:[0-9][0-9])?")
 SCALE = 10 ** 18
 FOURTEEN_HOURS = 14 * 3600 * SCALE
 
@@ -208,7 +208,10 @@ def day_key(term):
 # The six functions
 
 ESCAPED_ALIKE = set(r"\|.-^?*+{}()[]$nrt")
-QUANTIFIER = re.compile(r"\{\d+(,\d*)?\}")
+QUANTIFIER = re.compile(r"\{[0-9]+(,[0-9]*)?\}")
+# What Rust's regex reads as white space under the x flag: Unicode's White_Space property
+WHITE_SPACE = frozenset(map(chr, (*range(0x09, 0x0E), 0x20, 0x85, 0xA0, 0x1680, *range(0x2000, 0x200B), 0x2028, 0x2029,
+                                  0x202F, 0x205F, 0x3000)))
 CASE_APART = {"\u0130", "\u0131"}
 
 
@@ -230,8 +233,8 @@ def python_pattern(pattern, flags, text=""):
     text alone, as it is in Rust's regex unless the m flag is given. Whatever the vectors leave out, where the two may
     read a pattern apart, is refused with ValueError: an escape but of a metacharacter, n, r or t; a group opened with
     `(?` but `(?:`; a quantifier after a quantifier, so a lazy or possessive one; a `{` or `}` that is no quantifier; a
-    `[` inside a class, as a POSIX class has, or `&&`, `--` or `~~` there; under the x flag a `#`, or white space in a
-    class; and, under the i flag, a dotted or dotless I, which Python's case-insensitive match equates with i and Rust's
+    `[` inside a class, as a POSIX class has, or `&&`, `--` or `~~` there; under the x flag a `#`, white space in a
+    class, or non-ASCII white space; and, under the i flag, a dotted or dotless I, which Python's case-insensitive match equates with i and Rust's
     does not, or a character Python's Unicode does not assign."""
     if "i" in flags:
         if CASE_APART & set(pattern + text):
@@ -252,9 +255,15 @@ def python_pattern(pattern, flags, text=""):
             i, quantified = i + 2, False
             continue
         if in_class:
-            if c == "[" or pattern[i:i + 2] in ("&&", "--", "~~") or ("x" in flags and c.isspace()):
+            if c == "[" or pattern[i:i + 2] in ("&&", "--", "~~") or ("x" in flags and c in WHITE_SPACE):
                 raise ValueError(f"{pattern!r} has a class no vector covers")
             in_class = c != "]"
+            out.append(c)
+            i += 1
+            continue
+        if "x" in flags and c in WHITE_SPACE:
+            if c > "\x7f":
+                raise ValueError(f"{pattern!r} has white space {c!r} outside a class under the x flag, which no vector covers")
             out.append(c)
             i += 1
             continue
@@ -320,14 +329,17 @@ def sparql_replace(text, pattern, replacement, flags=""):
                               sum(f for name, f in (("s", re.S), ("m", re.M), ("i", re.I), ("x", re.X)) if name in flags))
     except re.error:
         return None
-    out, at, previous = [], 0, None
-    for match in compiled.finditer(text):
-        if match.start() == match.end() and previous is not None and previous.end() == match.start() \
-                and previous.end() > previous.start():
-            continue
+    out, at, start, last = [], 0, 0, None
+    while start <= len(text) and (match := compiled.search(text, start)):
+        if match.start() == match.end():
+            start = match.end() + 1
+            if last == match.end():
+                continue
+        else:
+            start = match.end()
         out.append(text[at:match.start()])
         out.append(expanded(replacement, match))
-        at, previous = match.end(), match
+        at = last = match.end()
     out.append(text[at:])
     return "".join(out)
 
@@ -351,7 +363,7 @@ def sparql_lcase(text):
     return None if text is None else text.lower()
 
 
-DECIMAL = re.compile(r"([+-]?)(\d*)(?:\.(\d*))?")
+DECIMAL = re.compile(r"([+-]?)([0-9]*)(?:\.([0-9]*))?")
 INTEGER_LIMIT = 2 ** 127
 
 
@@ -417,8 +429,8 @@ FLOATS = {XSD + "float", XSD + "double"}
 CALENDAR = {XSD + "dateTime", XSD + "date", XSD + "gYear", XSD + "gYearMonth"}
 COMPARED_ELSEWHERE = {XSD + name for name in ("time", "duration", "dayTimeDuration", "yearMonthDuration", "gMonth",
                                               "gDay", "gMonthDay")}
-FLOAT = re.compile(r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?|[+-]?INF|NaN")
-INTEGER = re.compile(r"[+-]?\d+")
+FLOAT = re.compile(r"[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)([eE][+-]?[0-9]+)?|[+-]?INF|NaN")
+INTEGER = re.compile(r"[+-]?[0-9]+")
 
 
 def number(term):
