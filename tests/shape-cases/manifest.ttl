@@ -149,6 +149,11 @@
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
               sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath pav:lastUpdateOn ] ] .
 
+<#revision/change-time-offset-past-fourteen-hours> a sht:Validate ;
+  mf:action [ sht:dataGraph <revision/change-time-offset-past-fourteen-hours.ttl> ] ;
+  mf:result [ a sh:ValidationReport ; sh:conforms false ;
+              sh:result [ sh:sourceShape cascade:RevisionShape ; sh:resultPath pav:lastUpdateOn ] ] .
+
 <#revision/change-time-a-date> a sht:Validate ;
   mf:action [ sht:dataGraph <revision/change-time-a-date.ttl> ] ;
   mf:result [ a sh:ValidationReport ; sh:conforms false ;
