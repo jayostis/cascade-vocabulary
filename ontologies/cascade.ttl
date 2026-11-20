@@ -1417,6 +1417,20 @@ cascade:holdsFilesInArchivesOfMediaType a owl:ObjectProperty ;
     rdfs:domain cascade:Placement ;
     rdfs:range dct:MediaType .
 
+cascade:holdsRequirementsForReadingAPod a owl:DatatypeProperty ;
+    rdfs:label "holds requirements for reading a pod"@en ;
+    rdfs:comment "Whether the placement's folder holds what a runtime must be able to do to read the pod whole, a file for each requirement, so that a runtime that cannot meet one refuses the pod rather than read part of it."@en ;
+    rdfs:domain cascade:Placement ;
+    rdfs:range xsd:boolean .
+
+cascade:RequirementForReadingAPod a owl:Class ;
+    rdfs:label "requirement for reading a pod"@en ;
+    rdfs:comment "Something a runtime must be able to do to read a pod that dct:requires it, as git's repository format extensions are: a runtime that cannot do it refuses the pod, naming it, where it would otherwise read only part of the pod."@en .
+
+cascade:ReadingFilesHeldInArchives a owl:NamedIndividual , cascade:RequirementForReadingAPod ;
+    rdfs:label "reading files held in archives"@en ;
+    rdfs:comment "Reading a pod's files from the archives in the folder runtime/pod-layout.ttl gives cascade:holdsFilesInArchivesOfMediaType as well as at their own paths, which a pod whose host keeps any file in an archive requires."@en .
+
 solid:forClass a rdf:Property ;
     rdfs:label "registry class"@en ;
     rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
@@ -2461,6 +2475,13 @@ dct:conformsTo a rdf:Property ;
     dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
     dct:license <https://creativecommons.org/licenses/by/4.0/> .
 
+dct:requires a rdf:Property ;
+    rdfs:label "Requires"@en ;
+    rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
+    rdfs:subPropertyOf <http://purl.org/dc/elements/1.1/relation> , dct:relation ;
+    dct:source <https://www.dublincore.org/specifications/dublin-core/dcmi-terms/2020-01-20/> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> .
+
 dct:description a rdf:Property ;
     rdfs:label "Description"@en ;
     rdfs:isDefinedBy <http://purl.org/dc/terms/> ;
@@ -3035,7 +3056,7 @@ cascade:ReleaseRetractionNamingRule a owl:NamedIndividual , cascade:NamingRule ;
 
 cascade:Snapshot a owl:Class ;
     rdfs:label "snapshot"@en ;
-    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file named as N9 names a file in a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder and the syncs' folder, the one it gives cascade:SyncFromAnotherWriter: a file the layout gives by solid:instance changes in place, and is outside it, and so is any other file in those folders. A file is in the set by its path, whether a host keeps it at that path or in an archive; an archive, in the folder the layout gives cascade:holdsFilesInArchivesOfMediaType, is not."@en ;
+    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file named as N9 names a file in a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder, the syncs' folder, the one it gives cascade:SyncFromAnotherWriter, and the requirements' folder, the one it gives cascade:holdsRequirementsForReadingAPod: a file the layout gives by solid:instance changes in place, and is outside it, and so is any other file in those folders. A file is in the set by its path, whether a host keeps it at that path or in an archive; an archive, in the folder the layout gives cascade:holdsFilesInArchivesOfMediaType, is not."@en ;
     rdfs:subClassOf prov:Entity .
 
 cascade:firstParentSnapshot a owl:ObjectProperty ;

@@ -1,6 +1,6 @@
 Feature: Opening a pod
-  What a runtime does when it opens a pod with the tables it holds: an app opens a pod with its own, and a newer app
-  holds newer versions.
+  What a runtime does when it opens a pod: whether it can read the pod, and what it adopts with the tables it holds: an
+  app opens a pod with its own, and a newer app holds newer versions.
 
   Each pod starts empty, at https://pod.example/, with one person as its subject (scripted-input/people.ttl). Hana
   enters six flu shots in three pairs by date, and later one more, four drug allergies, four conditions and nine whose codes recur. Her pod is made with the
@@ -259,3 +259,28 @@ Feature: Opening a pod
         SELECT ?row WHERE { ?row owl:annotatedSource <https://ns.cascadeprotocol.org/codes/cvx/141> }
         """
       Then it answers nothing
+
+  Rule: O4. A pod that requires what the runtime cannot do is refused at the open, naming the requirement
+    decisions/files-held-in-archives.md, row "what reading a pod requires".
+    A pod says what a runtime must be able to do to read it whole, a file for each cascade:RequirementForReadingAPod it
+    requires, in the folder pod-layout.ttl gives cascade:holdsRequirementsForReadingAPod. The file is named by N9 from
+    the requirement's IRI and holds one statement, that the pod dct:requires the requirement, the pod written <../> so
+    that the file's bytes are the same in every pod. The file of cascade:ReadingFilesHeldInArchives is
+    format/4c0299bfcb615af1d3456fb1755dea6e0229b4852c7890bae85f0328c453a95d.ttl, and its bytes are the line
+    <../> <http://purl.org/dc/terms/requires> <https://ns.cascadeprotocol.org/cascade#ReadingFilesHeldInArchives> .
+    ending in a line feed. A pod whose host keeps any file in an archive (X1) holds that file.
+
+    At every open, before it answers or writes anything, a runtime lists that folder; a pod without the folder
+    requires nothing. A file named for a requirement the runtime meets is not read. Any other file named as N9 names a
+    requirement's file is read, and the open fails: the refusal names each requirement the file states that the runtime
+    does not meet, by its IRI, and otherwise the file, as when it states none or cannot be read. Nothing else of the pod is
+    read and nothing is written. So a runtime refuses a pod that needs what came after it, rather than read part of
+    the pod and write beside what it could not see. A file in the folder not named as N9 names a requirement's file is a
+    write that stopped (W1), and is ignored.
+
+    A requirement's file is no file of the pod: it is in no snapshot's set (cascade:Snapshot), no archive holds it (X1),
+    no build reads it, and a sync does not carry it (S1). It is written once, before the first file that needs its
+    requirement (W1), and is never changed nor removed, even after a clean-up leaves no archive. A runtime from before this rule reads no requirement's file, so a pod that
+    must be refused by one is the runtime's to guard by other means.
+
+    No example can show this rule, because an example only sees a pod its runtime can open. Each runtime tests it itself.

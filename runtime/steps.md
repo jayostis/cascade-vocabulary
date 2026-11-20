@@ -239,7 +239,7 @@ The steps after this one are taken by that writer. It changes nothing.
 ### `{writer} receives the files of {writer} on {time}`
 
 The first writer named is given every file the second holds in a folder the layout gives by `solid:instanceContainer`,
-the views' and the archives' folders aside, writes each it lacks, at its path or in an archive, and writes a sync if
+the views', the archives' and the requirements' folders aside, writes each it lacks, at its path or in an archive, and writes a sync if
 `sync.feature` says it does. The steps after it are
 the receiving writer's.
 

@@ -34,6 +34,7 @@ cascade:SyncFromAnotherWriter rdfs:subClassOf prov:Activity .
 [] a cascade:Placement ; cascade:storesBytes true ; solid:instanceContainer <attachments/sha-256/> .
 [] a cascade:Placement ; solid:instanceContainer <archives/> ;
    cascade:holdsFilesInArchivesOfMediaType <https://www.iana.org/assignments/media-types/application/zip> .
+[] a cascade:Placement ; solid:instanceContainer <format/> ; cascade:holdsRequirementsForReadingAPod true .
 
 [] a cascade:Placement ; solid:forClass cascade:Judgment ; solid:instanceContainer <judgments/> ; cascade:subfolderPrefixLength 2 .
 [] a cascade:Placement ; solid:forClass cascade:MatcherJudgmentAssertion ; solid:instanceContainer <judgments/assertions/> ; cascade:subfolderPrefixLength 2 .

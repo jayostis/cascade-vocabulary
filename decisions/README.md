@@ -103,4 +103,4 @@ brought to it on 2026-10-22 under #202:
 - [`the-person.md`](the-person.md): what a version of the person's profile holds for gender and death, and why sex waits for the rule that reads it.
 - [`consent-tiers.md`](consent-tiers.md): what a model offered a person's pods may do through a tool, what waits for the person's yes, and what no tool does.
 - [`model-proposed-writes.md`](model-proposed-writes.md): what a write a model proposed and the person said yes to records of the model and of the person.
-- [`files-held-in-archives.md`](files-held-in-archives.md): where a host keeps a pod's files, at their own paths or in ZIP archives, with every path, byte and name unchanged.
+- [`files-held-in-archives.md`](files-held-in-archives.md): where a host keeps a pod's files, at their own paths or in ZIP archives, with every path, byte and name unchanged, and how a pod makes a runtime that cannot read archives refuse it.
