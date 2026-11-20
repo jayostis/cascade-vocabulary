@@ -124,7 +124,7 @@ class TestWhereAPodKeepsItsFiles:
 
             For each `cascade:RequirementForReadingAPod` the ontology declares, `cascade:ReadingFilesHeldInArchives`
             among them, its file is the SHA-256 of its IRI in UTF-8, in lowercase hex, adding `.ttl`, in the
-            layout's requirements folder (N9, O4), and O4 names that path; the file's bytes, read as Turtle at
+            layout's requirements folder (N9, O4), and O4 gives that path and those bytes; the bytes, read as Turtle at
             that path, are one statement, the pod's address `dct:requires` it, so they are the same in every pod.
             """
             requirements = set(terms().subjects(RDF.type, CASCADE.RequirementForReadingAPod))
@@ -132,7 +132,7 @@ class TestWhereAPodKeepsItsFiles:
             layout = Graph().parse(LAYOUT, publicID="https://pod.example/")
             for requirement in sorted(requirements):
                 path, text = requirement_file(layout, requirement)
-                assert path.removeprefix("https://pod.example/") in rule("O4")
+                assert path.removeprefix("https://pod.example/") in rule("O4") and text.removesuffix("\n") in rule("O4")
                 read = Graph().parse(data=text, format="turtle", publicID=path)
                 assert set(read) == {(URIRef("https://pod.example/"), DCTERMS.requires, requirement)}
 
