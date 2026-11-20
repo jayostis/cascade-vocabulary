@@ -61,8 +61,10 @@ Feature: The conformance kit
     No example states this check: SPARQL cannot hash a canonical graph.
 
   Rule: Check 5. Every file the runtime wrote is where pod-layout.ttl says
-    No note rules this.
-    The check is open-world: the pod may also hold files another app wrote.
+    decisions/files-held-in-archives.md, row "the kit's check", rules its second sentence; no note rules the rest.
+    The check is open-world: the pod may also hold files another app wrote. A file is where the layout says when its
+    path is, whether the runtime keeps it at that path or in an archive (X1); an archive is where the layout says when
+    it is named as N9 names an archive and holds only files an archive may hold.
 
     No example states this check: SPARQL cannot read a stored document's bytes.
 

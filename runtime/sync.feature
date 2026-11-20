@@ -10,9 +10,9 @@ Feature: Syncs
   second receives the first's files, and then imports the export that changes her peanut allergy.
 
   Rule: S1. A sync is written whenever the writer holds an act, other than a sync, whose snapshot is no ancestor of its last snapshot
-    decisions/naming.md, row "sync"; decisions/performance.md, row "sync as union, with the no-hash test".
+    decisions/naming.md, row "sync"; decisions/performance.md, row "sync as union, with the no-hash test"; decisions/files-held-in-archives.md, row "a sync".
     A writer receiving another writer's files writes each it lacks, in a folder the
-    layout gives by solid:instanceContainer but the views', in W1's order: the stored documents first, then the other
+    layout gives by solid:instanceContainer but the views' and the archives', in W1's order: the stored documents first, then the other
     files of the set, then the act files, each after those holding its snapshot's parents, and its sync last. Whether
     it writes a sync, and which acts the sync names (S2), depends on what the writer holds, never on what this
     receiving wrote: it writes one whenever it holds an act, other than a sync, whose snapshot is no ancestor of its
@@ -21,6 +21,13 @@ Feature: Syncs
     random UUID (N7), with its prov:startedAtTime, in a file of the folder the layout gives
     cascade:SyncFromAnotherWriter. The files that arrived are the transport's, not the sync's: the step wrote only the
     sync's file.
+
+    A file is the same file wherever a host keeps it (X1), so which files a writer lacks is decided by path, and the
+    files arrive as files whether the other writer kept them at their paths or in archives. A host that keeps files in
+    archives writes the files that arrived as W1 writes a step's: the stored documents at their paths, then the rest as
+    archives. A host that keeps archives may instead take whole archives the writer lacks, and keep them as they are at their
+    names after the stored documents it lacks, since a reader takes every archive and a file held twice holds the same
+    bytes in both.
 
     Example: a sync that brings an entry writes one file, its act's
       Given a new pod for Dev on 2026-04-01 at 09:00

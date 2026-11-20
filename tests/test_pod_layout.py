@@ -2,12 +2,14 @@ import re
 
 import pytest
 from pyshacl import validate
-from rdflib import Graph, URIRef
+from rdflib import Graph, Literal, URIRef
+from rdflib.namespace import RDF
 
-from contract import KITS, LAYOUT, ROOT
+from contract import CASCADE, KITS, LAYOUT, ROOT
 from ontologies import shapes
 
 SOLID = "http://www.w3.org/ns/solid/terms#"
+ZIP = URIRef("https://www.iana.org/assignments/media-types/application/zip")
 
 
 def placement(graph, predicate):
@@ -20,6 +22,11 @@ def naming_a_file_and_a_folder(graph):
 
 def naming_neither(graph):
     graph.remove((placement(graph, SOLID + "instanceContainer"), URIRef(SOLID + "instanceContainer"), None))
+
+
+def naming_an_archive_format_by_a_string(graph):
+    graph.add((placement(graph, SOLID + "instanceContainer"), CASCADE.holdsFilesInArchivesOfMediaType,
+               Literal("application/zip")))
 
 
 def conforms_to_its_shapes(graph):
@@ -45,9 +52,32 @@ class TestWhereAPodKeepsItsFiles:
             conforms, report = conforms_to_its_shapes(Graph().parse(LAYOUT, publicID="https://pod.example/"))
             assert conforms, report
 
+        def test_gives_one_folder_of_zip_archives_and_places_nothing_else_in_it(self):
+            """gives one folder of ZIP archives, and places nothing else in it
+
+            Exactly one placement states `cascade:holdsFilesInArchivesOfMediaType`: it gives a folder by
+            `solid:instanceContainer`, its media type is ZIP's, and it states nothing else of a placement. No
+            other placement's file or folder is at or under that folder, so a file held in an archive is placed by its
+            own path, never by the archive's.
+            """
+            graph = Graph().parse(LAYOUT, publicID="https://pod.example/")
+            archives = list(graph.subjects(CASCADE.holdsFilesInArchivesOfMediaType, None))
+            assert len(archives) == 1
+            [entry] = archives
+            folder = graph.value(entry, URIRef(SOLID + "instanceContainer"))
+            assert folder is not None and str(folder).endswith("/")
+            assert set(graph.objects(entry, CASCADE.holdsFilesInArchivesOfMediaType)) == {ZIP}
+            allowed = {RDF.type, URIRef(SOLID + "instanceContainer"), CASCADE.holdsFilesInArchivesOfMediaType}
+            assert sorted(str(predicate) for predicate in set(graph.predicates(entry)) - allowed) == []
+            others = {place for other in graph.subjects(RDF.type, CASCADE.Placement) if other != entry
+                      for predicate in ("instance", "instanceContainer")
+                      for place in graph.objects(other, URIRef(SOLID + predicate))}
+            assert sorted(str(place) for place in others if str(place).startswith(str(folder))) == []
+
     class TestGivenTheLayoutWithOnePlacementChanged:
-        @pytest.mark.parametrize("breaking", [naming_a_file_and_a_folder, naming_neither],
-                                 ids=["a file and a folder", "neither"])
+        @pytest.mark.parametrize("breaking", [naming_a_file_and_a_folder, naming_neither,
+                                              naming_an_archive_format_by_a_string],
+                                 ids=["a file and a folder", "neither", "its archives' media type by a string"])
         def test_fails_its_shapes_when_the_placement_names(self, breaking):
             """fails its shapes when the placement names
 

@@ -192,9 +192,15 @@ Feature: Naming
     cascade-bridge-spec and the runtime's Bridge interface use it, and their own tests check it.
 
   Rule: N9. A file's name comes from the name of what it holds
-    No note rules this.
+    decisions/files-held-in-archives.md, row "an archive's name", rules its last paragraph; no note rules the rest.
     For a urn:uuid: name, the UUID; for an ni:///sha-256; name, the hash in lowercase hex. An RDF file adds .ttl; a stored
     document adds nothing. The folder and the fan-out are the layout's, pod-layout.ttl.
+
+    An archive (X1) holds files and is named by none of them: its name is the SHA-256 of its own bytes in lowercase hex,
+    adding .zip, in the folder pod-layout.ttl gives cascade:holdsFilesInArchivesOfMediaType, with no fan-out. A host
+    checks that an archive's bytes hash to its name when it receives the archive (S1) and when a clean-up merges it, and
+    refuses one that does not: the receive writes nothing. Reading an archive needs only its end of central directory
+    record; an archive with none, which is a torn one, fails the open, naming the archive, and nothing is read from it.
 
     Every example shows this rule, because each graph is named by its file's path.
 
