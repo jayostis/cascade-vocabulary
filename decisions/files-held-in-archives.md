@@ -3,7 +3,9 @@
 Status: ruled, 2026-11-20, by Jay on [a pod that is fast at any size, cascade-runtime-js#819](https://github.com/jayostis/cascade-runtime-js/issues/819#issuecomment-7049607696),
 from the design pass in [the storage design](https://github.com/jayostis/cascade-runtime-js/issues/819#issuecomment-7049288478).
 Amends X1, N9, W1, S1 and the kit's check 5, which until now each said "No note rules this", and settles the
-packfiles question `performance.md` left open as the runtime's. Depends on `naming.md` (what names a file) and
+packfiles question `performance.md` left open as the runtime's. The row "what reading a pod requires" and rule O4 were
+added on 2026-11-20 from the review of the reader, [cascade-runtime-js#937](https://github.com/jayostis/cascade-runtime-js/pull/937),
+which measured what a runtime without it does with a pod held in archives. Depends on `naming.md` (what names a file) and
 `performance.md` (the ten-year pod). Every figure says measured or estimate; laptop means Jay's Windows 11 machine
 (i5-8257U, NTFS, Defender on), shared with other work, one sitting.
 
@@ -40,13 +42,20 @@ pod written one way must be read by every runtime and synced with every writer.
 - **TriG and N-Quads.** W3C formats that hold many named graphs in one file, a graph's name beside its statements.
 - **SQLite.** One file holding a whole database, which SQLite recommends as an application's file format; the
   runtime's SQL steps already keep a cache of the pod in one (`pod.db`, rebuilt from the files).
+- **git's repository format.** A repository states `core.repositoryformatversion` in its config, and at version 1 a list
+  of `extensions.*`: "If a version-1 repository specifies any `extensions.*` keys that the running git has not
+  implemented, the operation MUST NOT proceed." A repository that sets no extension stays at version 0, because then
+  "setting it to `1` provides no benefit, and makes the repository incompatible with older implementations of git".
+  The config is one file, changed in place.
 
 Sources: git's objects and packfiles (https://git-scm.com/book/en/v2/Git-Internals-Packfiles) and `fetch.unpackLimit`
 and `transfer.unpackLimit` (https://git-scm.com/docs/git-config); ISO/IEC 21320-1 as the Library of Congress describes it
 (https://www.loc.gov/preservation/digital/formats/fdd/fdd000361.shtml), ZIP
 (https://www.loc.gov/preservation/digital/formats/fdd/fdd000354.shtml); the IANA registration of `application/zip`
 (https://www.iana.org/assignments/media-types/application/zip); FHIR Bulk Data's export (https://hl7.org/fhir/uv/bulkdata/export.html);
-TriG (https://www.w3.org/TR/trig/); SQLite as an application file format (https://www.sqlite.org/appfileformat.html).
+TriG (https://www.w3.org/TR/trig/); SQLite as an application file format (https://www.sqlite.org/appfileformat.html);
+git's repository format versions (https://git-scm.com/docs/repository-version); DCMI's `dcterms:requires`
+(https://www.dublincore.org/specifications/dublin-core/dcmi-terms/terms/requires/).
 The research this note rests on, with the prototype, its result files and every measurement:
 [the storage design](https://github.com/jayostis/cascade-runtime-js/issues/819#issuecomment-7049288478); the rulings:
 [the decisions comment](https://github.com/jayostis/cascade-runtime-js/issues/819#issuecomment-7049607696).
@@ -63,6 +72,7 @@ The research this note rests on, with the prototype, its result files and every 
 | clean-up | `git gc` | a host may write the files of several archives, or loose files, into a new archive and then remove what they came from, each entry's bytes copied unchanged and the new archive in place first (X1) | borrowed from git |
 | a loose folder | git reads loose and packed objects alike | a reader takes every file at its own path and every entry of every archive, so a hand-made, example, fixture or older pod stays a pod as it is (X1) | borrowed |
 | the kit's check | | a file is where the layout says when its path is, at that path or in an archive (`runtime/the-kit.feature`, Check 5) | ours |
+| what reading a pod requires | git's `extensions.*`, which a git that lacks one refuses | a pod says each thing a runtime must be able to do to read it whole, `cascade:ReadingFilesHeldInArchives` first, as a file of its own in the folder the layout gives `cascade:holdsRequirementsForReadingThePod`, named by the SHA-256 of the requirement's IRI and stating that the pod `dct:requires` it. It is written before the first file that needs it and never changes; it is no file of the pod, and no archive holds it. Every runtime lists the folder at every open and refuses, naming the requirement, a pod that requires what it cannot do (`runtime/opening.feature`, O4; W1, X1, N9, S1) | borrowed from git's refusal; diverged in a file a requirement, never changed, and in no version number |
 | the snapshot's set | | a file is in the set by its path wherever a host keeps it, and an archive is not in it, so no snapshot and no set hash changes (`ontologies/cascade.ttl`) | ours |
 
 ## Why
@@ -120,6 +130,23 @@ The cost is two read paths, which git has carried since 2005.
 in one IndexedDB transaction and never had many operating-system files; it keeps doing so. The rules say how a host
 that keeps archives writes them and how every reader reads them, and require no host to keep them.
 
+**A runtime that cannot read archives must refuse, and only the pod can tell it to.** (row "what reading a pod
+requires") A runtime without the reader, opening the 647-record pod with its subject's file loose and its other 1,728
+files in one archive, saw 8 of 1,743 graphs and refused nothing (measured, cascade-runtime-js#937's review); with the
+subject's file archived too and its own description of the pod beside it, 7 (measured, #937). It then writes acts and
+revisions against a pod it sees in part, and X1 never lets them be removed. The runtimes already shipped cannot be
+changed, so the rule is for this runtime and every one after it: each lists one folder at every open, and refuses what
+it cannot do. Every later format, one seal an archive, stored documents kept compressed, joins as one more requirement
+with no change to this rule. A file a requirement, never changed, keeps X1's promise for the one thing a pod says about
+how it is kept, lets two hosts add requirements without reading each other's, and costs a runtime that meets them one
+listing and no read: the name says which requirement a file states. The pod, not the runtime's state beside it, says
+it, so a pod copied whole by a file-sync tool or a backup takes its requirements with it. The requirement is how a host
+keeps the files, not what they say, so it is in no snapshot's set and a sync does not carry it: the same files kept loose
+by one writer and in archives by another make the same snapshots, and each writer's pod requires what its own host
+needs. DCMI's `dcterms:requires`, "a related resource that is required by the described resource to support its
+function, delivery, or coherence", says the statement, so no `cascade#` property is minted for it; the requirements
+themselves are ours, since nothing outside the protocol names what a Cascade runtime must be able to do.
+
 ## Alternatives that lost
 
 - **Keep one file each and write faster.** The strongest case: nothing changes but the runtime's write path. Measured
@@ -143,6 +170,15 @@ that keeps archives writes them and how every reader reads them, and require no 
   the whole archive.
 - **"Statements never change", not files.** The strongest case: it is the promise a reader relies on. It is a larger
   change than the gain needs; the promise about each file holds once a file is its path and its bytes.
+- **git's own scheme: a format version and a list of extensions in one file.** The strongest case: it is git's, and
+  proven. A version number makes software from before the list refuse only if that software reads the number, and no
+  shipped runtime reads any, so a number would make no runtime refuse that the list does not. One file changed in place is a write two hosts could
+  each make with the other's lost, and a torn write could drop a requirement; a file a requirement can be neither.
+- **`dct:conformsTo` a profile.** The strongest case: it is how DCAT and the W3C profiles vocabulary say a resource
+  follows a specification. It says what the pod follows, not that a runtime that cannot do it must refuse, and a loose
+  pod follows the archives' rules too.
+- **The runtime's own description beside the pod.** The strongest case: no rule changes. No other runtime reads it, a
+  copy of the pod's folder leaves it behind, and it is the runtime's state, not the pod's.
 
 ## Still open
 
@@ -156,8 +192,8 @@ that keeps archives writes them and how every reader reads them, and require no 
   also lists (5.2 MB for the large import, measured).
 - How many archives a pod holds before a clean-up merges them, and whether a merged index is kept beside the pod: set by
   measuring the ten-year pod's open, not guessed.
-- A runtime from before this note, opening a pod whose files are in archives, sees a nearly empty folder; it must refuse
-  rather than write into it. That is the runtime's to ensure, in the step that adds the reader.
+- A runtime from before O4, opening a pod whose files are in archives, reads no requirement and sees part of the pod;
+  it must refuse rather than write into it. That is the runtime's to ensure, by what those runtimes already refuse.
 
 ## What would change our mind
 
