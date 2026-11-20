@@ -1411,6 +1411,11 @@ cascade:storesBytes a owl:DatatypeProperty ;
     rdfs:domain cascade:Placement ;
     rdfs:range xsd:boolean .
 
+cascade:holdsFilesInArchivesOfMediaType a owl:ObjectProperty ;
+    rdfs:label "holds files in archives of media type"@en ;
+    rdfs:comment "That the placement's folder holds archives of the pod's files, and the media type of those archives, by the IRI of its IANA registration. Each entry of an archive is a file of the pod at its own path, with its own bytes, so a file is the same file whether a host keeps it at its path or in an archive, and the archive itself is no file of the pod (runtime/nothing-is-edited.feature, X1)."@en ;
+    rdfs:domain cascade:Placement .
+
 solid:forClass a rdf:Property ;
     rdfs:label "registry class"@en ;
     rdfs:isDefinedBy <http://www.w3.org/ns/solid/terms#> ;
@@ -3029,7 +3034,7 @@ cascade:ReleaseRetractionNamingRule a owl:NamedIndividual , cascade:NamingRule ;
 
 cascade:Snapshot a owl:Class ;
     rdfs:label "snapshot"@en ;
-    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file named as N9 names a file in a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder and the syncs' folder, the one it gives cascade:SyncFromAnotherWriter: a file the layout gives by solid:instance changes in place, and is outside it, and so is any other file in those folders."@en ;
+    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file named as N9 names a file in a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder and the syncs' folder, the one it gives cascade:SyncFromAnotherWriter: a file the layout gives by solid:instance changes in place, and is outside it, and so is any other file in those folders. A file is in the set by its path, whether a host keeps it at that path or in an archive; an archive, in the folder the layout gives cascade:holdsFilesInArchivesOfMediaType, is not."@en ;
     rdfs:subClassOf prov:Entity .
 
 cascade:firstParentSnapshot a owl:ObjectProperty ;

@@ -151,8 +151,8 @@ Each is the wording a note had before 2026-10-22; the note named keeps it in ful
 - Incremental rebuild's correctness: that rebuilding the records an act reached equals the full rebuild is argued
   (the ladder is per record, entries are a closure), not proved; a property test over random act sequences, comparing
   the two, is the lean.
-- Packfiles: whether a pod's files are stored packed or deltified, as git does, is the runtime's
-  (jayostis/cascade-runtime-js#209).
+- Packfiles: ruled by `files-held-in-archives.md`, which keeps each file and holds the files of a step in one ZIP
+  archive; deltified storage is not taken.
 - What the browser runs: which acts a browser may perform on its own, and whether a demo is read-only, is unruled.
 
 ## What would change our mind

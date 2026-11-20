@@ -5,8 +5,21 @@ Feature: Nothing is edited or deleted
   exports that change them.
 
   Rule: X1. No file, once written, changes or goes
-    No note rules this.
+    decisions/files-held-in-archives.md, rows "a file", "an archive", "clean-up" and "a loose folder".
     A retraction, a later revision and an entered-in-error status each leave everything they follow in the pod.
+
+    A file is its path and its bytes, wherever a host keeps it: at its own path, or as the entry at that path of an
+    archive in the folder pod-layout.ttl gives cascade:holdsFilesInArchivesOfMediaType. An archive is a ZIP in the
+    ISO/IEC 21320-1 profile: each entry stored or deflated, its path in UTF-8 with forward slashes, its date
+    1980-01-01 00:00; entries in the order of their paths' bytes, one a path; no ZIP64 field, so at most 65,535 entries and under 4 GiB.
+    It holds only files of folders the layout gives by solid:instanceContainer, never a view nor a stored document, and
+    it is no file of the pod: a host may write files it holds into a new archive and then remove the archives, or the
+    copies at their own paths, they came from, so long as each file keeps its path and its bytes, and the new archive is
+    at its name before anything it holds is removed. A reader takes every file at its own path and every entry of every
+    archive at its name. A file held in two places, two archives or an archive and its own path, holds the same bytes in
+    both.
+
+    No example shows where a host keeps a file, because a step's dataset names each file by its path.
 
     Example: a later revision leaves the earlier revision and version in the files the earlier step wrote
       Given a new pod for Ada on 2026-01-01 at 09:00
