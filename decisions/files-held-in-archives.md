@@ -44,7 +44,7 @@ pod written one way must be read by every runtime and synced with every writer.
   runtime's SQL steps already keep a cache of the pod in one (`pod.db`, rebuilt from the files).
 - **git's repository format.** A repository states `core.repositoryformatversion` in its config, and at version 1 a list
   of `extensions.*`: "If a version-1 repository specifies any `extensions.*` keys that the running git has not
-  implemented, the operation MUST NOT proceed." A repository that sets no extension stays at version 0, because then
+  implemented, the operation MUST NOT proceed." A repository that sets no extension should leave the version at 0 ("SHOULD be set to 0"), because then
   "setting it to `1` provides no benefit, and makes the repository incompatible with older implementations of git".
   The config is one file, changed in place.
 
@@ -72,7 +72,7 @@ The research this note rests on, with the prototype, its result files and every 
 | clean-up | `git gc` | a host may write the files of several archives, or loose files, into a new archive and then remove what they came from, each entry's bytes copied unchanged and the new archive in place first (X1) | borrowed from git |
 | a loose folder | git reads loose and packed objects alike | a reader takes every file at its own path and every entry of every archive, so a hand-made, example, fixture or older pod stays a pod as it is (X1) | borrowed |
 | the kit's check | | a file is where the layout says when its path is, at that path or in an archive (`runtime/the-kit.feature`, Check 5) | ours |
-| what reading a pod requires | git's `extensions.*`, which a git that lacks one refuses | a pod says each thing a runtime must be able to do to read it whole, `cascade:ReadingFilesHeldInArchives` first, as a file of its own in the folder the layout gives `cascade:holdsRequirementsForReadingThePod`, named by the SHA-256 of the requirement's IRI and stating that the pod `dct:requires` it. It is written before the first file that needs it and never changes; it is no file of the pod, and no archive holds it. Every runtime lists the folder at every open and refuses, naming the requirement, a pod that requires what it cannot do (`runtime/opening.feature`, O4; W1, X1, N9, S1) | borrowed from git's refusal; diverged in a file a requirement, never changed, and in no version number |
+| what reading a pod requires | git's `extensions.*`, which a git that lacks one refuses | a pod says each thing a runtime must be able to do to read it whole, `cascade:ReadingFilesHeldInArchives` first, as a file of its own in the folder the layout gives `cascade:holdsRequirementsForReadingAPod`, named by the SHA-256 of the requirement's IRI and stating that the pod `dct:requires` it. It is written before the first file that needs it and is never changed nor removed; it is no file of the pod, and no archive holds it. Every runtime lists the folder at every open and refuses, naming the requirement, a pod that requires what it cannot do (`runtime/opening.feature`, O4; W1, X1, N9, S1) | borrowed from git's refusal; diverged in a file a requirement, never changed nor removed, and in no version number |
 | the snapshot's set | | a file is in the set by its path wherever a host keeps it, and an archive is not in it, so no snapshot and no set hash changes (`ontologies/cascade.ttl`) | ours |
 
 ## Why
@@ -137,7 +137,7 @@ subject's file archived too and its own description of the pod beside it, 7 (mea
 revisions against a pod it sees in part, and X1 never lets them be removed. The runtimes already shipped cannot be
 changed, so the rule is for this runtime and every one after it: each lists one folder at every open, and refuses what
 it cannot do. Every later format, one seal an archive, stored documents kept compressed, joins as one more requirement
-with no change to this rule. A file a requirement, never changed, keeps X1's promise for the one thing a pod says about
+with no change to this rule. A file a requirement, never changed nor removed, keeps X1's promise for the one thing a pod says about
 how it is kept, lets two hosts add requirements without reading each other's, and costs a runtime that meets them one
 listing and no read: the name says which requirement a file states. The pod, not the runtime's state beside it, says
 it, so a pod copied whole by a file-sync tool or a backup takes its requirements with it. The requirement is how a host

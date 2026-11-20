@@ -21,6 +21,7 @@ Feature: Write order
     pod lacks it, under another name, its bytes flushed to storage, then renamed to its name, and only then writes what
     needs it. So a host that keeps files in archives writes the file of cascade:ReadingFilesHeldInArchives before the
     first archive it writes into a pod, whether in a step, a receive (S1) or a clean-up (X1), and a pod that holds an
-    archive holds that file.
+    archive holds that file. It is never removed, even by a clean-up that leaves the pod no archive: a concurrent
+    writer may have just written an archive that relies on it.
 
     No example can show this rule, because an example only sees finished steps. Each runtime tests it itself.

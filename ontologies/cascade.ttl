@@ -1417,8 +1417,8 @@ cascade:holdsFilesInArchivesOfMediaType a owl:ObjectProperty ;
     rdfs:domain cascade:Placement ;
     rdfs:range dct:MediaType .
 
-cascade:holdsRequirementsForReadingThePod a owl:DatatypeProperty ;
-    rdfs:label "holds requirements for reading the pod"@en ;
+cascade:holdsRequirementsForReadingAPod a owl:DatatypeProperty ;
+    rdfs:label "holds requirements for reading a pod"@en ;
     rdfs:comment "Whether the placement's folder holds what a runtime must be able to do to read the pod whole, a file for each requirement, so that a runtime that cannot meet one refuses the pod rather than read part of it."@en ;
     rdfs:domain cascade:Placement ;
     rdfs:range xsd:boolean .
@@ -3056,7 +3056,7 @@ cascade:ReleaseRetractionNamingRule a owl:NamedIndividual , cascade:NamingRule ;
 
 cascade:Snapshot a owl:Class ;
     rdfs:label "snapshot"@en ;
-    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file named as N9 names a file in a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder, the syncs' folder, the one it gives cascade:SyncFromAnotherWriter, and the requirements' folder, the one it gives cascade:holdsRequirementsForReadingThePod: a file the layout gives by solid:instance changes in place, and is outside it, and so is any other file in those folders. A file is in the set by its path, whether a host keeps it at that path or in an archive; an archive, in the folder the layout gives cascade:holdsFilesInArchivesOfMediaType, is not."@en ;
+    rdfs:comment "The set of files a writer holds as one of its acts left it, as a git commit names its tree and its parents: a node in its act's file, prov:wasGeneratedBy the act, named by cascade:SnapshotNamingRule. The set is every file named as N9 names a file in a folder runtime/pod-layout.ttl gives by solid:instanceContainer, but the views' folder, the syncs' folder, the one it gives cascade:SyncFromAnotherWriter, and the requirements' folder, the one it gives cascade:holdsRequirementsForReadingAPod: a file the layout gives by solid:instance changes in place, and is outside it, and so is any other file in those folders. A file is in the set by its path, whether a host keeps it at that path or in an archive; an archive, in the folder the layout gives cascade:holdsFilesInArchivesOfMediaType, is not."@en ;
     rdfs:subClassOf prov:Entity .
 
 cascade:firstParentSnapshot a owl:ObjectProperty ;

@@ -31,7 +31,7 @@ def naming_an_archive_format_by_a_string(graph):
 
 
 def naming_its_requirements_folder_by_a_string(graph):
-    graph.add((placement(graph, SOLID + "instanceContainer"), CASCADE.holdsRequirementsForReadingThePod,
+    graph.add((placement(graph, SOLID + "instanceContainer"), CASCADE.holdsRequirementsForReadingAPod,
                Literal("true")))
 
 
@@ -42,7 +42,7 @@ def only_placement(graph, predicate, value):
 
 def requirement_file(graph, requirement):
     """O4: the path of the file that says the pod requires it, and that file's bytes."""
-    folder = graph.value(only_placement(graph, CASCADE.holdsRequirementsForReadingThePod, Literal(True)),
+    folder = graph.value(only_placement(graph, CASCADE.holdsRequirementsForReadingAPod, Literal(True)),
                          URIRef(SOLID + "instanceContainer"))
     name = hashlib.sha256(str(requirement).encode("utf-8")).hexdigest()
     return f"{folder}{name}.ttl", f"<../> <{DCTERMS.requires}> <{requirement}> .\n"
@@ -103,15 +103,15 @@ class TestWhereAPodKeepsItsFiles:
         def test_gives_one_folder_of_requirements_for_reading_the_pod_and_places_nothing_else_in_it(self):
             """gives one folder of requirements for reading the pod, and places nothing else in it
 
-            Exactly one placement states `cascade:holdsRequirementsForReadingThePod true`: it gives a folder one level
+            Exactly one placement states `cascade:holdsRequirementsForReadingAPod true`: it gives a folder one level
             below the pod by `solid:instanceContainer`, and states nothing else of a placement. No other placement's file
             or folder is at or under it, and it is not under the archives' folder, so no archive can hold its files (X1).
             """
             graph = Graph().parse(LAYOUT, publicID="https://pod.example/")
-            entry = only_placement(graph, CASCADE.holdsRequirementsForReadingThePod, Literal(True))
+            entry = only_placement(graph, CASCADE.holdsRequirementsForReadingAPod, Literal(True))
             folder = str(graph.value(entry, URIRef(SOLID + "instanceContainer")))
             assert re.fullmatch(r"https://pod\.example/[a-z-]+/", folder)
-            allowed = {RDF.type, URIRef(SOLID + "instanceContainer"), CASCADE.holdsRequirementsForReadingThePod}
+            allowed = {RDF.type, URIRef(SOLID + "instanceContainer"), CASCADE.holdsRequirementsForReadingAPod}
             assert sorted(str(predicate) for predicate in set(graph.predicates(entry)) - allowed) == []
             others = {str(place) for other in graph.subjects(RDF.type, CASCADE.Placement) if other != entry
                       for predicate in ("instance", "instanceContainer")

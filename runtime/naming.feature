@@ -203,7 +203,7 @@ Feature: Naming
     record; an archive with none, which is a torn one, fails the open, naming the archive, and nothing is read from it.
 
     A requirement's file (O4) is named by its requirement: the SHA-256 of the requirement's IRI, in UTF-8, in lowercase
-    hex, adding .ttl, in the folder pod-layout.ttl gives cascade:holdsRequirementsForReadingThePod, with no fan-out.
+    hex, adding .ttl, in the folder pod-layout.ttl gives cascade:holdsRequirementsForReadingAPod, with no fan-out.
 
     Every example shows this rule, because each graph is named by its file's path.
 
