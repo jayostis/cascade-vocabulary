@@ -32,9 +32,11 @@ pod written one way must be read by every runtime and synced with every writer.
   stored as a pack" (`fetch.unpackLimit`, defaulting to `transfer.unpackLimit`, "The default value is 100"). `git gc`
   packs loose objects and merges packs.
 - **ZIP and ISO/IEC 21320-1.** ZIP is PKWARE's container: entries one after another and a central directory at the end
-  that lists each entry's path and where it starts. ISO/IEC 21320-1 (Document Container File, Core) is the profile
-  EPUB, OOXML and ODF build on: entries "may only be stored uncompressed or using the 'deflate' mechanism", and "the
-  encryption features defined in APPNOTE.TXT are prohibited" (as the Library of Congress summarises it).
+  that lists each entry's path and where it starts. ISO/IEC 21320-1 (Document Container File, Core) is written down
+  from what EPUB, OOXML and ODF share: entries "may only be stored uncompressed or using the 'deflate' mechanism", and
+  "the encryption features defined in APPNOTE.TXT are prohibited" (as the Library of Congress summarises it). It says
+  UTF-8 only as a "should" and nothing of ZIP64: paths in UTF-8 only and no ZIP64 are this note's narrowings, not the
+  profile's.
 - **TriG and N-Quads.** W3C formats that hold many named graphs in one file, a graph's name beside its statements.
 - **SQLite.** One file holding a whole database, which SQLite recommends as an application's file format; the
   runtime's SQL steps already keep a cache of the pod in one (`pod.db`, rebuilt from the files).

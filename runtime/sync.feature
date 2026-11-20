@@ -25,8 +25,9 @@ Feature: Syncs
     A file is the same file wherever a host keeps it (X1), so which files a writer lacks is decided by path, and the
     files arrive as files whether the other writer kept them at their paths or in archives. A host that keeps files in
     archives writes the files that arrived as W1 writes a step's: the stored documents at their paths, then the rest as
-    archives. A transport may instead bring whole archives the writer lacks, which it keeps as they are at their names
-    after the stored documents it lacks, since a reader takes every archive and a file held twice holds the same bytes in both.
+    archives. A host that keeps archives may instead take whole archives the writer lacks, and keep them as they are at their
+    names after the stored documents it lacks, since a reader takes every archive and a file held twice holds the same
+    bytes in both.
 
     Example: a sync that brings an entry writes one file, its act's
       Given a new pod for Dev on 2026-04-01 at 09:00

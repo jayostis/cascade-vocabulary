@@ -56,7 +56,7 @@ class TestWhereAPodKeepsItsFiles:
             """gives one folder of ZIP archives, and places nothing else in it
 
             Exactly one placement states `cascade:holdsFilesInArchivesOfMediaType`: it gives a folder by
-            `solid:instanceContainer`, its media type is ZIP's, and it names no class, no property and no fan-out. No
+            `solid:instanceContainer`, its media type is ZIP's, and it states nothing else of a placement. No
             other placement's file or folder is at or under that folder, so a file held in an archive is placed by its
             own path, never by the archive's.
             """
@@ -67,9 +67,8 @@ class TestWhereAPodKeepsItsFiles:
             folder = graph.value(entry, URIRef(SOLID + "instanceContainer"))
             assert folder is not None and str(folder).endswith("/")
             assert set(graph.objects(entry, CASCADE.holdsFilesInArchivesOfMediaType)) == {ZIP}
-            assert sorted(str(predicate) for predicate in graph.predicates(entry) if predicate in {
-                URIRef(SOLID + "forClass"), CASCADE.forSubjectsOf, CASCADE.filedWith,
-                CASCADE.subfolderPrefixLength, CASCADE.holdsRecords, CASCADE.storesBytes}) == []
+            allowed = {RDF.type, URIRef(SOLID + "instanceContainer"), CASCADE.holdsFilesInArchivesOfMediaType}
+            assert sorted(str(predicate) for predicate in set(graph.predicates(entry)) - allowed) == []
             others = {place for other in graph.subjects(RDF.type, CASCADE.Placement) if other != entry
                       for predicate in ("instance", "instanceContainer")
                       for place in graph.objects(other, URIRef(SOLID + predicate))}

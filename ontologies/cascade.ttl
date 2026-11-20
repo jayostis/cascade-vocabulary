@@ -1413,8 +1413,9 @@ cascade:storesBytes a owl:DatatypeProperty ;
 
 cascade:holdsFilesInArchivesOfMediaType a owl:ObjectProperty ;
     rdfs:label "holds files in archives of media type"@en ;
-    rdfs:comment "That the placement's folder holds archives of the pod's files, and the media type of those archives, by the IRI of its IANA registration. Each entry of an archive is a file of the pod at its own path, with its own bytes, so a file is the same file whether a host keeps it at its path or in an archive, and the archive itself is no file of the pod (runtime/nothing-is-edited.feature, X1)."@en ;
-    rdfs:domain cascade:Placement .
+    rdfs:comment "That the placement's folder holds archives of the pod's files, and the media type of those archives, by the IRI of its IANA registration."@en ;
+    rdfs:domain cascade:Placement ;
+    rdfs:range dct:MediaType .
 
 solid:forClass a rdf:Property ;
     rdfs:label "registry class"@en ;
