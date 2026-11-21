@@ -1,6 +1,6 @@
 # What a pod costs as it grows
 
-Status: ruled, 2026-10-22, from the read on [#206](https://github.com/jayostis/cascade-vocabulary/issues/206). Amends
+Status: ruled, 2026-10-22, from the read on [#206](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/206). Amends
 `naming.md`, `currency.md`, `republishing-sources.md`, `judgments.md`, `variant-identity.md` and
 `variant-classifications-table.md` with the nine rulings listed under #204's Performance section; rules nothing of its
 own, and collects the argument the rulings carry. Sizes are marked computed (from the notes' rules and the stated pod)
@@ -38,8 +38,8 @@ delta-state CRDTs (https://arxiv.org/abs/1603.01529); openEHR change control
 (https://specifications.openehr.org/releases/QUERY/latest/AQL.html); FHIR R4 history
 (https://hl7.org/fhir/R4/http.html#history) and Bulk Data (https://hl7.org/fhir/uv/bulkdata/); Oxigraph
 (https://github.com/oxigraph/oxigraph). The read this note rests on, with its assumptions, per-ruling table and
-fixes: [#206](https://github.com/jayostis/cascade-vocabulary/issues/206); the rulings:
-[#204](https://github.com/jayostis/cascade-vocabulary/issues/204).
+fixes: [#206](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/206); the rulings:
+[#204](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/204).
 
 ## Choice
 
@@ -52,9 +52,9 @@ fixes: [#206](https://github.com/jayostis/cascade-vocabulary/issues/206); the ru
 | the ladder as a maximum | CRDTs | current is a maximum over one record's revisions, about four, less its Befores and Erroneous, with no walk of history (`currency.md`; computed) (`runtime/currency.feature`, C2) | borrowed in spirit from CRDTs |
 | matcher judgments named once, asserted per query hash | nanopub assertions | a matcher judgment counts under any rule list version whose row for its rule carries the same `rec:queryHash`, so a new version asserts only the matcher judgments of the rules it changed; only matcher judgments whose joining rows changed are re-minted (M7; `naming.md`, `judgments.md`, `variant-identity.md`): assertions track rule changes, not versions times matcher judgments | ours |
 | the star | `prov:hadMember` | a matcher judgment's members are the record and the least member of each entry it matched; `same-pairs.rq` derives a star and entries are unchanged (`naming.md`, `judgments.md`): linear in members, where every earlier copy was 58M derived pairs (computed from A5) (`runtime/matcher.feature`, M5) | ours |
-| entries by union-find | disjoint-set union (Tarjan) | a runtime may compute `queries/derivations/entries.rq`'s rows another way, such as a union-find over the `cascade:currentlySame` pairs, which `owl:SymmetricProperty` makes exact, so long as they equal the query's, which stays the oracle: on Oxigraph JS a 1,000-member entry takes 5.4 s by the query's closure and 0.04 s by union-find (measured, [#246](https://github.com/jayostis/cascade-vocabulary/issues/246)) | borrowed |
+| entries by union-find | disjoint-set union (Tarjan) | a runtime may compute `queries/derivations/entries.rq`'s rows another way, such as a union-find over the `cascade:currentlySame` pairs, which `owl:SymmetricProperty` makes exact, so long as they equal the query's, which stays the oracle: on Oxigraph JS a 1,000-member entry takes 5.4 s by the query's closure and 0.04 s by union-find (measured, [#246](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/246)) | borrowed |
 | runs bound to arrivals, scoped within an organisation | FHIR `_since` | a run binds `?record` to the records the import, entry or sync brought, and within-organisation rules stay within one (`republishing-sources.md`): about 100k comparisons a run against 1 to 5M rows unbound (assumed) (`runtime/matcher.feature`, M1 and M4a) | ours |
-| derivations of a source-level Same | FHIR `Linkage`, computed | a server Same's joins are a hash join on type and id over the records under both, kept with the derived state and redone when the judgment is filed or retracted, never per read (`republishing-sources.md`): on Oxigraph JS 0.5.11, 10,000 records under each of two servers judged one give about 10k pairs in 0.7 to 0.9 s, 1.0 to 2.5 s when every document names a custodian, and a pod with no server Same pays 2 to 5 ms (measured, on a machine shared with other work); until the runtime keeps them across steps ([cascade-runtime-js#518](https://github.com/jayostis/cascade-runtime-js/issues/518)), every derive recomputes them | ours |
+| derivations of a source-level Same | FHIR `Linkage`, computed | a server Same's joins are a hash join on type and id over the records under both, kept with the derived state and redone when the judgment is filed or retracted, never per read (`republishing-sources.md`): on Oxigraph JS 0.5.11, 10,000 records under each of two servers judged one give about 10k pairs in 0.7 to 0.9 s, 1.0 to 2.5 s when every document names a custodian, and a pod with no server Same pays 2 to 5 ms (measured, on a machine shared with other work); until the runtime keeps them across steps ([cascade-runtime-js#518](https://github.com/the-cascade-protocol/cascade-runtime-js/issues/518)), every derive recomputes them | ours |
 | page-read tables, current versions only | openEHR AQL's latest version | tables are keyed row lookups, and R13 counts over current versions only, so an old version's rows may be dropped (`variant-identity.md`, `variant-classifications-table.md`): one version held, where every one was 72 GB of ClinVar (computed) (`runtime/matcher.feature`, M17) | borrowed from AQL's default |
 | findings bounded | | one rollback finding per import that goes back, an acknowledged one still standing; no second clock finding while one stands on the new act's first-parent ancestry; one un-reached finding per rule list version, 40 in ten years (`currency.md`, `naming.md`; computed) (`runtime/arrivals.feature`, A18 and A19; `runtime/matcher.feature`, M18) | ours |
 | the review page bounded | | a pick between two pulls of one source where one's snapshot is an ancestor of the other's is ordered by ancestry and not listed; only picks ancestry does not order are (`currency.md`): against about 8,000 lines by year ten (assumed) (`runtime/currency.feature`, C5) | ours |
@@ -70,7 +70,7 @@ the Bundle is 485 KB); the same bytes again write 0 files. The D0 bench's second
 pull of 1,000 resources onto a pod holding the first's, brings one document that is new in bytes and in records, so it
 was kept before this rule and writes the same 3,004 files (the files that import writes, with the bench's default repeats; the 3,587 above is every file in the folder after a `repeats: false` import, views included, so the two count different things); its documents do not repeat, and a pull whose documents did would add the 3 files above and no more.
 The bytes grow with the pulls whose bytes change, and that is older than this ruling. The runtime's pull builds one
-collection Bundle per full re-pull, with no Bundle id and no `meta` ([`cascade-runtime/src/connect/pull.ts`](https://github.com/jayostis/cascade-runtime-js/blob/main/packages/cascade-runtime/src/connect/pull.ts)),
+collection Bundle per full re-pull, with no Bundle id and no `meta` ([`cascade-runtime/src/connect/pull.ts`](https://github.com/the-cascade-protocol/cascade-runtime-js/blob/main/packages/cascade-runtime/src/connect/pull.ts)),
 so a pull's bytes change only when some resource's bytes change or a server returns a search's results in another order (the Bundle's `entry` is filled in page order). Before this ruling a pull in which one record wrote one
 revision already kept the whole Bundle, so this note's "1 GB however often pulled" was wrong on any day on which
 anything changed: that cost, one document per changed pull, is not ruling 5.5's. Ruling 5.5 adds only the pulls whose
@@ -86,8 +86,8 @@ which gives about 38 GB (20k a day x 525 bytes x 3,650 days). The files bound ho
 bytes when nothing changed. The cost of a pull is still CPU, about two hours over ten years, since a changed document
 was converted before too; the chain of snapshots adds about 3 MB for the 22k names. Bounding the bytes (storing
 documents compressed, or a rule for a pull that restates what a held pull said) is the storage epic,
-[cascade-runtime-js#819](https://github.com/jayostis/cascade-runtime-js/issues/819), and is not ruled here. The
-measurement is [`packages/cascade-runtime/test/restamp-bench.ts`](https://github.com/jayostis/cascade-runtime-js/blob/main/packages/cascade-runtime/test/restamp-bench.ts)
+[cascade-runtime-js#819](https://github.com/the-cascade-protocol/cascade-runtime-js/issues/819), and is not ruled here. The
+measurement is [`packages/cascade-runtime/test/restamp-bench.ts`](https://github.com/the-cascade-protocol/cascade-runtime-js/blob/main/packages/cascade-runtime/test/restamp-bench.ts)
 (`npm run bench:restamp -- 20 200 1000`).
 
 **History is a chain, never a list per act.** (row "snapshot chain") Anything that names the whole set on every act is quadratic: 1.1 to 2.1

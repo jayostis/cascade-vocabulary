@@ -1,9 +1,9 @@
 # What a record was given for: a link to the condition's record, and the codes of a reason
 
 Status: draft, 2026-11-17, written with step C4b of the Families Beta epic
-([#437](https://github.com/jayostis/cascade-vocabulary/issues/437), part of
-[#415](https://github.com/jayostis/cascade-vocabulary/issues/415)), which applies it. It applies the owner's Ruling 3, 7.7
-([#416](https://github.com/jayostis/cascade-vocabulary/issues/416#issuecomment-6934505969)): one link term for medicines,
+([#437](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/437), part of
+[#415](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/415)), which applies it. It applies the owner's Ruling 3, 7.7
+([#416](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/416#issuecomment-6934505969)): one link term for medicines,
 procedures and a visit's reason, naming the condition's record; and the ruled design A, 2.1: a link names a record or a
 document, never a version. Depends on `clinical-terms-follow-fhir.md` (a term follows FHIR R4, and a departure is
 explained in its area's note: this is the reasons area's), `version-content.md` (a link between records is content of a

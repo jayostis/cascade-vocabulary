@@ -1,4 +1,4 @@
-"""Reads the latest run of each event of every workflow on main in each jayostis/cascade-* repository, and keeps one issue
+"""Reads the latest run of each event of every workflow on main in each the-cascade-protocol/cascade-* repository, and keeps one issue
 there open for each workflow with a red latest run: opened on the first red run, commented on once for each later red
 run, closed when the latest run of every event is green. A run still going, or cancelled, holds the issue as it is. An
 issue is recognised by its label and by a marker in its body naming the workflow."""
@@ -13,7 +13,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 
-OWNER = "jayostis"
+OWNER = "the-cascade-protocol"
 LABEL = "red-main"
 RED = {"failure", "timed_out", "startup_failure"}
 MAIN_EVENTS = ("push", "schedule", "workflow_run")

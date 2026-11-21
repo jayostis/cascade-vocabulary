@@ -1,8 +1,8 @@
 # A clinical term follows FHIR unless its area's note says why not
 
 Status: accepted, 2026-10-29: the owner accepted lean (b) as phase 0 of the care-gap epic
-([#287](https://github.com/jayostis/cascade-vocabulary/issues/287)), on the research in
-[#288](https://github.com/jayostis/cascade-vocabulary/issues/288). Extends #128 (cite FHIR for each clinical term,
+([#287](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287)), on the research in
+[#288](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/288). Extends #128 (cite FHIR for each clinical term,
 record where and why Cascade diverges) from a mapping into a rule for every new or changed clinical term. Depends on
 `version-content.md`, which keeps the `cascade:` clinical terms as what a version holds; `one-meaning-per-term.md`,
 whose renames this rule generalises; and `naming.md` for names. No runtime applies it: the terms in
@@ -58,8 +58,8 @@ https://hl7.org/fhir/R5/medicationstatement.html, https://hl7.org/fhir/R4/rdf.ht
 https://hl7.org/fhir/R4/linkage.html, https://hl7.org/fhir/R4/resource.html, https://www.w3.org/TR/prov-o/,
 https://pav-ontology.github.io/pav/, https://www.w3.org/TR/annotation-vocab/,
 https://mapping-commons.github.io/sssom/1.0/spec-model/. The research is the evidence issue
-[#288](https://github.com/jayostis/cascade-vocabulary/issues/288) (the by-record-kind comparison and the cross-cutting
-concerns), and #128's mapping (https://github.com/jayostis/cascade-vocabulary/issues/128#issuecomment-6135264321).
+[#288](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/288) (the by-record-kind comparison and the cross-cutting
+concerns), and #128's mapping (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/128#issuecomment-6135264321).
 
 ## Choice
 

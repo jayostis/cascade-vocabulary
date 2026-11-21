@@ -3,7 +3,7 @@ Feature: Priya Natarajan's pod
   Fernhill Family Clinic as a C-CDA alone. Her pod shows how an app joins the same medication or lab result across the
   two formats, although the copies differ in dates, units and where the code sits.
 
-  The second scenario every runtime must pass, https://github.com/jayostis/cascade-runtime-js/issues/70: one pod built
+  The second scenario every runtime must pass, https://github.com/the-cascade-protocol/cascade-runtime-js/issues/70: one pod built
   from FHIR and C-CDA together, medications and lab results included. Kestrel Harbor Hospital sends Priya's records as
   FHIR, through Apple Health, and as a C-CDA from its patient portal; Fernhill Family Clinic sends only a C-CDA. Each
   planted case P1 to P17 is a rule, and each example reads the pod at the smallest set of steps and lenses at which it

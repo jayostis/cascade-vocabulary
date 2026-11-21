@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v7
         if: ${{ !cancelled() }}
         with:
-          repository: jayostis/cascade-runtime-js
+          repository: the-cascade-protocol/cascade-runtime-js
           path: .runtime-js
           sparse-checkout: |
             scripts
@@ -67,4 +67,4 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - uses: jayostis/cascade-bridge-spec/.github/actions/start@main
+      - uses: the-cascade-protocol/cascade-bridge-spec/.github/actions/start@main

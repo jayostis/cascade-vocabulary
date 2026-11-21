@@ -17,7 +17,7 @@ The contract a Cascade pod is built and read by; [`README.md`](README.md) names 
 - **A derivation reads only statements and other derivations, never a view:** its answer is the same with the views in the pod or not.
 - **Each question is asked once.** Before adding one, look under its kind for the question that
   already returns those rows.
-- **A kit's `expected/` and its examples come from [the scenario](https://github.com/jayostis/cascade-vocabulary/issues/4)**,
+- **A kit's `expected/` and its examples come from [the scenario](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/4)**,
   and a rule's examples under `runtime/` from the rule they sit under, never from a runtime's output.
 - **A query is tested on fixtures under [`tests/fixtures/`](tests/fixtures), one per behaviour, never on an
   example.** Its expected rows are written from what the query says it does. A check true of any pod runs over every

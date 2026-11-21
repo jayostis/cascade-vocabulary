@@ -127,7 +127,7 @@ https://hl7.org/fhir/R5/rdf.html, https://build.fhir.org/rdf.html); C-CDA Result
 (https://ohdsi.github.io/CommonDataModel/cdm54.html); SPHN (https://www.biomedit.ch/rdf/sphn-schema/sphn); PAV
 (https://pav-ontology.github.io/pav/); SSSOM's schema
 (https://github.com/mapping-commons/sssom/blob/master/src/sssom_schema/schema/sssom_schema.yaml). The FHIR mapping of
-the 59 clinical terms (https://github.com/jayostis/cascade-vocabulary/issues/128#issuecomment-6135264321).
+the 59 clinical terms (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/128#issuecomment-6135264321).
 
 ## Choice
 

@@ -32,8 +32,8 @@ Adopt the standard wherever it fits, and say which. Where the vocabulary diverge
 the reason is research, not opinion. A note that diverges from a standard with no reason in Why is not done.
 
 Research is cited with its numbers and lives where a reader can reach it: an issue comment, as research 1 to 5 on
-[#130](https://github.com/jayostis/cascade-vocabulary/issues/130); or an evidence issue that keeps the counts and the
-scripts, as [#201](https://github.com/jayostis/cascade-vocabulary/issues/201). A folder on one machine is not
+[#130](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/130); or an evidence issue that keeps the counts and the
+scripts, as [#201](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/201). A folder on one machine is not
 reachable. A claim that rests on measurement says whether it was verified, inferred or unverified: "ids survive
 (inferred, not observed)".
 

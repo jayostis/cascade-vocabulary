@@ -56,9 +56,9 @@ verified) and its Statement
 (https://va-spec.ga4gh.org/en/latest/core-information-model/entities/information-entities/statement.html, verified);
 SEPIO (https://sepio-framework.github.io/sepio-linkml/about/, verified); openEHR, OMOP and SPHN as cited in
 `variant-record.md`; PROV-O (https://www.w3.org/TR/prov-o/, verified); SKOS (https://www.w3.org/TR/skos-reference/,
-verified). Research: #107's body (https://github.com/jayostis/cascade-vocabulary/issues/107) and its Step 0 comment
-(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340); the evidence issue
-(https://github.com/jayostis/cascade-vocabulary/issues/203); the scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
+verified). Research: #107's body (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/107) and its Step 0 comment
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/107#issuecomment-6139118340); the evidence issue
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203); the scenario #138 (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/138).
 
 ## Choice
 

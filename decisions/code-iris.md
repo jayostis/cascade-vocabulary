@@ -13,7 +13,7 @@ words them. Terms: `rec:CodeSystem` and its thirteen members (`records.ttl:469-5
 `variant-identity.md` (R12 and R13 join on the HGVS and ClinVar IRIs). The rulings are applied by the rubric the owner
 delegated; they land in #193's one re-mint, with `cascade:codingSystemUri`, and nothing in the ontology, the adapters
 or the tables changes in this note's pull request. The research log is
-[on #227](https://github.com/jayostis/cascade-vocabulary/pull/227#issuecomment-6350708032).
+[on #227](https://github.com/the-cascade-protocol/cascade-vocabulary/pull/227#issuecomment-6350708032).
 
 ## Question
 
@@ -189,7 +189,7 @@ later:
   version, and is moving to an EBNF grammar; ClinVar's Variation ID "can be used in lieu of the VCV accession number",
   and an Allele ID shares its numbering; ClinGen's Allele Registry assigns CA ids; VRS computes digests from the
   normalised object (verified, as the old note recorded, evidence on
-  [#203](https://github.com/jayostis/cascade-vocabulary/issues/203)).
+  [#203](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203)).
 
 Sources: FHIR RDF R5 (https://hl7.org/fhir/R5/rdf.html) and current build (https://build.fhir.org/rdf.html),
 Appendices 1 and 2; THO NamingSystems (https://terminology.hl7.org/NamingSystem-v3-loinc.json, -MeSH, -v3-snomed-CT,
@@ -215,7 +215,7 @@ ADL 2 (https://specifications.openehr.org/releases/AM/latest/ADL2.html); OMOP CD
 (https://github.com/ga4gh/vrs/blob/2.0/schema/vrs/vrs-source.yaml); W3C Web Architecture
 (https://www.w3.org/TR/webarch/#uri-ownership); and the sources of `hgvs-and-clinvar-codes.md` for encoding, HGVS and
 ClinVar, kept in its history and on #203. The commands and their answers are the research log on #227
-(https://github.com/jayostis/cascade-vocabulary/pull/227#issuecomment-6350708032).
+(https://github.com/the-cascade-protocol/cascade-vocabulary/pull/227#issuecomment-6350708032).
 
 ## Choice
 

@@ -1,7 +1,7 @@
 # Medical knowledge in the model, not the protocol: what a pod gives a model looking for care gaps
 
 Status: draft, 2026-10-30. The owner's direction of 2026-10-30, for phases 2–5 of the care-gap epic
-([#287](https://github.com/jayostis/cascade-vocabulary/issues/287)). Amends `readings-and-care-hypotheses.md`: its
+([#287](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287)). Amends `readings-and-care-hypotheses.md`: its
 rows "verdict", "reading of text" and "response to a care hypothesis" stand; its row "care hypothesis" keeps only the
 model's, since no rule raises one, and its Still open items about a rule's hypothesis (how a derived one is named,
 whether it needs a term) close. Amends `version-content.md`: its row "what rules read" and its outputs row "care
@@ -18,7 +18,7 @@ What makes it hard for a pod:
 - Guidelines change, and a coded rule goes stale without anyone noticing.
 - The knowledge is broad. Many such associations exist; a protocol could ship only a few.
 - The code lists that say who a rule applies to are often licensed (SNOMED CT, CPT) and cannot be published in the
-  feed (jayostis/cascade-reference-tables#68).
+  feed (the-cascade-protocol/cascade-reference-tables#68).
 - The protocol is a contract for records: what a record says, where it came from, how copies join. Medical knowledge
   is not part of that contract.
 
@@ -37,7 +37,7 @@ What makes it hard for a pod:
   adjudicated 300 answers, the gap widened to about 40 points. (Inferred, not measured there: a model holds far more
   such associations than a rule set we could write.)
 - **This project's own comparison** (2026-10-30,
-  [posted on #287](https://github.com/jayostis/cascade-vocabulary/issues/287#issuecomment-6529455264)): the same model
+  [posted on #287](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287#issuecomment-6529455264)): the same model
   found the planted gaps as well, or better, from pasted records as from today's pod. The pod's errors had three causes:
   - what it does not hold (note and report text; a "historical result" label);
   - facts it holds one question deeper than the views a model asks first;
@@ -50,16 +50,16 @@ Sources: FHIR R4 Clinical Reasoning (https://hl7.org/fhir/R4/clinicalreasoning-m
 WHO SMART Guidelines (https://smart.who.int/), C-CDA (https://www.hl7.org/ccdasearch/), OMOP CDM 5.4
 (https://ohdsi.github.io/CommonDataModel/cdm54.html), openEHR GDL2
 (https://specifications.openehr.org/releases/CDS/latest/GDL2.html), ChronoEvo (https://arxiv.org/abs/2610.30631). The
-comparison: https://github.com/jayostis/cascade-vocabulary/issues/287#issuecomment-6529455264.
+comparison: https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287#issuecomment-6529455264.
 
 ## Choice
 
 | thing | prior art | what we do | borrowed or diverged |
 |---|---|---|---|
 | medical knowledge (condition → test, interval) | CPG-on-FHIR, CQL, eCQMs: artifacts kept out of the record resources | none in the vocabulary: no care-rule queries, no rule feed. The model brings the knowledge, and says it is its own (#287) | diverged from #287's first plan; agrees with the record resources, which carry no rules |
-| what the pod gives a model | FHIR read APIs; MCP | read-only tools over the pod (`cascade-mcp`, over `cascade-runtime/tools`) whose first answers state each source's own values, with record citations and the scope of any absence (jayostis/cascade-runtime-js#548; #316) | borrowed MCP as the transport; the tools are ours |
+| what the pod gives a model | FHIR read APIs; MCP | read-only tools over the pod (`cascade-mcp`, over `cascade-runtime/tools`) whose first answers state each source's own values, with record citations and the scope of any absence (the-cascade-protocol/cascade-runtime-js#548; #316) | borrowed MCP as the transport; the tools are ours |
 | a care hypothesis | `readings-and-care-hypotheses.md` row "care hypothesis" | a model's only, minted once with its model version and the queries it ran; shown as unreviewed until the person accepts it (#287 lean g) | amends that row: no rule-derived kind |
-| how it is judged | eCQM test decks; model evals | an eval harness (`packages/evals` in cascade-runtime-js): synthetic people with machine-readable answer keys, pasted records as the control arm, blind scoring, token budgets, run off CI (jayostis/cascade-runtime-js#549) | diverged from test decks: there is no rule's expected output to test, only answers to judge |
+| how it is judged | eCQM test decks; model evals | an eval harness (`packages/evals` in cascade-runtime-js): synthetic people with machine-readable answer keys, pasted records as the control arm, blind scoring, token budgets, run off CI (the-cascade-protocol/cascade-runtime-js#549) | diverged from test decks: there is no rule's expected output to test, only answers to judge |
 
 ## Why
 

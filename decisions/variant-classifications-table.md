@@ -5,7 +5,7 @@ Status: draft, 2026-10-13, brought to the `README.md` standard on 2026-10-22 und
 `rec:ClinVarClassifications` and `rec:ClinVarReviewStatuses`. Depends on `naming.md` (how a table version is named,
 and what a judgment's used holds), `variant-identity.md` (R13, the identity rule that reads the rows),
 `code-iris.md` (the IRIs a row is found by), and the evidence issue
-[#203](https://github.com/jayostis/cascade-vocabulary/issues/203). #193 will move the `rec:` and `genomics:` terms into
+[#203](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203). #193 will move the `rec:` and `genomics:` terms into
 the one unversioned Cascade namespace.
 
 ## Question
@@ -20,7 +20,7 @@ variant by an expression, by a ClinVar ID, or both.
 - **ClinVar** publishes `variant_summary`, where "The data for the variant are reported for each assembly", generated
   weekly and archived monthly; its `ClinicalSignificance` is a "semicolon-separated list of aggregate values of germline
   classification" (verified, README). The 2026-10 release holds 4,646,126 variations (verified,
-  [#203](https://github.com/jayostis/cascade-vocabulary/issues/203)). It publishes `hgvs4variation`, "HGVS expressions
+  [#203](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203)). It publishes `hgvs4variation`, "HGVS expressions
   ClinVar reports per VariationID and AlleleID", updated weekly and not archived (verified, README), whose `Submitted`
   column says an expression "was used by a submitter", `Current` or `Previous`, and takes `No` as well (verified, #203).
 - **ClinVar's value set.** Its germline terms are the five ACMG/AMP terms with sub-tiers VUS-high, VUS-mid and VUS-low,
@@ -64,8 +64,8 @@ Genomics Reporting IG STU3 Diagnostic Implication
 ClinGen Evidence Repository (https://erepo.clinicalgenome.org/evrepo/); SKOS Reference §4 and §6
 (https://www.w3.org/TR/skos-reference/); GA4GH VRS (https://vrs.ga4gh.org/en/stable/) for the identifier set aside; OMOP
 as cited in `variant-record.md`. The counts, the scripts and the archived classification values are the evidence issue
-(https://github.com/jayostis/cascade-vocabulary/issues/203), from #107's epic and its Step 0
-(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340).
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203), from #107's epic and its Step 0
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/107#issuecomment-6139118340).
 
 ## Choice
 
@@ -90,7 +90,7 @@ found by either, each finds its classification in one lookup, and two tables can
 is per variation because ClinVar's classification is: `variant_summary` repeats it on each assembly's line, and some
 variations have no GRCh38 line (#107). Variation 90011's GRCh37 and GRCh38 lines are identical in eight archived
 releases (verified for 90011; for every variation inferred,
-[#203](https://github.com/jayostis/cascade-vocabulary/issues/203)).
+[#203](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203)).
 
 **Why only the expressions a submitter used.** (row "which expressions") A report cites what a lab wrote (#107), and the rest is size. Keeping
 the submitted expressions cuts variation 90011 from 29 expressions to 2, and Lynch's variations from 692,290 coding
@@ -113,7 +113,7 @@ which carries no content. A series is described once, on first publish, and a ru
 lists (#139), so a changed gene list can only be a new version.
 
 **Why current versions only.** (row "versions an app keeps") A page and R13 both ask what ClinVar says today. Held for the count, a monthly 0.60 GB
-version is 72 GB in ten years (computed, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)), against
+version is 72 GB in ten years (computed, [#206](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/206)), against
 a browser's keep bounds.
 
 **Why a marker, not a list.** (row "kinds an app keeps for its pages") A runtime that hard-codes the kinds its pages read changes for every new kind a page
@@ -163,6 +163,6 @@ reads; a marker in the vocabulary changes none.
 
 ## What would change our mind
 
-A larger gene list than the one fitting a browser's heap (jayostis/cascade-runtime-js#231), a source whose rows need more
+A larger gene list than the one fitting a browser's heap (the-cascade-protocol/cascade-runtime-js#231), a source whose rows need more
 than identity and a classification, a planted case that reads a condition, or a page that reads a kind no rule names
 and is not worth marking.

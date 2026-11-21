@@ -36,7 +36,7 @@ one without; the pod has no server of record to say they are one, and a view the
   submitted record for it), an AlleleID to each single variant, an RCV per variant and condition, and an SCV to each
   submitted record. Its `hgvs4variation` file reports "HGVS expressions ClinVar reports per VariationID and AlleleID",
   with columns marking which a submitter gave. VariationID 90011 has 29 expressions, two of them submitted coding
-  expressions and 22 on other transcripts (verified, [#203](https://github.com/jayostis/cascade-vocabulary/issues/203)); of 46,242,796 rows, 5,384,668 are `Submitted` Current and
+  expressions and 22 on other transcripts (verified, [#203](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203)); of 46,242,796 rows, 5,384,668 are `Submitted` Current and
   1,225 Previous (verified, counted in #107's Step 0 comment).
 - **GA4GH VRS** names a variation by a digest of its serialisation: "All valid implementations of the VRS Computed
   Identifier will generate the same identifier when the objects are identical." An allele is located on a sequence
@@ -80,9 +80,9 @@ search excerpt) and SPHN 2025.1
 unverified: search excerpt); OMOP genomic forum thread
 (https://forums.ohdsi.org/t/representing-germline-somatic-variants-in-omop-whos-actively-using-the-genomic-cdm-extension/25398,
 verified); PROV-O (https://www.w3.org/TR/prov-o/, verified). Research: #107's body
-(https://github.com/jayostis/cascade-vocabulary/issues/107) and its Step 0 comment
-(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340); the evidence issue
-(https://github.com/jayostis/cascade-vocabulary/issues/203); the scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/107) and its Step 0 comment
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/107#issuecomment-6139118340); the evidence issue
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203); the scenario #138 (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/138).
 
 ## Choice
 
@@ -107,7 +107,7 @@ does not say its expression identifies a variant, and HGVS itself makes two tran
 expressions are one variant is a judgment, filed by a rule that reads a table (`variant-identity.md`), so it can be wrong
 and be retracted without touching a name. An expression is not even unique to one variation: 195 of 3,304,067 submitted
 coding expressions map to two VariationIDs across the 2026-10 file, and 3 within Lynch's five genes (both verified,
-[#203](https://github.com/jayostis/cascade-vocabulary/issues/203)).
+[#203](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203)).
 
 **Why these three codes.** (rows "HGVS expression", "ClinVar variation", "gene") They are what a report states and what a page looks a variant up by. The ClinVar VariationID
 is the code the IG puts in its variation component and the key of ClinVar's rows; the HGVS expression is the IG's

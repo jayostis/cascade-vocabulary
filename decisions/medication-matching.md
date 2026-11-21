@@ -1,8 +1,8 @@
 # Medication matching: which copies are one medication
 
 Status: accepted, 2026-10-31, by the maintainer's ruling on
-[#293](https://github.com/jayostis/cascade-vocabulary/issues/293#issuecomment-6540369052) (decision d of the care-gap
-epic, [#287](https://github.com/jayostis/cascade-vocabulary/issues/287)). It is the note `medications.md` says rules M15
+[#293](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/293#issuecomment-6540369052) (decision d of the care-gap
+epic, [#287](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287)). It is the note `medications.md` says rules M15
 and M16 still need. It depends on `medications.md` (rows "exposure start", "exposure end", "no end" and "no period": the
 period it compares), `one-meaning-per-term.md` (row "1. clinical state and workflow state": M14's period test for
 conditions, which this follows) and `naming.md` (row "document, finding": a version that tightens a rule retracts
@@ -14,7 +14,7 @@ The matcher joins two medication records into one entry when they name one drug:
 a drug products table lists (R11), or a brand and its generic by a brand generics table (R10). Up to the rule list's
 version 17 it does so whatever their dates. A person who took metformin from 2019 to 2021 and started it again in 2026
 then has one metformin entry, and a rule that reads the entry reads one course: in case c7b0 of the experiment on #288
-([comment](https://github.com/jayostis/cascade-vocabulary/issues/288#issuecomment-6507076048)) the 2019 course
+([comment](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/288#issuecomment-6507076048)) the 2019 course
 disappeared behind the 2026 one. When are two copies of one drug one medication?
 
 What makes it hard: a pod has no server of record to say which copies are one course; sources date a medication

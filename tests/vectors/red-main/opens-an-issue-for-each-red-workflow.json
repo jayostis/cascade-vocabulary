@@ -1,5 +1,5 @@
 {
-  "repo": "jayostis/cascade-example",
+  "repo": "the-cascade-protocol/cascade-example",
   "workflows": [
     {"id": 1, "name": "nightly", "path": ".github/workflows/nightly.yml", "state": "active"},
     {"id": 2, "name": "watch", "path": ".github/workflows/watch.yml", "state": "active"},
@@ -8,15 +8,15 @@
   "runs": {
     "1": [
       {"id": 101, "event": "schedule", "status": "completed", "conclusion": "failure",
-       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/101"}
+       "html_url": "https://github.com/the-cascade-protocol/cascade-example/actions/runs/101"}
     ],
     "2": [
       {"id": 201, "event": "schedule", "status": "completed", "conclusion": "timed_out",
-       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/201"}
+       "html_url": "https://github.com/the-cascade-protocol/cascade-example/actions/runs/201"}
     ],
     "3": [
       {"id": 301, "event": "push", "status": "completed", "conclusion": "success",
-       "html_url": "https://github.com/jayostis/cascade-example/actions/runs/301"}
+       "html_url": "https://github.com/the-cascade-protocol/cascade-example/actions/runs/301"}
     ]
   },
   "jobs": {
@@ -38,11 +38,11 @@
       "body_has": [
         "<!-- red-main: .github/workflows/nightly.yml -->",
         "<!-- run: 101 -->",
-        "https://github.com/jayostis/cascade-example/actions/runs/101",
+        "https://github.com/the-cascade-protocol/cascade-example/actions/runs/101",
         "`launcher / Run npm run test:launcher`",
         "It closes when the latest push, schedule and workflow_run run of this workflow on `main` are green; a manual run does not close it.",
-        "https://github.com/jayostis/cascade-vocabulary/blob/main/.github/workflows/red-main.yml",
-        "https://github.com/jayostis/cascade-vocabulary/blob/main/README.md#red-main-alerts"
+        "https://github.com/the-cascade-protocol/cascade-vocabulary/blob/main/.github/workflows/red-main.yml",
+        "https://github.com/the-cascade-protocol/cascade-vocabulary/blob/main/README.md#red-main-alerts"
       ],
       "body_lacks": ["What failed"]
     },
