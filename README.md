@@ -4,7 +4,7 @@ The contract a Cascade pod is built and read by. It holds no code that builds a 
 [`ro-crate-metadata.json`](ro-crate-metadata.json) lists the package a runtime loads:
 
 - [`ontologies/`](ontologies): the terms and shapes a
-  [Cascade Bridge Adapter](https://github.com/jayostis/cascade-bridge-spec)'s output and a pod are read against, every
+  [Cascade Bridge Adapter](https://github.com/the-cascade-protocol/cascade-bridge-spec)'s output and a pod are read against, every
   one in the namespace `https://ns.cascadeprotocol.org/cascade#`: [`cascade.ttl`](ontologies/cascade.ttl) and
   [`cascade.shapes.ttl`](ontologies/cascade.shapes.ttl), under `Apache-2.0 AND CC-BY-4.0`, as [`NOTICE`](NOTICE)
   says. Each term in the namespace says what it is in its `rdfs:comment`; a term copied from another vocabulary
@@ -37,12 +37,12 @@ Beside them, [`tests/fixtures/`](tests/fixtures) holds the small hand-made pods 
 
 ## Docs
 
-- [The Cascade hub](https://jayostis.github.io/cascade-runtime-js/): where to go for each thing, and every repository.
-- [Term reference](https://jayostis.github.io/cascade-runtime-js/terms/): every term the vocabulary defines or copies.
-- [The rules](https://jayostis.github.io/cascade-runtime-js/spec/): the rules, feature by feature.
-- [Decision notes](https://jayostis.github.io/cascade-runtime-js/decisions/): why a term or a rule is as it is.
-- [Latest conformance run](https://jayostis.github.io/cascade-runtime-js/conformance/): the reference runtime's result for every example of the features and conformance kits.
-- [Unit-test reports](https://jayostis.github.io/cascade-runtime-js/conformance/tests/cascade-vocabulary/): each case of the vocabulary's tests, with its result, from the newest run on main; [the runtime's](https://jayostis.github.io/cascade-runtime-js/conformance/tests/cascade-runtime-js/) are beside it.
+- [The Cascade hub](https://the-cascade-protocol.github.io/cascade-runtime-js/): where to go for each thing, and every repository.
+- [Term reference](https://the-cascade-protocol.github.io/cascade-runtime-js/terms/): every term the vocabulary defines or copies.
+- [The rules](https://the-cascade-protocol.github.io/cascade-runtime-js/spec/): the rules, feature by feature.
+- [Decision notes](https://the-cascade-protocol.github.io/cascade-runtime-js/decisions/): why a term or a rule is as it is.
+- [Latest conformance run](https://the-cascade-protocol.github.io/cascade-runtime-js/conformance/): the reference runtime's result for every example of the features and conformance kits.
+- [Unit-test reports](https://the-cascade-protocol.github.io/cascade-runtime-js/conformance/tests/cascade-vocabulary/): each case of the vocabulary's tests, with its result, from the newest run on main; [the runtime's](https://the-cascade-protocol.github.io/cascade-runtime-js/conformance/tests/cascade-runtime-js/) are beside it.
 
 ## How a runtime proves it conforms
 
@@ -51,7 +51,7 @@ It runs every example of the feature files, the rules' and the kit's, and passes
 `expected/`, every file conforming to the shapes, every name following its rule, and every file where the layout says.
 It reports each in EARL.
 
-The reference runtime is [cascade-runtime-js](https://github.com/jayostis/cascade-runtime-js). From a clone of
+The reference runtime is [cascade-runtime-js](https://github.com/the-cascade-protocol/cascade-runtime-js). From a clone of
 `cascade-runtime-js`, with this repository cloned beside it, see it build Alex's pod and the site that documents it:
 
 ```sh
@@ -62,7 +62,7 @@ npm run build:example alex-rivera
 ## Trying a change against the runtime
 
 Every pull request here, and a nightly run, runs the reference runtime, at its default branch, over this checkout: the
-`compatibility` check, through [cascade-bridge-spec's compatibility tooling](https://github.com/jayostis/cascade-bridge-spec/blob/main/compatibility.md),
+`compatibility` check, through [cascade-bridge-spec's compatibility tooling](https://github.com/the-cascade-protocol/cascade-bridge-spec/blob/main/compatibility.md),
 which [`compatibility.json`](compatibility.json) names it to. A change to a rule, an example or a query that
 breaks the runtime fails that check.
 
@@ -81,7 +81,7 @@ npm run conformance -- --report earl.nt   # in cascade-runtime-js
 
 The [`red-main` workflow](.github/workflows/red-main.yml) tells you when a Cascade repository's `main` is red. Every day
 at 06:41 UTC, and when dispatched by hand, it reads the latest `push`, `schedule` and `workflow_run` run of each workflow
-on `main` in every unarchived `jayostis/cascade-*` repository, and keeps one issue labelled `red-main` open there for each
+on `main` in every unarchived `the-cascade-protocol/cascade-*` repository, and keeps one issue labelled `red-main` open there for each
 workflow whose latest run failed. A run on a pull request or a manual run is not the state of `main`, and a run older
 than 14 days is ignored.
 
@@ -92,7 +92,7 @@ than 14 days is ignored.
 - **Closes** at the first red-main run after the latest `push`, `schedule` and `workflow_run` run of that workflow are all
   green. A manual run does not close it, and a run still going or cancelled holds it as it is. Dispatch `red-main` to
   close it sooner than its next daily run.
-- **Needs** the repository secret `RED_MAIN_TOKEN`, a fine-grained personal access token on the `jayostis/cascade-*`
+- **Needs** the repository secret `RED_MAIN_TOKEN`, a fine-grained personal access token on the `the-cascade-protocol/cascade-*`
   repositories with Issues read and write, Actions read and Metadata read. Without the token the run fails with one line
   saying so. A job whose annotations cannot be read is named by its failing step only.
 

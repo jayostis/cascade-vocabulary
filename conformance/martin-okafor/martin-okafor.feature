@@ -3,7 +3,7 @@ Feature: Martin Okafor's pod
   a 2024 exome from St Columba's Hospital, each as a FHIR report. His pod shows how an app joins the two reports into
   one variant and sets it beside what ClinVar says of it.
 
-  The third scenario every runtime must pass, https://github.com/jayostis/cascade-vocabulary/issues/138: one variant
+  The third scenario every runtime must pass, https://github.com/the-cascade-protocol/cascade-vocabulary/issues/138: one variant
   in two FHIR reports, joined by the matcher, beside what ClinVar says of it. Harbourline Genetics' panel report of
   2022 and St Columba's Hospital's exome of 2024 each reach the pod as a saved pull. Each planted case M1 to M6 is a
   rule, and each example reads the pod at the smallest set of steps at which it can fail for its own reason. The cases

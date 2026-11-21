@@ -70,7 +70,7 @@ Sources: FHIR R4 Consent (https://hl7.org/fhir/R4/consent-definitions.html), Con
 (https://www.w3.org/TR/odrl-vocab/), DPV 2.3 (https://w3id.org/dpv, served from
 https://w3c-cg.github.io/dpv/2.3/dpv/dpv.ttl), PROV-O (https://www.w3.org/TR/prov-o/), MCP schema 2025-06-18
 (https://modelcontextprotocol.io/specification/2025-06-18/schema); the starter kit and the runtime at their main on
-2026-11-13; the comments on #394 and on jayostis/cascade-runtime-js#758.
+2026-11-13; the comments on #394 and on the-cascade-protocol/cascade-runtime-js#758.
 
 ## Choice
 
@@ -103,7 +103,7 @@ says yes before it exists. Changing the app's tables or settings writes no pod, 
 so it waits for a yes too.
 
 **Why `never` is a kind's tier, and a tool never carries it.** (row "never") The kit uses `NEVER` for a list of
-operations no tool calls; jayostis/cascade-runtime-js#758's design treats `never` as a tool's tier, a tool that exists
+operations no tool calls; the-cascade-protocol/cascade-runtime-js#758's design treats `never` as a tool's tier, a tool that exists
 and is not listed. The first fails closed: a tool that does not exist cannot be offered by a door that forgets to hide
 it, and a door has nothing to filter. The second makes every door responsible for hiding a tool that should not have
 been made. So `never` is the tier of a kind of act, and the kit's `NEVER` list is the operations whose kind it is; a

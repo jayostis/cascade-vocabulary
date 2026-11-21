@@ -29,7 +29,7 @@ and `versionNumber` (https://hl7.org/cda/stds/core/StructureDefinition-ClinicalD
 (https://specifications.openehr.org/releases/RM/latest/common.html#_change_control_package); git branching
 (https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging); Shapiro et al., CRDTs
 (https://hal.inria.fr/inria-00555588); PROV-O (https://www.w3.org/TR/prov-o/); the review on #130, where Before over
-versions was arbitrated (https://github.com/jayostis/cascade-vocabulary/issues/130).
+versions was arbitrated (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/130).
 
 ## Choice
 
@@ -92,7 +92,7 @@ the person's own. Between two pulls of one source where one's snapshot is an anc
 acts whatever its clock says, so that pick is not a guess and is not listed; only picks ancestry does not order, two
 writers or two paths, go to the review page. Listed, a source that sends no change time and changes a tenth of 8k
 records a year gives about 800 lines a year and about 8,000 by year ten, each kept until someone files a Before
-(assumed, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)).
+(assumed, [#206](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/206)).
 
 **Why neither the version id nor the write time ranks.** (rows "source's own version", "current") The source's version id never ranks: it is opaque, it
 resets, and it is a string. The writer's write time ranks nothing on its own: it was a clock that happens to be right,
@@ -107,7 +107,7 @@ question to have an answer whatever the order, because the document's own bytes 
 derives it from the revisions that happened to be written. The cost is, for each document whose bytes the pod did not
 keep, its bytes, its description and a share of the import's act; a document whose bytes the pod keeps costs nothing
 (A1). The sizes are in `performance.md`, row "content names and the held-state rule" (ruling 5.5 of
-[#415](https://github.com/jayostis/cascade-vocabulary/issues/415)).
+[#415](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/415)).
 
 **Why a held state writes nothing.** (row "what an arrival writes") The held state is skipped unconditionally because the only time it would become
 current is when a judgment removed the revision that holds it, and writing it again would undo that judgment; an

@@ -43,7 +43,7 @@ CI runs on every pull request. All of it must be green before a merge.
   [`tests/spec.json`](tests/spec.json), word for word. That check runs in CI, not in pytest, so a new or renamed test
   class needs its heading added to `tests/spec.json` by hand. A heading's situations name code or begin with "when",
   "given" or "with".
-- **`compatibility`**: the reference runtime, [cascade-runtime-js](https://github.com/jayostis/cascade-runtime-js),
+- **`compatibility`**: the reference runtime, [cascade-runtime-js](https://github.com/the-cascade-protocol/cascade-runtime-js),
   is run over your checkout. A change to a rule, an example or a query that breaks the runtime fails it.
 - **`ready-to-merge`**: holds a pull request until every pull request it depends on can merge (see "A change that spans two repositories"), and
   refuses a description with no `## Breaking` section or an empty one (cascade-bridge-spec's check, shared by every
@@ -66,11 +66,11 @@ sentence says.
 ## A change that spans two repositories
 
 A change the runtime must follow is two pull requests: one here and one in
-[cascade-runtime-js](https://github.com/jayostis/cascade-runtime-js). Each names the other in its description on a line
+[cascade-runtime-js](https://github.com/the-cascade-protocol/cascade-runtime-js). Each names the other in its description on a line
 of its own, with the full URL:
 
 ```
-Depends-On: https://github.com/jayostis/cascade-runtime-js/pull/123
+Depends-On: https://github.com/the-cascade-protocol/cascade-runtime-js/pull/123
 ```
 
 The `compatibility` check then runs the other repository's pull request together with yours, and `ready-to-merge`
@@ -83,7 +83,7 @@ A named pull request must be from a branch of the repository itself: one from a 
 without write access to the other repository asks a maintainer to open the counterpart.
 
 The full rules, and where they differ from the OpenStack Zuul model they follow, are in cascade-bridge-spec's
-[`compatibility.md`](https://github.com/jayostis/cascade-bridge-spec/blob/main/compatibility.md).
+[`compatibility.md`](https://github.com/the-cascade-protocol/cascade-bridge-spec/blob/main/compatibility.md).
 
 ## Terms and decisions
 

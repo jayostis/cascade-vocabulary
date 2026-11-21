@@ -84,14 +84,14 @@ https://github.com/bitcoin/bitcoin/blob/a773e1e33b349dc819b5a0edc1c7a4839dc73b48
 Maitin-Shepard et al., elliptic curve multiset hash (https://arxiv.org/abs/1601.06502); Lewi et al., LtHash
 (https://eprint.iacr.org/2019/227). Research 1 to 5 on
 #130: base-URL churn from archived endpoint lists
-(https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6327416626), the server's self-asserted base
-probed across seven vendors (https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328100407),
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/130#issuecomment-6327416626), the server's self-asserted base
+probed across seven vendors (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/130#issuecomment-6328100407),
 id-less and generator-minted ids in documents
-(https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6328557801), C-CDA entry id stability across
-documents (https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6334427968), and record identity
-across every input kind (https://github.com/jayostis/cascade-vocabulary/issues/130#issuecomment-6334428443); the
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/130#issuecomment-6328557801), C-CDA entry id stability across
+documents (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/130#issuecomment-6334427968), and record identity
+across every input kind (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/130#issuecomment-6334428443); the
 evidence issue keeping the churn and self-URL counts and scripts
-(https://github.com/jayostis/cascade-vocabulary/issues/201); and two downloads seven weeks apart from one EHR, in
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/201); and two downloads seven weeks apart from one EHR, in
 cascade-cli #121 (https://github.com/the-cascade-protocol/cascade-cli/pull/121).
 
 ## Choice
@@ -214,7 +214,7 @@ agent and a snapshot, and the snapshot exists because per-file integrity says no
 snapshot is a chain, its previous snapshot and this act's additions with an order-free hash of the set, because
 a list of every file per act grows with the square of the pod: 170 to 490 GB over ten years and 12,300 acts (5,000 and 7,300 pulls; the 70 to 200 GB of 5,000 acts scaled by 2.46) against a pod of 36 to 38 GB, where
 git's tree with this layout is 2.5 to 5 GB over those acts (the 1 to 2 GB of 5,000 acts scaled by 2.46) and the chain 60 to 115 MB (computed from a stated ten-year pod,
-[#206](https://github.com/jayostis/cascade-vocabulary/issues/206)); the set only grows, so a chain loses nothing, and
+[#206](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/206)); the set only grows, so a chain loses nothing, and
 "in sync" is one comparison of two hashes. A sync is an act because "when did this writer first see that import" is
 history nothing else records, and the matcher run the union calls for needs a cause to name; it is written only when
 the writer holds an act, other than a sync, whose snapshot is no ancestor of its last snapshot, because a background
@@ -349,7 +349,7 @@ spread it across a wrong join, and leave two devices that read at different time
 The one moment a statement can be stranded, a statement whose every record's original is removed while records that
 joined since still hold the thing, is handled once, at removal: the runtime carries the statement to the records the
 entry then holds, in a statement signed as the runtime and listed for review. No runtime removes an original yet; the carrying is built with removal, in the runtime's
-kept-and-built work (https://github.com/jayostis/cascade-runtime-js/issues/819).
+kept-and-built work (https://github.com/the-cascade-protocol/cascade-runtime-js/issues/819).
 A record is in at most one entry, so it is in one of three states: in an entry, where the question returns a row; in no
 entry for a reason, where `record/Why it is in no view` returns a row and the app shows the reason; or in neither, which
 means the pod no longer holds it. A statement none of whose records is held is kept, not dropped, and shown apart with

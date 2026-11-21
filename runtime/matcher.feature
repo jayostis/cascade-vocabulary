@@ -765,7 +765,7 @@ Feature: The matcher's procedure
     a package within one listing; one reused after a product was discontinued would join two products, a known limit the
     period test narrows. R10 joins a branded product and its generic, or two brands of one generic, by a version of the
     brand generics table, only when the two records share no code, so R5 and R10 never judge one pair. R11 joins two
-    that share a product code (M16). No rule joins an NDC with the drug it is, until jayostis/cascade-vocabulary#118.
+    that share a product code (M16). No rule joins an NDC with the drug it is, until the-cascade-protocol/cascade-vocabulary#118.
 
     R5, R10 and R11 join two medications only when their exposure periods share at least one day as well, so two
     courses of one drug years apart are two medications. A period runs from the record's

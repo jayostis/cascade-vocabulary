@@ -136,7 +136,7 @@ otherwise write nothing, and a run that reaches an asserted judgment writes noth
 rule list's version is out of the matcher judgment's name because with it in, every version renamed every matcher judgment, the duplication
 the split exists to stop. A matcher judgment counts under any version that keeps its rule's `rec:queryHash` because M11 pins the
 rule's bytes, so such versions reach the same matcher judgments; an assertion per matcher judgment per version would be 600k to 1.2M files
-over ten years ([#206](https://github.com/jayostis/cascade-vocabulary/issues/206)). A matcher judgment's members are a star, the
+over ten years ([#206](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/206)). A matcher judgment's members are a star, the
 record and the least member of each entry it matched, because entries come out the same and every earlier copy as a
 member expands to about 58M pairs over ten years (#206). The Cascade matcher is one unversioned agent because the
 matcher feature promises every runtime that follows it reaches the same matcher judgments, so which runtime ran is forensics, and

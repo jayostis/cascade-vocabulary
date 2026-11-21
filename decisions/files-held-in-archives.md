@@ -1,7 +1,7 @@
 # Where a host keeps a pod's files
 
-Status: ruled, 2026-11-20, by Jay on [a pod that is fast at any size, cascade-runtime-js#819](https://github.com/jayostis/cascade-runtime-js/issues/819#issuecomment-7049607696),
-from the design pass in [the storage design](https://github.com/jayostis/cascade-runtime-js/issues/819#issuecomment-7049288478).
+Status: ruled, 2026-11-20, by Jay on [a pod that is fast at any size, cascade-runtime-js#819](https://github.com/the-cascade-protocol/cascade-runtime-js/issues/819#issuecomment-7049607696),
+from the design pass in [the storage design](https://github.com/the-cascade-protocol/cascade-runtime-js/issues/819#issuecomment-7049288478).
 Amends X1, N9, W1, S1 and the kit's check 5, which until now each said "No note rules this", and settles the
 packfiles question `performance.md` left open as the runtime's. Depends on `naming.md` (what names a file) and
 `performance.md` (the ten-year pod). Every figure says measured or estimate; laptop means Jay's Windows 11 machine
@@ -48,8 +48,8 @@ and `transfer.unpackLimit` (https://git-scm.com/docs/git-config); ISO/IEC 21320-
 (https://www.iana.org/assignments/media-types/application/zip); FHIR Bulk Data's export (https://hl7.org/fhir/uv/bulkdata/export.html);
 TriG (https://www.w3.org/TR/trig/); SQLite as an application file format (https://www.sqlite.org/appfileformat.html).
 The research this note rests on, with the prototype, its result files and every measurement:
-[the storage design](https://github.com/jayostis/cascade-runtime-js/issues/819#issuecomment-7049288478); the rulings:
-[the decisions comment](https://github.com/jayostis/cascade-runtime-js/issues/819#issuecomment-7049607696).
+[the storage design](https://github.com/the-cascade-protocol/cascade-runtime-js/issues/819#issuecomment-7049288478); the rulings:
+[the decisions comment](https://github.com/the-cascade-protocol/cascade-runtime-js/issues/819#issuecomment-7049607696).
 
 ## Choice
 
@@ -70,9 +70,9 @@ The research this note rests on, with the prototype, its result files and every 
 **One file each was never chosen against an alternative.** (row "a file") The first example pod, on 2026-09-30, was a
 folder a Python script wrote into this repository, a Solid-style tree with one Turtle file per thing so that a reviewer
 could read each in a pull request. On 2026-10-05 the layout moved into `runtime/pod-layout.ttl`
-([#42](https://github.com/jayostis/cascade-vocabulary/issues/42)), describing the folders that already existed. X1, N9
+([#42](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/42)), describing the folders that already existed. X1, N9
 and W1 each said "No note rules this": they described what the runtime did. Packfiles were listed as a lesson from git
-"not yet taken" on 2026-10-21 ([#198](https://github.com/jayostis/cascade-vocabulary/issues/198)), and `performance.md`
+"not yet taken" on 2026-10-21 ([#198](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/198)), and `performance.md`
 left them open as the runtime's on 2026-10-22. No pod of size was measured until 2026-11-17. The cost stayed out of
 sight because every pod was small and every measurement ran on Linux, where a small file costs about a tenth of what it
 costs on the laptop.

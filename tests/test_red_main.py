@@ -83,19 +83,19 @@ def refusing(api, matches, error):
 
 def an_owners_repositories():
     runs = {"workflow_runs": [{"id": 5, "event": "schedule", "status": "completed", "conclusion": "failure", "created_at": JUST_NOW,
-                                "html_url": "https://github.com/jayostis/cascade-a/actions/runs/5"}]}
+                                "html_url": "https://github.com/the-cascade-protocol/cascade-a/actions/runs/5"}]}
     workflows = {"workflows": [{"id": 1, "name": "nightly", "path": ".github/workflows/nightly.yml", "state": "active"}]}
     answers = {
         "/user/repos": [
-            {"full_name": "jayostis/cascade-a", "name": "cascade-a", "archived": False},
-            {"full_name": "jayostis/cascade-b", "name": "cascade-b", "archived": False},
-            {"full_name": "jayostis/cascade-old", "name": "cascade-old", "archived": True},
-            {"full_name": "jayostis/notes", "name": "notes", "archived": False},
+            {"full_name": "the-cascade-protocol/cascade-a", "name": "cascade-a", "archived": False},
+            {"full_name": "the-cascade-protocol/cascade-b", "name": "cascade-b", "archived": False},
+            {"full_name": "the-cascade-protocol/cascade-old", "name": "cascade-old", "archived": True},
+            {"full_name": "the-cascade-protocol/notes", "name": "notes", "archived": False},
             {"full_name": "someone/cascade-c", "name": "cascade-c", "archived": False},
         ],
     }
     for name in ("a", "b"):
-        base = f"/repos/jayostis/cascade-{name}"
+        base = f"/repos/the-cascade-protocol/cascade-{name}"
         answers[f"{base}/actions/workflows"] = workflows
         answers[f"{base}/actions/workflows/1/runs"] = runs
         answers[f"{base}/actions/runs/5/jobs"] = {"jobs": []}
@@ -105,7 +105,7 @@ def an_owners_repositories():
 
 def a_red_repository(annotations):
     answers = an_owners_repositories()
-    base = "/repos/jayostis/cascade-a"
+    base = "/repos/the-cascade-protocol/cascade-a"
     answers["/user/repos"] = answers["/user/repos"][:1]
     answers[f"{base}/actions/runs/5/jobs"] = {"jobs": [
         {"id": 50, "name": "ok", "conclusion": "success", "steps": []},
@@ -203,10 +203,10 @@ class TestChecksOfTheRedMainAlert:
             api = Fake(an_owners_repositories())
             assert red_main.run(api) == []
             assert [(method, path) for method, path, _ in api.sent] == [
-                ("POST", "/repos/jayostis/cascade-a/labels"),
-                ("POST", "/repos/jayostis/cascade-a/issues"),
-                ("POST", "/repos/jayostis/cascade-b/labels"),
-                ("POST", "/repos/jayostis/cascade-b/issues"),
+                ("POST", "/repos/the-cascade-protocol/cascade-a/labels"),
+                ("POST", "/repos/the-cascade-protocol/cascade-a/issues"),
+                ("POST", "/repos/the-cascade-protocol/cascade-b/labels"),
+                ("POST", "/repos/the-cascade-protocol/cascade-b/issues"),
             ]
 
         def test_opens_each_issue_with_the_red_main_label_which_it_makes_first(self):
@@ -219,8 +219,8 @@ class TestChecksOfTheRedMainAlert:
             red_main.run(api)
             sent = [(method, path) for method, path, _ in api.sent]
             for repository in ("cascade-a", "cascade-b"):
-                assert sent.index(("POST", f"/repos/jayostis/{repository}/labels")) < sent.index(
-                    ("POST", f"/repos/jayostis/{repository}/issues"))
+                assert sent.index(("POST", f"/repos/the-cascade-protocol/{repository}/labels")) < sent.index(
+                    ("POST", f"/repos/the-cascade-protocol/{repository}/issues"))
             assert [body["labels"] for _, path, body in api.sent if path.endswith("/issues")] == [["red-main"]] * 2
 
         def test_puts_a_failed_jobs_annotation_in_the_issue(self):
@@ -241,8 +241,8 @@ class TestChecksOfTheRedMainAlert:
             """
             api = Fake(a_red_repository({51: [{"annotation_level": "failure", "message": "not checked: ncbi-clinvar"}]}))
             assert red_main.run(api) == []
-            assert "/repos/jayostis/cascade-a/check-runs/51/annotations" in api.asked
-            assert "/repos/jayostis/cascade-a/check-runs/50/annotations" not in api.asked
+            assert "/repos/the-cascade-protocol/cascade-a/check-runs/51/annotations" in api.asked
+            assert "/repos/the-cascade-protocol/cascade-a/check-runs/50/annotations" not in api.asked
 
         def test_opens_the_issue_when_it_is_refused_the_annotations(self):
             """opens the issue when it is refused the annotations
@@ -252,7 +252,7 @@ class TestChecksOfTheRedMainAlert:
             """
             api, errors, _ = run_refused_the_annotations()
             assert errors == []
-            assert ("POST", "/repos/jayostis/cascade-a/issues") in [(method, path) for method, path, _ in api.sent]
+            assert ("POST", "/repos/the-cascade-protocol/cascade-a/issues") in [(method, path) for method, path, _ in api.sent]
 
         def test_leaves_out_what_failed_when_it_is_refused_the_annotations(self):
             """leaves out what failed when it is refused the annotations
@@ -280,10 +280,10 @@ class TestChecksOfTheRedMainAlert:
             body holds the first job's message.
             """
             answers = a_red_repository({51: [{"annotation_level": "failure", "message": "not checked: ncbi-clinvar"}]})
-            jobs = answers["/repos/jayostis/cascade-a/actions/runs/5/jobs"]["jobs"]
+            jobs = answers["/repos/the-cascade-protocol/cascade-a/actions/runs/5/jobs"]["jobs"]
             jobs.append({"id": 52, "name": "late", "conclusion": "failure", "steps": []})
             jobs[0] = {"id": 50, "name": "first", "conclusion": "failure", "steps": []}
-            answers["/repos/jayostis/cascade-a/check-runs/50/annotations"] = [
+            answers["/repos/the-cascade-protocol/cascade-a/check-runs/50/annotations"] = [
                 {"annotation_level": "failure", "message": "first job said this"}]
             api = refusing(Fake(answers), lambda path: path.endswith("/check-runs/51/annotations"),
                            lambda path: red_main.GitHubError(
@@ -315,18 +315,18 @@ class TestChecksOfTheRedMainAlert:
             Given a token that GitHub refuses everything about `cascade-a`, `run()` returns one error, a single line
             that begins with the repository and GitHub's answer.
             """
-            errors = red_main.run(Fake(an_owners_repositories(), refuse=("/repos/jayostis/cascade-a/",)))
+            errors = red_main.run(Fake(an_owners_repositories(), refuse=("/repos/the-cascade-protocol/cascade-a/",)))
             assert len(errors) == 1 and "\n" not in errors[0]
-            assert errors[0].startswith("jayostis/cascade-a: GitHub answered 403")
+            assert errors[0].startswith("the-cascade-protocol/cascade-a: GitHub answered 403")
 
         def test_visits_the_other_repositories_after_one_is_refused(self):
             """visits the other repositories after one is refused
 
             Given a token that GitHub refuses everything about `cascade-a`, `run()` still posts the issue of `cascade-b`.
             """
-            api = Fake(an_owners_repositories(), refuse=("/repos/jayostis/cascade-a/",))
+            api = Fake(an_owners_repositories(), refuse=("/repos/the-cascade-protocol/cascade-a/",))
             red_main.run(api)
-            assert ("POST", "/repos/jayostis/cascade-b/issues") in [(method, path) for method, path, _ in api.sent]
+            assert ("POST", "/repos/the-cascade-protocol/cascade-b/issues") in [(method, path) for method, path, _ in api.sent]
 
         @pytest.mark.parametrize("failure", [ConnectionResetError("reset by peer"),
                                              json.JSONDecodeError("Expecting value\nline 1", "<html>", 0)],
@@ -337,11 +337,11 @@ class TestChecksOfTheRedMainAlert:
             Given a connection that fails for `cascade-a`, or an answer that is not JSON, `run()` returns one error, a
             single line that begins with the repository, and still posts the issue of `cascade-b`.
             """
-            api = refusing(Fake(an_owners_repositories()), lambda path: path.startswith("/repos/jayostis/cascade-a/"),
+            api = refusing(Fake(an_owners_repositories()), lambda path: path.startswith("/repos/the-cascade-protocol/cascade-a/"),
                            lambda path: failure)
             errors = red_main.run(api)
-            assert len(errors) == 1 and "\n" not in errors[0] and errors[0].startswith("jayostis/cascade-a: ")
-            assert ("POST", "/repos/jayostis/cascade-b/issues") in [(method, path) for method, path, _ in api.sent]
+            assert len(errors) == 1 and "\n" not in errors[0] and errors[0].startswith("the-cascade-protocol/cascade-a: ")
+            assert ("POST", "/repos/the-cascade-protocol/cascade-b/issues") in [(method, path) for method, path, _ in api.sent]
 
         def test_comments_on_an_issue_and_then_closes_it_as_completed(self):
             """comments on an issue and then closes it as completed
@@ -350,19 +350,19 @@ class TestChecksOfTheRedMainAlert:
             `run()` posts a comment to the issue, then closes it with the reason `completed`; the pull request is left alone.
             """
             answers = an_owners_repositories()
-            answers["/repos/jayostis/cascade-a/actions/workflows/1/runs"] = {"workflow_runs": [
+            answers["/repos/the-cascade-protocol/cascade-a/actions/workflows/1/runs"] = {"workflow_runs": [
                 {"id": 6, "event": "schedule", "status": "completed", "conclusion": "success", "created_at": JUST_NOW,
-                 "html_url": "https://github.com/jayostis/cascade-a/actions/runs/6"}]}
-            answers["/repos/jayostis/cascade-a/issues"] = [
+                 "html_url": "https://github.com/the-cascade-protocol/cascade-a/actions/runs/6"}]}
+            answers["/repos/the-cascade-protocol/cascade-a/issues"] = [
                 {"number": 7, "body": "<!-- red-main: .github/workflows/nightly.yml -->\n<!-- run: 5 -->"},
                 {"number": 8, "pull_request": {}, "body": "<!-- red-main: .github/workflows/nightly.yml -->"},
             ]
-            answers["/repos/jayostis/cascade-a/issues/7/comments"] = []
+            answers["/repos/the-cascade-protocol/cascade-a/issues/7/comments"] = []
             api = Fake(answers)
             red_main.run(api)
             assert [(method, path) for method, path, _ in api.sent][:2] == [
-                ("POST", "/repos/jayostis/cascade-a/issues/7/comments"),
-                ("PATCH", "/repos/jayostis/cascade-a/issues/7"),
+                ("POST", "/repos/the-cascade-protocol/cascade-a/issues/7/comments"),
+                ("PATCH", "/repos/the-cascade-protocol/cascade-a/issues/7"),
             ]
             assert api.sent[1][2] == {"state": "closed", "state_reason": "completed"}
 
@@ -374,7 +374,7 @@ class TestChecksOfTheRedMainAlert:
 
             Given an environment whose `RED_MAIN_TOKEN` is empty, `main()` returns 1 and prints nothing to standard output.
             """
-            assert red_main.main({"GITHUB_REPOSITORY_OWNER": "jayostis", "RED_MAIN_TOKEN": ""}) == 1
+            assert red_main.main({"GITHUB_REPOSITORY_OWNER": "the-cascade-protocol", "RED_MAIN_TOKEN": ""}) == 1
             out, _ = capsys.readouterr()
             assert out == ""
 
@@ -384,7 +384,7 @@ class TestChecksOfTheRedMainAlert:
             Given an environment whose `RED_MAIN_TOKEN` is empty, the one line `main()` prints to standard error shows no
             error trace and names the token, the Issues permission and the Actions permission.
             """
-            red_main.main({"GITHUB_REPOSITORY_OWNER": "jayostis", "RED_MAIN_TOKEN": ""})
+            red_main.main({"GITHUB_REPOSITORY_OWNER": "the-cascade-protocol", "RED_MAIN_TOKEN": ""})
             _, err = capsys.readouterr()
             assert err.count("\n") == 1 and "Traceback" not in err
             assert "RED_MAIN_TOKEN" in err and "Issues" in err and "Actions" in err

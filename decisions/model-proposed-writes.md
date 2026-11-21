@@ -1,6 +1,6 @@
 # What a write a model proposed records
 
-Status: draft, 2026-11-13, for jayostis/cascade-runtime-js#758. Adds `cascade:ModelProposerRole`, the shapes
+Status: draft, 2026-11-13, for the-cascade-protocol/cascade-runtime-js#758. Adds `cascade:ModelProposerRole`, the shapes
 `cascade:ModelProposedActShape`, `cascade:ModelProposerAssociationShape`, `cascade:OneModelProposerShape`,
 `cascade:PersonRetractionAuthorShape` and `cascade:ModelProposedJudgmentShape`, and
 the rule Y3 of `runtime/consent.feature`, with Y2's examples. Amends `cascade:PersonJudgmentShape`, which allowed an
@@ -58,7 +58,7 @@ Sources: FHIR R4 Provenance (https://hl7.org/fhir/R4/provenance-definitions.html
 (https://terminology.hl7.org/CodeSystem-provenance-participant-type.html), AI Transparency on FHIR
 (https://build.fhir.org/ig/HL7/aitransparency-ig/, its `requirements.md`, `use_cases.md` and `EX_Provenance.fsh` at
 https://github.com/HL7/aitransparency-ig on main), PROV-O (https://www.w3.org/ns/prov-o), PAV (http://purl.org/pav/), the MCP SDK in
-cascade-runtime-js on 2026-11-13; the comments on jayostis/cascade-runtime-js#758.
+cascade-runtime-js on 2026-11-13; the comments on the-cascade-protocol/cascade-runtime-js#758.
 
 ## Choice
 

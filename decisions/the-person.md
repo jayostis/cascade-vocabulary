@@ -1,8 +1,8 @@
 # The person: gender, death, and the sex no term holds yet
 
 Status: draft, 2026-10-29, written with the terms it rules under phase 1 of the care-gap epic
-([#287](https://github.com/jayostis/cascade-vocabulary/issues/287), item 10,
-[#297](https://github.com/jayostis/cascade-vocabulary/issues/297)). It is the area note `clinical-terms-follow-fhir.md`
+([#287](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287), item 10,
+[#297](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/297)). It is the area note `clinical-terms-follow-fhir.md`
 asks for: what the person's own record borrows from FHIR, and where it departs. It **amends `version-content.md` row 6**:
 the accepted borrow named US Core's Individual Sex extension for the person's sex, and this note names HL7's Sex
 Parameter for Clinical Use instead, and holds no term yet. Rows "gender" and "a C-CDA gender" only apply accepted rule

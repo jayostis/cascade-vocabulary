@@ -91,9 +91,9 @@ units (https://pmc.ncbi.nlm.nih.gov/articles/PMC6251552); XSD 1.1 (https://www.w
 Gorilla (https://apidocs.healthgorilla.com/getting-started/platform-overview/data-lifecycle), de Graauw
 (https://www.marcdegraauw.com/2024/01/09/deduplicating-patient-summaries/), Marley #1258
 (https://github.com/earthians/marley/pull/1258). The research on #131
-(https://github.com/jayostis/cascade-vocabulary/issues/131#issuecomment-6345803866); the quantity pattern
-(https://github.com/jayostis/cascade-runtime-js/issues/183#issuecomment-6093896826) and its review against FHIR,
-openEHR, UCUM, SPHN and OMOP (https://github.com/jayostis/cascade-runtime-js/issues/183#issuecomment-6135136922).
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/131#issuecomment-6345803866); the quantity pattern
+(https://github.com/the-cascade-protocol/cascade-runtime-js/issues/183#issuecomment-6093896826) and its review against FHIR,
+openEHR, UCUM, SPHN and OMOP (https://github.com/the-cascade-protocol/cascade-runtime-js/issues/183#issuecomment-6135136922).
 
 ## Choice
 

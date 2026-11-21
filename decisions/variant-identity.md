@@ -27,7 +27,7 @@ what does the pod read to decide, with no server of record to ask?
   expressions are `NM_000249.3:c.2042C>T` and `NM_000249.4:c.2042C>T` (verified, #203). An
   expression is not unique across variations: 195 of 3,304,067 submitted coding expressions map to two VariationIDs in the
   2026-10 snapshot, 3 within Lynch's five genes and 21 within the 26-gene panel (all verified,
-  [#203](https://github.com/jayostis/cascade-vocabulary/issues/203)).
+  [#203](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203)).
 - **ClinGen Allele Registry** does the join this note needs as a service: "All contextual alleles corresponding to a
   same variant are associated with the same canonical allele", across transcripts and assemblies, under one CA id.
 - **GA4GH VRS** gives one variant one digest from any source, set aside in `variant-record.md`. **Cat-VRS** names a
@@ -51,9 +51,9 @@ verified); Cat-VRS (https://cat-vrs.ga4gh.org/en/latest/, verified); openEHR and
 SEMAPV (https://mapping-commons.github.io/semantic-mapping-vocabulary/, verified); SKOS
 (https://www.w3.org/TR/skos-reference/#mapping, verified); SPARQL 1.1 `ENCODE_FOR_URI`
 (https://www.w3.org/TR/sparql11-query/#func-encode, verified). Research: #107's body
-(https://github.com/jayostis/cascade-vocabulary/issues/107) and its Step 0 comment
-(https://github.com/jayostis/cascade-vocabulary/issues/107#issuecomment-6139118340); the evidence issue
-(https://github.com/jayostis/cascade-vocabulary/issues/203); the scenario #138 (https://github.com/jayostis/cascade-vocabulary/issues/138).
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/107) and its Step 0 comment
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/107#issuecomment-6139118340); the evidence issue
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/203); the scenario #138 (https://github.com/the-cascade-protocol/cascade-vocabulary/issues/138).
 
 ## Choice
 
@@ -79,7 +79,7 @@ ClinVar's `hgvs4variation` does for 90011. Sameness is a matcher judgment the po
 rubric's second test, and the table version is in the matcher judgment's used, so a later table that says otherwise makes a
 different matcher judgment. A later table whose joining rows are unchanged says the same, so M7 re-mints only the matcher judgments whose
 joining rows changed: re-minting every table-reading matcher judgment per adopted version is about 960k matcher judgments in ten years
-(assumed monthly adoption, [#206](https://github.com/jayostis/cascade-vocabulary/issues/206)).
+(assumed monthly adoption, [#206](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/206)).
 
 **Why an ID is read before an expression.** (rows "join by ID (R12)", "how a version finds its row", "a page's lookup") An ID is a stronger claim than an expression, so a version that carries one
 is read by it alone: otherwise a report carrying ID 12345 and an expression of another variation would join that

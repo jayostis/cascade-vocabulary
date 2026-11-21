@@ -1,8 +1,8 @@
 # What a version's clinical content is
 
 Status: accepted, 2026-10-29: the owner accepted lean (a) as phase 0 of the care-gap epic
-([#287](https://github.com/jayostis/cascade-vocabulary/issues/287)), on the research in
-[#288](https://github.com/jayostis/cascade-vocabulary/issues/288). Answers the draft RFC's lean to make FHIR the
+([#287](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287)), on the research in
+[#288](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/288). Answers the draft RFC's lean to make FHIR the
 stored content of each version, with the `cascade:` clinical terms a rebuildable view (the maintainer's
 `starter-shape/medplum/5-design-challenge.md`, section 3, kept outside any repository). No feature rule applies it yet: each row names #287, or the
 issue that will write its rule. Depends on `naming.md` (a version is named by its content), `currency.md`,
@@ -79,7 +79,7 @@ https://hl7.org/fhir/us/davinci-deqm/gaps-in-care-reporting.html, https://hl7.or
 https://hl7.org/fhir/R4/guidanceresponse.html, https://hl7.org/fhir/R4/task.html, https://cds-hooks.hl7.org/2.0/,
 https://hl7.org/fhir/uv/aitransparency/2026Jan/general_guidance.html,
 https://docs.aws.amazon.com/healthlake/latest/devguide/resource-matching.html, https://www.w3.org/TR/annotation-model/.
-The research is the evidence issue [#288](https://github.com/jayostis/cascade-vocabulary/issues/288): a comparison by
+The research is the evidence issue [#288](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/288): a comparison by
 record kind; the cross-cutting concerns and prior art (with corrections for three claims made from a stale
 checkout); and both care-gap rules written twice, as SPARQL over a pod and as CQL over FHIR, and run on 15 cases, with
 the rule files inline. The runnable set (case generator, cases, runners) and the draft RFC are inputs the maintainer

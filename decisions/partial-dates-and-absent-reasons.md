@@ -86,7 +86,7 @@ W3CDTF (https://www.w3.org/TR/NOTE-datetime); SPHN (https://www.biomedit.ch/docr
 OMOP CDM 5.4 (https://ohdsi.github.io/CommonDataModel/cdm54.html); USCDI Date of Onset
 (https://isp.healthit.gov/uscdi-data/date-onset?page=1); OWL 2 Primer (https://www.w3.org/TR/owl2-primer/). The
 research on #133, with the Oxigraph and rdflib code it read
-(https://github.com/jayostis/cascade-vocabulary/issues/133#issuecomment-6345860418).
+(https://github.com/the-cascade-protocol/cascade-vocabulary/issues/133#issuecomment-6345860418).
 
 ## Choice
 
@@ -190,7 +190,7 @@ turn a delete into a statement.
 
 ## Settled while applying it
 
-By #133, 2026-10-24, under the owner's delegation (jayostis/cascade-vocabulary#204):
+By #133, 2026-10-24, under the owner's delegation (the-cascade-protocol/cascade-vocabulary#204):
 
 - **The reason term's name and namespace.** Everything is in `cascade#`. The reason is a node of the version,
   `cascade:ValueAbsentForReason`, named `<version>#absent-` and the local name of the property it stands for, as a

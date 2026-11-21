@@ -2,9 +2,9 @@
 
 Status: accepted, 2026-10-31: the owner accepted the departure in row "the text no entry holds". Written 2026-10-30
 with the terms it rules under phase 1 of the care-gap epic
-([#287](https://github.com/jayostis/cascade-vocabulary/issues/287), item 2,
-[#291](https://github.com/jayostis/cascade-vocabulary/issues/291), and the narrative text of
-[jayostis/cascade-bridge-adapter-ccda#50](https://github.com/jayostis/cascade-bridge-adapter-ccda/issues/50)). It is
+([#287](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287), item 2,
+[#291](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/291), and the narrative text of
+[the-cascade-protocol/cascade-bridge-adapter-ccda#50](https://github.com/the-cascade-protocol/cascade-bridge-adapter-ccda/issues/50)). It is
 the area note `clinical-terms-follow-fhir.md` asks for: what a report and a note borrow from FHIR, and the one place they
 depart. Rows "report", "note or document", "a report's results", "a code", "an attachment" and "the text" only apply
 accepted rule (b) of `clinical-terms-follow-fhir.md`; row "the text no entry holds" is a departure from FHIR, accepted by
@@ -113,7 +113,7 @@ a section an identity of its own apart from its document.
 The first rule kept a section only when its template was one of five and it held no entries, on the premise that an
 entry-bearing section's text is the human-readable copy of its entries. Real downloads break it, and every scored loss
 of the care-gap evaluation's first round traces to it
-([#287, the owner's ruling](https://github.com/jayostis/cascade-vocabulary/issues/287#issuecomment-6582465877)): a
+([#287, the owner's ruling](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287#issuecomment-6582465877)): a
 Results section carries a CT report with a lung nodule beside the lab table its entries reference; every Encounters
 section has no entry; a Plan of Treatment section that gains two order entries loses its discharge text; a pharmacy's
 fill-history table is pointed at by no entry. So any section's text that no entry references is kept, and a section
@@ -137,7 +137,7 @@ loss. The matcher's trimmed lines stay a note's and a report's: the note rules r
 two notes of one day. A section's kept text has no id, so it is named by its code and its text, and the departure
 in row "the text no entry holds" holds only if its repeats join. Counted on the comparison person `priya_l` (19
 downloads, converted with the C-CDA adapter's note sections; the counts, lines and timings are posted at
-https://github.com/jayostis/cascade-vocabulary/issues/321#issuecomment-6533857683): 10 note sections made 9 records, identical re-sends
+https://github.com/the-cascade-protocol/cascade-vocabulary/issues/321#issuecomment-6533857683): 10 note sections made 9 records, identical re-sends
 already one record; Fernhill's 5 cumulative plans of treatment, each keeping every visit's paragraph and adding the
 latest, made 4 records and 4 entries. A grown note's earlier text begins (or, newest first, ends) its later one, so R19
 joins them, and so a table that lists its newest row first, where the earlier text is the later one's header lines and

@@ -1,8 +1,8 @@
 # Readings, care hypotheses and verdicts: what a maker concludes that is not a verdict
 
 Status: accepted, 2026-10-29: the owner accepted lean (c) as phase 0 of the care-gap epic
-([#287](https://github.com/jayostis/cascade-vocabulary/issues/287)), on the research in
-[#288](https://github.com/jayostis/cascade-vocabulary/issues/288), **to stand once the prior-art search below is
+([#287](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/287)), on the research in
+[#288](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/288), **to stand once the prior-art search below is
 done**: a row that search overturns comes back to the owner, and the rest are built as written. Drafted 2026-10-28.
 Amends `judgments.md` and asks how `naming.md`'s second test reads; depends on `judgments.md`, `naming.md`,
 `currency.md`, and `version-content.md`, whose outputs table says how each kind here is shown over FHIR. No feature
@@ -113,7 +113,7 @@ openEHR Clinical Knowledge Manager (https://ckm.openehr.org/); OMOP CDM 5.4 `NOT
 SEPIO (https://github.com/monarch-initiative/SEPIO-ontology); ECO (https://www.evidenceontology.org/); Biolink Model
 (https://biolink.github.io/biolink-model/); Micropublications, Clark, Ciccarese and Goble, J Biomed Semantics 2014
 (https://doi.org/10.1186/2041-1480-5-28); SIO (https://github.com/MaastrichtU-IDS/semanticscience). The research is
-the evidence issue [#288](https://github.com/jayostis/cascade-vocabulary/issues/288): its cross-cutting concerns and
+the evidence issue [#288](https://github.com/the-cascade-protocol/cascade-vocabulary/issues/288): its cross-cutting concerns and
 prior art, section 7, read the FHIR outputs, DEQM, CDS Hooks and the text-span options; the care-gap assistant's plan
 is #287.
 
